@@ -1,9 +1,7 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.data.db.PlaceEntity
-import app.paralino.core.data.db.PlaceSettingsEntity
-import app.paralino.core.models.mappers.PlaceMapperCore
-import app.paralino.core.models.mappers.PlaceSettingsMapperCore
+import app.paralino.core.db.main.places.PlaceEntity
+import app.paralino.core.db.main.places.PlaceSettingsEntity
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
@@ -25,7 +23,7 @@ class GroupPlaceMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             private = model.privatePlace,
-            data = model.data_
+            data = model.data
         )
     }
 
@@ -36,10 +34,9 @@ class GroupPlaceMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             privatePlace = model.private,
-            data_ = model.data
+            data = model.data
         )
     }
-
 
     suspend fun local2Core(model: PlaceSettingsEntity): GroupPlaceSettings {
         return settingsCoreMapper.remote2Core(local2Remote(model))
@@ -64,5 +61,4 @@ class GroupPlaceMapperLocal(
             alertData = model.alertData
         )
     }
-
 }

@@ -1,6 +1,6 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.db.main.location.SharingContractEntity
+import app.paralino.core.db.main.common.SharingContractEntity
 import app.paralino.core.models.location.LocationSharingContract
 
 object SharingContractsMapper {

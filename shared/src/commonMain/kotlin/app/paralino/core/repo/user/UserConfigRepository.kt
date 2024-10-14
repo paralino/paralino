@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.user.UserConfigEntity
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class UserConfigRepository(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val documentsApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val scopeProvider: ICoroutineScopeProvider,

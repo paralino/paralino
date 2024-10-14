@@ -1,6 +1,6 @@
 package app.paralino.core.repo.personal_code
 
-import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
 import app.paralino.core.models.raw.PersonalCodeRaw
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class PersonalCodeLocalDataSource(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val mapper: PersonalCodeMapperLocal,
 ) {
 

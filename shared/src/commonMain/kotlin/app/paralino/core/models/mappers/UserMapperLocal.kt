@@ -1,6 +1,6 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.db.main.user.BlocklistEntity
+import app.paralino.core.db.main.blocklist.BlocklistEntity
 import app.paralino.core.db.main.user.SubscriptionPlanEntity
 import app.paralino.core.db.main.user.UserEntity
 import app.paralino.core.models.base.PlanBillingPeriod

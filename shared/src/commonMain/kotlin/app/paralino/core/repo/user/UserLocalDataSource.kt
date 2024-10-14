@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.models.mappers.UserMapperLocal
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.UserMeRaw
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class UserLocalDataSource(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val mapper: UserMapperLocal,
 ) {
 
@@ -48,19 +48,17 @@ class UserLocalDataSource(
     }
 
     suspend fun savePlans(plans: List<UserPlanRaw>) {
-        database.subscriptionPlanDao.recreatePlans(plans.map { mapper.remote2Local(it) })
+        database.userDao.recreatePlans(plans.map { mapper.remote2Local(it) })
     }
 
     fun getPlans(): Flow<List<UserPlanRaw>> {
-        return database.subscriptionPlanDao.getAllPlans()
+        return database.userDao.getAllPlans()
             .distinctFlowOfList()
             .map { it.map { mapper.local2Remote(it) } }
     }
 
     suspend fun clear() {
-        database.userDao.clearUserData(
-            database.subscriptionPlanDao,
-            database.blocklistDao
-        )
+        database.userDao.clearUserData()
+        database.blocklistDao.clearAll()
     }
 }

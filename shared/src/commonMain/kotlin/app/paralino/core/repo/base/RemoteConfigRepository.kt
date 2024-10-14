@@ -1,8 +1,8 @@
 package app.paralino.core.repo.base
 
-import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.db.main.user.RemoteConfigEntity
+import app.paralino.core.db.main.common.RemoteConfigEntity
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -21,7 +21,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 
 class RemoteConfigRepository(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val functionsApi: IFunctionsApi,
     private val deviceApiProvider: IDeviceApiProvider,
     private val scopeProvider: ICoroutineScopeProvider,

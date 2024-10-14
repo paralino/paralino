@@ -8,7 +8,7 @@ import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.db.main.members.GroupDeviceIntegrityEntity
+import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw

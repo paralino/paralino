@@ -1,7 +1,7 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.db.AppDatabaseHelper
-import app.paralino.core.db.main.members.GroupDeviceIntegrityEntity
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -9,7 +9,7 @@ import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
 
 class CryptoKeyLocalDataSource constructor(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val keysMapper: GroupKeysMapper,
 ) {
 
@@ -114,7 +114,7 @@ class CryptoKeyLocalDataSource constructor(
     }
 
     suspend fun getGroupOwnerId(groupId: String): String? {
-        return database.groupQueries.getGroupOwnerId(groupId).executeAsOneOrNull()
+        return database.groupRelatedDao.getGroupOwnerUserId(groupId)
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {

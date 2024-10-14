@@ -1,13 +1,14 @@
 package app.paralino.core.provider
 
 import app.paralino.core.CoreAppManager
-import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.appPrefs
+import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
-import app.paralino.core.db.AppDatabaseHelper
 import app.paralino.core.db.LogsDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
 import app.paralino.core.db.logs.AppLogsDatabase
+import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
@@ -37,14 +38,14 @@ import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.billing.PaywallViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
+import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
-import app.paralino.core.presentation.settings.billing.PaywallViewModel
-import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
-import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.DocumentApiWrapper
@@ -116,7 +117,7 @@ object KoinIOS {
                 single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
                 single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
                 single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
-                single { AppDatabaseHelper(SqlDriverFactory(get()), get()) }
+                single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(get()))) }
                 single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(get()))) }
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
                 single { valueFormatter } bind IValueFormatter::class

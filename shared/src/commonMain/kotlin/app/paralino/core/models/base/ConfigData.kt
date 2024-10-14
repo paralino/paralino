@@ -1,6 +1,6 @@
 package app.paralino.core.models.base
 
-import app.paralino.core.db.main.user.RemoteConfigEntity
+import app.paralino.core.db.main.common.RemoteConfigEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.utils.BaseRemoteModule

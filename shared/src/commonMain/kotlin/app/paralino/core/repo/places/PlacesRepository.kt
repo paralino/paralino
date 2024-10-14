@@ -80,7 +80,7 @@ class PlacesRepository constructor(
             remote = {
                 remote.getPlaceWithSettings(placeId)
             },
-            localUpdate = { local.updateOrCreatePlace(it) },
+            localUpdate = { groupLocal.updateOrCreatePlace(it) },
             remotePreference = RemotePreference.CACHE(key = "place_detail", timeMillis = 5_000)
         )
     }
@@ -92,8 +92,7 @@ class PlacesRepository constructor(
                 remote.getPlacesForGroup(groupId)
             },
             localUpdate = {
-                local.recreatePlacesForGroup(groupId, it)
-                placeActivityRepo.recreatePlacesForGroup(groupId, it)
+                groupLocal.recreatePlacesForGroup(groupId, it)
             }
         )
     }
@@ -107,7 +106,7 @@ class PlacesRepository constructor(
                     private = private
                 )
             },
-            localUpdate = { local.updateOrCreatePlace(it) }
+            localUpdate = { groupLocal.updateOrCreatePlace(it) }
         ).map { Unit }
     }
 

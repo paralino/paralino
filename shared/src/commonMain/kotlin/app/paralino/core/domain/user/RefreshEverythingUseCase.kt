@@ -116,8 +116,7 @@ class RefreshEverythingUseCase(
         }
             .also {
                 logg.tag("full_refresh").d("group and keys ready, updating groups")
-                local.recreateGroups(it.map { it.group })
-                placesLocal.recreatePlaces(it.flatMap { it.places })
+                local.recreateGroups(it)
             }
             .also {
                 placeActivityUploadEngine.syncPendingEvents()

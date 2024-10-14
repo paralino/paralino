@@ -176,9 +176,9 @@ val dataSourceModule = module {
     single { UserLocalDataSource(get(), get()) }
     single { UserCryptoKeyLocalDataSource(get(), appPrefs, get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get(), get()) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
-    single { PlacesLocalDataSource(get(), get(), get()) }
+    single { PlacesLocalDataSource(get(), get()) }
 
     single { UserRemoteSource(get(), get(), get(), get(), get()) }
     single { UserDevicesRemoteSource(get(), get(), get(), get()) }
@@ -220,7 +220,7 @@ val coreModule = module {
     single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }

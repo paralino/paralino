@@ -22,16 +22,27 @@ interface UserDao {
     @Query("SELECT * FROM userEntity")
     fun getUser(): Flow<UserEntity?>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createPlans(plans: List<SubscriptionPlanEntity>)
+
+    @Transaction
+    suspend fun recreatePlans(plans: List<SubscriptionPlanEntity>) {
+        clearAllPlans()
+        createPlans(plans)
+    }
+
+    @Query("SELECT * FROM subscriptionPlanEntity")
+    fun getAllPlans(): Flow<List<SubscriptionPlanEntity>>
+
+    @Query("DELETE FROM subscriptionPlanEntity")
+    suspend fun clearAllPlans()
+
     @Query("DELETE FROM userEntity")
     suspend fun clearUser()
 
     @Transaction
-    suspend fun clearUserData(
-        subscriptionPlanDao: SubscriptionPlanDao,
-        blocklistDao: BlocklistDao
-    ) {
+    suspend fun clearUserData() {
         clearUser()
-        subscriptionPlanDao.clearAll()
-        blocklistDao.clearAll()
+        clearAllPlans()
     }
 }

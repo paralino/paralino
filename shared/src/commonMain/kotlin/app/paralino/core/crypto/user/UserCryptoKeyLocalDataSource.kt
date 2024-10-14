@@ -1,7 +1,7 @@
 package app.paralino.core.crypto.user
 
 import app.paralino.core.crypto.SimpleKeyPairData
-import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.map
 class UserCryptoKeyLocalDataSource constructor(
     private val userKeyMapper: UserKeyMapperCore,
     private val appPrefs: AppPrefs,
-    private val database: AppDatabaseHelper
+    private val database: MainDatabaseHelper
 ) {
 
     suspend fun getCachedUserKey(): SymmetricCryptoKeyData? {

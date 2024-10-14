@@ -1,6 +1,6 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.db.AppDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.places.PlaceActivityEntity
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class PlaceActivityDataSource(
-    private val database: AppDatabaseHelper
+    private val database: MainDatabaseHelper
 ) {
 
     private val _placeActivityCache = MutableStateFlow(mapOf<String, PlaceActivityState>())

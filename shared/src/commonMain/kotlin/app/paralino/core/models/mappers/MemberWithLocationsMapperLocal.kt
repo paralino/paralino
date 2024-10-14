@@ -1,7 +1,7 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.data.db.MemberEntity
-import app.paralino.core.data.db.MemberLocationEntity
+import app.paralino.core.db.main.groups.MemberEntity
+import app.paralino.core.db.main.groups.MemberLocationEntity
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.GroupSettingsRaw
@@ -33,24 +33,24 @@ class MemberWithLocationsMapperLocal(
             groupId = model.groupId,
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
-            data = model.data_,
+            data = model.data,
             paralinoId = model.paralinoId,
             verification = model.verification,
             settingsRaw = safeLet(
-                model.settings_id,
-                model.settings_groupId,
-                model.settings_ownerUserId,
-                model.settings_memberIntegrity,
-                model.settings_memberIntegrityUserKeyVersion
+                model.settingsId,
+                model.settingsGroupId,
+                model.settingsOwnerUserId,
+                model.settingsMemberIntegrity,
+                model.settingsMemberIntegrityUserKeyVersion
             ) { id, groupId, userId, memberIntegrity, memberIntegrityUserKeyVersion ->
                 GroupSettingsRaw(
                     id = id,
                     groupId = groupId,
                     ownerUserId = userId,
                     memberIntegrity = memberIntegrity,
-                    groupIntegrity = model.settings_groupIntegrity,
+                    groupIntegrity = model.settingsGroupIntegrity,
                     memberIntegrityUserKeyVersion = memberIntegrityUserKeyVersion,
-                    groupIntegrityUserKeyVersion = model.settings_groupIntegrityUserKeyVersion
+                    groupIntegrityUserKeyVersion = model.settingsGroupIntegrityUserKeyVersion
                 )
             },
             locationIds = memberLocations.map { it.id }
@@ -100,14 +100,14 @@ class MemberWithLocationsMapperLocal(
             groupKeyVersion = model.groupKeyVersion,
             memberKeyVersion = model.memberKeyVersion,
             verification = model.verification,
-            settings_id = model.settingsRaw?.id,
-            settings_groupId = model.settingsRaw?.groupId,
-            settings_ownerUserId = model.settingsRaw?.ownerUserId,
-            settings_memberIntegrity = model.settingsRaw?.memberIntegrity,
-            settings_groupIntegrity = model.settingsRaw?.groupIntegrity,
-            settings_memberIntegrityUserKeyVersion = model.settingsRaw?.memberIntegrityUserKeyVersion,
-            settings_groupIntegrityUserKeyVersion = model.settingsRaw?.groupIntegrityUserKeyVersion,
-            data_ = model.data,
+            settingsId = model.settingsRaw?.id,
+            settingsGroupId = model.settingsRaw?.groupId,
+            settingsOwnerUserId = model.settingsRaw?.ownerUserId,
+            settingsMemberIntegrity = model.settingsRaw?.memberIntegrity,
+            settingsGroupIntegrity = model.settingsRaw?.groupIntegrity,
+            settingsMemberIntegrityUserKeyVersion = model.settingsRaw?.memberIntegrityUserKeyVersion,
+            settingsGroupIntegrityUserKeyVersion = model.settingsRaw?.groupIntegrityUserKeyVersion,
+            data = model.data,
             paralinoId = model.paralinoId,
         )
     }
