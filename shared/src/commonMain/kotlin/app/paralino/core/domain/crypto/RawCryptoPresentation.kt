@@ -1,7 +1,7 @@
 package app.paralino.core.domain.crypto
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess

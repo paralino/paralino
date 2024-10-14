@@ -1,33 +1,32 @@
 package app.paralino.core.repo.location
 
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.utils.extensions.distinctFlowOfList
 import app.paralino.core.models.mappers.SharingContractsMapper
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToList
+import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class SharingContractsLocalDataSource(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val mapper: SharingContractsMapper,
 ) {
 
     suspend fun createContract(contract: LocationSharingContract) {
-        database.sharingContractQueries.createContract(mapper.remote2Local(contract))
+        database.sharingContractsDao.createContract(mapper.remote2Local(contract))
     }
 
     fun getAllContracts(): Flow<List<LocationSharingContract>> {
-        return database.mapToList { sharingContractQueries.getAllContracts() }
+        return database.sharingContractsDao.getAllContracts()
             .distinctFlowOfList()
             .map { it.map { mapper.local2Remote(it) } }
     }
 
     suspend fun cancelContracts(ids: List<String>) {
-        database.sharingContractQueries.deleteContract(ids)
+        database.sharingContractsDao.deleteContract(ids)
     }
 
     suspend fun cancelAll() {
-        database.sharingContractQueries.clearAll()
+        database.sharingContractsDao.clearAll()
     }
 }

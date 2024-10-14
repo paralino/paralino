@@ -1,9 +1,6 @@
 package app.paralino.core.notifications
 
 import app.paralino.core.provider.InAppLogger
-import app.paralino.core.provider.InAppLoggerLogType
-import app.paralino.core.provider.LogPriority
-import kotlinx.datetime.Instant
 
 abstract class IPushNotificationPresenter(
     private val inAppLogger: InAppLogger
@@ -11,17 +8,7 @@ abstract class IPushNotificationPresenter(
     protected abstract fun showPushNotification(payload: Payload)
 
     fun notify(payload: Payload) {
-        if (payload.loggerTag != null) {
-            val timeInfo = payload.timeInfo ?: payload.timeMillis?.let { Instant.fromEpochMilliseconds(it).toString() }
-            inAppLogger.log(
-                type = InAppLoggerLogType.NOTIFICATIONS,
-                priority = LogPriority.INFO,
-                tag = payload.loggerTag,
-                title = listOfNotNull(payload.title, payload.message?.let { "($it)" }).joinToString(separator = " "),
-                info = timeInfo
-            )
-        }
-
+        inAppLogger.logNotificationPayload(payload)
         showPushNotification(payload)
     }
 
@@ -35,6 +22,11 @@ abstract class IPushNotificationPresenter(
     )
 }
 
-abstract class IInfoMessagesNotificationPresenter(inAppLogger: InAppLogger): IPushNotificationPresenter(inAppLogger)
-abstract class IPlaceActivityNotificationPresenter(inAppLogger: InAppLogger): IPushNotificationPresenter(inAppLogger)
-abstract class IGroupActivityNotificationPresenter(inAppLogger: InAppLogger): IPushNotificationPresenter(inAppLogger)
+abstract class IInfoMessagesNotificationPresenter(inAppLogger: InAppLogger) :
+    IPushNotificationPresenter(inAppLogger)
+
+abstract class IPlaceActivityNotificationPresenter(inAppLogger: InAppLogger) :
+    IPushNotificationPresenter(inAppLogger)
+
+abstract class IGroupActivityNotificationPresenter(inAppLogger: InAppLogger) :
+    IPushNotificationPresenter(inAppLogger)

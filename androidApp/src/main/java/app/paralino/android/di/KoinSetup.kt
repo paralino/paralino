@@ -26,9 +26,11 @@ import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.appPrefs
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.LogsDatabaseHelper
-import app.paralino.core.data.db.SqlDriverFactory
+import app.paralino.core.db.LogsDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.SqlDriverFactory
+import app.paralino.core.db.logs.AppLogsDatabase
+import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.notifications.IGroupActivityNotificationPresenter
@@ -54,14 +56,14 @@ import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.billing.PaywallViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
+import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
-import app.paralino.core.presentation.settings.billing.PaywallViewModel
-import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
-import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IConnectionStatusProvider
@@ -88,8 +90,8 @@ object KoinSetup {
     val modules get() = listOf(coreDependencyModule, appSpecificModule)
 
     private val coreDependencyModule = module {
-        single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
-        single { LogsDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
+        single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(androidContext()))) }
+        single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(androidContext()))) }
 
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
 
@@ -128,6 +130,7 @@ object KoinSetup {
                 publicServerUrl = BuildConfig.publicServerUrl,
                 billingRCApiKey = BuildConfig.revenueCatApiKey,
                 iOSTeamId = "",
+                iOSAppGroup = "",
                 appHost = AppHost.MAIN_APP,
                 isDevMode = BuildConfig.internalTesting,
                 hasPreviewFeatures = BuildConfig.internalTesting,
@@ -177,7 +180,7 @@ object KoinSetup {
         viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
-        viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
+        viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get()) }
         viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), appPrefs) }

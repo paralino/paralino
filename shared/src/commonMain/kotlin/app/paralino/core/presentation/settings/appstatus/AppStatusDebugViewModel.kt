@@ -4,6 +4,7 @@ import app.paralino.core.models.AppHost
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.InAppLoggerLogType
 import app.paralino.core.provider.LogPriority
@@ -28,7 +29,8 @@ class AppStatusDebugViewModel(
     private val inAppLogger: InAppLogger,
     private val deviceApi: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
-    private val locationSharingManager: LocationSharingManager
+    private val locationSharingManager: LocationSharingManager,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(AppStatusDebugScreenState())
@@ -38,7 +40,6 @@ class AppStatusDebugViewModel(
     private val filtersFlow = MutableStateFlow(AppStatusFilterState())
 
     init {
-
         filtersFlow.update {
             it.copy(
                 logTypeFilters = InAppLoggerLogType.entries.map {
@@ -156,7 +157,7 @@ class AppStatusDebugViewModel(
                         logs = logs.map {
                             AppStatusItemLogState(
                                 key = it.id.toString(),
-                                text = it.print(),
+                                text = it.print(valueFormatter),
                                 priority = LogPriority.fromKeyOrFloor(it.priority)
                             )
                         }

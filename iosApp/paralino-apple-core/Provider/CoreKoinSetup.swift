@@ -51,6 +51,7 @@ public class CoreKoinSetup {
             // TODO add key
             billingRCApiKey: "",
             iOSTeamId: Bundle.main.object(forInfoDictionaryKey: "TEAM_ID") as! String,
+            iOSAppGroup: "group.app.paralino.ios",
             appHost: apphost,
             isDevMode: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
             hasPreviewFeatures: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",

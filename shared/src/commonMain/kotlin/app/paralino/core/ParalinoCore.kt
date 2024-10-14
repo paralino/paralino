@@ -8,7 +8,7 @@ import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
@@ -134,9 +134,9 @@ object ParalinoCore {
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
         logr.init(
-            logrs = listOf(
+            logrs = listOfNotNull(
                 deviceApiProvider.createSystemLogr(),
-                inAppLogger,
+                inAppLogger.takeIf { appBuildConfig.isDevMode },
                 deviceApiProvider.createCrashReportingLogr()
             )
         )
@@ -176,7 +176,7 @@ val dataSourceModule = module {
     single { UserLocalDataSource(get(), get()) }
     single { UserCryptoKeyLocalDataSource(get(), appPrefs, get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get(), get()) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
 
@@ -220,7 +220,7 @@ val coreModule = module {
     single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }

@@ -1,9 +1,8 @@
 package app.paralino.core.crypto.user
 
 import app.paralino.core.crypto.SimpleKeyPairData
-import app.paralino.core.data.db.AppPrefs
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.map
 class UserCryptoKeyLocalDataSource constructor(
     private val userKeyMapper: UserKeyMapperCore,
     private val appPrefs: AppPrefs,
-    private val database: AppDatabaseHelper
+    private val database: MainDatabaseHelper
 ) {
 
     suspend fun getCachedUserKey(): SymmetricCryptoKeyData? {
@@ -38,12 +37,7 @@ class UserCryptoKeyLocalDataSource constructor(
         appPrefs.encryptedUserMasterKey = keyData.encryptedKey
         appPrefs.userMasterKeyVersion = key.userKeyVersion
 
-        database.userKeysQueries.transaction {
-            database.userKeysQueries.clearAll()
-            database.userKeysQueries.createUserKey(
-                userKeyMapper.remote2Local(key, isActive = true)
-            )
-        }
+        database.userKeysDao.recreateUserKeys(userKeyMapper.remote2Local(key, isActive = true))
     }
 
     suspend fun getKeyPair(): SimpleKeyPairData? {
@@ -60,7 +54,7 @@ class UserCryptoKeyLocalDataSource constructor(
     }
 
     fun listenToMyKey(): Flow<UserCryptoKeyRaw?> {
-        return database.mapToOneOrNull { userKeysQueries.getActive() }
+        return database.userKeysDao.getActive()
             .map {
                 it?.let { userKeyMapper.local2Remote(it, userId = appPrefs.userId) }
             }.catch {
@@ -92,8 +86,6 @@ class UserCryptoKeyLocalDataSource constructor(
         appPrefs.encryptedUserMasterKey = ""
         appPrefs.sessionMasterKey = ""
         appPrefs.userMasterKeyVersion = 0
-        database.userKeysQueries.transaction {
-            database.userKeysQueries.clearAll()
-        }
+        database.userKeysDao.clearAll()
     }
 }

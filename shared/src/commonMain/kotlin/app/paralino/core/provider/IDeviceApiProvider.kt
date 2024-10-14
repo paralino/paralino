@@ -1,6 +1,6 @@
 package app.paralino.core.provider
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import kotlinx.coroutines.flow.MutableStateFlow

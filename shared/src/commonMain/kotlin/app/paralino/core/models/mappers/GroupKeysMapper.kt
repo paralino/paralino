@@ -1,9 +1,9 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.data.db.GroupDeviceKeysEntity
-import app.paralino.core.data.db.GroupKeysEntity
-import app.paralino.core.data.db.GroupMembersKeysEntity
-import app.paralino.core.data.db.PersonalGroupKeyEntity
+import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.GroupKeysEntity
+import app.paralino.core.db.main.keys.GroupMembersKeysEntity
+import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw

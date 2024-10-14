@@ -17,7 +17,6 @@ import app.paralino.core.utils.exceptions.asRemoteException
 class GroupRefreshUseCase constructor(
     private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
-    private val placesLocal: PlacesLocalDataSource,
     private val cryptoKEKRepo: CryptoKEKRepository,
     private val groupMapperCore: GroupMapperCore,
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
@@ -32,8 +31,7 @@ class GroupRefreshUseCase constructor(
                 getRemoteGroupWithMembersAndPlaces(groupId)
                     .also {
                         logg.tag("tag_crypto_key_group").d("Finished processing group and keys, save group ${it.group.group.id}")
-                        local.updateOrCreateGroup(it.group)
-                        placesLocal.recreatePlacesForGroup(groupId = groupId, places = it.places)
+                        local.updateOrCreateGroupWithMembersAndPlaces(it)
                     }
             }
         )

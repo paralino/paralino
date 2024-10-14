@@ -1,7 +1,7 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.executeWithResult
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.logg
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.base.BaseRepository
@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.minutes
 class PlaceActivityUploadEngine(
     private val remote: PlacesRemoteSource,
     private val local: PlacesLocalDataSource,
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider
 ) : BaseRepository() {
 
@@ -33,7 +33,8 @@ class PlaceActivityUploadEngine(
                 isEnter = isEnter,
                 timeMillis = timeMillis
             )
-            logg.tag(executionKey).i("Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${placeId})")
+            logg.tag(executionKey)
+                .i("Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${placeId})")
 
             // sync pending events, but on different thread so we do not block current flow
             scopeProvider.userSessionIOScope.launch {
@@ -42,11 +43,14 @@ class PlaceActivityUploadEngine(
         } catch (e: Exception) {
             logg.tag(executionKey)
                 .w("Error sending place activity ${if (isEnter) "enter" else "exit"} event for place (${placeId}), create pending event - ${e.message}")
-            database.pendingPlaceEventsQueries.createPendingEvent(
-                placeId = placeId,
-                groupId = groupId,
-                isEnter = isEnter,
-                notifyTimeMillis = timeMillis
+            database.groupRelatedDao.createPendingEvent(
+                PendingPlaceEventsEntity(
+                    id = 0,
+                    placeId = placeId,
+                    groupId = groupId,
+                    isEnter = isEnter,
+                    notifyTimeMillis = timeMillis
+                )
             )
         }
     }
@@ -70,9 +74,7 @@ class PlaceActivityUploadEngine(
     }
 
     private suspend fun syncPendingEventsImpl() {
-        val pendingEvents = database.executeWithResult {
-            pendingPlaceEventsQueries.getAll().executeAsList()
-        } ?: emptyList()
+        val pendingEvents = database.groupRelatedDao.getAllPendingEventsOnce()
         val maxPendingTimeMillis = nowUTC().minus(12.hours).toEpochMilliseconds()
 
         val sentEvents = pendingEvents
@@ -108,18 +110,10 @@ class PlaceActivityUploadEngine(
 
         logg.tag(executionKey).v("Sent ${sentEvents.size} pending place events")
 
-        database.transaction {
-            sentEvents.forEach {
-                try {
-                    pendingPlaceEventsQueries.deleteEvent(id = it)
-                } catch (_: Exception) {
-                    // ignore if any
-                }
-            }
-            pendingPlaceEventsQueries.deleteObsoleteEvents(
-                maxPendingTimeMillis = maxPendingTimeMillis
-            )
-        }
+        database.groupRelatedDao.updatePendingEventsData(
+            sentEvents = sentEvents,
+            maxPendingTimeMillis = maxPendingTimeMillis
+        )
     }
 
     private suspend fun sendPlaceEventImpl(

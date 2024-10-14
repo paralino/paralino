@@ -1,6 +1,6 @@
 package app.paralino.core.notifications
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
@@ -45,7 +45,7 @@ class PushNotificationHandler constructor(
                 documentId = notificationId
             )
                 .also {
-                    logg.tag("push_notifications").v("Got ${it.size} notifications documents")
+                    logg.tag("push_notifications").v("Got notification document")
                 }
                 .let {
                     try {
