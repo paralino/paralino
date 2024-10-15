@@ -28,7 +28,7 @@ public class LocationManager: NSObject, ObservableObject, CLLocationManagerDeleg
     
     func setup() {
         manager.allowsBackgroundLocationUpdates = true
-        manager.showsBackgroundLocationIndicator = true
+        manager.showsBackgroundLocationIndicator = false
         manager.pausesLocationUpdatesAutomatically = true
         manager.desiredAccuracy = kCLLocationAccuracyBest
     }
