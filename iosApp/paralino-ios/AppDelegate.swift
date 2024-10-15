@@ -38,13 +38,13 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         locationManager.startMonitoringAppState()
         coreAppManager.onAppStart()
         
+        UNUserNotificationCenter.current().delegate = self
+        UIApplication.shared.registerForRemoteNotifications()
+        
         BackgroundRefresh.registerAppRefresh()
         BackgroundRefresh.registerNotificationsRefresh()
         BackgroundRefresh.scheduleAppRefresh()
         BackgroundRefresh.scheduleNotificationsRefresh()
-        
-        UNUserNotificationCenter.current().delegate = self
-        UIApplication.shared.registerForRemoteNotifications()
         
         return true
     }
