@@ -51,6 +51,8 @@ class AppPrefs(
         const val keyPasswordGuest = "prefs.profile.guest.password"
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
         const val keyPushTokenSynced = "prefs.device.pushToken.synced"
+        const val keyLocationPushTokenUnsynced = "prefs.device.locationPushToken.unsynced"
+        const val keyLocationPushTokenSynced = "prefs.device.locationPushToken.synced"
         const val keyDeviceID = "prefs.device.ID"
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
@@ -156,6 +158,18 @@ class AppPrefs(
             provider.userSettings.putString(keyPushTokenSynced, value)
         }
 
+    var locationPushTokenUnsynced: String
+        get() = provider.userSettings.getString(keyLocationPushTokenUnsynced, "")
+        set(value) {
+            provider.userSettings.putString(keyLocationPushTokenUnsynced, value)
+        }
+
+    var locationPushTokenSynced: String
+        get() = provider.userSettings.getString(keyLocationPushTokenSynced, "")
+        set(value) {
+            provider.userSettings.putString(keyLocationPushTokenSynced, value)
+        }
+
     var selectedGroupId: String?
         get() = provider.userSettings.getStringOrNull(keySelectedGroupID)
         set(value) {
@@ -206,6 +220,13 @@ class AppPrefs(
         val emailValidation = FormValidation.Email.validate(appPrefs.guestEmail)
         val passwordValidation = FormValidation.Password.validate(appPrefs.guestPassword)
         return emailValidation.result && passwordValidation.result
+    }
+
+    fun clearPushTokens() {
+        pushTokenSynced = ""
+        pushTokenUnsynced = ""
+        locationPushTokenSynced = ""
+        locationPushTokenUnsynced = ""
     }
 
     fun clear() {

@@ -18,6 +18,7 @@ public class LocationManager: NSObject, ObservableObject, CLLocationManagerDeleg
     lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
+    lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
     
     public init(setupManager: Bool) {
         super.init()
@@ -85,11 +86,24 @@ public class LocationManager: NSObject, ObservableObject, CLLocationManagerDeleg
     func startLocationUpdates() {
         manager.startUpdatingLocation()
         manager.startMonitoringSignificantLocationChanges()
+        
+        manager.startMonitoringLocationPushes { [weak self] data, error in
+            if let data = data {
+                let token = data.map { String(format: "%.2hhx", $0) }.joined()
+                shared.AppPrefs.companion.instance.locationPushTokenUnsynced = token
+                self?.pushProvider.syncPushToken()
+            }
+            
+            if let error = error {
+                Logr.d(tag:"location_service", message: "Error getting location push token: \(error.localizedDescription)")
+            }
+        }
     }
     
     func stopLocationUpdates() {
         manager.stopUpdatingLocation()
         manager.stopMonitoringSignificantLocationChanges()
+        manager.stopMonitoringLocationPushes()
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

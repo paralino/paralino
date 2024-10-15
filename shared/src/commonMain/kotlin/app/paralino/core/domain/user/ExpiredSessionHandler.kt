@@ -46,8 +46,7 @@ class ExpiredSessionRecovery(
                 // clearing user here will disable any further potential actions until session is refreshed
                 userRepo.clearLocally()
                 // also clearing push tokens, so those will be synced again after new login
-                appPrefs.pushTokenUnsynced = ""
-                appPrefs.pushTokenSynced = ""
+                appPrefs.clearPushTokens()
 
                 loginUseCase.login(email = appPrefs.guestEmail, password = appPrefs.guestPassword)
                     .catch {
