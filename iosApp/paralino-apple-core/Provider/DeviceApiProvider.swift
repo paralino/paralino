@@ -8,7 +8,6 @@
 import Foundation
 import shared
 import UIKit
-import paralino_apple_core
 import Sentry
 
 class DeviceApiProvider: IDeviceApiProvider {
@@ -34,6 +33,10 @@ class DeviceApiProvider: IDeviceApiProvider {
     
     override var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+    }
+    
+    override var packageName: String {
+        return Bundle.main.bundleIdentifier ?? "app.paralino.ios.undefined"
     }
     
     override var deviceOSVersion: Int32 {

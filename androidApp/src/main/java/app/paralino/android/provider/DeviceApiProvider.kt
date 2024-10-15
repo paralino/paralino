@@ -53,6 +53,9 @@ class DeviceApiProvider constructor(
     override val deviceOSVersion: Int
         get() = Build.VERSION.SDK_INT
 
+    override val packageName: String
+        get() = BuildConfig.APPLICATION_ID
+
     override fun createSystemLogr(): SystemLogr {
         return DebugLogr(enabled = appBuildConfig.logToConsole, tagPrefix = "Paralino")
     }

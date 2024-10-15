@@ -145,6 +145,8 @@ object ParalinoCore {
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
+        logr.i("paralino_core", "Paralino core initialized: ${deviceApiProvider.clientHeaderValue}")
+
         if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
         }
