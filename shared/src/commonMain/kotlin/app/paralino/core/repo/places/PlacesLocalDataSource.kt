@@ -68,7 +68,10 @@ class PlacesLocalDataSource(
     fun getAllPlaces(): Flow<List<GroupPlace>> {
         return database.groupRelatedDao.getAllPlaces()
             .distinctFlowOfList()
-            .map { it.map { mapper.local2Core(it) } }
+            .map {
+                it.map { mapper.local2Core(it) }
+                    .sortedBy { it.id }
+            }
     }
 
     suspend fun getAllPlacesOnce(): List<GroupPlace> {

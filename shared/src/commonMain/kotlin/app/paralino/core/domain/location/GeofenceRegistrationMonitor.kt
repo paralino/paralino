@@ -42,7 +42,6 @@ class GeofenceRegistrationMonitor(
         }
 
         val places = placesRepo.getAllPlacesLocally()
-            .distinctFlowOfList()
             .map {
                 it.mapNotNull { place ->
                     place.data.data?.let {
@@ -56,6 +55,7 @@ class GeofenceRegistrationMonitor(
                     }
                 }
             }
+            .distinctFlowOfList()
             .onEach {
                 logg.i(
                     tag = "place_activity_geofence",
