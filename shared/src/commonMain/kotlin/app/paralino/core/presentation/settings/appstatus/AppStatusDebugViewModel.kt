@@ -88,7 +88,7 @@ class AppStatusDebugViewModel(
                         add(
                             AppStatusItemStatusState(
                                 key = "location-performance",
-                                text = "Location performance: **${locationPerformance.current}**",
+                                text = "Location performance: **${locationPerformance.current}**\n  requested=${locationPerformance.requested}, old=${locationPerformance.requested}",
                                 isError = false
                             )
                         )

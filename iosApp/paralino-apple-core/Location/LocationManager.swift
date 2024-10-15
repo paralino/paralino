@@ -48,7 +48,6 @@ public class LocationManager: NSObject, ObservableObject, CLLocationManagerDeleg
         }
         
         locationPerformanceManager.locationPerformanceStatus { [weak self] model in
-            Logr.i(tag: "location_Test", message: "Location performance changed: \(model)")
             switch model.current {
             case .batterySaver:
                 self?.manager.pausesLocationUpdatesAutomatically = true

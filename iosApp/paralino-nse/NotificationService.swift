@@ -33,7 +33,7 @@ class NotificationService: UNNotificationServiceExtension {
         if let bestAttemptContent = bestAttemptContent {
             DispatchQueue.main.async { [weak self] in
                 Task {
-                    Logr.w(tag: "notification", message: "Try to parse notification ID")
+                    Logr.v(tag: "notification", message: "Try to parse notification ID")
                     let notificationId = bestAttemptContent.userInfo["notificationId"] as? String
                     if let notificationId, let pushProvider = self?.pushProvider {
                         Logr.v(tag: "notification", message: "Try to fetch new alert notification")
