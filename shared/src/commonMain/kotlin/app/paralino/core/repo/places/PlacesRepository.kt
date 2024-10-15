@@ -23,6 +23,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -50,10 +51,8 @@ class PlacesRepository constructor(
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
-    fun subscribeToAllActivePlaces(): Flow<List<GroupPlace>> {
-        return local.getAllPlaces().map {
-            it.filter { locationSharingManager.isSharingActiveForGroup(it.groupId) }
-        }
+    fun getAllPlacesLocally(): Flow<List<GroupPlace>> {
+        return local.getAllPlaces()
     }
 
     suspend fun getAllActivePlaces(): List<GroupPlace> {

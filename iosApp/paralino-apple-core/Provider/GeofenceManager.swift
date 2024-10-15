@@ -19,15 +19,7 @@ class GeofenceManager: IGeofenceManager {
     }
     
     func deleteAllGeofences() {
-        Logr.d(tag: "place_activity_geofence", message: "Removing all geofences")
         for region in locationManager.monitoredRegions {
-            locationManager.stopMonitoring(for: region)
-        }
-    }
-    
-    func deleteGeofences(placesIds: [String]) {
-        let regions = locationManager.monitoredRegions.filter { region in placesIds.contains { region.identifier == $0 } }
-        for region in regions {
             locationManager.stopMonitoring(for: region)
         }
     }
@@ -82,7 +74,7 @@ class GeofenceManager: IGeofenceManager {
                 .sorted{ a, b in return a.1 < b.1 }
                 .prefix(20)
             
-            Logr.d(tag: "place_activity_geofence", message: "Registering \(nearbyRegions.count) nearby geofences")
+            Logr.i(tag: "place_activity_geofence", message: "Registering \(nearbyRegions.count) nearby geofences")
             
             nearbyRegions.forEach {
                 locationManager.startMonitoring(for: $0.0)
