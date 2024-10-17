@@ -197,9 +197,9 @@ val dataSourceModule = module {
 }
 
 val coreModule = module {
-    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
-    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get()) }
+    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }

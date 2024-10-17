@@ -68,6 +68,7 @@ class LocationUploadEngine constructor(
             }
         }
     private var locationUploadMonitoringJob: Job? = null
+    private var locationStatusMonitoringJob: Job? = null
     private var lastLocationPush = MutableStateFlow<Instant?>(null)
 
     private val _pendingLocation = MutableStateFlow<LocationDataModel?>(null)
@@ -77,7 +78,8 @@ class LocationUploadEngine constructor(
     private var failedRegistrationAttempts = MutableStateFlow(mapOf<String, Int>())
 
     fun startLocationUploadEngine() {
-        locationSharingManager.sharingStatus
+        locationStatusMonitoringJob?.cancel()
+        locationStatusMonitoringJob = locationSharingManager.sharingStatus
             .mapNotNull { it.data }
             .onEach { sharingActive ->
                 if (sharingActive) {

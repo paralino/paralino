@@ -10,6 +10,7 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -29,6 +30,9 @@ class GeofenceRegistrationMonitor(
     private val locationSharingManager: LocationSharingManager,
     private val scopeProvider: ICoroutineScopeProvider
 ) {
+
+    private var geofenceMonitoringJob: Job? = null
+
     fun startGeofenceRegistration(reRegisterPeriodically: Boolean) {
         // timer to reregister places after certain time
         val timer = flow {
@@ -63,7 +67,8 @@ class GeofenceRegistrationMonitor(
                 )
             }
 
-        combine(
+        geofenceMonitoringJob?.cancel()
+        geofenceMonitoringJob = combine(
             places,
             deviceApiProvider.locationStatusProvider.status.map { it.isOK(forAlwaysOnAccess = true) },
             locationSharingManager.allContractsFlow.mapNotNull { it.data },
