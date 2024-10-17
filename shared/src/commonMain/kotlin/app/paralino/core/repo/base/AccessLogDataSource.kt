@@ -40,15 +40,47 @@ class AccessLogDataSource(
             }
 
             AppHost.IOS_NOTIFICATION_EXTENSION -> {
-                currentValidLogs.none { it.appHostType != AppHost.IOS_NOTIFICATION_EXTENSION }
+                currentValidLogs.all { it.appHostType == AppHost.IOS_NOTIFICATION_EXTENSION }
             }
 
             AppHost.IOS_LOCATION_EXTENSION -> false
         }
     }
 
-    suspend fun getAllAccessLogs(): List<AccessLogEntity> {
-        return database.accessLogQueries.getAllAccessLogs()
+    suspend fun saveLocationRequestAccessLog() {
+        val accessLog = AccessLogEntity(
+            type = "location",
+            host = appBuildConfig.appHost.key,
+            accessId = "request",
+            timeUTC = nowUTC().toString()
+        )
+        database.accessLogQueries.insertAccessLog(accessLog)
+    }
+
+    suspend fun deleteLocationRequestAccessLog() {
+        database.accessLogQueries.deleteAccessLog(type = "location", accessId = "request")
+    }
+
+    suspend fun canProcessLocationRequest(): Boolean {
+        val currentValidLogs = database.accessLogQueries.getAccessLogs(
+            type = "location",
+            accessId = "request"
+        )
+            .filter { it.accessTimeUTC?.isOlderThan(60.seconds) == false }
+
+        return when (appBuildConfig.appHost) {
+            AppHost.MAIN_APP -> {
+                true
+            }
+
+            AppHost.IOS_NOTIFICATION_EXTENSION -> {
+                currentValidLogs.none { it.appHostType != AppHost.IOS_NOTIFICATION_EXTENSION }
+            }
+
+            AppHost.IOS_LOCATION_EXTENSION -> {
+                currentValidLogs.all { it.appHostType == AppHost.IOS_LOCATION_EXTENSION }
+            }
+        }
     }
 
     suspend fun clearAll() {

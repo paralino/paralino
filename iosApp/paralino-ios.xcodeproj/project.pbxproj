@@ -251,6 +251,13 @@
 			);
 			target = 2505E6452CBD69B50088D146 /* paralino-lse */;
 		};
+		2505E6622CC11B880088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Provider/Logr.swift,
+			);
+			target = 2505E6452CBD69B50088D146 /* paralino-lse */;
+		};
 		2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -303,7 +310,7 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2505E6472CBD69B50088D146 /* paralino-lse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2505E6512CBD69B50088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-lse"; sourceTree = "<group>"; };
 		254EFF6C2CB5457800818618 /* paralino-nse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-nse"; sourceTree = "<group>"; };
-		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
+		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2505E6622CC11B880088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */

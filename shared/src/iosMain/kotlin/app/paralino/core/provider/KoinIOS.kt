@@ -122,7 +122,7 @@ object KoinIOS {
                 single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
                 single { valueFormatter } bind IValueFormatter::class
                 single { appUpdateManager } bind IAppUpdateManager::class
-                single { LocationRepositoryWrapper(get()) }
+                single { LocationRepositoryWrapper(get(), get(), get(), get()) }
                 single { oneTimeLocationProvider(get(), get()) }
             },
             createViewModelModule()
