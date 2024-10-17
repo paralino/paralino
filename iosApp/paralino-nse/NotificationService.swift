@@ -12,21 +12,25 @@ import Sentry
 
 class NotificationService: UNNotificationServiceExtension {
     
-    let locationManager: LocationManager
+    let locationManager: LocationManager = LocationManager(setupManager: false)
     
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     lazy var pushProvider: PushSetupProvider = { KoinIOS.Instances.shared.pushProvider as! PushSetupProvider }()
     lazy var inAppLogger: InAppLogger = { KoinIOS.Instances.shared.inAppLogger }()
+    lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     
     override init() {
-        self.locationManager = LocationManager(setupManager: false)
         SentrySDK.start { options in
             options.dsn = BuildKonfig.shared.glitchTipDSN
             options.debug = false
         }
+        
         locationManager.manager.delegate = locationManager
         KoinSetup.initKoin(locationManager: self.locationManager)
+        
+        super.init()
+        self.coreAppManager.onAppStart()
     }
     
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
