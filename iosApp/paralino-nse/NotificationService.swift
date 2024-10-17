@@ -8,6 +8,7 @@
 import UserNotifications
 import paralino_apple_core
 import shared
+import Sentry
 
 class NotificationService: UNNotificationServiceExtension {
     
@@ -20,6 +21,10 @@ class NotificationService: UNNotificationServiceExtension {
     
     override init() {
         self.locationManager = LocationManager(setupManager: false)
+        SentrySDK.start { options in
+            options.dsn = BuildKonfig.shared.glitchTipDSN
+            options.debug = false
+        }
         locationManager.manager.delegate = locationManager
         KoinSetup.initKoin(locationManager: self.locationManager)
     }
