@@ -54,11 +54,19 @@ class NotificationService: UNNotificationServiceExtension {
                             contentHandler(content)
                         } else {
                             Logr.w(tag: "notification", message: "Notification not fetched")
-                            self?.suppressNotification(contentHandler)
+                            if AppBuildConfig.companion.instance.isDevMode {
+                                bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
+                                bestAttemptContent.body = "Not fetched: \(bestAttemptContent.body)"
+                            }
+                            self?.suppressNotification(contentHandler, content: bestAttemptContent)
                         }
                     } else {
                         Logr.w(tag: "notification", message: "No notification id")
-                        self?.suppressNotification(contentHandler)
+                        if AppBuildConfig.companion.instance.isDevMode {
+                            bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
+                            bestAttemptContent.body = "Missing ID: \(bestAttemptContent.body)"
+                        }
+                        self?.suppressNotification(contentHandler, content: bestAttemptContent)
                     }
                 }
             }
@@ -70,13 +78,17 @@ class NotificationService: UNNotificationServiceExtension {
     
     func suppressNotification(_ contentHandler: @escaping (UNNotificationContent) -> Void, content: UNNotificationContent? = nil) {
         // Notification will be suppressed only if com.apple.developer.usernotifications.filtering is granted
-        contentHandler(UNNotificationContent())
+        contentHandler(content ?? UNNotificationContent())
     }
     
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+            if AppBuildConfig.companion.instance.isDevMode {
+                bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
+                bestAttemptContent.body = "Expired: \(bestAttemptContent.body)"
+            }
             suppressNotification(contentHandler, content: bestAttemptContent)
         }
     }

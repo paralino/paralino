@@ -37,7 +37,6 @@ class LocationStatusProvider: ILocationStatusProvider {
     
     private func updateNotificationPermissionStatus() {
         UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
-            Logr.i(tag:"delegate", message: "Notification status: \(settings.authorizationStatus)")
             switch settings.authorizationStatus {
             case .denied:
                 self?.hasNotificationPermission = false

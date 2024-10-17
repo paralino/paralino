@@ -70,6 +70,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -191,6 +192,8 @@ val dataSourceModule = module {
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
     single { PlaceActivityDataSource(get()) }
+
+    single { AccessLogDataSource(get(), get()) }
 }
 
 val coreModule = module {
@@ -214,7 +217,7 @@ val coreModule = module {
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -249,10 +252,10 @@ val coreModule = module {
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get(), get()) }
 
-    single { PushNotificationHandler(get(), get(), get(), get(), appPrefs) }
+    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get(), get()) }
-    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get()) }
-    factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationHandler(get(), get(), get(), get()) }
+    factory { GroupActivityNotificationsHandler(get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), appPrefs) }
 
     single { InAppLogger(get(), get(), get()) }

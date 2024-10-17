@@ -6,18 +6,24 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import app.paralino.core.db.SqlDriverFactory
+import app.paralino.core.db.logs.accesslog.AccessLogDao
+import app.paralino.core.db.logs.accesslog.AccessLogEntity
 import app.paralino.core.db.logs.debug.DebugLogsDao
 import app.paralino.core.db.logs.debug.DebugLogsEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
 @Database(
-    entities = [DebugLogsEntity::class],
-    version = 2
+    entities = [
+        DebugLogsEntity::class,
+        AccessLogEntity::class
+    ],
+    version = 3
 )
 @ConstructedBy(AppLogsDatabaseConstructor::class)
 abstract class AppLogsDatabase : RoomDatabase() {
     abstract fun debugLogsDao(): DebugLogsDao
+    abstract fun accessLogDao(): AccessLogDao
 
     companion object {
         fun create(builder: SqlDriverFactory): AppLogsDatabase {

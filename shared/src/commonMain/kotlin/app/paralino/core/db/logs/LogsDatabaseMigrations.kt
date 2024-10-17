@@ -12,5 +12,19 @@ object LogsDatabaseMigrations {
         }
     }
 
-    val migrations: List<Migration> = listOf(MIGRATION_1_2)
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `access_logs` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `type` TEXT NOT NULL,
+                        `host` TEXT NOT NULL,
+                        `access_id` TEXT NOT NULL,
+                        `access_time_utc` TEXT NOT NULL
+                    )
+                """)
+        }
+    }
+
+    val migrations: List<Migration> = listOf(MIGRATION_1_2, MIGRATION_2_3)
 }

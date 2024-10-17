@@ -21,14 +21,9 @@ class PlaceActivityNotificationHandler(
     private val groupRepo: UserGroupLocalDataSource,
     private val placeRepo: PlacesRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
-    private val presenter: IPlaceActivityNotificationPresenter,
-    private val groupPresenter: IGroupActivityNotificationPresenter,
     private val valueFormatter: IValueFormatter
 ) {
-    suspend fun processPlaceActivity(
-        push: PushNotificationRaw,
-        notify: Boolean
-    ): IPushNotificationPresenter.Payload? {
+    suspend fun processPlaceActivity(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
 
         val payload =
             push.content?.tryParseFromJson<PlaceActivityNotificationPayload>() ?: return null
@@ -75,17 +70,10 @@ class PlaceActivityNotificationHandler(
             loggerTag = "place_notification"
         )
 
-        if (notify) {
-            presenter.notify(pushPayload)
-        }
-
         return pushPayload
     }
 
-    suspend fun processPlaceCreated(
-        push: PushNotificationRaw,
-        notify: Boolean
-    ): IPushNotificationPresenter.Payload? {
+    suspend fun processPlaceCreated(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
         val payload =
             push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return null
 
@@ -119,17 +107,10 @@ class PlaceActivityNotificationHandler(
             loggerTag = "place_notification"
         )
 
-        if (notify) {
-            groupPresenter.notify(pushPayload)
-        }
-
         return pushPayload
     }
 
-    suspend fun processPlaceDeleted(
-        push: PushNotificationRaw,
-        notify: Boolean
-    ): IPushNotificationPresenter.Payload? {
+    suspend fun processPlaceDeleted(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
         val payload =
             push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return null
         preRefreshUseCase.refreshGroupWithMembers(
@@ -140,10 +121,7 @@ class PlaceActivityNotificationHandler(
         return null
     }
 
-    suspend fun processPlaceUpdated(
-        push: PushNotificationRaw,
-        notify: Boolean
-    ): IPushNotificationPresenter.Payload? {
+    suspend fun processPlaceUpdated(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
         val payload =
             push.content?.tryParseFromJson<PlaceCreateDeleteNotificationPayload>() ?: return null
         preRefreshUseCase.refreshGroupWithMembers(

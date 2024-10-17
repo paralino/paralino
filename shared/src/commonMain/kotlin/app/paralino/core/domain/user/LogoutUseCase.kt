@@ -11,6 +11,7 @@ import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
@@ -35,6 +36,7 @@ class LogoutUseCase(
     private val geofenceManager: IGeofenceManager,
     private val sessionMonitor: UserSessionMonitor,
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
+    private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 
@@ -116,6 +118,7 @@ class LogoutUseCase(
         sharingManager.stopAllSharing()
         geofenceManager.deleteAllGeofences()
         userRepo.clearLocally()
+        accessLogs.clearAll()
         logg.i("account_state", "Cleared all data on logout")
     }
 }

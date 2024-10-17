@@ -7,6 +7,7 @@ class LogsDatabaseHelper(
     private val database: AppLogsDatabase
 ) {
     val debugLogsQueries = database.debugLogsDao()
+    val accessLogQueries = database.accessLogDao()
 }
 
 class MainDatabaseHelper(
