@@ -10,7 +10,7 @@ import CoreLocation
 import shared
 import UserNotifications
 
-public class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDelegate {
     
     public let manager = CLLocationManager()
     
@@ -32,6 +32,22 @@ public class LocationManager: NSObject, ObservableObject, CLLocationManagerDeleg
         manager.showsBackgroundLocationIndicator = false
         manager.pausesLocationUpdatesAutomatically = true
         manager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    public var lastLocation: CLLocation? {
+        manager.location
+    }
+    
+    public var monitoredRegions: Set<CLRegion> {
+        manager.monitoredRegions
+    }
+    
+    public func startMonitoringRegion(region: CLCircularRegion) {
+        manager.startMonitoring(for: region)
+    }
+    
+    public func stopMonitoringRegion(region: CLRegion) {
+        manager.stopMonitoring(for: region)
     }
     
     func startMonitoringAppState() {
@@ -152,25 +168,5 @@ public class LocationManager: NSObject, ObservableObject, CLLocationManagerDeleg
     
     public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         //        notifyUser(id: "LocationResume", message: "Permission changed: \(manager.authorizationStatus)")
-    }
-}
-
-extension CLLocation {
-    func toLocationModel() -> LocationDataModel {
-        let location = self
-        let accuracy: Float = if !location.horizontalAccuracy.isNaN && location.horizontalAccuracy > 0 { Float(location.horizontalAccuracy) } else { 0 }
-        let speed: KotlinFloat? = if !location.speed.isNaN && location.speed > 0 { KotlinFloat(floatLiteral: location.speed) } else { nil }
-        let altitude: KotlinFloat? = if !location.altitude.isNaN { KotlinFloat(floatLiteral: location.altitude) } else { nil }
-        let timeUTC = location.timestamp.ISO8601Format(.iso8601(timeZone: .gmt))
-        
-        return LocationDataModel(
-            lat: location.coordinate.latitude,
-            lng: location.coordinate.longitude,
-            accuracy: accuracy,
-            timeUTC: timeUTC,
-            endTimeUTC: nil,
-            speed: speed,
-            altitude: altitude
-        )
     }
 }

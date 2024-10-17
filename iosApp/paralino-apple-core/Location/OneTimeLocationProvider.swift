@@ -12,11 +12,11 @@ import SwiftLocation
 
 class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelegate {
     
-    var locationManager: LocationManager
+    var locationManager: CoreLocationManagerDelegate
 
     
     init(
-        locationManager: LocationManager,
+        locationManager: CoreLocationManagerDelegate,
         locationStatusProvider: ILocationStatusProvider,
         locationCacheRepo: LocationCacheRepository
     ) {
@@ -49,7 +49,7 @@ class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelega
             accuracy: [accuracyFilter],
             timeout: TimeInterval(requestType.timeoutMillis / 1000)
         ).location
-        let lastLocation = locationManager.manager.location
+        let lastLocation = locationManager.lastLocation
         
         Logr.v(tag: "location_service", message: "iOS got new location from one time fetch: \(location != nil) - has lastLocation: \(lastLocation != nil)")
         return LocationDataModel.companion.getBetter(

@@ -256,6 +256,7 @@
 			membershipExceptions = (
 				Crypto/CryptoFrameworkProvider.swift,
 				Location/BackgroundRefresh.swift,
+				Location/CoreLocationManagerDelegate.swift,
 				Location/LocationManager.swift,
 				Location/OneTimeLocationProvider.swift,
 				Provider/ConnectionStatusProvider.swift,

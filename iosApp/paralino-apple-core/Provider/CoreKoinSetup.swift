@@ -16,7 +16,7 @@ public class CoreKoinSetup {
     
     public static func initKoin(
         appHost: AppHost,
-        locationManager: LocationManager,
+        locationManager: CoreLocationManagerDelegate,
         appUpdateManager: IAppUpdateManager,
         billingProvider: IBillingProvider
     ) {
@@ -39,7 +39,7 @@ public class CoreKoinSetup {
     
     private static func createKoinModules(
         apphost: AppHost,
-        locationManager: LocationManager,
+        locationManager: CoreLocationManagerDelegate,
         appUpdateManager: IAppUpdateManager,
         billingProvider: IBillingProvider
     ) -> [Koin_coreModule] {
@@ -75,7 +75,7 @@ public class CoreKoinSetup {
             placeNotificationPresenter: { inAppLogger in PlaceNotificationPresenter(inAppLogger: inAppLogger) },
             groupActivityNotificationPresenter: { inAppLogger in GroupActivityNotificationPresenter(inAppLogger: inAppLogger) },
             infoNotificationPresenter: { inAppLogger in InfoNotificationPresenter(inAppLogger: inAppLogger) },
-            geofenceManager: GeofenceManager(locationManager: locationManager.manager),
+            geofenceManager: GeofenceManager(locationManager: locationManager),
             appBuildConfig: appBuildConfig,
             oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in
                 OneTimeLocationProvider(

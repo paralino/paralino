@@ -12,15 +12,15 @@ import UIKit
 
 class GeofenceManager: IGeofenceManager {
     
-    let locationManager: CLLocationManager
+    let locationManager: CoreLocationManagerDelegate
     
-    init(locationManager: CLLocationManager) {
+    init(locationManager: CoreLocationManagerDelegate) {
         self.locationManager = locationManager
     }
     
     func deleteAllGeofences() {
         for region in locationManager.monitoredRegions {
-            locationManager.stopMonitoring(for: region)
+            locationManager.stopMonitoringRegion(region: region)
         }
     }
     
@@ -41,7 +41,7 @@ class GeofenceManager: IGeofenceManager {
             
             deleteAllGeofences()
             
-            let lastLocation = locationManager.location
+            let lastLocation = locationManager.lastLocation
             
             let regions = places.map {
                 let region = CLCircularRegion(
@@ -77,7 +77,7 @@ class GeofenceManager: IGeofenceManager {
             Logr.i(tag: "place_activity_geofence", message: "Registering \(nearbyRegions.count) nearby geofences")
             
             nearbyRegions.forEach {
-                locationManager.startMonitoring(for: $0.0)
+                locationManager.startMonitoringRegion(region: $0.0)
             }
         } else {
             Logr.w(tag: "place_activity_geofence", message: "Region monitoring not supported")

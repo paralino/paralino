@@ -11,7 +11,7 @@ import shared
 
 class KoinSetup {
     
-    static func initKoin(locationManager: LocationManager) {
+    static func initKoin(locationManager: CoreLocationManagerDelegate) {
         CoreKoinSetup.initKoin(
             appHost: AppHost.iosLocationExtension,
             locationManager: locationManager,
