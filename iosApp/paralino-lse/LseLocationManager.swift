@@ -19,6 +19,8 @@ class LseLocationManager: NSObject, ObservableObject, CoreLocationManagerDelegat
     lazy private var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy private var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
     
+    private var wasLocationPerformanceActive = false
+    
     func start(delegate: CLLocationManagerDelegate, _ completion: @escaping () -> Void) {
         self.manager.delegate = delegate
         self.completion = completion
@@ -53,16 +55,21 @@ class LseLocationManager: NSObject, ObservableObject, CoreLocationManagerDelegat
         locationPerformanceManager.locationPerformanceStatus { [weak self] model in
             switch model.current {
             case .batterySaver, .balanced:
-                self?.stopLocationUpdates()
+                if self?.wasLocationPerformanceActive == true {
+                    self?.stopLocationUpdates()
+                }
             case .mediumHigh:
+                self?.wasLocationPerformanceActive = true
                 self?.manager.pausesLocationUpdatesAutomatically = true
                 self?.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
                 self?.manager.distanceFilter = 50
             case .high:
+                self?.wasLocationPerformanceActive = true
                 self?.manager.pausesLocationUpdatesAutomatically = false
                 self?.manager.desiredAccuracy = kCLLocationAccuracyBest
                 self?.manager.distanceFilter = 2
             case .veryHigh, .manualBoost:
+                self?.wasLocationPerformanceActive = true
                 self?.manager.pausesLocationUpdatesAutomatically = false
                 self?.manager.desiredAccuracy = kCLLocationAccuracyBest
                 self?.manager.distanceFilter = kCLDistanceFilterNone
@@ -74,8 +81,10 @@ class LseLocationManager: NSObject, ObservableObject, CoreLocationManagerDelegat
     func startLocationUpdates() {
         DispatchQueue.main.async { [weak self] in
             Task {
-                if let canProcess = try? await self?.locationRepo.canProcessLocationRequest().boolValue {
-                    _ = try? await self?.locationRepo.startLocationRequest()
+                if
+                    let canProcess = try? await self?.locationRepo.canProcessLocationRequest().boolValue,
+                    let result = try? await self?.locationRepo.startLocationRequest()
+                {
                     self?.manager.startUpdatingLocation()
                 } else {
                     self?.stopLocationUpdates()
