@@ -120,13 +120,14 @@ class LocationUploadEngine constructor(
                             }
                         }
 
+                        logg.d(tag = "location_service", message = "Location (${it.timeUTC}) ready for upload")
                         lastLocationPush.update { nowUTC() }
                         locationCacheRepo.updateCache(it)
                         scopeProvider.userSessionIOScope.launch {
                             try {
                                 uploadLocation(it)
                             } catch (e: Exception) {
-                                lastLocationPush.update { null }
+//                                lastLocationPush.update { null }
                                 logg.w(
                                     tag = "location_service",
                                     message = "Error uploading new location: ${e.message}"
