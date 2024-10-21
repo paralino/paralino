@@ -1,8 +1,7 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.data.db.GroupEntity
+import app.paralino.core.db.main.groups.GroupEntity
 import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
@@ -20,7 +19,7 @@ class GroupsMapperLocal(
             id = model.id,
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
-            data = model.data_,
+            data = model.data,
             serverIntegrity = model.serverIntegrity,
             schemeVersion = model.schemeVersion,
             planType = model.planType,
@@ -38,7 +37,7 @@ class GroupsMapperLocal(
             id = model.id,
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
-            data_ = model.data,
+            data = model.data,
             serverIntegrity = model.serverIntegrity,
             schemeVersion = model.schemeVersion,
             planType = model.planType,

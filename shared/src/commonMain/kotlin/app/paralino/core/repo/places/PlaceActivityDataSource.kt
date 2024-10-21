@@ -1,16 +1,14 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.PlaceActivityEntity
-import app.paralino.core.data.db.execute
-import app.paralino.core.data.db.executeWithResult
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.places.PlaceActivityEntity
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class PlaceActivityDataSource(
-    private val database: AppDatabaseHelper
+    private val database: MainDatabaseHelper
 ) {
 
     private val _placeActivityCache = MutableStateFlow(mapOf<String, PlaceActivityState>())
@@ -21,9 +19,9 @@ class PlaceActivityDataSource(
 
     suspend fun getPlaceActivity(): Map<String, PlaceActivityState>? {
         return _placeActivityCache.value.ifEmpty {
-            database.executeWithResult { placeActivityQueries.getAll().executeAsList() }
-                ?.associateBy { it.placeId }
-                ?.mapValues {
+            database.placeActivityDao.getAll()
+                .associateBy { it.placeId }
+                .mapValues {
                     PlaceActivityState(
                         placeId = it.value.placeId,
                         groupId = it.value.groupId,
@@ -42,8 +40,7 @@ class PlaceActivityDataSource(
                         tryNotifyJob = _placeActivityCache.value.get(it.key)?.tryNotifyJob
                     )
                 }
-                ?.also { _placeActivityCache.value = it }
-                ?: emptyMap()
+                .also { _placeActivityCache.value = it }
         }
     }
 
@@ -61,8 +58,8 @@ class PlaceActivityDataSource(
         }
 
         if (state != null) {
-            database.placeActivityQueries.createPlaceActivity(
-                placeActivityEntity = PlaceActivityEntity(
+            database.placeActivityDao.createPlaceActivity(
+                PlaceActivityEntity(
                     placeId = placeId,
                     groupId = state.groupId,
                     isEnter = state.isEnter,
@@ -76,9 +73,7 @@ class PlaceActivityDataSource(
                 )
             )
         } else {
-            database.execute {
-                placeActivityQueries.deletePlaceActivity(placeId = placeId)
-            }
+            database.placeActivityDao.deletePlaceActivity(placeId = placeId)
         }
     }
 
@@ -94,15 +89,7 @@ class PlaceActivityDataSource(
                 }
             }
         }
-        database.transaction {
-            placeActivityQueries.getAll()
-                .executeAsList()
-                .forEach { activity ->
-                    if (places.none { it.place.id == activity.placeId }) {
-                        placeActivityQueries.deletePlaceActivity(placeId = activity.placeId)
-                    }
-                }
-        }
+        database.placeActivityDao.clearMissing(placeIds = places.map { it.place.id })
     }
 
     suspend fun recreatePlacesForGroup(
@@ -120,15 +107,7 @@ class PlaceActivityDataSource(
                 }
             }
         }
-        database.transaction {
-            placeActivityQueries.getAllForGroup(groupId = groupId)
-                .executeAsList()
-                .forEach { activity ->
-                    if (places.none { it.place.id == activity.placeId }) {
-                        placeActivityQueries.deletePlaceActivity(placeId = activity.placeId)
-                    }
-                }
-        }
+        database.placeActivityDao.clearMissing(groupId = groupId, placeIds = places.map { it.place.id })
     }
 
     suspend fun clearForGroup(groupId: String) {
@@ -141,7 +120,7 @@ class PlaceActivityDataSource(
                 }
             }
         }
-        database.execute { placeActivityQueries.deleteForGroup(groupId = groupId) }
+        database.placeActivityDao.deleteForGroup(groupId = groupId)
     }
 
     suspend fun clearAll() {
@@ -149,8 +128,6 @@ class PlaceActivityDataSource(
             it.forEach { it.value.tryNotifyJob?.cancel() }
             emptyMap()
         }
-        database.execute {
-            placeActivityQueries.clearAll()
-        }
+        database.placeActivityDao.clearAll()
     }
 }

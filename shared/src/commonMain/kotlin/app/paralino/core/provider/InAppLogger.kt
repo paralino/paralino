@@ -1,10 +1,11 @@
 package app.paralino.core.provider
 
-import app.paralino.core.data.db.DebugLogsEntity
-import app.paralino.core.data.db.LogsDatabaseHelper
-import app.paralino.core.data.db.execute
-import app.paralino.core.data.db.mapToList
+import app.paralino.core.db.LogsDatabaseHelper
+import app.paralino.core.db.logs.debug.DebugLogsEntity
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppHost
+import app.paralino.core.notifications.IPushNotificationPresenter
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -16,9 +17,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -27,7 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 class InAppLogger(
     private val database: LogsDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val valueFormatter: IValueFormatter
+    private val appBuildConfig: AppBuildConfig
 ) : SystemLogr() {
 
     private val _pendingLogsFlow = MutableStateFlow<List<DebugLogsEntity>>(emptyList())
@@ -51,24 +50,13 @@ class InAppLogger(
                         }
 
                         lastFlushTime = nowUTC()
-                        scopeProvider.userSessionIOScope.launch {
+                        scopeProvider.defaultIOScope.launch {
                             try {
-                                database.transaction {
-                                    logs.forEach {
-                                        database.debugLogsQueries.insertEntry(
-                                            timeUTC = it.timeUTC,
-                                            type = it.type,
-                                            priority = it.priority,
-                                            tag = it.tag,
-                                            title = it.title,
-                                            info = it.info
-                                        )
-                                        database.debugLogsQueries.removeOlderThan(
-                                            nowUTC().minus(2.days).toString()
-                                        )
-                                    }
-                                }
-                                _pendingLogsFlow.update { emptyList() }
+                                _pendingLogsFlow.update { it - logs.toSet() }
+                                database.debugLogsQueries.insertNewAndRemoveOldEntries(
+                                    maxValidTimeUTC = nowUTC().minus(2.days).toString(),
+                                    logs = logs
+                                )
                             } catch (e: Exception) {
                                 lastFlushTime = null
                                 logg.w(
@@ -89,11 +77,15 @@ class InAppLogger(
 
     override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
 
+        if (!appBuildConfig.isDevMode) {
+            return
+        }
+
         if (tag == "app_logger") {
             return
         }
 
-        if (priority < LogPriority.INFO) {
+        if (priority < LogPriority.INFO && appBuildConfig.appHost == AppHost.MAIN_APP) {
             return
         }
 
@@ -104,6 +96,19 @@ class InAppLogger(
             title = message,
             info = t?.message
         )
+    }
+
+    fun logNotificationPayload(payload: IPushNotificationPresenter.Payload) {
+        if (payload.loggerTag != null) {
+            val timeInfo = payload.timeInfo ?: payload.timeMillis?.let { Instant.fromEpochMilliseconds(it).toString() }
+            log(
+                type = InAppLoggerLogType.NOTIFICATIONS,
+                priority = LogPriority.INFO,
+                tag = payload.loggerTag,
+                title = listOfNotNull(payload.title, payload.message?.let { "($it)" }).joinToString(separator = " "),
+                info = timeInfo
+            )
+        }
     }
 
     fun log(
@@ -117,45 +122,81 @@ class InAppLogger(
             id = 0,
             timeUTC = nowUTC().toString(),
             type = type.key,
+            host = appBuildConfig.appHost.key,
             priority = priority.key,
             tag = tag ?: "default",
             title = title,
-            info = info
+            info = info,
         )
 
-        _pendingLogsFlow.update { it + entry }
+        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+            _pendingLogsFlow.update { it + entry }
+        } else {
+            scopeProvider.defaultIOScope.launch {
+                try {
+                    database.debugLogsQueries.insertNewAndRemoveOldEntries(
+                        maxValidTimeUTC = nowUTC().minus(2.days).toString(),
+                        logs = listOf(entry)
+                    )
+                } catch (e: Exception) {
+                    logg.w(
+                        tag = "app_logger",
+                        message = "Error writing new logs: ${e.message}"
+                    )
+                }
+            }
+        }
     }
 
     fun getFilteredLog(
         priorities: List<LogPriority>,
         types: List<InAppLoggerLogType>,
         tags: List<String>,
+        hosts: List<AppHost>,
         text: String?
     ): Flow<List<DebugLogsEntity>> {
-        return database.mapToList {
-            debugLogsQueries.getFiltered(
-                types = types.map { it.key },
-                tags = tags,
-                priorities = priorities.map { it.key },
-                typesNullIfEmpty = if (types.isEmpty()) 1 else 0,
-                tagsNullIfEmpty = if (tags.isEmpty()) 1 else 0,
-                priorityNullIfEmpty = if (priorities.isEmpty()) 1 else 0,
-                text = text ?: ""
-            )
-        }
+        return database.debugLogsQueries.getFiltered(
+            types = types.map { it.key },
+            tags = tags,
+            hosts = hosts.map { it.key },
+            priorities = priorities.map { it.key },
+            typesNullIfEmpty = if (types.isEmpty()) 1 else 0,
+            tagsNullIfEmpty = if (tags.isEmpty()) 1 else 0,
+            priorityNullIfEmpty = if (priorities.isEmpty()) 1 else 0,
+            hostsNullIfEmpty = if (hosts.isEmpty()) 1 else 0,
+            text = text ?: ""
+        )
     }
 
     suspend fun clearLogs() {
         _pendingLogsFlow.update { listOf() }
-        database.execute { debugLogsQueries.clearAll() }
+        database.debugLogsQueries.clearAll()
     }
 }
 
-fun DebugLogsEntity.print(): String {
-    return "${
-        this.timeUTC.isoWithOffsetToInstant()?.toLocalDateTime(TimeZone.currentSystemDefault())
-            ?.format(format = LocalDateTime.Formats.ISO)?.replace("T", " ")
-    } [${this.type}] [${LogPriority.fromKeyOrFloor(this.priority)}]\n[${this.tag}]\n${this.title}${this.info?.let { " | ${this.info}" } ?: ""}\n"
+fun DebugLogsEntity.print(valueFormatter: IValueFormatter): String {
+    return buildString {
+        append("[$tag]")
+        append("\n")
+        append(
+            timeUTC.isoWithOffsetToInstant()
+                ?.let {
+                    valueFormatter.formatWithPattern(
+                        timeUTC = it.toLocalDateTime(TimeZone.UTC),
+                        pattern = "yyyy-MM-dd' 'HH:mm:ss'.'SSS"
+                    )
+                }
+        )
+        append(" [${type}]")
+        append(" [${LogPriority.fromKeyOrFloor(priority)}]")
+        append(" [$host]")
+        append("\n")
+        append(title)
+        if (!info.isNullOrBlank()) {
+            append(" | $info")
+        }
+        append("\n")
+    }
 }
 
 enum class InAppLoggerLogType constructor(val key: String) {

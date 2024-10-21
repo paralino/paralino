@@ -31,7 +31,10 @@ struct GroupInitScreen: View {
                         shareText = ShareText(text: data)
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
+                        notificationPermissionHandler.requestNotificationPermission(
+                            locationStatusProvider: appDelegate.locationStatusProvider,
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }

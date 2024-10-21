@@ -1,7 +1,7 @@
 package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
@@ -149,6 +149,11 @@ class AppAccountStateMonitor constructor(
                     if (appPrefs.wasUserLoggedIn) {
                         try {
                             logoutUseCase.fullLogout(logoutLocallyOnError = true)
+                        } catch (e: Exception) {
+                        }
+                    } else {
+                        try {
+                            logoutUseCase.logoutLocally()
                         } catch (e: Exception) {
                         }
                     }

@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons

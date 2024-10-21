@@ -8,7 +8,7 @@ import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
@@ -70,6 +70,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -134,9 +135,9 @@ object ParalinoCore {
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
         logr.init(
-            logrs = listOf(
+            logrs = listOfNotNull(
                 deviceApiProvider.createSystemLogr(),
-                inAppLogger,
+                inAppLogger.takeIf { appBuildConfig.isDevMode },
                 deviceApiProvider.createCrashReportingLogr()
             )
         )
@@ -144,6 +145,8 @@ object ParalinoCore {
         if (appPrefs.deviceIdSeed.isBlank()) {
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
+
+        logr.i("paralino_core", "Paralino core initialized: ${deviceApiProvider.clientHeaderValue}")
 
         if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
             logg.e("ERROR", "Server config invalid - missing endpoint or projectId")
@@ -176,7 +179,7 @@ val dataSourceModule = module {
     single { UserLocalDataSource(get(), get()) }
     single { UserCryptoKeyLocalDataSource(get(), appPrefs, get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get(), get()) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
 
@@ -189,12 +192,14 @@ val dataSourceModule = module {
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
     single { PlaceActivityDataSource(get()) }
+
+    single { AccessLogDataSource(get(), get()) }
 }
 
 val coreModule = module {
-    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
-    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get()) }
+    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get()) }
@@ -212,7 +217,7 @@ val coreModule = module {
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -220,7 +225,7 @@ val coreModule = module {
     single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -229,7 +234,7 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get(), get(), get()) }
     single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
     single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RemoteConfigRepository(get(), get(), get(), get(), appPrefs) }
@@ -247,10 +252,10 @@ val coreModule = module {
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get(), get()) }
 
-    single { PushNotificationHandler(get(), get(), get(), get(), appPrefs) }
+    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestNotificationHandler(get(), get(), get(), get(), get()) }
-    factory { PlaceActivityNotificationHandler(get(), get(), get(), get(), get(), get()) }
-    factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationHandler(get(), get(), get(), get()) }
+    factory { GroupActivityNotificationsHandler(get(), get(), get()) }
     single { LocationPerformanceManager(get(), get(), appPrefs) }
 
     single { InAppLogger(get(), get(), get()) }

@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase

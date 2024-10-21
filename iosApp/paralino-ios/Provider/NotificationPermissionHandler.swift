@@ -9,19 +9,20 @@ import Foundation
 import UIKit
 import shared
 import UserNotifications
+import paralino_apple_core
 
 class NotificationPermissionHandler {
     
     private var requested: Bool = false
 
     func requestNotificationPermission(
-        appDelegate: AppDelegate,
+        locationStatusProvider: ILocationStatusProvider,
         messageDispather: ICoreMessageDispatcher
     ) {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             Logr.d(tag: "permission_request", message: "Notification result: \(granted)", t: KotlinThrowable(message: error?.localizedDescription))
-            appDelegate.locationStatusProvider.refreshLocationStatus()
+            locationStatusProvider.refreshLocationStatus()
             if !granted {
                 if self.requested {
                     let data = AppSnackbarData(

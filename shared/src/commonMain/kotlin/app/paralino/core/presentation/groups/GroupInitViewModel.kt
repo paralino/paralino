@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanType

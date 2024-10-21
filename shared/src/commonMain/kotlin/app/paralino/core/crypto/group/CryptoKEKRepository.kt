@@ -8,7 +8,7 @@ import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.GroupDeviceIntegrityEntity
+import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.logg
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -20,7 +20,6 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 
 class CryptoKEKRepository(
     private val remote: CryptoKeyRemoteDataSource,
@@ -38,36 +37,28 @@ class CryptoKEKRepository(
     suspend fun getGroupKeys(): List<GroupCryptoKeyDataRaw> {
         return cachedGroupKeys.value.ifEmpty {
             local.getAllGroupKeys()
-                .firstOrNull()
-                ?.also { cachedGroupKeys.value = it }
-                ?: emptyList()
+                .also { cachedGroupKeys.value = it }
         }
     }
 
     suspend fun getMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
         return cachedMemberKeys.value.ifEmpty {
             local.getAllMemberKeys()
-                .firstOrNull()
-                ?.also { cachedMemberKeys.value = it }
-                ?: emptyList()
+                .also { cachedMemberKeys.value = it }
         }
     }
 
     suspend fun getGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
         return cachedGroupDeviceKeys.value.ifEmpty {
             local.getAllGroupDeviceKeys()
-                .firstOrNull()
-                ?.also { cachedGroupDeviceKeys.value = it }
-                ?: emptyList()
+                .also { cachedGroupDeviceKeys.value = it }
         }
     }
 
     suspend fun getPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
         return cachedPersonalGroupKeys.value.ifEmpty {
             local.getAllPersonalGroupKeys()
-                .firstOrNull()
-                ?.also { cachedPersonalGroupKeys.value = it }
-                ?: emptyList()
+                .also { cachedPersonalGroupKeys.value = it }
         }
     }
 

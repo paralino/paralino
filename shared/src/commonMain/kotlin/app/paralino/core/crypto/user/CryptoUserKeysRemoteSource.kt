@@ -1,7 +1,7 @@
 package app.paralino.core.crypto.user
 
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.raw.UpdateUserKeysFunctionData
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.repo.api.IDocumentsApi

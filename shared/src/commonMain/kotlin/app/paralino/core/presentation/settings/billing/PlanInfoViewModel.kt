@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.settings.billing
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.user.UserRepository

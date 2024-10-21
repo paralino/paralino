@@ -1,6 +1,6 @@
 package app.paralino.core.models.user
 
-import app.paralino.core.data.db.UserConfigEntity
+import app.paralino.core.db.main.user.UserConfigEntity
 
 data class UserConfigModel(
     val nodes: List<UserConfigNode>
@@ -17,7 +17,7 @@ data class UserConfigModel(
                         id = document.id,
                         ownerUserId = document.ownerUserId,
                         type = document.type,
-                        data = document.data_
+                        data = document.data
                     )
                 }
             )

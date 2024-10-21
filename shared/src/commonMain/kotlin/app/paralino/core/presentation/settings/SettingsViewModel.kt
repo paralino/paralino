@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload

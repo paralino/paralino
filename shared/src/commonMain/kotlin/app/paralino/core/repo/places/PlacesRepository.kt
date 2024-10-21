@@ -1,6 +1,6 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.data
@@ -23,6 +23,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -50,10 +51,8 @@ class PlacesRepository constructor(
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
-    fun subscribeToAllActivePlaces(): Flow<List<GroupPlace>> {
-        return local.getAllPlaces().map {
-            it.filter { locationSharingManager.isSharingActiveForGroup(it.groupId) }
-        }
+    fun getAllPlacesLocally(): Flow<List<GroupPlace>> {
+        return local.getAllPlaces()
     }
 
     suspend fun getAllActivePlaces(): List<GroupPlace> {
@@ -80,7 +79,7 @@ class PlacesRepository constructor(
             remote = {
                 remote.getPlaceWithSettings(placeId)
             },
-            localUpdate = { local.updateOrCreatePlace(it) },
+            localUpdate = { groupLocal.updateOrCreatePlace(it) },
             remotePreference = RemotePreference.CACHE(key = "place_detail", timeMillis = 5_000)
         )
     }
@@ -92,8 +91,7 @@ class PlacesRepository constructor(
                 remote.getPlacesForGroup(groupId)
             },
             localUpdate = {
-                local.recreatePlacesForGroup(groupId, it)
-                placeActivityRepo.recreatePlacesForGroup(groupId, it)
+                groupLocal.recreatePlacesForGroup(groupId, it)
             }
         )
     }
@@ -107,7 +105,7 @@ class PlacesRepository constructor(
                     private = private
                 )
             },
-            localUpdate = { local.updateOrCreatePlace(it) }
+            localUpdate = { groupLocal.updateOrCreatePlace(it) }
         ).map { Unit }
     }
 

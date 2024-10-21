@@ -23,7 +23,8 @@ struct PersonalCodeScreen: View {
                     vm: appState.vm,
                     askNotificationPermission: {
                         notificationPermissionHandler.requestNotificationPermission(
-                            appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher
+                            locationStatusProvider: appDelegate.locationStatusProvider,
+                            messageDispather: appState.vm.messageDispatcher
                         )
                     },
                     onShare: { data in

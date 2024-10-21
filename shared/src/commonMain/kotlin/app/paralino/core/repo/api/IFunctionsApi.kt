@@ -20,8 +20,7 @@ import kotlinx.serialization.encodeToString
 abstract class BaseFunctionsApi(
     private val deviceApiProvider: IDeviceApiProvider
 ) {
-    private val clientHeaderValue: String =
-        "${deviceApiProvider.deviceType.key}/${deviceApiProvider.deviceOSVersion}/${deviceApiProvider.appVersionCode}/${deviceApiProvider.appVersion}"
+    private val clientHeaderValue: String = deviceApiProvider.clientHeaderValue
     val clientHeader: Pair<String, String> = "x-paralino-client" to clientHeaderValue
 
     suspend fun executeFunction(function: ServerFunction, data: String?): FunctionExecutionRaw {

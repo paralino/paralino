@@ -1,6 +1,6 @@
 package app.paralino.core.provider
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +55,7 @@ abstract class IDeviceApiProvider(
     }
 
     val batteryLevel: Int? get() = if (_batteryLevel in 0..100) _batteryLevel else null
+    val clientHeaderValue: String get() = "${packageName}/${deviceOSVersion}/${appVersionCode}/${appVersion}"
 
     protected abstract val _batteryLevel: Int
     abstract val isCharging: Boolean
@@ -63,6 +64,7 @@ abstract class IDeviceApiProvider(
     abstract val appVersionCode: Long
     abstract val appVersion: String
     abstract val defaultDeviceName: String
+    abstract val packageName: String
     abstract fun createSystemLogr(): SystemLogr
     abstract fun createCrashReportingLogr(): SystemLogr
     abstract fun createConfig(): AppPrefs

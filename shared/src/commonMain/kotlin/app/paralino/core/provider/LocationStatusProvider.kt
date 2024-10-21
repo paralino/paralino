@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.*
 
 abstract class ILocationStatusProvider {
     protected val mutableStatus = MutableStateFlow<Resource<LocationConditionStatus>>(Resource.NotInitialized)
-    val status: Flow<LocationConditionStatus> = mutableStatus.mapNotNull { it.data }
+    val status: Flow<LocationConditionStatus> = mutableStatus.mapNotNull { it.data }.distinctUntilChanged()
     val currentStatus get() = mutableStatus.value.data ?: createCurrentStatus()
 
     open fun refreshLocationStatus() {

@@ -20,13 +20,9 @@ import kotlin.time.Duration.Companion.seconds
 class GroupActivityNotificationsHandler(
     private val groupRepo: GroupRepository,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
-    private val presenter: IGroupActivityNotificationPresenter,
     private val valueFormatter: IValueFormatter
 ) {
-    suspend fun processMemberAdded(
-        push: PushNotificationRaw,
-        notify: Boolean
-    ): IPushNotificationPresenter.Payload? {
+    suspend fun processMemberAdded(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
 
         val payload =
             push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>() ?: return null
@@ -70,17 +66,10 @@ class GroupActivityNotificationsHandler(
             loggerTag = "group_activity_notification"
         )
 
-        if (notify) {
-            presenter.notify(pushPayload)
-        }
-
         return pushPayload
     }
 
-    suspend fun processMemberDeleted(
-        push: PushNotificationRaw,
-        notify: Boolean
-    ): IPushNotificationPresenter.Payload? {
+    suspend fun processMemberDeleted(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
         val payload =
             push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return null
         preRefreshUseCase.refreshGroupWithMembers(
@@ -91,10 +80,7 @@ class GroupActivityNotificationsHandler(
         return null
     }
 
-    suspend fun processLocationSharingStarted(
-        push: PushNotificationRaw,
-        notify: Boolean
-    ): IPushNotificationPresenter.Payload? {
+    suspend fun processLocationSharingStarted(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
         val payload =
             push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return null
 
@@ -135,10 +121,6 @@ class GroupActivityNotificationsHandler(
             timeInfo = timeInfo,
             loggerTag = "group_activity_notification"
         )
-
-        if (notify) {
-            presenter.notify(pushPayload)
-        }
 
         return pushPayload
     }

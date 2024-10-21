@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.login
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase

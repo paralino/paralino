@@ -1,15 +1,18 @@
 package app.paralino.core.notifications
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
-import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppHost
+import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.raw.LocationFocusRaw
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.RemotePreference
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -18,7 +21,11 @@ class PushNotificationHandler constructor(
     private val placePush: PlaceActivityNotificationHandler,
     private val groupMemberActivityPush: GroupActivityNotificationsHandler,
     private val locationRequestPush: LocationRequestNotificationHandler,
+    private val placePresenter: IPlaceActivityNotificationPresenter,
+    private val groupPresenter: IGroupActivityNotificationPresenter,
     private val docApi: IDocumentsApi,
+    private val appBuildConfig: AppBuildConfig,
+    private val accessLogSource: AccessLogDataSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository() {
 
@@ -28,7 +35,7 @@ class PushNotificationHandler constructor(
         notificationId: String,
         force: Boolean
     ): IPushNotificationPresenter.Payload? {
-
+        val executionKey = "${executionKey}_$notificationId"
         try {
             startProcessing(executionKey)
         } catch (e: Exception) {
@@ -39,13 +46,20 @@ class PushNotificationHandler constructor(
         }
 
         try {
+            accessLogSource.saveAlertNotificationAccessLog(notificationId = notificationId)
+            delay(3.seconds)
+            if (!accessLogSource.canProcessAlertNotification(notificationId = notificationId)) {
+                logg.tag("push_notifications").i("Can not process single notification: $notificationId")
+                return null
+            }
+
             val notification = docApi.getDocument(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPushNotificationID,
                 documentId = notificationId
             )
                 .also {
-                    logg.tag("push_notifications").v("Got ${it.size} notifications documents")
+                    logg.tag("push_notifications").v("Got notification document")
                 }
                 .let {
                     try {
@@ -66,6 +80,95 @@ class PushNotificationHandler constructor(
             return null
         } finally {
             stopProcessing(executionKey)
+        }
+    }
+
+    suspend fun tryToHandleLocationPush(): Boolean {
+        val executionKey = "${executionKey}_location"
+        try {
+            startProcessing(executionKey)
+        } catch (e: Exception) {
+            logg.tag(executionKey).v("Processing, can't fetch notification")
+            return false
+        }
+
+        try {
+            accessLogSource.saveLocationRequestAccessLog()
+
+            val deviceQuery = listOfNotNull(appPrefs.deviceId, appPrefs.sessionId)
+                .filter { it.isNotBlank() }
+                .takeIf { it.isNotEmpty() }
+                ?.let { BackendQuery.Equals(key = "deviceId", value = it) }
+            val notifications = docApi.listAllDocuments(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = BackendResourceIDs.collectionPushNotificationID,
+                queries = buildList {
+                    if (deviceQuery != null) {
+                        add(
+                            BackendQuery.OR(
+                                queries = listOf(deviceQuery, BackendQuery.IsNull(key = "deviceId"))
+                            )
+                        )
+                    } else {
+                        add(BackendQuery.IsNull(key = "deviceId"))
+                    }
+                }
+            )
+                .also {
+                    logg.tag("push_notifications").v("Got ${it.size} notifications documents")
+                }
+                .mapNotNull {
+                    try {
+                        PushNotificationRaw.from(it)
+                    } catch (e: Exception) {
+                        logg.tag("push_notifications").e("Error parsing push notification", e)
+                        null
+                    }
+                }
+
+            logg.tag("push_notifications")
+                .v("Got ${notifications.size} notifications documents")
+
+            notifications
+                .filter { it.isForThisDevice() }
+                .also {
+                    logg.tag("push_notifications")
+                        .v("Got ${it.size} notifications documents for this device")
+                }
+                .let {
+                    // if push have eventId, only use one of each with same event
+                    // otherwise use all of them
+                    val withoutEvent = it.filter { it.eventId.isNullOrBlank() }
+                    val withEvent = it.filter { !it.eventId.isNullOrBlank() }
+                        .distinctBy { it.eventId }
+                    withoutEvent + withEvent
+                }
+                .filter {
+                    it.pushType == PushNotificationType.LOCATION_FOCUS || it.pushType == PushNotificationType.LOCATION_REQUEST
+                }
+                .also {
+                    logg.tag("push_notifications")
+                        .v("Processing ${it.size} location notifications for this device")
+
+                    if (it.isEmpty()) {
+                        return false
+                    }
+                }
+                .forEach {
+                    processNotification(
+                        push = it,
+                        notify = false,
+                        onDelete = { push ->
+                            deletePushNotification(notificationId = push.id)
+                        }
+                    )
+                }
+            return true
+        } catch (e: Exception) {
+            logg.tag(executionKey).w("Error processing location push notification - ${e.message}")
+            return false
+        } finally {
+            startProcessing(executionKey)
         }
     }
 
@@ -98,7 +201,7 @@ class PushNotificationHandler constructor(
     }
 
     private suspend fun checkForPushNotificationsImpl() {
-        logg.tag("push_notifications").v("Start checking push notifications")
+        logg.tag("push_notifications").i("Start checking push notifications")
 
         val deviceQuery = listOfNotNull(appPrefs.deviceId, appPrefs.sessionId)
             .filter { it.isNotBlank() }
@@ -216,23 +319,49 @@ class PushNotificationHandler constructor(
             return null
         }
 
+        if (appBuildConfig.appHost == AppHost.MAIN_APP && accessLogSource.canProcessAlertNotification(notificationId = push.id)) {
+            accessLogSource.saveAlertNotificationAccessLog(notificationId = push.id)
+        }
+
         val payload: IPushNotificationPresenter.Payload? = when (push.pushType) {
             PushNotificationType.PLACE_ALERT -> {
-                placePush.processPlaceActivity(push, notify).also {
-                    onDelete?.invoke(push)
+                val payload = placePush.processPlaceActivity(push)
+                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
+
+                if (notify && payload != null && canProcess) {
+                    placePresenter.notify(payload)
                 }
+
+                if (canProcess) {
+                    onDelete?.invoke(push)
+                } else {
+                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
+                }
+
+                return payload
             }
 
             PushNotificationType.GROUP_MEMBER_ADDED -> {
-                groupMemberActivityPush.processMemberAdded(push, notify).also {
-                    onDelete?.invoke(push)
+                val payload = groupMemberActivityPush.processMemberAdded(push)
+                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
+
+                if (notify && payload != null && canProcess) {
+                    groupPresenter.notify(payload)
                 }
+
+                if (canProcess) {
+                    onDelete?.invoke(push)
+                } else {
+                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
+                }
+
+                return payload
             }
 
             PushNotificationType.GROUP_MEMBER_DELETED -> {
-                groupMemberActivityPush.processMemberDeleted(push, notify).also {
-                    onDelete?.invoke(push)
-                }
+                val payload = groupMemberActivityPush.processMemberDeleted(push)
+                onDelete?.invoke(push)
+                return payload
             }
 
             PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
@@ -242,27 +371,49 @@ class PushNotificationHandler constructor(
             }
 
             PushNotificationType.PLACE_CREATED -> {
-                placePush.processPlaceCreated(push, notify).also {
-                    onDelete?.invoke(push)
+                val payload = placePush.processPlaceCreated(push)
+                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
+
+                if (notify && payload != null && canProcess) {
+                    groupPresenter.notify(payload)
                 }
+
+                if (canProcess) {
+                    onDelete?.invoke(push)
+                } else {
+                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
+                }
+
+                return payload
             }
 
             PushNotificationType.PLACE_UPDATED -> {
-                placePush.processPlaceUpdated(push, notify).also {
-                    onDelete?.invoke(push)
-                }
+                val payload = placePush.processPlaceUpdated(push)
+                onDelete?.invoke(push)
+                return payload
             }
 
             PushNotificationType.PLACE_DELETED -> {
-                placePush.processPlaceDeleted(push, notify).also {
-                    onDelete?.invoke(push)
-                }
+                val payload = placePush.processPlaceDeleted(push)
+                onDelete?.invoke(push)
+                return payload
             }
 
             PushNotificationType.LOCATION_STARTED -> {
-                groupMemberActivityPush.processLocationSharingStarted(push, notify).also {
-                    onDelete?.invoke(push)
+                val payload = groupMemberActivityPush.processLocationSharingStarted(push)
+                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
+
+                if (notify && payload != null && canProcess) {
+                    groupPresenter.notify(payload)
                 }
+
+                if (canProcess) {
+                    onDelete?.invoke(push)
+                } else {
+                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
+                }
+
+                return payload
             }
 
             null -> null
@@ -283,6 +434,8 @@ class PushNotificationHandler constructor(
         } catch (e: Exception) {
             logg.tag("push_notifications")
                 .w("Error deleting push notification $notificationId - ${e.message}")
+        } finally {
+            accessLogSource.deleteAlertNotificationAccessLog(notificationId = notificationId)
         }
     }
 

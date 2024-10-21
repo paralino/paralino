@@ -5,8 +5,8 @@ import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.places.GroupPlace

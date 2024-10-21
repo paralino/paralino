@@ -1,7 +1,7 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModel
@@ -10,74 +10,57 @@ import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.filterNotNull
 
 class LocationLocalDataSource(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val mapper: MemberWithLocationsMapperLocal
 ) {
 
     suspend fun createOrUpdateMembersWithoutSettings(vararg data: MemberDocumentRaw) {
-        database.memberQueries.transaction {
-            data.forEach {
-                val currentMember = database.memberQueries.getMemberById(it.id).executeAsOneOrNull()
-                val newMember = mapper.remote2Local(it).copy(
-                    settings_id = currentMember?.settings_id,
-                    settings_groupId = currentMember?.settings_groupId,
-                    settings_ownerUserId = currentMember?.settings_ownerUserId,
-                    settings_memberIntegrity = currentMember?.settings_memberIntegrity,
-                    settings_groupIntegrity = currentMember?.settings_groupIntegrity,
-                    settings_memberIntegrityUserKeyVersion = currentMember?.settings_memberIntegrityUserKeyVersion,
-                    settings_groupIntegrityUserKeyVersion = currentMember?.settings_groupIntegrityUserKeyVersion
-                )
-                database.memberQueries.create(newMember)
-            }
-        }
+        database.groupRelatedDao.createOrUpdateMembersWithoutSettings(
+            data.map { mapper.remote2Local(it) }
+        )
     }
 
     suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
         logg.v("Save new location to database (${data.id})")
-        database.locationQueries.update(
-            id = data.id,
-            deviceId = data.deviceId,
-            deviceData = data.deviceData,
-            groupKeyVersion = data.groupKeyVersion,
-            deviceKeyVersion = data.deviceKeyVersion,
-            locationData = data.locationData,
-            status = data.status
+        database.groupRelatedDao.updateMemberLocation(
+            MemberLocationEntityDataUpdate(
+                id = data.id,
+                deviceId = data.deviceId,
+                deviceData = data.deviceData,
+                groupKeyVersion = data.groupKeyVersion,
+                deviceKeyVersion = data.deviceKeyVersion,
+                locationData = data.locationData,
+                status = data.status
+            )
         )
     }
 
     suspend fun getMemberOnce(group: UserGroup, userId: String): MemberModel? {
-        return database.memberQueries.getMember(
-            groupId = group.id,
-            userId = userId
-        ).executeAsOneOrNull()?.let {
+        return database.groupRelatedDao.getMemberOnce(groupId = group.id, userId = userId)?.let {
             mapper.local2Core(it, emptyList(), group).member
         }
     }
 
     fun getLocationCountForMember(memberId: String): Flow<Int> {
-        return database.mapToOneOrNull { locationQueries.getLocationCountForMember(memberId) }
-            .mapNotNull { it?.toInt() }
+        return database.groupRelatedDao.getLocationCountForMember(memberId = memberId)
+            .filterNotNull()
             .distinctUntilChanged()
     }
 
     fun getMemberCountInGroup(groupId: String): Flow<Int> {
-        return database.mapToOneOrNull { memberQueries.getMemberCount(groupId) }
-            .mapNotNull { it?.toInt() }
+        return database.groupRelatedDao.getMemberCount(groupId = groupId)
+            .filterNotNull()
             .distinctUntilChanged()
     }
 
-    suspend fun getMemberCountInGroupOnce(groupId: String): Int {
-        return database.memberQueries.getMemberCount(groupId).executeAsOneOrNull()?.toInt() ?: 0
-    }
-
     suspend fun getUserMemberId(groupId: String, userId: String): String? {
-        return database.memberQueries.getUserMemberId(groupId = groupId, userId = userId).executeAsOneOrNull()
+        return database.groupRelatedDao.getUserMemberId(groupId = groupId, userId = userId)
     }
 
     suspend fun clearMemberLocationData(locationId: String) {
-        database.locationQueries.updateLocationData(locationData = null, id = locationId)
+        database.groupRelatedDao.clearLocationDataForLocation(locationId = locationId)
     }
 }

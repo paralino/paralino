@@ -24,7 +24,8 @@ abstract class IValueFormatter {
 
     abstract fun formatTimeOnly(timeUTC: LocalDateTime?): String?
     abstract fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String
-    abstract fun formatBestPattern(epochSeconds: Long, pattern: String): String
+    abstract fun formatBestPattern(timeUTC: LocalDateTime, pattern: String): String
+    abstract fun formatWithPattern(timeUTC: LocalDateTime, pattern: String): String
     abstract fun currentTimeForApi(): String
 
     fun getDistanceSmall(
@@ -108,15 +109,15 @@ abstract class IValueFormatter {
 
             sameYear -> {
                 formatBestPattern(
-                    local.toInstant(TimeZone.UTC).epochSeconds,
-                    "MMMMd"
+                    timeUTC = timeUTC,
+                    pattern = "MMMMd"
                 ) + ", $formattedTime"
             }
 
             else -> {
                 formatBestPattern(
-                    local.toInstant(TimeZone.UTC).epochSeconds,
-                    "MMMMdyyyy"
+                    timeUTC = timeUTC,
+                    pattern = "MMMMdyyyy"
                 ).let { "**$it**" } + ", $formattedTime"
             }
         }
@@ -145,15 +146,15 @@ abstract class IValueFormatter {
 
             optionalYear && sameYear -> {
                 formatBestPattern(
-                    local.toInstant(TimeZone.UTC).epochSeconds,
-                    "MMMMd"
+                    timeUTC = timeUTC,
+                    pattern = "MMMMd"
                 ) + ", $formattedTime"
             }
 
             else -> {
                 formatBestPattern(
-                    local.toInstant(TimeZone.UTC).epochSeconds,
-                    "MMMMdyyyy"
+                    timeUTC = timeUTC,
+                    pattern = "MMMMdyyyy"
                 ) + ", $formattedTime"
             }
         }
@@ -192,14 +193,14 @@ abstract class IValueFormatter {
             sameDay -> time
             isTomorrow -> "${MR.strings.date_name_tomorrow.localizedString()}, $time"
             sameYear -> formatBestPattern(
-                epochSeconds = local.toInstant(TimeZone.UTC).epochSeconds,
+                timeUTC = dateTimeUTC,
                 pattern = "MMMd"
             ) + ", $time"
 
             else -> {
                 val timeFixed = if (splitTimeToOneLine) "\n$time" else ", $time"
                 formatBestPattern(
-                    epochSeconds = local.toInstant(TimeZone.UTC).epochSeconds,
+                    timeUTC = dateTimeUTC,
                     pattern = "MMMdyyyy"
                 ) + timeFixed
             }

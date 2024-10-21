@@ -3,14 +3,13 @@ package app.paralino.core.repo.user
 import app.paralino.core.appPrefs
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.utils.extensions.blocking
 
 class UserDevicesRemoteSource constructor(
     private val documentApi: IDocumentsApi,
@@ -34,24 +33,22 @@ class UserDevicesRemoteSource constructor(
         ).let { UserDeviceRaw.from(it) }
     }
 
-    suspend fun updateDeviceData(pushToken: String) {
-        blocking {
-            val payload = UpdateUserDeviceFunctionData(
-                sessionId = appPrefs.sessionId,
-                deviceId = appPrefs.deviceId,
-                pushToken = pushToken,
-                deviceType = userMemberIdUseCase.getCurrentDeviceType().key
-            )
+    suspend fun updateDeviceData(pushToken: String, locationPushToken: String?) {
+        val payload = UpdateUserDeviceFunctionData(
+            sessionId = appPrefs.sessionId,
+            deviceId = appPrefs.deviceId,
+            pushToken = pushToken,
+            deviceType = userMemberIdUseCase.getCurrentDeviceType().key,
+            locationPushToken = locationPushToken
+        )
 
-            val response = functionsApi.runAndWait(
-                function = ServerFunction.DEVICE_UPDATE,
-                data = payload
-            )
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.DEVICE_UPDATE,
+            data = payload
+        )
 
-            if (!response.isSuccess) {
-                throw response.remoteException
-            }
+        if (!response.isSuccess) {
+            throw response.remoteException
         }
     }
-
 }

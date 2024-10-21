@@ -1,16 +1,12 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.executeWithResult
-import app.paralino.core.data.db.mapToList
-import app.paralino.core.data.db.mapToOneOrNull
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
-import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -19,66 +15,27 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 class PlacesLocalDataSource(
-    private val database: AppDatabaseHelper,
-    private val mapper: GroupPlaceMapperLocal,
+    private val database: MainDatabaseHelper,
+    private val mapper: GroupPlaceMapperLocal
 ) {
 
-    suspend fun recreatePlaces(places: List<GroupPlaceWithSettingsRaw>) {
-        database.transaction {
-            placesQueries.clearAll()
-            placeSettingsQueries.clearAll()
-            places.forEach {
-                placesQueries.createPlace(mapper.remote2Local(it.place))
-                it.settings?.let { mapper.remote2Local(it) }?.let {
-                    placeSettingsQueries.createPlaceSettings(it)
-                }
-            }
-        }
-    }
-
-    suspend fun updateOrCreatePlace(place: GroupPlaceWithSettingsRaw) {
-        database.transaction {
-            placesQueries.createPlace(mapper.remote2Local(place.place))
-            if (place.settings == null)
-                placeSettingsQueries.deleteForPlace(placeId = place.place.id)
-            else
-                placeSettingsQueries.createPlaceSettings(mapper.remote2Local(place.settings!!))
-        }
-    }
-
-    suspend fun recreatePlacesForGroup(
-        groupId: String,
-        places: List<GroupPlaceWithSettingsRaw>
-    ) {
-        database.transaction {
-            placesQueries.deleteForGroup(groupId)
-            placeSettingsQueries.deleteForGroup(groupId)
-            places.forEach {
-                placesQueries.createPlace(mapper.remote2Local(it.place))
-                it.settings?.let { mapper.remote2Local(it) }?.let {
-                    placeSettingsQueries.createPlaceSettings(it)
-                }
-            }
-        }
-    }
-
     suspend fun updatePlaceOnly(place: GroupPlaceRaw) {
-        database.placesQueries.createPlace(mapper.remote2Local(place))
+        database.groupRelatedDao.createPlace(mapper.remote2Local(place))
     }
 
     suspend fun updatePlaceSettings(settings: GroupPlaceSettingRaw) {
-        database.placeSettingsQueries.createPlaceSettings(mapper.remote2Local(settings))
+        database.groupRelatedDao.createPlaceSettings(mapper.remote2Local(settings))
     }
 
     fun getPlaceRawPresentation(placeId: String): Flow<Pair<GroupPlaceRaw, GroupPlace>> {
-        return database.mapToOneOrNull { placesQueries.getPlace(placeId) }
+        return database.groupRelatedDao.getPlace(placeId = placeId)
             .filterNotNull()
             .distinctUntilChanged()
             .map { mapper.local2Remote(it) to mapper.local2Core(it) }
     }
 
     fun getPlaceWithoutSettings(placeId: String): Flow<GroupPlace> {
-        return database.mapToOneOrNull { placesQueries.getPlace(placeId) }
+        return database.groupRelatedDao.getPlace(placeId = placeId)
             .filterNotNull()
             .distinctUntilChanged()
             .map { mapper.local2Core(it) }
@@ -86,8 +43,8 @@ class PlacesLocalDataSource(
 
     fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings> {
         return combine(
-            database.mapToOneOrNull { placesQueries.getPlace(placeId) },
-            database.mapToOneOrNull { placeSettingsQueries.getSettingsForPlace(placeId) }
+            database.groupRelatedDao.getPlace(placeId = placeId),
+            database.groupRelatedDao.getSettingsForPlace(placeId = placeId)
         ) { place, settings ->
             if (place != null) {
                 GroupPlaceWithSettings(
@@ -100,7 +57,7 @@ class PlacesLocalDataSource(
     }
 
     fun getPlacesForGroup(groupId: String): Flow<List<GroupPlace>> {
-        return database.mapToList { placesQueries.getAllForGroup(groupId) }
+        return database.groupRelatedDao.getAllPlacesForGroup(groupId = groupId)
             .distinctFlowOfList()
             .map {
                 it.map { mapper.local2Core(it) }
@@ -109,34 +66,26 @@ class PlacesLocalDataSource(
     }
 
     fun getAllPlaces(): Flow<List<GroupPlace>> {
-        return database.mapToList { placesQueries.getAll() }
+        return database.groupRelatedDao.getAllPlaces()
             .distinctFlowOfList()
             .map {
                 it.map { mapper.local2Core(it) }
+                    .sortedBy { it.id }
             }
     }
 
     suspend fun getAllPlacesOnce(): List<GroupPlace> {
-        return database.placesQueries
-            .getAll()
-            .executeAsList()
+        return database.groupRelatedDao
+            .getAllPlacesOnce()
             .map { mapper.local2Core(it) }
     }
 
-    fun getNumberOfPlaces(): Flow<Int> {
-        return database.mapToOneOrNull { placesQueries.getPlacesCount() }
-            .filterNotNull()
-            .map { it.toInt() }
-    }
-
     suspend fun getPlaceWithoutSettingsOnce(placeId: String): GroupPlace? {
-        return database.placesQueries.getPlace(placeId).executeAsOneOrNull()
+        return database.groupRelatedDao.getPlaceOnce(placeId = placeId)
             ?.let { mapper.local2Core(it) }
     }
 
     suspend fun getGroupId(placeId: String): String? {
-        return database.executeWithResult {
-            placesQueries.getGroupIdForPlaceId(placeId = placeId).executeAsOneOrNull()
-        }
+        return database.groupRelatedDao.getGroupIdForPlace(placeId = placeId)
     }
 }

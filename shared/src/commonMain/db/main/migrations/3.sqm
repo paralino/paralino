@@ -1,1 +1,0 @@
-ALTER TABLE groupEntity ADD COLUMN fallbackPlanType TEXT DEFAULT NULL;

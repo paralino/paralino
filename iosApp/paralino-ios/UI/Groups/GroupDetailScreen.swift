@@ -49,7 +49,10 @@ struct GroupDetailScreen: View {
                         path.removeLast()
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
+                        notificationPermissionHandler.requestNotificationPermission(
+                            locationStatusProvider: appDelegate.locationStatusProvider,
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askLocationService: {
                         

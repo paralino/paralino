@@ -3,48 +3,46 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		25008E4B2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */; };
+		2505E64D2CBD69B50088D146 /* paralino-lse.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2505E6462CBD69B50088D146 /* paralino-lse.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2505E6522CBD69E70088D146 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
+		2505E6532CBD69E70088D146 /* paralino_apple_core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
 		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
-		25129FED2BBDE6B800D1A5AE /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 25129FEC2BBDE6B800D1A5AE /* Sentry */; };
+		250BB6AA2CB9391800CCAB64 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 250BB6A92CB9391800CCAB64 /* Appwrite */; };
 		2522C6872B322923007C4913 /* MapComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2522C6862B322923007C4913 /* MapComponent.swift */; };
 		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
-		2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAAB2B113C4D00D88042 /* LocationManager.swift */; };
-		252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */; };
-		252E361529CF60BA008FC635 /* Logr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252E361429CF60BA008FC635 /* Logr.swift */; };
-		252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */; };
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
-		252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00829DD8BE100338956 /* LocationStatusProvider.swift */; };
-		252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00A29DD99F900338956 /* PushSetupProvider.swift */; };
-		252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */; };
-		252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00E29DD9FC300338956 /* GeofenceManager.swift */; };
-		252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */; };
-		252EA01529DDA99B00338956 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 252EA01429DDA99B00338956 /* Appwrite */; };
-		252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01629DDE5A800338956 /* DocumentsApi.swift */; };
-		252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01829DDEFC400338956 /* FunctionsApi.swift */; };
-		252EA01B29DDF1B500338956 /* UserApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01A29DDF1B500338956 /* UserApi.swift */; };
-		252EA01D29DDF93B00338956 /* RealtimeApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA01C29DDF93B00338956 /* RealtimeApi.swift */; };
-		252EA02029E03B4D00338956 /* Clibsodium in Frameworks */ = {isa = PBXBuildFile; productRef = 252EA01F29E03B4D00338956 /* Clibsodium */; };
-		252EA02229E03B4D00338956 /* Sodium in Frameworks */ = {isa = PBXBuildFile; productRef = 252EA02129E03B4D00338956 /* Sodium */; };
-		252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */; };
-		25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A8F29E9452300CD32F5 /* SealedClasses.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
 		25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25395C1E2B630042000394DA /* BaseMapObservableObject.swift */; };
-		253D31682AC215FD009E5010 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 253D31672AC215FD009E5010 /* Appwrite */; };
+		254729E62CB5967000172F55 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 254729E52CB5967000172F55 /* Sentry */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
 		254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */; };
 		254B6F2C29EC7F6A008B1458 /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2A29EC7F6A008B1458 /* LoginScreen.swift */; };
 		254B6F3329EC8039008B1458 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 254B6F2E29EC8039008B1458 /* Localizable.strings */; };
 		254B6F3429EC8039008B1458 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 254B6F3129EC8039008B1458 /* Localizable.strings */; };
+		254EFF732CB5457800818618 /* paralino-nse.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 254EFF6B2CB5457800818618 /* paralino-nse.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		254EFF7A2CB545AB00818618 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
+		254EFF7C2CB545D200818618 /* paralino_apple_core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
+		2568AF5E2CB5342B007EE00F /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5D2CB5342B007EE00F /* NIO */; };
+		2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */; };
+		2568AF622CB5342B007EE00F /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF612CB5342B007EE00F /* NIOCore */; };
+		2568AF642CB5342B007EE00F /* NIOEmbedded in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF632CB5342B007EE00F /* NIOEmbedded */; };
+		2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF652CB5342B007EE00F /* NIOFoundationCompat */; };
 		256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */; };
 		256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */; };
-		258C2D3E2BDAED0700CA9229 /* SwiftLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 258C2D3D2BDAED0700CA9229 /* SwiftLocation */; };
+		257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = 257B6E0A2CB5717B004F5438 /* Atomics */; };
+		257DCAD92CB4407700402562 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
+		257DCADA2CB4407700402562 /* paralino_apple_core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		257DCAE42CB441BB00402562 /* Clibsodium in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAE32CB441BB00402562 /* Clibsodium */; };
+		257DCAE62CB441BB00402562 /* Sodium in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAE52CB441BB00402562 /* Sodium */; };
+		257DCAEA2CB441BB00402562 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAE92CB441BB00402562 /* AsyncHTTPClient */; };
+		257DCAEC2CB441BB00402562 /* SwiftLocation in Frameworks */ = {isa = PBXBuildFile; productRef = 257DCAEB2CB441BB00402562 /* SwiftLocation */; };
 		258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E9BF629EBDEBF006BD46C /* AlertDialog.swift */; };
 		259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */; };
 		259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF982A3C68580083FF4B /* ComposeRepresentable.swift */; };
@@ -59,9 +57,6 @@
 		25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB422A44D7F60007E89D /* SettingsScreen.swift */; };
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
 		25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */; };
-		25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */; };
-		25B3A0C82BBF08E7002F1CB4 /* AsyncHTTPClient in Frameworks */ = {isa = PBXBuildFile; productRef = 25B3A0C72BBF08E7002F1CB4 /* AsyncHTTPClient */; };
-		25B85F2C2A4A1F1E007618E6 /* ValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */; };
 		25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
@@ -91,30 +86,101 @@
 		25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2505E64B2CBD69B50088D146 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25C03A5C29CCE77100646364 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2505E6452CBD69B50088D146;
+			remoteInfo = "paralino-lse";
+		};
+		2505E6542CBD69E70088D146 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25C03A5C29CCE77100646364 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 257DCAD22CB4407700402562;
+			remoteInfo = "paralino-apple-core";
+		};
+		254EFF702CB5457800818618 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25C03A5C29CCE77100646364 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 254EFF6A2CB5457800818618;
+			remoteInfo = "paralino-nse";
+		};
+		254EFF782CB545A400818618 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25C03A5C29CCE77100646364 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 257DCAD22CB4407700402562;
+			remoteInfo = "paralino-apple-core";
+		};
+		257DCAD72CB4407700402562 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25C03A5C29CCE77100646364 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 257DCAD22CB4407700402562;
+			remoteInfo = "paralino-apple-core";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2505E6562CBD69E70088D146 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2505E6532CBD69E70088D146 /* paralino_apple_core.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		254EFF722CB5457800818618 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				254EFF732CB5457800818618 /* paralino-nse.appex in Embed Foundation Extensions */,
+				2505E64D2CBD69B50088D146 /* paralino-lse.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		254EFF7B2CB545C100818618 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				254EFF7C2CB545D200818618 /* paralino_apple_core.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		257DCADB2CB4407700402562 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				257DCADA2CB4407700402562 /* paralino_apple_core.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeLocationProvider.swift; sourceTree = "<group>"; };
+		2505E6462CBD69B50088D146 /* paralino-lse.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "paralino-lse.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-iosDebug.entitlements"; sourceTree = "<group>"; };
 		2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacesScreen.swift; sourceTree = "<group>"; };
 		2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailScreen.swift; sourceTree = "<group>"; };
 		2522C6862B322923007C4913 /* MapComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponent.swift; sourceTree = "<group>"; };
 		2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingStartScreen.swift; sourceTree = "<group>"; };
 		2529CAAA2B10CF1500D88042 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		2529CAAB2B113C4D00D88042 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceApiProvider.swift; sourceTree = "<group>"; };
-		252E361429CF60BA008FC635 /* Logr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logr.swift; sourceTree = "<group>"; };
-		252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusProvider.swift; sourceTree = "<group>"; };
 		252EA00629DD89C800338956 /* KoinSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinSetup.swift; sourceTree = "<group>"; };
-		252EA00829DD8BE100338956 /* LocationStatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationStatusProvider.swift; sourceTree = "<group>"; };
-		252EA00A29DD99F900338956 /* PushSetupProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushSetupProvider.swift; sourceTree = "<group>"; };
-		252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationPresenters.swift; sourceTree = "<group>"; };
-		252EA00E29DD9FC300338956 /* GeofenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceManager.swift; sourceTree = "<group>"; };
-		252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppwriteRemoteModule.swift; sourceTree = "<group>"; };
-		252EA01629DDE5A800338956 /* DocumentsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsApi.swift; sourceTree = "<group>"; };
-		252EA01829DDEFC400338956 /* FunctionsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionsApi.swift; sourceTree = "<group>"; };
-		252EA01A29DDF1B500338956 /* UserApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserApi.swift; sourceTree = "<group>"; };
-		252EA01C29DDF93B00338956 /* RealtimeApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeApi.swift; sourceTree = "<group>"; };
-		252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoFrameworkProvider.swift; sourceTree = "<group>"; };
-		25356A8F29E9452300CD32F5 /* SealedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SealedClasses.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		25395C1E2B630042000394DA /* BaseMapObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMapObservableObject.swift; sourceTree = "<group>"; };
 		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
@@ -123,9 +189,11 @@
 		254B6F2A29EC7F6A008B1458 /* LoginScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		254B6F2F29EC8039008B1458 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Localizable.strings; sourceTree = "<group>"; };
 		254B6F3229EC8039008B1458 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Localizable.strings; sourceTree = "<group>"; };
+		254EFF6B2CB5457800818618 /* paralino-nse.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "paralino-nse.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionHandler.swift; sourceTree = "<group>"; };
 		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSettingsScreen.swift; sourceTree = "<group>"; };
+		257DCAD32CB4407700402562 /* paralino_apple_core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = paralino_apple_core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2585A9E92C7733DE00BC04AA /* production-config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "production-config.xcconfig"; sourceTree = "<group>"; };
 		2585A9ED2C777EB000BC04AA /* staging-config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "staging-config.xcconfig"; sourceTree = "<group>"; };
 		2585A9EF2C777EF300BC04AA /* debugConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debugConfig.xcconfig; sourceTree = "<group>"; };
@@ -140,12 +208,11 @@
 		259AEFA32A3E19740083FF4B /* Sharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharing.swift; sourceTree = "<group>"; };
 		259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeScreen.swift; sourceTree = "<group>"; };
 		259AEFA72A3E2F960083FF4B /* MapHomeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeState.swift; sourceTree = "<group>"; };
+		25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-ios.entitlements"; sourceTree = "<group>"; };
 		25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateManager.swift; sourceTree = "<group>"; };
 		25B2DB422A44D7F60007E89D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		25B2DB442A44D89B0007E89D /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
 		25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCodeScreen.swift; sourceTree = "<group>"; };
-		25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefresh.swift; sourceTree = "<group>"; };
-		25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueFormatter.swift; sourceTree = "<group>"; };
 		25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCreateScreen.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
@@ -176,18 +243,117 @@
 		25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2505E6512CBD69B50088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2505E6452CBD69B50088D146 /* paralino-lse */;
+		};
+		2505E6622CC11B880088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Provider/Logr.swift,
+			);
+			target = 2505E6452CBD69B50088D146 /* paralino-lse */;
+		};
+		2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Crypto/CryptoFrameworkProvider.swift,
+				Location/BackgroundRefresh.swift,
+				Location/CoreLocationManagerDelegate.swift,
+				Location/LocationManager.swift,
+				Location/OneTimeLocationProvider.swift,
+				Provider/ConnectionStatusProvider.swift,
+				Provider/CoreKoinSetup.swift,
+				Provider/DeviceApiProvider.swift,
+				Provider/GeofenceManager.swift,
+				Provider/LocationStatusProvider.swift,
+				Provider/Logr.swift,
+				Provider/PushNotificationPresenters.swift,
+				Provider/PushSetupProvider.swift,
+				Provider/SealedClasses.swift,
+				Provider/ValueFormatter.swift,
+				Remote/AppwriteRemoteModule.swift,
+				Remote/DocumentsApi.swift,
+				Remote/FunctionsApi.swift,
+				Remote/RealtimeApi.swift,
+				Remote/UserApi.swift,
+			);
+			target = 25C03A6329CCE77100646364 /* paralino-ios */;
+		};
+		254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 254EFF6A2CB5457800818618 /* paralino-nse */;
+		};
+		257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				paralino_apple_core.h,
+			);
+			target = 257DCAD22CB4407700402562 /* paralino-apple-core */;
+		};
+		2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Provider/Logr.swift,
+			);
+			target = 254EFF6A2CB5457800818618 /* paralino-nse */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2505E6472CBD69B50088D146 /* paralino-lse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2505E6512CBD69B50088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-lse"; sourceTree = "<group>"; };
+		254EFF6C2CB5457800818618 /* paralino-nse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-nse"; sourceTree = "<group>"; };
+		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2505E6622CC11B880088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		2505E6432CBD69B50088D146 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2505E6522CBD69E70088D146 /* paralino_apple_core.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		254EFF682CB5457800818618 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				254EFF7A2CB545AB00818618 /* paralino_apple_core.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		257DCAD02CB4407700402562 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				257DCAEC2CB441BB00402562 /* SwiftLocation in Frameworks */,
+				257DCAEA2CB441BB00402562 /* AsyncHTTPClient in Frameworks */,
+				2568AF642CB5342B007EE00F /* NIOEmbedded in Frameworks */,
+				2568AF5E2CB5342B007EE00F /* NIO in Frameworks */,
+				2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */,
+				2568AF662CB5342B007EE00F /* NIOFoundationCompat in Frameworks */,
+				257DCAE42CB441BB00402562 /* Clibsodium in Frameworks */,
+				2568AF622CB5342B007EE00F /* NIOCore in Frameworks */,
+				250BB6AA2CB9391800CCAB64 /* Appwrite in Frameworks */,
+				257B6E0B2CB5717B004F5438 /* Atomics in Frameworks */,
+				257DCAE62CB441BB00402562 /* Sodium in Frameworks */,
+				254729E62CB5967000172F55 /* Sentry in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		25C03A6129CCE77100646364 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25129FED2BBDE6B800D1A5AE /* Sentry in Frameworks */,
-				252EA01529DDA99B00338956 /* Appwrite in Frameworks */,
-				252EA02029E03B4D00338956 /* Clibsodium in Frameworks */,
-				252EA02229E03B4D00338956 /* Sodium in Frameworks */,
-				25B3A0C82BBF08E7002F1CB4 /* AsyncHTTPClient in Frameworks */,
-				258C2D3E2BDAED0700CA9229 /* SwiftLocation in Frameworks */,
-				253D31682AC215FD009E5010 /* Appwrite in Frameworks */,
+				257DCAD92CB4407700402562 /* paralino_apple_core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,16 +363,7 @@
 		252E361129CF5EB0008FC635 /* Provider */ = {
 			isa = PBXGroup;
 			children = (
-				252E361229CF5EC6008FC635 /* DeviceApiProvider.swift */,
-				252E361429CF60BA008FC635 /* Logr.swift */,
-				252EA00429DD6C0100338956 /* ConnectionStatusProvider.swift */,
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
-				252EA00829DD8BE100338956 /* LocationStatusProvider.swift */,
-				252EA00A29DD99F900338956 /* PushSetupProvider.swift */,
-				252EA00C29DD9AF500338956 /* PushNotificationPresenters.swift */,
-				252EA00E29DD9FC300338956 /* GeofenceManager.swift */,
-				25356A8F29E9452300CD32F5 /* SealedClasses.swift */,
-				25B85F2B2A4A1F1E007618E6 /* ValueFormatter.swift */,
 				2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */,
 				25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */,
 				25EF80302CAEAC0000DFC890 /* BillingProviderIOS.swift */,
@@ -225,26 +382,6 @@
 				259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */,
 			);
 			path = Login;
-			sourceTree = "<group>";
-		};
-		252EA01029DDA66400338956 /* Remote */ = {
-			isa = PBXGroup;
-			children = (
-				252EA01129DDA67700338956 /* AppwriteRemoteModule.swift */,
-				252EA01629DDE5A800338956 /* DocumentsApi.swift */,
-				252EA01829DDEFC400338956 /* FunctionsApi.swift */,
-				252EA01A29DDF1B500338956 /* UserApi.swift */,
-				252EA01C29DDF93B00338956 /* RealtimeApi.swift */,
-			);
-			path = Remote;
-			sourceTree = "<group>";
-		};
-		252EA02329E03D2400338956 /* Crypto */ = {
-			isa = PBXGroup;
-			children = (
-				252EA02629E03D4900338956 /* CryptoFrameworkProvider.swift */,
-			);
-			path = Crypto;
 			sourceTree = "<group>";
 		};
 		25356A9829EAB8CD00CD32F5 /* Theme */ = {
@@ -370,21 +507,14 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		25B4E5DB2B6F994200F2E24D /* Location */ = {
-			isa = PBXGroup;
-			children = (
-				2529CAAB2B113C4D00D88042 /* LocationManager.swift */,
-				25B3A0C02BBEBF11002F1CB4 /* BackgroundRefresh.swift */,
-				25008E4A2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift */,
-			);
-			path = Location;
-			sourceTree = "<group>";
-		};
 		25C03A5B29CCE77100646364 = {
 			isa = PBXGroup;
 			children = (
 				25E044582A3358D5001E1B05 /* Configuration */,
 				25C03A6629CCE77100646364 /* paralino-ios */,
+				257DCAD42CB4407700402562 /* paralino-apple-core */,
+				254EFF6C2CB5457800818618 /* paralino-nse */,
+				2505E6472CBD69B50088D146 /* paralino-lse */,
 				2556B8422AC6FCED00ADEB17 /* Frameworks */,
 				25C03A6529CCE77100646364 /* Products */,
 			);
@@ -394,6 +524,9 @@
 			isa = PBXGroup;
 			children = (
 				25C03A6429CCE77100646364 /* paralino-ios.app */,
+				257DCAD32CB4407700402562 /* paralino_apple_core.framework */,
+				254EFF6B2CB5457800818618 /* paralino-nse.appex */,
+				2505E6462CBD69B50088D146 /* paralino-lse.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -401,13 +534,11 @@
 		25C03A6629CCE77100646364 /* paralino-ios */ = {
 			isa = PBXGroup;
 			children = (
+				25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */,
 				250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */,
 				2529CAAA2B10CF1500D88042 /* Info.plist */,
-				252EA02329E03D2400338956 /* Crypto */,
-				25B4E5DB2B6F994200F2E24D /* Location */,
 				254B6F3529EC8056008B1458 /* Localization */,
 				252E361129CF5EB0008FC635 /* Provider */,
-				252EA01029DDA66400338956 /* Remote */,
 				256C5A5829E8934E00FCF0B7 /* UI */,
 				25C03A6D29CCE77200646364 /* Preview Content */,
 				25C03A6B29CCE77200646364 /* Assets.xcassets */,
@@ -452,30 +583,124 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		257DCACE2CB4407700402562 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
-		25C03A6329CCE77100646364 /* paralino-ios */ = {
+		2505E6452CBD69B50088D146 /* paralino-lse */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 25C03A7229CCE77200646364 /* Build configuration list for PBXNativeTarget "paralino-ios" */;
+			buildConfigurationList = 2505E6502CBD69B50088D146 /* Build configuration list for PBXNativeTarget "paralino-lse" */;
 			buildPhases = (
-				252D59F22AC6133D00C49BBE /* Compile Kotlin */,
-				25C03A6029CCE77100646364 /* Sources */,
-				25C03A6129CCE77100646364 /* Frameworks */,
-				25C03A6229CCE77100646364 /* Resources */,
-				25C617F42A34C7BB00EB34FA /* Copy Moko resources */,
+				2505E6572CBD69F80088D146 /* Compile Kotlin */,
+				2505E6422CBD69B50088D146 /* Sources */,
+				2505E6432CBD69B50088D146 /* Frameworks */,
+				2505E6442CBD69B50088D146 /* Resources */,
+				2505E6562CBD69E70088D146 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2505E6552CBD69E70088D146 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2505E6472CBD69B50088D146 /* paralino-lse */,
+			);
+			name = "paralino-lse";
+			packageProductDependencies = (
+			);
+			productName = "paralino-lse";
+			productReference = 2505E6462CBD69B50088D146 /* paralino-lse.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		254EFF6A2CB5457800818618 /* paralino-nse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 254EFF752CB5457800818618 /* Build configuration list for PBXNativeTarget "paralino-nse" */;
+			buildPhases = (
+				2580EF8A2CB6834A00C9431D /* Compile Kotlin */,
+				254EFF672CB5457800818618 /* Sources */,
+				254EFF682CB5457800818618 /* Frameworks */,
+				254EFF692CB5457800818618 /* Resources */,
+				254EFF7B2CB545C100818618 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				254EFF792CB545A400818618 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				254EFF6C2CB5457800818618 /* paralino-nse */,
+			);
+			name = "paralino-nse";
+			packageProductDependencies = (
+			);
+			productName = "paralino-nse";
+			productReference = 254EFF6B2CB5457800818618 /* paralino-nse.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		257DCAD22CB4407700402562 /* paralino-apple-core */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 257DCADF2CB4407700402562 /* Build configuration list for PBXNativeTarget "paralino-apple-core" */;
+			buildPhases = (
+				257DCACE2CB4407700402562 /* Headers */,
+				257DCAE02CB440D100402562 /* Compile Kotlin */,
+				257DCACF2CB4407700402562 /* Sources */,
+				257DCAD02CB4407700402562 /* Frameworks */,
+				257DCAD12CB4407700402562 /* Resources */,
+				2584CDB02CB4434B00F9AD13 /* Copy Moko Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				257DCAD42CB4407700402562 /* paralino-apple-core */,
+			);
+			name = "paralino-apple-core";
+			packageProductDependencies = (
+				257DCAE32CB441BB00402562 /* Clibsodium */,
+				257DCAE52CB441BB00402562 /* Sodium */,
+				257DCAE92CB441BB00402562 /* AsyncHTTPClient */,
+				257DCAEB2CB441BB00402562 /* SwiftLocation */,
+				2568AF5D2CB5342B007EE00F /* NIO */,
+				2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */,
+				2568AF612CB5342B007EE00F /* NIOCore */,
+				2568AF632CB5342B007EE00F /* NIOEmbedded */,
+				2568AF652CB5342B007EE00F /* NIOFoundationCompat */,
+				257B6E0A2CB5717B004F5438 /* Atomics */,
+				254729E52CB5967000172F55 /* Sentry */,
+				250BB6A92CB9391800CCAB64 /* Appwrite */,
+			);
+			productName = "paralino-apple-core";
+			productReference = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		25C03A6329CCE77100646364 /* paralino-ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 25C03A7229CCE77200646364 /* Build configuration list for PBXNativeTarget "paralino-ios" */;
+			buildPhases = (
+				2584CDB32CB4498400F9AD13 /* Compile Kotlin */,
+				25C03A6029CCE77100646364 /* Sources */,
+				25C03A6129CCE77100646364 /* Frameworks */,
+				25C03A6229CCE77100646364 /* Resources */,
+				257DCADB2CB4407700402562 /* Embed Frameworks */,
+				254EFF722CB5457800818618 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				257DCAD82CB4407700402562 /* PBXTargetDependency */,
+				254EFF712CB5457800818618 /* PBXTargetDependency */,
+				2505E64C2CBD69B50088D146 /* PBXTargetDependency */,
+			);
 			name = "paralino-ios";
 			packageProductDependencies = (
-				252EA01429DDA99B00338956 /* Appwrite */,
-				252EA01F29E03B4D00338956 /* Clibsodium */,
-				252EA02129E03B4D00338956 /* Sodium */,
-				253D31672AC215FD009E5010 /* Appwrite */,
-				25129FEC2BBDE6B800D1A5AE /* Sentry */,
-				25B3A0C72BBF08E7002F1CB4 /* AsyncHTTPClient */,
-				258C2D3D2BDAED0700CA9229 /* SwiftLocation */,
 			);
 			productName = "paralino-ios";
 			productReference = 25C03A6429CCE77100646364 /* paralino-ios.app */;
@@ -488,9 +713,19 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1420;
+				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					2505E6452CBD69B50088D146 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					254EFF6A2CB5457800818618 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					257DCAD22CB4407700402562 = {
+						CreatedOnToolsVersion = 16.0;
+						LastSwiftMigration = 1600;
+					};
 					25C03A6329CCE77100646364 = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -507,22 +742,48 @@
 			);
 			mainGroup = 25C03A5B29CCE77100646364;
 			packageReferences = (
-				252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */,
 				252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */,
 				25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */,
 				25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */,
+				2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */,
+				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
+				25A5A6222CB9384100D3D160 /* XCLocalSwiftPackageReference "appwrite-ios" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				25C03A6329CCE77100646364 /* paralino-ios */,
+				257DCAD22CB4407700402562 /* paralino-apple-core */,
+				254EFF6A2CB5457800818618 /* paralino-nse */,
+				2505E6452CBD69B50088D146 /* paralino-lse */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2505E6442CBD69B50088D146 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		254EFF692CB5457800818618 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		257DCAD12CB4407700402562 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		25C03A6229CCE77100646364 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -537,9 +798,8 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		252D59F22AC6133D00C49BBE /* Compile Kotlin */ = {
+		2505E6572CBD69F80088D146 /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -556,7 +816,7 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
-		25C617F42A34C7BB00EB34FA /* Copy Moko resources */ = {
+		257DCAE02CB440D100402562 /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -565,7 +825,43 @@
 			);
 			inputPaths = (
 			);
-			name = "Copy Moko resources";
+			name = "Compile Kotlin";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+		};
+		2580EF8A2CB6834A00C9431D /* Compile Kotlin */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Kotlin";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+		};
+		2584CDB02CB4434B00F9AD13 /* Copy Moko Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Moko Resources";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -574,42 +870,74 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"$SRCROOT/../gradlew\" -p \"$SRCROOT/../\" :moko:copyFrameworkResourcesToApp \\\n    -Pmoko.resources.PLATFORM_NAME=\"$PLATFORM_NAME\" \\\n    -Pmoko.resources.CONFIGURATION=\"$CONFIGURATION\" \\\n    -Pmoko.resources.ARCHS=\"$ARCHS\" \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=\"$BUILT_PRODUCTS_DIR\" \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=\"$CONTENTS_FOLDER_PATH\" \n";
 		};
+		2584CDB32CB4498400F9AD13 /* Compile Kotlin */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Kotlin";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2505E6422CBD69B50088D146 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		254EFF672CB5457800818618 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		257DCACF2CB4407700402562 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		25C03A6029CCE77100646364 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
-				25B3A0C12BBEBF11002F1CB4 /* BackgroundRefresh.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
 				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
 				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
 				25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */,
 				259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */,
 				2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */,
-				2529CAAC2B113C4D00D88042 /* LocationManager.swift in Sources */,
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */,
-				25008E4B2BDAAFE700A3BCCA /* OneTimeLocationProvider.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
 				259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */,
-				252EA01B29DDF1B500338956 /* UserApi.swift in Sources */,
 				259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */,
-				252E361529CF60BA008FC635 /* Logr.swift in Sources */,
 				25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */,
 				25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */,
 				25FC5CAE2A45FB320006E796 /* BlockListScreen.swift in Sources */,
-				25B85F2C2A4A1F1E007618E6 /* ValueFormatter.swift in Sources */,
 				25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,
 				259AEF9C2A3DB1C70083FF4B /* MapRootScreen.swift in Sources */,
 				25C91A2F2A57EFC600A49F06 /* PhotoPickerSheet.swift in Sources */,
 				259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */,
 				2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */,
-				252EA00B29DD99F900338956 /* PushSetupProvider.swift in Sources */,
 				254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */,
 				25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */,
 				256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */,
@@ -625,16 +953,9 @@
 				25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */,
 				25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */,
 				25C7DD722BEC16BC00D16BC9 /* AppStatusDebugScreen.swift in Sources */,
-				252EA01D29DDF93B00338956 /* RealtimeApi.swift in Sources */,
-				252EA00929DD8BE100338956 /* LocationStatusProvider.swift in Sources */,
 				25EF80312CAEAC0000DFC890 /* BillingProviderIOS.swift in Sources */,
-				25356A9029E9452300CD32F5 /* SealedClasses.swift in Sources */,
 				259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */,
-				252E361329CF5EC6008FC635 /* DeviceApiProvider.swift in Sources */,
-				252EA01229DDA67700338956 /* AppwriteRemoteModule.swift in Sources */,
 				254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */,
-				252EA00529DD6C0100338956 /* ConnectionStatusProvider.swift in Sources */,
-				252EA00D29DD9AF500338956 /* PushNotificationPresenters.swift in Sources */,
 				254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */,
 				25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */,
 				2522C6872B322923007C4913 /* MapComponent.swift in Sources */,
@@ -643,19 +964,43 @@
 				25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */,
 				25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */,
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
-				252EA01729DDE5A800338956 /* DocumentsApi.swift in Sources */,
-				252EA02729E03D4900338956 /* CryptoFrameworkProvider.swift in Sources */,
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,
 				25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */,
 				259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */,
-				252EA01929DDEFC400338956 /* FunctionsApi.swift in Sources */,
 				2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */,
 				25FC5CB02A460A510006E796 /* RawDataScreen.swift in Sources */,
-				252EA00F29DD9FC300338956 /* GeofenceManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2505E64C2CBD69B50088D146 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2505E6452CBD69B50088D146 /* paralino-lse */;
+			targetProxy = 2505E64B2CBD69B50088D146 /* PBXContainerItemProxy */;
+		};
+		2505E6552CBD69E70088D146 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 257DCAD22CB4407700402562 /* paralino-apple-core */;
+			targetProxy = 2505E6542CBD69E70088D146 /* PBXContainerItemProxy */;
+		};
+		254EFF712CB5457800818618 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 254EFF6A2CB5457800818618 /* paralino-nse */;
+			targetProxy = 254EFF702CB5457800818618 /* PBXContainerItemProxy */;
+		};
+		254EFF792CB545A400818618 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 257DCAD22CB4407700402562 /* paralino-apple-core */;
+			targetProxy = 254EFF782CB545A400818618 /* PBXContainerItemProxy */;
+		};
+		257DCAD82CB4407700402562 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 257DCAD22CB4407700402562 /* paralino-apple-core */;
+			targetProxy = 257DCAD72CB4407700402562 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		254B6F2E29EC8039008B1458 /* Localizable.strings */ = {
@@ -677,6 +1022,268 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2505E64E2CBD69B50088D146 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = "paralino-lse/paralino-lseDebug.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "paralino-lse/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "paralino-lse";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.paralinolse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2505E64F2CBD69B50088D146 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = "paralino-lse/paralino-lse.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "paralino-lse/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "paralino-lse";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.paralinolse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		254EFF762CB5457800818618 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = "paralino-nse/paralino-nse.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "paralino-nse/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "paralino-nse";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "When in use location permission is required to post updates";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.paralinonse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				forceLogToSystem = true;
+				internalTesting = true;
+			};
+			name = Debug;
+		};
+		254EFF772CB5457800818618 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_ENTITLEMENTS = "paralino-nse/paralino-nse.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "paralino-nse/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "paralino-nse";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "When in use location permission is required to post updates";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.paralinonse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				forceLogToSystem = false;
+				internalTesting = false;
+			};
+			name = Release;
+		};
+		257DCADC2CB4407700402562 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					shared,
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.core;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		257DCADD2CB4407700402562 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					shared,
+					"-lsqlite3",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.core;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		25C03A7029CCE77200646364 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2585A9EF2C777EF300BC04AA /* debugConfig.xcconfig */;
@@ -833,11 +1440,9 @@
 				MARKETING_VERSION = 0.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					shared,
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.test;
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -853,6 +1458,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
@@ -883,8 +1489,6 @@
 				MARKETING_VERSION = 0.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					shared,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios;
@@ -901,6 +1505,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2505E6502CBD69B50088D146 /* Build configuration list for PBXNativeTarget "paralino-lse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2505E64E2CBD69B50088D146 /* Debug */,
+				2505E64F2CBD69B50088D146 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		254EFF752CB5457800818618 /* Build configuration list for PBXNativeTarget "paralino-nse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				254EFF762CB5457800818618 /* Debug */,
+				254EFF772CB5457800818618 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		257DCADF2CB4407700402562 /* Build configuration list for PBXNativeTarget "paralino-apple-core" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				257DCADC2CB4407700402562 /* Debug */,
+				257DCADD2CB4407700402562 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		25C03A5F29CCE77100646364 /* Build configuration list for PBXProject "paralino-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -921,6 +1552,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		25A5A6222CB9384100D3D160 /* XCLocalSwiftPackageReference "appwrite-ios" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "appwrite-ios";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -938,20 +1576,28 @@
 				version = 8.26.0;
 			};
 		};
-		252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/appwrite/sdk-for-apple.git";
-			requirement = {
-				kind = exactVersion;
-				version = 5.0.0;
-			};
-		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jedisct1/swift-sodium.git";
 			requirement = {
 				kind = revision;
 				revision = 0d3021d0f81ac4be8600fecc19630b831def1b5b;
+			};
+		};
+		2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-nio.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.74.0;
+			};
+		};
+		257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-atomics.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
 			};
 		};
 		25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */ = {
@@ -965,39 +1611,64 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		25129FEC2BBDE6B800D1A5AE /* Sentry */ = {
+		250BB6A92CB9391800CCAB64 /* Appwrite */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Appwrite;
+		};
+		254729E52CB5967000172F55 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
 		};
-		252EA01429DDA99B00338956 /* Appwrite */ = {
+		2568AF5D2CB5342B007EE00F /* NIO */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 252EA01329DDA99B00338956 /* XCRemoteSwiftPackageReference "sdk-for-apple" */;
-			productName = Appwrite;
+			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIO;
 		};
-		252EA01F29E03B4D00338956 /* Clibsodium */ = {
+		2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOConcurrencyHelpers;
+		};
+		2568AF612CB5342B007EE00F /* NIOCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOCore;
+		};
+		2568AF632CB5342B007EE00F /* NIOEmbedded */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOEmbedded;
+		};
+		2568AF652CB5342B007EE00F /* NIOFoundationCompat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOFoundationCompat;
+		};
+		257B6E0A2CB5717B004F5438 /* Atomics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */;
+			productName = Atomics;
+		};
+		257DCAE32CB441BB00402562 /* Clibsodium */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */;
 			productName = Clibsodium;
 		};
-		252EA02129E03B4D00338956 /* Sodium */ = {
+		257DCAE52CB441BB00402562 /* Sodium */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */;
 			productName = Sodium;
 		};
-		253D31672AC215FD009E5010 /* Appwrite */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Appwrite;
-		};
-		258C2D3D2BDAED0700CA9229 /* SwiftLocation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */;
-			productName = SwiftLocation;
-		};
-		25B3A0C72BBF08E7002F1CB4 /* AsyncHTTPClient */ = {
+		257DCAE92CB441BB00402562 /* AsyncHTTPClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */;
 			productName = AsyncHTTPClient;
+		};
+		257DCAEB2CB441BB00402562 /* SwiftLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */;
+			productName = SwiftLocation;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

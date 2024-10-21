@@ -10,15 +10,17 @@ import UIKit
 import shared
 import UserNotifications
 import Sentry
+import paralino_apple_core
 
 class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNotificationCenterDelegate {
     
     static internal var sharedInstance: AppDelegate!
     
-    let locationStatusProvider = LocationStatusProvider()
+    lazy var locationManager = LocationManager(setupManager: true)
+    
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
-    lazy var locationManager = LocationManager()
+    lazy var locationStatusProvider: ILocationStatusProvider = { KoinIOS.Instances.shared.locationStatusProvider }()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
@@ -27,22 +29,22 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
             options.debug = false
         }
         
-        initKoin(locationStatusProvider: locationStatusProvider)
+        locationManager.manager.delegate = locationManager
+        
+        KoinSetup.initKoin(locationManager: locationManager)
         
         Logr.i(tag:"delegate", message: "App start")
         
-        UNUserNotificationCenter.current().delegate = self
-        locationManager.manager.delegate = locationManager
         locationManager.startMonitoringAppState()
-        
         coreAppManager.onAppStart()
+        
+        UNUserNotificationCenter.current().delegate = self
+        UIApplication.shared.registerForRemoteNotifications()
         
         BackgroundRefresh.registerAppRefresh()
         BackgroundRefresh.registerNotificationsRefresh()
         BackgroundRefresh.scheduleAppRefresh()
         BackgroundRefresh.scheduleNotificationsRefresh()
-        
-        UIApplication.shared.registerForRemoteNotifications()
         
         return true
     }

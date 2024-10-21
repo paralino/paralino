@@ -5,7 +5,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKRepository
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.LocationDeletePayload

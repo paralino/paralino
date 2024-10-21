@@ -1,7 +1,7 @@
 package app.paralino.core.repo.user
 
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
 import app.paralino.core.models.raw.BlocklistRaw

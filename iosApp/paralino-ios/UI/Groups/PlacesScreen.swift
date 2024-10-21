@@ -32,7 +32,10 @@ struct PlacesScreen: View {
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
+                        notificationPermissionHandler.requestNotificationPermission(
+                            locationStatusProvider: appDelegate.locationStatusProvider,
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     mapUIView: { state in
                         appState.updateMarkers(state: state)

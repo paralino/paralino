@@ -10,12 +10,11 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 
-class ValueFormatter(): IValueFormatter() {
+class ValueFormatter() : IValueFormatter() {
 
     override val unitType: DistanceUnitType
         get() = DistanceUnitType.METRIC
@@ -33,12 +32,20 @@ class ValueFormatter(): IValueFormatter() {
         return local.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
     }
 
-    override fun formatBestPattern(epochSeconds: Long, pattern: String): String {
-        val dateTime = java.time.LocalDateTime.ofEpochSecond(epochSeconds, 0, ZoneOffset.UTC)
-        return dateTime.format(DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), pattern)))
+    override fun formatBestPattern(timeUTC: LocalDateTime, pattern: String): String {
+        return timeUTC.toJavaLocalDateTime().fromUTCtoLocal().format(
+            DateTimeFormatter.ofPattern(
+                DateFormat.getBestDateTimePattern(Locale.getDefault(), pattern)
+            )
+        )
+    }
+
+    override fun formatWithPattern(timeUTC: LocalDateTime, pattern: String): String {
+        return timeUTC.toJavaLocalDateTime().fromUTCtoLocal().format(DateTimeFormatter.ofPattern(pattern))
     }
 
     override fun currentTimeForApi(): String {
-        return nowUTC().toLocalDateTime(TimeZone.UTC).toJavaLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        return nowUTC().toLocalDateTime(TimeZone.UTC).toJavaLocalDateTime()
+            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     }
 }

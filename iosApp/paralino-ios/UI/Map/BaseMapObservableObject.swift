@@ -9,6 +9,7 @@ import Foundation
 import MapKit
 import SwiftUI
 import shared
+import paralino_apple_core
 
 class BaseMapObservableObject : ObservableObject {
     
