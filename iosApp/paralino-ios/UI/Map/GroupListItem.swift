@@ -20,7 +20,7 @@ struct GroupListItem: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.themeSecondary, lineWidth: 2)
+                        .stroke(Color.themeSecondary, lineWidth: 1)
                 )
             
             Spacer().frame(width: 16)
@@ -49,14 +49,14 @@ struct GroupListItem: View {
             Spacer()
             
             if data.canEdit {
-                Image(systemName: "pencil")
+                Image(systemName: "gearshape")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .padding(14)
-                    .frame(width: 52, height: 64)
-                    .foregroundColor(.accentDark)
-                    .background(Color.accentLight.opacity(0.2))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(10)
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.white)
+                    .background(Color.themePrimary)
+                    .clipShape(Circle())
                     .onTapGesture(perform: onEdit)
             }
         }
