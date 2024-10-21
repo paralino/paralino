@@ -131,11 +131,11 @@ fun MapHomeScreenElements(
         // map mode
         Image(
             painter = if (!state.isSatelliteMode) {
-                CoreAppIcons.MapModeSatellite.asPainterResource()
+                MR.images.image_map_type_satellite.asPainterResource()
             } else if (isSystemInDarkTheme()) {
-                CoreAppIcons.MapModeDefaultDark.asPainterResource()
+                MR.images.image_map_type_default_dark.asPainterResource()
             } else {
-                CoreAppIcons.MapModeDefaultLight.asPainterResource()
+                MR.images.image_map_type_default_light.asPainterResource()
             },
             contentDescription = null,
             modifier = Modifier
