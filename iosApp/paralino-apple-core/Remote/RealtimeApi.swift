@@ -17,9 +17,9 @@ class RealtimeApi: IRealtimeApiIOS {
         self.remoteModule = remoteModule
     }
     
-    func subscribeWithFilter(channels: [String], filters: [String], onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void) async throws -> RealtimeSubscriptionCallbackIOS {
-        let subscription = await remoteModule.execute { module in
-            module.realtime.subscribe(channels: Set(channels.map { $0 })) { response in
+    func subscribeWithFilter(channels: [String], filters: [String], onResult: @escaping (RealtimeResponse<NSDictionary>) -> Void) async throws -> Payload<RealtimeSubscriptionCallbackIOS> {
+        return await remoteModule.execute { module in
+            let subscription = try await module.realtime.subscribe(channels: Set(channels.map { $0 })) { response in
                 if filters.isEmpty || (response.events?.contains(where: { event in filters.contains(where: { filter in filter == event}) }) ?? false) {
                     onResult(
                         RealtimeResponse(
@@ -31,8 +31,21 @@ class RealtimeApi: IRealtimeApiIOS {
                     )
                 }
             }
+            return RealtimeSubscriptionCallbackIOS {
+                self.closeSubscription(subscription: subscription)
+            }
         }
-        
-        return RealtimeSubscriptionCallbackIOS { PayloadSwift(subscription).dataOrNil?.close() }
+    }
+    
+    private func closeSubscription(subscription: RealtimeSubscription) {
+        DispatchQueue.main.async {
+            Task {
+                do {
+                    try await subscription.close()
+                } catch let error {
+                    Logr.w(tag: "realtime_events", message: "Error closing channel: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
