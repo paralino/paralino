@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.places.create
 
+import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.utils.Emojis
 
@@ -12,6 +13,7 @@ data class CreatePlaceScreenState constructor(
     val lat: Double?,
     val lng: Double?,
     val radiusMeters: Int,
+    val hintText: AnnotatedString,
     val hasNameError: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean
@@ -33,6 +35,7 @@ data class CreatePlaceScreenState constructor(
 
         fun empty(
             groupId: String,
+            hintText: AnnotatedString,
             lat: Double? = null,
             lng: Double? = null
         ): CreatePlaceScreenState {
@@ -45,6 +48,7 @@ data class CreatePlaceScreenState constructor(
                 lat = lat,
                 lng = lng,
                 radiusMeters = defaultRadiusMeters,
+                hintText = hintText,
                 hasNameError = false,
                 actionLoading = false,
                 fullLoading = false

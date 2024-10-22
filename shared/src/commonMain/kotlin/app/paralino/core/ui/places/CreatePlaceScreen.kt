@@ -274,7 +274,7 @@ private fun CreatePlaceScreenCore(
                 .fillMaxWidth(),
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
-            text = stringResource(MR.strings.places_create_location_hint).annotatedBold()
+            text = state.hintText
         )
 
         Spacer(modifier = Modifier.size(30.dp))
