@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.logg
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
@@ -139,8 +140,13 @@ fun MapHomeScreenElements(
             },
             contentDescription = null,
             modifier = Modifier
-                .align(Alignment.End)
-                .padding(top = 20.dp, end = 8.dp)
+                .align(
+                    when (state.deviceType) {
+                        DeviceType.Android -> Alignment.End
+                        DeviceType.iOS -> Alignment.Start
+                    }
+                )
+                .padding(top = 16.dp, end = 8.dp, start = 8.dp)
                 .size(40.dp)
                 .clickable { onMapModeSwitch() }
                 .background(
