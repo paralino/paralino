@@ -22,94 +22,72 @@ struct MapComponent: View {
     
     var body: some View {
         ZStack {
-            GeometryReader { proxy in
-                MapReader { reader in
-                    Map(position: $mapState.cameraPosition) {
-                        ForEach(mapState.markers) { marker in
-                            
-                            MapCircle(center: marker.coordinate, radius: CLLocationDistance(Int32(marker.data.accuracy)))
-                                .foregroundStyle(
-                                    marker.data.pinType == MapPinType.member 
-                                    ? Color.themePrimary.opacity(0.6)
-                                    : Color.blue.opacity(0.2)
-                                )
-                                .stroke(lineWidth: marker.data.pinType == MapPinType.member ? CGFloat(0.6) : CGFloat(0.2))
-                                .mapOverlayLevel(level: marker.data.pinType == MapPinType.member ? .aboveLabels : .aboveRoads)
-                            
-                            Annotation(
-                                coordinate: marker.coordinate,
-                                anchor: UnitPoint(x: 0.5, y: marker.data.markerStyle == MapMarkerStyle.pin ? 1.0 : 0.5),
-                                content: {
-                                    Button(
-                                        action: {
-                                            mapState.onMarkerTap(markerData: marker.data.asFocusedMarker())
-                                        },
-                                        label: { MapMarker(pinData: marker.data) }
-                                    )
-                                },
-                                label: {
-                                    Text(marker.data.title ?? "--")
-                                }
-                            )
-                        }
-                    }
-                    .mapControls {
-                        MapCompass()
-                    }
-                    .mapStyle(
-                        mapState.isSatelliteMode ? .hybrid(showsTraffic: true) : .standard(showsTraffic: true)
-                    )
-                    .onMapCameraChange(frequency: .onEnd) { action in
-                        mapState.isUpdatingRegion = false
-                        let oldCameraRect = mapState.cameraPosition.rect
+            MapReader { reader in
+                Map(position: $mapState.cameraPosition, interactionModes: .all) {
+                    ForEach(mapState.markers) { marker in
                         
-                        task?.cancel()
-                        task = Task {
-                            try? await Task.sleep(for: .seconds(1))
-                            // ensure camera didn't change in the meantime
-                            if !Task.isCancelled, oldCameraRect == mapState.cameraPosition.rect {
-                                mapState.cameraPosition = MapCameraPosition.rect(action.rect)
+                        MapCircle(center: marker.coordinate, radius: CLLocationDistance(Int32(marker.data.accuracy)))
+                            .foregroundStyle(
+                                marker.data.pinType == MapPinType.member
+                                ? Color.themePrimary.opacity(0.6)
+                                : Color.blue.opacity(0.2)
+                            )
+                            .stroke(lineWidth: marker.data.pinType == MapPinType.member ? CGFloat(0.6) : CGFloat(0.2))
+                            .mapOverlayLevel(level: marker.data.pinType == MapPinType.member ? .aboveLabels : .aboveRoads)
+                        
+                        Annotation(
+                            coordinate: marker.coordinate,
+                            anchor: UnitPoint(x: 0.5, y: marker.data.markerStyle == MapMarkerStyle.pin ? 1.0 : 0.5),
+                            content: {
+                                Button(
+                                    action: {
+                                        mapState.onMarkerTap(markerData: marker.data.asFocusedMarker())
+                                    },
+                                    label: { MapMarker(pinData: marker.data) }
+                                )
+                            },
+                            label: {
+                                Text(marker.data.title ?? "--")
                             }
+                        )
+                    }
+                }
+                .safeAreaPadding(.bottom, mapState.bottomSafeArea)
+                .mapControls {
+                    MapCompass()
+                }
+                .mapStyle(
+                    mapState.isSatelliteMode ? .hybrid(showsTraffic: true) : .standard(showsTraffic: true)
+                )
+                .onMapCameraChange(frequency: .onEnd) { action in
+                    mapState.isUpdatingRegion = false
+                    let oldCameraRect = mapState.cameraPosition.rect
+                    
+                    task?.cancel()
+                    task = Task {
+                        try? await Task.sleep(for: .seconds(1))
+                        // ensure camera didn't change in the meantime
+                        if !Task.isCancelled, oldCameraRect == mapState.cameraPosition.rect {
+                            mapState.cameraPosition = MapCameraPosition.rect(action.rect)
                         }
                     }
-                    .onMapCameraChange(frequency: .continuous) {
-                        if !mapState.isUpdatingRegion {
-                            task?.cancel()
-                            onMapTouch()
-                        }
-                    }
-                    .gesture(
-                        LongPressGesture(minimumDuration: 0.20)
-                            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
-                            .onEnded { value in
-                                switch value {
-                                case .second(true, let drag):
-                                    let longPressLocation = drag?.location ?? .zero
-                                    let customLocation = convertTap(
-                                        at: longPressLocation,
-                                        for: proxy.size
-                                    )
-                                    if let customLocation = customLocation {
-                                        onMapLongPress(customLocation)
-                                    }
-                                default:
-                                    break
-                                }
-                            }
-                    )
-                    .highPriorityGesture(DragGesture(minimumDistance: 10))
-                    .onTapGesture{ screenCoord in
-                        if let pinLocation = reader.convert(screenCoord, from: .local) {
-                            onMapTap(pinLocation)
-                        }
-                    }
-                    .onDisappear {
+                }
+                .onMapCameraChange(frequency: .continuous) {
+                    if !mapState.isUpdatingRegion {
                         task?.cancel()
+                        onMapTouch()
                     }
+                }
+                .onTapGesture{ screenCoord in
+                    if let pinLocation = reader.convert(screenCoord, from: .local) {
+                        onMapTap(pinLocation)
+                    }
+                }
+                .onDisappear {
+                    task?.cancel()
                 }
             }
         }
-        .safeAreaPadding(.bottom, mapState.bottomSafeArea)
     }
 }
 

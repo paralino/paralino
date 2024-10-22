@@ -15,12 +15,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.interop.UIKitView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
+import androidx.compose.ui.viewinterop.UIKitInteropProperties
+import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
@@ -62,7 +65,7 @@ import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.collectLatest
-import platform.UIKit.UIView
+import platform.UIKit.UIViewController
 
 object HomeScreens {
     fun GroupInitScreenVC(
@@ -201,7 +204,11 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class, ExperimentalMaterialApi::class)
+    @OptIn(
+        ExperimentalForeignApi::class,
+        ExperimentalMaterialApi::class,
+        ExperimentalComposeUiApi::class
+    )
     fun MapSheet(
         vm: MapHomeViewModel,
         initialUiState: MapHomeScreenState,
@@ -216,7 +223,7 @@ object HomeScreens {
         onPlaceClick: (PlaceListItemData) -> Unit,
         onCreateGroup: () -> Unit,
         openPaywall: () -> Unit,
-        mapUIView: () -> UIView,
+        mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
         RootScreenIOS {
             MessageDispatcherEffect(vm, it)
@@ -302,9 +309,13 @@ object HomeScreens {
                         vm.setSelectedContentType(MapSheetSelectedContentType.MEMBERS)
                     },
                     screenContent = {
-                        UIKitView(
-                            factory = mapUIView,
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = mapUIView,
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
 
                         MapHomeScreenElements(
@@ -344,14 +355,14 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlacesScreenVC(
         vm: PlacesViewModel,
         addNewPlace: () -> Unit,
         openPaywall: () -> Unit,
         openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
         askNotificationPermission: () -> Unit,
-        mapUIView: (PlacesListScreenState) -> UIView,
+        mapUIView: (PlacesListScreenState) -> UIViewController,
     ) = ComposeUIViewController {
         RootScreenIOS {
 
@@ -372,9 +383,13 @@ object HomeScreens {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        UIKitView(
-                            factory = { mapUIView(state) },
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = { mapUIView(state) },
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
                     }
                 }
@@ -382,13 +397,13 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlaceDetailScreenVC(
         vm: PlaceDetailViewModel,
         openPlaceRawDataScreen: () -> Unit,
         openPlaceEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
-        mapUIView: (PlaceDetailScreenState) -> UIView,
+        mapUIView: (PlaceDetailScreenState) -> UIViewController,
     ) = ComposeUIViewController {
         RootScreenIOS {
 
@@ -408,9 +423,13 @@ object HomeScreens {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        UIKitView(
-                            factory = { mapUIView(state) },
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = { mapUIView(state) },
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
                     }
                 }
@@ -418,12 +437,12 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlaceCreateScreenVC(
         vm: CreatePlaceViewModel,
         onNavigateBack: () -> Unit,
         onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
-        mapUIView: () -> UIView,
+        mapUIView: () -> UIViewController,
     ) = ComposeUIViewController {
         RootScreenIOS {
             CreatePlaceScreenCore(
@@ -435,9 +454,13 @@ object HomeScreens {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        UIKitView(
-                            factory = { mapUIView() },
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = mapUIView,
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
                     }
                 }

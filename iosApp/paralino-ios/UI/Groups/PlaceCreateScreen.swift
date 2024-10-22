@@ -28,16 +28,15 @@ struct PlaceCreateScreen: View {
                         bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
                     },
                     mapUIView: {
-                        return SwiftUIInUIView(
-                            content: VStack {
-                                MapComponent(
-                                    mapState: appState,
-                                    onMapTap: { point in },
-                                    onMapLongPress: { point in appState.vm.updatePosition(lat: point.latitude, lng: point.longitude) },
-                                    onMapTouch: {}
-                                )
-                            }
-                        )
+                        let rootView = VStack {
+                            MapComponent(
+                                mapState: appState,
+                                onMapTap: { point in appState.vm.updatePosition(lat: point.latitude, lng: point.longitude) },
+                                onMapLongPress: { point in appState.vm.updatePosition(lat: point.latitude, lng: point.longitude) },
+                                onMapTouch: {}
+                            )
+                        }
+                        return UIHostingController(rootView: rootView)
                     }
                 )
             }
