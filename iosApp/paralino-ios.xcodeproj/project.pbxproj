@@ -53,6 +53,7 @@
 		259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA32A3E19740083FF4B /* Sharing.swift */; };
 		259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */; };
 		259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA72A3E2F960083FF4B /* MapHomeState.swift */; };
+		25A228662CC7D3AE004577BE /* Number+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228652CC7D3A8004577BE /* Number+Extension.swift */; };
 		25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */; };
 		25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB422A44D7F60007E89D /* SettingsScreen.swift */; };
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
@@ -208,6 +209,7 @@
 		259AEFA32A3E19740083FF4B /* Sharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharing.swift; sourceTree = "<group>"; };
 		259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeScreen.swift; sourceTree = "<group>"; };
 		259AEFA72A3E2F960083FF4B /* MapHomeState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHomeState.swift; sourceTree = "<group>"; };
+		25A228652CC7D3A8004577BE /* Number+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Number+Extension.swift"; sourceTree = "<group>"; };
 		25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-ios.entitlements"; sourceTree = "<group>"; };
 		25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateManager.swift; sourceTree = "<group>"; };
 		25B2DB422A44D7F60007E89D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
@@ -395,6 +397,7 @@
 		254B6F2629EC7C50008B1458 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				25A228652CC7D3A8004577BE /* Number+Extension.swift */,
 				254B6F2729EC7C50008B1458 /* Image+Extensions.swift */,
 			);
 			path = Utils;
@@ -940,6 +943,7 @@
 				2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */,
 				254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */,
 				25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */,
+				25A228662CC7D3AE004577BE /* Number+Extension.swift in Sources */,
 				256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */,
 				25F37E362A5AE1EB00317D85 /* MapGroupPicker.swift in Sources */,
 				25FC5CA82A45811C0006E796 /* ChangeEmailScreen.swift in Sources */,
