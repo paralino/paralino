@@ -35,6 +35,7 @@ fun PlaceCreateMapComposable(
     modifier: Modifier = Modifier,
     state: CreatePlaceScreenState,
     onMapInteraction: (Boolean) -> Unit,
+    onMapTap: (lat: Double, lng: Double) -> Unit,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
 ) {
     val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
@@ -46,6 +47,7 @@ fun PlaceCreateMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
         onMapInteraction = onMapInteraction,
+        onMapTap = onMapTap,
         onMapLongPress = onMapLongPress
     )
 }
@@ -65,6 +67,7 @@ fun PlaceDetailMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
         onMapInteraction = onMapInteraction,
+        onMapTap = { lat, lng -> },
         onMapLongPress = { lat, lng -> }
     )
 }
@@ -75,6 +78,7 @@ fun SimplePlaceMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
     onMapInteraction: (Boolean) -> Unit,
+    onMapTap: (lat: Double, lng: Double) -> Unit,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
 ) {
 
@@ -123,7 +127,10 @@ fun SimplePlaceMapComposable(
             properties = properties,
             uiSettings = uiSettings,
             onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
-            onMapClick = { onMapInteraction(true) },
+            onMapClick = {
+                onMapTap(it.latitude, it.longitude)
+                onMapInteraction(true)
+            },
             onMapLoaded = { mapLoaded = true }
         ) {
             markers.forEach { model ->

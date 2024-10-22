@@ -120,6 +120,7 @@ fun PlacesScreen(
                 SimplePlaceMapComposable(
                     markers = state.markers,
                     onMapInteraction = { userScroll = !it },
+                    onMapTap = { lat, lng -> },
                     onMapLongPress = { lat, lng -> }
                 )
             }

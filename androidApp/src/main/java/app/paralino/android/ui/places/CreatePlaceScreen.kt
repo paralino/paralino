@@ -64,6 +64,7 @@ fun CreatePlaceScreen(
                     modifier = Modifier.fillMaxSize(),
                     state = state,
                     onMapInteraction = { },
+                    onMapTap = { lat, lng -> vm.updatePosition(lat, lng) },
                     onMapLongPress = { lat, lng -> vm.updatePosition(lat, lng) }
                 )
             }
