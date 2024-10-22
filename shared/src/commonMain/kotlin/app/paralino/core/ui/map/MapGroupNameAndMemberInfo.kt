@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -148,7 +149,6 @@ fun MapGroupNameAndMemberInfo(
 
         Box(
             modifier = Modifier
-                .alpha(interactionVisibilityFraction)
                 .size(56.dp)
                 .padding(4.dp)
                 .clickable(
@@ -158,7 +158,7 @@ fun MapGroupNameAndMemberInfo(
                 .clip(RoundedCornerShape(percent = 100))
                 .border(
                     0.5.dp,
-                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled * interactionVisibilityFraction),
                     RoundedCornerShape(percent = 100)
                 )
                 .padding(4.dp),
@@ -168,7 +168,9 @@ fun MapGroupNameAndMemberInfo(
                 Icon(
                     painter = CoreAppIcons.ChevronRight.asPainterResource(),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .rotate((-90f) * (1f - interactionVisibilityFraction))
                 )
             } else {
                 Icon(
