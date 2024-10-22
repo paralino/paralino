@@ -557,13 +557,18 @@ class MapHomeViewModel constructor(
     }
 
     fun setSelectedContentType(selectedContentType: MapSheetSelectedContentType) =
-        updateReadyState {
-            it.copy(
+        updateReadyState { currentState ->
+            currentState.copy(
                 trackingMarker = null,
-                markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
-                mapHomeScreenFocusType = when (selectedContentType) {
-                    MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
-                    MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
+                markers = currentState.markers.map { it.copy(focused = false, hidden = it.obsolete) },
+                mapHomeScreenFocusType = if (currentState.mapSheetSelectedContentType == selectedContentType) {
+                    // refocus only if tapping again
+                    when (selectedContentType) {
+                        MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
+                        MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
+                    }
+                } else {
+                    currentState.mapHomeScreenFocusType
                 },
                 mapSheetSelectedContentType = selectedContentType
             )
