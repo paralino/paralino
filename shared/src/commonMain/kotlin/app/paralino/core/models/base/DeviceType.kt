@@ -10,4 +10,9 @@ sealed interface DeviceType {
     data object iOS: DeviceType {
         override val key: String get() = "ios"
     }
+
+    // KEEP empty so extensions on companion can work
+    companion object {
+
+    }
 }

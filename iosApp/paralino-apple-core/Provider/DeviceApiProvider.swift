@@ -58,10 +58,6 @@ class DeviceApiProvider: IDeviceApiProvider {
         return state == .charging || state == .full
     }
     
-    override var deviceType: DeviceType {
-        DeviceTypeIOS.shared
-    }
-    
     override var defaultDeviceName: String {
         "iPhone"
     }

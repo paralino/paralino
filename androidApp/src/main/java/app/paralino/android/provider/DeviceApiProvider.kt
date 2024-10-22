@@ -13,7 +13,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
@@ -31,9 +30,6 @@ class DeviceApiProvider constructor(
     locationStatusProvider: ILocationStatusProvider,
     connectionStatusProvider: IConnectionStatusProvider,
 ) : IDeviceApiProvider(locationStatusProvider, connectionStatusProvider) {
-
-    override val deviceType: DeviceType
-        get() = DeviceType.Android
 
     override val _batteryLevel: Int
         get() = appClass.batterLevel
