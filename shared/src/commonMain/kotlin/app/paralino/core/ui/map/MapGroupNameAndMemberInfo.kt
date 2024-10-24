@@ -50,7 +50,8 @@ fun MapGroupNameAndMemberInfo(
     inactiveUserCount: Int,
     verified: Boolean,
     interactionVisibilityFraction: Float,
-    onGroupClick: () -> Unit,
+    onGroupDetailButtonClick: () -> Unit,
+    onGroupContentClick: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -60,10 +61,9 @@ fun MapGroupNameAndMemberInfo(
             )
             .clip(RoundedCornerShape(percent = 100))
             .clickable(
-                enabled = interactionVisibilityFraction == 0f,
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
-            ) { onGroupClick() },
+            ) { onGroupContentClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         ImageModelImage(
@@ -154,7 +154,7 @@ fun MapGroupNameAndMemberInfo(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
-                ) { onGroupClick() }
+                ) { onGroupDetailButtonClick() }
                 .clip(RoundedCornerShape(percent = 100))
                 .border(
                     0.5.dp,
