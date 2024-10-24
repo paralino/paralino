@@ -21,6 +21,7 @@ class BaseMapObservableObject : ObservableObject {
     @Published var isSatelliteMode: Bool = false
     
     @Published var bottomSafeArea: CGFloat = 0
+    @Published var previousBottomSafeArea: CGFloat = 0
     
     func onMarkerTap(markerData: FocusedMarkerData) {}
     

@@ -36,13 +36,13 @@ struct MapHomeScreen: View {
                             }
                         },
                         onSheetOffsetChange: { offset in
-                            if mapState.bottomSafeArea < CGFloat(offset.floatValue) - 35 {
-                                withAnimation(.linear(duration: 0.1)) {
-                                    mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
-                                }
-                            } else {
-                                mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
-                            }
+//                            if mapState.bottomSafeArea < CGFloat(offset.floatValue) - 35 {
+//                                withAnimation(.linear(duration: 0.1)) {
+//                                    mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
+//                                }
+//                            } else {
+                            mapState.bottomSafeArea = max(CGFloat(offset.floatValue) - 35, 0)
+//                            }
                         },
                         onGroupPickerClick: {
                             groupPicker = mapState.vm.getGroupPickerState()
@@ -70,22 +70,30 @@ struct MapHomeScreen: View {
                             
                         },
                         mapUIView: { () -> UIViewController in
-                            let rootView = VStack {
-                                MapComponent(
-                                    mapState: mapState,
-                                    onMapTap: { point in },
-                                    onMapLongPress: { point in
-                                        if let readyState = mapState.uiState.asReady() {
-                                            path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
-                                        }
-                                    },
-                                    onMapTouch: {
-                                        mapState.vm.onMapTouch()
-                                    }
-                                )
-                                .safeAreaPadding(.top, 60)
+                            let controller = MapComponentVC()
+                            controller.mapState = mapState
+                            controller.onMapLongPress = { point in
+                                if let readyState = mapState.uiState.asReady() {
+                                    path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
+                                }
                             }
-                            return UIHostingController(rootView: rootView)
+                            return controller
+//                            let rootView = VStack {
+//                                MapComponent(
+//                                    mapState: mapState,
+//                                    onMapTap: { point in },
+//                                    onMapLongPress: { point in
+//                                        if let readyState = mapState.uiState.asReady() {
+//                                            path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
+//                                        }
+//                                    },
+//                                    onMapTouch: {
+//                                        mapState.vm.onMapTouch()
+//                                    }
+//                                )
+//                                .safeAreaPadding(.top, 60)
+//                            }
+//                            return UIHostingController(rootView: rootView)
                         }
                     )
                 }
