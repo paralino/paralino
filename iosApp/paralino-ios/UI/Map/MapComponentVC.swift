@@ -10,7 +10,7 @@ import SwiftUI
 import shared
 import Combine
 
-class MapComponentVC: UIViewController {
+class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
     private var mapState: BaseMapObservableObject?
     
@@ -75,6 +75,8 @@ class MapComponentVC: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMapTap(_:)))
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleMapLongPress(_:)))
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleMapPan(_:)))
+        
+        panGesture.delegate = self
         
         mapView.addGestureRecognizer(tapGesture)
         mapView.addGestureRecognizer(longPressGesture)
@@ -165,6 +167,9 @@ class MapComponentVC: UIViewController {
     @objc private func handleMapPan(_ gesture: UIPanGestureRecognizer) {
         guard gesture.state == .ended else { return }
         onMapPan?(mapView)
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+       return true
     }
 }
 
