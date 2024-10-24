@@ -65,6 +65,7 @@ import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import platform.UIKit.UIViewController
 
 object HomeScreens {
@@ -273,14 +274,16 @@ object HomeScreens {
                     }
                 }
 
-                LaunchedEffect(sheetState.currentValue) {
-                    snapshotFlow { sheetState.currentValue }.collectLatest {
-                        val bottomOffset = (height - bottomOffset).coerceIn(
-                            0.dp,
-                            height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                        )
-                        onSheetOffsetChange(bottomOffset.value)
-                    }
+                LaunchedEffect(bottomOffset) {
+                    snapshotFlow { bottomOffset }
+                        .distinctUntilChanged()
+                        .collectLatest {
+                            val bottomOffset = (height - bottomOffset).coerceIn(
+                                0.dp,
+                                height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                            )
+                            onSheetOffsetChange(bottomOffset.value)
+                        }
                 }
 
                 val dialog = uiState.alertDialog
