@@ -118,7 +118,7 @@ class SettingsViewModel(
                                 personalCode = personalCode?.formattedCode,
                                 isGuestUser = userState.data.isGuestUser,
                                 errorItem = if (userState.data.needsEmailVerification)
-                                    ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
+                                    ConditionErrorType.EmailVerification(userState.data.email)
                                 else null
                             ),
                             canUseEmail = remoteConfig?.isEmailEnabled ?: false,

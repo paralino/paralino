@@ -167,6 +167,10 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
     }
     
     public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        //        notifyUser(id: "LocationResume", message: "Permission changed: \(manager.authorizationStatus)")
+        Logr.w(tag: "location_service", message: "Location permission changed: \(manager.authorizationStatus)")
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        Logr.w(tag: "location_service", message: "Location permission changed2: \(manager.authorizationStatus)")
     }
 }

@@ -109,14 +109,14 @@ class GroupDetailViewModel(
             val errors = buildList {
                 sharingStatus?.let {
                     if (!deviceStatus.networkStatus.isOnline) {
-                        add(ConditionErrorType.NETWORK)
+                        add(ConditionErrorType.Network)
                     }
 
                     addAll(deviceStatus.locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
 
                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                    add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                    add(ConditionErrorType.PermissionNotifications)
                 }
             }
 

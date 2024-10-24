@@ -256,10 +256,10 @@ fun GroupDetailScreenCore(
                         ConditionErrorItem(data = it) {
                             when (it) {
                                 ConditionErrorType.GPS -> askLocationService()
-                                ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
-                                ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
-                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
-                                ConditionErrorType.NETWORK -> vm.showSnackbar(
+                                ConditionErrorType.PermissionNotifications -> askNotificationPermission()
+                                is ConditionErrorType.PermissionLocation -> askLocationPermission()
+                                ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
+                                ConditionErrorType.Network -> vm.showSnackbar(
                                     text = MR.strings.error_no_connection_snackbar.localizedString()
                                 )
 

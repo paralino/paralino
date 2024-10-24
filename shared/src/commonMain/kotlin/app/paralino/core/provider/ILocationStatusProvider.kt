@@ -24,19 +24,25 @@ abstract class ILocationStatusProvider {
 
 data class LocationConditionStatus constructor(
     val isGpsOn: Boolean,
-    val isPermissionAllowed: Boolean,
+    val isFinePermissionAllowed: Boolean,
+    val isCoarsePermissionAllowed: Boolean,
     val isBackgroundPermissionAllowed: Boolean
 ) {
 
+    val isAnyLocationPermissionAllowed: Boolean = isCoarsePermissionAllowed || isFinePermissionAllowed
+
     fun isOK(forAlwaysOnAccess: Boolean = false): Boolean {
-        return isGpsOn && isPermissionAllowed && (if (forAlwaysOnAccess) isBackgroundPermissionAllowed else true)
+        return isGpsOn && isFinePermissionAllowed && (if (forAlwaysOnAccess) isBackgroundPermissionAllowed else true)
     }
 
     fun getPossibleErrors(forBackground: Boolean = true): MutableList<ConditionErrorType> {
         val list = mutableListOf<ConditionErrorType>()
         if (!isGpsOn) list.add(ConditionErrorType.GPS)
-        if (!isPermissionAllowed) list.add(ConditionErrorType.PERMISSION_LOCATION)
-        if (!isBackgroundPermissionAllowed && forBackground) list.add(ConditionErrorType.PERMISSION_LOCATION_BACKGROUND)
+
+        if (!isCoarsePermissionAllowed) list.add(ConditionErrorType.PermissionLocation.PermissionLocationAny)
+        else if (!isFinePermissionAllowed) list.add(ConditionErrorType.PermissionLocation.PermissionLocationPrecise)
+
+        if (!isBackgroundPermissionAllowed && forBackground) list.add(ConditionErrorType.PermissionLocationBackground)
         return list
     }
 

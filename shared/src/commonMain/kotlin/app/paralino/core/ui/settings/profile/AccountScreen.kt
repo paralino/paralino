@@ -46,9 +46,7 @@ import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
-import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.CoreUiState
@@ -110,7 +108,7 @@ fun AccountScreenCore(
                     },
                     onErrorItemClick = {
                         when (it) {
-                            is ConditionErrorType.EMAIL_VERIFICATION -> {
+                            is ConditionErrorType.EmailVerification -> {
                                 viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
                             }
 

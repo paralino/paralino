@@ -50,7 +50,7 @@ class PlacesViewModel(
             }
 
             val errors = if (places.isNotEmpty() && !deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                listOf(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                listOf(ConditionErrorType.PermissionNotifications)
             } else {
                 emptyList()
             }

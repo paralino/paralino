@@ -106,7 +106,7 @@ class LocationService : Service() {
                 )
             )
             if(!deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
-                add(ConditionErrorType.NETWORK)
+                add(ConditionErrorType.Network)
             }
         }
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0

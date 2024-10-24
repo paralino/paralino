@@ -21,7 +21,8 @@ extension CLLocationManager {
         let locationAccuracy = self.accuracyAuthorization
         return LocationConditionStatus(
             isGpsOn: CLLocationManager.locationServicesEnabled(),
-            isPermissionAllowed: (permissionStatus == .authorizedWhenInUse || permissionStatus == .authorizedAlways) && locationAccuracy == .fullAccuracy,
+            isFinePermissionAllowed: (permissionStatus == .authorizedWhenInUse || permissionStatus == .authorizedAlways) && locationAccuracy == .fullAccuracy,
+            isCoarsePermissionAllowed: permissionStatus == .authorizedWhenInUse || permissionStatus == .authorizedAlways,
             isBackgroundPermissionAllowed: permissionStatus == .authorizedAlways
         )
     }

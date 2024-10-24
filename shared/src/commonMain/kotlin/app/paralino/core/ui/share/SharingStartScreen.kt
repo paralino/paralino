@@ -169,10 +169,10 @@ fun SharingStartScreenCore(
                 is SharingStartScreenEvent.AskForPermission -> {
                     when (event.error) {
                         ConditionErrorType.GPS -> askLocationService()
-                        ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
-                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
-                        ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
-                        ConditionErrorType.NETWORK -> vm.showSnackbar(
+                        is ConditionErrorType.PermissionLocation -> askLocationPermission()
+                        ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
+                        ConditionErrorType.PermissionNotifications -> askNotificationPermission()
+                        ConditionErrorType.Network -> vm.showSnackbar(
                             text = MR.strings.error_no_connection_snackbar.localizedString()
                         )
 
@@ -248,10 +248,10 @@ fun SharingStartScreenCore(
                         ConditionErrorItem(data = it) {
                             when (it) {
                                 ConditionErrorType.GPS -> askLocationService()
-                                ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
-                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
-                                ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
-                                ConditionErrorType.NETWORK -> vm.showSnackbar(
+                                is ConditionErrorType.PermissionLocation -> askLocationPermission()
+                                ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
+                                ConditionErrorType.PermissionNotifications -> askNotificationPermission()
+                                ConditionErrorType.Network -> vm.showSnackbar(
                                     text = MR.strings.error_no_connection_snackbar.localizedString()
                                 )
 

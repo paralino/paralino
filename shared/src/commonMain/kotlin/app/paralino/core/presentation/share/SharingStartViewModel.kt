@@ -95,12 +95,12 @@ class SharingStartViewModel(
                         addAll(deviceStatus.locationStatus.getPossibleErrors(it.isLongTerm))
 
                         if (!deviceStatus.networkStatus.isOnline) {
-                            add(ConditionErrorType.NETWORK)
+                            add(ConditionErrorType.Network)
                         }
                     },
                     warnings = buildList {
                         if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                            add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                            add(ConditionErrorType.PermissionNotifications)
                         }
                     }
                 )
@@ -120,7 +120,7 @@ class SharingStartViewModel(
                         _uiState.update { it.copy(alertDialog = null) }
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             coroutineScope.launch {
-                                _eventChannel.send(SharingStartScreenEvent.AskForPermission(ConditionErrorType.PERMISSION_LOCATION_BACKGROUND))
+                                _eventChannel.send(SharingStartScreenEvent.AskForPermission(ConditionErrorType.PermissionLocationBackground))
                             }
                         }
                     }
@@ -368,7 +368,7 @@ class SharingStartViewModel(
                 deviceStatus.locationStatus.getPossibleErrors(forLongTerm)
             )
             if (!deviceStatus.networkStatus.isOnline) {
-                add(ConditionErrorType.NETWORK)
+                add(ConditionErrorType.Network)
             }
         }
     }

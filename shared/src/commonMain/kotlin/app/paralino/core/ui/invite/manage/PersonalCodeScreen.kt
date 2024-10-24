@@ -74,13 +74,13 @@ fun PersonalCodeScreenCore(
                 data = it
             ) {
                 when (it) {
-                    ConditionErrorType.NETWORK -> {
+                    ConditionErrorType.Network -> {
                         vm.showSnackbar(
                             text = MR.strings.error_no_connection_snackbar.localizedString()
                         )
                     }
 
-                    ConditionErrorType.PERMISSION_NOTIFICATIONS -> {
+                    ConditionErrorType.PermissionNotifications -> {
                         askNotificationPermission()
                     }
 

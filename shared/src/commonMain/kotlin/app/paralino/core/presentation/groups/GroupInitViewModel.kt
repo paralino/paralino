@@ -86,15 +86,15 @@ class GroupInitViewModel(
     ): GroupInitScreenState {
         val errors = buildList {
             if (!deviceStatus.networkStatus.isOnline) {
-                add(ConditionErrorType.NETWORK)
+                add(ConditionErrorType.Network)
             }
 
             if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                add(ConditionErrorType.PermissionNotifications)
             }
 
             user.data?.needsEmailVerification?.takeIf { it }?.let {
-                add(ConditionErrorType.EMAIL_VERIFICATION(user.data?.email ?: ""))
+                add(ConditionErrorType.EmailVerification(user.data?.email ?: ""))
             }
         }
 

@@ -110,17 +110,17 @@ fun GroupInitScreenCore(
                     data = it
                 ) {
                     when (it) {
-                        is ConditionErrorType.EMAIL_VERIFICATION -> {
+                        is ConditionErrorType.EmailVerification -> {
                             vm.onEvent(GroupInitScreenUiEvent.SendEmailVerification)
                         }
 
-                        ConditionErrorType.NETWORK -> {
+                        ConditionErrorType.Network -> {
                             vm.showSnackbar(
                                 text = MR.strings.error_no_connection_snackbar.localizedString()
                             )
                         }
 
-                        ConditionErrorType.PERMISSION_NOTIFICATIONS -> {
+                        ConditionErrorType.PermissionNotifications -> {
                             askNotificationPermission()
                         }
 

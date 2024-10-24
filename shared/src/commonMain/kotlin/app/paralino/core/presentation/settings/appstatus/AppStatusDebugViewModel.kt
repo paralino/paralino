@@ -112,8 +112,16 @@ class AppStatusDebugViewModel(
                         add(
                             AppStatusItemStatusState(
                                 key = "location-permission",
-                                text = "Location permission: ${if (deviceStatus.locationStatus.isPermissionAllowed) "**OK**" else "**MISSING**"}",
-                                isError = !deviceStatus.locationStatus.isPermissionAllowed
+                                text = "Location permission: ${if (deviceStatus.locationStatus.isCoarsePermissionAllowed) "**OK**" else "**MISSING**"}",
+                                isError = !deviceStatus.locationStatus.isCoarsePermissionAllowed
+                            )
+                        )
+
+                        add(
+                            AppStatusItemStatusState(
+                                key = "location-permission-fine",
+                                text = "Fine Location permission: ${if (deviceStatus.locationStatus.isFinePermissionAllowed) "**OK**" else "**MISSING**"}",
+                                isError = !deviceStatus.locationStatus.isFinePermissionAllowed
                             )
                         )
 

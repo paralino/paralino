@@ -26,7 +26,14 @@ fun LocationConditionStatus.Companion.isLocationOn(context: Context): Boolean {
         ?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true
 }
 
-fun LocationConditionStatus.Companion.hasLocationPermission(context: Context): Boolean {
+fun LocationConditionStatus.Companion.hasCoarseLocationPermission(context: Context): Boolean {
+    return ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun LocationConditionStatus.Companion.hasFineLocationPermission(context: Context): Boolean {
     return ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -43,7 +50,8 @@ fun LocationConditionStatus.Companion.hasBackgroundLocationPermission(context: C
 fun LocationConditionStatus.Companion.getLocationStatus(context: Context): LocationConditionStatus {
     return LocationConditionStatus(
         isGpsOn = isLocationOn(context),
-        isPermissionAllowed = hasLocationPermission(context),
+        isFinePermissionAllowed = hasFineLocationPermission(context),
+        isCoarsePermissionAllowed = hasCoarseLocationPermission(context),
         isBackgroundPermissionAllowed = hasBackgroundLocationPermission(context)
     )
 }

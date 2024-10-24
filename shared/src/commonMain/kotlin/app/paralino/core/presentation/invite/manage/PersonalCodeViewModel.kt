@@ -106,7 +106,7 @@ class PersonalCodeViewModel(
             alertDialog = activeAlertDialog,
             errors = buildList {
                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                    add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                    add(ConditionErrorType.PermissionNotifications)
                 }
             }
         )
