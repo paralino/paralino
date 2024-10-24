@@ -74,8 +74,6 @@ fun MapHomeSheetContent(
     onOpenPlaces: () -> Unit,
     onCreatePlace: () -> Unit,
     onWholeContentClick: () -> Unit,
-    onExpandSheet: () -> Unit,
-    onCollapseSheet: () -> Unit,
     onFocusOnMembersClick: () -> Unit,
     onFocusOnPlacesClick: () -> Unit,
 ) {
@@ -122,9 +120,10 @@ fun MapHomeSheetContent(
                 idleUserCount = readyState.idleUserCount,
                 verified = readyState.allMembersVerified,
                 interactionVisibilityFraction = contentAlpha,
-                onGroupClick = {
+                onGroupContentClick = onWholeContentClick,
+                onGroupDetailButtonClick = {
                     if (swipeableState.isCollapsed()) {
-                        onExpandSheet()
+                        onWholeContentClick()
                     } else {
                         onGroupClick()
                     }

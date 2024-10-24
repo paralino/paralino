@@ -59,7 +59,7 @@ abstract class IDeviceApiProvider(
 
     protected abstract val _batteryLevel: Int
     abstract val isCharging: Boolean
-    abstract val deviceType: DeviceType
+    val deviceType: DeviceType get() = DeviceType.current
     abstract val deviceOSVersion: Int
     abstract val appVersionCode: Long
     abstract val appVersion: String
@@ -90,3 +90,5 @@ enum class AppLifecycleType {
 
     val activeOrInactive: Boolean get() = this == ACTIVE || this == INACTIVE
 }
+
+expect val DeviceType.Companion.current: DeviceType

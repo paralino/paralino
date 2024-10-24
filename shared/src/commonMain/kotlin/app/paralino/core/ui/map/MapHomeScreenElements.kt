@@ -1,6 +1,7 @@
 package app.paralino.core.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.logg
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
@@ -74,7 +76,6 @@ fun MapHomeScreenElements(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(bottom = sheetPeekHeight)
     ) {
 
         val readyState = rememberUpdatedState(state.asReady()).value
@@ -131,16 +132,21 @@ fun MapHomeScreenElements(
         // map mode
         Image(
             painter = if (!state.isSatelliteMode) {
-                CoreAppIcons.MapModeSatellite.asPainterResource()
+                MR.images.image_map_type_satellite.asPainterResource()
             } else if (isSystemInDarkTheme()) {
-                CoreAppIcons.MapModeDefaultDark.asPainterResource()
+                MR.images.image_map_type_default_dark.asPainterResource()
             } else {
-                CoreAppIcons.MapModeDefaultLight.asPainterResource()
+                MR.images.image_map_type_default_light.asPainterResource()
             },
             contentDescription = null,
             modifier = Modifier
-                .align(Alignment.End)
-                .padding(top = 20.dp, end = 8.dp)
+                .align(
+                    when (state.deviceType) {
+                        DeviceType.Android -> Alignment.End
+                        DeviceType.iOS -> Alignment.Start
+                    }
+                )
+                .padding(top = 16.dp, end = 8.dp, start = 8.dp)
                 .size(40.dp)
                 .clickable { onMapModeSwitch() }
                 .background(
@@ -154,144 +160,152 @@ fun MapHomeScreenElements(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            // sharing time info
-            AnimatedVisibility(
-                visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
+        Box {
+            Row(
                 modifier = Modifier
-                    .padding(start = 6.dp, bottom = 32.dp),
-                enter = fadeIn(),
-                exit = fadeOut()
+                    .fillMaxWidth()
+                    .padding(bottom = sheetPeekHeight)
             ) {
-                Row(
+                // sharing time info
+                AnimatedVisibility(
+                    visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
                     modifier = Modifier
-                        .clickable { onGroupDetailsClick() }
-                        .background(
-                            MaterialTheme.colors.surface,
-                            MaterialTheme.shapes.medium
-                        )
-                        .clip(RoundedCornerShape(percent = 100))
-                        .padding(vertical = 4.dp)
-                        .padding(start = 4.dp, end = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(start = 6.dp, bottom = 32.dp),
+                    enter = fadeIn(),
+                    exit = fadeOut()
                 ) {
-                    Icon(
-                        painter = CoreAppIcons.Timer.asPainterResource(),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.size(4.dp))
-                    Text(
-                        text = readyState?.sharingEndTime
-                            ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
-                        style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // sharing start
-            if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {
-                ExtendedFloatingActionButton(
-                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
-                    text = {
-                        Text(text = stringResource(MR.strings.groups_sharing_button_start))
-                    },
-                    icon = {
+                    Row(
+                        modifier = Modifier
+                            .clickable { onGroupDetailsClick() }
+                            .background(
+                                MaterialTheme.colors.surface,
+                                MaterialTheme.shapes.medium
+                            )
+                            .clip(RoundedCornerShape(percent = 100))
+                            .padding(vertical = 4.dp)
+                            .padding(start = 4.dp, end = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
-                            painter = CoreAppIcons.ShareLocation.asPainterResource(),
-                            contentDescription = null
+                            painter = CoreAppIcons.Timer.asPainterResource(),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
                         )
-                    },
-                    backgroundColor = MaterialTheme.colors.primary,
-                    elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
-                    onClick = onSharingStartClick
-                )
-            }
-        }
+                        Spacer(modifier = Modifier.size(4.dp))
+                        Text(
+                            text = readyState?.sharingEndTime
+                                ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
+                            style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
+                        )
+                    }
+                }
 
-        // focused item
-        AnimatedVisibility(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp),
-            visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.PLACE,
-            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
-        ) {
-            readyState?.focusedPlace?.let { placeState ->
-                Box(
-                    modifier = Modifier.padding(bottom = 32.dp)
-                ) {
-                    PlaceListItem(
-                        modifier = Modifier.padding(top = 20.dp),
-                        state = placeState,
-                        hasEndArrow = true,
-                        onClick = { onPlaceClick(placeState) }
-                    )
-                    CloseFocusButton(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(end = 8.dp),
-                        onClick = onCloseFocusedItem
+                Spacer(modifier = Modifier.weight(1f))
+
+                // sharing start
+                if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {
+                    ExtendedFloatingActionButton(
+                        modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
+                        text = {
+                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                        },
+                        icon = {
+                            Icon(
+                                painter = CoreAppIcons.ShareLocation.asPainterResource(),
+                                contentDescription = null
+                            )
+                        },
+                        backgroundColor = MaterialTheme.colors.primary,
+                        elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                        onClick = onSharingStartClick
                     )
                 }
             }
-        }
 
-        AnimatedVisibility(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp),
-            visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.MEMBER,
-            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
-        ) {
-            readyState?.focusedMember?.let { memberState ->
-                Box(
-                    modifier = Modifier.padding(bottom = 32.dp)
+            Column(
+                modifier = Modifier
+                    .padding(bottom = animateDpAsState(targetValue = sheetPeekHeight).value)
+            ) {
+                // focused item
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp),
+                    visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.PLACE,
+                    enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
                 ) {
-                    GroupMember(
-                        modifier = Modifier.padding(top = 20.dp),
-                        state = memberState,
-                        backgroundColor = MaterialTheme.colors.background,
-                        collapseOnActionClick = false,
-                        forceExpandAction = true,
-                        canShowOldLocation = true,
-                        onEvent = { event ->
-                            when (event) {
-                                is GroupMemberItemEvent.onActionClick -> {
-                                    onMemberActionClick(event.action.type, memberState)
-                                }
-
-                                is GroupMemberItemEvent.onItemClick -> {
-                                    onMemberClick(event.item)
-                                }
-
-                                is GroupMemberItemEvent.onShowLocation -> {
-                                    onToggleLocation(event.item)
-                                }
-
-                                is GroupMemberItemEvent.onDeleteDeviceClick -> {}
-                                is GroupMemberItemEvent.onOpenRawData -> {}
-                                is GroupMemberItemEvent.onCopyCode -> {}
-                                is GroupMemberItemEvent.onLocationRequest -> {
-                                    logg.v("location_request", "pass request click")
-                                    onRequestLocation(memberState)
-                                }
-                            }
+                    readyState?.focusedPlace?.let { placeState ->
+                        Box(
+                            modifier = Modifier.padding(bottom = 32.dp)
+                        ) {
+                            PlaceListItem(
+                                modifier = Modifier.padding(top = 20.dp),
+                                state = placeState,
+                                hasEndArrow = true,
+                                onClick = { onPlaceClick(placeState) }
+                            )
+                            CloseFocusButton(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(end = 8.dp),
+                                onClick = onCloseFocusedItem
+                            )
                         }
-                    )
-                    CloseFocusButton(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(end = 8.dp),
-                        onClick = onCloseFocusedItem
-                    )
+                    }
+                }
+
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp),
+                    visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.MEMBER,
+                    enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    readyState?.focusedMember?.let { memberState ->
+                        Box(
+                            modifier = Modifier.padding(bottom = 32.dp)
+                        ) {
+                            GroupMember(
+                                modifier = Modifier.padding(top = 20.dp),
+                                state = memberState,
+                                backgroundColor = MaterialTheme.colors.background,
+                                collapseOnActionClick = false,
+                                forceExpandAction = true,
+                                canShowOldLocation = true,
+                                onEvent = { event ->
+                                    when (event) {
+                                        is GroupMemberItemEvent.onActionClick -> {
+                                            onMemberActionClick(event.action.type, memberState)
+                                        }
+
+                                        is GroupMemberItemEvent.onItemClick -> {
+                                            onMemberClick(event.item)
+                                        }
+
+                                        is GroupMemberItemEvent.onShowLocation -> {
+                                            onToggleLocation(event.item)
+                                        }
+
+                                        is GroupMemberItemEvent.onDeleteDeviceClick -> {}
+                                        is GroupMemberItemEvent.onOpenRawData -> {}
+                                        is GroupMemberItemEvent.onCopyCode -> {}
+                                        is GroupMemberItemEvent.onLocationRequest -> {
+                                            logg.v("location_request", "pass request click")
+                                            onRequestLocation(memberState)
+                                        }
+                                    }
+                                }
+                            )
+                            CloseFocusButton(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(end = 8.dp),
+                                onClick = onCloseFocusedItem
+                            )
+                        }
+                    }
                 }
             }
         }

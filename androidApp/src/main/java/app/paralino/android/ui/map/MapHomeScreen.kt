@@ -84,7 +84,7 @@ private fun MapHomeContent(
     val pickerState = rememberGroupBottomSheetPickerState()
 
     val sheetState = rememberSwipeableState(
-        initialValue = BottomSheetPosition.HALF_EXPANDED,
+        initialValue = BottomSheetPosition.default,
         confirmStateChange = {
             it != BottomSheetPosition.HIDDEN
         }

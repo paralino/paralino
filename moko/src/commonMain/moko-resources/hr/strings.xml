@@ -368,7 +368,8 @@
     <string name="places_create_seekbar_info">Radijus</string>
     <string name="places_create_button_create">Stvori mjesto</string>
     <string name="places_create_error_no_place">Dodajte lokaciju dugim pritiskom na kartu</string>
-    <string name="places_create_location_hint">**SAVJET:** Dugim pritiskom na kartu dodajte ili prilagodite svoje mjesto</string>
+    <string name="places_create_location_hint_tap">**SAVJET:** Dodirom na kartu dodajte ili prilagodite svoje mjesto</string>
+    <string name="places_create_location_hint_longpress">**SAVJET:** Dugim pritiskom na kartu dodajte ili prilagodite svoje mjesto</string>
     <string name="place_list_menu_delete">Izbriši mjesto</string>
     <string name="place_list_delete_place_alert_title">Jeste li sigurni da želite izbrisati ovo mjesto?</string>
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>

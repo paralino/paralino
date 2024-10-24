@@ -78,8 +78,8 @@ private fun MainMapSheetActiveBody(
                     }
 
                     else -> {
-                        // use previous value?
-                        swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+                        // TODO use previous value?
+                        swipeableState.animateTo(BottomSheetPosition.default)
                     }
                 }
             }
@@ -108,17 +108,9 @@ private fun MainMapSheetActiveBody(
             appState.uiScope.launch {
                 if (swipeableState.isCollapsed() || swipeableState.isFullyExpanded()) {
                     swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+                } else {
+                    swipeableState.animateTo(BottomSheetPosition.COLLAPSED)
                 }
-            }
-        },
-        onExpandSheet = {
-            appState.uiScope.launch {
-                swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
-            }
-        },
-        onCollapseSheet = {
-            appState.uiScope.launch {
-                swipeableState.animateTo(BottomSheetPosition.COLLAPSED)
             }
         },
         onFocusOnMembersClick = onFocusOnMembersClick,

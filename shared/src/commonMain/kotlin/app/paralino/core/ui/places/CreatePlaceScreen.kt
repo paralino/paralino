@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -226,7 +227,7 @@ private fun CreatePlaceScreenCore(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            shape = MaterialTheme.shapes.medium,
+            shape = RoundedCornerShape(20.dp),
             color = MaterialTheme.colors.surface,
             border = BorderStroke(6.dp, MaterialTheme.colors.surface),
             elevation = 12.dp
@@ -239,8 +240,8 @@ private fun CreatePlaceScreenCore(
                 Surface(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(4.dp),
-                    shape = MaterialTheme.shapes.medium,
+                        .padding(6.dp),
+                    shape = RoundedCornerShape(15.dp),
                     color = MaterialTheme.colors.surface,
                 ) {
                     mapContent(state)
@@ -273,7 +274,7 @@ private fun CreatePlaceScreenCore(
                 .fillMaxWidth(),
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
-            text = stringResource(MR.strings.places_create_location_hint).annotatedBold()
+            text = state.hintText
         )
 
         Spacer(modifier = Modifier.size(30.dp))

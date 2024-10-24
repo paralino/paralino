@@ -31,16 +31,9 @@ struct PlaceDetailScreen: View {
                     },
                     mapUIView: { state in
                         appState.updateMarkers(state: state)
-                        return SwiftUIInUIView(
-                            content: VStack {
-                                MapComponent(
-                                    mapState: appState,
-                                    onMapTap: { point in },
-                                    onMapLongPress: { point in },
-                                    onMapTouch: {}
-                                )
-                            }
-                        )
+                        let controller = MapComponentVC()
+                        controller.mapState = appState
+                        return controller
                     }
                 )
             }

@@ -36,9 +36,7 @@ struct MapHomeScreen: View {
                             }
                         },
                         onSheetOffsetChange: { offset in
-                            withAnimation(.linear(duration: 0.1)) {
-                                mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
-                            }
+                            mapState.bottomSafeArea = max(CGFloat(offset.floatValue) - 35, 0)
                         },
                         onGroupPickerClick: {
                             groupPicker = mapState.vm.getGroupPickerState()
@@ -65,28 +63,39 @@ struct MapHomeScreen: View {
                         openPaywall: {
                             
                         },
-                        mapUIView: { () -> UIView in
-                            SwiftUIInUIView(
-                                content: VStack {
-                                    MapComponent(
-                                        mapState: mapState,
-                                        onMapTap: { point in },
-                                        onMapLongPress: { point in
-                                            if let readyState = mapState.uiState.asReady() {
-                                                path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
-                                            }
-                                        },
-                                        onMapTouch: {
-                                            mapState.vm.onMapTouch()
-                                        }
-                                    )
-                                    .safeAreaPadding(.top, 70)
+                        mapUIView: { () -> UIViewController in
+                            let controller = MapComponentVC()
+                            controller.mapState = mapState
+                            controller.onMapPan = {
+                                mapState.vm.onMapTouch()
+                            }
+                            controller.onMapLongPress = { point in
+                                if let readyState = mapState.uiState.asReady() {
+                                    path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
                                 }
-                            )
+                            }
+                            return controller
+//                            let rootView = VStack {
+//                                MapComponent(
+//                                    mapState: mapState,
+//                                    onMapTap: { point in },
+//                                    onMapLongPress: { point in
+//                                        if let readyState = mapState.uiState.asReady() {
+//                                            path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
+//                                        }
+//                                    },
+//                                    onMapTouch: {
+//                                        mapState.vm.onMapTouch()
+//                                    }
+//                                )
+//                                .safeAreaPadding(.top, 60)
+//                            }
+//                            return UIHostingController(rootView: rootView)
                         }
                     )
                 }
                 .ignoresSafeArea(.all, edges: .vertical)
+                .toolbar(.hidden, for: .navigationBar)
             } else if mapState.uiState is MapHomeScreenState.Empty {
                 VStack {
                     Image("paralino_logo")

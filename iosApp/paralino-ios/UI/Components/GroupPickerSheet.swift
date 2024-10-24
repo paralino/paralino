@@ -30,7 +30,7 @@ struct GroupPickerSheet: ViewModifier {
                         LazyVStack(alignment: .center, spacing: 8) {
                             ForEach(groups.indices, id: \.self) { index in
                                 GroupListItem(data: groups[index], onClick: { onSelectGroup?(groups[index]) }, onEdit: { onEditGroup?(groups[index]) })
-                                    .padding(.vertical, 4)
+                                    
                             }
                             Spacer()
                             HStack {

@@ -86,9 +86,6 @@ import paralino.shared.generated.resources.ic_wifi_1
 import paralino.shared.generated.resources.ic_wifi_2
 import paralino.shared.generated.resources.ic_wifi_3
 import paralino.shared.generated.resources.ic_wifi_off
-import paralino.shared.generated.resources.image_map_type_default_dark
-import paralino.shared.generated.resources.image_map_type_default_light
-import paralino.shared.generated.resources.image_map_type_satellite
 
 @OptIn(ExperimentalResourceApi::class)
 object CoreAppIcons {
@@ -175,9 +172,9 @@ object CoreAppIcons {
 
     val CircleFull get() = MR.images.ic_circle_full
     val CircleWithOutline get() = Res.drawable.ic_circle_with_outline
-    val MapModeSatellite get() = Res.drawable.image_map_type_satellite
-    val MapModeDefaultLight get() = Res.drawable.image_map_type_default_light
-    val MapModeDefaultDark get() = Res.drawable.image_map_type_default_dark
+//    val MapModeSatellite get() = Res.drawable.image_map_type_satellite
+//    val MapModeDefaultLight get() = Res.drawable.image_map_type_default_light
+//    val MapModeDefaultDark get() = Res.drawable.image_map_type_default_dark
 
     @Composable
     inline fun DrawableResource.asPainterResource(): Painter {
