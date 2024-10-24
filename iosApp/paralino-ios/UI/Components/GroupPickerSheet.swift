@@ -46,6 +46,7 @@ struct GroupPickerSheet: ViewModifier {
                         }
                         .padding()
                         .presentationDetents([.medium, .large])
+                        .presentationBackground(Color.themebackground)
                     }
                 }
             }

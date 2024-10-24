@@ -45,6 +45,7 @@ struct PhotoPickerSheet: ViewModifier {
                         }
                         .padding()
                         .presentationDetents([.medium, .large])
+                        .presentationBackground(Color.themebackground)
                     }
                 }
             }
