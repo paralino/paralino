@@ -47,7 +47,7 @@ struct SharingStartScreen: View {
                         locationManager.requestLocationPermission()
                     },
                     askBackgroundLocationPermission: {
-                        locationManager.requestAlwaysOnLocationPermission()
+                        locationManager.requestLocationPermission()
                     }
                 )
             }
