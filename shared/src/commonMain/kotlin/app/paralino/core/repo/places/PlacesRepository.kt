@@ -73,15 +73,17 @@ class PlacesRepository constructor(
         return local.getPlaceWithoutSettingsOnce(placeId)
     }
 
-    fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings> {
-        return mergeDataWithRemote(
-            local = local.getPlaceWithSettings(placeId),
-            remote = {
-                remote.getPlaceWithSettings(placeId)
-            },
-            localUpdate = { groupLocal.updateOrCreatePlace(it) },
-            remotePreference = RemotePreference.CACHE(key = "place_detail", timeMillis = 5_000)
-        )
+    fun getPlaceWithSettingsLocally(placeId: String): Flow<GroupPlaceWithSettings> {
+        return local.getPlaceWithSettings(placeId)
+    }
+
+    suspend fun refreshPlaceWithSettingsMaybe(placeId: String) {
+        triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(key = "place_detail_$placeId", timeMillis = 10000)
+        ) {
+            remote.getPlaceWithSettings(placeId = placeId)
+                .also { groupLocal.updateOrCreatePlace(it) }
+        }
     }
 
     fun getAndRefreshPlacesForGroup(groupId: String): Flow<List<GroupPlace>> {
