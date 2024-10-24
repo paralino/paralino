@@ -36,13 +36,7 @@ struct MapHomeScreen: View {
                             }
                         },
                         onSheetOffsetChange: { offset in
-//                            if mapState.bottomSafeArea < CGFloat(offset.floatValue) - 35 {
-//                                withAnimation(.linear(duration: 0.1)) {
-//                                    mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
-//                                }
-//                            } else {
                             mapState.bottomSafeArea = max(CGFloat(offset.floatValue) - 35, 0)
-//                            }
                         },
                         onGroupPickerClick: {
                             groupPicker = mapState.vm.getGroupPickerState()

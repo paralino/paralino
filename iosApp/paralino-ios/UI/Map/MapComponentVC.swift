@@ -12,7 +12,7 @@ import Combine
 
 class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
-    private var mapState: BaseMapObservableObject?
+    var mapState: BaseMapObservableObject?
     
     private var cancellables = Set<AnyCancellable>()
     private let positionAnimator = ValueAnimator()
