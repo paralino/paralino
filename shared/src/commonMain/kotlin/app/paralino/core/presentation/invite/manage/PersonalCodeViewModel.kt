@@ -7,9 +7,8 @@ import app.paralino.core.models.data
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.provider.ILocationStatusProvider
-import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -33,8 +32,7 @@ import kotlinx.coroutines.launch
 
 class PersonalCodeViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
-    private val deviceApiProvider: IDeviceApiProvider,
-    val locationStatusProvider: ILocationStatusProvider,
+    val deviceApiProvider: IDeviceApiProvider,
     private val userRepo: UserRepository
 ) : CoreViewModel() {
 
@@ -42,7 +40,7 @@ class PersonalCodeViewModel(
         mapPersonalCodes(
             personalCodes = personalCodeRepo.personalCodeLocalState.value,
             userPlans = userRepo.userPlans.value,
-            locationStatus = locationStatusProvider.currentStatus,
+            deviceStatus = deviceApiProvider.currentDeviceStatus(),
             activeAlertDialog = null
         )
     )
@@ -61,14 +59,14 @@ class PersonalCodeViewModel(
 
         combine(
             personalCodeRepo.personalCodeLocalState,
-            locationStatusProvider.status,
+            deviceApiProvider.deviceStatus,
             userRepo.userPlans
-        ) { personalCodes, permissionStatus, plans ->
+        ) { personalCodes, deviceStatus, plans ->
             _uiState.update {
                 mapPersonalCodes(
                     personalCodes = personalCodes,
                     userPlans = plans,
-                    locationStatus = permissionStatus,
+                    deviceStatus = deviceStatus,
                     activeAlertDialog = it.alertDialog
                 )
             }
@@ -80,7 +78,7 @@ class PersonalCodeViewModel(
     private fun mapPersonalCodes(
         personalCodes: List<UserPersonalCode>,
         userPlans: UserPlans,
-        locationStatus: LocationConditionStatus,
+        deviceStatus: DeviceStatusData,
         activeAlertDialog: MainAlertDialog?
     ): PersonalCodeScreenState {
         val codeData = personalCodes
@@ -107,7 +105,7 @@ class PersonalCodeViewModel(
             createLoading = false,
             alertDialog = activeAlertDialog,
             errors = buildList {
-                if (!locationStatus.isNotificationPermissionAllowed) {
+                if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
                     add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                 }
             }

@@ -96,8 +96,8 @@ class AppStatusDebugViewModel(
                         add(
                             AppStatusItemStatusState(
                                 key = "notification-permission",
-                                text = "Notification permission: ${if (deviceStatus.locationStatus.isNotificationPermissionAllowed) "**OK**" else "**MISSING**"}",
-                                isError = !deviceStatus.locationStatus.isNotificationPermissionAllowed
+                                text = "Notification permission: ${if (deviceStatus.notificationStatus.isNotificationPermissionAllowed) "**OK**" else "**MISSING**"}",
+                                isError = !deviceStatus.notificationStatus.isNotificationPermissionAllowed
                             )
                         )
 

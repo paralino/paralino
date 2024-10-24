@@ -42,13 +42,13 @@ fun SharingStartScreen(
     val permissionHandler = rememberLocationPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        locationStatusProvider = vm.deviceApiProvider.locationStatusProvider
     )
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
     )
 
     val pickerState = rememberGroupBottomSheetPickerState()

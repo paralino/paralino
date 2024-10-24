@@ -4,7 +4,11 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.toResource
 import app.paralino.core.utils.ConditionErrorType
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.update
 
 abstract class ILocationStatusProvider {
     protected val mutableStatus = MutableStateFlow<Resource<LocationConditionStatus>>(Resource.NotInitialized)
@@ -21,8 +25,7 @@ abstract class ILocationStatusProvider {
 data class LocationConditionStatus constructor(
     val isGpsOn: Boolean,
     val isPermissionAllowed: Boolean,
-    val isBackgroundPermissionAllowed: Boolean,
-    val isNotificationPermissionAllowed: Boolean
+    val isBackgroundPermissionAllowed: Boolean
 ) {
 
     fun isOK(forAlwaysOnAccess: Boolean = false): Boolean {

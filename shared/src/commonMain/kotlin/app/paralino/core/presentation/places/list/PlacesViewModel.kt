@@ -5,7 +5,7 @@ import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -29,7 +29,7 @@ class PlacesViewModel(
     private val remoteConfig: RemoteConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,
-    val locationStatusProvider: ILocationStatusProvider,
+    val deviceApiProvider: IDeviceApiProvider,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PlacesListScreenState>>(Payload.Loading)
@@ -42,14 +42,14 @@ class PlacesViewModel(
         combine(
             groupRepo.getGroupWithoutMembers(groupId),
             placesRepo.getAndRefreshPlacesForGroup(groupId),
-            locationStatusProvider.status
-        ) { group, places, status ->
+            deviceApiProvider.deviceStatus
+        ) { group, places, deviceStatus ->
 
             val placesState = places.map {
                 PlaceListItemData(it)
             }
 
-            val errors = if (places.isNotEmpty() && !status.isNotificationPermissionAllowed) {
+            val errors = if (places.isNotEmpty() && !deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
                 listOf(ConditionErrorType.PERMISSION_NOTIFICATIONS)
             } else {
                 emptyList()

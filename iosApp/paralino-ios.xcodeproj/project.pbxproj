@@ -276,6 +276,7 @@
 				Provider/GeofenceManager.swift,
 				Provider/LocationStatusProvider.swift,
 				Provider/Logr.swift,
+				Provider/NotificationStatusProvider.swift,
 				Provider/PushNotificationPresenters.swift,
 				Provider/PushSetupProvider.swift,
 				Provider/SealedClasses.swift,

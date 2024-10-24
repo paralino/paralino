@@ -61,16 +61,19 @@ public class CoreKoinSetup {
         
         let locationStatusProvider = LocationStatusProvider()
         let connectionStatusProvider = ConnectionStatusProvider(appBuildConfig: appBuildConfig)
+        let notificationStatusProvider = NotificationStatusProvider()
         let deviceApiProvider = DeviceApiProvider(
             appBuildConfig: appBuildConfig,
             locationStatusProvider: locationStatusProvider,
-            connectionStatusProvider: connectionStatusProvider
+            connectionStatusProvider: connectionStatusProvider,
+            notificationStatusProvider: notificationStatusProvider
         )
         
         let coreIOSModules = KoinIOS.shared.createIOSKoinModules(
             deviceProvider: deviceApiProvider,
             connectionStatusProvider: connectionStatusProvider,
             locationStatusProvider: locationStatusProvider,
+            notificationStatusProvider: notificationStatusProvider,
             pushSetupProvider: PushSetupProvider(),
             placeNotificationPresenter: { inAppLogger in PlaceNotificationPresenter(inAppLogger: inAppLogger) },
             groupActivityNotificationPresenter: { inAppLogger in GroupActivityNotificationPresenter(inAppLogger: inAppLogger) },

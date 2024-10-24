@@ -4,17 +4,13 @@ import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
-import app.paralino.core.provider.IConnectionStatusProvider
+import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.provider.ILocationStatusProvider
-import app.paralino.core.provider.LocationConditionStatus
-import app.paralino.core.provider.NetworkConnectionInfo
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
@@ -36,19 +32,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GroupInitViewModel(
-    private val connectionStatus: IConnectionStatusProvider,
-    val locationStatusProvider: ILocationStatusProvider,
     private val userRepo: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
-    private val deviceApiProvider: IDeviceApiProvider,
+    val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
         mapState(
             user = userRepo.localUser.value,
-            network = connectionStatus.currentStatus,
-            locationStatus = locationStatusProvider.currentStatus,
+            deviceStatus = deviceApiProvider.currentDeviceStatus(),
             codes = personalCodesRepo.personalCodeLocalState.value
         )
     )
@@ -72,12 +65,11 @@ class GroupInitViewModel(
 
         combine(
             userRepo.localUser,
-            connectionStatus.status,
-            locationStatusProvider.status,
+            deviceApiProvider.deviceStatus,
             personalCodesRepo.personalCodeLocalState
-        ) { user, network, locationStatus, codes ->
+        ) { user, deviceStatus, codes ->
             _uiState.update {
-                mapState(user, network, locationStatus, codes)
+                mapState(user, deviceStatus, codes)
             }
         }
             .catch {
@@ -89,16 +81,17 @@ class GroupInitViewModel(
 
     private fun mapState(
         user: Resource<UserMe?>,
-        network: NetworkConnectionInfo,
-        locationStatus: LocationConditionStatus,
+        deviceStatus: DeviceStatusData,
         codes: List<UserPersonalCode>
     ): GroupInitScreenState {
         val errors = buildList {
-            if (!network.isOnline)
+            if (!deviceStatus.networkStatus.isOnline) {
                 add(ConditionErrorType.NETWORK)
+            }
 
-            if (!locationStatus.isNotificationPermissionAllowed)
+            if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
                 add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+            }
 
             user.data?.needsEmailVerification?.takeIf { it }?.let {
                 add(ConditionErrorType.EMAIL_VERIFICATION(user.data?.email ?: ""))

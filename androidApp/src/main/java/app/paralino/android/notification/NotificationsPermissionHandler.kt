@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.ICoreMessageDispatcher
-import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.INotificationStatusProvider
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.onAction
@@ -27,17 +27,17 @@ import kotlinx.coroutines.launch
 fun rememberNotificationsPermissionHandler(
     appState: MainAppState,
     messageDispatcher: ICoreMessageDispatcher,
-    locationStatusProvider: ILocationStatusProvider,
+    notificationStatusProvider: INotificationStatusProvider,
 ): NotificationsPermissionHandlerState {
 
     val context = LocalContext.current
 
-    val state = remember(context, appState, locationStatusProvider) {
+    val state = remember(context, appState, notificationStatusProvider) {
         NotificationsPermissionHandlerState(
             appState = appState,
             messageDispatcher = messageDispatcher,
             context = context,
-            locationStatusProvider = locationStatusProvider
+            notificationStatusProvider = notificationStatusProvider
         )
     }
 
@@ -64,7 +64,7 @@ class NotificationsPermissionHandlerState constructor(
     val appState: MainAppState,
     val messageDispatcher: ICoreMessageDispatcher,
     val context: Context,
-    val locationStatusProvider: ILocationStatusProvider,
+    val notificationStatusProvider: INotificationStatusProvider,
 ) {
 
     internal var notificationPermissionState: MultiplePermissionsState? = null
@@ -94,7 +94,7 @@ class NotificationsPermissionHandlerState constructor(
     }
 
     private fun updateStatus() {
-        locationStatusProvider.refreshLocationStatus()
+        notificationStatusProvider.refreshNotificationsStatus()
     }
 
     private fun showPermissionDeniedInfo() {

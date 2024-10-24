@@ -20,7 +20,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
-    lazy var locationStatusProvider: ILocationStatusProvider = { KoinIOS.Instances.shared.locationStatusProvider }()
+    lazy var deviceApiProvider: IDeviceApiProvider = { KoinIOS.Instances.shared.deviceApiProvider }()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         

@@ -1,7 +1,10 @@
 package app.paralino.android.provider
 
+import android.Manifest
 import android.content.Context
-import app.paralino.android.tracking.getLocationStatus
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import androidx.core.content.ContextCompat
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LocationConditionStatus
 
@@ -16,4 +19,31 @@ class LocationStatusProvider(
     override fun createCurrentStatus(): LocationConditionStatus {
         return LocationConditionStatus.getLocationStatus(context)
     }
+}
+
+fun LocationConditionStatus.Companion.isLocationOn(context: Context): Boolean {
+    return ContextCompat.getSystemService(context, LocationManager::class.java)
+        ?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true
+}
+
+fun LocationConditionStatus.Companion.hasLocationPermission(context: Context): Boolean {
+    return ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun LocationConditionStatus.Companion.hasBackgroundLocationPermission(context: Context): Boolean {
+    return ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun LocationConditionStatus.Companion.getLocationStatus(context: Context): LocationConditionStatus {
+    return LocationConditionStatus(
+        isGpsOn = isLocationOn(context),
+        isPermissionAllowed = hasLocationPermission(context),
+        isBackgroundPermissionAllowed = hasBackgroundLocationPermission(context)
+    )
 }

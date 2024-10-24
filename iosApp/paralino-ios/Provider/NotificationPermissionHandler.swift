@@ -16,13 +16,13 @@ class NotificationPermissionHandler {
     private var requested: Bool = false
 
     func requestNotificationPermission(
-        locationStatusProvider: ILocationStatusProvider,
+        notificationStatusProvider: INotificationStatusProvider,
         messageDispather: ICoreMessageDispatcher
     ) {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             Logr.d(tag: "permission_request", message: "Notification result: \(granted)", t: KotlinThrowable(message: error?.localizedDescription))
-            locationStatusProvider.refreshLocationStatus()
+            notificationStatusProvider.refreshNotificationsStatus()
             if !granted {
                 if self.requested {
                     let data = AppSnackbarData(

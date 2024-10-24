@@ -28,8 +28,6 @@ class CoreAppManager(
     private val refreshManager: RefreshEverythingUseCase,
     private val sessionMonitor: UserSessionMonitor,
     private val logoutUseCase: LogoutUseCase,
-    private val connectionStatusProvider: IConnectionStatusProvider,
-    private val locationStatus: ILocationStatusProvider,
     private val activeSharingEngine: ActiveSharingEngine,
     private val deviceApiProvider: IDeviceApiProvider,
     private val userRepo: UserRepository,
@@ -64,6 +62,7 @@ class CoreAppManager(
                     if (state.current == AppLifecycleType.ACTIVE) {
                         updateLocationStatus()
                         updateConnectionStatus()
+                        deviceApiProvider.notificationStatusProvider.refreshNotificationsStatus()
 
                         if (state.comingFromBackground) {
                             updateConfig()
@@ -112,12 +111,12 @@ class CoreAppManager(
     }
 
     fun updateLocationStatus() {
-        locationStatus.refreshLocationStatus()
+        deviceApiProvider.locationStatusProvider.refreshLocationStatus()
     }
 
     fun updateConnectionStatus() {
         scopeProvider.defaultIOScope.launch {
-            connectionStatusProvider.initAndGetStatus()
+            deviceApiProvider.connectionStatusProvider.initAndGetStatus()
         }
     }
 

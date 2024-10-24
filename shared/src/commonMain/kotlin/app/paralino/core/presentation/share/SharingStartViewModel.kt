@@ -10,8 +10,7 @@ import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
-import app.paralino.core.provider.IConnectionStatusProvider
-import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -44,8 +43,7 @@ class SharingStartViewModel(
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: GroupRepository,
     private val sharingManager: LocationSharingManager,
-    val locationStatusProvider: ILocationStatusProvider,
-    private val connectionStatus: IConnectionStatusProvider,
+    val deviceApiProvider: IDeviceApiProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
     private val locationRepo: LocationLocalDataSource,
@@ -78,8 +76,7 @@ class SharingStartViewModel(
         groupId?.let { setSelectedGroup(it) }
 
         combine(
-            locationStatusProvider.status,
-            connectionStatus.status,
+            deviceApiProvider.deviceStatus,
             currentGroup.flatMapMerge {
                 if (it == null) {
                     flowOf(0)
@@ -89,20 +86,20 @@ class SharingStartViewModel(
                     )
                 }
             }
-        ) { locationStatus, connection, locationCount ->
+        ) { deviceStatus, locationCount ->
             _uiState.update {
                 it.copy(
                     deviceName = userMemberIdUseCase.getDefaultDeviceName(groupId),
                     devicesCount = locationCount,
                     errors = buildList {
-                        addAll(locationStatus.getPossibleErrors(it.isLongTerm))
+                        addAll(deviceStatus.locationStatus.getPossibleErrors(it.isLongTerm))
 
-                        if (!connection.isOnline) {
+                        if (!deviceStatus.networkStatus.isOnline) {
                             add(ConditionErrorType.NETWORK)
                         }
                     },
                     warnings = buildList {
-                        if (!locationStatus.isNotificationPermissionAllowed) {
+                        if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
                             add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                         }
                     }
@@ -366,10 +363,11 @@ class SharingStartViewModel(
 
     private fun getErrors(forLongTerm: Boolean): List<ConditionErrorType> {
         return buildList {
+            val deviceStatus = deviceApiProvider.currentDeviceStatus()
             addAll(
-                locationStatusProvider.currentStatus.getPossibleErrors(forLongTerm)
+                deviceStatus.locationStatus.getPossibleErrors(forLongTerm)
             )
-            if (!connectionStatus.status.value.isOnline) {
+            if (!deviceStatus.networkStatus.isOnline) {
                 add(ConditionErrorType.NETWORK)
             }
         }

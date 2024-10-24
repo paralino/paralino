@@ -17,10 +17,15 @@ class DeviceApiProvider: IDeviceApiProvider {
     init(
         appBuildConfig: AppBuildConfig,
         locationStatusProvider: ILocationStatusProvider,
-        connectionStatusProvider: IConnectionStatusProvider
+        connectionStatusProvider: IConnectionStatusProvider,
+        notificationStatusProvider: INotificationStatusProvider
     ) {
         self.appBuildConfig = appBuildConfig
-        super.init(locationStatusProvider: locationStatusProvider, connectionStatusProvider: connectionStatusProvider)
+        super.init(
+            locationStatusProvider: locationStatusProvider,
+            connectionStatusProvider: connectionStatusProvider,
+            notificationStatusProvider: notificationStatusProvider
+        )
     }
     
     override func logout() async throws {

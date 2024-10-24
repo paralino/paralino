@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.update
 
 abstract class IDeviceApiProvider(
     val locationStatusProvider: ILocationStatusProvider,
-    val connectionStatusProvider: IConnectionStatusProvider
+    val connectionStatusProvider: IConnectionStatusProvider,
+    val notificationStatusProvider: INotificationStatusProvider
 ) {
 
     private var _appLifecycleState = MutableStateFlow(AppLifecycleState())
@@ -18,9 +19,18 @@ abstract class IDeviceApiProvider(
 
     val deviceStatus = combine(
         locationStatusProvider.status,
-        connectionStatusProvider.status
-    ) { locationStatus, connectionStatus ->
-        DeviceStatusData(locationStatus, connectionStatus)
+        connectionStatusProvider.status,
+        notificationStatusProvider.status
+    ) { locationStatus, connectionStatus, notificationStatus ->
+        DeviceStatusData(locationStatus, connectionStatus, notificationStatus)
+    }
+
+    fun currentDeviceStatus(): DeviceStatusData {
+        return DeviceStatusData(
+            locationStatus = locationStatusProvider.currentStatus,
+            networkStatus = connectionStatusProvider.currentStatus,
+            notificationStatus = notificationStatusProvider.currentStatus
+        )
     }
 
     fun onAppActive() {
@@ -74,7 +84,8 @@ abstract class IDeviceApiProvider(
 
 data class DeviceStatusData(
     val locationStatus: LocationConditionStatus,
-    val networkStatus: NetworkConnectionInfo
+    val networkStatus: NetworkConnectionInfo,
+    val notificationStatus: NotificationConditionStatus
 )
 
 data class AppLifecycleState(

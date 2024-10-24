@@ -43,13 +43,13 @@ private fun GroupDetailScreen(
     val locationPermissionHandler = rememberLocationPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        locationStatusProvider = vm.deviceApiProvider.locationStatusProvider
     )
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
     )
 
     Scaffold(

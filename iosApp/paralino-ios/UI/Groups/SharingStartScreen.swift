@@ -8,6 +8,7 @@
 import SwiftUI
 import shared
 import paralino_apple_core
+import SwiftLocation
 
 struct SharingStartScreen: View {
     
@@ -35,7 +36,7 @@ struct SharingStartScreen: View {
                     },
                     askNotificationPermission: {
                         notificationPermissionHandler.requestNotificationPermission(
-                            locationStatusProvider: appDelegate.locationStatusProvider,
+                            notificationStatusProvider: appDelegate.deviceApiProvider.notificationStatusProvider,
                             messageDispather: appState.vm.messageDispatcher
                         )
                     },

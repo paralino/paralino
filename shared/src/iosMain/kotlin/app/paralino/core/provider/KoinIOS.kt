@@ -79,6 +79,7 @@ object KoinIOS {
         deviceProvider: IDeviceApiProvider,
         connectionStatusProvider: IConnectionStatusProvider,
         locationStatusProvider: ILocationStatusProvider,
+        notificationStatusProvider: INotificationStatusProvider,
         pushSetupProvider: IPushProviderManager,
         placeNotificationPresenter: (InAppLogger) -> IPlaceActivityNotificationPresenter,
         groupActivityNotificationPresenter: (InAppLogger) -> IGroupActivityNotificationPresenter,
@@ -104,6 +105,7 @@ object KoinIOS {
                 single(createdAtStart = true) { deviceProvider }
                 single { connectionStatusProvider }
                 single { locationStatusProvider }
+                single { notificationStatusProvider }
                 single { pushSetupProvider }
                 factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
                 factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
@@ -131,7 +133,7 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get(), get(), get(), appPrefs) }
+            factory { GroupInitViewModel(get(), get(), get(), appPrefs) }
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get())
             }
@@ -141,10 +143,10 @@ object KoinIOS {
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (groupID: String?, isOnboarding: Boolean) ->
-                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
-            factory { PersonalCodeViewModel(get(), get(), get(), get()) }
+            factory { PersonalCodeViewModel(get(), get(), get()) }
             factory { (groupId: String?, code: String?) ->
                 MemberInviteViewModel(
                     groupId = groupId,
@@ -156,7 +158,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
@@ -219,6 +221,7 @@ object KoinIOS {
         val refreshEverything: RefreshEverythingUseCase get() = get()
         val pushProvider: IPushProviderManager get() = get()
         val locationStatusProvider: ILocationStatusProvider get() = get()
+        val deviceApiProvider: IDeviceApiProvider get() = get()
         val inAppLogger: InAppLogger get() = get()
     }
 

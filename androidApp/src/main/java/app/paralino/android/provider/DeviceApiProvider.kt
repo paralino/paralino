@@ -16,6 +16,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.INotificationStatusProvider
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
 import app.paralino.core.utils.exceptions.InternalConnectionException
@@ -29,7 +30,8 @@ class DeviceApiProvider constructor(
     private val appBuildConfig: AppBuildConfig,
     locationStatusProvider: ILocationStatusProvider,
     connectionStatusProvider: IConnectionStatusProvider,
-) : IDeviceApiProvider(locationStatusProvider, connectionStatusProvider) {
+    notificationStatusProvider: INotificationStatusProvider,
+) : IDeviceApiProvider(locationStatusProvider, connectionStatusProvider, notificationStatusProvider) {
 
     override val _batteryLevel: Int
         get() = appClass.batterLevel

@@ -46,7 +46,7 @@ fun PlacesScreen(
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
     )
 
     var userScroll by remember {

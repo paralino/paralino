@@ -11,9 +11,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -41,12 +39,10 @@ class GroupDetailViewModel(
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
     private val placeActivityRepo: PlaceActivityDataSource,
-    val locationStatusProvider: ILocationStatusProvider,
-    private val connectionStatus: IConnectionStatusProvider,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
     private val valueFormatter: IValueFormatter,
-    private val deviceApiProvider: IDeviceApiProvider
+    val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
@@ -58,12 +54,11 @@ class GroupDetailViewModel(
 
     init {
         combine(
-            locationStatusProvider.status,
-            connectionStatus.status,
+            deviceApiProvider.deviceStatus,
             groupRefresh.getAndRefreshGroupWithMembers(groupId),
             sharingManager.sharingContractForGroup(groupId),
             userRepo.getBlocklistLocally()
-        ) { locationStatus, network, group, sharingStatus, blocklist ->
+        ) { deviceStatus, group, sharingStatus, blocklist ->
             groupData.update { group }
             val members = group.members
                 .sortedBy { it.member.name }
@@ -113,12 +108,14 @@ class GroupDetailViewModel(
 
             val errors = buildList {
                 sharingStatus?.let {
-                    if (!network.isOnline)
+                    if (!deviceStatus.networkStatus.isOnline) {
                         add(ConditionErrorType.NETWORK)
-                    addAll(locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
+                    }
+
+                    addAll(deviceStatus.locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
                 }
 
-                if (!locationStatus.isNotificationPermissionAllowed) {
+                if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
                     add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
                 }
             }
