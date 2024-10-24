@@ -15,7 +15,7 @@ class BaseMapObservableObject : ObservableObject {
     
     @Published var markers: [MapAnnotatedItem] = []
     
-    @Published var cameraPosition: MapCameraPosition = MapCameraPosition.automatic
+    @Published var cameraPosition: MapCameraState = MapCameraState(animate: false, cameraRect: MapCameraPosition.automatic.rect)
     
     @Published var isUpdatingRegion: Bool = false
     @Published var isSatelliteMode: Bool = false
@@ -34,7 +34,7 @@ class BaseMapObservableObject : ObservableObject {
             focusToMarkers([marker], animate: true)
         } else {
             // mapping from region to rect and vice-versa to get proper center and map size
-            guard let rect = cameraPosition.rect else {
+            guard let rect = cameraPosition.cameraRect else {
                 focusToMarkers([marker], animate: true)
                 return
             }
@@ -83,21 +83,17 @@ class BaseMapObservableObject : ObservableObject {
             return
         }
         
-        if animate {
-            withAnimation {
-                // region update flag is reset from map component
-                isUpdatingRegion = true
-                Logr.v(tag: "marker_update", message: "Start animation")
-                cameraPosition = MapCameraPosition.rect(rect)
-            }
-        } else {
-            cameraPosition = MapCameraPosition.rect(rect)
-        }
+        cameraPosition = MapCameraState(animate: animate, cameraRect: rect)
     }
     
     func refocusMap(animate: Bool = true, canInteruptAnimation: Bool = false) {
         focusToMarkers(markers, animate: animate, canInteruptAnimation: canInteruptAnimation)
     }
+}
+
+struct MapCameraState {
+    let animate: Bool
+    let cameraRect: MKMapRect?
 }
 
 // credit: https://stackoverflow.com/a/73201022

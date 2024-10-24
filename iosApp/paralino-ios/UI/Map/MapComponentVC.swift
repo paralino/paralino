@@ -19,7 +19,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
     var onMapTap: ((CLLocationCoordinate2D) -> Void)?
     var onMapLongPress: ((CLLocationCoordinate2D) -> Void)?
-    var onMapPan: ((MKMapView) -> Void)?
+    var onMapPan: (() -> Void)?
     
     private let mapView: MKMapView = {
         let map = MKMapView()
@@ -47,6 +47,11 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         ])
         
         mapView.delegate = self
+        
+        // set map camera right away if available
+        if let rect = mapState?.cameraPosition.cameraRect {
+            mapView.setRegion(.init(rect), animated: false)
+        }
     }
     
     func bindToViewModel() {
@@ -69,6 +74,15 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
                 self?.updateSafeArea(bottomOffset: bottomSafeArea)
             }
             .store(in: &cancellables)
+        
+        mapState?.$cameraPosition
+            .receive(on: RunLoop.main)
+            .sink { [weak self] cameraPosition in
+                if let rect = cameraPosition.cameraRect {
+                    self?.mapView.setRegion(.init(rect), animated: cameraPosition.animate)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func setupGestures() {
@@ -84,7 +98,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func setMapStyle(satellite: Bool) {
-        mapView.mapType = satellite ? .satellite : .hybrid
+        mapView.mapType = satellite ? .hybrid : .standard
     }
     
     func updateSafeArea(bottomOffset: CGFloat) {
@@ -111,9 +125,10 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
                     mapView.removeAnnotation(currentMarker)
                     mapView.addAnnotation(marker)
                 } else {
-                    UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut){
+                    // Animations are disabled for now
+//                    UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut){
                         currentMarker.data = marker.data
-                    }
+//                    }
                 }
             } else {
                 let annotation = marker
@@ -166,7 +181,9 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
     @objc private func handleMapPan(_ gesture: UIPanGestureRecognizer) {
         guard gesture.state == .ended else { return }
-        onMapPan?(mapView)
+        mapState?.cameraPosition = MapCameraState(animate: false, cameraRect: mapView.visibleMapRect)
+        onMapPan?()
+    }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
        return true
@@ -203,5 +220,13 @@ extension MapComponentVC: MKMapViewDelegate {
             return renderer
         }
         return MKOverlayRenderer()
+    }
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        mapState?.isUpdatingRegion = false
+    }
+    
+    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        mapState?.isUpdatingRegion = true
     }
 }

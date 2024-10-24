@@ -72,6 +72,9 @@ struct MapHomeScreen: View {
                         mapUIView: { () -> UIViewController in
                             let controller = MapComponentVC()
                             controller.mapState = mapState
+                            controller.onMapPan = {
+                                mapState.vm.onMapTouch()
+                            }
                             controller.onMapLongPress = { point in
                                 if let readyState = mapState.uiState.asReady() {
                                     path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
