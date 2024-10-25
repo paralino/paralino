@@ -53,17 +53,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     }
     
     func appInForeground() {
-        Logr.d(tag:"delegate", message: "App in foreground")
         coreAppManager.onAppActive()
     }
     
     func appInBackground() {
-        Logr.d(tag:"delegate", message: "App in background")
         coreAppManager.onAppBackground()
     }
     
     func appInactive() {
-        Logr.d(tag:"delegate", message: "App inactive")
         coreAppManager.onAppInactive()
     }
     

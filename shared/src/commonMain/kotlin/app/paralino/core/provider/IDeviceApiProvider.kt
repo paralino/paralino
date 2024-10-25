@@ -39,7 +39,9 @@ abstract class IDeviceApiProvider(
             it.copy(
                 previous = it.current,
                 current = AppLifecycleType.ACTIVE,
-                wasEverActive = true
+                wasEverActive = true,
+                cameFromBackground = it.wasInBackground,
+                wasInBackground = false
             )
         }
     }
@@ -49,7 +51,8 @@ abstract class IDeviceApiProvider(
         _appLifecycleState.update {
             it.copy(
                 previous = it.current,
-                current = AppLifecycleType.INACTIVE
+                current = AppLifecycleType.INACTIVE,
+                cameFromBackground = it.wasInBackground
             )
         }
     }
@@ -59,7 +62,8 @@ abstract class IDeviceApiProvider(
         _appLifecycleState.update {
             it.copy(
                 previous = it.current,
-                current = AppLifecycleType.BACKGROUND
+                current = AppLifecycleType.BACKGROUND,
+                wasInBackground = true
             )
         }
     }
@@ -91,9 +95,15 @@ data class DeviceStatusData(
 data class AppLifecycleState(
     val previous: AppLifecycleType = AppLifecycleType.DESTROYED,
     val current: AppLifecycleType = AppLifecycleType.DESTROYED,
-    val wasEverActive: Boolean = false
+    val wasEverActive: Boolean = false,
+
+    // When coming from background iOS has Background > Inactive > Active lifecycle
+    // so we can not simply check for previous state so we are keeping a flag is app was actually in background
+    // flag is reset and consumed when app comes to foreground
+    val wasInBackground: Boolean = false,
+    private val cameFromBackground: Boolean = false
 ) {
-    val comingFromBackground get() = wasEverActive && current == AppLifecycleType.ACTIVE && previous == AppLifecycleType.BACKGROUND
+    val comingFromBackground get() = wasEverActive && current == AppLifecycleType.ACTIVE && cameFromBackground
 }
 
 enum class AppLifecycleType {
