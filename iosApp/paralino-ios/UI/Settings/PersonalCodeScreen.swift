@@ -13,7 +13,6 @@ struct PersonalCodeScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.personalCodeVM)
     @State var shareText: ShareText?
-    let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
@@ -22,8 +21,7 @@ struct PersonalCodeScreen: View {
                 ScreensIOS.shared.settings.PersonalCodeScreenVC(
                     vm: appState.vm,
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(
-                            notificationStatusProvider: appDelegate.deviceApiProvider.notificationStatusProvider,
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
                             messageDispather: appState.vm.messageDispatcher
                         )
                     },

@@ -18,7 +18,6 @@ struct SharingStartScreen: View {
     @StateObject var appState: SharingStartState
     
     @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
-    let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
@@ -35,8 +34,7 @@ struct SharingStartScreen: View {
                         path.append(.settings(.subscriptions))
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(
-                            notificationStatusProvider: appDelegate.deviceApiProvider.notificationStatusProvider,
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
                             messageDispather: appState.vm.messageDispatcher
                         )
                     },

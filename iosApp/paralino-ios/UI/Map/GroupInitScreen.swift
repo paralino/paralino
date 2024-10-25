@@ -15,7 +15,6 @@ struct GroupInitScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.groupInitVM)
     @State var shareText: ShareText?
-    let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
@@ -31,8 +30,7 @@ struct GroupInitScreen: View {
                         shareText = ShareText(text: data)
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(
-                            notificationStatusProvider: appDelegate.deviceApiProvider.notificationStatusProvider,
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
                             messageDispather: appState.vm.messageDispatcher
                         )
                     }

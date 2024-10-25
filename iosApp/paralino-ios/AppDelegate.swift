@@ -22,6 +22,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
     lazy var deviceApiProvider: IDeviceApiProvider = { KoinIOS.Instances.shared.deviceApiProvider }()
     
+    lazy var notificationPermissionHandler = NotificationPermissionHandler(notificationStatusProvider: deviceApiProvider.notificationStatusProvider)
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         SentrySDK.start { options in

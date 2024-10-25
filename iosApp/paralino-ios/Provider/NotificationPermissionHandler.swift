@@ -14,33 +14,37 @@ import paralino_apple_core
 class NotificationPermissionHandler {
     
     private var requested: Bool = false
+    let notificationStatusProvider: INotificationStatusProvider
+    
+    init(notificationStatusProvider: INotificationStatusProvider) {
+        self.notificationStatusProvider = notificationStatusProvider
+    }
 
     func requestNotificationPermission(
-        notificationStatusProvider: INotificationStatusProvider,
         messageDispather: ICoreMessageDispatcher
     ) {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             Logr.d(tag: "permission_request", message: "Notification result: \(granted)", t: KotlinThrowable(message: error?.localizedDescription))
-            notificationStatusProvider.refreshNotificationsStatus()
+            self.notificationStatusProvider.refreshNotificationsStatus()
             if !granted {
                 if self.requested {
+                    self.openAppSettingsPage()
+                } else {
                     let data = AppSnackbarData(
                         text: MR.shared.strings.error_notification_permission_missing_sheet_message.localizedString(),
-                        actionText: "Settings",
+                        actionText: MR.shared.strings.button_open_settings.localizedString(),
                         duration: SnackbarDuration.long_,
                         id: "notification_permission"
                     )
                     DispatchQueue.main.async {
                         messageDispather.showSnackbarForResult(data: data) { result, error in
                             if result?.result == MaterialSnackbarResult.actionperformed {
+                                self.requested = true
                                 self.openAppSettingsPage()
                             }
                         }
                     }
-                } else {
-                    self.openAppSettingsPage()
-                    self.requested = true
                 }
             }
         }
@@ -53,5 +57,4 @@ class NotificationPermissionHandler {
             }
         }
     }
-    
 }

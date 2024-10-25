@@ -14,7 +14,6 @@ struct PlacesScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: PlacesState
-    let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
@@ -32,8 +31,7 @@ struct PlacesScreen: View {
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(
-                            notificationStatusProvider: appDelegate.deviceApiProvider.notificationStatusProvider,
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
                             messageDispather: appState.vm.messageDispatcher
                         )
                     },

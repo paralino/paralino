@@ -14,7 +14,6 @@ struct GroupDetailScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState: ViewModelFactoryIOS<GroupDetailViewModel>
     @State var alertDialog: AlertDialogData? = nil
-    let notificationPermissionHandler = NotificationPermissionHandler()
     
     var body: some View {
         ZStack {
@@ -49,8 +48,7 @@ struct GroupDetailScreen: View {
                         path.removeLast()
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(
-                            notificationStatusProvider: appDelegate.deviceApiProvider.notificationStatusProvider,
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
                             messageDispather: appState.vm.messageDispatcher
                         )
                     },
