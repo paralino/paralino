@@ -23,6 +23,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     lazy var deviceApiProvider: IDeviceApiProvider = { KoinIOS.Instances.shared.deviceApiProvider }()
     
     lazy var notificationPermissionHandler = NotificationPermissionHandler(notificationStatusProvider: deviceApiProvider.notificationStatusProvider)
+    lazy var locationPermissionHandler = LocationPermissionHandler(locationManager: locationManager)
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         

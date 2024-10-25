@@ -68,6 +68,7 @@
 		25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */; };
 		25C91A342A580CBA00A49F06 /* GroupDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */; };
 		25C91A362A5890B400A49F06 /* MemberInviteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */; };
+		25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
 		25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */; };
 		25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */; };
@@ -227,6 +228,7 @@
 		25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCreateScreen.swift; sourceTree = "<group>"; };
 		25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailScreen.swift; sourceTree = "<group>"; };
 		25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberInviteScreen.swift; sourceTree = "<group>"; };
+		25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPermissionHandler.swift; sourceTree = "<group>"; };
 		25D8A43429CE24A00023A0E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsScreen.swift; sourceTree = "<group>"; };
 		25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
@@ -368,6 +370,7 @@
 		252E361129CF5EB0008FC635 /* Provider */ = {
 			isa = PBXGroup;
 			children = (
+				25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */,
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
 				2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */,
 				25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */,
@@ -924,6 +927,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
+				25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */,
 				25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
 				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,

@@ -90,15 +90,6 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
             }
         }
     }
-
-    func requestLocationPermission() {
-        let status = manager.locationCondtionStatus()
-        if !status.isAnyLocationPermissionAllowed {
-            manager.requestWhenInUseAuthorization()
-        } else if !status.isBackgroundPermissionAllowed {
-            manager.requestAlwaysAuthorization()
-        }
-    }
     
     func startLocationUpdates() {
         manager.startUpdatingLocation()

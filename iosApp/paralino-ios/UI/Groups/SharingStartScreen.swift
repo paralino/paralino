@@ -13,7 +13,6 @@ import SwiftLocation
 struct SharingStartScreen: View {
     
     @EnvironmentObject var appDelegate: AppDelegate
-    @EnvironmentObject var locationManager: LocationManager
     @Binding var path: [NavigationGraph]
     @StateObject var appState: SharingStartState
     
@@ -42,10 +41,14 @@ struct SharingStartScreen: View {
                         
                     },
                     askLocationPermission: {
-                        locationManager.requestLocationPermission()
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askBackgroundLocationPermission: {
-                        locationManager.requestLocationPermission()
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }
