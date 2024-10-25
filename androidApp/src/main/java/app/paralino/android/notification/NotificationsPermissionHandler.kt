@@ -85,7 +85,7 @@ class NotificationsPermissionHandlerState constructor(
                 updateStatus()
             }
             notificationPermissionState?.shouldShowRationale == true -> {
-                openSettings()
+                showPermissionDeniedInfo()
             }
             else -> {
                 notificationPermissionState?.launchMultiplePermissionRequest()
@@ -105,7 +105,7 @@ class NotificationsPermissionHandlerState constructor(
             messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
                     text = context.getString(messageRes),
-                    actionText = "Settings",
+                    actionText = MR.strings.button_open_settings.getString(context),
                     duration = SnackbarDuration.Long
                 )
             )?.result?.onAction {
