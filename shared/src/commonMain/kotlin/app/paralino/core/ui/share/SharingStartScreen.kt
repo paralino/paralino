@@ -203,6 +203,11 @@ fun SharingStartScreenCore(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colors.background)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = { }
+                    )
                     .padding(bottom = 20.dp, top = 8.dp)
                     .padding(horizontal = 20.dp),
                 contentAlignment = Alignment.Center

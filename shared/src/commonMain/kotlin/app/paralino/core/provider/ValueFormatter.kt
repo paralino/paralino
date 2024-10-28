@@ -190,7 +190,7 @@ abstract class IValueFormatter {
 
         val time = formatTimeOnly(dateTimeUTC)
         return when {
-            sameDay -> time
+            sameDay -> "${MR.strings.date_name_today.localizedString()}, $time"
             isTomorrow -> "${MR.strings.date_name_tomorrow.localizedString()}, $time"
             sameYear -> formatBestPattern(
                 timeUTC = dateTimeUTC,
