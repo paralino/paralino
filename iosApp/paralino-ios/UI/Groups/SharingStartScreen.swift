@@ -16,7 +16,7 @@ struct SharingStartScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState: SharingStartState
     
-    @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
+    @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -25,7 +25,7 @@ struct SharingStartScreen: View {
                 ScreensIOS.shared.home.StartSharingScreenVC(
                     vm: appState.vm,
                     groupId: nil,
-                    onPickGroup: { sheet in bottomSheet = sheet },
+                    onPickGroup: { sheet in groupPicker = sheet },
                     onSharingStarted: {
                         path.removeLast()
                     },
@@ -55,6 +55,16 @@ struct SharingStartScreen: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
         }
+        .groupPickerSheet(
+            $groupPicker,
+            onSelectGroup: { state in
+                groupPicker = nil
+                appState.vm.setSelectedGroup(groupId: state.id)
+            },
+            onEditGroup: { group in },
+            onCreateGroup: {},
+            onJoinGroup: {}
+        )
     }
     
     static func createState(groupId: String?, isOnboarding: Bool) -> SharingStartState {

@@ -13,8 +13,7 @@ struct MemberInviteScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState: MemberInviteState
     
-    // TODO add group picker
-    @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
+    @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -22,7 +21,7 @@ struct MemberInviteScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.MemberInviteScreenVC(
                     vm: appState.vm,
-                    onPickGroup: { sheet in bottomSheet = sheet },
+                    onPickGroup: { sheet in groupPicker = sheet },
                     onMemberAdded: {
                         if appState.isOnboarding {
                             path[path.count - 1] = .home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding))
@@ -46,6 +45,16 @@ struct MemberInviteScreen: View {
                 }
             }
         }
+        .groupPickerSheet(
+            $groupPicker,
+            onSelectGroup: { state in
+                groupPicker = nil
+                appState.vm.selectGroup(group: state)
+            },
+            onEditGroup: { group in },
+            onCreateGroup: {},
+            onJoinGroup: {}
+        )
     }
     
     static func createState(groupId: String?, code: String?, isOnboarding: Bool) -> MemberInviteState {

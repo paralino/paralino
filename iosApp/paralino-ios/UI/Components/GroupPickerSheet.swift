@@ -32,17 +32,19 @@ struct GroupPickerSheet: ViewModifier {
                                 GroupListItem(data: groups[index], onClick: { onSelectGroup?(groups[index]) }, onEdit: { onEditGroup?(groups[index]) })
                                     
                             }
-                            Spacer()
-                            HStack {
-                                Button(action: { onCreateGroup?() }) {
-                                    Label(MR.shared.strings.group_create_button_text.localizedString(), systemImage: "plus")
-                                }
+                            if bottomSheet?.onlyShowGroups == false {
                                 Spacer()
-                                Button(action: { onJoinGroup?() }) {
-                                    Label(MR.shared.strings.dashboard_groups_join_button.localizedString(), systemImage: "key.horizontal")
+                                HStack {
+                                    Button(action: { onCreateGroup?() }) {
+                                        Label(MR.shared.strings.group_create_button_text.localizedString(), systemImage: "plus")
+                                    }
+                                    Spacer()
+                                    Button(action: { onJoinGroup?() }) {
+                                        Label(MR.shared.strings.dashboard_groups_join_button.localizedString(), systemImage: "key.horizontal")
+                                    }
                                 }
+                                .padding()
                             }
-                            .padding()
                         }
                         .padding()
                         .presentationDetents([.medium, .large])
