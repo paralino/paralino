@@ -52,6 +52,13 @@ struct MainApp: App {
             .environmentObject(appDelegate)
             .environmentObject(appDelegate.locationManager)
             .environmentObject(appState)
+            .onOpenURL { url in
+                if let deeplink = DeeplinkType.companion.parse(deeplink: url.absoluteString) {
+                    appState.vm.setDeeplink(deeplinkType: deeplink)
+                } else {
+                    Logr.w(tag:"delegate", message: "Unknown url launched")
+                }
+            }
         }
     }
     
