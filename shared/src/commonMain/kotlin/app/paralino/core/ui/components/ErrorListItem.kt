@@ -148,7 +148,8 @@ val ConditionErrorType.nameRes: StringResource
     get() = when (this) {
         ConditionErrorType.GPS -> MR.strings.location_banner_error_gps_off
         ConditionErrorType.PermissionNotifications -> MR.strings.location_banner_error_no_permission_notifications
-        is ConditionErrorType.PermissionLocation -> MR.strings.location_banner_error_no_permission_location
+        ConditionErrorType.PermissionLocation.PermissionLocationAny -> MR.strings.location_banner_error_no_permission_location
+        ConditionErrorType.PermissionLocation.PermissionLocationPrecise -> MR.strings.location_banner_error_no_permission_location_precise
         ConditionErrorType.PermissionLocationBackground -> MR.strings.location_banner_error_no_permission_location_background
         ConditionErrorType.Network -> MR.strings.location_banner_error_offline
         is ConditionErrorType.EmailVerification -> MR.strings.info_email_confirm

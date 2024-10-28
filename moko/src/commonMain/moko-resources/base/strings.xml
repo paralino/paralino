@@ -75,6 +75,7 @@
     <string name="location_banner_error_gps_off">Device location is disabled</string>
     <string name="location_banner_error_no_permission_notifications">Missing notifications permission</string>
     <string name="location_banner_error_no_permission_location">Missing location permission</string>
+    <string name="location_banner_error_no_permission_location_precise">Missing precise location permission</string>
     <string name="location_banner_error_no_permission_location_background">Missing all time location permission</string>
     <string name="location_banner_error_offline">Device is offline</string>
 

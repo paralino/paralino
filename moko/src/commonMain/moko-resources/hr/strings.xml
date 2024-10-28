@@ -75,6 +75,7 @@
     <string name="location_banner_error_gps_off">Lokacija uređaja je onemogućena</string>
     <string name="location_banner_error_no_permission_notifications">Nedostaje dozvola za obavijesti</string>
     <string name="location_banner_error_no_permission_location">Nedostaje dozvola za lokaciju</string>
+    <string name="location_banner_error_no_permission_location_precise">Nedostaje dozvola preciznu za lokaciju</string>
     <string name="location_banner_error_no_permission_location_background">Nedostaje dozvola za stalnu lokaciju</string>
     <string name="location_banner_error_offline">Uređaj je izvan mreže</string>
 
