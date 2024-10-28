@@ -16,19 +16,12 @@ sealed class DeeplinkType() {
     ) : DeeplinkType() {
 
         companion object {
-            val argumentParalinoID: String = "paralinoId"
-            val deeplinkPrefix = "https://${host}/$pathParalinoID/"
-
             fun buildUrl(paralinoID: String): String {
-                return "$deeplinkPrefix$paralinoID"
+                return "https://$host/$pathParalinoID/$paralinoID"
             }
 
-            fun get(input: String): String {
+            fun getParalinoIDCode(input: String): String {
                 return (DeeplinkType.parse(input.lowercase()) as? ParalinoID)?.paralinoID ?: input
-            }
-
-            fun routeSignature(): String {
-                return "$pathParalinoID/${argumentParalinoID}"
             }
         }
     }
@@ -39,23 +32,10 @@ sealed class DeeplinkType() {
         val secret: String,
         val expire: String?,
     ) : DeeplinkType() {
-
-        fun route(): String {
-            return "$pathPasswordReset?$argumentUserId=$argumentUserId&$argumentSecret=$argumentSecret&$argumentExpire=$argumentExpire"
-        }
-
         companion object {
-            val argumentUserId: String = "userId"
-            val argumentSecret: String = "secret"
-            val argumentExpire: String = "expire"
-
-            fun uriPattern(): String {
-                return "https://${host}/${routeSignature()}"
-            }
-
-            fun routeSignature(): String {
-                return "$pathPasswordReset?$argumentUserId={$argumentUserId}&$argumentSecret={$argumentSecret}&$argumentExpire={$argumentExpire}"
-            }
+            const val argumentUserId: String = "userId"
+            const val argumentSecret: String = "secret"
+            const val argumentExpire: String = "expire"
         }
     }
 
@@ -65,33 +45,21 @@ sealed class DeeplinkType() {
         val secret: String,
         val expire: String?,
     ) : DeeplinkType() {
-
-        fun route(): String {
-            return "$pathEmailVerify?$argumentUserId=$argumentUserId&$argumentSecret=$argumentSecret&$argumentExpire=$argumentExpire"
-        }
-
         companion object {
-            val argumentUserId: String = "userId"
-            val argumentSecret: String = "secret"
-            val argumentExpire: String = "expire"
-
-            fun uriPattern(): String {
-                return "https://${host}/${routeSignature()}"
-            }
-
-            fun routeSignature(): String {
-                return "$pathEmailVerify?$argumentUserId={$argumentUserId}&$argumentSecret={$argumentSecret}&$argumentExpire={$argumentExpire}"
-            }
+            const val argumentUserId: String = "userId"
+            const val argumentSecret: String = "secret"
+            const val argumentExpire: String = "expire"
         }
     }
 
+
     companion object {
 
-        val host = "paralino.app"
-        val linkHome = "home"
-        val pathPasswordReset = "recover"
-        val pathEmailVerify = "verify"
-        val pathParalinoID = "id"
+        private const val host = "paralino.app"
+        private const val linkHome = "home"
+        private const val pathPasswordReset = "recover"
+        private const val pathEmailVerify = "verify"
+        private const val pathParalinoID = "id"
 
         private fun cleanDeepLink(deeplink: String?): Url? {
 
@@ -99,14 +67,14 @@ sealed class DeeplinkType() {
 
             val data = Url(deeplink)
             val isValidDeeplink =
-                data.host.endsWith(DeeplinkType.host) == true || (data.protocol.name == "paralino" && data.host == "app")
+                data.host.endsWith(host) || (data.protocol.name == "paralino" && data.host == "app")
 
             if (!isValidDeeplink) return null
 
             val canUseDeeplink = arrayOf(
-                DeeplinkType.pathPasswordReset,
-                DeeplinkType.pathEmailVerify,
-                DeeplinkType.pathParalinoID
+                pathPasswordReset,
+                pathEmailVerify,
+                pathParalinoID
             ).any {
                 data.fullPath?.matches(it) ?: false
             }
@@ -116,7 +84,7 @@ sealed class DeeplinkType() {
                     .apply { set(scheme = "https", host = DeeplinkType.host) }
                     .build()
             } else {
-                Url("https://${DeeplinkType.host}/${DeeplinkType.linkHome}")
+                Url("https://${host}/${linkHome}")
             }
 
             return cleanDeepLink
@@ -137,7 +105,6 @@ sealed class DeeplinkType() {
             deeplink ?: return null
             val cleanDeeplink = cleanDeepLink(deeplink) ?: return null
             val path = cleanDeeplink.fullPath ?: return null
-            val split = path.split("/").filter { it.isNotBlank() }
 
             return when {
                 path.matches(pathPasswordReset) -> {
@@ -147,24 +114,35 @@ sealed class DeeplinkType() {
                         cleanDeeplink.parameters.get(PasswordReset.argumentSecret) ?: return null
                     val expire = cleanDeeplink.parameters.get(PasswordReset.argumentExpire)
 
-                    PasswordReset(deeplink, userId, secret, expire)
+                    PasswordReset(
+                        deeplink = deeplink,
+                        userId = userId,
+                        secret = secret,
+                        expire = expire
+                    )
                 }
 
                 path.matches(pathEmailVerify) -> {
                     val userId =
-                        cleanDeeplink.parameters.get(PasswordReset.argumentUserId) ?: return null
+                        cleanDeeplink.parameters.get(EmailVerify.argumentUserId) ?: return null
                     val secret =
-                        cleanDeeplink.parameters.get(PasswordReset.argumentSecret) ?: return null
-                    val expire = cleanDeeplink.parameters.get(PasswordReset.argumentExpire)
+                        cleanDeeplink.parameters.get(EmailVerify.argumentSecret) ?: return null
+                    val expire = cleanDeeplink.parameters.get(EmailVerify.argumentExpire)
 
-                    EmailVerify(deeplink, userId, secret, expire)
+                    EmailVerify(
+                        deeplink = deeplink,
+                        userId = userId,
+                        secret = secret,
+                        expire = expire
+                    )
                 }
 
                 path.matches(pathParalinoID) -> {
                     val segments = cleanDeeplink.pathSegments ?: return null
-                    val pathIndex =
-                        segments.indexOfFirst { it == pathParalinoID }.takeIf { it >= 0 }
-                            ?: return null
+                    val pathIndex = segments
+                        .indexOfFirst { it == pathParalinoID }
+                        .takeIf { it >= 0 }
+                        ?: return null
                     val paralinoId = segments.getOrNull(pathIndex + 1) ?: return null
                     ParalinoID(deeplink = deeplink, paralinoID = paralinoId)
                 }

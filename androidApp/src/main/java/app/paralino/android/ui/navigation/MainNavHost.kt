@@ -239,14 +239,7 @@ fun NavGraphBuilder.loggedOutGraph(
         composable(AppScreen.LoggedOut.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
         }
-        composable(
-            AppScreen.LoggedOut.PasswordReset.routeSignature,
-            deepLinks = listOf(
-                navDeepLink {
-                    this.uriPattern = DeeplinkType.PasswordReset.uriPattern()
-                }
-            )
-        ) {
+        composable(AppScreen.LoggedOut.PasswordReset.routeSignature) {
             val userId = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentUserId)
             val secret = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentSecret)
             ResetPasswordScreen(appState, userId = userId!!, secret = secret!!)

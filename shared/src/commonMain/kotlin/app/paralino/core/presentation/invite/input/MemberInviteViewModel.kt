@@ -204,7 +204,7 @@ class MemberInviteViewModel(
             MemberInviteScreenState.Empty(
                 code = code
                     .trim()
-                    .let { DeeplinkType.ParalinoID.get(it) }
+                    .let { DeeplinkType.ParalinoID.getParalinoIDCode(it) }
                     .uppercase(),
                 hasInputError = if (it.hasInputError) code.isBlank() else false,
                 actionLoading = it.actionLoading

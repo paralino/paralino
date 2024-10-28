@@ -44,20 +44,24 @@ sealed class AppScreen {
             val argumentUserId: String = DeeplinkType.PasswordReset.argumentUserId
             val argumentSecret: String = DeeplinkType.PasswordReset.argumentSecret
             val argumentExpire: String = DeeplinkType.PasswordReset.argumentExpire
-            override val routeSignature: String = DeeplinkType.PasswordReset.routeSignature()
+            override val routeSignature: String = "password-reset?$argumentUserId={$argumentUserId}&$argumentSecret={$argumentSecret}&$argumentExpire={$argumentExpire}"
 
             fun route(deeplink: DeeplinkType.PasswordReset): String {
-                return deeplink.route()
+                val args = arrayOf(
+                    "$argumentUserId=${deeplink.userId}",
+                    "$argumentSecret=${deeplink.secret}",
+                    deeplink.expire?.let { "$argumentExpire=$it" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+
+                return "password-reset?$args"
             }
         }
     }
 
     object MainHome : AppScreen() {
         override val routeSignature: String = "home"
-
-        object GroupConnect : AppScreen() {
-            override val routeSignature: String = "home-connect"
-        }
 
         object MainMap : AppScreen() {
             override val routeSignature: String = "map-mainMap?$argumentGroupId={$argumentGroupId}"
