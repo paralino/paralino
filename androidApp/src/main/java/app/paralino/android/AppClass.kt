@@ -89,6 +89,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                 if (it.data == true) {
                     logg.v("Location sharing contract ready, starting location service from state: $appState")
                     try {
+                        // TODO check if background location permission is enabled before starting
                         LocationService.start(this, isForeground)
                     } catch (e: Exception) {
                         val message =
