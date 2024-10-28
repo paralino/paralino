@@ -18,7 +18,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
@@ -326,7 +325,7 @@ object HomeScreens {
                             state = uiState,
                             sheetPeekHeight = (this.maxHeight - bottomOffset)
                                 .plus(if (sheetState.currentValue == BottomSheetPosition.HIDDEN) 35.dp else 0.dp)
-                                .coerceAtMost(this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
+                                .coerceIn(0.dp, this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
                             onGroupPickerClick = onGroupPickerClick,
                             onGroupDetailsClick = onGroupDetailsClick,
                             onSharingStartClick = onSharingStartClick,
