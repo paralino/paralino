@@ -51,6 +51,7 @@ struct MainApp: App {
             }
             .environmentObject(appDelegate)
             .environmentObject(appDelegate.locationManager)
+            .environmentObject(appState)
         }
     }
     

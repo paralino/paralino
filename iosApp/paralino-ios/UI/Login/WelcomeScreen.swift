@@ -12,16 +12,16 @@ import shared
 
 struct WelcomeScreen: View {
     
-    @State private var path: [WelcomeGraph] = []
+    @EnvironmentObject var mainAppState: MainAppObject
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.welcomeVM)
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack(path: $mainAppState.appStartGraph) {
             ComposeRepresentable {
                 ScreensIOS.shared.login.WelcomeScreenVC(
                     vm: appState.vm,
-                    onLoginClick: { path.append(.login) },
-                    onStartClick: { path.append(.signup) }
+                    onLoginClick: { mainAppState.appStartGraph.append(.login) },
+                    onStartClick: { mainAppState.appStartGraph.append(.signup) }
                 )
             }
             .ignoresSafeArea(.all, edges: .vertical)
@@ -30,10 +30,10 @@ struct WelcomeScreen: View {
                 case .welcome: WelcomeScreen()
                 case .login:
                     let loginAppState = LoginScreen.createState(screenUiType: LoginScreenUiType.login)
-                    LoginScreen(appState: loginAppState, path: $path)
+                    LoginScreen(appState: loginAppState)
                 case .signup:
                     let loginAppState = LoginScreen.createState(screenUiType: LoginScreenUiType.signup)
-                    LoginScreen(appState: loginAppState, path: $path)
+                    LoginScreen(appState: loginAppState)
                 }
             }
         }

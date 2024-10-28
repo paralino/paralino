@@ -14,6 +14,9 @@ class MainAppObject: ObservableObject {
     @Published
     var uiState: ResourceSwift<AppAccountState> = .notInitialized
     
+    @Published var appStartGraph: [WelcomeGraph] = []
+    @Published var userReadyGraph: [NavigationGraph] = []
+    
     init() {
         vm = KoinIOS.ViewModels.shared.mainVM
         vm.observe(flow: vm.uiState) { [weak self] state in
@@ -25,5 +28,4 @@ class MainAppObject: ObservableObject {
     deinit {
         vm.cleanup()
     }
-    
 }
