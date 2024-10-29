@@ -2,7 +2,6 @@ package app.paralino.core.ui.main
 
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
-import io.ktor.http.fullPath
 import io.ktor.http.set
 
 sealed class DeeplinkType() {
@@ -76,7 +75,7 @@ sealed class DeeplinkType() {
                 pathEmailVerify,
                 pathParalinoID
             ).any {
-                data.fullPath?.matches(it) ?: false
+                data.encodedPath.matches(it)
             }
 
             val cleanDeepLink = if (canUseDeeplink) {
@@ -104,7 +103,7 @@ sealed class DeeplinkType() {
         fun parse(deeplink: String?): DeeplinkType? {
             deeplink ?: return null
             val cleanDeeplink = cleanDeepLink(deeplink) ?: return null
-            val path = cleanDeeplink.fullPath ?: return null
+            val path = cleanDeeplink.encodedPath
 
             return when {
                 path.matches(pathPasswordReset) -> {
