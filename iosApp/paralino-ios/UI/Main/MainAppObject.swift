@@ -51,6 +51,13 @@ class MainAppObject: ObservableObject {
                 }
             }
         }
+        
+        // reset graph if state is out of graph
+        if accountState.data is AppAccountState.USER_READY {
+            appStartGraph = []
+        } else if accountState.data is AppAccountState.NO_USER {
+            userReadyGraph = []
+        }
     }
     
     deinit {
