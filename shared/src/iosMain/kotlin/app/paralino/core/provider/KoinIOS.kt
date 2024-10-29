@@ -234,7 +234,9 @@ object KoinIOS {
         val editProfileVM get() = get<EditProfileViewModel>()
         val groupInitVM get() = get<GroupInitViewModel>()
         val recoverKeysVM get() = get<RecoverKeysViewModel>()
-        val resetPasswordVM get() = get<ResetPasswordViewModel>()
+        fun resetPasswordVM(userId: String, secret: String) = get<ResetPasswordViewModel> {
+            parametersOf(userId, secret)
+        }
         val mapHomeVM get() = get<MapHomeViewModel>()
         val settingsVM get() = get<SettingsViewModel>()
         val changeEmailVM get() = get<ChangeEmailViewModel>()

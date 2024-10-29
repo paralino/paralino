@@ -41,12 +41,22 @@ class MainAppObject: ObservableObject {
     
     private func processDeeplink(deeplink: DeeplinkType?) {
         if accountState.data is AppAccountState.USER_READY,
-           let inviteDeeplink = deeplink as? DeeplinkType.ParalinoID {
+            let inviteDeeplink = deeplink as? DeeplinkType.ParalinoID {
             deeplinkTask?.cancel()
             DispatchQueue.main.async { [weak self] in
                 self?.deeplinkTask = Task { [weak self] in
                     try? await Task.sleep(nanoseconds: 500 * 1_000_000)
                     self?.userReadyGraph.append(.home(.memberInvite(groupId: nil, code: inviteDeeplink.paralinoID, isOnboarding: false)))
+                    self?.vm.setDeeplink(deeplinkType: nil)
+                }
+            }
+        } else if accountState.data is AppAccountState.NO_USER,
+                  let recoveryDeeplink = deeplink as? DeeplinkType.PasswordReset {
+            deeplinkTask?.cancel()
+            DispatchQueue.main.async { [weak self] in
+                self?.deeplinkTask = Task { [weak self] in
+                    try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                    self?.appStartGraph = [.passwordReset(deeplink: recoveryDeeplink)]
                     self?.vm.setDeeplink(deeplinkType: nil)
                 }
             }

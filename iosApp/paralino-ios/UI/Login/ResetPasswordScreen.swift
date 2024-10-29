@@ -9,7 +9,8 @@ import SwiftUI
 import shared
 
 struct ResetPasswordScreen: View {
-    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.resetPasswordVM)
+    @StateObject var appState: ViewModelFactoryIOS<ResetPasswordViewModel>
+    @EnvironmentObject var mainAppState: MainAppObject
     
     var body: some View {
         ZStack {
@@ -17,17 +18,17 @@ struct ResetPasswordScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.login.ResetPasswordVC(
                     vm: appState.vm,
-                    openLoginScreen: {}
+                    openLoginScreen: {
+                        mainAppState.appStartGraph = [.login]
+                    }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.reset_password_screen_title.localizedString())
         }
     }
-}
-
-struct ResetPasswordScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        ResetPasswordScreen()
+    
+    static func createState(deeplink: DeeplinkType.PasswordReset) -> ViewModelFactoryIOS<ResetPasswordViewModel> {
+        ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.resetPasswordVM(userId: deeplink.userId, secret: deeplink.secret))
     }
 }

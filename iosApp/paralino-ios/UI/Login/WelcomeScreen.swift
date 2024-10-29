@@ -34,6 +34,8 @@ struct WelcomeScreen: View {
                 case .signup:
                     let loginAppState = LoginScreen.createState(screenUiType: LoginScreenUiType.signup)
                     LoginScreen(appState: loginAppState)
+                case .passwordReset(let deeplink):
+                    ResetPasswordScreen(appState: ResetPasswordScreen.createState(deeplink: deeplink))
                 }
             }
         }

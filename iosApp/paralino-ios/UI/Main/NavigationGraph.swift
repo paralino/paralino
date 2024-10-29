@@ -17,6 +17,7 @@ enum WelcomeGraph: Hashable {
     case welcome
     case login
     case signup
+    case passwordReset(deeplink: DeeplinkType.PasswordReset)
 }
 
 enum HomeGraph: Hashable {
