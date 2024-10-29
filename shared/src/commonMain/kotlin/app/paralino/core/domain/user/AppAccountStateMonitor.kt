@@ -1,5 +1,7 @@
 package app.paralino.core.domain.user
 
+import app.paralino.core.crypto.AlphabetType
+import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeyRepository
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
@@ -15,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -23,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AppAccountStateMonitor constructor(
@@ -34,14 +39,18 @@ class AppAccountStateMonitor constructor(
     private val pushManager: IPushProviderManager,
     private val scopeProvider: ICoroutineScopeProvider,
     private val userSessionMonitor: UserSessionMonitor,
+    private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs
 ) {
-
+    private val manualTrigger = MutableStateFlow("")
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
     private var everHadUser = false
 
     val userState: Flow<Resource<AppAccountState>> =
-        userRepo.localUserRaw.map { userState ->
+        combine(
+            userRepo.localUserRaw,
+            manualTrigger
+        ) { userState, _ ->
             when (userState) {
                 Resource.NotInitialized -> Resource.NotInitialized
                 is Resource.Ready -> {
@@ -176,6 +185,10 @@ class AppAccountStateMonitor constructor(
                 }
             }
             .flowOn(Dispatchers.IO)
+
+    fun triggerStateCheck() {
+        manualTrigger.update { cryptoCore.randomId(length = 32, AlphabetType.EXTENDED) }
+    }
 }
 
 sealed class AppAccountState {

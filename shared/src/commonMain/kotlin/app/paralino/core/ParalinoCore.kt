@@ -243,7 +243,7 @@ val coreModule = module {
     single { GroupValidityVerification(get(), get(), get(), appPrefs) }
     single { LocationSharingManager(get(), get()) }
     single { UserSessionMonitor() }
-    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get()) }

@@ -168,7 +168,7 @@ object KoinIOS {
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
             factory { EditProfileViewModel(get(), get()) }
-            factory { RecoverKeysViewModel(get(), get()) }
+            factory { RecoverKeysViewModel(get(), get(), get()) }
             factory { (userId: String, secret: String) ->
                 ResetPasswordViewModel(
                     userId = userId,
