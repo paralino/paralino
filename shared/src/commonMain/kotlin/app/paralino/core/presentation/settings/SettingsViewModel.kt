@@ -106,7 +106,7 @@ class SettingsViewModel(
         userPlans: UserPlans
     ): Payload<AccountScreenState> {
         return when (userState) {
-            Resource.NotInitialized -> _accountState.value
+            Resource.NotInitialized -> Payload.Loading
             is Resource.Ready -> {
                 if (userState.data != null) {
                     Payload.Success(
