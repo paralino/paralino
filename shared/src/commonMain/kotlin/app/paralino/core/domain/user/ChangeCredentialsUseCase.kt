@@ -120,7 +120,7 @@ class ChangeCredentialsUseCase(
 
             val newUserKeys = cryptoCore.changeUserMasterKey(
                 userId = userId,
-                signatureKeyPair = userKeyRepo.signatureKeyPair(),
+                signatureKeyPair = oldKey.signatureKeyPair,
                 authKey = newMasterAuthKey
             )
 
