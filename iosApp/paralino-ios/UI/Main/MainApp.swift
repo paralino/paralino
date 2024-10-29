@@ -62,6 +62,7 @@ struct MainApp: App {
             .mainAlert($appState.sessionExpiredDialog) { action in
                 appState.vm.cancelSessionExpired()
             }
+            .loadingOverlay(isLoading: appState.uiState.dataRefreshBlockingLoadingShown)
         }
     }
     
