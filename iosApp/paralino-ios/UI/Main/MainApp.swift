@@ -25,7 +25,7 @@ struct MainApp: App {
         WindowGroup {
             ZStack {
                 if isOrWasActive {
-                    switch appState.uiState {
+                    switch appState.accountState {
                     case .notInitialized: VStack {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
                     }
@@ -58,6 +58,9 @@ struct MainApp: App {
                 } else {
                     Logr.w(tag:"delegate", message: "Unknown url launched")
                 }
+            }
+            .mainAlert($appState.sessionExpiredDialog) { action in
+                appState.vm.cancelSessionExpired()
             }
         }
     }

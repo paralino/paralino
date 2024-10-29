@@ -64,7 +64,10 @@ struct AlertDialog: ViewModifier {
     var onAction: ((String) -> Void)?
     
     var isShowingAlert: Binding<Bool> {
-        Binding(get: { alertData != nil }, set: { _ in alertData = nil })
+        Binding(
+            get: { alertData != nil },
+            set: { _ in alertData = nil }
+        )
     }
     
     func body(content: Content) -> some View {
