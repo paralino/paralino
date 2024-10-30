@@ -52,7 +52,7 @@ class NotificationPermissionHandler {
     
     func openAppSettingsPage() {
         DispatchQueue.main.async {
-            if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
+            if let appSettings = URL(string: UIApplication.openNotificationSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
                 UIApplication.shared.open(appSettings)
             }
         }
