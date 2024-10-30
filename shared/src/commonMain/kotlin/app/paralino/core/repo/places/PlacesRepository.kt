@@ -23,7 +23,6 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.extensions.combine
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -33,6 +32,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.math.absoluteValue
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
@@ -385,7 +385,13 @@ class PlacesRepository constructor(
         logg.tag("place_activity").i("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
-            placeActivityDelay()
+            val delay = placeActivityDelay(trigger = trigger)
+            logg.tag("place_activity").i("Delay place notify $activityTag - $placeId for ${delay?.inWholeSeconds}")
+
+            if (delay != null) {
+                delay(delay)
+            }
+
             try {
                 processPlaceActivity(
                     activityTag = activityTag,
@@ -525,11 +531,16 @@ class PlacesRepository constructor(
         )
     }
 
-    suspend fun placeActivityDelay() {
-        if (appPrefs.placeActivityThrottle) {
-            delay(20.seconds)
-        } else {
-            delay(5.seconds)
+    private fun placeActivityDelay(trigger: PlaceActivityTriggerType): Duration? {
+        return when (trigger) {
+            PlaceActivityTriggerType.GOEFENCE -> {
+                if (appPrefs.placeActivityThrottle) 5.seconds
+                else null
+            }
+            else -> {
+                if (appPrefs.placeActivityThrottle) 20.seconds
+                else 5.seconds
+            }
         }
     }
 
