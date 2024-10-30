@@ -24,7 +24,7 @@ struct MemberInviteScreen: View {
                     onPickGroup: { sheet in groupPicker = sheet },
                     onMemberAdded: {
                         if appState.isOnboarding {
-                            path[path.count - 1] = .home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding))
+                            path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
                         } else {
                             path.removeLast()
                         }
@@ -37,7 +37,7 @@ struct MemberInviteScreen: View {
                 if appState.isOnboarding {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: {
-                            path[path.count - 1] = .home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding))
+                            path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
                         }) {
                             Text(MR.shared.strings.button_skip.localizedString())
                         }

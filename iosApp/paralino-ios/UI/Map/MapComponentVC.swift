@@ -102,15 +102,16 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func updateSafeArea(bottomOffset: CGFloat) {
-        positionAnimator.animate(
-            from: mapState!.previousBottomSafeArea,
-            to: bottomOffset,
-            duration: 0.3,
-            timingFunction: .easeOut,
-            onUpdate: { [weak self] value in
-                self?.mapView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: value, right: 0)
-            }
-        )
+//        positionAnimator.animate(
+//            from: mapState!.previousBottomSafeArea,
+//            to: bottomOffset,
+//            duration: 0.3,
+//            timingFunction: .easeOut,
+//            onUpdate: { [weak self] value in
+//                self?.mapView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: value, right: 0)
+//            }
+//        )
+        mapView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: bottomOffset, right: 0)
         mapState!.previousBottomSafeArea = bottomOffset
     }
     

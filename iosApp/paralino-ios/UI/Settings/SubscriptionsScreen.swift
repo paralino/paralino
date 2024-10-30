@@ -22,10 +22,10 @@ struct SubscriptionsScreen: View {
                         path.removeLast()
                     },
                     openBillingStore: {
-                        
+                        // TODO open store
                     },
                     openPaywall: {
-                        
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     }
                 )
             }

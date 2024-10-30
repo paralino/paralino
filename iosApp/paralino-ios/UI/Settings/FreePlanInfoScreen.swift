@@ -20,14 +20,13 @@ struct FreePlanInfoScreen: View {
                     vm: appState.vm,
                     showBanner: true,
                     onContinue: {
-                        path.append(.home(.groupCreate(groupId: nil)))
+                        path[path.count - 1] = .home(.groupCreate(groupId: nil))
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
                     }
                 )
             }
-            .ignoresSafeArea(.all, edges: .vertical)
             .navigationBarBackButtonHidden(true)
         }
     }

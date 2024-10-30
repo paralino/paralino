@@ -61,7 +61,7 @@ struct MapHomeScreen: View {
                             path.append(.home(.groupCreate(groupId: nil)))
                         },
                         openPaywall: {
-                            
+                            path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
                         },
                         mapUIView: { () -> UIViewController in
                             let controller = MapComponentVC()

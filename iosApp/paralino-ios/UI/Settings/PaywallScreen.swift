@@ -9,19 +9,77 @@ import SwiftUI
 import shared
 
 struct PaywallScreen: View {
+    
     @Binding var path: [NavigationGraph]
-    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.appStatusDebugVM)
+    @StateObject var state: PaywallScreenState
     
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
-                ScreensIOS.shared.settings.AppStatusDebugScreenVC(
-                    vm: appState.vm
+                ScreensIOS.shared.settings.PaywallScreenVC(
+                    vm: state.vm,
+                    onNavigateBack: { isSuccess in
+                        goBack(isSuccess: isSuccess.boolValue)
+                    },
+                    onStartPurchase: { event in
+                        
+                    },
+                    onRestorePurchase: { event in
+                        
+                    }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.plan_limit_alert_title.localizedString())
+            .toolbar(.hidden, for: .navigationBar)
         }
+    }
+    
+    private func goBack(isSuccess: Bool) {
+        switch state.type {
+        case .onboarding:
+            if let groupId = state.groupId, !groupId.isEmpty {
+                if let index = path.firstIndex(where: { $0 == .home(.map) }) {
+                    path.removeSubrange(index+1..<path.count)
+                }
+                path.append(.home(.groupDetail(groupId: groupId)))
+            } else {
+                path.append(.home(.map))
+            }
+
+        case .freePlanNotice:
+            if isSuccess {
+                if let index = path.firstIndex(where: { $0 == .home(.map) }) {
+                    path.removeSubrange(index+1..<path.count)
+                }
+                path.append(.home(.groupCreate(groupId: nil)))
+            } else {
+                path.removeLast()
+            }
+
+        case .normal:
+            path.removeLast()
+            
+        default: break
+        }
+    }
+
+}
+
+class PaywallScreenState: ObservableObject {
+    
+    let groupId: String?
+    let type: BillingScreenSourceType
+    let vm: PaywallViewModel
+    
+    init (groupId: String?, type: BillingScreenSourceType) {
+        self.groupId = groupId
+        self.type = type
+        self.vm = KoinIOS.ViewModels.shared.paywallVM(type: type)
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }

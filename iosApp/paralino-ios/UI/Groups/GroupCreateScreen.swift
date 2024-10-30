@@ -21,7 +21,7 @@ struct GroupCreateScreen: View {
                 ScreensIOS.shared.home.GroupCreateScreenVC(
                     vm: appState.vm,
                     onBottomSheetAction: { screen in
-                        bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
+                        bottomSheet = screen
                     },
                     groupUpdated: { newGroupId in
                         if appState.vm.isGroupCreate() {

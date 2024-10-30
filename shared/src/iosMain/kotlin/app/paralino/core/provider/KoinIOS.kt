@@ -266,8 +266,7 @@ object KoinIOS {
         ) = get<CreatePlaceViewModel> { parametersOf(groupId, placeId, lat, lng) }
         val appStatusDebugVM get() = get<AppStatusDebugViewModel>()
         val subscriptionVM get() = get<SubscriptionViewModel>()
-        val paywallVM get() = get<PaywallViewModel>()
+        fun paywallVM(type: BillingScreenSourceType) = get<PaywallViewModel> { parametersOf(type) }
         val planInfoVM get() = get<PlanInfoViewModel>()
     }
-
 }

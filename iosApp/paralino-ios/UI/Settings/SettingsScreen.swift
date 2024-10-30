@@ -49,7 +49,7 @@ struct SettingsScreen: View {
                         path.append(.settings(.subscriptions))
                     },
                     openPaywall: {
-                        
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
                     onShare: { data in
                         shareText = ShareText(text: data)

@@ -25,7 +25,7 @@ struct PlacesScreen: View {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, lat: nil, lng: nil)))
                     },
                     openPaywall: {
-                        
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
                     openPlaceDetailScreen: { place in
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
@@ -45,7 +45,17 @@ struct PlacesScreen: View {
             }
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.places_list_screen_title.localizedString())
-            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if appState.isOnboarding {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
+                        }) {
+                            Text(MR.shared.strings.button_skip.localizedString())
+                        }
+                    }
+                }
+            }
         }
     }
     

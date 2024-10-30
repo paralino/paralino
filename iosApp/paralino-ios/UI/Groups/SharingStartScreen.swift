@@ -27,7 +27,7 @@ struct SharingStartScreen: View {
                     groupId: nil,
                     onPickGroup: { sheet in groupPicker = sheet },
                     onSharingStarted: {
-                        path.removeLast()
+                        finishWithSharingScreen(isOnboarding: appState.isOnboarding)
                     },
                     openSubscriptions: {
                         path.append(.settings(.subscriptions))
@@ -57,6 +57,17 @@ struct SharingStartScreen: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
         }
+        .toolbar {
+            if appState.isOnboarding {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        finishWithSharingScreen(isOnboarding: appState.isOnboarding)
+                    }) {
+                        Text(MR.shared.strings.button_skip.localizedString())
+                    }
+                }
+            }
+        }
         .groupPickerSheet(
             $groupPicker,
             onSelectGroup: { state in
@@ -68,6 +79,29 @@ struct SharingStartScreen: View {
             onJoinGroup: {}
         )
     }
+    
+    private func finishWithSharingScreen(isOnboarding: Bool) {
+        if appState.vm.shouldProceedToPaywall {
+            if let index = path.firstIndex(where: { $0 == .home(.map) }) {
+                path.removeSubrange(index+1..<path.count)
+            }
+            path.append(
+                .settings(
+                    .paywall(groupId: appState.groupId, type: isOnboarding ? BillingScreenSourceType.onboarding : BillingScreenSourceType.normal)
+                )
+            )
+        } else if isOnboarding {
+            if let index = path.firstIndex(where: { $0 == .home(.map) }) {
+                path.removeSubrange(index+1..<path.count)
+            }
+            if let groupId = appState.groupId {
+                path.append(.home(.groupDetail(groupId: groupId)))
+            }
+        } else {
+            path.removeLast()
+        }
+    }
+
     
     static func createState(groupId: String?, isOnboarding: Bool) -> SharingStartState {
         SharingStartState(groupId: groupId, isOnboarding: isOnboarding)

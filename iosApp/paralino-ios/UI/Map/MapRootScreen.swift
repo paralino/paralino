@@ -34,7 +34,7 @@ struct MapRootScreen: View {
                             case .editProfile: EditProfileScreen(path: $mainAppState.userReadyGraph)
                             case .appStatusDebug: AppStatusDebugScreen(path: $mainAppState.userReadyGraph)
                             case .subscriptions: SubscriptionsScreen(path: $mainAppState.userReadyGraph)
-                            case .paywall(type: let type): SubscriptionsScreen(path: $mainAppState.userReadyGraph)
+                            case .paywall(let groupId, let type): PaywallScreen(path: $mainAppState.userReadyGraph, state: PaywallScreenState(groupId: groupId, type: type))
                             }
                         case let .home(homeGraph):
                             switch homeGraph {

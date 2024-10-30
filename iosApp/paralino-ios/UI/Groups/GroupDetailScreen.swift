@@ -42,7 +42,7 @@ struct GroupDetailScreen: View {
                         path.append(.home(.sharingStart(groupId: appState.vm.groupId, isOnboarding: false)))
                     },
                     openPaywall: {
-                        
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
                     onNavigateBack: {
                         path.removeLast()
