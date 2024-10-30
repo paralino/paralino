@@ -38,7 +38,9 @@ struct SharingStartScreen: View {
                         )
                     },
                     askLocationService: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationServices(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askLocationPermission: {
                         appDelegate.locationPermissionHandler.requestLocationPermission(

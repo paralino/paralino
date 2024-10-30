@@ -20,6 +20,20 @@ class LocationPermissionHandler {
         self.locationManager = locationManager
     }
     
+    func requestLocationServices(
+        messageDispather: ICoreMessageDispatcher
+    ) {
+        let data = AppSnackbarData(
+            text: MR.shared.strings.error_location_service_missing_sheet_message.localizedString(),
+            actionText: nil,
+            duration: SnackbarDuration.short_,
+            id: "location_services"
+        )
+        DispatchQueue.main.async {
+            messageDispather.showSnackbarForResult(data: data) { result, error in }
+        }
+    }
+    
     func requestLocationPermission(
         messageDispather: ICoreMessageDispatcher
     ) {

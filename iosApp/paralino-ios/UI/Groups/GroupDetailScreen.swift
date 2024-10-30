@@ -53,13 +53,19 @@ struct GroupDetailScreen: View {
                         )
                     },
                     askLocationService: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationServices(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askLocationPermission: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askBackgroundLocationPermission: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }
