@@ -26,6 +26,7 @@ class NotificationService: UNNotificationServiceExtension {
             options.debug = false
         }
         
+        DebbugLogr(canLogToConsole: true).systemLog(priority: LogPriority.warn, tag: "notification", message: "Start (\(DeviceUtil.getMemoryPrintString()))", t: nil)
         locationManager.manager.delegate = locationManager
         KoinSetup.initKoin(locationManager: self.locationManager)
         
@@ -37,7 +38,7 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        Logr.w(tag: "notification", message: "Received alert notification")
+        Logr.w(tag: "notification", message: "Received alert notification (\(DeviceUtil.getMemoryPrintString()))")
         
         if let bestAttemptContent = bestAttemptContent {
             DispatchQueue.main.async { [weak self] in
@@ -45,7 +46,7 @@ class NotificationService: UNNotificationServiceExtension {
                     Logr.v(tag: "notification", message: "Try to parse notification ID")
                     let notificationId = bestAttemptContent.userInfo["notificationId"] as? String
                     if let notificationId, let pushProvider = self?.pushProvider {
-                        Logr.v(tag: "notification", message: "Try to fetch new alert notification")
+                        Logr.v(tag: "notification", message: "Try to fetch new alert notification (\(DeviceUtil.getMemoryPrintString()))")
                         let payload = try? await pushProvider.getNotificationPayload(notificationId: notificationId)
                         
                         if let payload = payload {
@@ -54,7 +55,7 @@ class NotificationService: UNNotificationServiceExtension {
                         
                         if let content = payload?.notificationContent() {
                             try? await pushProvider.deleteNotification(notificationId: notificationId)
-                            Logr.v(tag: "notification", message: "Display new alert notification")
+                            Logr.v(tag: "notification", message: "Display new alert notification (\(DeviceUtil.getMemoryPrintString()))")
                             
                             if AppBuildConfig.companion.instance.isDevMode {
                                 content.title = "NSE: \(content.title)"

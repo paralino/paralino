@@ -290,6 +290,7 @@
 				Remote/FunctionsApi.swift,
 				Remote/RealtimeApi.swift,
 				Remote/UserApi.swift,
+				Utils/DeviceUtil.swift,
 			);
 			target = 25C03A6329CCE77100646364 /* paralino-ios */;
 		};
@@ -311,6 +312,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Provider/Logr.swift,
+				Utils/DeviceUtil.swift,
 			);
 			target = 254EFF6A2CB5457800818618 /* paralino-nse */;
 		};

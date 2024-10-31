@@ -54,6 +54,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     
     func appInForeground() {
         coreAppManager.onAppActive()
+        Logr.w(tag: "delegate", message: "Usage (\(DeviceUtil.getMemoryPrintString()))")
     }
     
     func appInBackground() {
