@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.core.net.toUri
 import app.paralino.android.utils.extensions.openUri
 import app.paralino.core.app_update.IAppUpdateManager
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.provider.ICoroutineScopeProvider
 
