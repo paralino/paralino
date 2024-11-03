@@ -55,6 +55,8 @@
 		25A228662CC7D3AE004577BE /* Number+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228652CC7D3A8004577BE /* Number+Extension.swift */; };
 		25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228672CC7F7BF004577BE /* MapComponentVC.swift */; };
 		25A2286A2CC809C8004577BE /* ValueAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228692CC809C4004577BE /* ValueAnimator.swift */; };
+		25A812102CD51216002DF3E5 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 25A8120F2CD51216002DF3E5 /* RevenueCat */; };
+		25A812122CD5122B002DF3E5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A812112CD5122B002DF3E5 /* StoreKit.framework */; };
 		25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */; };
 		25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB422A44D7F60007E89D /* SettingsScreen.swift */; };
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
@@ -215,6 +217,7 @@
 		25A228672CC7F7BF004577BE /* MapComponentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapComponentVC.swift; sourceTree = "<group>"; };
 		25A228692CC809C4004577BE /* ValueAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueAnimator.swift; sourceTree = "<group>"; };
 		25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-ios.entitlements"; sourceTree = "<group>"; };
+		25A812112CD5122B002DF3E5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateManager.swift; sourceTree = "<group>"; };
 		25B2DB422A44D7F60007E89D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		25B2DB442A44D89B0007E89D /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
@@ -364,6 +367,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25A812122CD5122B002DF3E5 /* StoreKit.framework in Frameworks */,
+				25A812102CD51216002DF3E5 /* RevenueCat in Frameworks */,
 				257DCAD92CB4407700402562 /* paralino_apple_core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -442,6 +447,7 @@
 		2556B8422AC6FCED00ADEB17 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25A812112CD5122B002DF3E5 /* StoreKit.framework */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -716,6 +722,7 @@
 			);
 			name = "paralino-ios";
 			packageProductDependencies = (
+				25A8120F2CD51216002DF3E5 /* RevenueCat */,
 			);
 			productName = "paralino-ios";
 			productReference = 25C03A6429CCE77100646364 /* paralino-ios.app */;
@@ -764,6 +771,7 @@
 				2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */,
 				257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */,
 				25A5A6222CB9384100D3D160 /* XCLocalSwiftPackageReference "appwrite-ios" */,
+				2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			productRefGroup = 25C03A6529CCE77100646364 /* Products */;
 			projectDirPath = "";
@@ -1587,6 +1595,14 @@
 				version = 6.0.0;
 			};
 		};
+		2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = exactVersion;
+				version = 5.7.1;
+			};
+		};
 		25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
@@ -1688,6 +1704,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 25008E4D2BDAE84600A3BCCA /* XCRemoteSwiftPackageReference "SwiftLocation" */;
 			productName = SwiftLocation;
+		};
+		25A8120F2CD51216002DF3E5 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2508BC132CD50FEE007919B8 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

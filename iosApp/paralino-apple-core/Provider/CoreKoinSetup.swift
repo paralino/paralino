@@ -48,8 +48,7 @@ public class CoreKoinSetup {
             serverUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoServerUrl") as! String,
             projectId: Bundle.main.object(forInfoDictionaryKey: "paralinoServerKey") as! String,
             publicServerUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoPublicServerUrl") as! String,
-            // TODO add key
-            billingRCApiKey: "",
+            billingRCApiKey: Bundle.main.object(forInfoDictionaryKey: "revenueCatApiKey") as! String,
             iOSTeamId: Bundle.main.object(forInfoDictionaryKey: "TEAM_ID") as! String,
             iOSAppGroup: "group.app.paralino.ios",
             appHost: apphost,

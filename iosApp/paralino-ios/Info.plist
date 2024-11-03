@@ -33,5 +33,7 @@
 	<string>$(serverKey)</string>
 	<key>paralinoServerUrl</key>
 	<string>$(serverUrl)</string>
+    <key>revenueCatApiKey</key>
+    <string>$(revenueCatApiKey)</string>
 </dict>
 </plist>
