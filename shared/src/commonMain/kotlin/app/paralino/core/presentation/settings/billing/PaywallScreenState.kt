@@ -28,6 +28,7 @@ data class PlanInfoState(
     val hasSpecialOffer: Boolean,
     val isSelected: Boolean,
     val isExpanded: Boolean,
+    val includedMembersPerGroup: Int,
     val billingPeriods: List<PlanBillingPeriodState>,
     val benefits: List<PlanConfig.PlanBenefit>
 ) {

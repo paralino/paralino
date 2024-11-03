@@ -243,12 +243,13 @@ class PaywallViewModel(
         val freeUiPlan = PlanInfoState(
             productId = "free",
             name = MR.strings.paywall_free_plan_name.localizedString(),
-            type = config.defaultFreePlanConfig().planTypeEnum,
+            type = freePlanConfig.planTypeEnum,
             isCurrentPlan = false,
             hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
             billingPeriods = emptyList(),
+            includedMembersPerGroup = freePlanConfig.membersLimit,
             benefits = freePlanConfig.planBenefits()
         )
 
@@ -295,15 +296,19 @@ class PaywallViewModel(
                         )
                             .distinct()
                             .takeIf { it.isNotEmpty() }
-                            ?.joinToString("\n") { it.filterNot { it == ' ' } },
+                            ?.joinToString("\n"), // { it.filterNot { it == ' ' } },
                         discountPercent = listOfNotNull(
                             fullYearlyPrice?.referencePerYearPrice,
                             highestPrice?.price
                         )
                             .maxOrNull()
+                            ?.takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
                             ?.let { (1f - (lowestPrice.price.toFloat() / it)) * 100 }
                             ?.toInt()
-                            ?.let { "-$it%" },
+                            // using even numbers to display discount
+                            // will even out discounts across plans and still be capped below actual discount
+                            ?.let { it - (it % 2) }
+                            ?.let { "$it%" },
                         isPromoDiscount = highestPrice != null,
                         pricePerMonth = null,
                         trialDurationDays = lowestPrice.trialDurationDays,
@@ -318,6 +323,7 @@ class PaywallViewModel(
                 isSelected = isPlanSelected,
                 isExpanded = sourceType != BillingScreenSourceType.ONBOARDING,
                 billingPeriods = billingPeriods,
+                includedMembersPerGroup = planConfig.membersLimit,
                 benefits = planConfig.planBenefits()
             )
         }

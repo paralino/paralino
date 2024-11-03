@@ -139,7 +139,7 @@
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
     <string name="plans_management_screen_title">Subscription</string>
     <string name="plans_management_info_not_subscribed">You are currently not subscribed to premium plan!</string>
-    <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\n\nUse device you originally used for purchase.</string>
+    <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\n\nUse the device you originally used for purchasing.</string>
     <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
     <string name="plans_management_action_change">Change plan</string>
@@ -153,7 +153,7 @@
     <string name="paywall_screen_title">Select the plan that is right for you</string>
     <string name="paywall_current_plan_label">Current plan</string>
     <string name="paywall_special_offer_label">Special offer 🎁</string>
-    <string name="paywall_all_members_features_notice">All members get group benefits</string>
+    <string name="paywall_all_members_features_notice">All %s members get group benefits</string>
     <string name="paywall_free_trial_notice">First **%s days** are free</string>
     <string name="paywall_start_button_free">Start **free trial**</string>
     <string name="paywall_start_button_continue">Continue with **%s**</string>
@@ -166,6 +166,7 @@
     <string name="paywall_free_plan_name">Basic</string>
     <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
     <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
+    <string name="paywall_discount_percentage_badge_text">%s OFF</string>
 
     <string name="paywall_faq_question_how_to_cancel">How can I cancel my subscription?</string>
     <string name="paywall_faq_question_upgrade_downgrade">How can I upgrade or downgrade my plan?</string>
