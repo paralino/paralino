@@ -65,6 +65,7 @@ struct MapHomeScreen: View {
                         },
                         mapUIView: { () -> UIViewController in
                             let controller = MapComponentVC()
+                            controller.additionalSafeAreaInsets = .init(top: 60, left: 0, bottom: 0, right: 0)
                             controller.mapState = mapState
                             controller.onMapPan = {
                                 mapState.vm.onMapTouch()
@@ -75,22 +76,6 @@ struct MapHomeScreen: View {
                                 }
                             }
                             return controller
-//                            let rootView = VStack {
-//                                MapComponent(
-//                                    mapState: mapState,
-//                                    onMapTap: { point in },
-//                                    onMapLongPress: { point in
-//                                        if let readyState = mapState.uiState.asReady() {
-//                                            path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
-//                                        }
-//                                    },
-//                                    onMapTouch: {
-//                                        mapState.vm.onMapTouch()
-//                                    }
-//                                )
-//                                .safeAreaPadding(.top, 60)
-//                            }
-//                            return UIHostingController(rootView: rootView)
                         }
                     )
                 }
