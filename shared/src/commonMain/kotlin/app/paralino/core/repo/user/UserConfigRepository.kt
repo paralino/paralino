@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.minutes
 
 class UserConfigRepository(
     private val database: MainDatabaseHelper,
@@ -37,7 +38,7 @@ class UserConfigRepository(
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "config_refresh",
-                timeMillis = if (force) 0 else 120_000,
+                timeMillis = if (force) 0 else 2.minutes.inWholeMilliseconds,
                 failOnError = false
             )
         ) { getConfigFromRemote() }

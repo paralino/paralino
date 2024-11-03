@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
+import kotlin.time.Duration.Companion.minutes
 
 class RemoteConfigRepository(
     private val database: MainDatabaseHelper,
@@ -45,7 +46,7 @@ class RemoteConfigRepository(
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "config_refresh",
-                timeMillis = 10_000,
+                timeMillis = 1.minutes.inWholeMilliseconds,
                 failOnError = false
             )
         ) { getConfigFromRemote() }
@@ -67,7 +68,7 @@ class RemoteConfigRepository(
     }
 
     suspend fun cancelNewAppVersion() {
-        val remoteConfig = getConfigOnce()
+        val remoteConfig = configState.value
         appPrefs.dismissedAppVersion = when (deviceApiProvider.deviceType) {
             DeviceType.Android -> remoteConfig.newVersionAndroid
             DeviceType.iOS -> remoteConfig.newVersionIOS
@@ -80,10 +81,8 @@ class RemoteConfigRepository(
             .distinctUntilChanged()
     }
 
-    private suspend fun getConfigOnce(): ConfigData {
-        return database.remoteConfigDao
-            .getAllOnce()
-            .let { ConfigData.init(it) }
+    fun getConfigOnce(): ConfigData {
+        return configState.value
     }
 
     private suspend fun getConfigFromRemote(): JsonObject? {
