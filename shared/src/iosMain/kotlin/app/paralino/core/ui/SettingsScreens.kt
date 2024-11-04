@@ -19,6 +19,7 @@ import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
 import app.paralino.core.ui.settings.AppStatusDebugScreenCore
 import app.paralino.core.ui.settings.BlocklistScreenCore
+import app.paralino.core.ui.settings.LicencesScreenCore
 import app.paralino.core.ui.settings.RawDataScreenCore
 import app.paralino.core.ui.settings.SettingsScreenCore
 import app.paralino.core.ui.settings.billing.PaywallScreenCore
@@ -221,6 +222,15 @@ object SettingsScreens {
                 appState = it,
                 vm = vm,
                 paddingValues = PaddingValues(bottom = 30.dp)
+            )
+        }
+    }
+
+    fun LicencesScreenVC() = ComposeUIViewController {
+        RootScreenIOS {
+            LicencesScreenCore(
+                coreUiState = it,
+                contentPadding = PaddingValues(bottom = 20.dp)
             )
         }
     }

@@ -33,6 +33,7 @@ struct MapRootScreen: View {
                                 RawDataScreen(appState: RawDataScreen.createState(type: type))
                             case .editProfile: EditProfileScreen(path: $mainAppState.userReadyGraph)
                             case .appStatusDebug: AppStatusDebugScreen(path: $mainAppState.userReadyGraph)
+                            case .licences: LicencesScreen(path: $mainAppState.userReadyGraph)
                             case .subscriptions: SubscriptionsScreen(path: $mainAppState.userReadyGraph)
                             case .paywall(let groupId, let type): PaywallScreen(path: $mainAppState.userReadyGraph, state: PaywallScreenState(groupId: groupId, type: type))
                             }

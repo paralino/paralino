@@ -40,7 +40,7 @@ struct SettingsScreen: View {
                         path.append(.settings(.rawData(type: .UserPresentation())))
                     },
                     openLicences: {
-                        
+                        path.append(.settings(.licences))
                     },
                     openAppStatus: {
                         path.append(.settings(.appStatusDebug))

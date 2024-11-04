@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.aboutlibraries)
     // have to use id here since build will fail otherwise because of duplicate versions
     // check later id fixed
     // https://github.com/gradle/gradle/issues/17968
@@ -183,12 +182,6 @@ android {
     }
 }
 
-aboutLibraries {
-    configPath = "config"
-    additionalLicenses = arrayOf("svg_backgrounds")
-    prettyPrint = true
-}
-
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
@@ -273,9 +266,6 @@ dependencies {
     }
     // implementation("net.java.dev.jna:jna:5.14.0@aar")
     implementation(libs.nanoid)
-
-    implementation(libs.aboutLibraries.core)
-    implementation(libs.aboutLibraries.compose)
     implementation(libs.sentry.android)
 
     implementation(project(path = ":appwrite-android"))

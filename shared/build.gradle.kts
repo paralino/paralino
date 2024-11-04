@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.moko.resources)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.aboutlibraries)
 }
 
 kotlin {
@@ -56,6 +57,8 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
+            implementation(libs.aboutLibraries.core)
+            implementation(libs.aboutLibraries.compose)
         }
 
         androidMain.dependencies {
@@ -126,4 +129,10 @@ buildkonfig {
             buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
         }
     }
+}
+
+aboutLibraries {
+    configPath = "config"
+    additionalLicenses = arrayOf("svg_backgrounds")
+    prettyPrint = true
 }

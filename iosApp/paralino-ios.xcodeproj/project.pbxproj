@@ -28,6 +28,7 @@
 		254EFF7A2CB545AB00818618 /* paralino_apple_core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; };
 		254EFF7C2CB545D200818618 /* paralino_apple_core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 257DCAD32CB4407700402562 /* paralino_apple_core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
+		2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */; };
 		2568AF5E2CB5342B007EE00F /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5D2CB5342B007EE00F /* NIO */; };
 		2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */; };
 		2568AF622CB5342B007EE00F /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF612CB5342B007EE00F /* NIOCore */; };
@@ -196,6 +197,7 @@
 		254B6F3229EC8039008B1458 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Localizable.strings; sourceTree = "<group>"; };
 		254EFF6B2CB5457800818618 /* paralino-nse.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "paralino-nse.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionHandler.swift; sourceTree = "<group>"; };
+		2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicencesScreen.swift; sourceTree = "<group>"; };
 		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSettingsScreen.swift; sourceTree = "<group>"; };
 		257DCAD32CB4407700402562 /* paralino_apple_core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = paralino_apple_core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -523,6 +525,7 @@
 				25FC5CAD2A45FB320006E796 /* BlockListScreen.swift */,
 				25FC5CAF2A460A510006E796 /* RawDataScreen.swift */,
 				25FC5CB12A4612A40006E796 /* EditProfileScreen.swift */,
+				2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */,
 				25C7DD712BEC16BC00D16BC9 /* AppStatusDebugScreen.swift */,
 			);
 			path = Settings;
@@ -944,6 +947,7 @@
 				25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */,
 				25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
+				2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */,
 				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
 				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
 				25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */,
