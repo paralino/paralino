@@ -251,7 +251,7 @@ fun FreePlanInfoScreenCore(
                     onClick = openPaywall
                 )
             } else {
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(30.dp))
             }
         }
     }

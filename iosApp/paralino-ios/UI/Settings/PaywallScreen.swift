@@ -23,14 +23,13 @@ struct PaywallScreen: View {
                         goBack(isSuccess: isSuccess.boolValue)
                     },
                     onStartPurchase: { event in
-                        
+                        state.startPurchase(event)
                     },
                     onRestorePurchase: { event in
-                        
+                        state.restorePurchase(event)
                     }
                 )
             }
-            .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.plan_limit_alert_title.localizedString())
             .toolbar(.hidden, for: .navigationBar)
         }
@@ -77,6 +76,44 @@ class PaywallScreenState: ObservableObject {
         self.groupId = groupId
         self.type = type
         self.vm = KoinIOS.ViewModels.shared.paywallVM(type: type)
+    }
+    
+    func startPurchase(_ event: PaywallScreenEvent.OnStartPurchase) {
+        DispatchQueue.main.async { [weak self] in
+            Task {
+                do {
+                    guard let billingProvider = self?.vm.billingProvider as? BillingProviderIOS else { return }
+                    try await billingProvider.startPurchase(planType: event.planType, newProductPlanId: event.newPlanProductId)
+                    self?.vm.onEvent(event: PaywallScreenUiEvent.RefreshPlans())
+                } catch {
+                    if let error = error as? PurchaseError {
+                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: error.sharedError))
+                    } else {
+                        let sharedError = PurchaseErrorException(errorCode: 0, errorMessage: "Unknown error", userCancelled: false)
+                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: sharedError))
+                    }
+                }
+            }
+        }
+    }
+    
+    func restorePurchase(_ event: PaywallScreenEvent.OnRestorePurchase) {
+        DispatchQueue.main.async { [weak self] in
+            Task {
+                do {
+                    guard let billingProvider = self?.vm.billingProvider as? BillingProviderIOS else { return }
+                    try await billingProvider.restorePurchase()
+                    self?.vm.onEvent(event: PaywallScreenUiEvent.RefreshPlans())
+                } catch {
+                    if let error = error as? PurchaseError {
+                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: error.sharedError))
+                    } else {
+                        let sharedError = PurchaseErrorException(errorCode: 0, errorMessage: "Unknown error", userCancelled: false)
+                        self?.vm.onEvent(event: PaywallScreenUiEvent.OnPurchaseError(error: sharedError))
+                    }
+                }
+            }
+        }
     }
     
     deinit {

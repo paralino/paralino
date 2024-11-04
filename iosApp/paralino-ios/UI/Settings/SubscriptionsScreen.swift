@@ -11,6 +11,7 @@ import shared
 struct SubscriptionsScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.subscriptionVM)
+    @State private var isSubscriptionManagementScreenShown: Bool = false
     
     var body: some View {
         ZStack {
@@ -22,7 +23,7 @@ struct SubscriptionsScreen: View {
                         path.removeLast()
                     },
                     openBillingStore: {
-                        // TODO open store
+                        isSubscriptionManagementScreenShown = true
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
@@ -32,5 +33,6 @@ struct SubscriptionsScreen: View {
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.plans_management_screen_title.localizedString())
         }
+        .manageSubscriptionsSheet(isPresented: $isSubscriptionManagementScreenShown)
     }
 }

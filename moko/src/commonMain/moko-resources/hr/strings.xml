@@ -153,7 +153,7 @@
     <string name="paywall_screen_title">Odaberite plan koji ti odgovara</string>
     <string name="paywall_current_plan_label">Trenutni plan</string>
     <string name="paywall_special_offer_label">Posebna ponuda 🎁</string>
-    <string name="paywall_all_members_features_notice">Pogodnosti grupe su za sve članove</string>
+    <string name="paywall_all_members_features_notice">Pogodnosti grupe su za svih %s članova</string>
     <string name="paywall_free_trial_notice">Prvih **%s dana** je besplatno</string>
     <string name="paywall_start_button_free">Započni **besplatni period**</string>
     <string name="paywall_start_button_continue">Odaberi **%s**</string>
@@ -166,6 +166,7 @@
     <string name="paywall_free_plan_name">Osnovni</string>
     <string name="paywall_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>
     <string name="paywall_purchase_error_alert_message">Nije moguće izvršiti zahtjev, pokušajte ponovno.</string>
+    <string name="paywall_discount_percentage_badge_text">%s sniženje</string>
 
     <string name="paywall_faq_question_how_to_cancel">Kako mogu otkazati svoju pretplatu?</string>
     <string name="paywall_faq_question_upgrade_downgrade">Kako mogu nadograditi ili smanjiti svoj plan?</string>

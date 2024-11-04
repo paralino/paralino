@@ -1,19 +1,16 @@
 package app.paralino.android.ui.settings
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons
-import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
+import app.paralino.core.ui.settings.LicencesScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun LicencesScreen(appState: MainAppState) {
-
     Scaffold(
         topBar = {
             DefaultToolbar(
@@ -22,10 +19,9 @@ fun LicencesScreen(appState: MainAppState) {
             )
         }
     ) {
-        LibrariesContainer(
-            modifier = Modifier.fillMaxSize(),
+        LicencesScreenCore(
+            coreUiState = appState,
             contentPadding = it
         )
     }
-
 }

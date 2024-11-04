@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -219,7 +220,7 @@ private fun PaywallScreen(
                     Spacer(modifier = Modifier.size(16.dp))
                 }
 
-                CompositionLocalProvider(LocalContentAlpha provides (if (plan.isSelected) 1f else 0.5f)) {
+                CompositionLocalProvider(LocalContentAlpha provides (if (state.selectedPlan == null || plan.isSelected) 1f else 0.5f)) {
                     PlanCardDetails(
                         state = plan,
                         onPeriodSelected = { onPeriodSelected(plan.type, it) },
@@ -248,8 +249,8 @@ private fun PaywallScreen(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            MaterialTheme.colors.surface,
-                            MaterialTheme.colors.surface
+                            MaterialTheme.colors.background,
+                            MaterialTheme.colors.background
                         )
                     )
                 )
@@ -364,17 +365,20 @@ private fun PlanInfoBadge(
     modifier: Modifier = Modifier,
     text: String
 ) {
-    Text(
-        modifier = modifier
-            .background(
-                color = AppColors.accent.copy(alpha = 0.8f),
-                shape = RoundedCornerShape(25)
+    SmallActionButton(
+        modifier = Modifier,
+        backgroundColor = AppColors.accent.copy(alpha = 0.8f),
+        contentColor = AppColors.lightBackground,
+        shape = RoundedCornerShape(percent = 25),
+        icon = null,
+        text = {
+            Text(
+                text = text,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
             )
-            .padding(horizontal = 6.dp),
-        text = text,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 12.sp,
-        color = AppColors.lightBackground
+        },
+        onClick = null
     )
 }
 
@@ -398,8 +402,8 @@ private fun PaywallBottomCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-        elevation = 8.dp,
+        shape = MaterialTheme.shapes.medium,
+        elevation = 6.dp,
         backgroundColor = backgroundColor
     ) {
         Column(
@@ -411,7 +415,9 @@ private fun PaywallBottomCard(
             AnimatedVisibility(selectedPlan?.type?.isPremium == true) {
                 Text(
                     modifier = Modifier.padding(bottom = 8.dp),
-                    text = stringResource(MR.strings.paywall_all_members_features_notice),
+                    text = stringResource(
+                        MR.strings.paywall_all_members_features_notice,
+                        selectedPlan?.includedMembersPerGroup?.let { "$it" } ?: " "),
                     style = MaterialTheme.typography.caption,
                     textAlign = TextAlign.Center,
                     color = contentColor
@@ -740,35 +746,57 @@ private fun SubscriptionOptionItem(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-//            AnimatedVisibility(discountPercent != null) {
-//                Text(
-//                    text = discountPercent ?: "",
-//                    fontWeight = FontWeight.SemiBold,
-//                    fontSize = 12.sp,
-//                    lineHeight = 14.sp
-//                )
-//            }
-            if (isPromoDiscount) {
-                PlanPriceBadge("🎁 $originalPrice")
-            } else {
-                PlanPriceBadge(originalPrice)
+            AnimatedVisibility(discountPercent != null) {
+                Text(
+                    modifier = Modifier
+                        .background(
+                            color = AppColors.lightBackground,
+                            shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                        )
+                        .padding(horizontal = 8.dp)
+                        .padding(top = 4.dp),
+                    text = stringResource(
+                        MR.strings.paywall_discount_percentage_badge_text,
+                        discountPercent ?: ""
+                    ),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp,
+                    color = AppColors.redMain
+                )
             }
+            PlanPriceBadge(
+                priceText = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
+                shape = if (discountPercent != null) {
+                    RoundedCornerShape(
+                        topStart = 8.dp,
+                        bottomStart = 8.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 8.dp
+                    )
+                } else {
+                    RoundedCornerShape(8.dp)
+                }
+            )
         }
     }
 }
 
 @Composable
-private fun PlanPriceBadge(discountText: String) {
+private fun PlanPriceBadge(
+    priceText: String,
+    shape: Shape = RoundedCornerShape(8.dp)
+) {
     Box(
         modifier = Modifier
             .background(
                 color = AppColors.lightBackground,
-                shape = RoundedCornerShape(8.dp)
+                shape = shape
             )
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
-            text = discountText,
+            text = priceText,
             color = AppColors.darkBackground,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold

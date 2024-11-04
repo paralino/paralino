@@ -65,7 +65,7 @@ class RefreshEverythingUseCase(
                     logg.tag("full_refresh").v("Start full refresh")
                     userRepository.refreshUserIfAvailable()
                     personalCodesRepo.refreshPersonalCodes()
-                    userRepository.refreshBlocklist()
+                    userRepository.refreshBlocklist(cacheTimeMillis = 2.minutes.inWholeMilliseconds)
                     configRepo.refreshConfig()
                     userConfigRepo.refreshAndGetConfig()
                     scheduleRefreshAllGroupsWithPlaces(

@@ -21,8 +21,8 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -233,9 +233,11 @@ class UserRepository constructor(
         )
     }
 
-    suspend fun refreshBlocklist() {
-        triggerRemoteOnly { remote.getBlocklist() }
-            .also { local.recreateBlocklist(it) }
+    suspend fun refreshBlocklist(cacheTimeMillis: Long) {
+        triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(key = "blocklist", timeMillis = cacheTimeMillis)
+        ) { remote.getBlocklist() }
+            ?.also { local.recreateBlocklist(it) }
     }
 
     suspend fun removeUserFromBlocklist(userId: String) {

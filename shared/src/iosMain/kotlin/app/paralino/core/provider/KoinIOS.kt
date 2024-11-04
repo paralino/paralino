@@ -60,11 +60,13 @@ import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.IUserApiIOS
 import app.paralino.core.repo.api.RealtimeApiWrapperIOS
 import app.paralino.core.repo.api.UserApiWrapperIOS
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepositoryWrapper
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -110,7 +112,7 @@ object KoinIOS {
                 factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
                 factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
                 factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
-                factory { billingProvider } bind IBillingProvider::class
+                single { billingProvider } bind IBillingProvider::class
                 single { geofenceManager }
                 single { remoteModule(get()) }
                 single { appBuildConfig }
@@ -223,6 +225,9 @@ object KoinIOS {
         val locationStatusProvider: ILocationStatusProvider get() = get()
         val deviceApiProvider: IDeviceApiProvider get() = get()
         val inAppLogger: InAppLogger get() = get()
+        val appBuildConfig: AppBuildConfig get() = get()
+        val remoteConfigRepo: RemoteConfigRepository get() = get()
+        val userConfigRepo: UserConfigRepository get() = get()
     }
 
     object ViewModels : KoinComponent {

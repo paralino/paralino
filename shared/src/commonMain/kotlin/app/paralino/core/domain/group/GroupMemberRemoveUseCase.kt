@@ -62,7 +62,7 @@ class GroupMemberRemoveUseCase(
                 remote.blockUser(member)
             },
             localUpdate = {
-                userRepository.refreshBlocklist()
+                userRepository.refreshBlocklist(cacheTimeMillis = 0)
             }
         ).map { Unit }
     }
