@@ -22,6 +22,7 @@ import paralino.shared.generated.resources.ic_check
 import paralino.shared.generated.resources.ic_check_circle
 import paralino.shared.generated.resources.ic_chevron_left
 import paralino.shared.generated.resources.ic_chevron_right
+import paralino.shared.generated.resources.ic_circle_only_outline
 import paralino.shared.generated.resources.ic_circle_with_outline
 import paralino.shared.generated.resources.ic_close
 import paralino.shared.generated.resources.ic_code
@@ -172,6 +173,7 @@ object CoreAppIcons {
 
     val CircleFull get() = MR.images.ic_circle_full
     val CircleWithOutline get() = Res.drawable.ic_circle_with_outline
+    val CircleOnlyOutline get() = Res.drawable.ic_circle_only_outline
 //    val MapModeSatellite get() = Res.drawable.image_map_type_satellite
 //    val MapModeDefaultLight get() = Res.drawable.image_map_type_default_light
 //    val MapModeDefaultDark get() = Res.drawable.image_map_type_default_dark

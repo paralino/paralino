@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.login
 
+import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
@@ -16,6 +17,9 @@ data class LoginScreenState constructor(
     val stepInfo: SignUpStepInfo? = null,
     val alertDialog: MainAlertDialog? = null
 ) {
+    val passwordValidation: FormValidation.PasswordConfirm.PasswordConfirmValidationResult =
+        FormValidation.PasswordConfirm.validate(password, passwordConfirm)
+
     companion object {
         val defaultStartScreen = LoginScreenUiType.SIGNUP_GUEST
     }

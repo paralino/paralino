@@ -241,12 +241,15 @@
     <string name="login_step_error_encryption_logIn">Vaši ključevi za enkripciju čine se oštećeni ili nepostojeći, pokušajte ponovno ili resetirajte lozinku (To će izbrisati sve vaše prethodne podatke)</string>
 
     <string name="form_invalid_email_description">Vaša e-mail adresa nije valjana.</string>
-    <string name="form_invalid_credentials_description">Molimo provjerite svoje pristupnice i pokušajte ponovno.</string>
-    <string name="form_invalid_email_conflict_description">Molimo koristite drugi e-mail.</string>
-    <string name="form_invalid_password_length_description">Vaša lozinka mora imati najmanje 8 znakova.</string>
+    <string name="form_invalid_credentials_description">Molimo provjerite svoje podatke i pokušajte ponovno.</string>
+    <string name="form_invalid_email_conflict_description">Molimo odaberite drugi e-mail.</string>
+    <string name="form_invalid_password_length_description">Odaberite bolju lozinku.</string>
     <string name="form_invalid_password_match_description">Lozinke se ne podudaraju.</string>
     <string name="form_invalid_name_description">Vaše ime nije valjano.</string>
     <string name="form_generic_validation">Molimo popunite sva polja.</string>
+    <string name="form_rules_password_min_length">Najmanje %d znakova</string>
+    <string name="form_rules_password_min_strength">Sadrži različite znakove</string>
+    <string name="form_rules_password_match">Lozinke se podudaraju</string>
 
     <string name="info_email_confirm">Molimo potvrdite svoju e-mail adresu!</string>
     <string name="info_email_confirm_alert_title">Potvrda e-maila</string>

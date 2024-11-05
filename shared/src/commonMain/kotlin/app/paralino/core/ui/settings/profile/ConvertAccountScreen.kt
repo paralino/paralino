@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenEvent
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenState
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
@@ -34,6 +35,7 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.components.PasswordValidationElement
 import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -123,6 +125,15 @@ fun ConvertAccountScreenCore(
                 focusManager = focusManager,
                 onInputChange = { vm.onConfirmPasswordChange(it) }
             )
+
+            PasswordValidationElement(
+                modifier = Modifier.padding(top = 12.dp),
+                minPasswordLength = FormValidation.Password.PasswordStrength.minPasswordLength,
+                hasMinPasswordLength = uiState.passwordValidation.minPasswordLength,
+                hasMinPasswordStrength = uiState.passwordValidation.passwordStrength.isOK,
+                doPasswordsMatch = uiState.passwordValidation.passwordsMatch
+            )
+
 
             Spacer(modifier = Modifier.size(80.dp))
 

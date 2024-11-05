@@ -243,10 +243,13 @@
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>
     <string name="form_invalid_email_conflict_description">Please use another email.</string>
-    <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>
+    <string name="form_invalid_password_length_description">Please use a better password.</string>
     <string name="form_invalid_password_match_description">Passwords don\'t match.</string>
     <string name="form_invalid_name_description">Your name is not valid.</string>
     <string name="form_generic_validation">Please fill in all the details.</string>
+    <string name="form_rules_password_min_length">Minimum %d characters</string>
+    <string name="form_rules_password_min_strength">Contains different characters</string>
+    <string name="form_rules_password_match">Passwords match</string>
 
     <string name="info_email_confirm">Please verify your email address!</string>
     <string name="info_email_confirm_alert_title">Verify email</string>
