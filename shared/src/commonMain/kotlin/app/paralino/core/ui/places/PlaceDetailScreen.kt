@@ -260,7 +260,7 @@ private fun PlaceDetailScreen(
                 key = { index, item -> item.memberUserId }
             ) { index, item ->
                 PlaceDetailUserListItem(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItem(),
                     state = item,
                     onEnterChange = onEnterChange,
                     onExitChange = onExitChange,
