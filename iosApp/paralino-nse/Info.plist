@@ -21,5 +21,7 @@
     <string>$(serverKey)</string>
     <key>paralinoServerUrl</key>
     <string>$(serverUrl)</string>
+    <key>revenueCatApiKey</key>
+    <string></string>
 </dict>
 </plist>
