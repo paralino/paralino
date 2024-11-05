@@ -96,7 +96,7 @@ fun SettingsScreenCore(
                 onErrorItemClick = { },
                 onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
                 onShareCode = onShareCode,
-                onClick = openProfileDetails
+                onClick = openPersonalCodes
             )
         }
 
@@ -112,10 +112,10 @@ fun SettingsScreenCore(
 
         if (readyState != null) {
             SettingsActionItem(
-                name = stringResource(MR.strings.settings_section_personal_code_title),
-                icon = CoreAppIcons.Key.asPainterResource()
+                name = stringResource(MR.strings.settings_section_account_title),
+                icon = CoreAppIcons.Person.asPainterResource()
             ) {
-                openPersonalCodes()
+                openProfileDetails()
             }
 
             SettingsActionItem(
