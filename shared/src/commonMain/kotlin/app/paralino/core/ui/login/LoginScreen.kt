@@ -304,7 +304,7 @@ fun LoginScreenCore(
                         .clip(RoundedCornerShape(8.dp))
                         .background(
                             if (uiState.stepInfo is SignUpStepInfo.Error)
-                                MaterialTheme.colors.error
+                                AppColors.errorBackground
                             else
                                 AppColors.accent.copy(alpha = 0.1f)
                         )

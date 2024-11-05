@@ -175,7 +175,7 @@ fun MapGroupNameAndMemberInfo(
             } else {
                 Icon(
                     painter = CoreAppIcons.Warning.asPainterResource(),
-                    tint = MaterialTheme.colors.onError,
+                    tint = MaterialTheme.colors.error,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )

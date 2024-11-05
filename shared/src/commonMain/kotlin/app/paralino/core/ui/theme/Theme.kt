@@ -30,12 +30,12 @@ private val LightThemeColors = lightColors(
 	surface = AppColors.lightSurface,
 	primary = AppColors.lightThemePrimary,
 	secondary = AppColors.lightThemeSecondary,
-	error = AppColors.errorBackground,
+	error = AppColors.redMain,
 	primaryVariant = AppColors.darkSurface,
 	secondaryVariant = AppColors.lightThemeSecondary,
 	onPrimary = AppColors.lightBackground,
 	onSecondary = AppColors.darkBackground,
-	onError = AppColors.redMain,
+	onError = AppColors.lightBackground,
 	onBackground = AppColors.darkBackground,
 	onSurface = AppColors.darkBackground
 )
@@ -45,12 +45,12 @@ private val DarkThemeColors = darkColors(
 	surface = AppColors.darkSurface,
 	primary = AppColors.darkThemePrimary,
 	secondary = AppColors.darkThemeSecondary,
-	error = AppColors.errorBackground,
+	error = AppColors.redMain,
 	primaryVariant = AppColors.lightSurface,
 	secondaryVariant = AppColors.darkThemeSecondary,
 	onPrimary = AppColors.lightBackground,
 	onSecondary = AppColors.lightBackground,
-	onError = AppColors.redMain,
+	onError = AppColors.lightBackground,
 	onBackground = AppColors.lightBackground,
 	onSurface = AppColors.lightBackground
 )
@@ -129,8 +129,6 @@ fun AppTheme(
 		}
 	}
 }
-
-
 
 private object AppRippleTheme  {
 	@OptIn(ExperimentalMaterialApi::class)

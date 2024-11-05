@@ -271,8 +271,7 @@ fun RecoverKeysScreen(
                 Spacer(modifier = Modifier.size(10.dp))
                 FilledButton(
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.onError,
-                        contentColor = Color.White
+                        backgroundColor = MaterialTheme.colors.error
                     ),
                     style = ButtonStyle.BIG,
                     state = if (state.resetLoading == null)

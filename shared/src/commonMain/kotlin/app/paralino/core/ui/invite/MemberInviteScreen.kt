@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -46,6 +47,7 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.groups.GroupListItem
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
@@ -208,8 +210,13 @@ private fun MemberInviteScreen(
                     Text(
                         modifier = Modifier
                             .padding(vertical = 10.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colors.error)
+                            .shadow(
+                                elevation = 12.dp,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colors.background)
+                            .background(AppColors.errorBackground)
                             .padding(10.dp),
                         text = stringResource(
                             MR.strings.invite_connect_disclaimer_user,
@@ -232,6 +239,5 @@ private fun MemberInviteScreen(
                 }
             }
         }
-
     }
 }

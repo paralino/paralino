@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
@@ -36,7 +37,8 @@ fun ConditionErrorItem(
 ) {
     ConditionErrorItem(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colors.error,
+        backgroundColor = AppColors.errorBackground,
+        contentColor = AppColors.redMain,
         icon = data.icon,
         text = stringResource(data.nameRes),
         endAction = if (data.endActionTextRes != null)
@@ -50,7 +52,7 @@ fun ConditionErrorItem(
 @Composable
 fun ConditionErrorItem(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.error,
+    backgroundColor: Color = AppColors.errorBackground,
     contentColor: Color = contentColorFor(backgroundColor = backgroundColor),
     icon: Painter?,
     text: String,

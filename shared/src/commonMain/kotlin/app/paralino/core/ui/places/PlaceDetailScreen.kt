@@ -47,6 +47,7 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -229,7 +230,7 @@ private fun PlaceDetailScreen(
                 SettingsActionItem(
                     name = stringResource(MR.strings.place_list_menu_delete),
                     icon = CoreAppIcons.Delete.asPainterResource(),
-                    iconTint = MaterialTheme.colors.error
+                    iconTint = AppColors.errorBackground
                 ) {
                     onPlaceDelete()
                 }

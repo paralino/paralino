@@ -94,7 +94,7 @@ fun AppStatusDebugScreenCore(
         this.items(items = uiState.status, key = { it.key }) {
             Text(
                 text = it.text.annotatedBold(),
-                color = if (it.isError) MaterialTheme.colors.onError else MaterialTheme.colors.onBackground,
+                color = if (it.isError) MaterialTheme.colors.error else MaterialTheme.colors.onBackground,
                 style = MaterialTheme.typography.caption.copy(lineHeight = 12.sp)
             )
         }

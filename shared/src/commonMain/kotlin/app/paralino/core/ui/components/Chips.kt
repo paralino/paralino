@@ -89,8 +89,8 @@ fun DataInfoChip(
 @Composable
 fun SmallActionButton(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.onError,
-    contentColor: Color = MaterialTheme.colors.onPrimary,
+    backgroundColor: Color = MaterialTheme.colors.error,
+    contentColor: Color = MaterialTheme.colors.onError,
     shape: Shape = RoundedCornerShape(percent = 50),
     hasEndArrow: Boolean = false,
     icon: Painter?,

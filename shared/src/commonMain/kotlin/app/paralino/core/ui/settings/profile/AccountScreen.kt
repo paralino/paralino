@@ -154,7 +154,7 @@ fun AccountScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.setting_title_logout),
                         icon = CoreAppIcons.Logout.asPainterResource(),
-                        iconTint = MaterialTheme.colors.error,
+                        iconTint = AppColors.errorBackground,
                         type = SettingsActionItemType.Action
                     ) {
                         viewModel.onEvent(AccountScreenUiEvent.Logout)
@@ -167,7 +167,7 @@ fun AccountScreenCore(
                         SettingsActionItem(
                             name = stringResource(MR.strings.setting_title_delete_account),
                             icon = CoreAppIcons.DeleteForever.asPainterResource(),
-                            iconTint = MaterialTheme.colors.error,
+                            iconTint = AppColors.errorBackground,
                             type = SettingsActionItemType.Action
                         ) {
                             viewModel.onEvent(AccountScreenUiEvent.DeleteAccount)
@@ -179,7 +179,7 @@ fun AccountScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.setting_title_dangerZone),
                         icon = CoreAppIcons.Warning.asPainterResource(),
-                        iconTint = MaterialTheme.colors.error,
+                        iconTint = AppColors.errorBackground,
                         type = SettingsActionItemType.Action
                     ) {
                         showDangerZoneContent = true
@@ -284,7 +284,7 @@ fun AccountInfoHeader(
                     ) {
                         if (isGuestUser) {
                             AccountHeaderChip(
-                                backgroundColor = MaterialTheme.colors.onError,
+                                backgroundColor = AppColors.redMain,
                                 contentColor = MaterialTheme.colors.onPrimary,
                                 icon = CoreAppIcons.Incognito.asPainterResource(),
                                 text = stringResource(MR.strings.settings_account_guest_badge),

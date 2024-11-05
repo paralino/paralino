@@ -51,7 +51,7 @@ fun PlanLimitCount(
         style = MaterialTheme.typography.subtitle1,
         modifier = modifier
             .background(
-                color = if (limit != null && limit <= count) MaterialTheme.colors.error
+                color = if (limit != null && limit <= count) AppColors.errorBackground
                 else AppColors.accentLight.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(4.dp)
             )
