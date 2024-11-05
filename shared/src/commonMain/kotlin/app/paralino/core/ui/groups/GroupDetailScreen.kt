@@ -361,7 +361,7 @@ fun GroupDetailScreenCore(
                         }
 
                         GroupMember(
-                            modifier = Modifier.animateItemPlacement(),
+                            modifier = Modifier.animateItem(),
                             state = item,
                             forceExpandAction = expanded,
                             collapseOnActionClick = false,

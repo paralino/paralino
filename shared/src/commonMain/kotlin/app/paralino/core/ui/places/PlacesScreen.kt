@@ -258,7 +258,7 @@ private fun PlacesScreen(
                     Spacer(modifier = Modifier.size(8.dp))
                 }
                 PlaceListItem(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItem(),
                     state = item,
                     hasEndArrow = true,
                     onClick = { onPlaceClick(item) },
