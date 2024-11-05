@@ -4,8 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,6 +36,7 @@ import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.isFullyExpanded
+import app.paralino.core.ui.map.rememberSwipeableSheetState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -70,7 +69,6 @@ fun MapHomeScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MapHomeContent(
     appState: MainAppState,
@@ -83,15 +81,17 @@ private fun MapHomeContent(
     val density = LocalDensity.current
     val pickerState = rememberGroupBottomSheetPickerState()
 
-    val sheetState = rememberSwipeableState(
+    val sheetState = rememberSwipeableSheetState(
         initialValue = BottomSheetPosition.default,
-        confirmStateChange = {
+        collapsedAnchorBottomPaddingPixels = 0f,
+        confirmValueChange = {
             it != BottomSheetPosition.HIDDEN
         }
     )
+
     val bottomOffset = density.run {
         try {
-            sheetState.offset.value.toDp()
+            sheetState.offset.toDp()
         } catch (e: Exception) {
             0.dp
         }

@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -57,6 +55,7 @@ import app.paralino.core.ui.login.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
+import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
@@ -204,11 +203,7 @@ object HomeScreens {
         }
     }
 
-    @OptIn(
-        ExperimentalForeignApi::class,
-        ExperimentalMaterialApi::class,
-        ExperimentalComposeUiApi::class
-    )
+    @OptIn(ExperimentalComposeUiApi::class)
     fun MapSheet(
         vm: MapHomeViewModel,
         initialUiState: MapHomeScreenState,
@@ -234,27 +229,29 @@ object HomeScreens {
             BoxWithConstraints {
                 val height = this.maxHeight
                 val density = LocalDensity.current
-                val sheetState = rememberSwipeableState(
+
+                val collapsedAnchorBottomPaddingPixels = with(LocalDensity.current) {
+                    15.dp.toPx()
+                }
+
+                val sheetState = rememberSwipeableSheetState(
                     initialValue = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused != false) {
                         BottomSheetPosition.HIDDEN
                     } else {
                         BottomSheetPosition.HIDDEN
                     },
-                    confirmStateChange = {
+                    collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
+                    confirmValueChange = {
                         it != BottomSheetPosition.HIDDEN
                     }
                 )
 
                 val bottomOffset = density.run {
                     try {
-                        sheetState.offset.value.toDp()
+                        sheetState.offset.toDp()
                     } catch (e: Exception) {
                         0.dp
                     }
-                }
-
-                val collapsedAnchorBottomPaddingPixels = with(LocalDensity.current) {
-                    15.dp.toPx()
                 }
 
                 LaunchedEffect(key1 = Unit) {
@@ -295,12 +292,6 @@ object HomeScreens {
                     swipeableState = sheetState,
                     trackMarker = trackMarker,
                     readyState = readyState,
-                    createAnchors = {
-                        BottomSheetPosition.swipeAnchors(
-                            screenHeightPixels = it,
-                            collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels
-                        )
-                    },
                     onOpenPlacesScreen = onOpenPlacesScreen,
                     onOpenCreatePlaceScreen = onOpenCreatePlaceScreen,
                     onOpenGroupScreen = onGroupDetailsClick,
@@ -324,7 +315,7 @@ object HomeScreens {
                             modifier = Modifier.padding(top = 50.dp),
                             state = uiState,
                             sheetPeekHeight = (this.maxHeight - bottomOffset)
-                                .plus(if (sheetState.currentValue == BottomSheetPosition.HIDDEN) 35.dp else 0.dp)
+                                .plus(if (sheetState.settledValue == BottomSheetPosition.HIDDEN) 35.dp else 0.dp)
                                 .coerceIn(0.dp, this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
                             onGroupPickerClick = onGroupPickerClick,
                             onGroupDetailsClick = onGroupDetailsClick,

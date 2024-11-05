@@ -1,7 +1,6 @@
 package app.paralino.core.ui.map
 
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.SwipeableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
@@ -19,15 +18,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainMapSheet(
     appState: CoreUiState,
-    swipeableState: SwipeableState<BottomSheetPosition>,
+    swipeableState: SwipeableSheetState,
     trackMarker: (FocusedMarkerData) -> Unit,
     readyState: MapHomeScreenState.Ready?,
-    createAnchors: (screenHeightPixels: Float) -> Map<Float, BottomSheetPosition> = {
-        BottomSheetPosition.swipeAnchors(
-            screenHeightPixels = it,
-            collapsedAnchorBottomPaddingPixels = 0f
-        )
-    },
     onOpenGroupScreen: () -> Unit,
     onOpenPlacesScreen: () -> Unit,
     onOpenCreatePlaceScreen: () -> Unit,
@@ -38,7 +31,6 @@ fun MainMapSheet(
     SwipeableBottomSheet(
         swipeableState = swipeableState,
         screenContent = screenContent,
-        createAnchors = createAnchors,
         body = {
             MainMapSheetActiveBody(
                 appState = appState,
@@ -55,11 +47,10 @@ fun MainMapSheet(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MainMapSheetActiveBody(
     appState: CoreUiState,
-    swipeableState: SwipeableState<BottomSheetPosition>,
+    swipeableState: SwipeableSheetState,
     trackMarker: (FocusedMarkerData) -> Unit,
     readyState: MapHomeScreenState.Ready?,
     onOpenGroupScreen: () -> Unit,
