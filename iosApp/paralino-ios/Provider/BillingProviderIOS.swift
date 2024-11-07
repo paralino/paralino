@@ -113,6 +113,13 @@ class BillingProviderIOS: IBillingProvider {
                     case .onetime: formattedPrice = product.localizedPriceString
                     default: formattedPrice = product.localizedPriceString
                     }
+                    
+                    let trialDurationDays: KotlinInt?
+                    if await Purchases.shared.checkTrialOrIntroDiscountEligibility(product: product).isEligible {
+                        trialDurationDays = product.introductoryDiscount?.subscriptionPeriod.valueInDays
+                    } else {
+                        trialDurationDays = nil
+                    }
 
                     let periodData = IBillingProviderSubscriptionPlanPeriodData(
                         fullProductId: product.productIdentifier,
@@ -122,7 +129,7 @@ class BillingProviderIOS: IBillingProvider {
                         formattedPrice: formattedPrice ?? product.localizedPriceString,
                         referencePerYearPrice: KotlinLong(longLong: product.pricePerYear?.int64Value ?? 0),
                         referencePerYearFormattedPrice: product.localizedPricePerYear,
-                        trialDurationDays: product.introductoryDiscount?.subscriptionPeriod.valueInDays
+                        trialDurationDays: trialDurationDays
                     )
 
                     let planConfig = remoteConfigRepo.getConfigOnce().plans.first { config in
