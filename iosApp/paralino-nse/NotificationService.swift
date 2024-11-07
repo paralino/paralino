@@ -8,7 +8,6 @@
 import UserNotifications
 import paralino_apple_core
 import shared
-import Sentry
 
 class NotificationService: UNNotificationServiceExtension {
     
@@ -19,11 +18,7 @@ class NotificationService: UNNotificationServiceExtension {
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     
     override init() {
-        SentrySDK.start { options in
-            options.dsn = BuildKonfig.shared.glitchTipDSN
-            options.debug = false
-        }
-        
+
         DebbugLogr(canLogToConsole: true).systemLog(priority: LogPriority.warn, tag: "notification", message: "Start (\(DeviceUtil.getMemoryPrintString()))", t: nil)
         KoinSetup.initKoin()
         Logr.w(tag: "notification", message: "On start: (\(DeviceUtil.getMemoryPrintString()))")
