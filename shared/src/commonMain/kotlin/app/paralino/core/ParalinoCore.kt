@@ -126,7 +126,6 @@ object ParalinoCore {
         logg = logr
 
         val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
-        val cryptoCore = koinApp.koin.get<CryptoCore>()
         val appBuildConfig = koinApp.koin.get<AppBuildConfig>()
         val inAppLogger = koinApp.koin.get<InAppLogger>()
 
@@ -143,6 +142,7 @@ object ParalinoCore {
         )
 
         if (appPrefs.deviceIdSeed.isBlank()) {
+            val cryptoCore = koinApp.koin.get<CryptoCore>()
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
