@@ -82,7 +82,7 @@ class GroupActivityNotificationsHandler(
 
     suspend fun processLocationSharingStarted(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
         val payload =
-            push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return null
+            push.content?.tryParseFromJson<LocationSharingStartedNotificationPayload>() ?: return null
 
         val title = try {
             val group = groupRepo.getGroupWithMembersLocally(payload.groupId).firstOrNull()
@@ -134,6 +134,12 @@ data class GroupMemberAddedNotificationPayload constructor(
 
 @Serializable
 data class GroupMemberDeletedNotificationPayload constructor(
+    val groupId: String,
+    val memberUserId: String
+)
+
+@Serializable
+data class LocationSharingStartedNotificationPayload constructor(
     val groupId: String,
     val memberUserId: String
 )
