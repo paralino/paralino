@@ -15,7 +15,6 @@ class NotificationService: UNNotificationServiceExtension {
     var bestAttemptContent: UNMutableNotificationContent?
     lazy var pushProvider: PushSetupProvider = { KoinIOS.Instances.shared.pushProvider as! PushSetupProvider }()
     lazy var inAppLogger: InAppLogger = { KoinIOS.Instances.shared.inAppLogger }()
-    lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     
     override init() {
 
@@ -24,7 +23,6 @@ class NotificationService: UNNotificationServiceExtension {
         Logr.w(tag: "notification", message: "On start: (\(DeviceUtil.getMemoryPrintString()))")
         
         super.init()
-        self.coreAppManager.onAppStart()
     }
     
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
