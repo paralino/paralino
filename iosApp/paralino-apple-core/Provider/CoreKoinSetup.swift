@@ -16,9 +16,12 @@ public class CoreKoinSetup {
     
     public static func initKoin(
         appHost: AppHost,
-        locationManager: CoreLocationManagerDelegate,
-        appUpdateManager: IAppUpdateManager,
-        billingProvider: IBillingProvider
+        locationManager: @escaping () -> CoreLocationManagerDelegate,
+        appUpdateManager: @escaping () -> IAppUpdateManager,
+        billingProvider: @escaping () -> IBillingProvider,
+        locationStatusProvider: @escaping () -> ILocationStatusProvider,
+        connectionStatusProvider: @escaping (AppBuildConfig) -> IConnectionStatusProvider,
+        notificationStatusProvider: @escaping () -> INotificationStatusProvider
     ) {
         
         if (_koin != nil) {
@@ -31,7 +34,10 @@ public class CoreKoinSetup {
                 apphost: appHost,
                 locationManager: locationManager,
                 appUpdateManager: appUpdateManager,
-                billingProvider: billingProvider
+                billingProvider: billingProvider,
+                locationStatusProvider: locationStatusProvider,
+                connectionStatusProvider: connectionStatusProvider,
+                notificationStatusProvider: notificationStatusProvider
             )
         )
         _koin = koinApp.koin
@@ -39,9 +45,12 @@ public class CoreKoinSetup {
     
     private static func createKoinModules(
         apphost: AppHost,
-        locationManager: CoreLocationManagerDelegate,
-        appUpdateManager: IAppUpdateManager,
-        billingProvider: IBillingProvider
+        locationManager: @escaping () -> CoreLocationManagerDelegate,
+        appUpdateManager: @escaping () -> IAppUpdateManager,
+        billingProvider: @escaping () -> IBillingProvider,
+        locationStatusProvider: @escaping () -> ILocationStatusProvider,
+        connectionStatusProvider: @escaping (AppBuildConfig) -> IConnectionStatusProvider,
+        notificationStatusProvider: @escaping () -> INotificationStatusProvider
     ) -> [Koin_coreModule] {
         
         let appBuildConfig = AppBuildConfig(
@@ -58,9 +67,15 @@ public class CoreKoinSetup {
             logErrorsToRemote: true
         )
         
-        let locationStatusProvider = LocationStatusProvider()
-        let connectionStatusProvider = ConnectionStatusProvider(appBuildConfig: appBuildConfig)
-        let notificationStatusProvider = NotificationStatusProvider()
+//        let locationStatusProvider = LocationStatusProvider()
+//        let connectionStatusProvider = ConnectionStatusProvider(appBuildConfig: appBuildConfig)
+//        let notificationStatusProvider = NotificationStatusProvider()
+        
+        let locationManager = locationManager()
+        let locationStatusProvider = locationStatusProvider()
+        let connectionStatusProvider = connectionStatusProvider(appBuildConfig)
+        let notificationStatusProvider = notificationStatusProvider()
+        
         let deviceApiProvider = DeviceApiProvider(
             appBuildConfig: appBuildConfig,
             locationStatusProvider: locationStatusProvider,
@@ -73,11 +88,11 @@ public class CoreKoinSetup {
             connectionStatusProvider: connectionStatusProvider,
             locationStatusProvider: locationStatusProvider,
             notificationStatusProvider: notificationStatusProvider,
-            pushSetupProvider: PushSetupProvider(),
+            pushSetupProvider: { PushSetupProvider() },
             placeNotificationPresenter: { inAppLogger in PlaceNotificationPresenter(inAppLogger: inAppLogger) },
             groupActivityNotificationPresenter: { inAppLogger in GroupActivityNotificationPresenter(inAppLogger: inAppLogger) },
             infoNotificationPresenter: { inAppLogger in InfoNotificationPresenter(inAppLogger: inAppLogger) },
-            geofenceManager: GeofenceManager(locationManager: locationManager),
+            geofenceManager: { GeofenceManager(locationManager: locationManager) },
             appBuildConfig: appBuildConfig,
             oneTimeLocationProvider: { locationStatusProvider, locationCacheRepository in
                 OneTimeLocationProvider(
@@ -91,8 +106,8 @@ public class CoreKoinSetup {
             userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
             functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },
             realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
-            cryptoServiceProvider: CryptoFrameworkProvider(),
-            valueFormatter: ValueFormatter(),
+            cryptoServiceProvider: { CryptoFrameworkProvider() },
+            valueFormatter: { ValueFormatter() },
             appUpdateManager: appUpdateManager,
             billingProvider: billingProvider
         )

@@ -12,8 +12,6 @@ import Sentry
 
 class NotificationService: UNNotificationServiceExtension {
     
-    let locationManager: LocationManager = LocationManager(setupManager: false)
-    
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     lazy var pushProvider: PushSetupProvider = { KoinIOS.Instances.shared.pushProvider as! PushSetupProvider }()
@@ -27,8 +25,8 @@ class NotificationService: UNNotificationServiceExtension {
         }
         
         DebbugLogr(canLogToConsole: true).systemLog(priority: LogPriority.warn, tag: "notification", message: "Start (\(DeviceUtil.getMemoryPrintString()))", t: nil)
-        locationManager.manager.delegate = locationManager
-        KoinSetup.initKoin(locationManager: self.locationManager)
+        KoinSetup.initKoin()
+        Logr.w(tag: "notification", message: "On start: (\(DeviceUtil.getMemoryPrintString()))")
         
         super.init()
         self.coreAppManager.onAppStart()

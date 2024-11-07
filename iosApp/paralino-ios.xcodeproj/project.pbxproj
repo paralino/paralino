@@ -267,7 +267,10 @@
 		2505E6622CC11B880088D146 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Provider/ConnectionStatusProvider.swift,
+				Provider/LocationStatusProvider.swift,
 				Provider/Logr.swift,
+				Provider/NotificationStatusProvider.swift,
 			);
 			target = 2505E6452CBD69B50088D146 /* paralino-lse */;
 		};
@@ -316,6 +319,7 @@
 		2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Provider/ConnectionStatusProvider.swift,
 				Provider/Logr.swift,
 				Utils/DeviceUtil.swift,
 			);

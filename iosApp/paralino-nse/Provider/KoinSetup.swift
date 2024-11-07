@@ -11,12 +11,15 @@ import shared
 
 class KoinSetup {
     
-    static func initKoin(locationManager: CoreLocationManagerDelegate) {
+    static func initKoin() {
         CoreKoinSetup.initKoin(
             appHost: AppHost.iosNotificationExtension,
-            locationManager: locationManager,
-            appUpdateManager: AppUpdateManager(),
-            billingProvider: BillingProviderIOS()
+            locationManager: { NseLocationManager() },
+            appUpdateManager: { AppUpdateManager() },
+            billingProvider: { BillingProviderIOS() },
+            locationStatusProvider: { LocationStatusProvider() },
+            connectionStatusProvider: { appBuildConfig in ConnectionStatusProvider(appBuildConfig: appBuildConfig) },
+            notificationStatusProvider: { NotificationStatusProvider() }
         )
     }
     
@@ -30,6 +33,18 @@ class KoinSetup {
     class BillingProviderIOS: IBillingProvider {
         func configure() async throws -> [IBillingProviderSubscriptionPlanData] {
             return []
+        }
+    }
+    
+    class LocationStatusProvider: ILocationStatusProvider {
+        override func createCurrentStatus() -> LocationConditionStatus {
+            return LocationConditionStatus(isGpsOn: true, isFinePermissionAllowed: false, isCoarsePermissionAllowed: false, isBackgroundPermissionAllowed: false)
+        }
+    }
+    
+    class NotificationStatusProvider: INotificationStatusProvider {
+        override func createCurrentStatus() -> NotificationConditionStatus {
+            return NotificationConditionStatus(isNotificationPermissionAllowed: true)
         }
     }
 }
