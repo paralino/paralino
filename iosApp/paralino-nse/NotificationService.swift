@@ -13,7 +13,7 @@ class NotificationService: UNNotificationServiceExtension {
     
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
-    lazy var pushProvider: PushSetupProvider = { KoinIOS.Instances.shared.pushProvider as! PushSetupProvider }()
+    lazy var pushHandler: IOSNSEPushNotificationHandler = { KoinIOS.Instances.shared.nseNotificationHandler }()
     lazy var inAppLogger: InAppLogger = { KoinIOS.Instances.shared.inAppLogger }()
     
     override init() {
@@ -36,16 +36,16 @@ class NotificationService: UNNotificationServiceExtension {
                 Task {
                     Logr.v(tag: "notification", message: "Try to parse notification ID")
                     let notificationId = bestAttemptContent.userInfo["notificationId"] as? String
-                    if let notificationId, let pushProvider = self?.pushProvider {
+                    if let notificationId, let pushHandler = self?.pushHandler {
                         Logr.v(tag: "notification", message: "Try to fetch new alert notification (\(DeviceUtil.getMemoryPrintString()))")
-                        let payload = try? await pushProvider.getNotificationPayload(notificationId: notificationId)
+                        let payload = try? await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
                         
                         if let payload = payload {
                             self?.inAppLogger.logNotificationPayload(payload: payload)
                         }
                         
                         if let content = payload?.notificationContent() {
-                            try? await pushProvider.deleteNotification(notificationId: notificationId)
+                            try? await pushHandler.deletePushNotification(notificationId: notificationId)
                             Logr.v(tag: "notification", message: "Display new alert notification (\(DeviceUtil.getMemoryPrintString()))")
                             
                             if AppBuildConfig.companion.instance.isDevMode {

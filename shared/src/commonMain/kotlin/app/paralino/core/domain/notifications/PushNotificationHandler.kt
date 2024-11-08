@@ -2,9 +2,18 @@ package app.paralino.core.domain.notifications
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
+import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.notifications.processors.GroupMemberAddedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.GroupMemberDeletedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.INotificationProcessor
+import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor
+import app.paralino.core.domain.notifications.processors.LocationSharingStartedNotificationsProcessor
+import app.paralino.core.domain.notifications.processors.NotificationPreCheckProcessor
+import app.paralino.core.domain.notifications.processors.PlaceActivityNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PlaceDeletedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PlaceUpdatedNotificationProcessor
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.raw.LocationFocusRaw
@@ -18,13 +27,20 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 class PushNotificationHandler constructor(
-    private val placePush: PlaceActivityNotificationHandler,
-    private val groupMemberActivityPush: GroupActivityNotificationsHandler,
-    private val locationRequestPush: LocationRequestNotificationHandler,
+    private val sharingStartedNotification: LocationSharingStartedNotificationsProcessor,
+    private val memberAddedNotification: GroupMemberAddedNotificationProcessor,
+    private val memberDeletedNotification: GroupMemberDeletedNotificationProcessor,
+    private val placeCreatedNotification: PlaceCreatedNotificationProcessor,
+    private val placeDeletedNotification: PlaceDeletedNotificationProcessor,
+    private val placeUpdatedNotification: PlaceUpdatedNotificationProcessor,
+    private val placeActivityNotification: PlaceActivityNotificationProcessor,
+    private val locationRequestNotification: LocationRequestNotificationProcessor,
+    private val notificationPreCheck: NotificationPreCheckProcessor,
     private val placePresenter: IPlaceActivityNotificationPresenter,
     private val groupPresenter: IGroupActivityNotificationPresenter,
     private val docApi: IDocumentsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val preRefreshUseCase: GroupPreRefreshUseCase,
+    private val notificationDelete: PushNotificationDeleteUseCase,
     private val accessLogSource: AccessLogDataSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository() {
@@ -78,7 +94,7 @@ class PushNotificationHandler constructor(
                 .v("Got ${notifications.size} notifications documents")
 
             notifications
-                .filter { it.isForThisDevice() }
+                .filter { notificationPreCheck.isPushForThisDevice(it) }
                 .also {
                     logg.tag("push_notifications")
                         .v("Got ${it.size} notifications documents for this device")
@@ -107,7 +123,7 @@ class PushNotificationHandler constructor(
                         push = it,
                         notify = false,
                         onDelete = { push ->
-                            deletePushNotification(notificationId = push.id)
+                            notificationDelete.deletePushNotification(notificationId = push.id)
                         }
                     )
                 }
@@ -203,7 +219,7 @@ class PushNotificationHandler constructor(
             .v("Got ${notifications.size} notifications documents and ${locationFocusDocuments.size} location focus documents")
 
         notifications
-            .filter { it.isForThisDevice() }
+            .filter { notificationPreCheck.isPushForThisDevice(it) }
             .also {
                 logg.tag("push_notifications")
                     .v("Got ${it.size} notifications documents for this device")
@@ -225,7 +241,7 @@ class PushNotificationHandler constructor(
                     push = it,
                     notify = true,
                     onDelete = { push ->
-                        deletePushNotification(notificationId = push.id)
+                        notificationDelete.deletePushNotification(notificationId = push.id)
                     }
                 )
             }
@@ -254,140 +270,59 @@ class PushNotificationHandler constructor(
         onDelete: (suspend (PushNotificationRaw) -> Unit)? = null
     ): IPushNotificationPresenter.Payload? {
 
-        if (!push.isForThisDevice()) {
+        val canProcess = notificationPreCheck.preProcess(
+            push = push,
+            onDelete = onDelete
+        )
+
+        if (!canProcess) {
             return null
         }
 
-        logg.tag("push_notifications")
-            .v("Process ${push.importance} ${push.type} push notification. Expired (${push.isExpired})")
-
-        if (push.isExpired) {
-            logg.tag("push_notifications").v("Push notification expired, ignore")
-            onDelete?.invoke(push)
-            return null
-        }
-
-        if (appBuildConfig.appHost == AppHost.MAIN_APP && accessLogSource.canProcessAlertNotification(notificationId = push.id)) {
-            accessLogSource.saveAlertNotificationAccessLog(notificationId = push.id)
-        }
-
-        val payload: IPushNotificationPresenter.Payload? = when (push.pushType) {
-            PushNotificationType.PLACE_ALERT -> {
-                val payload = placePush.processPlaceActivity(push)
-                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
-
-                if (notify && payload != null && canProcess) {
-                    placePresenter.notify(payload)
-                }
-
-                if (canProcess) {
-                    onDelete?.invoke(push)
-                } else {
-                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
-                }
-
-                return payload
-            }
-
-            PushNotificationType.GROUP_MEMBER_ADDED -> {
-                val payload = groupMemberActivityPush.processMemberAdded(push)
-                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
-
-                if (notify && payload != null && canProcess) {
-                    groupPresenter.notify(payload)
-                }
-
-                if (canProcess) {
-                    onDelete?.invoke(push)
-                } else {
-                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
-                }
-
-                return payload
-            }
-
-            PushNotificationType.GROUP_MEMBER_DELETED -> {
-                val payload = groupMemberActivityPush.processMemberDeleted(push)
-                onDelete?.invoke(push)
-                return payload
-            }
-
-            PushNotificationType.LOCATION_REQUEST, PushNotificationType.LOCATION_FOCUS -> {
-                locationRequestPush.process(push)
-                onDelete?.invoke(push)
-                null
-            }
-
-            PushNotificationType.PLACE_CREATED -> {
-                val payload = placePush.processPlaceCreated(push)
-                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
-
-                if (notify && payload != null && canProcess) {
-                    groupPresenter.notify(payload)
-                }
-
-                if (canProcess) {
-                    onDelete?.invoke(push)
-                } else {
-                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
-                }
-
-                return payload
-            }
-
-            PushNotificationType.PLACE_UPDATED -> {
-                val payload = placePush.processPlaceUpdated(push)
-                onDelete?.invoke(push)
-                return payload
-            }
-
-            PushNotificationType.PLACE_DELETED -> {
-                val payload = placePush.processPlaceDeleted(push)
-                onDelete?.invoke(push)
-                return payload
-            }
-
-            PushNotificationType.LOCATION_STARTED -> {
-                val payload = groupMemberActivityPush.processLocationSharingStarted(push)
-                val canProcess = accessLogSource.canProcessAlertNotification(notificationId = push.id)
-
-                if (notify && payload != null && canProcess) {
-                    groupPresenter.notify(payload)
-                }
-
-                if (canProcess) {
-                    onDelete?.invoke(push)
-                } else {
-                    logg.tag("push_notifications").i("Can not process push notification: ${push.type}")
-                }
-
-                return payload
-            }
-
-            null -> null
+        val payload = push.pushType?.let {
+            val processor = it.processor()
+            val presenter = if (notify) it.presenter() else null
+            processor.processAndGetPayload(
+                push = push,
+                presenter = presenter,
+                groupRefreshHook = {
+                    preRefreshUseCase.refreshGroupWithMembers(
+                        groupId = it.groupId,
+                        cacheTimeMillis = it.cacheTimeDuration.inWholeMilliseconds
+                    )
+                },
+                onDelete = onDelete
+            )
         }
 
         return payload
     }
 
-    suspend fun deletePushNotification(notificationId: String) {
-        try {
-            logg.tag("push_notifications").v("Delete push notification document")
-            docApi.deleteDocument(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = BackendResourceIDs.collectionPushNotificationID,
-                documentId = notificationId
-            )
-            delay(400)
-        } catch (e: Exception) {
-            logg.tag("push_notifications")
-                .w("Error deleting push notification $notificationId - ${e.message}")
-        } finally {
-            accessLogSource.deleteAlertNotificationAccessLog(notificationId = notificationId)
+    private fun PushNotificationType.processor(): INotificationProcessor {
+        return when (this) {
+            PushNotificationType.PLACE_ALERT -> placeActivityNotification
+            PushNotificationType.PLACE_CREATED -> placeCreatedNotification
+            PushNotificationType.PLACE_UPDATED -> placeUpdatedNotification
+            PushNotificationType.PLACE_DELETED -> placeDeletedNotification
+            PushNotificationType.GROUP_MEMBER_ADDED -> memberAddedNotification
+            PushNotificationType.GROUP_MEMBER_DELETED -> memberDeletedNotification
+            PushNotificationType.LOCATION_STARTED -> sharingStartedNotification
+            PushNotificationType.LOCATION_REQUEST -> locationRequestNotification
+            PushNotificationType.LOCATION_FOCUS -> locationRequestNotification
         }
     }
 
-    private fun PushNotificationRaw.isForThisDevice(): Boolean {
-        return this.deviceId.isNullOrBlank() || this.deviceId == appPrefs.deviceId || this.deviceId == appPrefs.sessionId
+    private fun PushNotificationType.presenter(): IPushNotificationPresenter? {
+        return when (this) {
+            PushNotificationType.PLACE_ALERT -> placePresenter
+            PushNotificationType.PLACE_CREATED -> groupPresenter
+            PushNotificationType.PLACE_UPDATED -> null
+            PushNotificationType.PLACE_DELETED -> null
+            PushNotificationType.GROUP_MEMBER_ADDED -> groupPresenter
+            PushNotificationType.GROUP_MEMBER_DELETED -> null
+            PushNotificationType.LOCATION_STARTED -> groupPresenter
+            PushNotificationType.LOCATION_REQUEST -> null
+            PushNotificationType.LOCATION_FOCUS -> null
+        }
     }
 }

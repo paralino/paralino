@@ -1,6 +1,6 @@
 package app.paralino.core.models.raw
 
-import app.paralino.core.domain.notifications.LocationRequestNotificationPayload
+import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.toJson
@@ -28,7 +28,7 @@ data class LocationFocusRaw(
             eventId = "$groupId$ownerUserId",
             type = PushNotificationType.LOCATION_FOCUS.key,
             importance = PushNotificationImportance.NORMAL.key,
-            content = LocationRequestNotificationPayload(
+            content = LocationRequestNotificationProcessor.LocationRequestNotificationPayload(
                 groupId = groupId,
                 memberUserId = ownerUserId
             ).toJson()

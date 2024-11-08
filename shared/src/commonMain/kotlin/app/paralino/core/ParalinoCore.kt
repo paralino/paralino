@@ -34,6 +34,17 @@ import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.domain.location.RealtimeEventsProcessor
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.notifications.PushNotificationDeleteUseCase
+import app.paralino.core.domain.notifications.PushNotificationHandler
+import app.paralino.core.domain.notifications.processors.GroupMemberAddedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.GroupMemberDeletedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor
+import app.paralino.core.domain.notifications.processors.LocationSharingStartedNotificationsProcessor
+import app.paralino.core.domain.notifications.processors.NotificationPreCheckProcessor
+import app.paralino.core.domain.notifications.processors.PlaceActivityNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PlaceDeletedNotificationProcessor
+import app.paralino.core.domain.notifications.processors.PlaceUpdatedNotificationProcessor
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
@@ -62,10 +73,6 @@ import app.paralino.core.models.mappers.SharingContractsMapper
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.mappers.UserMapperLocal
-import app.paralino.core.domain.notifications.GroupActivityNotificationsHandler
-import app.paralino.core.domain.notifications.LocationRequestNotificationHandler
-import app.paralino.core.domain.notifications.PlaceActivityNotificationHandler
-import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
@@ -252,10 +259,19 @@ val coreModule = module {
     single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
     single { CryptoUserKeyRepository(get(), get(), get()) }
 
-    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-    factory { LocationRequestNotificationHandler(get(), get(), get(), get(), get()) }
-    factory { PlaceActivityNotificationHandler(get(), get(), get(), get()) }
-    factory { GroupActivityNotificationsHandler(get(), get(), get(), get()) }
+    factory { NotificationPreCheckProcessor(get(), get(), appPrefs) }
+    factory { PushNotificationDeleteUseCase(get(), get()) }
+    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+
+    factory { PlaceActivityNotificationProcessor(get(), get(), get(), get()) }
+    factory { PlaceCreatedNotificationProcessor(get(), get(), get()) }
+    factory { PlaceDeletedNotificationProcessor(get()) }
+    factory { PlaceUpdatedNotificationProcessor(get()) }
+    factory { GroupMemberAddedNotificationProcessor(get(), get(), get()) }
+    factory { GroupMemberDeletedNotificationProcessor(get()) }
+    factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get()) }
+    factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get()) }
+
     single { LocationPerformanceManager(get(), get(), appPrefs) }
 
     single { InAppLogger(get(), get(), get()) }

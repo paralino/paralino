@@ -1,8 +1,8 @@
-package app.paralino.core.domain.notifications
+package app.paralino.core.domain.notifications.processors
 
-import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.PushNotificationImportance
@@ -10,6 +10,7 @@ import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.launch
@@ -17,24 +18,28 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-class LocationRequestNotificationHandler(
+class LocationRequestNotificationProcessor(
     private val locationPerformanceManager: LocationPerformanceManager,
     private val sharingManager: LocationSharingManager,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val memberIdUseCase: UserMemberIdUseCase,
-    private val coroutineScopeProvider: ICoroutineScopeProvider
-) : LimitedExecution() {
+    private val coroutineScopeProvider: ICoroutineScopeProvider,
+    private val accessLogSource: AccessLogDataSource
+) : INotificationProcessor(accessLogSource) {
 
-    fun process(push: PushNotificationRaw) {
+    override suspend fun constructPushPayload(
+        push: PushNotificationRaw,
+        groupRefreshHook: (suspend (GroupRefreshHookPayload) -> Unit)?
+    ): IPushNotificationPresenter.Payload? {
 
         val payload = push.content?.tryParseFromJson<LocationRequestNotificationPayload>()
 
         if (payload == null) {
             logg.w("Location request payload is NULL")
-            return
+            return null
         }
 
-        val performanceType = push.performanceType ?: return
+        val performanceType = push.performanceType ?: return null
         val key = (push.pushType?.key ?: "location_request") + "_${payload.groupId}"
 
         logg.tag("location_performance")
@@ -58,6 +63,8 @@ class LocationRequestNotificationHandler(
                 logg.w("Location $key already in progress: ${e.message}")
             }
         }
+
+        return null
     }
 
     private suspend fun updateStatusAndPerformance(
@@ -135,10 +142,10 @@ class LocationRequestNotificationHandler(
                 else -> 20.seconds
             }
         }
-}
 
-@Serializable
-data class LocationRequestNotificationPayload constructor(
-    val groupId: String,
-    val memberUserId: String
-)
+    @Serializable
+    data class LocationRequestNotificationPayload constructor(
+        val groupId: String,
+        val memberUserId: String
+    )
+}

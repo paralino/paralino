@@ -36,12 +36,10 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         when (val transition = geofencingEvent.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                logg.i("place_activity_geofence", "User entered geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceEnter(it.map { it.requestId }) }
             }
 
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                logg.i("place_activity_geofence", "User exited geofence")
                 geofencingEvent.triggeringGeofences?.let { receiver.notifyPlaceExit(it.map { it.requestId }) }
             }
 

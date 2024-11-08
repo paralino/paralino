@@ -69,10 +69,6 @@ class PlacesRepository constructor(
         return local.getPlaceWithoutSettings(placeId)
     }
 
-    suspend fun getPlaceLocallyOnce(placeId: String): GroupPlace? {
-        return local.getPlaceWithoutSettingsOnce(placeId)
-    }
-
     fun getPlaceWithSettingsLocally(placeId: String): Flow<GroupPlaceWithSettings> {
         return local.getPlaceWithSettings(placeId)
     }
@@ -246,6 +242,7 @@ class PlacesRepository constructor(
     }
 
     fun placesEnter(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        logg.i("place_activity_geofence", "User entered geofence")
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
@@ -264,6 +261,7 @@ class PlacesRepository constructor(
     }
 
     fun placesExit(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        logg.i("place_activity_geofence", "User exited geofence")
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {

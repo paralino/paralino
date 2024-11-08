@@ -19,6 +19,7 @@ import app.paralino.core.domain.notifications.IGroupActivityNotificationPresente
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.domain.notifications.PushNotificationHandler
+import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -112,6 +113,7 @@ object KoinIOS {
                     single { locationStatusProvider }
                     single { notificationStatusProvider }
                     single { pushSetupProvider() }
+                    single { IOSNSEPushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get()) }
                     factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
                     factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
                     factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
@@ -235,6 +237,7 @@ object KoinIOS {
         val appBuildConfig: AppBuildConfig get() = get()
         val remoteConfigRepo: RemoteConfigRepository get() = get()
         val userConfigRepo: UserConfigRepository get() = get()
+        val nseNotificationHandler: IOSNSEPushNotificationHandler get() = get()
     }
 
     object ViewModels : KoinComponent {
