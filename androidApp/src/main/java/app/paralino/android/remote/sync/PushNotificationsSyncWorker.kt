@@ -13,7 +13,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.paralino.android.notification.SyncNotificationProvider
 import app.paralino.core.logg
-import app.paralino.core.notifications.PushNotificationHandler
+import app.paralino.core.domain.notifications.PushNotificationHandler
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

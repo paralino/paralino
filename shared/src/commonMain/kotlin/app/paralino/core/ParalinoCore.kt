@@ -62,10 +62,10 @@ import app.paralino.core.models.mappers.SharingContractsMapper
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.mappers.UserMapperLocal
-import app.paralino.core.notifications.GroupActivityNotificationsHandler
-import app.paralino.core.notifications.LocationRequestNotificationHandler
-import app.paralino.core.notifications.PlaceActivityNotificationHandler
-import app.paralino.core.notifications.PushNotificationHandler
+import app.paralino.core.domain.notifications.GroupActivityNotificationsHandler
+import app.paralino.core.domain.notifications.LocationRequestNotificationHandler
+import app.paralino.core.domain.notifications.PlaceActivityNotificationHandler
+import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr

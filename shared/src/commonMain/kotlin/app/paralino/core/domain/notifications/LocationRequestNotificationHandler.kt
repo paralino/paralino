@@ -1,4 +1,4 @@
-package app.paralino.core.notifications
+package app.paralino.core.domain.notifications
 
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor

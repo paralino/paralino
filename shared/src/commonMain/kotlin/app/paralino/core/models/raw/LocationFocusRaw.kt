@@ -1,6 +1,6 @@
 package app.paralino.core.models.raw
 
-import app.paralino.core.notifications.LocationRequestNotificationPayload
+import app.paralino.core.domain.notifications.LocationRequestNotificationPayload
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.toJson

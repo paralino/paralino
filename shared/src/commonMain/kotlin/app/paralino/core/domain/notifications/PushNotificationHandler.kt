@@ -1,4 +1,4 @@
-package app.paralino.core.notifications
+package app.paralino.core.domain.notifications
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
@@ -30,58 +30,6 @@ class PushNotificationHandler constructor(
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "notification_sync"
-
-    suspend fun retrievePushPresenterPayload(
-        notificationId: String,
-        force: Boolean
-    ): IPushNotificationPresenter.Payload? {
-        val executionKey = "${executionKey}_$notificationId"
-        try {
-            startProcessing(executionKey)
-        } catch (e: Exception) {
-            logg.tag(executionKey).v("Processing, can't fetch notification")
-            if (!force) {
-                return null
-            }
-        }
-
-        try {
-            accessLogSource.saveAlertNotificationAccessLog(notificationId = notificationId)
-            delay(3.seconds)
-            if (!accessLogSource.canProcessAlertNotification(notificationId = notificationId)) {
-                logg.tag("push_notifications").i("Can not process single notification: $notificationId")
-                return null
-            }
-
-            val notification = docApi.getDocument(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = BackendResourceIDs.collectionPushNotificationID,
-                documentId = notificationId
-            )
-                .also {
-                    logg.tag("push_notifications").v("Got notification document")
-                }
-                .let {
-                    try {
-                        PushNotificationRaw.from(it)
-                    } catch (e: Exception) {
-                        logg.tag("push_notifications").e("Error parsing push notification", e)
-                        null
-                    }
-                }
-
-            return processNotification(
-                push = notification!!,
-                notify = false,
-                onDelete = null
-            )
-        } catch (e: Exception) {
-            logg.tag(executionKey).w("Error fetching push notification - ${e.message}")
-            return null
-        } finally {
-            stopProcessing(executionKey)
-        }
-    }
 
     suspend fun tryToHandleLocationPush(): Boolean {
         val executionKey = "${executionKey}_location"

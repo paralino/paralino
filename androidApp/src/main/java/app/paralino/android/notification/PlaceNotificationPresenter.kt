@@ -17,7 +17,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
 import app.paralino.core.MR
 import app.paralino.core.logg
-import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.ui.theme.AppColors
 
