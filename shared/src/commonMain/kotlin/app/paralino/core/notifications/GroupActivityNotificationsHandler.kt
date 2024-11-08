@@ -4,13 +4,14 @@ import app.paralino.core.MR
 import app.paralino.core.appPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.tryParseFromJson
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
@@ -18,14 +19,15 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class GroupActivityNotificationsHandler(
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
+    private val memberRepo: LocationLocalDataSource,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val valueFormatter: IValueFormatter
 ) {
     suspend fun processMemberAdded(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
 
-        val payload =
-            push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>() ?: return null
+        val payload = push.content?.tryParseFromJson<GroupMemberAddedNotificationPayload>()
+            ?: return null
 
         preRefreshUseCase.refreshGroupWithMembers(
             groupId = payload.groupId,
@@ -33,8 +35,10 @@ class GroupActivityNotificationsHandler(
         )
 
         val title = try {
-            val group = groupRepo.getGroupWithMembersLocally(payload.groupId).firstOrNull()
-            val member = group?.memberByUserId(payload.memberUserId)
+            val group: UserGroup? = groupRepo.getGroupOnce(payload.groupId)
+            val member = group?.let {
+                memberRepo.getMemberOnce(group = it, userId = payload.memberUserId)
+            }
 //                val groupEmoji = group?.data?.data?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
 //                val memberEmoji = member?.image?.getImageValue(ImageType.emoji)?.let { "$it " } ?: ""
             val groupName = group?.data?.data?.name //?.let { "$groupEmoji$it" }
@@ -70,28 +74,29 @@ class GroupActivityNotificationsHandler(
     }
 
     suspend fun processMemberDeleted(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
-        val payload =
-            push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>() ?: return null
+        val payload = push.content?.tryParseFromJson<GroupMemberDeletedNotificationPayload>()
+            ?: return null
         preRefreshUseCase.refreshGroupWithMembers(
             groupId = payload.groupId,
             cacheTimeMillis = 10.seconds.inWholeMilliseconds
         )
-
         return null
     }
 
     suspend fun processLocationSharingStarted(push: PushNotificationRaw): IPushNotificationPresenter.Payload? {
-        val payload =
-            push.content?.tryParseFromJson<LocationSharingStartedNotificationPayload>() ?: return null
+        val payload = push.content?.tryParseFromJson<LocationSharingStartedNotificationPayload>()
+            ?: return null
 
         val title = try {
-            val group = groupRepo.getGroupWithMembersLocally(payload.groupId).firstOrNull()
-            val member = group?.memberByUserId(payload.memberUserId)
-            val memberName = member?.name
-
             if (payload.memberUserId == appPrefs.userId) {
                 MR.strings.group_member_current_sharing_started_notification.localizedString()
             } else {
+                val group = groupRepo.getGroupOnce(payload.groupId)
+                val member = group?.let {
+                    memberRepo.getMemberOnce(group = it, userId = payload.memberUserId)
+                }
+                val memberName = member?.name
+
                 if (memberName.isNullOrBlank()) {
                     MR.strings.group_member_sharing_started_notification_default.localizedString()
                 } else {
