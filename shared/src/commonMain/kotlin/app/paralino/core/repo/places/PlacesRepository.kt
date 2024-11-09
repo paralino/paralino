@@ -22,7 +22,6 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -43,7 +42,6 @@ class PlacesRepository constructor(
     private val placeActivityRepo: PlaceActivityDataSource,
     private val placeActivityUploadEngine: PlaceActivityUploadEngine,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
-    private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val geofenceManager: IGeofenceManager,
@@ -67,10 +65,6 @@ class PlacesRepository constructor(
 
     fun getPlaceLocally(placeId: String): Flow<GroupPlace> {
         return local.getPlaceWithoutSettings(placeId)
-    }
-
-    suspend fun getPlaceLocallyOnce(placeId: String): GroupPlace? {
-        return local.getPlaceWithoutSettingsOnce(placeId)
     }
 
     fun getPlaceWithSettingsLocally(placeId: String): Flow<GroupPlaceWithSettings> {
@@ -153,7 +147,7 @@ class PlacesRepository constructor(
                         id = "",
                         groupId = place.place.groupId,
                         placeId = placeId,
-                        ownerUserId = userRepository.cachedUserId,
+                        ownerUserId = appPrefs.userId,
                         alertData = listOf(data)
                     )
                 }
@@ -246,6 +240,7 @@ class PlacesRepository constructor(
     }
 
     fun placesEnter(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        logg.i("place_activity_geofence", "User entered geofence")
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
@@ -264,6 +259,7 @@ class PlacesRepository constructor(
     }
 
     fun placesExit(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        logg.i("place_activity_geofence", "User exited geofence")
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
@@ -534,7 +530,7 @@ class PlacesRepository constructor(
     private fun placeActivityDelay(trigger: PlaceActivityTriggerType): Duration? {
         return when (trigger) {
             PlaceActivityTriggerType.GOEFENCE -> {
-                if (appPrefs.placeActivityThrottle) 5.seconds
+                if (appPrefs.placeActivityThrottle) null
                 else null
             }
             else -> {

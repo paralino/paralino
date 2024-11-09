@@ -13,14 +13,14 @@ class LogsDatabaseHelper(
 class MainDatabaseHelper(
     private val roomDatabase: AppMainDatabase
 ) {
-    val userDao = roomDatabase.userDao()
-    val blocklistDao = roomDatabase.blocklistDao()
-    val sharingContractsDao = roomDatabase.sharingContractsDao()
-    val userConfigDao = roomDatabase.userConfigDao()
-    val remoteConfigDao = roomDatabase.remoteConfigDao()
-    val personalCodeDao = roomDatabase.personalCodeDao()
-    val userKeysDao = roomDatabase.userKeysDao()
-    val groupRelatedKeysDao = roomDatabase.groupRelatedKeysDao()
-    val placeActivityDao = roomDatabase.placeActivityDao()
-    val groupRelatedDao = roomDatabase.groupRelatedDao()
+    val userDao by lazy { roomDatabase.userDao() }
+    val blocklistDao by lazy { roomDatabase.blocklistDao() }
+    val sharingContractsDao by lazy { roomDatabase.sharingContractsDao() }
+    val userConfigDao by lazy { roomDatabase.userConfigDao() }
+    val remoteConfigDao by lazy { roomDatabase.remoteConfigDao() }
+    val personalCodeDao by lazy { roomDatabase.personalCodeDao() }
+    val userKeysDao by lazy { roomDatabase.userKeysDao() }
+    val groupRelatedKeysDao by lazy { roomDatabase.groupRelatedKeysDao() }
+    val placeActivityDao by lazy { roomDatabase.placeActivityDao() }
+    val groupRelatedDao by lazy { roomDatabase.groupRelatedDao() }
 }

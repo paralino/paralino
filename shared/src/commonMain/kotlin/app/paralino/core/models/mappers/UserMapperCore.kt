@@ -1,7 +1,7 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.asImageModel
 import app.paralino.core.models.raw.BlocklistRaw
@@ -16,7 +16,7 @@ import app.paralino.core.utils.BaseRemoteModule
 
 class UserMapperCore(
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeyRepository
+    private val userKeyRepo: CryptoUserKeysLocalSource
 ) {
 
     suspend fun remote2Core(model: BlocklistRaw): BlocklistModel {

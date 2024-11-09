@@ -1,6 +1,6 @@
 package app.paralino.core.repo.group
 
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.domain.crypto.VerificationResultError
@@ -33,7 +33,8 @@ class UserGroupLocalDataSource constructor(
     private val memberMapper: MemberWithLocationsMapperLocal,
     private val placeMapper: GroupPlaceMapperLocal,
     private val memberLocal: LocationLocalDataSource,
-    private val placeActivity: PlaceActivityDataSource
+    private val placeActivity: PlaceActivityDataSource,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun recreateGroups(data: List<GroupWithMembersAndPlacesRaw>) {

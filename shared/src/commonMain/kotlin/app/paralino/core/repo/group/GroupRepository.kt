@@ -16,8 +16,4 @@ class GroupRepository constructor(
     fun getGroupWithMembersLocally(id: String): Flow<UserGroupWithMembers?> {
         return local.getGroupWithMembers(id)
     }
-
-    suspend fun clear() {
-        local.clearAll()
-    }
 }

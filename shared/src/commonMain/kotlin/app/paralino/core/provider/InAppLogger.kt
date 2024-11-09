@@ -5,7 +5,7 @@ import app.paralino.core.db.logs.debug.DebugLogsEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
-import app.paralino.core.notifications.IPushNotificationPresenter
+import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay

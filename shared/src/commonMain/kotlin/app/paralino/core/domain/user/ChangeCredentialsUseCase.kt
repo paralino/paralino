@@ -4,7 +4,9 @@ import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.UserAuthDerivedKey
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.OldMasterKeys
@@ -24,12 +26,14 @@ import kotlinx.coroutines.flow.flowOn
 class ChangeCredentialsUseCase(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
+    private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
+    private val appPrefs: AppPrefs
 ) {
 
     fun changeEmail(email: String, password: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
-            userId = userRepo.cachedUserId,
+            userId = appPrefs.userId,
             oldPassword = password,
             newPassword = null,
             action = { oldLoginKey, newLoginKey ->
@@ -43,7 +47,7 @@ class ChangeCredentialsUseCase(
 
     fun changePassword(oldPassword: String, newPassword: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
-            userId = userRepo.cachedUserId,
+            userId = appPrefs.userId,
             oldPassword = oldPassword,
             newPassword = newPassword,
             action = { oldLoginKey, newLoginKey ->
@@ -185,7 +189,7 @@ class ChangeCredentialsUseCase(
             }
 
             // first upload new key to server as backup, without deleting old keys
-            val backedUpKey = userKeyRepo.uploadNewUserKey(newKey, removeOldKeys = false)
+            val backedUpKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = false)
 
             // check once more everything is properly uploaded
             check(newKey.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
@@ -203,13 +207,13 @@ class ChangeCredentialsUseCase(
             action(oldMasterAuthKey?.loginKey, newMasterAuthKey.loginKey)
 
             // if password is changed successfully we can save the new key and delete old ones
-            val newRemoteKey = userKeyRepo.uploadNewUserKey(newKey, removeOldKeys = true)
+            val newRemoteKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
 
             // at this point both login password and encryption key are updated safely
             // we can save the key locally
-            userKeyRepo.saveUserKeyLocally(
-                keyRaw = newRemoteKey,
-                decryptedKey = newUserKeys.userPersonalKey
+            userKeyRepo.saveUserKey(
+                key = newRemoteKey,
+                decryptedMainKey = newUserKeys.userPersonalKey
             )
 
             emit(ChangeCredentialsStep.DONE)

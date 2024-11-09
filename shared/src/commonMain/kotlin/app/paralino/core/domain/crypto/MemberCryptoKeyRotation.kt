@@ -1,12 +1,12 @@
 package app.paralino.core.domain.crypto
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
-import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.data
@@ -25,9 +25,10 @@ import kotlinx.serialization.encodeToString
 class MemberCryptoKeyRotation(
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeyRepository,
-    private val cryptoKEKRepository: CryptoKEKRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
+    private val cryptoKEKRepository: CryptoKEKLocalRepository,
     private val validityVerification: GroupValidityVerification,
+    private val appPrefs: AppPrefs
 ) : LimitedExecution() {
 
     suspend fun rotateMemberKeys(

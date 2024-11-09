@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
@@ -310,6 +308,24 @@ fun SharingStartScreenCore(
 
             Spacer(modifier = Modifier.size(20.dp))
 
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.background)
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.groups_sharing_devices),
+                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
+                        modifier = Modifier.alpha(ContentAlpha.medium)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
+                }
+            }
+
             MainInputField(
                 text = state.deviceName,
                 hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
@@ -321,32 +337,10 @@ fun SharingStartScreenCore(
                 onInputChange = { vm.onDeviceNameChange(it) }
             )
 
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.surface,
-                            shape = RoundedCornerShape(percent = 20)
-                        )
-                        .padding(vertical = 8.dp, horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.groups_sharing_devices),
-                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
-                }
-            }
-
             SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
 
             LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 icon = CoreAppIcons.AccessTime.asPainterResource(),
                 title = stringResource(MR.strings.groups_sharing_section_title_duration),
                 description = getTime(state.sharingTimeMillis),

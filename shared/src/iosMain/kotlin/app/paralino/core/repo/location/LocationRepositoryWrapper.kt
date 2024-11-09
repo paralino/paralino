@@ -3,7 +3,7 @@ package app.paralino.core.repo.location
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationDataModel
-import app.paralino.core.notifications.PushNotificationHandler
+import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
 

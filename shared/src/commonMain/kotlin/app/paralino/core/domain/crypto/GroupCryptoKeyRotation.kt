@@ -1,11 +1,12 @@
 package app.paralino.core.domain.crypto
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
-import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.data
@@ -17,7 +18,6 @@ import app.paralino.core.models.raw.UpdateGroupKeysPayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
@@ -28,12 +28,13 @@ import kotlinx.serialization.encodeToString
 class GroupCryptoKeyRotation constructor(
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeyRepository,
-    private val userRepository: UserRepository,
-    private val cryptoKEKRepository: CryptoKEKRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
+    private val cryptoKEKRepository: CryptoKEKLocalRepository,
+    private val cryptoKEKRefreshUseCase: CryptoKEKRefreshUseCase,
     private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
     private val deviceKeyRotation: MemberDeviceKeyRotation,
-    private val validityVerification: GroupValidityVerification
+    private val validityVerification: GroupValidityVerification,
+    private val appPrefs: AppPrefs
 ) : LimitedExecution() {
 
     suspend fun rotateGroupAndMemberKeys(
@@ -45,7 +46,7 @@ class GroupCryptoKeyRotation constructor(
         } else {
             val didRotateMemberKey = memberCryptoKeyRotation.rotateMemberKeys(remoteGroup.groupWithMembers, force = false)
             if(didRotateMemberKey)
-                cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
+                cryptoKEKRefreshUseCase.refreshMemberKeysForGroup(groupId = remoteGroup.id)
 
             val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup.groupWithMembers, force = false)
 
@@ -57,7 +58,7 @@ class GroupCryptoKeyRotation constructor(
         remoteGroup: UserGroupWithMembersAndPlaces,
         force: Boolean
     ): Boolean {
-        if (remoteGroup.ownerUserId != userRepository.cachedUserId) return false
+        if (remoteGroup.ownerUserId != appPrefs.userId) return false
         // if group is not verified (current member is not verified - group owner) skip key generation
         if (!remoteGroup.groupWithMembers.isGroupVerified) {
             logg.tag("tag_crypto_key_group_rotation").v("Group ${remoteGroup.id} not verified")
@@ -107,18 +108,18 @@ class GroupCryptoKeyRotation constructor(
         // 1. rotate group key
         rotateGroupKeys(group = remoteGroup)
         // new group key is required first since we are re-encrypting user data with it
-        cryptoKEKRepository.refreshGroupKeysForGroup(groupId = remoteGroup.id)
+        cryptoKEKRefreshUseCase.refreshGroupKeysForGroup(groupId = remoteGroup.id)
 
         // 2. only rotate member keys
         val didRotateMemberKeys =
             memberCryptoKeyRotation.rotateMemberKeys(remoteGroup = remoteGroup.groupWithMembers, force = true)
         if (didRotateMemberKeys)
-            cryptoKEKRepository.refreshMemberKeysForGroup(groupId = remoteGroup.id)
+            cryptoKEKRefreshUseCase.refreshMemberKeysForGroup(groupId = remoteGroup.id)
 
         // 3. rotate current device keys
         val didRotateDeviceKeys = deviceKeyRotation.rotateDeviceKeys(remoteGroup = remoteGroup.groupWithMembers, force = true)
         if (didRotateDeviceKeys)
-            cryptoKEKRepository.refreshDeviceKeysForGroup(groupId = remoteGroup.id)
+            cryptoKEKRefreshUseCase.refreshDeviceKeysForGroup(groupId = remoteGroup.id)
     }
 
     private suspend fun rotateGroupKeys(

@@ -14,14 +14,22 @@ class KoinSetup {
     static func initKoin(locationManager: CoreLocationManagerDelegate) {
         CoreKoinSetup.initKoin(
             appHost: AppHost.iosLocationExtension,
-            locationManager: locationManager,
-            appUpdateManager: AppUpdateManager(),
-            billingProvider: BillingProviderIOS()
+            crashReportingLogr: { appBuildConfig in CrashReportingLogr() },
+            locationManager: { locationManager },
+            appUpdateManager: { AppUpdateManager() },
+            billingProvider: { BillingProviderIOS() },
+            locationStatusProvider: { LocationStatusProvider() },
+            connectionStatusProvider: { appBuildConfig in ConnectionStatusProvider(appBuildConfig: appBuildConfig) },
+            notificationStatusProvider: { NotificationStatusProvider() }
         )
     }
     
     // MARK: NO-OP classes
     // Keep them empty since they are not used in notification service
+    
+    class CrashReportingLogr: ICrashReportingLogr {
+        override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {}
+    }
     
     class AppUpdateManager: IAppUpdateManager {
         override func startUpdateProcess(data: ConfigData) {}

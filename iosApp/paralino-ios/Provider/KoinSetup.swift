@@ -13,9 +13,13 @@ class KoinSetup {
     static func initKoin(locationManager: LocationManager) {
         CoreKoinSetup.initKoin(
             appHost: AppHost.mainApp,
-            locationManager: locationManager,
-            appUpdateManager: AppUpdateManager(),
-            billingProvider: BillingProviderIOS()
+            crashReportingLogr: { appBuildConfig in CrashReportingLogr(canLogToRemote: appBuildConfig.logErrorsToRemote) },
+            locationManager: { locationManager },
+            appUpdateManager: { AppUpdateManager() },
+            billingProvider: { BillingProviderIOS() },
+            locationStatusProvider: { LocationStatusProvider() },
+            connectionStatusProvider: { appBuildConfig in ConnectionStatusProvider(appBuildConfig: appBuildConfig) },
+            notificationStatusProvider: { NotificationStatusProvider() }
         )
     }
 }

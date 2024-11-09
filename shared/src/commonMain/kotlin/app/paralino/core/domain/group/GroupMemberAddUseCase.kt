@@ -1,12 +1,12 @@
 package app.paralino.core.domain.group
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
-import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -34,8 +34,9 @@ class GroupMemberAddUseCase constructor(
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeyRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val appPrefs: AppPrefs
 ) : LimitedExecutionRepository() {
 
     fun addMemberByAccessCode(

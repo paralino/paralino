@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
@@ -15,7 +15,8 @@ class UserDevicesRemoteSource constructor(
     private val documentApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val appBuildConfig: AppBuildConfig,
-    private val userMemberIdUseCase: UserMemberIdUseCase
+    private val userMemberIdUseCase: UserMemberIdUseCase,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun getDevicesWithData(): List<UserDeviceRaw> {

@@ -7,169 +7,21 @@ import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.logg
-import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
-import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
-import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
 
-class CryptoKEKRepository(
-    private val remote: CryptoKeyRemoteDataSource,
+class CryptoKEKLocalRepository(
     private val local: CryptoKeyLocalDataSource,
-    private val userKeyRepository: CryptoUserKeyRepository,
-    private val userRepository: UserRepository,
+    private val userKeyRepository: CryptoUserKeysLocalSource,
     private val cryptoCore: CryptoCore,
+    private val appPrefs: AppPrefs,
 ) : BaseRepository() {
-
-    private var cachedGroupKeys = MutableStateFlow<List<GroupCryptoKeyDataRaw>>(emptyList())
-    private var cachedMemberKeys = MutableStateFlow<List<GroupMemberCryptoKeyDataRaw>>(emptyList())
-    private var cachedGroupDeviceKeys = MutableStateFlow<List<GroupDeviceCryptoKeyRaw>>(emptyList())
-    private var cachedPersonalGroupKeys = MutableStateFlow<List<PersonalGroupKeyRaw>>(emptyList())
-
-    suspend fun getGroupKeys(): List<GroupCryptoKeyDataRaw> {
-        return cachedGroupKeys.value.ifEmpty {
-            local.getAllGroupKeys()
-                .also { cachedGroupKeys.value = it }
-        }
-    }
-
-    suspend fun getMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
-        return cachedMemberKeys.value.ifEmpty {
-            local.getAllMemberKeys()
-                .also { cachedMemberKeys.value = it }
-        }
-    }
-
-    suspend fun getGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
-        return cachedGroupDeviceKeys.value.ifEmpty {
-            local.getAllGroupDeviceKeys()
-                .also { cachedGroupDeviceKeys.value = it }
-        }
-    }
-
-    suspend fun getPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
-        return cachedPersonalGroupKeys.value.ifEmpty {
-            local.getAllPersonalGroupKeys()
-                .also { cachedPersonalGroupKeys.value = it }
-        }
-    }
-
-
-    suspend fun refreshAllKeys(groups: List<GroupWithMembersAndPlacesRaw>, force: Boolean) {
-        triggerRemoteOnly {
-
-            if (!force && hasAllKeys(groups)) {
-                logg.tag("tag_crypto_key").d("No need to refresh all keys for groups")
-                return@triggerRemoteOnly
-            }
-
-            logg.tag("tag_crypto_key").d("Need to refresh all keys for all groups (${groups.size})")
-
-            val groupKeysAsync = async { remote.getAllGroupKeys() }
-            val memberKeysAsync = async { remote.getAllGroupMemberKeys() }
-            val deviceKeysAsync = async { remote.getAllGroupDeviceKeys() }
-            val preKeysAsync = async { remote.getAllPersonalGroupKeys() }
-
-            val groupKeys = groupKeysAsync.await()
-            val memberKeys = memberKeysAsync.await()
-            val deviceKeys = deviceKeysAsync.await()
-            val preKeys = preKeysAsync.await()
-
-            cachedGroupKeys.value = groupKeys
-            cachedMemberKeys.value = memberKeys
-            cachedGroupDeviceKeys.value = deviceKeys
-            cachedPersonalGroupKeys.value = preKeys
-
-            local.recreateAllGroupKeys(groupKeys, memberKeys, deviceKeys, preKeys)
-
-            logg.tag("tag_crypto_key")
-                .w("updated group (${groupKeys.size}), member (${memberKeys.size}), device (${deviceKeys.size}), pre (${preKeys.size}) keys")
-        }
-    }
-
-    suspend fun refreshGroupKeysForGroup(groupId: String) {
-        triggerRemoteOnly {
-            logg.tag("tag_crypto_key_group").d("refreshing only group key")
-            remote.getGroupKeyForGroup(groupId)
-        }.also {
-            logg.tag("tag_crypto_key_group").d("updated only group keys (${it.size})")
-
-            cachedGroupKeys.value = emptyList()
-            local.recreateGroupKeyForGroup(groupId, it)
-        }
-    }
-
-    suspend fun refreshMemberKeysForGroup(groupId: String) {
-        triggerRemoteOnly {
-            logg.tag("tag_crypto_key_group_member").d("refreshing only group member key")
-            val memberKeys = remote.getAllGroupMemberKeysForGroup(groupId)
-            logg.tag("tag_crypto_key_group_member").d("refreshing group pre keys")
-            val preKeys = remote.getAllPersonalGroupKeysForGroup(groupId)
-            logg.tag("tag_crypto_key_group_member")
-                .d("updated member (${memberKeys.size}), pre (${preKeys.size}) keys")
-
-            cachedMemberKeys.value = emptyList()
-            cachedPersonalGroupKeys.value = emptyList()
-            local.recreateMemberKeysForGroup(groupId, memberKeys, preKeys)
-        }
-    }
-
-    suspend fun refreshDeviceKeysForGroup(groupId: String) {
-        triggerRemoteOnly {
-            logg.tag("tag_crypto_key_group_member").w("refreshing only group device key")
-            val deviceKeys = remote.getAllGroupDeviceKeysForGroup(groupId)
-            logg.tag("tag_crypto_key_group_member")
-                .w("updated member device (${deviceKeys.size}) keys")
-
-            cachedGroupDeviceKeys.value = emptyList()
-            local.recreateDeviceKeysForGroup(groupId, deviceKeys)
-        }
-    }
-
-    suspend fun refreshKeysForGroup(
-        groupId: String,
-        group: GroupWithMembersAndPlacesRaw,
-        force: Boolean
-    ) {
-        triggerRemoteOnly {
-
-            if (!force && hasAllKeysForGroup(group)) {
-                logg.tag("tag_crypto_key_group").d("No need to refresh keys for group $groupId")
-                return@triggerRemoteOnly
-            }
-
-            logg.tag("tag_crypto_key_group").d("Need to refresh all keys for group $groupId")
-
-            val groupKeysAsync = async { remote.getGroupKeyForGroup(groupId) }
-            val memberKeysAsync = async { remote.getAllGroupMemberKeysForGroup(groupId) }
-            val deviceKeysAsync = async { remote.getAllGroupDeviceKeysForGroup(groupId) }
-            val preKeysAsync = async { remote.getAllPersonalGroupKeysForGroup(groupId) }
-
-            val groupKeys = groupKeysAsync.await()
-            val memberKeys = memberKeysAsync.await()
-            val deviceKeys = deviceKeysAsync.await()
-            val preKeys = preKeysAsync.await()
-
-            logg.tag("tag_crypto_key_group")
-                .d("Got new group (${groupKeys.size}), member (${memberKeys.size}), device (${deviceKeys.size}), pre (${preKeys.size}) for group $groupId")
-
-            cachedGroupKeys.value = emptyList()
-            cachedMemberKeys.value = emptyList()
-            cachedGroupDeviceKeys.value = emptyList()
-            cachedPersonalGroupKeys.value = emptyList()
-            local.recreateGroupKeyForGroup(groupId, groupKeys, memberKeys, deviceKeys, preKeys)
-
-            logg.tag("tag_crypto_key_group").d("updated group and member keys for group")
-        }
-    }
 
     suspend fun getGroupKey(groupId: String, keyVersion: Long?): GroupMasterKey {
         val groupOwnerId = local.getGroupOwnerId(groupId) ?: return GroupMasterKey.Error.Missing
@@ -181,7 +33,7 @@ class CryptoKEKRepository(
         groupOwnerId: String,
         keyVersion: Long?
     ): GroupMasterKey {
-        val allGroupKeys = getGroupKeys()
+        val allGroupKeys = local.getGroupKeys()
             .filter { it.groupId == groupId }
         val keyRaw = allGroupKeys
             .let { keys ->
@@ -272,7 +124,7 @@ class CryptoKEKRepository(
     }
 
     suspend fun getAllGroupKeys(groupId: String): List<GroupMasterKey.Valid> {
-        val keys = getGroupKeys().filter { it.groupId == groupId }
+        val keys = local.getGroupKeys().filter { it.groupId == groupId }
         return keys.map { key ->
             val ownerPublicKey = getMemberPublicKey(
                 groupId = groupId,
@@ -293,29 +145,29 @@ class CryptoKEKRepository(
     }
 
     suspend fun getAllEncryptedMembershipPublicKeys(groupId: String): List<String> {
-        return getMemberKeys().filter { it.groupId == groupId }.map { it.signedMembershipPublicKey }
+        return local.getMemberKeys().filter { it.groupId == groupId }.map { it.signedMembershipPublicKey }
     }
 
     suspend fun hasGroupKeyByVersion(groupId: String, groupKeyVersion: Long): Boolean {
-        return getGroupKeys().any {
+        return local.getGroupKeys().any {
             it.groupId == groupId && it.groupKeyVersion == groupKeyVersion
         }
     }
 
     suspend fun hasDeviceKeyByVersion(locationId: String, deviceKeyVersion: Long): Boolean {
-        return getGroupDeviceKeys().any {
+        return local.getGroupDeviceKeys().any {
             it.locationId == locationId && it.deviceKeyVersion == deviceKeyVersion
         }
     }
 
     suspend fun hasMemberKeyByVersion(memberId: String, memberKeyVersion: Long): Boolean {
-        return getMemberKeys().any {
+        return local.getMemberKeys().any {
             it.id == memberId && it.memberKeyVersion == memberKeyVersion
         }
     }
 
     suspend fun hasPersonalGroupKeyByVersion(groupId: String, version: Long): Boolean {
-        return getPersonalGroupKeys().any {
+        return local.getPersonalGroupKeys().any {
             it.groupId == groupId && it.personalGroupKeyVersion == version
         }
     }
@@ -325,8 +177,8 @@ class CryptoKEKRepository(
         memberUserId: String,
         locationId: String
     ): GroupMemberSenderKey {
-        val currentUserId = userRepository.cachedUserId
-        val allMemberKeys = getGroupDeviceKeys()
+        val currentUserId = appPrefs.userId
+        val allMemberKeys = local.getGroupDeviceKeys()
         val keyRaw = allMemberKeys.firstOrNull {
             it.groupId == groupId
                     && it.ownerUserId == memberUserId
@@ -392,11 +244,15 @@ class CryptoKEKRepository(
         )
     }
 
+    suspend fun getGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
+        return local.getGroupDeviceKeys()
+    }
+
     suspend fun getMemberPublicKey(
         groupId: String,
         memberUserId: String
     ): GroupMemberMainPublicKey {
-        val allMemberKeys = getMemberKeys()
+        val allMemberKeys = local.getMemberKeys()
         val keyRaw = allMemberKeys
             // filter keys that memberUserId created for current user
             .filter { it.groupId == groupId && it.ownerUserId == memberUserId }
@@ -417,7 +273,7 @@ class CryptoKEKRepository(
     private suspend fun getMemberPublicKey(
         keyRaw: GroupMemberCryptoKeyDataRaw
     ): GroupMemberMainPublicKey {
-        val currentUserId = userRepository.cachedUserId
+        val currentUserId = appPrefs.userId
 
         val identityKey = getMemberIdentityKey(keyRaw)
 
@@ -497,7 +353,7 @@ class CryptoKEKRepository(
     suspend fun getMemberIdentityKey(
         keyRaw: GroupMemberCryptoKeyDataRaw
     ): GroupMemberIdentityKey {
-        val currentUserId = userRepository.cachedUserId
+        val currentUserId = appPrefs.userId
         // always return own identity key from secure storage but ensure no one tampered with key from server
         val identityKey = if (keyRaw.ownerUserId == currentUserId) {
             keyRaw.ownerIdentityKey
@@ -516,7 +372,7 @@ class CryptoKEKRepository(
         groupId: String,
         version: Long?
     ): UserGroupPersonalKeyPair {
-        val allKeys = getPersonalGroupKeys()
+        val allKeys = local.getPersonalGroupKeys()
             .filter { it.groupId == groupId }
         val keyRaw = allKeys
             .let { keys ->
@@ -567,62 +423,19 @@ class CryptoKEKRepository(
     }
 
     suspend fun getAllActiveMemberKeyVersions(groupId: String): List<Long> {
-        val groupDeviceKeys = getGroupDeviceKeys().filter {
+        val groupDeviceKeys = local.getGroupDeviceKeys().filter {
             // group device keys created for me
-            it.groupId == groupId && it.memberUserId == userRepository.cachedUserId
+            it.groupId == groupId && it.memberUserId == appPrefs.userId
         }.map { it.memberKeyVersion }
-        val groupKeys = getGroupKeys().filter {
+        val groupKeys = local.getGroupKeys().filter {
             // group master keys created for me
-            it.groupId == groupId && it.memberUserId == userRepository.cachedUserId
+            it.groupId == groupId && it.memberUserId == appPrefs.userId
         }.map { it.memberKeyVersion }
-        val memberKeys = getMemberKeys().filter {
+        val memberKeys = local.getMemberKeys().filter {
             // member keys
-            it.groupId == groupId && it.ownerUserId == userRepository.cachedUserId
+            it.groupId == groupId && it.ownerUserId == appPrefs.userId
         }.map { it.memberKeyVersion }
         return (groupDeviceKeys + groupKeys + memberKeys).distinct()
-    }
-
-    private suspend fun hasAllKeys(groups: List<GroupWithMembersAndPlacesRaw>): Boolean {
-        return groups.all { hasAllKeysForGroup(it) }
-    }
-
-    private suspend fun hasAllKeysForGroup(group: GroupWithMembersAndPlacesRaw): Boolean {
-        buildList {
-            add(group.group.group.groupKeyVersion)
-            addAll(group.group.members.map { it.member.groupKeyVersion })
-            addAll(group.group.members.flatMap { it.locations.map { it.groupKeyVersion } })
-            addAll(group.places.map { it.place.groupKeyVersion })
-        }
-            .distinct()
-            .all { hasGroupKeyByVersion(groupId = group.group.group.id, groupKeyVersion = it) }
-            .takeIf { it }
-            ?: return false
-
-        group.group.members.all { member ->
-            member.locations.all { location ->
-                hasDeviceKeyByVersion(
-                    locationId = location.id,
-                    deviceKeyVersion = location.deviceKeyVersion
-                )
-            }
-        }
-            .takeIf { it }
-            ?: return false
-
-        group.group.members.all { member ->
-            hasMemberKeyByVersion(
-                memberId = member.member.id,
-                memberKeyVersion = member.member.memberKeyVersion
-            )
-        }
-            .takeIf { it }
-            ?: return false
-
-        if (getMemberKeys().filter { it.groupId == group.group.group.id }.size != group.group.members.size) {
-            return false
-        }
-
-        return true
     }
 
     suspend fun updateIntegrity(
@@ -642,28 +455,14 @@ class CryptoKEKRepository(
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {
-        cachedGroupKeys.value = cachedGroupKeys.value.filter { it.groupId != groupId }
-        cachedMemberKeys.value = cachedMemberKeys.value.filter { it.groupId != groupId }
-        cachedGroupDeviceKeys.value = cachedGroupDeviceKeys.value.filter { it.groupId != groupId }
-        cachedPersonalGroupKeys.value =
-            cachedPersonalGroupKeys.value.filter { it.groupId != groupId }
         local.deleteAllKeysForGroup(groupId)
     }
 
     suspend fun deleteKeysForUser(groupId: String, userId: String) {
-        cachedGroupDeviceKeys.value = cachedGroupDeviceKeys.value.filter {
-            // remove all keys that were either created by or for userId
-            !(it.memberUserId == userId || it.ownerUserId == userId)
-        }
-        cachedMemberKeys.value = cachedMemberKeys.value.filter { it.ownerUserId != userId }
         local.deleteKeysForUser(groupId, userId)
     }
 
     suspend fun clearKeys() {
-        cachedMemberKeys.value = emptyList()
-        cachedGroupKeys.value = emptyList()
-        cachedGroupDeviceKeys.value = emptyList()
-        cachedPersonalGroupKeys.value = emptyList()
         local.deleteAllKeys()
     }
 }

@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.places.detail
 
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
@@ -36,6 +36,7 @@ class PlaceDetailViewModel(
     val placeId: String,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val placeFlow =

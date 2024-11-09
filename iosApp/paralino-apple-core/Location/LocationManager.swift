@@ -130,23 +130,11 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
     }
     
     public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
-                Logr.i(tag: "place_activity_geofence", message: "User entered geofence: \(region.identifier) (\(place?.nameOrNull ?? "nil"))")
-            }
-        }
         Logr.i(tag: "place_activity_geofence", message: "User entered geofence: \(region.identifier)")
         placeRepo.placesEnter(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     
     public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        DispatchQueue.main.async { [weak self] in
-            Task {
-                let place = try? await self?.placeRepo.getPlaceLocallyOnce(placeId: region.identifier)
-                Logr.i(tag: "place_activity_geofence", message: "User exited geofence: \(region.identifier) (\(place?.nameOrNull ?? "nil"))")
-            }
-        }
         placeRepo.placesExit(placesIds: [region.identifier], trigger: PlaceActivityTriggerType.goefence)
     }
     

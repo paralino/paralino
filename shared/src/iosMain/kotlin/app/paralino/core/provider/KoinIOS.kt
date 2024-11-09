@@ -4,6 +4,7 @@ import app.paralino.core.CoreAppManager
 import app.paralino.core.appPrefs
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
+import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.db.LogsDatabaseHelper
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
@@ -14,10 +15,13 @@ import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.notifications.IGroupActivityNotificationPresenter
-import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
-import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
-import app.paralino.core.notifications.PushNotificationHandler
+import app.paralino.core.models.AppHost
+import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.domain.notifications.PushNotificationHandler
+import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
+import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -71,6 +75,7 @@ import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.module.Module
+import org.koin.core.module.factory
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -79,14 +84,15 @@ object KoinIOS {
 
     fun createIOSKoinModules(
         deviceProvider: IDeviceApiProvider,
+        crashReportingLogr: () -> ICrashReportingLogr,
         connectionStatusProvider: IConnectionStatusProvider,
         locationStatusProvider: ILocationStatusProvider,
         notificationStatusProvider: INotificationStatusProvider,
-        pushSetupProvider: IPushProviderManager,
+        pushSetupProvider: () -> IPushProviderManager,
         placeNotificationPresenter: (InAppLogger) -> IPlaceActivityNotificationPresenter,
         groupActivityNotificationPresenter: (InAppLogger) -> IGroupActivityNotificationPresenter,
         infoNotificationPresenter: (InAppLogger) -> IInfoMessagesNotificationPresenter,
-        geofenceManager: IGeofenceManager,
+        geofenceManager: () -> IGeofenceManager,
         appBuildConfig: AppBuildConfig,
         oneTimeLocationProvider: (
             locationStatusProvider: ILocationStatusProvider,
@@ -97,40 +103,49 @@ object KoinIOS {
         userApi: (IRemoteModule, AppBuildConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
         realtimeApi: (IRemoteModule, AppBuildConfig) -> IRealtimeApiIOS,
-        cryptoServiceProvider: ICryptoServiceProviderIOS,
-        valueFormatter: IValueFormatter,
-        appUpdateManager: IAppUpdateManager,
-        billingProvider: IBillingProvider,
+        cryptoServiceProvider: () -> ICryptoServiceProviderIOS,
+        valueFormatter: () -> IValueFormatter,
+        appUpdateManager: () -> IAppUpdateManager,
+        billingProvider: () -> IBillingProvider
     ): List<Module> {
-        return listOf(
-            module {
-                single(createdAtStart = true) { deviceProvider }
-                single { connectionStatusProvider }
-                single { locationStatusProvider }
-                single { notificationStatusProvider }
-                single { pushSetupProvider }
-                factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
-                factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
-                factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
-                single { billingProvider } bind IBillingProvider::class
-                single { geofenceManager }
-                single { remoteModule(get()) }
-                single { appBuildConfig }
-                single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
-                single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
-                single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
-                single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
-                single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
-                single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(get()))) }
-                single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(get()))) }
-                single { CryptoServiceWrapperIOS(cryptoServiceProvider) } bind ICryptoServiceProvider::class
-                single { valueFormatter } bind IValueFormatter::class
-                single { appUpdateManager } bind IAppUpdateManager::class
-                single { LocationRepositoryWrapper(get(), get(), get(), get()) }
-                single { oneTimeLocationProvider(get(), get()) }
-            },
-            createViewModelModule()
-        )
+        return buildList {
+            add(
+                module {
+                    single(createdAtStart = true) { AppPrefsProvider(appBuildConfig) }
+                    single(createdAtStart = true) { deviceProvider }
+                    single { connectionStatusProvider }
+                    single { locationStatusProvider }
+                    single { notificationStatusProvider }
+                    single { pushSetupProvider() }
+                    single { crashReportingLogr() }
+                    factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
+                    factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
+                    factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
+                    single { billingProvider() } bind IBillingProvider::class
+                    single { geofenceManager() }
+                    single { remoteModule(get()) }
+                    single { appBuildConfig }
+                    single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
+                    single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
+                    single { FunctionsApiWrapper(functionsApi(get(), get())) } bind IFunctionsApi::class
+                    single { RealtimeApiWrapperIOS(realtimeApi(get(), get()), get()) } bind IRealtimeApi::class
+                    single { CoroutineScopeProvider() } bind ICoroutineScopeProvider::class
+                    single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(get()))) }
+                    single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(get()))) }
+                    single { CryptoServiceWrapperIOS(cryptoServiceProvider()) } bind ICryptoServiceProvider::class
+                    single { valueFormatter() } bind IValueFormatter::class
+                    single { appUpdateManager() } bind IAppUpdateManager::class
+                    single { oneTimeLocationProvider(get(), get()) }
+                    single { LocationRepositoryWrapper(get(), get(), get(), get()) }
+                    single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
+                    single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
+                }
+            )
+
+            if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+                add(createViewModelModule())
+            }
+        }
     }
 
     private fun createViewModelModule(): Module {
@@ -160,7 +175,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs)
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
@@ -170,7 +185,7 @@ object KoinIOS {
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
             factory { EditProfileViewModel(get(), get()) }
-            factory { RecoverKeysViewModel(get(), get(), get()) }
+            factory { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
             factory { (userId: String, secret: String) ->
                 ResetPasswordViewModel(
                     userId = userId,
@@ -184,7 +199,8 @@ object KoinIOS {
                     groupId = groupID,
                     placeId = placeId,
                     placesRepo = get(),
-                    groupRepo = get()
+                    groupRepo = get(),
+                    appPrefs = appPrefs
                 )
             }
             factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->
@@ -228,6 +244,7 @@ object KoinIOS {
         val appBuildConfig: AppBuildConfig get() = get()
         val remoteConfigRepo: RemoteConfigRepository get() = get()
         val userConfigRepo: UserConfigRepository get() = get()
+        val nseNotificationHandler: IOSNSEPushNotificationHandler get() = get()
     }
 
     object ViewModels : KoinComponent {

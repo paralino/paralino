@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
@@ -19,12 +19,11 @@ import app.paralino.core.repo.user.UserRepository
 import kotlin.time.Duration.Companion.minutes
 
 class RefreshEverythingUseCase(
-    private val placesLocal: PlacesLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val local: UserGroupLocalDataSource,
     private val userRepository: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRefreshUseCase: CryptoKEKRefreshUseCase,
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val configRepo: RemoteConfigRepository,
     private val userConfigRepo: UserConfigRepository,
@@ -111,7 +110,7 @@ class RefreshEverythingUseCase(
         triggerRemoteOnly {
             logg.tag("full_refresh").d("refreshing all groups")
             remote.getAllGroups()
-                .also { cryptoKEKRepo.refreshAllKeys(it, force = false) }
+                .also { cryptoKEKRefreshUseCase.refreshAllKeys(it, force = false) }
                 .let { it.map { groupRefreshUseCase.handleGroupKeysUpdate(it) } }
         }
             .also {

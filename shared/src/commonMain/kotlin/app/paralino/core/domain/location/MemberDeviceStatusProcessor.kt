@@ -1,6 +1,6 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.provider.IOneTimeLocationProvider
@@ -18,7 +18,8 @@ class MemberDeviceStatusProcessor(
     private val remote: LocationRemoteSource,
     private val payloadProvider: LocationPayloadProvider,
     private val sharingManager: LocationSharingManager,
-    private val oneTimeLocationProvider: IOneTimeLocationProvider
+    private val oneTimeLocationProvider: IOneTimeLocationProvider,
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
     suspend fun pushDeviceStatus(groupId: String) {

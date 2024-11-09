@@ -2,7 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
@@ -21,7 +21,7 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.serialization.encodeToString
 
 class GroupMapperCore constructor(
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val cryptoCore: CryptoCore,
     private val memberMapperCore: MemberMapperCore,
     private val placesMapper: PlaceMapperCore

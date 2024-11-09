@@ -15,15 +15,7 @@ public class PushSetupProvider: IPushProviderManager {
     
     
     public func logout() async throws {
-        
-    }
-    
-    public func getNotificationPayload(notificationId: String) async throws -> IPushNotificationPresenter.Payload? {
-        return try await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
-    }
-    
-    public func deleteNotification(notificationId: String) async throws {
-        try await pushHandler.deletePushNotification(notificationId: notificationId)
+        // TODO delete push token
     }
     
     public func syncPushNotifications() {

@@ -1,7 +1,7 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.raw.PersonalCodeRaw
@@ -14,7 +14,7 @@ import app.paralino.core.utils.exceptions.DecryptionException
 
 class PersonalCodeMapperCore(
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
 ) {
 
     suspend fun remote2CoreRead(

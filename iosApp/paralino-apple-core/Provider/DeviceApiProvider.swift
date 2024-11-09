@@ -8,7 +8,6 @@
 import Foundation
 import shared
 import UIKit
-import Sentry
 
 class DeviceApiProvider: IDeviceApiProvider {
     
@@ -67,37 +66,11 @@ class DeviceApiProvider: IDeviceApiProvider {
         "iPhone"
     }
     
-    override func createConfig() -> AppPrefs {
-        AppPrefs(provider: AppPrefsProvider(appBuildConfig: appBuildConfig))
-    }
-    
     override func createSystemLogr() -> SystemLogr {
         return DebbugLogr(canLogToConsole: appBuildConfig.logToConsole)
     }
     
-    override func createCrashReportingLogr() -> SystemLogr {
-        return CrashReportingLogr(canLogToRemote: appBuildConfig.logErrorsToRemote)
-    }
-    
     override func doCopyToClipboard(data: String) {
         UIPasteboard.general.string = data
-    }
-}
-
-class CrashReportingLogr: SystemLogr {
-    
-    let canLogToRemote: Bool
-    
-    init(canLogToRemote: Bool) {
-        self.canLogToRemote = canLogToRemote
-    }
-    
-    override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
-        guard canLogToRemote else { return }
-        guard priority == LogPriority.error else { return }
-        guard let error = t?.description() else { return }
-        if t is InternalConnectionException { return }
-        
-        SentrySDK.capture(error: KotlinError(message: message, stackTrace: error))
     }
 }
