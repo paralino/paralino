@@ -16,18 +16,11 @@ import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.INotificationStatusProvider
-import app.paralino.core.provider.LogPriority
 import app.paralino.core.provider.SystemLogr
-import app.paralino.core.utils.exceptions.InternalConnectionException
-import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import io.sentry.Sentry
-import java.net.ConnectException
-import java.net.SocketTimeoutException
 
 class DeviceApiProvider constructor(
     private val appClass: AppClass,
     private val appBuildConfig: AppBuildConfig,
-    private val appPrefs: AppPrefs,
     locationStatusProvider: ILocationStatusProvider,
     connectionStatusProvider: IConnectionStatusProvider,
     notificationStatusProvider: INotificationStatusProvider,
@@ -56,32 +49,6 @@ class DeviceApiProvider constructor(
 
     override fun createSystemLogr(): SystemLogr {
         return DebugLogr(enabled = appBuildConfig.logToConsole, tagPrefix = "Paralino")
-    }
-
-    override fun createCrashReportingLogr(): SystemLogr {
-        return object : SystemLogr() {
-            override fun systemLog(
-                priority: LogPriority,
-                tag: String?,
-                message: String,
-                t: Throwable?
-            ) {
-                if (!appPrefs.errorReporting) {
-                    return
-                }
-
-                if (priority != LogPriority.ERROR || !appBuildConfig.logErrorsToRemote) {
-                    return
-                }
-
-                val exceptionAllowed =
-                    t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException &&
-                            t !is MissingGroupKeyException
-                if (exceptionAllowed) {
-                    Sentry.captureException(t!!)
-                }
-            }
-        }
     }
 
     override fun createConfig(): AppPrefs {

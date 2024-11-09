@@ -12,6 +12,7 @@ import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.provider.ConnectionStatusProvider
+import app.paralino.android.provider.CrashReportingLogr
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
 import app.paralino.android.provider.NotificationStatusProvider
@@ -69,6 +70,7 @@ import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.INotificationStatusProvider
@@ -101,7 +103,8 @@ object KoinSetup {
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
         single<INotificationStatusProvider>(createdAtStart = true) { NotificationStatusProvider(androidContext()) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), appPrefs, get(), get(), get()) }
+        single<ICrashReportingLogr> { CrashReportingLogr(get(), appPrefs) }
+        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
         single<IValueFormatter> { ValueFormatter() }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class

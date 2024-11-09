@@ -83,6 +83,7 @@ object KoinIOS {
 
     fun createIOSKoinModules(
         deviceProvider: IDeviceApiProvider,
+        crashReportingLogr: () -> ICrashReportingLogr,
         connectionStatusProvider: IConnectionStatusProvider,
         locationStatusProvider: ILocationStatusProvider,
         notificationStatusProvider: INotificationStatusProvider,
@@ -104,7 +105,7 @@ object KoinIOS {
         cryptoServiceProvider: () -> ICryptoServiceProviderIOS,
         valueFormatter: () -> IValueFormatter,
         appUpdateManager: () -> IAppUpdateManager,
-        billingProvider: () -> IBillingProvider,
+        billingProvider: () -> IBillingProvider
     ): List<Module> {
         return buildList {
             add(
@@ -114,6 +115,7 @@ object KoinIOS {
                     single { locationStatusProvider }
                     single { notificationStatusProvider }
                     single { pushSetupProvider() }
+                    single { crashReportingLogr() }
                     factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
                     factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
                     factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class

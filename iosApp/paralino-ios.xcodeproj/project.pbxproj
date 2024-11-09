@@ -13,6 +13,7 @@
 		2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */; };
 		2507A9722B5D704B008E9FF0 /* PlaceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */; };
 		250BB6AA2CB9391800CCAB64 /* Appwrite in Frameworks */ = {isa = PBXBuildFile; productRef = 250BB6A92CB9391800CCAB64 /* Appwrite */; };
+		250FD3832CDF9D1E000F1070 /* CrashReportingLogr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 250FD3822CDF9D1A000F1070 /* CrashReportingLogr.swift */; };
 		2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */; };
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
@@ -184,6 +185,7 @@
 		250701212CB1C6AA006FBC1C /* paralino-iosDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-iosDebug.entitlements"; sourceTree = "<group>"; };
 		2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacesScreen.swift; sourceTree = "<group>"; };
 		2507A9712B5D704B008E9FF0 /* PlaceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceDetailScreen.swift; sourceTree = "<group>"; };
+		250FD3822CDF9D1A000F1070 /* CrashReportingLogr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportingLogr.swift; sourceTree = "<group>"; };
 		2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingStartScreen.swift; sourceTree = "<group>"; };
 		2529CAAA2B10CF1500D88042 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		252EA00629DD89C800338956 /* KoinSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinSetup.swift; sourceTree = "<group>"; };
@@ -385,6 +387,7 @@
 		252E361129CF5EB0008FC635 /* Provider */ = {
 			isa = PBXGroup;
 			children = (
+				250FD3822CDF9D1A000F1070 /* CrashReportingLogr.swift */,
 				25C9E5662CCB75BA00C3C58A /* LocationPermissionHandler.swift */,
 				252EA00629DD89C800338956 /* KoinSetup.swift */,
 				2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */,
@@ -965,6 +968,7 @@
 				259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */,
 				25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */,
 				25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */,
+				250FD3832CDF9D1E000F1070 /* CrashReportingLogr.swift in Sources */,
 				25FC5CAE2A45FB320006E796 /* BlockListScreen.swift in Sources */,
 				25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,

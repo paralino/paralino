@@ -14,6 +14,7 @@ class KoinSetup {
     static func initKoin() {
         CoreKoinSetup.initKoin(
             appHost: AppHost.iosNotificationExtension,
+            crashReportingLogr: { appBuildConfig in CrashReportingLogr() },
             locationManager: { NseLocationManager() },
             appUpdateManager: { AppUpdateManager() },
             billingProvider: { BillingProviderIOS() },
@@ -25,6 +26,10 @@ class KoinSetup {
     
     // MARK: NO-OP classes
     // Keep them empty since they are not used in notification service
+    
+    class CrashReportingLogr: ICrashReportingLogr {
+        override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {}
+    }
     
     class AppUpdateManager: IAppUpdateManager {
         override func startUpdateProcess(data: ConfigData) {}

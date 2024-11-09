@@ -21,7 +21,7 @@ class NotificationService: UNNotificationServiceExtension {
         DebbugLogr(canLogToConsole: true).systemLog(priority: LogPriority.warn, tag: "notification", message: "Start (\(DeviceUtil.getMemoryPrintString()))", t: nil)
         KoinSetup.initKoin()
         Logr.w(tag: "notification", message: "On start: (\(DeviceUtil.getMemoryPrintString()))")
-        
+ 
         super.init()
     }
     

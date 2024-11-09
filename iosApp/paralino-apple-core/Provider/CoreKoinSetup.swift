@@ -16,6 +16,7 @@ public class CoreKoinSetup {
     
     public static func initKoin(
         appHost: AppHost,
+        crashReportingLogr: @escaping (AppBuildConfig) -> ICrashReportingLogr,
         locationManager: @escaping () -> CoreLocationManagerDelegate,
         appUpdateManager: @escaping () -> IAppUpdateManager,
         billingProvider: @escaping () -> IBillingProvider,
@@ -32,6 +33,7 @@ public class CoreKoinSetup {
             preLaunch: { koinApp in koinApp },
             appModules: CoreKoinSetup.createKoinModules(
                 apphost: appHost,
+                crashReportingLogr: crashReportingLogr,
                 locationManager: locationManager,
                 appUpdateManager: appUpdateManager,
                 billingProvider: billingProvider,
@@ -45,6 +47,7 @@ public class CoreKoinSetup {
     
     private static func createKoinModules(
         apphost: AppHost,
+        crashReportingLogr: @escaping (AppBuildConfig) -> ICrashReportingLogr,
         locationManager: @escaping () -> CoreLocationManagerDelegate,
         appUpdateManager: @escaping () -> IAppUpdateManager,
         billingProvider: @escaping () -> IBillingProvider,
@@ -85,6 +88,7 @@ public class CoreKoinSetup {
         
         let coreIOSModules = KoinIOS.shared.createIOSKoinModules(
             deviceProvider: deviceApiProvider,
+            crashReportingLogr: { crashReportingLogr(appBuildConfig) },
             connectionStatusProvider: connectionStatusProvider,
             locationStatusProvider: locationStatusProvider,
             notificationStatusProvider: notificationStatusProvider,

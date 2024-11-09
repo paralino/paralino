@@ -2,8 +2,8 @@ package app.paralino.core
 
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
@@ -73,6 +73,7 @@ import app.paralino.core.models.mappers.SharingContractsMapper
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.mappers.UserMapperLocal
+import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
@@ -141,11 +142,12 @@ object ParalinoCore {
         AppPrefs.instance = deviceApiProvider.createConfig()
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
+        val crashReportingLogger = koinApp.koin.get<ICrashReportingLogr>()
         logr.init(
             logrs = listOfNotNull(
                 deviceApiProvider.createSystemLogr(),
                 inAppLogger.takeIf { appBuildConfig.isDevMode },
-                deviceApiProvider.createCrashReportingLogr()
+                crashReportingLogger
             )
         )
 
