@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -37,6 +39,7 @@ import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -86,24 +89,35 @@ fun MainHomeMapComposable(
 ) {
 
     val stateData by rememberUpdatedState(newValue = state)
-
     val scope = rememberCoroutineScope()
+    var canAnimateMapFocus by remember { mutableStateOf(false) }
+    var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
+
     val cameraPositionState = rememberCameraPositionState {
         boundsForMarkers(stateData?.visibleMarkers ?: emptyList())?.let {
             move(CameraUpdateFactory.newLatLngBounds(it, 40))
         }
     }
 
+    LaunchedEffect(Unit) {
+        delay(500)
+        canAnimateMapFocus = true
+        shouldAnimateMapFocus = true
+    }
+
     LaunchedEffect(stateData?.visibleMarkers) {
         snapshotFlow { stateData?.mapHomeScreenFocusType }
             .distinctUntilChanged()
             .collectLatest {
+                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
+                    delay(20)
+                }
                 cameraPositionState.focusOnMap(
                     scope = scope,
                     focusType = it,
                     markers = stateData?.visibleMarkers ?: emptyList(),
                     focusedMarker = stateData?.trackingMarker,
-                    durationMs = 3000
+                    durationMs = if (canAnimateMapFocus) 3000 else 0
                 )
             }
     }
@@ -112,12 +126,15 @@ fun MainHomeMapComposable(
         snapshotFlow { stateData?.mapHomeScreenFocusType }
             .distinctUntilChanged()
             .collectLatest {
+                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
+                    delay(20)
+                }
                 cameraPositionState.focusOnMap(
                     scope = scope,
                     focusType = it,
                     markers = stateData?.visibleMarkers ?: emptyList(),
                     focusedMarker = stateData?.trackingMarker,
-                    durationMs = 500
+                    durationMs = if (canAnimateMapFocus) 500 else 0
                 )
             }
     }
