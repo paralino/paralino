@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.onEach
 class ConvertAccountUseCase constructor(
     private val userRepo: UserRepository,
     private val changeCredentials: ChangeCredentialsUseCase,
+    private val appPrefs: AppPrefs
 ) {
     fun convertAccount(
         email: String,

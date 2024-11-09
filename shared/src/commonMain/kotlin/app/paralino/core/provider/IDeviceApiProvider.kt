@@ -34,7 +34,7 @@ abstract class IDeviceApiProvider(
     }
 
     fun onAppActive() {
-        logg.tag("app_state").v("App is in foreground")
+        logg.tag("app_state").i("App is in foreground")
         _appLifecycleState.update {
             it.copy(
                 previous = it.current,
@@ -47,7 +47,7 @@ abstract class IDeviceApiProvider(
     }
 
     fun onAppInactive() {
-        logg.tag("app_state").v("App is inactive")
+        logg.tag("app_state").i("App is inactive")
         _appLifecycleState.update {
             it.copy(
                 previous = it.current,
@@ -58,7 +58,7 @@ abstract class IDeviceApiProvider(
     }
 
     fun onAppBackground() {
-        logg.tag("app_state").v("App is in background")
+        logg.tag("app_state").i("App is in background")
         _appLifecycleState.update {
             it.copy(
                 previous = it.current,

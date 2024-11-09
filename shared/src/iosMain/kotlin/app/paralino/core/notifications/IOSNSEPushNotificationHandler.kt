@@ -8,7 +8,6 @@ import app.paralino.core.domain.notifications.processors.INotificationProcessor
 import app.paralino.core.domain.notifications.processors.LocationSharingStartedNotificationsProcessor
 import app.paralino.core.domain.notifications.processors.NotificationPreCheckProcessor
 import app.paralino.core.domain.notifications.processors.PlaceActivityNotificationProcessor
-import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificationProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
@@ -17,20 +16,23 @@ import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.base.AccessLogDataSource
 import kotlinx.coroutines.delay
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import kotlin.time.Duration.Companion.seconds
 
 class IOSNSEPushNotificationHandler constructor(
-    private val sharingStartedNotification: LocationSharingStartedNotificationsProcessor,
-    private val memberAddedNotification: GroupMemberAddedNotificationProcessor,
-    private val placeCreatedNotification: PlaceCreatedNotificationProcessor,
-    private val placeActivityNotification: PlaceActivityNotificationProcessor,
     private val notificationPreCheck: NotificationPreCheckProcessor,
     private val docApi: IDocumentsApi,
     private val notificationDelete: PushNotificationDeleteUseCase,
     private val accessLogSource: AccessLogDataSource,
-) : LimitedExecutionRepository() {
+) : LimitedExecutionRepository(), KoinComponent {
 
     private val executionKey = "notification_sync"
+
+    private val sharingStartedNotification: LocationSharingStartedNotificationsProcessor by lazy { get() }
+    private val memberAddedNotification: GroupMemberAddedNotificationProcessor by lazy { get() }
+    private val placeCreatedNotification: IOSNSEPlaceCreatedNotificationProcessor by lazy { get() }
+    private val placeActivityNotification: PlaceActivityNotificationProcessor by lazy { get() }
 
     suspend fun retrievePushPresenterPayload(
         notificationId: String,
@@ -99,7 +101,7 @@ class IOSNSEPushNotificationHandler constructor(
         val payload = push.pushType?.processor()?.processAndGetPayload(
             push = push,
             presenter = null,
-            groupRefreshHook = {},
+            groupRefreshHook = null,
             onDelete = null
         )
 
@@ -110,7 +112,7 @@ class IOSNSEPushNotificationHandler constructor(
         notificationDelete.deletePushNotification(notificationId = notificationId)
     }
 
-    private fun PushNotificationType.processor(): INotificationProcessor? {
+    private fun PushNotificationType.processor(): INotificationProcessor<*>? {
         return when (this) {
             PushNotificationType.PLACE_ALERT -> placeActivityNotification
             PushNotificationType.PLACE_CREATED -> placeCreatedNotification

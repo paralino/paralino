@@ -101,7 +101,7 @@ object KoinSetup {
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
         single<INotificationStatusProvider>(createdAtStart = true) { NotificationStatusProvider(androidContext()) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) }
+        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), appPrefs, get(), get(), get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
         single<IValueFormatter> { ValueFormatter() }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class
@@ -169,17 +169,17 @@ object KoinSetup {
                 userRepo = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
         viewModel { ConvertAccountViewModel(get()) }
         viewModel { EditProfileViewModel(get(), get()) }
-        viewModel { RecoverKeysViewModel(get(), get(), get()) }
+        viewModel { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
         viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
-        viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
+        viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get(), appPrefs) }
         viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }

@@ -298,7 +298,7 @@ class PushNotificationHandler constructor(
         return payload
     }
 
-    private fun PushNotificationType.processor(): INotificationProcessor {
+    private fun PushNotificationType.processor(): INotificationProcessor<*> {
         return when (this) {
             PushNotificationType.PLACE_ALERT -> placeActivityNotification
             PushNotificationType.PLACE_CREATED -> placeCreatedNotification

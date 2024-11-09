@@ -2,7 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.places.GroupPlace
@@ -12,7 +12,7 @@ import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 
 class PlaceMapperCore constructor(
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val cryptoCore: CryptoCore,
     val settingsMapper: PlaceSettingsMapperCore
 ) {

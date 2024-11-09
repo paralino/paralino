@@ -1,7 +1,7 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
@@ -26,8 +26,8 @@ class LogoutUseCase(
     private val groupsRepo: UserGroupLocalDataSource,
     private val placeActivityRepo: PlaceActivityDataSource,
     private val sharingManager: LocationSharingManager,
-    private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
     private val deviceStatus: IDeviceApiProvider,
@@ -107,7 +107,7 @@ class LogoutUseCase(
         appPrefs.clear()
         scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
 
-        userKeyRepo.clearAll()
+        userKeyRepo.clearAllKeys()
         cryptoKEKRepo.clearKeys()
         pushManager.logout()
         deviceStatus.logout()

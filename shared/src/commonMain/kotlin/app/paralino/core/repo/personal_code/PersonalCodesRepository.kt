@@ -1,5 +1,6 @@
 package app.paralino.core.repo.personal_code
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -26,7 +27,8 @@ class PersonalCodesRepository constructor(
     private val local: PersonalCodeLocalDataSource,
     private val userRepo: UserRepository,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val sessionMonitor: UserSessionMonitor
+    private val sessionMonitor: UserSessionMonitor,
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
     val personalCodeLocalState: StateFlow<List<UserPersonalCode>> = local.getPersonalCodes()
@@ -129,7 +131,7 @@ class PersonalCodesRepository constructor(
             remote = {
                 remote.updateCodeUserData(
                     personalCode = code.cleanCode(),
-                    userId = userRepo.cachedUserId,
+                    userId = appPrefs.userId,
                     userMeData = userRepo.cachedUser!!.data!!
                 )
                 refreshPersonalCodes()
@@ -144,7 +146,7 @@ class PersonalCodesRepository constructor(
             if (currentCode != null) {
                 remote.updateCodeUserData(
                     personalCode = currentCode.code,
-                    userId = userRepo.cachedUserId,
+                    userId = appPrefs.userId,
                     userMeData = userMeData
                 )
             } else if (canCreateNewCode() && personalCodeLocalState.value.isEmpty()) {
@@ -167,7 +169,7 @@ class PersonalCodesRepository constructor(
                 )
             ) {
                 remote.restockPreKeysIfNeeded(
-                    userId = userRepo.cachedUserId,
+                    userId = appPrefs.userId,
                     personalCode = code
                 )
             }
@@ -186,5 +188,4 @@ class PersonalCodesRepository constructor(
             .replace(Regex("[^a-zA-Z0-9]"), "")
             .uppercase()
     }
-
 }

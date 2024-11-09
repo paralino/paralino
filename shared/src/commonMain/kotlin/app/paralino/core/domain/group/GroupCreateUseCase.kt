@@ -3,7 +3,7 @@ package app.paralino.core.domain.group
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.SimpleKeyPairData
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
@@ -29,7 +29,7 @@ import kotlinx.serialization.encodeToString
 
 class GroupCreateUseCase(
     private val userRepository: UserRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val cryptoCore: CryptoCore,
     private val remote: GroupsRemoteSource,
     private val groupRefresh: GroupRefreshUseCase,

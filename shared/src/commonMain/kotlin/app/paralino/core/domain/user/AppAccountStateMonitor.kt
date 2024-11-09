@@ -2,7 +2,7 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
@@ -32,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class AppAccountStateMonitor constructor(
     private val userRepo: UserRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val userMapper: UserMapperCore,
     private val refreshEverything: RefreshEverythingUseCase,
     private val logoutUseCase: LogoutUseCase,

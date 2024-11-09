@@ -19,6 +19,7 @@ import app.paralino.core.domain.notifications.IGroupActivityNotificationPresente
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.domain.notifications.PushNotificationHandler
+import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
@@ -113,7 +114,6 @@ object KoinIOS {
                     single { locationStatusProvider }
                     single { notificationStatusProvider }
                     single { pushSetupProvider() }
-                    single { IOSNSEPushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get()) }
                     factory { placeNotificationPresenter(get()) } bind IPlaceActivityNotificationPresenter::class
                     factory { groupActivityNotificationPresenter(get()) } bind IGroupActivityNotificationPresenter::class
                     factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
@@ -131,8 +131,10 @@ object KoinIOS {
                     single { CryptoServiceWrapperIOS(cryptoServiceProvider()) } bind ICryptoServiceProvider::class
                     single { valueFormatter() } bind IValueFormatter::class
                     single { appUpdateManager() } bind IAppUpdateManager::class
-                    single { LocationRepositoryWrapper(get(), get(), get(), get()) }
                     single { oneTimeLocationProvider(get(), get()) }
+                    single { LocationRepositoryWrapper(get(), get(), get(), get()) }
+                    single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
+                    single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
                 }
             )
 
@@ -169,7 +171,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs)
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
@@ -179,7 +181,7 @@ object KoinIOS {
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
             factory { EditProfileViewModel(get(), get()) }
-            factory { RecoverKeysViewModel(get(), get(), get()) }
+            factory { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
             factory { (userId: String, secret: String) ->
                 ResetPasswordViewModel(
                     userId = userId,
@@ -193,7 +195,8 @@ object KoinIOS {
                     groupId = groupID,
                     placeId = placeId,
                     placesRepo = get(),
-                    groupRepo = get()
+                    groupRepo = get(),
+                    appPrefs = appPrefs
                 )
             }
             factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->

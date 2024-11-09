@@ -1,13 +1,12 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.UserAuthDerivedKey
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -15,12 +14,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 
 class RecoverAccountUseCase(
-    private val userRepo: UserRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val cryptoCore: CryptoCore,
     private val keyMapper: UserKeyMapperCore,
     private val logoutUseCase: LogoutUseCase,
-    private val changeCredential: ChangeCredentialsUseCase
+    private val changeCredential: ChangeCredentialsUseCase,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun getCorrectUserKeyForPassword(
@@ -29,13 +28,13 @@ class RecoverAccountUseCase(
     ): GeneratedUserKeys? {
         return getCorrectUserKeyForPassword(
             keys = keys,
-            userId = userRepo.cachedUserId,
+            userId = appPrefs.userId,
             password = password
         )
     }
 
-    suspend fun getUserKeys(): List<UserCryptoKeyRaw> {
-        return userKeyRepo.getRemoteKeys()
+    suspend fun getUserKeysFromRemote(): List<UserCryptoKeyRaw> {
+        return userKeysRemoteSource.getAllMyKeys()
     }
 
     suspend fun getCorrectUserKeyForPassword(
@@ -83,7 +82,7 @@ class RecoverAccountUseCase(
         return flow {
             val newKey = cryptoCore.generateNewKeysForUser(
                 authKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey),
-                userId = userRepo.cachedUserId
+                userId = appPrefs.userId
             )
             logoutUseCase.resetAccount(
                 keyToPersist = newKey.encryptedKeyData,
@@ -100,7 +99,7 @@ class RecoverAccountUseCase(
         val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
 
         changeCredential.changeCredentials(
-            userId = userRepo.cachedUserId,
+            userId = appPrefs.userId,
             oldKey = key,
             oldMasterAuthKey = null,
             newMasterAuthKey = authKey,

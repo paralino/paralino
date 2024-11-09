@@ -1,9 +1,9 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.MemberGroupId
@@ -30,7 +30,8 @@ class LocationRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val appBuildConfig: AppBuildConfig,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKRepository
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun deleteLocation(memberId: String, locationId: String) {

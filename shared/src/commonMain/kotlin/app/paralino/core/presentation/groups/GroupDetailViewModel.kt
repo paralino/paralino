@@ -1,6 +1,6 @@
 package app.paralino.core.presentation.groups
 
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
@@ -42,7 +42,8 @@ class GroupDetailViewModel(
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
     private val valueFormatter: IValueFormatter,
-    val deviceApiProvider: IDeviceApiProvider
+    val deviceApiProvider: IDeviceApiProvider,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)

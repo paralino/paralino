@@ -9,7 +9,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class PlaceDeletedNotificationProcessor(
     private val accessLogSource: AccessLogDataSource
-) : INotificationProcessor(accessLogSource) {
+) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
         push: PushNotificationRaw,

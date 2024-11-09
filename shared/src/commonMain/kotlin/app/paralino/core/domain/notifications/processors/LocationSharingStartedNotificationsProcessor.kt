@@ -1,7 +1,7 @@
 package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.MR
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.provider.IValueFormatter
@@ -20,8 +20,9 @@ class LocationSharingStartedNotificationsProcessor(
     private val groupRepo: UserGroupLocalDataSource,
     private val memberRepo: LocationLocalDataSource,
     private val valueFormatter: IValueFormatter,
-    private val accessLogSource: AccessLogDataSource
-): INotificationProcessor(accessLogSource) {
+    private val accessLogSource: AccessLogDataSource,
+    private val appPrefs: AppPrefs
+): BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
         push: PushNotificationRaw,

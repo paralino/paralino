@@ -9,25 +9,26 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class PlaceCreatedNotificationProcessor(
     private val groupRepo: UserGroupLocalDataSource,
     private val placeRepo: PlacesLocalDataSource,
-    private val accessLogSource: AccessLogDataSource
-): INotificationProcessor(accessLogSource) {
+    accessLogSource: AccessLogDataSource
+): INotificationProcessor<PlaceCreatedNotificationProcessor.PlaceCreatedHookPayload>(accessLogSource) {
 
     override suspend fun constructPushPayload(
         push: PushNotificationRaw,
-        groupRefreshHook: (suspend (GroupRefreshHookPayload) -> Unit)?
+        groupRefreshHook: (suspend (PlaceCreatedHookPayload) -> Unit)?
     ): IPushNotificationPresenter.Payload? {
-
         val payload = push.content?.tryParseFromJson<PlaceCreatedNotificationPayload>()
             ?: return null
 
         groupRefreshHook?.invoke(
-            GroupRefreshHookPayload(
+            PlaceCreatedHookPayload(
                 groupId = payload.groupId,
+                placeId = payload.placeId,
                 cacheTimeDuration = 20.seconds
             )
         )
@@ -65,4 +66,10 @@ class PlaceCreatedNotificationProcessor(
         val groupId: String,
         val placeId: String
     )
+
+    data class PlaceCreatedHookPayload constructor(
+        override val groupId: String,
+        val placeId: String,
+        override val cacheTimeDuration: Duration
+    ): BaseNotificationProcessor.IGroupRefreshHookPayload
 }

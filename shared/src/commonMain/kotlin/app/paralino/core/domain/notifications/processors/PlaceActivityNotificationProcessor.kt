@@ -22,7 +22,7 @@ class PlaceActivityNotificationProcessor(
     private val placeRepo: PlacesLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val accessLogSource: AccessLogDataSource
-) : INotificationProcessor(accessLogSource) {
+) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
         push: PushNotificationRaw,

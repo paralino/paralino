@@ -2,12 +2,12 @@ package app.paralino.core
 
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
-import app.paralino.core.crypto.user.UserCryptoKeyLocalDataSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
@@ -91,6 +91,7 @@ import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
+import app.paralino.core.repo.places.PlacesGetRemoteSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.places.PlacesRepository
@@ -174,7 +175,7 @@ val mappersModule = module {
     single { UserKeyMapperCore(get()) }
     single { PersonalCodeMapperCore(get(), get()) }
     single { PersonalCodeMapperLocal(get()) }
-    single { PlaceSettingsMapperCore(get(), get()) }
+    single { PlaceSettingsMapperCore() }
     single { PlaceMapperCore(get(), get(), get()) }
     single { GroupPlaceMapperLocal(get(), get()) }
 }
@@ -184,17 +185,17 @@ val dataSourceModule = module {
     single { LocationLocalDataSource(get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
-    single { UserCryptoKeyLocalDataSource(get(), appPrefs, get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get()) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), appPrefs) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
 
     single { UserRemoteSource(get(), get(), get(), get(), get()) }
-    single { UserDevicesRemoteSource(get(), get(), get(), get()) }
-    single { LocationRemoteSource(get(), get(), get(), get(), get()) }
-    single { GroupsRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
-    single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
+    single { UserDevicesRemoteSource(get(), get(), get(), get(), appPrefs) }
+    single { LocationRemoteSource(get(), get(), get(), get(), get(), appPrefs) }
+    single { GroupsRemoteSource(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { PlacesGetRemoteSource(get(), get()) }
     single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
     single { CryptoUserKeysRemoteSource(get(), get(), get()) }
@@ -208,42 +209,42 @@ val coreModule = module {
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    factory { LoginUseCase(get(), get(), get(), get(), get()) }
-    factory { CreateAccountUseCase(get(), get(), get(), get()) }
+    factory { LoginUseCase(get(), get(), get(), get(), get(), get(), appPrefs) }
+    factory { CreateAccountUseCase(get(), get(), get(), get(), get(), appPrefs) }
     factory { ResetPasswordUseCase(get(), get(), get()) }
-    factory { ChangeCredentialsUseCase(get(), get(), get()) }
-    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get()) }
-    factory { ConvertAccountUseCase(get(), get()) }
+    factory { ChangeCredentialsUseCase(get(), get(), get(), get(), appPrefs) }
+    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), appPrefs) }
+    factory { ConvertAccountUseCase(get(), get(), appPrefs) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
-    factory { UserMemberIdUseCase(get(), get(), get(), get(), get()) }
-    factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { UserMemberIdUseCase(get(), get(), get(), get(), appPrefs) }
+    factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     factory { RawCryptoPresentation(get(), get(), get(), get(), get(), appPrefs) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-    single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get()) }
-    single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get()) }
+    single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), appPrefs) }
+    single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), appPrefs) }
     single { GroupRefreshUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
+    single { GroupRemoveUseCase(get(), get(), get(), get(), get(), appPrefs) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    single { PersonalCodesRepository(get(), get(), get(), get(), get()) }
+    single { PersonalCodesRepository(get(), get(), get(), get(), get(), appPrefs) }
     single { GroupRepository(get()) }
-    single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
-    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RemoteConfigRepository(get(), get(), get(), get(), appPrefs) }
     single { UserConfigRepository(get(), get(), get(), get()) }
 
@@ -253,11 +254,12 @@ val coreModule = module {
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get()) }
-    single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get()) }
+    single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), appPrefs) }
 
     single { CryptoCore(get()) }
-    single { CryptoKEKRepository(get(), get(), get(), get(), get()) }
-    single { CryptoUserKeyRepository(get(), get(), get()) }
+    single { CryptoKEKLocalRepository(get(), get(), get(), appPrefs) }
+    single { CryptoUserKeysLocalSource(get(), get(), appPrefs) }
+    single { CryptoKEKRefreshUseCase(get(), get(), get()) }
 
     factory { NotificationPreCheckProcessor(get(), get(), appPrefs) }
     factory { PushNotificationDeleteUseCase(get(), get()) }
@@ -267,9 +269,9 @@ val coreModule = module {
     factory { PlaceCreatedNotificationProcessor(get(), get(), get()) }
     factory { PlaceDeletedNotificationProcessor(get()) }
     factory { PlaceUpdatedNotificationProcessor(get()) }
-    factory { GroupMemberAddedNotificationProcessor(get(), get(), get()) }
+    factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), appPrefs) }
     factory { GroupMemberDeletedNotificationProcessor(get()) }
-    factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get()) }
+    factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), appPrefs) }

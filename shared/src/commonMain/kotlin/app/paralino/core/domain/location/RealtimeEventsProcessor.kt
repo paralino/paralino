@@ -1,7 +1,7 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.crypto.GroupMemberMainPublicKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
@@ -21,7 +21,7 @@ class RealtimeEventsProcessor constructor(
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
     private val placesRepo: PlacesRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val memberLocal: LocationLocalDataSource,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,

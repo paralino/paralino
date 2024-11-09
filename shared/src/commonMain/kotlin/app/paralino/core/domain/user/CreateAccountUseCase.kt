@@ -1,11 +1,12 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.UserAuthDerivedKey
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
@@ -29,8 +30,10 @@ import kotlinx.serialization.encodeToString
 class CreateAccountUseCase constructor(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
-    private val userKeyRepository: CryptoUserKeyRepository,
-    private val logoutUseCase: LogoutUseCase
+    private val userKeyRepository: CryptoUserKeysLocalSource,
+    private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
+    private val logoutUseCase: LogoutUseCase,
+    private val appPrefs: AppPrefs
 ) {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
@@ -106,14 +109,20 @@ class CreateAccountUseCase constructor(
             }
 
             try {
-                val remoteKey = userKeyRepository.uploadNewUserKey(keys.encryptedKeyData)
-                userKeyRepository.saveUserKeyLocally(remoteKey, keys.userPersonalKey)
+                val remoteKey = userKeysRemoteSource.createPersonalKey(
+                    data = keys.encryptedKeyData,
+                    removeOldKeys = true
+                )
+                userKeyRepository.saveUserKey(remoteKey, keys.userPersonalKey)
             } catch (e: Exception) {
                 if (e.isSocketTimeout()) {
                     // try once more if socket times out
                     try {
-                        val remoteKey = userKeyRepository.uploadNewUserKey(keys.encryptedKeyData)
-                        userKeyRepository.saveUserKeyLocally(remoteKey, keys.userPersonalKey)
+                        val remoteKey = userKeysRemoteSource.createPersonalKey(
+                            data = keys.encryptedKeyData,
+                            removeOldKeys = true
+                        )
+                        userKeyRepository.saveUserKey(remoteKey, keys.userPersonalKey)
                     } catch (e: Exception) {
                         throw userKeySetupFailed(user, session, authKey, e)
                     }
@@ -143,7 +152,7 @@ class CreateAccountUseCase constructor(
         authKey: UserAuthDerivedKey,
         e: Throwable
     ): SignUpStepException {
-        userKeyRepository.clearAll()
+        userKeyRepository.clearAllKeys()
         // key generation failed but user is created
         // we are saving user as is, so account recovery can take place later on
         appPrefs.temporaryMasterAuthKey = BaseRemoteModule.formatter.encodeToString(authKey)
