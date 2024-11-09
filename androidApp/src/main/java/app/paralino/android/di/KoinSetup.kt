@@ -28,16 +28,17 @@ import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.appPrefs
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
+import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.db.LogsDatabaseHelper
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
-import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.AppHost
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppHost
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -100,11 +101,14 @@ object KoinSetup {
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
 
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
+
+        single<AppPrefsProvider>(createdAtStart = true) { AppPrefsProvider(androidContext()) }
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
         single<INotificationStatusProvider>(createdAtStart = true) { NotificationStatusProvider(androidContext()) }
-        single<ICrashReportingLogr> { CrashReportingLogr(get(), appPrefs) }
         single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) }
+
+        single<ICrashReportingLogr> { CrashReportingLogr(get(), appPrefs) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
         single<IValueFormatter> { ValueFormatter() }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class

@@ -66,10 +66,6 @@ class DeviceApiProvider: IDeviceApiProvider {
         "iPhone"
     }
     
-    override func createConfig() -> AppPrefs {
-        AppPrefs(provider: AppPrefsProvider(appBuildConfig: appBuildConfig))
-    }
-    
     override func createSystemLogr() -> SystemLogr {
         return DebbugLogr(canLogToConsole: appBuildConfig.logToConsole)
     }

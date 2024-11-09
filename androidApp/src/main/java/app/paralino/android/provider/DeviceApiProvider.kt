@@ -51,10 +51,6 @@ class DeviceApiProvider constructor(
         return DebugLogr(enabled = appBuildConfig.logToConsole, tagPrefix = "Paralino")
     }
 
-    override fun createConfig(): AppPrefs {
-        return AppPrefs(AppPrefsProvider(appClass))
-    }
-
     override fun copyToClipboard(data: String) {
         appClass.copy(data)
     }

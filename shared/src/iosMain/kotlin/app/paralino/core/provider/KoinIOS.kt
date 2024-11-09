@@ -4,6 +4,7 @@ import app.paralino.core.CoreAppManager
 import app.paralino.core.appPrefs
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
+import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.db.LogsDatabaseHelper
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
@@ -110,6 +111,7 @@ object KoinIOS {
         return buildList {
             add(
                 module {
+                    single(createdAtStart = true) { AppPrefsProvider(appBuildConfig) }
                     single(createdAtStart = true) { deviceProvider }
                     single { connectionStatusProvider }
                     single { locationStatusProvider }

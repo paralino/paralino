@@ -134,12 +134,13 @@ object ParalinoCore {
         val logr = Logr
         logg = logr
 
+        val appPrefs = koinApp.koin.get<AppPrefs>()
         val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
         val appBuildConfig = koinApp.koin.get<AppBuildConfig>()
         val inAppLogger = koinApp.koin.get<InAppLogger>()
 
         AppBuildConfig.instance = appBuildConfig
-        AppPrefs.instance = deviceApiProvider.createConfig()
+        AppPrefs.instance = appPrefs
         connectionStatus = deviceApiProvider.connectionStatusProvider
 
         val crashReportingLogger = koinApp.koin.get<ICrashReportingLogr>()
@@ -184,6 +185,7 @@ val mappersModule = module {
 
 
 val dataSourceModule = module {
+    single(createdAtStart = true) { AppPrefs(get()) }
     single { LocationLocalDataSource(get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
