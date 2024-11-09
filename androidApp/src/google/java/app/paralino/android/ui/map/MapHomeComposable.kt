@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -166,31 +168,46 @@ private fun MapMarkerComposable(
     val lat = remember { Animatable(0f) }
     val lng = remember { Animatable(0f) }
     val acc = remember { Animatable(0f) }
+
+    var latValue by remember { mutableDoubleStateOf(0.0) }
+    var lngValue by remember { mutableDoubleStateOf(0.0) }
+
     val animationSpec = remember {
-        tween<Float>(durationMillis = 3000, easing = LinearEasing)
+        tween<Float>(durationMillis = 4000, easing = LinearEasing)
     }
 
     LaunchedEffect(model.markerId) {
-        lat.snapTo(model.lat.toFloat())
-        lng.snapTo(model.lng.toFloat())
+        lat.snapTo(0f)
+        lng.snapTo(0f)
         acc.snapTo(model.accuracy)
+
+        latValue = model.lat
+        lngValue = model.lng
     }
 
     LaunchedEffect(model.lat) {
-        lat.animateTo(model.lat.toFloat(), animationSpec = animationSpec)
+        lat.snapTo(0f)
+        val startLat = latValue
+        lat.animateTo(1f, animationSpec = animationSpec) {
+            latValue = (model.lat - startLat) * this.value + startLat
+        }
     }
 
     LaunchedEffect(model.lng) {
-        lng.animateTo(model.lng.toFloat(), animationSpec = animationSpec)
+        lng.snapTo(0f)
+        val startLng = lngValue
+        lng.animateTo(1f, animationSpec = animationSpec) {
+            lngValue = (model.lng - startLng) * this.value + startLng
+        }
     }
 
     LaunchedEffect(model.accuracy) {
-        acc.animateTo(model.accuracy.toFloat(), animationSpec = animationSpec)
+        acc.animateTo(model.accuracy, animationSpec = animationSpec)
     }
 
     if (model.shouldShowApproximateCircle) {
         Circle(
-            center = LatLng(lat.value.toDouble(), lng.value.toDouble()),
+            center = LatLng(latValue, lngValue),
             clickable = true,
             fillColor = when (model.pinType) {
                 MapPinType.MEMBER -> AppColors.accentDark.copy(alpha = 0.5f)
@@ -224,7 +241,7 @@ private fun MapMarkerComposable(
 
     MapMarkerComposable(
         state = model,
-        position = LatLng(lat.value.toDouble(), lng.value.toDouble()),
+        position = LatLng(latValue, lngValue),
         onClick = onMarkerClick
     )
 }
