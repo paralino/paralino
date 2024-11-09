@@ -530,7 +530,7 @@ class PlacesRepository constructor(
     private fun placeActivityDelay(trigger: PlaceActivityTriggerType): Duration? {
         return when (trigger) {
             PlaceActivityTriggerType.GOEFENCE -> {
-                if (appPrefs.placeActivityThrottle) 3.seconds
+                if (appPrefs.placeActivityThrottle) null
                 else null
             }
             else -> {
