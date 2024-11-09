@@ -93,11 +93,7 @@ fun MainHomeMapComposable(
     var canAnimateMapFocus by remember { mutableStateOf(false) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
 
-    val cameraPositionState = rememberCameraPositionState {
-        boundsForMarkers(stateData?.visibleMarkers ?: emptyList())?.let {
-            move(CameraUpdateFactory.newLatLngBounds(it, 40))
-        }
-    }
+    val cameraPositionState = rememberCameraPositionState()
 
     LaunchedEffect(Unit) {
         delay(500)
