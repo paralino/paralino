@@ -8,16 +8,16 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
 import app.paralino.core.MR
-import app.paralino.core.logg
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.logg
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.ui.theme.AppColors
 
@@ -44,13 +44,12 @@ class GroupActivityNotificationPresenter(
         val notificationManager = NotificationManagerCompat.from(context)
 
         val intent = buildNotificationIntent(context)
-        intent.apply { flags = Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED }
-        val pendingIntent = TaskStackBuilder.create(context)
-            .apply { addNextIntentWithParentStack(intent) }
-            .getPendingIntent(
-                100,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
             .setContentTitle(payload.title)
@@ -77,7 +76,9 @@ class GroupActivityNotificationPresenter(
 
     private fun buildNotificationIntent(context: Context): Intent {
         // TODO deeplink to a group
-        return Intent(context, MainActivity::class.java)
+        return Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
     }
 
     private fun registerNotificationChannel(context: Context) {
