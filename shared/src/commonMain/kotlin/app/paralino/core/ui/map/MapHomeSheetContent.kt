@@ -158,10 +158,10 @@ fun MapHomeSheetContent(
 
             Row(
                 modifier = Modifier
-                    .padding(start = 20.dp)
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp)
                     .alpha(contentAlpha)
-                    .align(Alignment.Start)
-                    .horizontalScroll(rememberScrollState()),
+                    .align(Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MapBottomSheetTab(
