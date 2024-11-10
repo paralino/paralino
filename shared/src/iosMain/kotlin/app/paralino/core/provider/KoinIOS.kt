@@ -160,7 +160,7 @@ object KoinIOS {
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
             factory { (groupID: String?, isOnboarding: Boolean) ->
-                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }

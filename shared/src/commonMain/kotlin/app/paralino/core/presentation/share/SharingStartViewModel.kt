@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.share
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
@@ -15,6 +16,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -41,13 +43,14 @@ class SharingStartViewModel(
     groupId: String?,
     private val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,
     val deviceApiProvider: IDeviceApiProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
     private val locationRepo: LocationLocalDataSource,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -82,7 +85,8 @@ class SharingStartViewModel(
                     flowOf(0)
                 } else {
                     locationRepo.getLocationCountForMember(
-                        userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!
+                        groupId = it.id,
+                        userId = appPrefs.userId
                     )
                 }
             }
@@ -156,12 +160,12 @@ class SharingStartViewModel(
     }
 
     private suspend fun getAllGroups(): List<UserGroupWithMetadata> {
-        return groupRepo.getAllGroupsLocally().firstOrNull() ?: emptyList()
+        return groupRepo.getAllGroupsWithMetadata().firstOrNull() ?: emptyList()
     }
 
     fun setSelectedGroup(groupId: String) {
         coroutineScope.launch {
-            getAllGroups().firstOrNull { it.id == groupId }?.let { group ->
+            groupRepo.getGroupWithMetadata(groupId = groupId).firstOrNull()?.let { group ->
                 setSelectedGroup(group)
             } ?: let {
                 currentGroup.update { null }

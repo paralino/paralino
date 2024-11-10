@@ -422,7 +422,7 @@ enum class BottomSheetPosition constructor(val screenHeightPercent: Float) {
 
 
     companion object {
-        val default: BottomSheetPosition = COLLAPSED
+        val default: BottomSheetPosition = HALF_EXPANDED
 
         fun swipeAnchors(
             screenHeightPixels: Float,
