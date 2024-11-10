@@ -90,10 +90,10 @@ fun SubscriptionScreenCore(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
                 .padding(20.dp)
                 .padding(bottom = 40.dp)
-                .verticalScroll(rememberScrollState())
         ) {
 
             if (uiState.canShowMoreInfo) {
