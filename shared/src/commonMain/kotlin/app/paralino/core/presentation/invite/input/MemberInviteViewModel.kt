@@ -186,6 +186,7 @@ class MemberInviteViewModel(
     private suspend fun getAllGroups(): List<GroupItemState> {
         return groupRepo.getAllGroupsWithMetadata()
             .firstOrNull()
+            ?.filter { it.group.isCurrentUserOwner }
             ?.map { GroupItemState(it) }
             ?.also { groups.value = it }
             ?: emptyList()
