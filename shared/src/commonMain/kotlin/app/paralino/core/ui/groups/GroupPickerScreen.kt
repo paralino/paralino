@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -93,13 +94,12 @@ class GroupBottomSheetPickerState @OptIn(ExperimentalMaterialApi::class) constru
 fun rememberGroupBottomSheetPickerState(
     initialValue: ModalBottomSheetValue = ModalBottomSheetValue.Hidden
 ): GroupBottomSheetPickerState {
-    return key(initialValue) {
-        GroupBottomSheetPickerState(
-            bottomSheetState = rememberModalBottomSheetState(
-                initialValue = initialValue,
-                skipHalfExpanded = true
-            )
-        )
+    val bottomSheetState = rememberModalBottomSheetState(
+        initialValue = initialValue,
+        skipHalfExpanded = true
+    )
+    return remember(Unit) {
+        GroupBottomSheetPickerState(bottomSheetState)
     }
 }
 
