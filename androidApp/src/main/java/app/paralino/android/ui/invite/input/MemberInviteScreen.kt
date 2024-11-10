@@ -1,5 +1,6 @@
 package app.paralino.android.ui.invite.input
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -90,6 +91,10 @@ fun MemberInviteScreen(
                 }
             }
         )
+    }
+
+    BackHandler (enabled = isOnboarding) {
+        // block back for onboarding
     }
 
     GroupBottomSheetPicker(

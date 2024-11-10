@@ -1,6 +1,7 @@
 package app.paralino.android.ui.share
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -131,6 +132,11 @@ fun SharingStartScreen(
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             }
         )
+    }
+
+
+    BackHandler (enabled = isOnboarding) {
+        // block back for onboarding
     }
 
     GroupBottomSheetPicker(

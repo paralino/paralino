@@ -15,6 +15,7 @@ import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -33,7 +34,7 @@ class PlacesViewModel(
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PlacesListScreenState>>(Payload.Loading)
-    val uiState: Flow<Payload<PlacesListScreenState>> = _uiState
+    val uiState: StateFlow<Payload<PlacesListScreenState>> = _uiState
 
     private val _eventChannel = Channel<PlacesScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()

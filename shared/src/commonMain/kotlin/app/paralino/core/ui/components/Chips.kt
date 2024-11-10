@@ -128,6 +128,8 @@ fun SmallActionButton(
                 tint = contentColor,
                 contentDescription = null
             )
+        } else {
+            Spacer(modifier = Modifier.size(4.dp))
         }
     }
 }
