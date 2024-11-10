@@ -44,19 +44,33 @@ struct PlacesScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.places_list_screen_title.localizedString())
-            .toolbar {
-                if appState.isOnboarding {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
-                        }) {
-                            Text(MR.shared.strings.button_skip.localizedString())
-                        }
+        }
+        .toolbar {
+            if appState.isOnboarding {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if appState.markers.isEmpty {
+                        SmallActionButtonView(
+                            text: MR.shared.strings.button_skip.localizedString(),
+                            action: {
+                                path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
+                            },
+                            hasEndArrow: true
+                        )
+                    } else {
+                        SmallActionButtonView(
+                            text: MR.shared.strings.button_next.localizedString(),
+                            action: {
+                                path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
+                            },
+                            hasEndArrow: true
+                        )
                     }
                 }
             }
         }
+        .toolbarTitleDisplayMode(.inline)
+        .navigationTitle(MR.shared.strings.places_list_screen_title.localizedString())
+        .navigationBarBackButtonHidden(appState.isOnboarding)
     }
     
     static func createState(groupId: String, isOnboarding: Bool) -> PlacesState {

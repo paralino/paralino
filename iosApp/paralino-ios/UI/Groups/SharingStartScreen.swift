@@ -55,19 +55,23 @@ struct SharingStartScreen: View {
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
         }
         .toolbar {
             if appState.isOnboarding {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        finishWithSharingScreen(isOnboarding: appState.isOnboarding)
-                    }) {
-                        Text(MR.shared.strings.button_skip.localizedString())
-                    }
+                    SmallActionButtonView(
+                        text: MR.shared.strings.button_skip.localizedString(),
+                        action: {
+                            finishWithSharingScreen(isOnboarding: appState.isOnboarding)
+                        },
+                        hasEndArrow: true
+                    )
                 }
             }
         }
+        .toolbarTitleDisplayMode(.inline)
+        .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
+        .navigationBarBackButtonHidden(appState.isOnboarding)
         .groupPickerSheet(
             $groupPicker,
             onSelectGroup: { state in

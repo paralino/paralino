@@ -32,19 +32,23 @@ struct MemberInviteScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())
-            .toolbar {
-                if appState.isOnboarding {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
+        }
+        .toolbar {
+            if appState.isOnboarding {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    SmallActionButtonView(
+                        text: MR.shared.strings.button_skip.localizedString(),
+                        action: {
                             path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
-                        }) {
-                            Text(MR.shared.strings.button_skip.localizedString())
-                        }
-                    }
+                        },
+                        hasEndArrow: true
+                    )
                 }
             }
         }
+        .toolbarTitleDisplayMode(.inline)
+        .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())
+        .navigationBarBackButtonHidden(appState.isOnboarding)
         .groupPickerSheet(
             $groupPicker,
             onSelectGroup: { state in

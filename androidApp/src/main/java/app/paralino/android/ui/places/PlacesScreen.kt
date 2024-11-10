@@ -77,14 +77,14 @@ fun PlacesScreen(
                             backgroundColor = MaterialTheme.colors.primary,
                             contentColor = MaterialTheme.colors.onPrimary,
                             icon = null,
-                            hasEndArrow = placesCount == 0,
+                            hasEndArrow = true,
                             text = {
                                 Text(
                                     text = stringResource(
                                         if (placesCount == 0) {
                                             MR.strings.button_skip
                                         } else {
-                                            MR.strings.button_done
+                                            MR.strings.button_next
                                         }
                                     ),
                                     fontSize = 14.sp
