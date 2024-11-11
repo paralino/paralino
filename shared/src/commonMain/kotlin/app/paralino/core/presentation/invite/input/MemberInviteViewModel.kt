@@ -40,7 +40,6 @@ class MemberInviteViewModel(
         MutableStateFlow<MemberInviteScreenState>(MemberInviteScreenState.Empty())
     val uiState: Flow<MemberInviteScreenState> = _uiState
 
-    private val groups = MutableStateFlow<List<GroupItemState>>(emptyList())
     private val currentGroup = MutableStateFlow<GroupItemState?>(null)
 
     private val _eventChannel = Channel<MemberInviteScreenEvent?>()
@@ -178,17 +177,17 @@ class MemberInviteViewModel(
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
-            userPlan = userRepo.userPlans.value.highestValidPlanConfig,
-            groups = getAllGroups()
+            userPlan = null,
+            createdGroups = getAllUserCreatedGroups(),
+            joinedGroups = emptyList()
         )
     }
 
-    private suspend fun getAllGroups(): List<GroupItemState> {
+    private suspend fun getAllUserCreatedGroups(): List<GroupItemState> {
         return groupRepo.getAllGroupsWithMetadata()
             .firstOrNull()
             ?.filter { it.group.isCurrentUserOwner }
             ?.map { GroupItemState(it) }
-            ?.also { groups.value = it }
             ?: emptyList()
     }
 

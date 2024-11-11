@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -19,9 +20,12 @@ import app.paralino.core.ui.theme.AppColors
 
 @Composable
 fun PlanLimitCount(
+    modifier: Modifier = Modifier,
     count: Int,
     limit: Int?,
-    modifier: Modifier = Modifier,
+    backgroundColor: Color = AppColors.accentLight.copy(alpha = 0.3f),
+    errorBackgroundColor: Color = AppColors.errorBackground,
+    contentColor: Color = if(isSystemInDarkTheme()) AppColors.accent else AppColors.accentDark
 ) {
     Text(
         text = buildAnnotatedString {
@@ -30,7 +34,7 @@ fun PlanLimitCount(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     baselineShift = BaselineShift(0.1f),
-                    color = if(isSystemInDarkTheme()) AppColors.accent else AppColors.accentDark
+                    color = contentColor
                 )
             ) {
                 this.append("$count")
@@ -38,10 +42,10 @@ fun PlanLimitCount(
             if(limit != null) {
                 this.withStyle(
                     style = SpanStyle(
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 12.sp,
                         baselineShift = BaselineShift(0.1f),
-                        color = AppColors.accentDark
+                        color = contentColor
                     )
                 ) {
                     this.append("/${limit}")
@@ -51,8 +55,8 @@ fun PlanLimitCount(
         style = MaterialTheme.typography.subtitle1,
         modifier = modifier
             .background(
-                color = if (limit != null && limit <= count) AppColors.errorBackground
-                else AppColors.accentLight.copy(alpha = 0.3f),
+                color = if (limit != null && limit <= count) errorBackgroundColor
+                else backgroundColor,
                 shape = RoundedCornerShape(4.dp)
             )
             .padding(vertical = 2.dp, horizontal = 6.dp)

@@ -28,7 +28,7 @@ struct SmallActionButtonView: View {
                     Image(systemName: "chevron.right")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 12, height: 12)
+                        .frame(width: 10, height: 10)
                         .foregroundColor(contentColor)
                 } else {
                     Spacer()

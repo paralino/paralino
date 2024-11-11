@@ -68,6 +68,9 @@
     <string name="dashboard_groups_section_unverified">NEPOTVRĐENO</string>
     <string name="dashboard_groups_add_button">Kreiraj novu grupu</string>
     <string name="dashboard_groups_join_button">Pridruži se grupi</string>
+    <string name="dashboard_groups_title_created">Kreirane grupe</string>
+    <string name="dashboard_groups_title_joined">Ostale grupe</string>
+    <string name="dashboard_groups_create_plan_limit">Da kreiraš više grupa, nadogradi svoj plan</string>
     <string name="dashboard_groups_create_info">Ili kreirajte grupu</string>
     <string name="dashboard_paralino_id_title">Ovo je tvoj **Paralino.ID**</string>
     <string name="dashboard_paralino_id_description">Podijeli ga i pridruži se grupi</string>

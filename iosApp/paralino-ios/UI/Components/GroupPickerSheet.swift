@@ -11,11 +11,19 @@ import shared
 struct GroupPickerSheet: ViewModifier {
     
     @Binding var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet?
+    var createdGroups: [GroupItemState] {
+        return bottomSheet?.createdGroups ?? []
+    }
+    var joinedGroups: [GroupItemState] {
+        return bottomSheet?.joinedGroups ?? []
+    }
+    var groupsCount: Int { createdGroups.count + joinedGroups.count }
     
     var onSelectGroup: ((GroupItemState) -> Void)?
     var onEditGroup: ((GroupItemState) -> Void)?
     var onCreateGroup: (() -> Void)?
     var onJoinGroup: (() -> Void)?
+    var onOpenSubscription: (() -> Void)?
     
     var isShowingSheet: Binding<Bool> {
         Binding(get: { bottomSheet != nil }, set: { _ in bottomSheet = nil })
@@ -24,30 +32,40 @@ struct GroupPickerSheet: ViewModifier {
     func body(content: Content) -> some View {
         content
             .sheet(isPresented: isShowingSheet) {
-                let groups = bottomSheet?.groups ?? []
                 VStack {
                     ScrollView {
-                        LazyVStack(alignment: .center, spacing: 8) {
-                            ForEach(groups.indices, id: \.self) { index in
-                                GroupListItem(data: groups[index], onClick: { onSelectGroup?(groups[index]) }, onEdit: { onEditGroup?(groups[index]) })
-                                    
+                        LazyVStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text(MR.shared.strings.title_dashboard.localizedString())
+                                    .font(.system(size: 24, weight: .bold))
+                                Spacer().frame(width: 8)
+                                PlanLimitCount(count: groupsCount, limit: nil)
                             }
+                            
+                            Spacer().frame(height: 8)
+                            
+                            ForEach(createdGroups.indices, id: \.self) { index in
+                                GroupListItem(data: createdGroups[index], onClick: { onSelectGroup?(createdGroups[index]) }, onEdit: { onEditGroup?(createdGroups[index]) })
+                            }
+                            
+                            ForEach(joinedGroups.indices, id: \.self) { index in
+                                GroupListItem(data: joinedGroups[index], onClick: { onSelectGroup?(joinedGroups[index]) }, onEdit: { onEditGroup?(joinedGroups[index]) })
+                            }
+                            
                             if bottomSheet?.onlyShowGroups == false {
                                 Spacer()
-                                HStack {
-                                    Button(action: { onCreateGroup?() }) {
-                                        Label(MR.shared.strings.group_create_button_text.localizedString(), systemImage: "plus")
-                                    }
-                                    Spacer()
-                                    Button(action: { onJoinGroup?() }) {
-                                        Label(MR.shared.strings.dashboard_groups_join_button.localizedString(), systemImage: "key.horizontal")
-                                    }
-                                }
-                                .padding()
+                                GroupPickerGroupCreateSection(
+                                    groupsCount: createdGroups.count,
+                                    groupsLimit: bottomSheet?.groupsLimit?.intValue,
+                                    canCreateGroup: bottomSheet?.canCreateGroup ?? true,
+                                    onCreateGroup: onCreateGroup,
+                                    onJoinGroup: onJoinGroup,
+                                    onOpenSubscription: onOpenSubscription
+                                )
                             }
                         }
                         .padding()
-                        .presentationDetents([.medium, .large])
+                        .presentationDetents(groupsCount >= 2 ? [.large] : [.medium, .large])
                         .presentationBackground(Color.themebackground)
                     }
                 }
@@ -61,8 +79,9 @@ extension View {
         onSelectGroup: @escaping (GroupItemState) -> Void,
         onEditGroup: @escaping (GroupItemState) -> Void,
         onCreateGroup: @escaping () -> Void,
-        onJoinGroup: @escaping () -> Void
+        onJoinGroup: @escaping () -> Void,
+        onOpenSubscription: @escaping () -> Void
     ) -> some View {
-        self.modifier(GroupPickerSheet(bottomSheet: data, onSelectGroup: onSelectGroup, onEditGroup: onEditGroup, onCreateGroup: onCreateGroup, onJoinGroup: onJoinGroup))
+        self.modifier(GroupPickerSheet(bottomSheet: data, onSelectGroup: onSelectGroup, onEditGroup: onEditGroup, onCreateGroup: onCreateGroup, onJoinGroup: onJoinGroup, onOpenSubscription: onOpenSubscription))
     }
 }

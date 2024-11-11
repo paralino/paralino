@@ -57,7 +57,8 @@ struct MemberInviteScreen: View {
             },
             onEditGroup: { group in },
             onCreateGroup: {},
-            onJoinGroup: {}
+            onJoinGroup: {},
+            onOpenSubscription: {}
         )
     }
     

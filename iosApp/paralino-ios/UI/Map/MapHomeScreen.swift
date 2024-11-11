@@ -123,6 +123,10 @@ struct MapHomeScreen: View {
             onJoinGroup: {
                 groupPicker = nil
                 path.append(.settings(.personalCodes))
+            },
+            onOpenSubscription: {
+                groupPicker = nil
+                path.append(.settings(.paywall(groupId: nil, type: .normal)))
             }
         )
         .navigationBarBackButtonHidden(true)

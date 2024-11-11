@@ -84,6 +84,8 @@
 		25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE2B2A5B250600522293 /* GroupPickerSheet.swift */; };
 		25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EFDE2F2A5B45C300522293 /* MapMarker.swift */; };
 		25F234C92CE0E77A007208CD /* SmallActionButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234C82CE0E773007208CD /* SmallActionButtonView.swift */; };
+		25F234CB2CE12F16007208CD /* PlanLimitCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234CA2CE12F12007208CD /* PlanLimitCount.swift */; };
+		25F234CD2CE12FAA007208CD /* GroupPickerGroupCreateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */; };
 		25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F37E332A5AC6EE00317D85 /* ImageModelImage.swift */; };
 		25F37E362A5AE1EB00317D85 /* MapGroupPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F37E352A5AE1EB00317D85 /* MapGroupPicker.swift */; };
 		25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */; };
@@ -249,6 +251,8 @@
 		25EFDE2B2A5B250600522293 /* GroupPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerSheet.swift; sourceTree = "<group>"; };
 		25EFDE2F2A5B45C300522293 /* MapMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapMarker.swift; sourceTree = "<group>"; };
 		25F234C82CE0E773007208CD /* SmallActionButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallActionButtonView.swift; sourceTree = "<group>"; };
+		25F234CA2CE12F12007208CD /* PlanLimitCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanLimitCount.swift; sourceTree = "<group>"; };
+		25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerGroupCreateSection.swift; sourceTree = "<group>"; };
 		25F37E332A5AC6EE00317D85 /* ImageModelImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageModelImage.swift; sourceTree = "<group>"; };
 		25F37E352A5AE1EB00317D85 /* MapGroupPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGroupPicker.swift; sourceTree = "<group>"; };
 		25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordScreen.swift; sourceTree = "<group>"; };
@@ -492,6 +496,8 @@
 		258E9BF529EBDEAF006BD46C /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */,
+				25F234CA2CE12F12007208CD /* PlanLimitCount.swift */,
 				25F234C82CE0E773007208CD /* SmallActionButtonView.swift */,
 				258E9BF629EBDEBF006BD46C /* AlertDialog.swift */,
 				259AEFA32A3E19740083FF4B /* Sharing.swift */,
@@ -836,7 +842,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		2505E6572CBD69F80088D146 /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -854,7 +860,7 @@
 		};
 		257DCAE02CB440D100402562 /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -872,7 +878,7 @@
 		};
 		2580EF8A2CB6834A00C9431D /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -908,7 +914,7 @@
 		};
 		2584CDB32CB4498400F9AD13 /* Compile Kotlin */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -967,6 +973,7 @@
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
+				25F234CD2CE12FAA007208CD /* GroupPickerGroupCreateSection.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
 				259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */,
 				259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */,
@@ -1007,6 +1014,7 @@
 				25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */,
 				25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */,
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
+				25F234CB2CE12F16007208CD /* PlanLimitCount.swift in Sources */,
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,
 				25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */,
 				259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */,

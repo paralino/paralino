@@ -29,9 +29,9 @@ import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.groups.GroupBottomSheetPicker
-import app.paralino.core.ui.groups.GroupPickerAction
-import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
+import app.paralino.android.ui.groups.GroupBottomSheetPicker
+import app.paralino.android.ui.groups.GroupPickerAction
+import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements

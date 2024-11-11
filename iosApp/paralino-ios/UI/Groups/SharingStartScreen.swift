@@ -80,7 +80,8 @@ struct SharingStartScreen: View {
             },
             onEditGroup: { group in },
             onCreateGroup: {},
-            onJoinGroup: {}
+            onJoinGroup: {},
+            onOpenSubscription: {}
         )
     }
     

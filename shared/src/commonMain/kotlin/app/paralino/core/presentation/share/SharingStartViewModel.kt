@@ -152,15 +152,13 @@ class SharingStartViewModel(
     }
 
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        val allGroups = groupRepo.getAllGroupsWithMetadata().firstOrNull() ?: emptyList()
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
-            userPlan = userRepo.userPlans.value.highestValidPlanConfig,
-            groups = getAllGroups().map { GroupItemState(it) }
+            userPlan = null,
+            createdGroups = allGroups.filter { it.group.isCurrentUserOwner }.map { GroupItemState(it) },
+            joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }.map { GroupItemState(it) },
         )
-    }
-
-    private suspend fun getAllGroups(): List<UserGroupWithMetadata> {
-        return groupRepo.getAllGroupsWithMetadata().firstOrNull() ?: emptyList()
     }
 
     fun setSelectedGroup(groupId: String) {

@@ -60,6 +60,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -599,14 +600,17 @@ class MapHomeViewModel constructor(
     }
 
     fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        val allGroups = getAllGroupsItemState()
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = false,
             userPlan = userRepository.userPlans.value.highestValidPlanConfig,
-            groups = getAllGroupsItemState()
+            groupsLimit = userRepository.userPlans.value.groupsLimit,
+            createdGroups = allGroups.filter { it.isCurrentUserOwner },
+            joinedGroups = allGroups.filter { !it.isCurrentUserOwner }
         )
     }
 
-    fun getAllGroupsItemState(): List<GroupItemState> {
+    private fun getAllGroupsItemState(): List<GroupItemState> {
         return allGroups.value.data?.map { group ->
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
@@ -859,8 +863,7 @@ class MapHomeViewModel constructor(
     }
 
     fun tryCreateGroup() {
-        val limit = userRepository.userPlans.value.highestValidPlan?.plan?.groupsLimitOverride?.toInt()
-            ?: userRepository.userPlans.value.highestValidPlanConfig.groupsLimit
+        val limit = userRepository.userPlans.value.groupsLimit
         val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
         val maxGroupLimit = remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.groupsLimit
 

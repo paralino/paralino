@@ -17,9 +17,9 @@ import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.ToolbarButtons
-import app.paralino.core.ui.groups.GroupBottomSheetPicker
-import app.paralino.core.ui.groups.GroupPickerAction
-import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
+import app.paralino.android.ui.groups.GroupBottomSheetPicker
+import app.paralino.android.ui.groups.GroupPickerAction
+import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.core.ui.invite.MemberInviteScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
