@@ -18,12 +18,12 @@ object LocationRequestModels {
     }
 
     private val locationRequestLow: LocationRequest
-        get() = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 30 * 60 * 1000L)
+        get() = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 60 * 60 * 1000L)
             .setMinUpdateIntervalMillis(10 * 60 * 1000L)
             .build()
 
     private val locationRequestBalanced: LocationRequest
-        get() = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 15 * 60 * 1000L)
+        get() = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 30 * 60 * 1000L)
             .setMinUpdateIntervalMillis(2 * 60 * 1000L)
             .build()
 
