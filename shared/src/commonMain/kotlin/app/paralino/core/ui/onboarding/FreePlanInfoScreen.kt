@@ -138,7 +138,8 @@ fun FreePlanInfoScreenCore(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 32.dp),
+                    .padding(horizontal = 20.dp, vertical = 32.dp)
+                    .padding(bottom = if (showBanner) 0.dp else 32.dp),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -178,7 +179,7 @@ fun FreePlanInfoScreenCore(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = stringResource(MR.strings.plans_gift_screen_box_message),
+                            text = stringResource(MR.strings.plans_gift_screen_box_message).annotatedBold(),
                             style = MaterialTheme.typography.subtitle1,
                             textAlign = TextAlign.Center
                         )

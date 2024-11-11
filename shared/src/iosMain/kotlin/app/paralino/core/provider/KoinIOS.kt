@@ -150,7 +150,7 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get(), appPrefs) }
+            factory { GroupInitViewModel(get(), get(), get()) }
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get())
             }

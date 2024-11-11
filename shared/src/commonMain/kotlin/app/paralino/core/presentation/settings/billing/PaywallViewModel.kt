@@ -242,7 +242,11 @@ class PaywallViewModel(
         )
         val freeUiPlan = PlanInfoState(
             productId = "free",
-            name = MR.strings.paywall_free_plan_name.localizedString(),
+            name = if (freePlanConfig.planTypeEnum == PlanType.SILVER) {
+                MR.strings.paywall_silver_plan_name.localizedString()
+            } else {
+                MR.strings.paywall_free_plan_name.localizedString()
+            },
             type = freePlanConfig.planTypeEnum,
             isCurrentPlan = false,
             hasSpecialOffer = false,
@@ -353,6 +357,8 @@ class PaywallViewModel(
                     .forEach {
                         val planName = if (it.planTypeEnum.isPremium) {
                             it.planName
+                        } else if (it.planTypeEnum == PlanType.SILVER) {
+                            MR.strings.paywall_silver_plan_name.localizedString()
                         } else {
                             MR.strings.paywall_free_plan_name.localizedString()
                         }

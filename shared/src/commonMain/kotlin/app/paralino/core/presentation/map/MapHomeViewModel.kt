@@ -60,7 +60,6 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -866,6 +865,7 @@ class MapHomeViewModel constructor(
         val limit = userRepository.userPlans.value.groupsLimit
         val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
         val maxGroupLimit = remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.groupsLimit
+        val shouldShowFreePlanNoticeScreen = userRepository.shouldShowFreePlanNoticeScreen
 
         coroutineScope.launch {
             if (groupCount >= maxGroupLimit) {
@@ -879,6 +879,8 @@ class MapHomeViewModel constructor(
                 }
             } else if (limit in 0..groupCount) {
                 _eventChannel.send(MapHomeScreenEvent.GroupsPlanLimitReached)
+            } else if (shouldShowFreePlanNoticeScreen) {
+                _eventChannel.send(MapHomeScreenEvent.ShowFreePlanInfo)
             } else {
                 _eventChannel.send(MapHomeScreenEvent.AddGroup)
             }

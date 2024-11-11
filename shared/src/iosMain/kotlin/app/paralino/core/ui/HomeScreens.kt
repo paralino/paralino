@@ -217,6 +217,7 @@ object HomeScreens {
         onSettingsClick: () -> Unit,
         onPlaceClick: (PlaceListItemData) -> Unit,
         onCreateGroup: () -> Unit,
+        openFreePlanInfo: () -> Unit,
         openPaywall: () -> Unit,
         mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
@@ -257,14 +258,9 @@ object HomeScreens {
                 LaunchedEffect(key1 = Unit) {
                     vm.events.collectLatest { event ->
                         when (event) {
-                            MapHomeScreenEvent.AddGroup -> {
-                                onCreateGroup()
-                            }
-
-                            MapHomeScreenEvent.GroupsPlanLimitReached -> {
-                                openPaywall()
-                            }
-
+                            MapHomeScreenEvent.AddGroup -> onCreateGroup()
+                            MapHomeScreenEvent.ShowFreePlanInfo -> openFreePlanInfo()
+                            MapHomeScreenEvent.GroupsPlanLimitReached -> openPaywall()
                             null -> {}
                         }
                     }

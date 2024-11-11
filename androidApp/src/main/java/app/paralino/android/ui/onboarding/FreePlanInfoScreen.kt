@@ -15,7 +15,7 @@ fun FreePlanInfoScreen(
 ) {
     FreePlanInfoScreenCore(
         coreUiState = appState,
-        showBanner = true,
+        showBanner = false,
         vm = vm,
         onContinue = {
             appState.navController.navigate(

@@ -1,7 +1,6 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.MR
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -34,8 +33,7 @@ import kotlinx.coroutines.launch
 class GroupInitViewModel(
     private val userRepo: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
-    val deviceApiProvider: IDeviceApiProvider,
-    private val appPrefs: AppPrefs
+    val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -51,8 +49,7 @@ class GroupInitViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     val shouldShowFreePlanNoticeScreen: Boolean get() {
-        return !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
-                && !appPrefs.didStartedGroupOnboarding
+        return userRepo.shouldShowFreePlanNoticeScreen
     }
 
     init {

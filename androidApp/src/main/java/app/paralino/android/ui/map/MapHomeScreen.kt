@@ -101,7 +101,11 @@ private fun MapHomeContent(
         vm.events.collectLatest { event ->
             when (event) {
                 MapHomeScreenEvent.AddGroup -> {
-                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
+                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
+                }
+
+                MapHomeScreenEvent.ShowFreePlanInfo -> {
+                    appState.navController.navigate(AppScreen.MainHome.FreePlanNoticeScreen.route())
                 }
 
                 MapHomeScreenEvent.GroupsPlanLimitReached -> {

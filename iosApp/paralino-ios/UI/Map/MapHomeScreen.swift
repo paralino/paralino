@@ -60,6 +60,9 @@ struct MapHomeScreen: View {
                         onCreateGroup: {
                             path.append(.home(.groupCreate(groupId: nil)))
                         },
+                        openFreePlanInfo: {
+                            path.append(.home(.freePlanInfo))
+                        },
                         openPaywall: {
                             path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
                         },

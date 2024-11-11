@@ -18,7 +18,7 @@ struct FreePlanInfoScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.FreePlanInfoScreenVC(
                     vm: appState.vm,
-                    showBanner: true,
+                    showBanner: false,
                     onContinue: {
                         path[path.count - 1] = .home(.groupCreate(groupId: nil))
                     },
