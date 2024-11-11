@@ -127,7 +127,9 @@ fun GroupInitScreenCore(
             Spacer(modifier = Modifier.size(20.dp))
 
             if (state.personalCode != null) {
-                PersonalCodeItemWithHints {
+                PersonalCodeItemWithHints(
+                    hintDelayMillis = 1000
+                ) {
                     PersonalCodeItem(
                         modifier = this,
                         state = state.personalCode!!,
