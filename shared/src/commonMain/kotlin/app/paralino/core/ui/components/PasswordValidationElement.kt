@@ -51,7 +51,7 @@ private fun PasswordInfoElement(
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 12.dp, vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -61,6 +61,6 @@ private fun PasswordInfoElement(
             contentDescription = null
         )
         Spacer(modifier = Modifier.size(8.dp))
-        Text(text = text, fontSize = 12.sp)
+        Text(text = text, style = MaterialTheme.typography.caption)
     }
 }
