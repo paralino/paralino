@@ -96,7 +96,7 @@ sealed interface ButtonStyle {
 
 	data class SMALL_ACTION(
 		override val defaultModifier: Modifier = Modifier,
-		override val paddingValues: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+		override val paddingValues: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
 		override val shape: CornerBasedShape = RoundedCornerShape(percent = 50),
 		override val iconSize: Dp = 12.dp,
 		override val iconSpacing: Dp = 4.dp,

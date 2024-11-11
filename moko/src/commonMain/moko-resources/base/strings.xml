@@ -88,15 +88,15 @@
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
-    <string name="settings_account_edit_email_button">CHANGE EMAIL</string>
+    <string name="settings_account_edit_email_button">Change email</string>
     <string name="settings_account_edit_email_placeholder_email">New email*</string>
     <string name="settings_account_edit_email_placeholder_password">Current password*</string>
-    <string name="settings_account_edit_password_button">CHANGE PASSWORD</string>
+    <string name="settings_account_edit_password_button">Change password</string>
     <string name="settings_account_edit_password_placeholder_password_new">New password*</string>
     <string name="settings_account_edit_password_placeholder_password_confirm">Confirm password*</string>
     <string name="settings_account_guest_convert">Convert account</string>
     <string name="settings_account_guest_badge">Guest account</string>
-    <string name="settings_account_edit_guest_account_button">CONVERT ACCOUNT</string>
+    <string name="settings_account_edit_guest_account_button">Convert account></string>
     <string name="settings_account_edit_guest_account_info">When you add email and password to your account you will be able to login on another device or recover your account if your delete the app or lose your device.</string>
 
     <string name="settings_account_logout_alert_title">Logout</string>
@@ -282,8 +282,8 @@
 
     <string name="groups_sharing_duration_type_infinite">Always on</string>
 
-    <string name="invite_create_button">CREATE PARALINO.ID</string>
-    <string name="invite_create_new_button">CREATE ALTERNATIVE ID</string>
+    <string name="invite_create_button">Create Paralino.ID</string>
+    <string name="invite_create_new_button">Create alternative ID</string>
     <string name="toast_copy_invite_code">Code copied</string>
     <string name="invite_delete_alert_title">Are you sure you want to disable this code?\n\nYou will not be able to join any new groups but you can always come back and enable Paralino.ID again.</string>
     <string name="invite_manage_empty_description">You don\'t have an active **Paralino.ID**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
@@ -304,9 +304,9 @@
     <string name="invite_code_button_activate">Activate</string>
     <string name="invite_connect_already_member_message">This user is already a member of your group!</string>
 
-    <string name="group_members_item_remove_button">REMOVE</string>
-    <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
-    <string name="group_members_item_request_location_button">REFRESH</string>
+    <string name="group_members_item_remove_button">Remove</string>
+    <string name="group_members_item_clear_location_button">Clear location</string>
+    <string name="group_members_item_request_location_button">Refresh</string>
     <string name="group_members_item_old_location_button">Show last location</string>
     <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
     <string name="group_member_title">Member</string>

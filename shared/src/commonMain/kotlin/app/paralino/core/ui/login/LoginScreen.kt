@@ -141,9 +141,9 @@ fun LoginScreenCore(
             ) {
                 focusManager.clearFocus()
             }
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
-            .padding(bottom = 20.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(bottom = 20.dp),
         verticalArrangement = Arrangement.Center
     ) {
 

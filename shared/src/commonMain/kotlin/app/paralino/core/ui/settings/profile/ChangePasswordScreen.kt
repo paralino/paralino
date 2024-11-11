@@ -69,8 +69,8 @@ fun ChangePasswordScreenCore(
             ) {
                 focusManager.clearFocus()
             }
-            .padding(20.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp),
         verticalArrangement = Arrangement.Center
     ) {
 

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,7 +64,6 @@ import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
-import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
@@ -570,7 +568,7 @@ private fun GroupMemberAction(
         ) {
             Text(
                 text = stringResource(state.type.actionText),
-                style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
+                style = MaterialTheme.typography.caption
             )
         }
         Spacer(modifier = Modifier.size(4.dp))

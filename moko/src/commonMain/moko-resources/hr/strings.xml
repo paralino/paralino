@@ -88,10 +88,10 @@
     <string name="settings_account_edit_profile">Uredi profil</string>
     <string name="settings_account_edit_email">Promijeni e-mail</string>
     <string name="settings_account_edit_password">Promijeni lozinku</string>
-    <string name="settings_account_edit_email_button">PROMIJENI E-MAIL</string>
+    <string name="settings_account_edit_email_button">Promijeni e-mail</string>
     <string name="settings_account_edit_email_placeholder_email">Novi e-mail*</string>
     <string name="settings_account_edit_email_placeholder_password">Trenutna lozinka*</string>
-    <string name="settings_account_edit_password_button">PROMIJENI LOZINKU</string>
+    <string name="settings_account_edit_password_button">Promijeni lozinku</string>
     <string name="settings_account_edit_password_placeholder_password_new">Nova lozinka*</string>
     <string name="settings_account_edit_password_placeholder_password_confirm">Potvrdi lozinku*</string>
     <string name="settings_account_guest_convert">Pretvori račun</string>
@@ -282,8 +282,8 @@
 
     <string name="groups_sharing_duration_type_infinite">Uvijek uključeno</string>
 
-    <string name="invite_create_button">KREIRAJ PARALINO.ID</string>
-    <string name="invite_create_new_button">KREIRAJ DODATNI KOD</string>
+    <string name="invite_create_button">Kreiraj PARALINO.ID</string>
+    <string name="invite_create_new_button">Kreiraj dodatni kod</string>
     <string name="toast_copy_invite_code">Kod kopiran</string>
     <string name="invite_delete_alert_title">Sigurno želiš onemogućiti ovaj kod?\n\nNećeš se moći pridružiti novoj grupi ali uvijek možeš ponovno omogućiti svoj Paralino.ID.</string>
     <string name="invite_manage_empty_description">Nemate aktivan **Paralino.ID**.\nStvorite jedan kako biste se pridružili drugim grupama i sigurno dijelili svoju lokaciju s prijateljima.</string>
@@ -291,7 +291,7 @@
     <string name="invite_create_alternative_description">Dodatni Paralino.ID ti omogućava da imaš više identiteta te da dijeliš različite kodove sa različitim grupama. Trenutno možeš imat **%s** Paralino.ID sa svojom pretplatom.</string>
     <string name="invite_connect_code_placeholder">Korisnikov Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">Dodajete **%1$s** u grupu **%2$s**.\nNakon toga možete sigurno dijeliti svoju lokaciju.</string>
-    <string name="invite_connect_button_addToGroup">DODAJ U GRUPU</string>
+    <string name="invite_connect_button_addToGroup">Dodaj u grupu</string>
     <string name="invite_connect_button_pickGroup">Odaberite grupu</string>
     <string name="invite_connect_alert_pickGroup">Molimo odaberite grupu</string>
     <string name="invite_connect_alert_wrongCode">Molimo provjerite svoj kod ili pokušajte s drugim</string>
@@ -304,9 +304,9 @@
     <string name="invite_code_button_activate">Aktiviraj</string>
     <string name="invite_connect_already_member_message">Ovaj korisnik je već član tvoje grupe!</string>
 
-    <string name="group_members_item_remove_button">UKLONI</string>
-    <string name="group_members_item_clear_location_button">UKLONI LOKACIJU</string>
-    <string name="group_members_item_request_location_button">OSVJEŽI</string>
+    <string name="group_members_item_remove_button">Ukloni</string>
+    <string name="group_members_item_clear_location_button">Ukloni lokaciju</string>
+    <string name="group_members_item_request_location_button">Osvježi</string>
     <string name="group_members_item_old_location_button">Prikaži posljednju lokaciju</string>
     <string name="group_members_marker_circle_info">%s je negdje unutar ovog kruga</string>
     <string name="group_member_title">Korisnik</string>
