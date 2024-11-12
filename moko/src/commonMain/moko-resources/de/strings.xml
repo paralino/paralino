@@ -1,14 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Paralino</string>
     <string name="title_dashboard">Gruppen</string>
     <string name="title_map">Standort</string>
     <string name="title_settings">Einstellungen</string>
-
     <string name="date_name_today">Heute</string>
     <string name="date_name_tomorrow">Morgen</string>
     <string name="date_name_yesterday">Gestern</string>
-
     <string name="button_cancel">Abbrechen</string>
     <string name="button_ok">OK</string>
     <string name="button_done">Fertig</string>
@@ -23,7 +21,6 @@
     <string name="button_cool">Cool</string>
     <string name="button_continue">Fortfahren</string>
     <string name="button_open_settings">Einstellungen öffnen</string>
-
     <string name="alert_title_confirm">Bitte bestätigen</string>
     <string name="alert_sessionExpired_title">Sitzung abgelaufen</string>
     <string name="alert_sessionExpired_message">Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.</string>
@@ -46,12 +43,10 @@
     <string name="error_location_sharing_start_notification_message">Die Standortfreigabe kann nicht gestartet werden!\nBitte öffnen Sie die App erneut!</string>
     <string name="error_device_registration_notification_message">Ihr Gerät kann nicht registriert werden!\nBitte starten Sie die Standortfreigabe neu!</string>
     <string name="error_unverified_member_notification_message">Ihre Mitgliedschaft konnte nicht verifiziert werden. Bitte versuchen Sie, die Daten zu aktualisieren, oder kontaktieren Sie den Gruppenadministrator.</string>
-
     <string name="error_crypto_key_missing">Verschlüsselungsdaten sind unvollständig (%s), bitte versuchen Sie zu aktualisieren.</string>
     <string name="error_crypto_key_missing_user">Ihre kryptografischen Schlüssel sind nicht richtig konfiguriert.</string>
     <string name="error_crypto_encryption_generic">Daten können nicht verschlüsselt werden, bitte versuchen Sie es erneut.</string>
     <string name="error_crypto_decryption_generic">Daten können nicht entschlüsselt werden, bitte versuchen Sie es erneut.</string>
-
     <string name="notifications_sharing_active_title">Freigabe aktiv</string>
     <string name="notifications_sharing_error_title">Freigabe pausiert!</string>
     <string name="notifications_sharing_error_message">Freigabe ist aufgrund folgender Fehler pausiert:\n%s</string>
@@ -61,10 +56,8 @@
     <string name="notifications_channel_push_sync">Benachrichtigungssynchronisierung</string>
     <string name="notifications_channel_data_sync">Datensynchronisierung</string>
     <string name="notifications_channel_info_message">Systeminformationen</string>
-
     <string name="location_banner_info_stop">Freigabe beenden</string>
     <string name="location_banner_fix">Beheben</string>
-
     <string name="dashboard_groups_section_unverified">UNBESTÄTIGT</string>
     <string name="dashboard_groups_add_button">Neue Gruppe erstellen</string>
     <string name="dashboard_groups_join_button">Einer Gruppe beitreten</string>
@@ -74,14 +67,12 @@
     <string name="dashboard_groups_create_info">Oder erstellen Sie Ihre eigene Gruppe</string>
     <string name="dashboard_paralino_id_title">Dies ist Ihre **Paralino.ID**</string>
     <string name="dashboard_paralino_id_description">Teilen Sie es, um einer Gruppe beizutreten</string>
-
     <string name="location_banner_error_gps_off">Gerätestandort ist deaktiviert</string>
     <string name="location_banner_error_no_permission_notifications">Benachrichtigungsberechtigung fehlt</string>
     <string name="location_banner_error_no_permission_location">Standortberechtigung fehlt</string>
     <string name="location_banner_error_no_permission_location_precise">Genaue Standortberechtigung fehlt</string>
     <string name="location_banner_error_no_permission_location_background">Berechtigung für dauerhaften Standortzugriff fehlt</string>
     <string name="location_banner_error_offline">Gerät ist offline</string>
-
     <string name="settings_section_account_title">Konto</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inaktive Codes</string>
@@ -96,9 +87,8 @@
     <string name="settings_account_edit_password_placeholder_password_confirm">Passwort bestätigen*</string>
     <string name="settings_account_guest_convert">Konto umwandeln</string>
     <string name="settings_account_guest_badge">Gastkonto</string>
-    <string name="settings_account_edit_guest_account_button">Konto umwandeln></string>
+    <string name="settings_account_edit_guest_account_button">Konto umwandeln&gt;</string>
     <string name="settings_account_edit_guest_account_info">Wenn Sie Ihrem Konto eine E-Mail und ein Passwort hinzufügen, können Sie sich auf einem anderen Gerät anmelden oder Ihr Konto wiederherstellen, falls Sie die App löschen oder Ihr Gerät verlieren.</string>
-
     <string name="settings_account_logout_alert_title">Abmelden</string>
     <string name="settings_account_logout_alert_message">Möchten Sie sich wirklich abmelden?</string>
     <string name="settings_account_delete_alert_title">Konto löschen</string>
@@ -109,9 +99,7 @@
     <string name="settings_account_delete_alert_cancel_button2">Egal</string>
     <string name="settings_account_delete_alert_cancel_button3">Abbrechen</string>
     <string name="settings_account_delete_alert_cancel_button4">Schließen</string>
-
     <string name="settings_profile_name_placeholder">Ihr Name*</string>
-
     <string name="settings_section_general_title">Info</string>
     <string name="setting_title_share">Mit Freunden teilen</string>
     <string name="setting_title_rate">Geben Sie ein paar Sterne 🌟🌟🌟🌟🌟</string>
@@ -123,7 +111,6 @@
     <string name="setting_title_logout">Abmelden</string>
     <string name="setting_title_delete_account">Konto löschen</string>
     <string name="setting_title_dangerZone">Gefahrenbereich</string>
-
     <string name="setting_title_errorReporting">Anonyme Absturzberichte</string>
     <string name="setting_description_errorReporting">Teilen Sie anonyme Fehlerberichte im Falle eines App-Absturzes oder anderer Probleme.\nDie Protokolle enthalten keine persönlichen Daten, und wir verwenden eine selbst gehostete Infrastruktur, sodass nichts Paralino verlässt!</string>
     <string name="setting_title_locationBoost">Standort-Boost</string>
@@ -132,7 +119,6 @@
     <string name="setting_title_placeActivityThrottle">Ortsaktivität drosseln</string>
     <string name="setting_description_placeActivityThrottle_enabled">Ihr Gerät wird Ortsaktivitätsbenachrichtigungen erstellen, wenn Sie mehr Zeit in oder außerhalb eines bestimmten Ortes verbringen.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Ihr Gerät wird schneller auf Ortsänderungen reagieren und möglicherweise mehrere Ortsaktivitätsbenachrichtigungen in kurzer Zeit erstellen (zum Beispiel, wenn Sie kurz an einem bestimmten Ort vorbeifahren).</string>
-
     <string name="plans_banner_settings_title">Plan upgraden</string>
     <string name="plans_banner_settings_description">Holen Sie sich mehr von allem und bringen Sie Ihr Erlebnis auf die nächste Stufe!</string>
     <string name="plans_banner_settings_action">Jetzt upgraden</string>
@@ -146,12 +132,10 @@
     <string name="plans_management_info_plan">Sie haben derzeit einen **%1$s**-Plan!</string>
     <string name="plans_management_action_manage">Abonnement verwalten oder kündigen</string>
     <string name="plans_management_action_change">Plan ändern</string>
-
     <string name="plan_period_weekly_name">Wöchentlich</string>
     <string name="plan_period_monthly_name">Monatlich</string>
     <string name="plan_period_annually_name">Jährlich</string>
     <string name="plan_period_onetime_name">Lebenslang</string>
-
     <string name="paywall_onboarding_skip_button">Kostenlose Version nutzen</string>
     <string name="paywall_screen_title">Wählen Sie den Plan, der zu Ihnen passt</string>
     <string name="paywall_current_plan_label">Aktueller Plan</string>
@@ -171,7 +155,6 @@
     <string name="paywall_billing_loading_error_alert_message">Abrechnungsverwaltung konnte nicht initialisiert werden, bitte versuchen Sie es erneut.</string>
     <string name="paywall_purchase_error_alert_message">Abrechnungsanfrage konnte nicht durchgeführt werden, bitte versuchen Sie es erneut.</string>
     <string name="paywall_discount_percentage_badge_text">%s RABATT</string>
-
     <string name="paywall_faq_question_how_to_cancel">Wie kann ich mein Abonnement kündigen?</string>
     <string name="paywall_faq_question_upgrade_downgrade">Wie kann ich meinen Plan upgraden oder downgraden?</string>
     <string name="paywall_faq_question_plan_features">Wie viele Mitglieder und Orte kann eine Gruppe in einem %s-Plan haben?</string>
@@ -180,7 +163,6 @@
     <string name="paywall_faq_question_payment_security">Sind meine Zahlungsinformationen sicher?</string>
     <string name="paywall_faq_question_free_trial">Gibt es eine kostenlose Testversion?</string>
     <string name="paywall_faq_question_contact_support">Wie kann ich den Support kontaktieren?</string>
-
     <string name="paywall_faq_answer_how_to_cancel">Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen unter **Abonnement** kündigen und auf **Kündigen** tippen. Sie werden zu den Store-Einstellungen weitergeleitet, wo Sie Ihren Plan kündigen können.</string>
     <string name="paywall_faq_answer_upgrade_downgrade">Um Ihren Plan zu ändern, gehen Sie zu **Abonnements** in Ihren Kontoeinstellungen, tippen Sie dann auf **Ändern** und wählen Sie den gewünschten Plan aus.</string>
     <string name="paywall_faq_answer_plan_features">Jede Gruppe im %1$s-Plan kann %2$s Mitglieder und %3$s Orte haben.</string>
@@ -191,7 +173,6 @@
     <string name="paywall_faq_answer_payment_security_google">Ja, Ihre Zahlung wird direkt vom Google Play Store verarbeitet. Wir verarbeiten oder speichern keine Zahlungsinformationen.</string>
     <string name="paywall_faq_answer_free_trial">Ja, wir bieten eine kostenlose Testphase an, wenn Sie Ihr Abonnement zum ersten Mal starten. Sie können dann Premium-Funktionen kostenlos genießen.</string>
     <string name="paywall_faq_answer_contact_support">Sie können unser Support-Team kontaktieren, indem Sie eine E-Mail an **contact@paralino.com** senden.</string>
-
     <string name="plans_gift_screen_title">Lassen Sie uns feiern!</string>
     <string name="plans_gift_screen_box_title">Early Adopter Geschenk</string>
     <string name="plans_gift_screen_box_message">Sie erhalten einen speziellen lebenslangen **Starter**-Plan, komplett KOSTENLOS!</string>
@@ -199,7 +180,6 @@
     <string name="plans_gift_screen_separator_text">Brauchen Sie mehr?</string>
     <string name="plans_benefit_place_alerts">Unbegrenzte Ortsbenachrichtigungen</string>
     <string name="plans_benefit_sharing">Unbegrenzte Standortfreigabe</string>
-
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">E-Mail*</string>
     <string name="login_placeholder_password">Passwort*</string>
@@ -226,24 +206,20 @@
     <string name="login_signup_terms_privacy_text">Durch die Erstellung eines Kontos stimmen Sie der Datenschutzrichtlinie und den Nutzungsbedingungen zu.</string>
     <string name="login_signup_terms_privacy_privacy">Datenschutzrichtlinie</string>
     <string name="login_signup_terms_privacy_terms">Nutzungsbedingungen</string>
-
     <string name="login_step_logIn">Anmeldung läuft</string>
     <string name="login_step_signUp">Konto wird erstellt</string>
     <string name="login_step_encryption">Verschlüsselung wird eingerichtet</string>
     <string name="login_step_allDone">Erfolg!</string>
     <string name="login_step_user_setup">Benutzer wird vorbereitet</string>
     <string name="login_step_generic_loading">Bitte warten...</string>
-
     <string name="login_step_error_signUp">Fehler beim Erstellen des Kontos</string>
     <string name="login_step_error_encryption_signUp">Fehler beim Einrichten der Verschlüsselung</string>
     <string name="login_step_error_user_setup">Benutzerdaten können nicht vorbereitet werden</string>
     <string name="login_info_password_reset_done">Überprüfen Sie Ihre E-Mail für Anweisungen zum Zurücksetzen des Passworts</string>
-
     <string name="login_step_error_user_setup_signUp">Benutzerdaten können nicht eingerichtet werden, versuchen Sie sich mit den aktuellen Anmeldedaten anzumelden!</string>
     <string name="login_step_error_logIn">Fehler bei der Anmeldung</string>
     <string name="login_step_error_recoverGuest">Gastkonto konnte nicht wiederhergestellt werden</string>
     <string name="login_step_error_encryption_logIn">Ihre Verschlüsselungsschlüssel scheinen beschädigt oder nicht vorhanden zu sein, bitte versuchen Sie es erneut oder setzen Sie Ihr Passwort zurück (Dadurch werden alle Ihre vorherigen Daten gelöscht)</string>
-
     <string name="form_invalid_email_description">Ihre E-Mail-Adresse ist ungültig.</string>
     <string name="form_invalid_credentials_description">Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.</string>
     <string name="form_invalid_email_conflict_description">Bitte verwenden Sie eine andere E-Mail.</string>
@@ -254,14 +230,12 @@
     <string name="form_rules_password_min_length">Mindestens %d Zeichen</string>
     <string name="form_rules_password_min_strength">Enthält verschiedene Zeichen</string>
     <string name="form_rules_password_match">Passwörter stimmen überein</string>
-
     <string name="info_email_confirm">Bitte bestätigen Sie Ihre E-Mail-Adresse!</string>
     <string name="info_email_confirm_alert_title">E-Mail bestätigen</string>
     <string name="info_email_confirm_alert_message">Bestätigen Sie Ihre E-Mail-Adresse, um sicherzustellen, dass Sie sich erneut bei Ihrem Konto anmelden können!\n\nIhre E-Mail:\n**%s**</string>
     <string name="info_email_confirm_alert_button_resend">Bestätigungslink erneut senden</string>
     <string name="info_email_verified">E-Mail erfolgreich verifiziert</string>
     <string name="info_email_check_instructions">Überprüfen Sie Ihre E-Mail für Anweisungen</string>
-
     <string name="groups_sharing_section_title_group">Gruppe</string>
     <string name="groups_sharing_section_title_duration">Dauer</string>
     <string name="groups_sharing_setting_battery_share">Batteriestand</string>
@@ -279,9 +253,7 @@
     <string name="groups_sharing_potential_error_background_location_message">Ihr Standort kann nicht im Hintergrund oder nach einem Neustart Ihres Telefons freigegeben werden!\n\nBitte erlauben Sie den **dauerhaften** Standortzugriff für eine zuverlässige Freigabe.</string>
     <string name="groups_sharing_error_unverified_group_title">Unbestätigte Gruppe oder Mitglied</string>
     <string name="groups_sharing_error_unverified_group_message">Sie können Ihren Standort nicht an eine unbestätigte Gruppe oder ein unbestätigtes Mitglied freigeben.\n\nVersuchen Sie, die Gruppendaten zu aktualisieren.</string>
-
     <string name="groups_sharing_duration_type_infinite">Immer an</string>
-
     <string name="invite_create_button">Paralino.ID erstellen</string>
     <string name="invite_create_new_button">Alternative ID erstellen</string>
     <string name="toast_copy_invite_code">Code kopiert</string>
@@ -303,7 +275,6 @@
     <string name="invite_code_button_share">Code teilen</string>
     <string name="invite_code_button_activate">Aktivieren</string>
     <string name="invite_connect_already_member_message">Dieser Benutzer ist bereits Mitglied Ihrer Gruppe!</string>
-
     <string name="group_members_item_remove_button">Entfernen</string>
     <string name="group_members_item_clear_location_button">Standort löschen</string>
     <string name="group_members_item_request_location_button">Aktualisieren</string>
@@ -339,7 +310,6 @@
     <string name="group_settings_verification_description_off">Gruppenmitglieder können jetzt von anderen Benutzern hinzugefügt werden, und es gibt keine zusätzliche Überprüfung durch den Gruppeninhaber.</string>
     <string name="group_settings_verification_dialog_message_on">Die Aktivierung der Überprüfung löst den erneuten Verifizierungsprozess für alle aktuellen Mitglieder aus.\n\nMitglieder werden kryptografisch verifiziert und niemand sonst kann neue Mitglieder zu dieser Gruppe hinzufügen.</string>
     <string name="group_settings_verification_dialog_message_off">Die Deaktivierung der Mitgliederüberprüfung ermöglicht es anderen, neue Mitglieder zu Ihrer Gruppe hinzuzufügen.</string>
-
     <string name="group_create_start_title">Verbinden</string>
     <string name="group_load_error">Ihre Gruppe konnte nicht geladen werden</string>
     <string name="group_create_name_placeholder">Gruppenname</string>
@@ -355,7 +325,6 @@
     <string name="group_member_device_setup_invalid">Gerät ist nicht vollständig kompatibel und kann nicht erreicht werden</string>
     <string name="group_member_device_request_failed">Anfrage fehlgeschlagen, bitte versuchen Sie es erneut</string>
     <string name="group_member_device_request_disabled">Bitte warten Sie einen Moment, bevor Sie den Standort erneut anfordern 🙏</string>
-
     <string name="group_members_last_active_status_now">Gerade eben</string>
     <string name="group_members_last_active_status_recently_1">Vor 1 Minute</string>
     <string name="group_members_last_active_status_recently_2">Vor 2 Minuten</string>
@@ -369,7 +338,6 @@
     <string name="group_members_status_throttle">Leerlauf</string>
     <string name="group_members_status_too_many_requests">Zu viele Anfragen</string>
     <string name="group_members_status_missing_permissions">Fehlende Berechtigungen</string>
-
     <string name="places_list_add_button">Neuer Ort</string>
     <string name="places_list_screen_title">Orte</string>
     <string name="places_list_screen_empty_info">Sie haben noch keine Orte</string>
@@ -385,7 +353,6 @@
     <string name="place_detail_setting_button_notify_enter">Betreten</string>
     <string name="place_detail_setting_button_notify_exit">Verlassen</string>
     <string name="place_detail_notification_settings_title">Benachrichtigungseinstellungen</string>
-
     <string name="place_notification_enter">%s ist bei %s angekommen</string>
     <string name="place_notification_exit">%s hat %s verlassen</string>
     <string name="place_notification_default">Ihr Ort hat Aktivität</string>
@@ -398,7 +365,6 @@
     <string name="group_member_sharing_started_notification_default">Ihr Freund hat begonnen, seinen Standort freizugeben</string>
     <string name="group_member_sharing_started_notification">%s hat die Standortfreigabe gestartet</string>
     <string name="group_member_current_sharing_started_notification">Ihr Gerät hat die Standortfreigabe gestartet</string>
-
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>
@@ -408,9 +374,7 @@
     <string name="placeholder_unit_speed_mph">%s m/h</string>
     <string name="welcome_screen_info_1">SICHER - PRIVAT - VERSCHLÜSSELT</string>
     <string name="welcome_screen_button_join">BEITRETEN</string>
-
     <string name="welcome_account_edit_profile">Vervollständigen Sie Ihr Profil</string>
-
     <string name="recover_account_screen_error">Konto-Wiederherstellung konnte nicht geladen werden</string>
     <string name="recover_account_screen_title">Konto-Wiederherstellung</string>
     <string name="recover_account_button_recover">Konto wiederherstellen</string>
@@ -425,7 +389,6 @@
     <string name="recover_account_header_recover_not_possible">Ihr Konto hat keine passenden Schlüssel! Bitte setzen Sie Ihr Konto zurück.</string>
     <string name="recover_account_caption_recover_not_possible">Wenn Sie den Schlüssel nicht wiederherstellen können, können Sie Ihr Konto zurücksetzen. **Durch das Zurücksetzen Ihres Kontos werden alle Ihre Daten gelöscht!**</string>
     <string name="recover_account_caption_reset">**Durch das Zurücksetzen Ihres Kontos werden alle Ihre Daten gelöscht!**</string>
-
     <string name="reset_password_screen_title">Passwort zurücksetzen</string>
     <string name="reset_password_success_message">Bitte melden Sie sich erneut an!</string>
     <string name="reset_password_error_token_message">Ihr Link zum Zurücksetzen des Passworts ist abgelaufen, bitte fordern Sie einen neuen an.</string>
@@ -433,7 +396,6 @@
     <string name="raw_data_screen_title">Verschlüsselung</string>
     <string name="raw_data_section_encrypted">Verschlüsselte Daten auf dem Server</string>
     <string name="raw_data_section_decrypted">Entschlüsselte Daten auf dem Gerät</string>
-
     <string name="plan_limit_alert_title">BETA-Version</string>
     <string name="plan_limit_alert_message">Sie haben die maximale Anzahl von %1$s (**%2$d**) während der BETA erreicht.\n\nWeitere Pläne werden bald verfügbar sein.\n\nVielen Dank für Ihre Geduld, während wir unsere Infrastruktur erweitern!</string>
     <string name="plan_limit_contact_owner_alert_title">Planlimit</string>
@@ -442,13 +404,11 @@
     <string name="plan_limit_places_alert_info">Gruppenorte</string>
     <string name="plan_limit_devices_alert_info">Geräte</string>
     <string name="plan_limit_groups_alert_info">Gruppen</string>
-
     <string name="app_version_alert_title">Neues App-Update</string>
     <string name="app_version_alert_message">Eine neue Version von Paralino ist verfügbar, bitte aktualisieren Sie für ein besseres Erlebnis!</string>
     <string name="app_version_alert_title_mandatory">Bitte aktualisieren</string>
     <string name="app_version_alert_message_mandatory">Diese App-Version ist veraltet!\n\nUm die App weiter zu nutzen, aktualisieren Sie bitte auf die neueste Version!</string>
     <string name="app_version_alert_button_update">Aktualisieren</string>
-
     <string name="blocklist_screen_title">Blockliste</string>
     <string name="blocklist_screen_empty_title">Ihre Blockliste ist leer</string>
     <string name="blocklist_screen_title_groups">Blockierte Gruppen</string>
@@ -459,5 +419,4 @@
     <string name="blocklist_unblock_user_alert_message">Durch das Entsperren kann der Benutzer Sie zu neuen Gruppen hinzufügen und Sie werden über Standortaktualisierungen des Benutzers benachrichtigt.</string>
     <string name="blocklist_unblock_alert_button">Entsperren</string>
     <string name="blocklist_unblock_alert_unknown">Unbekannten blockierten Typ entfernen?</string>
-
 </resources>
