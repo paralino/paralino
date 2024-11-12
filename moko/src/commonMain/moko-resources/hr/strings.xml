@@ -8,7 +8,7 @@
     <string name="date_name_tomorrow">Sutra</string>
     <string name="date_name_yesterday">Jučer</string>
     <string name="button_cancel">Odustani</string>
-    <string name="button_ok">Uredu</string>
+    <string name="button_ok">OK</string>
     <string name="button_done">Gotovo</string>
     <string name="button_skip">Preskoči</string>
     <string name="button_retry">Ponovno</string>
@@ -32,14 +32,14 @@
     <string name="error_something_wrong">Nešto nije uredu!</string>
     <string name="error_something_wrong_http">Nešto nije uredu! [%d]</string>
     <string name="error_generic_snacbar">Ups, pokušajte ponovno.</string>
-    <string name="error_still_loading_snackbar">Osvježavanje podata u tijeku,\n**pokušajte ponovno za par sekundi.**</string>
-    <string name="error_location_permission_missing_sheet_message">Lokacijska dozvola je **potrebna** kako bi se uspješno pratila i dijelila vaša lokacija s drugima.</string>
-    <string name="error_location_precise_permission_missing_sheet_message">Molimo omogućite **preciznu lokacijsku dozvolu** kako biste uspješno pratili i dijelili vašu lokaciju s drugima.</string>
-    <string name="error_location_background_permission_missing_sheet_message">Molimo omogućite pristup lokaciji **uvijek** kako biste **pouzdano i uvijek** pratili i dijelili svoju lokaciju s drugima.</string>
+    <string name="error_still_loading_snackbar">Osvježavanje podataka u tijeku,\n**pokušajte ponovno za par sekundi.**</string>
+    <string name="error_location_permission_missing_sheet_message">Dopuštenje za lokaciju je **potrebna** kako bi se uspješno pratila i dijelila vaša lokacija s drugima.</string>
+    <string name="error_location_precise_permission_missing_sheet_message">Molimo omogućite **točno dopuštenje za lokaciju** kako biste uspješno pratili i dijelili vašu lokaciju s drugima.</string>
+    <string name="error_location_background_permission_missing_sheet_message">Molimo omogućite pristup lokaciji **cijelo vrijeme** kako biste **pouzdano i uvijek** pratili i dijelili svoju lokaciju s drugima.</string>
     <string name="error_location_background_permission_missing_sheet_message_android11">Molimo omogućite pristup lokaciji **%s** kako biste **pouzdano i uvijek** pratili i dijelili svoju lokaciju s drugima.</string>
     <string name="error_location_service_missing_sheet_message">Molimo omogućite **lokaciju uređaja** kako biste pronašli svoj uređaj.</string>
     <string name="error_notification_permission_missing_sheet_message">Molimo omogućite **obavijesti** kako biste primili **važna** obavijest za vaša mjesta.</string>
-    <string name="error_location_background_permission_missing_notification_message">Nemoguće pokrenuti dijeljenje lokacije jer nedostaje dozvola za stalnu lokaciju!\nPonovno pokrenite aplikaciju da bi nastavili dijeliti lokaciju!</string>
+    <string name="error_location_background_permission_missing_notification_message">Nemoguće pokrenuti dijeljenje lokacije jer nedostaje dopuštenje za stalnu lokaciju!\nPonovno pokrenite aplikaciju da bi nastavili dijeliti lokaciju!</string>
     <string name="error_location_sharing_start_notification_message">Nemoguće pokrenuti dijeljenje lokacije!\nPonovno pokrenite aplikaciju!</string>
     <string name="error_device_registration_notification_message">Tvoj uređaj nije registriran!\nMolimo ponovno započni dijeljenje lokacije!</string>
     <string name="error_unverified_member_notification_message">Tvoje članstvo u grupi nije potvrđeno.\nPonovno osvježi podatke ili kontaktiraj vlasnika grupe.</string>
@@ -66,7 +66,7 @@
     <string name="dashboard_groups_create_plan_limit">Da kreiraš više grupa, nadogradi svoj plan</string>
     <string name="dashboard_groups_create_info">Ili kreirajte grupu</string>
     <string name="dashboard_paralino_id_title">Ovo je tvoj **Paralino.ID**</string>
-    <string name="dashboard_paralino_id_description">Podijeli ga i pridruži se grupi</string>
+    <string name="dashboard_paralino_id_description">Podijeli i pridruži se grupi</string>
     <string name="location_banner_error_gps_off">Lokacija uređaja je onemogućena</string>
     <string name="location_banner_error_no_permission_notifications">Nedostaje dozvola za obavijesti</string>
     <string name="location_banner_error_no_permission_location">Nedostaje dozvola za lokaciju</string>
