@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d Minute</item>
+        <item quantity="other">%d Minuten</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d Stunde</item>
+        <item quantity="other">%d Stunden</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d Tag</item>
+        <item quantity="other">%d Tage</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d Monat</item>
+        <item quantity="other">%d Monate</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d Jahr</item>
+        <item quantity="other">%d Jahre</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Standort wird mit 1 Gruppe geteilt</item>
+        <item quantity="other">Standort wird mit %d Gruppen geteilt</item>
+    </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one">**%d Gruppe**</item>
+        <item quantity="other">**%d Gruppen**</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">**%d Mitglied**</item>
+        <item quantity="other">**%d Mitglieder**</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one">**%d Ort**</item>
+        <item quantity="other">**%d Orte**</item>
+    </plurals>
+</resources>
