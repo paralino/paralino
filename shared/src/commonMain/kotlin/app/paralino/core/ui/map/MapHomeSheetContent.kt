@@ -90,7 +90,7 @@ fun MapHomeSheetContent(
             .collectLatest {
                 if (it >= BottomSheetPosition.HALF_EXPANDED) {
                     scope.launch {
-                        swipeableState.mapContentListState.animateScrollToItem(0, -10)
+                        swipeableState.mapContentListState.scrollToItem(0, 0)
                     }
                 }
             }
