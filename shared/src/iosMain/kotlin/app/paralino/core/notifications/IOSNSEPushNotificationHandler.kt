@@ -42,7 +42,7 @@ class IOSNSEPushNotificationHandler constructor(
         try {
             startProcessing(executionKey)
         } catch (e: Exception) {
-            logg.tag(executionKey).v("Processing, can't fetch notification")
+            logg.tag("push_notifications").v("Processing, can't fetch notification")
             if (!force) {
                 return null
             }
@@ -78,10 +78,14 @@ class IOSNSEPushNotificationHandler constructor(
                 push = notification!!
             )
         } catch (e: Exception) {
-            logg.tag(executionKey).w("Error fetching push notification - ${e.message}")
+            logg.tag("push_notifications").w("Error fetching push notification - ${e.message}")
             return null
         } finally {
-            stopProcessing(executionKey)
+            try {
+                stopProcessing(executionKey)
+            } catch (e: Exception) {
+                logg.tag("push_notifications").w("Error with stop processing - ${e.message}")
+            }
         }
     }
 
@@ -89,14 +93,20 @@ class IOSNSEPushNotificationHandler constructor(
         push: PushNotificationRaw
     ): IPushNotificationPresenter.Payload? {
 
+        logg.tag("push_notifications").v("Start pre-process")
         val canProcess = notificationPreCheck.preProcess(
             push = push,
             onDelete = null
         )
 
+        logg.tag("push_notifications").v("Pre-processed, can process further: $canProcess")
+
         if (!canProcess) {
+            logg.tag("push_notifications").v("Can not process notification ${push.type}")
             return null
         }
+
+        logg.tag("push_notifications").v("Can process, continue and get payload")
 
         val payload = push.pushType?.processor()?.processAndGetPayload(
             push = push,
@@ -104,6 +114,8 @@ class IOSNSEPushNotificationHandler constructor(
             groupRefreshHook = null,
             onDelete = null
         )
+
+        logg.tag("push_notifications").v("Got payload for ${push.type} - ${payload != null}")
 
         return payload
     }

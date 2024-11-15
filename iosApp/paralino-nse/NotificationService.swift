@@ -40,6 +40,8 @@ class NotificationService: UNNotificationServiceExtension {
                         Logr.v(tag: "notification", message: "Try to fetch new alert notification (\(DeviceUtil.getMemoryPrintString()))")
                         let payload = try? await pushHandler.retrievePushPresenterPayload(notificationId: notificationId, force: true)
                         
+                        Logr.v(tag: "notification", message: "Got push payload: \(payload != nil) - (\(DeviceUtil.getMemoryPrintString()))")
+                        
                         if let payload = payload {
                             self?.inAppLogger.logNotificationPayload(payload: payload)
                         }
