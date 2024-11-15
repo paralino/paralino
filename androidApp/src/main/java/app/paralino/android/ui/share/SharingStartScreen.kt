@@ -18,8 +18,8 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.android.ui.groups.GroupBottomSheetPicker
 import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState

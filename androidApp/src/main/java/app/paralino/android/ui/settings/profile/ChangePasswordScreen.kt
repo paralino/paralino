@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.profile.ChangePasswordScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.getViewModel

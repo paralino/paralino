@@ -8,8 +8,8 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.ui.components.EmojiBottomSheetPicker
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import kotlinx.coroutines.launch

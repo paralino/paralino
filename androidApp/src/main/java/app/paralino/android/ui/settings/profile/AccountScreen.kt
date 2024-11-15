@@ -9,8 +9,8 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.MR
 import app.paralino.core.presentation.settings.SettingsViewModel
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.profile.AccountScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.getViewModel

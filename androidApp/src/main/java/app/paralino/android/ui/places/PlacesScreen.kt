@@ -27,8 +27,8 @@ import app.paralino.core.models.data
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.theme.AppTheme
