@@ -15,12 +15,15 @@ struct MapHomeScreen: View {
     @StateObject var mapState: MapHomeState
     @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         ZStack {
             if mapState.uiState is MapHomeScreenState.Ready {
                 ComposeRepresentable {
                     ScreensIOS.shared.home.MapSheet(
                         vm: mapState.vm,
+                        paddingValues: safeAreaInsets,
                         initialUiState: mapState.uiState,
                         trackMarker: { data in
                             mapState.vm.trackMarker(markerData: data)
@@ -36,7 +39,7 @@ struct MapHomeScreen: View {
                             }
                         },
                         onSheetOffsetChange: { offset in
-                            mapState.bottomSafeArea = max(CGFloat(offset.floatValue) - 35, 0)
+                            mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)
                         },
                         onGroupPickerClick: {
                             groupPicker = mapState.vm.getGroupPickerState()

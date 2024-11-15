@@ -152,7 +152,7 @@ private fun PlacesScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = contentPadding.calculateTopPadding() + 20.dp,
-                bottom = contentPadding.calculateBottomPadding() + 100.dp,
+                bottom = contentPadding.calculateBottomPadding() + 40.dp,
                 start = 20.dp,
                 end = 20.dp
             ),

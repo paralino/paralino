@@ -32,6 +32,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
@@ -127,7 +128,8 @@ private fun rememberBottomSheetNestedScrollConnection(
                 source: NestedScrollSource
             ): Offset {
                 val delta = available.y
-                val calculatedPosition = swipeableState.state.anchors.closestAnchor(swipeableState.offset + delta)
+                val calculatedPosition =
+                    swipeableState.state.anchors.closestAnchor(swipeableState.offset + delta)
                 if (calculatedPosition != null && calculatedPosition < BottomSheetPosition.HIDDEN) {
                     return swipeableState.state.dispatchRawDelta(delta).toOffset()
                 } else {
@@ -204,6 +206,16 @@ class SwipeableSheetState internal constructor(
 
     var screenHeightPixels: Float = 0f
         private set
+
+    val contentBottomPadding: Dp
+        get() {
+            val fixedPadding = ((1f - maxSheetContentSizePercent) * screenHeightPixels).dp
+            val extraPadding = when (DeviceType.current) {
+                DeviceType.Android -> 0.dp
+                DeviceType.iOS -> 20.dp
+            }
+            return fixedPadding + extraPadding
+        }
 
     suspend fun settle(velocity: Float): Float {
         val previousValue = this.currentValue

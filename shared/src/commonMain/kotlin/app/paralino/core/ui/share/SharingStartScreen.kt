@@ -238,7 +238,7 @@ fun SharingStartScreenCore(
                 .padding(
                     start = 20.dp,
                     end = 20.dp,
-                    bottom = it.calculateBottomPadding() + 100.dp,
+                    bottom = it.calculateBottomPadding() + 60.dp,
                 ),
         ) {
 

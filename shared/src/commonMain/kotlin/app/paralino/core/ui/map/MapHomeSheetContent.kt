@@ -194,7 +194,7 @@ fun MapHomeSheetContent(
                 start = 20.dp,
                 end = 20.dp,
                 top = 8.dp,
-                bottom = ((1f - swipeableState.maxSheetContentSizePercent) * swipeableState.screenHeightPixels).dp
+                bottom = swipeableState.contentBottomPadding
             )
         ) {
             this.stickyHeader(key = "top_gradient") {

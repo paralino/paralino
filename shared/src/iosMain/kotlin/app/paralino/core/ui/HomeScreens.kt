@@ -108,6 +108,7 @@ object HomeScreens {
     fun GroupDetailScreenVC(
         vm: GroupDetailViewModel,
         groupId: String?,
+        paddingValues: AppleScreenPaddingValues,
         openMemberAdd: () -> Unit,
         openMap: () -> Unit,
         openPlaces: () -> Unit,
@@ -126,7 +127,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 groupId = groupId,
-                contentPadding = PaddingValues(bottom = 30.dp),
+                contentPadding = paddingValues.toComposePaddingValues(),
                 openMemberAdd = openMemberAdd,
                 openMap = openMap,
                 openPlaces = openPlaces,
@@ -206,6 +207,7 @@ object HomeScreens {
     @OptIn(ExperimentalComposeUiApi::class)
     fun MapSheet(
         vm: MapHomeViewModel,
+        paddingValues: AppleScreenPaddingValues,
         initialUiState: MapHomeScreenState,
         trackMarker: (FocusedMarkerData) -> Unit,
         onOpenPlacesScreen: () -> Unit,
@@ -308,11 +310,12 @@ object HomeScreens {
                         )
 
                         MapHomeScreenElements(
-                            modifier = Modifier.padding(top = 50.dp),
+                            modifier = Modifier.padding(top = paddingValues.top.dp),
                             state = uiState,
-                            sheetPeekHeight = (this.maxHeight - bottomOffset)
-                                .plus(if (sheetState.settledValue == BottomSheetPosition.HIDDEN) 35.dp else 0.dp)
-                                .coerceIn(0.dp, this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
+                            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
+                                minimumValue = if (sheetState.currentValue == BottomSheetPosition.HIDDEN) paddingValues.bottom.dp else 0.dp,
+                                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                            ),
                             onGroupPickerClick = onGroupPickerClick,
                             onGroupDetailsClick = onGroupDetailsClick,
                             onSharingStartClick = onSharingStartClick,
@@ -347,6 +350,7 @@ object HomeScreens {
     @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlacesScreenVC(
         vm: PlacesViewModel,
+        paddingValues: AppleScreenPaddingValues,
         addNewPlace: () -> Unit,
         openPaywall: () -> Unit,
         openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
@@ -363,7 +367,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 userScrollEnabled = userScroll,
-                contentPadding = PaddingValues(bottom = 30.dp),
+                contentPadding = paddingValues.toComposePaddingValues(),
                 askNotificationPermission = askNotificationPermission,
                 addNewPlace = addNewPlace,
                 openPaywall = openPaywall,
@@ -389,6 +393,7 @@ object HomeScreens {
     @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlaceDetailScreenVC(
         vm: PlaceDetailViewModel,
+        paddingValues: AppleScreenPaddingValues,
         openPlaceRawDataScreen: () -> Unit,
         openPlaceEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
@@ -404,7 +409,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 userScrollEnabled = userScroll,
-                contentPadding = PaddingValues(bottom = 30.dp),
+                contentPadding = paddingValues.toComposePaddingValues(),
                 onNavigateBack = onNavigateBack,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceEditScreen = openPlaceEditScreen,

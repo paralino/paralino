@@ -15,6 +15,8 @@ struct GroupDetailScreen: View {
     @StateObject var appState: ViewModelFactoryIOS<GroupDetailViewModel>
     @State var alertDialog: AlertDialogData? = nil
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
@@ -22,6 +24,12 @@ struct GroupDetailScreen: View {
                 ScreensIOS.shared.home.GroupDetailScreenVC(
                     vm: appState.vm,
                     groupId: appState.vm.groupId,
+                    paddingValues: AppleScreenPaddingValues(
+                        start: safeAreaInsets.start,
+                        top: 0,
+                        end: safeAreaInsets.end,
+                        bottom: safeAreaInsets.bottom
+                    ),
                     openMemberAdd: {
                         path.append(.home(HomeGraph.memberInvite(groupId: appState.vm.groupId, code: nil, isOnboarding: false)))
                     },

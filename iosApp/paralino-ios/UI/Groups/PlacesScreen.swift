@@ -15,12 +15,20 @@ struct PlacesScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState: PlacesState
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.home.PlacesScreenVC(
                     vm: appState.vm,
+                    paddingValues: AppleScreenPaddingValues(
+                        start: safeAreaInsets.start,
+                        top: 0,
+                        end: safeAreaInsets.end,
+                        bottom: safeAreaInsets.bottom
+                    ),
                     addNewPlace: {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, lat: nil, lng: nil)))
                     },
