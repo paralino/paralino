@@ -92,6 +92,8 @@ class RegisterDeviceForSharingUseCase constructor(
                     groupId = groupId,
                     deviceId = appPrefs.deviceId,
                     deviceData = deviceData,
+                    // TODO pass location data already
+                    locationData = null,
                     status = status,
                     groupKeyVersion = groupKey.version,
                     notify = notifyOthers,
