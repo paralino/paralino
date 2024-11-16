@@ -335,7 +335,12 @@ class PaywallViewModel(
 
         return PaywallScreenState(
             canShowMoreInfo = AppBuildConfig.instance.isDevMode,
-            plans = listOfNotNull(freeUiPlan.takeIf { sourceType == BillingScreenSourceType.ONBOARDING }) + uiPlans,
+            plans = buildList {
+                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
+                    add(freeUiPlan)
+                }
+                addAll(uiPlans)
+            },
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
