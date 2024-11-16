@@ -165,7 +165,8 @@ class LocationInitHandler constructor(
             accuracy = this.accuracy,
             timeUTC = this.time.millisToDateTimeUTC().toLocalString(),
             speed = if (this.hasSpeed()) this.speed else null,
-            altitude = if (this.hasAltitude()) this.altitude.toFloat() else null
+            altitude = if (this.hasAltitude()) this.altitude.toFloat() else null,
+            isMasked = false
         )
     }
 }

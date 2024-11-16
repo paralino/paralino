@@ -112,7 +112,9 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
-                            if(verification is VerificationResult.Verified) {
+                            if (it.isMasked) {
+                                CryptoResource.NotInitialized
+                            } else if(verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)

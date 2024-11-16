@@ -88,7 +88,7 @@ class MemberDeviceStatusProcessor(
             logg.d("Clearing old locations for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
-                    remote.clearLocation(it.id)
+                    remote.clearLocation(groupId = it.groupId, locationId = it.id)
                 } catch (e: Exception) {
                     logg.w("Error while clearing old location", e)
                 }

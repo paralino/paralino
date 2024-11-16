@@ -693,7 +693,7 @@ class MapHomeViewModel constructor(
             return
         }
 
-        clearUserLocation.clearLocation(state.location.locationId)
+        clearUserLocation.clearLocation(groupId = state.memberState.groupId, locationId = state.location.locationId)
             .onStart {
                 updateReadyState { readyState ->
                     readyState.copy(

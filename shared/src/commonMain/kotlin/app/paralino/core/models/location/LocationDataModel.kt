@@ -20,7 +20,8 @@ data class LocationDataModel constructor(
     val timeUTC: String? = null,
     val endTimeUTC: String? = null,
     val speed: Float? = null,
-    val altitude: Float? = null
+    val altitude: Float? = null,
+    val isMasked: Boolean = false
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
     val isAccurate get() = accuracy < 20f
