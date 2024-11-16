@@ -109,7 +109,6 @@ fun CreatePlaceScreenCore(
                 Payload.Loading -> {}
                 is Payload.Success -> {
                     ScaffoldBottomBarButton(
-                        modifier = Modifier.fillMaxSize(),
                         buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
                         buttonText = if (finalState.data.isNewPlace) {
                             stringResource(MR.strings.places_create_button_create)
