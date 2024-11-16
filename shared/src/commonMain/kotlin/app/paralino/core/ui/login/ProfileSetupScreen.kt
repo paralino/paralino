@@ -40,7 +40,7 @@ fun ProfileSetupScreenCore(
             state = uiState,
             onImageClick = { onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.userEmojis)) },
             onNameChange = { vm.onNameChange(it) },
-            onCreateGroupClick = { vm.proceed() }
+            onConfirm = { vm.proceed() }
         )
     }
 }

@@ -37,6 +37,7 @@ import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
 import app.paralino.core.presentation.invite.input.MemberInviteScreenState
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
@@ -86,10 +87,7 @@ fun MemberInviteScreenCore(
         onCodeChange = {
             vm.codeChanged(it)
         },
-        onLoadCode = {
-            vm.addOrLoadMember()
-        },
-        onAddMember = {
+        onConfirm = {
             vm.addOrLoadMember()
         },
         onPickGroup = {
@@ -106,68 +104,69 @@ private fun MemberInviteScreen(
     modifier: Modifier = Modifier,
     state: MemberInviteScreenState,
     onCodeChange: (String) -> Unit,
-    onLoadCode: () -> Unit,
-    onAddMember: () -> Unit,
+    onConfirm: () -> Unit,
     onPickGroup: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            }
-            .padding(20.dp),
-        verticalArrangement = if (state is MemberInviteScreenState.Empty) Arrangement.Center else Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-
-        if (state is MemberInviteScreenState.Loaded) {
-            SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_user))
+    ActionScaffold(
+        modifier = modifier.fillMaxSize(),
+        buttonState = AppButtonState.loadingStateWithCheck(state.actionLoading),
+        buttonText = when (state) {
+            is MemberInviteScreenState.Empty -> stringResource(MR.strings.button_next)
+            is MemberInviteScreenState.Loaded -> stringResource(MR.strings.invite_connect_button_addToGroup)
+        },
+        buttonIcon = if (state is MemberInviteScreenState.Loaded) {
+            CoreAppIcons.PersonAdd.asPainterResource()
         } else {
-            Text(
-                modifier = Modifier.padding(bottom = 40.dp),
-                text = stringResource(MR.strings.invite_connect_title).annotatedBold(),
-                style = MaterialTheme.typography.h6
-            )
+            null
+        },
+        onConfirm = {
+            focusManager.clearFocus()
+            onConfirm()
         }
-
-        MainInputField(
-            text = state.code,
-            textStyle = MaterialTheme.typography.h4.copy(
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            ),
-            hint = stringResource(MR.strings.invite_connect_code_placeholder),
-            hasError = state.hasInputError,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done,
-            focusManager = focusManager,
-            onInputChange = onCodeChange
-        )
-
-        when (state) {
-            is MemberInviteScreenState.Empty -> {
-                Spacer(modifier = Modifier.size(40.dp))
-                FilledButton(
-                    style = ButtonStyle.BIG,
-                    state = AppButtonState.loadingStateWithCheck(state.actionLoading),
-                    icon = null,
-                    onClick = {
-                        focusManager.clearFocus()
-                        onLoadCode()
-                    }
+    ) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
                 ) {
-                    Text(text = stringResource(MR.strings.button_next))
+                    focusManager.clearFocus()
                 }
+                .verticalScroll(rememberScrollState())
+                .padding(it)
+                .padding(20.dp),
+            verticalArrangement = if (state is MemberInviteScreenState.Empty) Arrangement.Center else Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+
+            if (state is MemberInviteScreenState.Loaded) {
+                SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_user))
+            } else {
+                Text(
+                    modifier = Modifier.padding(bottom = 40.dp),
+                    text = stringResource(MR.strings.invite_connect_title).annotatedBold(),
+                    style = MaterialTheme.typography.h6
+                )
             }
 
-            is MemberInviteScreenState.Loaded -> {
+            MainInputField(
+                text = state.code,
+                textStyle = MaterialTheme.typography.h4.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center
+                ),
+                hint = stringResource(MR.strings.invite_connect_code_placeholder),
+                hasError = state.hasInputError,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                focusManager = focusManager,
+                onInputChange = onCodeChange
+            )
+
+            if (state is MemberInviteScreenState.Loaded) {
 
                 Spacer(modifier = Modifier.size(20.dp))
                 Row(
@@ -225,17 +224,6 @@ private fun MemberInviteScreen(
                         ).annotatedBold(),
                         style = MaterialTheme.typography.body2
                     )
-                }
-
-                Spacer(modifier = Modifier.size(40.dp))
-
-                FilledButton(
-                    style = ButtonStyle.BIG,
-                    state = AppButtonState.loadingStateWithCheck(state.actionLoading),
-                    icon = CoreAppIcons.PersonAdd.asPainterResource(),
-                    onClick = onAddMember
-                ) {
-                    Text(text = stringResource(MR.strings.invite_connect_button_addToGroup))
                 }
             }
         }

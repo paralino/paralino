@@ -48,6 +48,7 @@ import app.paralino.core.presentation.share.SharingStartScreenUiEvent
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.ConditionErrorItem
@@ -194,34 +195,12 @@ fun SharingStartScreenCore(
         vm.onEvent(SharingStartScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 
-    Scaffold(
+    ActionScaffold(
         modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.background)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { }
-                    )
-                    .padding(bottom = 20.dp, top = 8.dp)
-                    .padding(horizontal = 20.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                FilledButton(
-                    modifier = Modifier,
-                    style = ButtonStyle.BIG(iconSize = 24.dp),
-                    state = AppButtonState.CONTENT,
-                    icon = if (state.canShare) CoreAppIcons.ShareLocation.asPainterResource()
-                    else CoreAppIcons.NotListedLocation.asPainterResource(),
-                    onClick = { vm.startSharing() }
-                ) {
-                    Text(text = stringResource(MR.strings.groups_sharing_button_start))
-                }
-            }
-        },
+        buttonText = stringResource(MR.strings.groups_sharing_button_start),
+        buttonIcon = if (state.canShare) CoreAppIcons.ShareLocation.asPainterResource()
+        else CoreAppIcons.NotListedLocation.asPainterResource(),
+        onConfirm = { vm.startSharing() },
     ) {
         val focusManager = LocalFocusManager.current
         Column(

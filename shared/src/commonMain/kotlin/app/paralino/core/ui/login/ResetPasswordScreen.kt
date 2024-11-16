@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -28,12 +27,11 @@ import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenSta
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
-import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
@@ -87,26 +85,29 @@ fun ResetPasswordScreenCore(
         }
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            }
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center
+    ActionScaffold(
+        modifier = Modifier.fillMaxSize(),
+        buttonState = AppButtonState.loadingStateWithCheck(uiState.actionLoading),
+        buttonText = stringResource(MR.strings.settings_account_edit_password_button),
+        buttonIcon = null,
+        onConfirm = {
+            focusManager.clearFocus()
+            vm.proceed()
+        }
     ) {
-
-        Spacer(modifier = Modifier.size(30.dp))
-
         Column(
             Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
+                .verticalScroll(rememberScrollState())
+                .padding(it)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.Top
         ) {
 
             PasswordInputField(
@@ -136,26 +137,9 @@ fun ResetPasswordScreenCore(
                 doPasswordsMatch = uiState.passwordValidation.passwordsMatch
             )
 
-            Spacer(modifier = Modifier.size(80.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
-            Spacer(modifier = Modifier.size(10.dp))
-            FilledButton(
-                style = ButtonStyle.BIG,
-                state = if (uiState.actionLoading == null)
-                    AppButtonState.CONTENT
-                else
-                    AppButtonState.loadingStateWithCheck(uiState.actionLoading!!),
-                onClick = {
-                    focusManager.clearFocus()
-                    vm.proceed()
-                }
-            ) {
-                Text(text = stringResource(MR.strings.settings_account_edit_password_button))
-            }
-
         }
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
