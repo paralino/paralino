@@ -320,10 +320,10 @@ private fun PlanCardDetails(
                     )
                     if (state.isCurrentPlan) {
                         Spacer(modifier = Modifier.weight(1f))
-                        PlanInfoBadge(text = stringResource(MR.strings.paywall_current_plan_label))
+                        PlanInfoBadge(text = stringResource(MR.strings.paywall_current_plan_label), onClick = onClick)
                     } else if (state.hasSpecialOffer) {
                         Spacer(modifier = Modifier.weight(1f))
-                        PlanInfoBadge(text = stringResource(MR.strings.paywall_special_offer_label))
+                        PlanInfoBadge(text = stringResource(MR.strings.paywall_special_offer_label), onClick = onClick)
                     }
                 }
 
@@ -363,10 +363,11 @@ private fun PlanCardDetails(
 @Composable
 private fun PlanInfoBadge(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    onClick: () -> Unit
 ) {
     SmallActionButton(
-        modifier = Modifier,
+        modifier = modifier,
         backgroundColor = AppColors.accent.copy(alpha = 0.8f),
         contentColor = AppColors.lightBackground,
         shape = RoundedCornerShape(percent = 25),
@@ -378,7 +379,7 @@ private fun PlanInfoBadge(
                 textAlign = TextAlign.Center
             )
         },
-        onClick = null
+        onClick = onClick
     )
 }
 

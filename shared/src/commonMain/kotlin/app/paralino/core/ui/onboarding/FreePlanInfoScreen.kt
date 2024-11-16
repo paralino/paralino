@@ -175,7 +175,8 @@ fun FreePlanInfoScreenCore(
                         Text(
                             text = stringResource(MR.strings.plans_gift_screen_box_title),
                             style = MaterialTheme.typography.h5,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
