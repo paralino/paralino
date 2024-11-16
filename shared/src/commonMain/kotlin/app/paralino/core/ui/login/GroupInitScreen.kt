@@ -26,13 +26,13 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
-import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
@@ -127,9 +127,7 @@ fun GroupInitScreenCore(
             Spacer(modifier = Modifier.size(20.dp))
 
             if (state.personalCode != null) {
-                PersonalCodeItemWithHints(
-                    hintDelayMillis = 1000
-                ) {
+                PersonalCodeItemWithHints {
                     PersonalCodeItem(
                         modifier = this,
                         state = state.personalCode!!,

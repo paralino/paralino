@@ -229,7 +229,7 @@ fun PersonalCodeItem(
             Text(
                 modifier = Modifier
                     .zIndex(0f)
-                    .offset(y = animateDpAsState((1f - animatedInfoText).times(-30).dp).value)
+                    .offset(y = animateDpAsState((1f - animatedInfoText).times(-200).dp).value)
                     .padding(horizontal = 30.dp)
                     .shadow(
                         elevation = 8.dp,
