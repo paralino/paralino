@@ -22,7 +22,7 @@ struct ConvertAccountScreen: View {
                     onNavigateBack: { path.removeLast() }
                 )
             }
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_account_guest_convert.localizedString())
         }
     }

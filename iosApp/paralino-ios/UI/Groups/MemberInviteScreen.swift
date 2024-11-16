@@ -31,7 +31,7 @@ struct MemberInviteScreen: View {
                     }
                 )
             }
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .toolbar {
             if appState.isOnboarding {

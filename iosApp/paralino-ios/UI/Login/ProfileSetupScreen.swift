@@ -23,7 +23,7 @@ struct ProfileSetupScreen: View {
                     bottomSheet = screen
                 }
             }
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.onImageChange(image: image)
