@@ -39,8 +39,8 @@ struct SettingsScreen: View {
                     openProfileRawScreen: {
                         path.append(.settings(.rawData(type: .UserPresentation())))
                     },
-                    openLicences: {
-                        path.append(.settings(.licences))
+                    openGeneralInfo: {
+                        path.append(.settings(.generalInfo))
                     },
                     openAppStatus: {
                         path.append(.settings(.appStatusDebug))

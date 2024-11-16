@@ -70,6 +70,7 @@ abstract class IDeviceApiProvider(
 
     val batteryLevel: Int? get() = if (_batteryLevel in 0..100) _batteryLevel else null
     val clientHeaderValue: String get() = "${packageName}/${deviceOSVersion}/${appVersionCode}/${appVersion}"
+    val appVersionText get() = "v$appVersion ($appVersionCode)"
 
     protected abstract val _batteryLevel: Int
     abstract val isCharging: Boolean

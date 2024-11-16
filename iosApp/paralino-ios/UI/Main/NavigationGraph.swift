@@ -48,4 +48,5 @@ enum SettingsGraph: Hashable {
     case rawData(type: RawPresentationDataType)
     case appStatusDebug
     case licences
+    case generalInfo
 }

@@ -15,7 +15,6 @@ data class AccountScreenState constructor(
     val versionName: String,
     val alertDialog: MainAlertDialog? = null,
     val boostTime: String? = null,
-    val isErrorReportingEnabled: Boolean,
     val placeActivityThrottleEnabled: Boolean,
     val userPlan: PlanConfig
 ) {
@@ -46,6 +45,5 @@ sealed class AccountScreenUiEvent() {
     data object ConfirmSendEmailVerification: AccountScreenUiEvent()
     data object ToggleLocationBoost: AccountScreenUiEvent()
     data object TogglePlaceActivityThrottle: AccountScreenUiEvent()
-    data object ToggleErrorReporting: AccountScreenUiEvent()
     data class Copy(val content: String): AccountScreenUiEvent()
 }

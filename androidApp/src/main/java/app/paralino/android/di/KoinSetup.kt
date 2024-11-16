@@ -66,6 +66,7 @@ import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
+import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
@@ -194,5 +195,6 @@ object KoinSetup {
         viewModel { SubscriptionViewModel(get(), get(), get()) }
         viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), appPrefs) }
+        viewModel { GeneralInfoViewModel(get(), get()) }
     }
 }

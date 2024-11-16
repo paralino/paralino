@@ -62,8 +62,8 @@ fun SettingsScreen(
                     )
                 )
             },
-            openLicences = {
-                appState.navController.navigate(AppScreen.Settings.Licences.routeSignature)
+            openGeneralInfo = {
+                appState.navController.navigate(AppScreen.Settings.GeneralInfo.routeSignature)
             },
             openAppStatus = {
                 appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
@@ -88,12 +88,9 @@ fun MainPreview() {
     AppTheme {
         Surface {
             SettingSectionInfo(
-                appVersion = "v1.2.3 (43)",
-                isErrorReportingEnabled = true,
-                onLicencesClick = {},
                 onAppStatusClick = {},
+                onGeneralInfoClick = {},
                 onShareApp = {},
-                toggleErrorReporting = {},
             )
         }
     }

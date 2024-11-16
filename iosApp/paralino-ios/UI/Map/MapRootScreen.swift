@@ -36,6 +36,7 @@ struct MapRootScreen: View {
                             case .licences: LicencesScreen(path: $mainAppState.userReadyGraph)
                             case .subscriptions: SubscriptionsScreen(path: $mainAppState.userReadyGraph)
                             case .paywall(let groupId, let type): PaywallScreen(path: $mainAppState.userReadyGraph, state: PaywallScreenState(groupId: groupId, type: type))
+                            case .generalInfo: GeneralInfoScreen(path: $mainAppState.userReadyGraph)
                             }
                         case let .home(homeGraph):
                             switch homeGraph {

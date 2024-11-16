@@ -244,6 +244,10 @@ sealed class AppScreen {
         object AppStatusDebug : AppScreen() {
             override val routeSignature: String = "app-status"
         }
+
+        object GeneralInfo : AppScreen() {
+            override val routeSignature: String = "general-info"
+        }
     }
 
     object Common {

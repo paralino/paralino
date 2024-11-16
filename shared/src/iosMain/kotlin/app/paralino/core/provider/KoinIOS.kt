@@ -49,6 +49,7 @@ import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
+import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.repo.LocationSharingManager
@@ -225,6 +226,7 @@ object KoinIOS {
             factory { SubscriptionViewModel(get(), get(), get()) }
             factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), appPrefs) }
+            factory { GeneralInfoViewModel(get(), get()) }
         }
     }
 
@@ -290,5 +292,6 @@ object KoinIOS {
         val subscriptionVM get() = get<SubscriptionViewModel>()
         fun paywallVM(type: BillingScreenSourceType) = get<PaywallViewModel> { parametersOf(type) }
         val planInfoVM get() = get<PlanInfoViewModel>()
+        val generalInfoVM get() = get<GeneralInfoViewModel>()
     }
 }

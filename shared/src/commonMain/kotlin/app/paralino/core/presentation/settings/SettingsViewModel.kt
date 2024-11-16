@@ -124,10 +124,9 @@ class SettingsViewModel(
                             canUseEmail = remoteConfig?.isEmailEnabled ?: false,
                             logoutState = null,
                             deleteAccountState = null,
-                            versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
+                            versionName = deviceApiProvider.appVersionText,
                             boostTime = null,
                             placeActivityThrottleEnabled = appPrefs.placeActivityThrottle,
-                            isErrorReportingEnabled = appPrefs.errorReporting,
                             userPlan = userPlans.highestValidPlanConfig
                         )
                     )
@@ -225,17 +224,6 @@ class SettingsViewModel(
         }
     }
 
-    private fun toggleErrorReporting() {
-        _accountState.update {
-            it.mapSuccess {
-                val newValue = !it.isErrorReportingEnabled
-                logg.v("Toggle error reporting: $newValue")
-                appPrefs.errorReporting = newValue
-                it.copy(isErrorReportingEnabled = newValue)
-            }
-        }
-    }
-
     private fun onShowDialog(dialog: MainAlertDialog?) {
         _accountState.update { it.mapSuccess { it.copy(alertDialog = dialog) } }
     }
@@ -251,7 +239,6 @@ class SettingsViewModel(
             AccountScreenUiEvent.LogoutConfirm -> logout()
             AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
             AccountScreenUiEvent.TogglePlaceActivityThrottle -> togglePlaceActivityThrottle()
-            AccountScreenUiEvent.ToggleErrorReporting -> toggleErrorReporting()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
             AccountScreenUiEvent.SendEmailVerification -> {
                 _accountState.update {

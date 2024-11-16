@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +45,6 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.utils.Emojis
@@ -63,7 +61,7 @@ fun SettingsScreenCore(
     openPersonalCodes: () -> Unit,
     openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
-    openLicences: () -> Unit,
+    openGeneralInfo: () -> Unit,
     openAppStatus: () -> Unit,
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
@@ -173,31 +171,20 @@ fun SettingsScreenCore(
         }
 
         SettingSectionInfo(
-            appVersion = accountState.data?.versionName ?: "",
-            isErrorReportingEnabled = readyState?.isErrorReportingEnabled ?: false,
-            onLicencesClick = { openLicences() },
-            onAppStatusClick = { openAppStatus() },
-            onShareApp = onShareApp,
-            toggleErrorReporting = {
-                viewModel.onEvent(AccountScreenUiEvent.ToggleErrorReporting)
-            }
+            onAppStatusClick = openAppStatus,
+            onGeneralInfoClick = openGeneralInfo,
+            onShareApp = onShareApp
         )
     }
 }
 
 @Composable
 fun SettingSectionInfo(
-    appVersion: String,
-    isErrorReportingEnabled: Boolean,
-    onLicencesClick: () -> Unit,
+    onGeneralInfoClick: () -> Unit,
     onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
-    toggleErrorReporting: () -> Unit
 ) {
-    val uriHandler = LocalUriHandler.current
     Column {
-        SettingsSectionHeader(name = stringResource(MR.strings.settings_section_general_title))
-
         if (AppBuildConfig.instance.hasPreviewFeatures) {
             SettingsActionItem(
                 name = "App status",
@@ -215,6 +202,14 @@ fun SettingSectionInfo(
                 onShareApp(BackendResourceIDs.homeUrl)
             }
         }
+
+        SettingsActionItem(
+            name = stringResource(MR.strings.settings_section_general_title),
+            icon = CoreAppIcons.LibraryBooks.asPainterResource()
+        ) {
+            onGeneralInfoClick()
+        }
+
 //    SettingsActionItem(
 //        name = stringResource(MR.strings.setting_title_help),
 //        icon = AppIcons.Help
@@ -225,44 +220,6 @@ fun SettingSectionInfo(
 //        ) {
 //            uriHandler.openUri(BackendResourceIDs.sourceCodeUrl)
 //        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_privacy),
-            icon = CoreAppIcons.PrivacyTip.asPainterResource(),
-            type = SettingsActionItemType.Link
-        ) {
-            uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl)
-        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_terms),
-            icon = CoreAppIcons.PrivacyTip.asPainterResource(),
-            type = SettingsActionItemType.Link
-        ) {
-            uriHandler.openUri(BackendResourceIDs.termsOfUseUrl)
-        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_libraries),
-            icon = CoreAppIcons.LibraryBooks.asPainterResource()
-        ) {
-            onLicencesClick()
-        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_errorReporting),
-            description = stringResource(MR.strings.setting_description_errorReporting),
-            icon = CoreAppIcons.LibraryBooks.asPainterResource(),
-            type = SettingsActionItemType.Switch(isErrorReportingEnabled),
-            onClick = toggleErrorReporting
-        )
-
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = appVersion,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                style = MaterialTheme.typography.caption,
-                textAlign = TextAlign.Center
-            )
-        }
     }
 }
 
