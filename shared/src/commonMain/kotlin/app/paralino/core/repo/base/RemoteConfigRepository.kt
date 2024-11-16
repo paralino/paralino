@@ -42,11 +42,11 @@ class RemoteConfigRepository(
             .distinctUntilChanged()
     }
 
-    suspend fun refreshConfig() {
+    suspend fun refreshConfig(cacheTimeMillis: Long = 1.minutes.inWholeMilliseconds) {
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "config_refresh",
-                timeMillis = 1.minutes.inWholeMilliseconds,
+                timeMillis = cacheTimeMillis,
                 failOnError = false
             )
         ) { getConfigFromRemote() }
