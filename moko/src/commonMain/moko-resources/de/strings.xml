@@ -27,7 +27,7 @@
     <string name="alert_comingSoon_title">Kommt bald 🤞</string>
     <string name="alert_comingSoon_message">Diese Funktion ist bereits in Entwicklung und kommt bald.</string>
     <string name="error_load_data_generic">Anfrage konnte nicht abgeschlossen werden.</string>
-    <string name="error_no_connection_snackbar">Verbindung fehlgeschlagen\n**Überprüfen Sie Ihre Internetverbindung.**</string>
+    <string name="error_no_connection_snackbar">Verbindung nicht möglich\n**Überprüfen Sie Ihre Internetverbindung.**</string>
     <string name="error_server_unavailable">Derzeit keine Verbindung möglich, bitte versuchen Sie es in Kürze erneut.</string>
     <string name="error_something_wrong">Etwas ist schiefgelaufen!</string>
     <string name="error_something_wrong_http">Etwas ist schiefgelaufen! [%d]</string>
@@ -65,8 +65,8 @@
     <string name="dashboard_groups_title_joined">Beigetretene Gruppen</string>
     <string name="dashboard_groups_create_plan_limit">Um weitere Gruppen zu erstellen, aktualisieren Sie Ihren Plan</string>
     <string name="dashboard_groups_create_info">Oder erstellen Sie Ihre eigene Gruppe</string>
-    <string name="dashboard_paralino_id_title">Dies ist Ihre **Paralino.ID**</string>
-    <string name="dashboard_paralino_id_description">Teilen Sie es, um einer Gruppe beizutreten</string>
+    <string name="dashboard_paralino_id_title">Das ist Ihre **Paralino.ID**</string>
+    <string name="dashboard_paralino_id_description">Teilen Sie sie, um einer Gruppe beizutreten</string>
     <string name="location_banner_error_gps_off">Gerätestandort ist deaktiviert</string>
     <string name="location_banner_error_no_permission_notifications">Benachrichtigungsberechtigung fehlt</string>
     <string name="location_banner_error_no_permission_location">Standortberechtigung fehlt</string>
@@ -107,12 +107,12 @@
     <string name="setting_title_sourceCode">Quellcode ansehen</string>
     <string name="setting_title_privacy">Datenschutzrichtlinie</string>
     <string name="setting_title_terms">Nutzungsbedingungen</string>
-    <string name="setting_title_libraries">Danksagungen</string>
+    <string name="setting_title_libraries">Lizenzen</string>
     <string name="setting_title_logout">Abmelden</string>
     <string name="setting_title_delete_account">Konto löschen</string>
     <string name="setting_title_dangerZone">Gefahrenbereich</string>
     <string name="setting_title_errorReporting">Anonyme Absturzberichte</string>
-    <string name="setting_description_errorReporting">Teilen Sie anonyme Fehlerberichte im Falle eines App-Absturzes oder anderer Probleme.\nDie Protokolle enthalten keine persönlichen Daten, und wir verwenden eine selbst gehostete Infrastruktur, sodass nichts Paralino verlässt!</string>
+    <string name="setting_description_errorReporting">Teilen Sie anonyme Fehlerberichte, im Falle eines App-Absturzes oder anderer Probleme.\nDie Protokolle enthalten keine persönlichen Daten, und wir verwenden eine selbst gehostete Infrastruktur, sodass nichts Paralino verlässt!</string>
     <string name="setting_title_locationBoost">Standort-Boost</string>
     <string name="setting_description_locationBoost_enabled">Maximale Standortleistung wird um %s zurückgesetzt. **Verbraucht mehr Akku!!!**</string>
     <string name="setting_description_locationBoost_disabled">Nutzen Sie maximale Standortleistung für bis zu 2 Stunden. **Wird mehr Akku verbrauchen!!!**</string>
@@ -174,7 +174,7 @@
     <string name="paywall_faq_answer_free_trial">Ja, wir bieten eine kostenlose Testphase an, wenn Sie Ihr Abonnement zum ersten Mal starten. Sie können dann Premium-Funktionen kostenlos genießen.</string>
     <string name="paywall_faq_answer_contact_support">Sie können unser Support-Team kontaktieren, indem Sie eine E-Mail an **contact@paralino.com** senden.</string>
     <string name="plans_gift_screen_title">Lassen Sie uns feiern!</string>
-    <string name="plans_gift_screen_box_title">Early Adopter Geschenk</string>
+    <string name="plans_gift_screen_box_title">Geschenk für Erstnutzer</string>
     <string name="plans_gift_screen_box_message">Sie erhalten einen speziellen lebenslangen **Starter**-Plan, komplett KOSTENLOS!</string>
     <string name="plans_gift_screen_benefits_title">Was Sie erhalten</string>
     <string name="plans_gift_screen_separator_text">Brauchen Sie mehr?</string>
@@ -335,7 +335,7 @@
     <string name="group_members_status_gps_off">GPS ist aus</string>
     <string name="group_members_status_battery_saver">Energiesparmodus ist an</string>
     <string name="group_members_status_active">Aktiv</string>
-    <string name="group_members_status_throttle">Leerlauf</string>
+    <string name="group_members_status_throttle">Inaktiv</string>
     <string name="group_members_status_too_many_requests">Zu viele Anfragen</string>
     <string name="group_members_status_missing_permissions">Fehlende Berechtigungen</string>
     <string name="places_list_add_button">Neuer Ort</string>

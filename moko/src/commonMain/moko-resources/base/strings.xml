@@ -88,7 +88,7 @@
     <string name="settings_account_guest_convert">Convert account</string>
     <string name="settings_account_guest_badge">Guest account</string>
     <string name="settings_account_edit_guest_account_button">Convert account&gt;</string>
-    <string name="settings_account_edit_guest_account_info">When you add email and password to your account you will be able to login on another device or recover your account if your delete the app or lose your device.</string>
+    <string name="settings_account_edit_guest_account_info">When you add email and password to your account, you will be able to login on another device or recover your account, if your delete the app or lose your device.</string>
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
     <string name="settings_account_delete_alert_title">Delete account</string>
@@ -112,7 +112,7 @@
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
     <string name="setting_title_errorReporting">Anonymous crash logs</string>
-    <string name="setting_description_errorReporting">Share anonymous error logs in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
+    <string name="setting_description_errorReporting">Share anonymous error logs, in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_title_locationBoost">Location boost</string>
     <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
     <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>
@@ -127,7 +127,7 @@
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
     <string name="plans_management_screen_title">Subscription</string>
-    <string name="plans_management_info_not_subscribed">You are currently not subscribed to premium plan!</string>
+    <string name="plans_management_info_not_subscribed">You are currently not subscribed to Premium plan!</string>
     <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\n\nUse the device you originally used for purchasing.</string>
     <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
@@ -387,7 +387,7 @@
     <string name="recover_account_step_password_correct">Key can be recovered 🙌</string>
     <string name="recover_account_step_password_wrong">Password does not match</string>
     <string name="recover_account_header_recover_possible">Your password does not match your decryption keys</string>
-    <string name="recover_account_caption_recover_possible">To recover you account, try recovering the key with old password.</string>
+    <string name="recover_account_caption_recover_possible">To recover your account, try recovering the key with old password.</string>
     <string name="recover_account_header_recover_not_possible">Your account does not have matching keys! Please reset your account.</string>
     <string name="recover_account_caption_recover_not_possible">If you can not recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
     <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
