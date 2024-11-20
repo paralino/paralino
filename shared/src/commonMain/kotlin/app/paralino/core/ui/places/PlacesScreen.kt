@@ -145,136 +145,130 @@ private fun PlacesScreen(
     onPlanBannerClick: () -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = contentPadding.calculateTopPadding() + 20.dp,
-                bottom = contentPadding.calculateBottomPadding() + 40.dp,
-                start = 20.dp,
-                end = 20.dp
-            ),
-            userScrollEnabled = userScrollEnabled
+    if (state.places.isEmpty()) {
+        PlacesEmptyState(
+            modifier = Modifier.padding(contentPadding),
+            onCreateClick = onCreatePlace
+        )
+    } else {
+        Scaffold(
+            modifier = Modifier.fillMaxSize()
         ) {
-            if (state.places.isNotEmpty()) {
-                this.item(key = "main_header") {
-                    DataInfoChip(
-                        modifier = Modifier,
-                        image = state.groupImage,
-                        text = state.groupName
-                    )
-                }
-
-                this.items(items = state.errors, key = { it.toString() }) {
-                    ConditionErrorItem(data = it) {
-                        onErrorItemClick(it)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = contentPadding.calculateTopPadding() + 20.dp,
+                    bottom = contentPadding.calculateBottomPadding() + 40.dp,
+                    start = 20.dp,
+                    end = 20.dp
+                ),
+                userScrollEnabled = userScrollEnabled
+            ) {
+                if (state.places.isNotEmpty()) {
+                    this.item(key = "main_header") {
+                        DataInfoChip(
+                            modifier = Modifier,
+                            image = state.groupImage,
+                            text = state.groupName
+                        )
                     }
-                }
 
-                this.item(key = "map") {
-                    // map
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(top = 8.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colors.background,
-                        border = BorderStroke(6.dp, MaterialTheme.colors.surface),
-                        elevation = 12.dp
-                    ) {
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(4.dp),
-                            shape = MaterialTheme.shapes.medium,
-                            color = MaterialTheme.colors.background,
-                        ) {
-                            mapContent(state)
+                    this.items(items = state.errors, key = { it.toString() }) {
+                        ConditionErrorItem(data = it) {
+                            onErrorItemClick(it)
                         }
                     }
-                    Spacer(modifier = Modifier.size(40.dp))
-                }
 
-                if (state.shouldShowPlanBanner) {
-                    this.item(key = "plan_upgrade_banner") {
-                        PremiumPlanBannerSmall(
-                            description = stringResource(MR.strings.plans_banner_inline_places),
-                            onClick = onPlanBannerClick
-                        )
+                    this.item(key = "map") {
+                        // map
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .padding(top = 8.dp),
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colors.background,
+                            border = BorderStroke(6.dp, MaterialTheme.colors.surface),
+                            elevation = 12.dp
+                        ) {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(4.dp),
+                                shape = MaterialTheme.shapes.medium,
+                                color = MaterialTheme.colors.background,
+                            ) {
+                                mapContent(state)
+                            }
+                        }
                         Spacer(modifier = Modifier.size(40.dp))
                     }
+
+                    if (state.shouldShowPlanBanner) {
+                        this.item(key = "plan_upgrade_banner") {
+                            PremiumPlanBannerSmall(
+                                description = stringResource(MR.strings.plans_banner_inline_places),
+                                onClick = onPlanBannerClick
+                            )
+                            Spacer(modifier = Modifier.size(40.dp))
+                        }
+                    }
+
+                    this.stickyHeader(key = "count_header") {
+                        Row(
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                                .background(MaterialTheme.colors.background)
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(MR.strings.places_list_screen_title),
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier.alpha(ContentAlpha.medium)
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
+                            PlanLimitCount(
+                                modifier = Modifier.padding(top = 4.dp),
+                                count = state.places.size,
+                                limit = if (state.canShowPlacesLimit) {
+                                    state.placesLimit
+                                } else {
+                                    null
+                                }
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            SmallActionButton(
+                                modifier = Modifier,
+                                icon = CoreAppIcons.Add.asPainterResource(),
+                                text = {
+                                    Text(
+                                        modifier = Modifier.padding(end = 4.dp),
+                                        text = stringResource(MR.strings.group_details_add_member_button)
+                                    )
+                                },
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = MaterialTheme.colors.onPrimary,
+                                onClick = onCreatePlace
+                            )
+                        }
+                        Spacer(modifier = Modifier.size(4.dp))
+                    }
                 }
 
-                this.stickyHeader(key = "count_header") {
-                    Row(
-                        modifier = Modifier
-                            .fillParentMaxWidth()
-                            .background(MaterialTheme.colors.background)
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(MR.strings.places_list_screen_title),
-                            style = MaterialTheme.typography.h6,
-                            modifier = Modifier.alpha(ContentAlpha.medium)
-                        )
+                this.itemsIndexed(
+                    items = state.places,
+                    key = { index, item -> item.id }
+                ) { index, item ->
+                    if (index > 0) {
                         Spacer(modifier = Modifier.size(8.dp))
-                        PlanLimitCount(
-                            modifier = Modifier.padding(top = 4.dp),
-                            count = state.places.size,
-                            limit = if (state.canShowPlacesLimit) {
-                                state.placesLimit
-                            } else {
-                                null
-                            }
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        SmallActionButton(
-                            modifier = Modifier,
-                            icon = CoreAppIcons.Add.asPainterResource(),
-                            text = {
-                                Text(
-                                    modifier = Modifier.padding(end = 4.dp),
-                                    text = stringResource(MR.strings.group_details_add_member_button)
-                                )
-                            },
-                            backgroundColor = MaterialTheme.colors.primary,
-                            contentColor = MaterialTheme.colors.onPrimary,
-                            onClick = onCreatePlace
-                        )
                     }
-                    Spacer(modifier = Modifier.size(4.dp))
-                }
-            }
-
-            this.itemsIndexed(
-                items = state.places,
-                key = { index, item -> item.id }
-            ) { index, item ->
-                if (index > 0) {
-                    Spacer(modifier = Modifier.size(8.dp))
-                }
-                PlaceListItem(
-                    modifier = Modifier.animateItem(),
-                    state = item,
-                    hasEndArrow = true,
-                    onClick = { onPlaceClick(item) },
-                )
-            }
-
-            if (state.places.isEmpty()) {
-                this.item {
-                    DefaultEmptyState(
-                        content = stringResource(MR.strings.places_list_screen_empty_info),
-                        icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                        buttonText = stringResource(MR.strings.places_create_button_create),
-                        buttonIcon = CoreAppIcons.Add.asPainterResource()
-                    ) {
-                        onCreatePlace()
-                    }
+                    PlaceListItem(
+                        modifier = Modifier.animateItem(),
+                        state = item,
+                        hasEndArrow = true,
+                        onClick = { onPlaceClick(item) },
+                    )
                 }
             }
         }

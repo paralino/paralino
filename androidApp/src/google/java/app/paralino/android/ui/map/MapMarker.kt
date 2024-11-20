@@ -45,6 +45,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -98,44 +99,6 @@ private fun mapMarkerIcon(
 
     return rememberComposeBitmapDescriptor(*keys) {
         MapMarkerContent(state = state)
-    }
-}
-
-@Composable
-private fun MapMarkerContent(
-    state: MapPinData,
-) {
-    Box(
-        modifier = Modifier.size(state.getPinSize().dp),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        if (state.markerStyle == MapMarkerStyle.PIN) {
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                painter = painterResource(id = MR.images.ic_pin_bubble.drawableResId),
-                contentDescription = null,
-                colorFilter = if (state.active) ColorFilter.tint(AppColors.accentDark) else ColorFilter.tint(Color.DarkGray)
-            )
-        }
-        val maxSize = when (state.markerStyle) {
-            MapMarkerStyle.PIN -> 0.9f
-            MapMarkerStyle.CIRCLE -> 1f
-        }
-        Box(
-            modifier = Modifier.fillMaxSize(maxSize),
-            contentAlignment = Alignment.Center
-        ) {
-            ImageModelImage(
-                modifier = Modifier.fillMaxSize(0.9f),
-                imageModel = state.image ?: ImageModel.emoji(Emojis.lock),
-                clipShape = CircleShape,
-                colorFilter = if (!state.active) {
-                    ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
-                } else {
-                    null
-                }
-            )
-        }
     }
 }
 

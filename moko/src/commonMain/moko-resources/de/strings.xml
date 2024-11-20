@@ -340,7 +340,9 @@
     <string name="group_members_status_missing_permissions">Fehlende Berechtigungen</string>
     <string name="places_list_add_button">Neuer Ort</string>
     <string name="places_list_screen_title">Orte</string>
-    <string name="places_list_screen_empty_info">Sie haben noch keine Orte</string>
+    <string name="places_list_screen_empty_info">Erstellen Sie einen Ort und erhalten Sie eine **Benachrichtigung**, wenn jemand einen vordefinierten Bereich wie Zuhause, Arbeit oder Schule betritt oder verlässt.</string>
+    <string name="places_notification_demo_peter_arrived">Peter ist zu Hause angekommen</string>
+    <string name="places_notification_demo_heidi_left">Heidi hat die Schule verlassen</string>
     <string name="places_create_screen_title">Neuen Ort erstellen</string>
     <string name="places_edit_screen_title">Ort bearbeiten</string>
     <string name="places_create_seekbar_info">Radius</string>

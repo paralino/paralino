@@ -340,11 +340,13 @@
     <string name="group_members_status_missing_permissions">Missing permissions</string>
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>
-    <string name="places_list_screen_empty_info">You don\'t have any places yet</string>
-    <string name="places_create_screen_title">Create new place</string>
+    <string name="places_list_screen_empty_info">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
+    <string name="places_notification_demo_peter_arrived">Peter arrived at Home</string>
+    <string name="places_notification_demo_heidi_left">Heidi left School</string>
+    <string name="places_create_screen_title">Create a new place</string>
     <string name="places_edit_screen_title">Edit place</string>
     <string name="places_create_seekbar_info">Radius</string>
-    <string name="places_create_button_create">Create place</string>
+    <string name="places_create_button_create">Create a place</string>
     <string name="places_create_error_no_place">Please add location by long pressing on the map</string>
     <string name="places_create_location_hint_longpress">**TIP:** Long press on the map to add or adjust your place</string>
     <string name="places_create_location_hint_tap">**TIP:** Tap on the map to add or adjust your place</string>

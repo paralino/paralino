@@ -340,7 +340,9 @@
     <string name="group_members_status_missing_permissions">Nedostaju dozvole</string>
     <string name="places_list_add_button">Novo mjesto</string>
     <string name="places_list_screen_title">Mjesta</string>
-    <string name="places_list_screen_empty_info">Još nemate niti jedno mjesto</string>
+    <string name="places_list_screen_empty_info">Kreirajte novo mjesto te **budite obaviješteni** kada netko stigne ili napusti područje kao kuća, posao ili škola.</string>
+    <string name="places_notification_demo_peter_arrived">Peter je sada kod Kuće</string>
+    <string name="places_notification_demo_heidi_left">Heidi je napustila Školu</string>
     <string name="places_create_screen_title">Stvori novo mjesto</string>
     <string name="places_edit_screen_title">Uredi mjesto</string>
     <string name="places_create_seekbar_info">Radijus</string>
