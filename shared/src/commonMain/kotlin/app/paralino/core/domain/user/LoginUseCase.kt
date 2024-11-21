@@ -1,9 +1,10 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserMeRaw
@@ -23,9 +24,11 @@ import kotlinx.serialization.encodeToString
 class LoginUseCase constructor(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
-    private val userKeyRepository: CryptoUserKeyRepository,
+    private val userKeyRepository: CryptoUserKeysLocalSource,
+    private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val keyMapper: UserKeyMapperCore,
     private val logoutUseCase: LogoutUseCase,
+    private val appPrefs: AppPrefs
 ) {
 
     fun login(email: String, password: String): Flow<SignUpStep> {
@@ -80,7 +83,7 @@ class LoginUseCase constructor(
             try {
                 logg.d("login", "Fetch keys from remote")
                 delay(500)
-                val keys = userKeyRepository.getRemoteKeys()
+                val keys = userKeysRemoteSource.getAllMyKeys()
 
                 logg.d("login", "Found ${keys.size} key(s) on remote")
 
@@ -127,8 +130,8 @@ class LoginUseCase constructor(
                             // we have valid key and old unused keys are on server
                             // here we notify server to keep currently valid key
                             try {
-                                userKeyRepository.uploadNewUserKey(
-                                    keyRaw = correctPersonalKey.encryptedKeyData,
+                                userKeysRemoteSource.createPersonalKey(
+                                    data = correctPersonalKey.encryptedKeyData,
                                     removeOldKeys = true
                                 )
                             } catch (e: Exception) {
@@ -153,7 +156,7 @@ class LoginUseCase constructor(
             try {
                 delay(500)
                 logg.d("login", "Save user keys locally")
-                userKeyRepository.saveUserKeyLocally(
+                userKeyRepository.saveUserKey(
                     keyData.encryptedKeyData,
                     keyData.userPersonalKey
                 )

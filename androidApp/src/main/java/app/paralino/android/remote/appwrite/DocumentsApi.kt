@@ -1,6 +1,6 @@
 package app.paralino.android.remote.appwrite
 
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import io.appwrite.Query

@@ -3,7 +3,7 @@ package app.paralino.android.ui.navigation
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.main.DeeplinkType
-import app.paralino.core.ui.settings.BillingScreenSourceType
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 sealed class AppScreen {
 
@@ -44,20 +44,24 @@ sealed class AppScreen {
             val argumentUserId: String = DeeplinkType.PasswordReset.argumentUserId
             val argumentSecret: String = DeeplinkType.PasswordReset.argumentSecret
             val argumentExpire: String = DeeplinkType.PasswordReset.argumentExpire
-            override val routeSignature: String = DeeplinkType.PasswordReset.routeSignature()
+            override val routeSignature: String = "password-reset?$argumentUserId={$argumentUserId}&$argumentSecret={$argumentSecret}&$argumentExpire={$argumentExpire}"
 
             fun route(deeplink: DeeplinkType.PasswordReset): String {
-                return deeplink.route()
+                val args = arrayOf(
+                    "$argumentUserId=${deeplink.userId}",
+                    "$argumentSecret=${deeplink.secret}",
+                    deeplink.expire?.let { "$argumentExpire=$it" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+
+                return "password-reset?$args"
             }
         }
     }
 
     object MainHome : AppScreen() {
         override val routeSignature: String = "home"
-
-        object GroupConnect : AppScreen() {
-            override val routeSignature: String = "home-connect"
-        }
 
         object MainMap : AppScreen() {
             override val routeSignature: String = "map-mainMap?$argumentGroupId={$argumentGroupId}"
@@ -239,6 +243,10 @@ sealed class AppScreen {
 
         object AppStatusDebug : AppScreen() {
             override val routeSignature: String = "app-status"
+        }
+
+        object GeneralInfo : AppScreen() {
+            override val routeSignature: String = "general-info"
         }
     }
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.os.Looper
+import app.paralino.android.provider.getLocationStatus
 import app.paralino.android.utils.extensions.millisToDateTimeUTC
 import app.paralino.android.utils.extensions.toLocalString
 import app.paralino.core.logg
@@ -164,7 +165,8 @@ class LocationInitHandler constructor(
             accuracy = this.accuracy,
             timeUTC = this.time.millisToDateTimeUTC().toLocalString(),
             speed = if (this.hasSpeed()) this.speed else null,
-            altitude = if (this.hasAltitude()) this.altitude.toFloat() else null
+            altitude = if (this.hasAltitude()) this.altitude.toFloat() else null,
+            isMasked = false
         )
     }
 }

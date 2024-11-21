@@ -47,7 +47,7 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.AppColors
@@ -172,8 +172,8 @@ fun RecoverKeysScreen(
             ) {
                 focusManager.clearFocus()
             }
-            .padding(20.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp),
         verticalArrangement = Arrangement.Center
     ) {
 
@@ -271,8 +271,7 @@ fun RecoverKeysScreen(
                 Spacer(modifier = Modifier.size(10.dp))
                 FilledButton(
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.onError,
-                        contentColor = Color.White
+                        backgroundColor = MaterialTheme.colors.error
                     ),
                     style = ButtonStyle.BIG,
                     state = if (state.resetLoading == null)

@@ -4,17 +4,14 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Colors
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
@@ -23,12 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.theme.AppTheme
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
@@ -41,7 +37,8 @@ fun ConditionErrorItem(
 ) {
     ConditionErrorItem(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colors.error,
+        backgroundColor = AppColors.errorBackground,
+        contentColor = AppColors.redMain,
         icon = data.icon,
         text = stringResource(data.nameRes),
         endAction = if (data.endActionTextRes != null)
@@ -55,7 +52,7 @@ fun ConditionErrorItem(
 @Composable
 fun ConditionErrorItem(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.error,
+    backgroundColor: Color = AppColors.errorBackground,
     contentColor: Color = contentColorFor(backgroundColor = backgroundColor),
     icon: Painter?,
     text: String,
@@ -141,35 +138,33 @@ val ConditionErrorType.icon: Painter
     @Composable
     get() = when (this) {
         ConditionErrorType.GPS -> CoreAppIcons.LocationOff
-        ConditionErrorType.PERMISSION_NOTIFICATIONS -> CoreAppIcons.NotificationsActive
-        ConditionErrorType.PERMISSION_LOCATION -> CoreAppIcons.PhonelinkSetup
-        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> CoreAppIcons.PhonelinkSetup
-        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> CoreAppIcons.PhonelinkSetup
-        ConditionErrorType.NETWORK -> CoreAppIcons.WifiOff
-        is ConditionErrorType.EMAIL_VERIFICATION -> CoreAppIcons.Email
-        ConditionErrorType.GUEST_ACCOUNT -> CoreAppIcons.Incognito
+        ConditionErrorType.PermissionNotifications -> CoreAppIcons.NotificationsActive
+        is ConditionErrorType.PermissionLocation -> CoreAppIcons.PhonelinkSetup
+        ConditionErrorType.PermissionLocationBackground -> CoreAppIcons.PhonelinkSetup
+        ConditionErrorType.Network -> CoreAppIcons.WifiOff
+        is ConditionErrorType.EmailVerification -> CoreAppIcons.Email
+        ConditionErrorType.GuestAccount -> CoreAppIcons.Incognito
     }.asPainterResource()
 
 val ConditionErrorType.nameRes: StringResource
     get() = when (this) {
         ConditionErrorType.GPS -> MR.strings.location_banner_error_gps_off
-        ConditionErrorType.PERMISSION_NOTIFICATIONS -> MR.strings.location_banner_error_no_permission_notifications
-        ConditionErrorType.PERMISSION_LOCATION -> MR.strings.location_banner_error_no_permission_location
-        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> MR.strings.location_banner_error_no_permission_location
-        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> MR.strings.location_banner_error_no_permission_location_background
-        ConditionErrorType.NETWORK -> MR.strings.location_banner_error_offline
-        is ConditionErrorType.EMAIL_VERIFICATION -> MR.strings.info_email_confirm
-        ConditionErrorType.GUEST_ACCOUNT -> MR.strings.settings_account_guest_badge
+        ConditionErrorType.PermissionNotifications -> MR.strings.location_banner_error_no_permission_notifications
+        ConditionErrorType.PermissionLocation.PermissionLocationAny -> MR.strings.location_banner_error_no_permission_location
+        ConditionErrorType.PermissionLocation.PermissionLocationPrecise -> MR.strings.location_banner_error_no_permission_location_precise
+        ConditionErrorType.PermissionLocationBackground -> MR.strings.location_banner_error_no_permission_location_background
+        ConditionErrorType.Network -> MR.strings.location_banner_error_offline
+        is ConditionErrorType.EmailVerification -> MR.strings.info_email_confirm
+        ConditionErrorType.GuestAccount -> MR.strings.settings_account_guest_badge
     }
 
 val ConditionErrorType.endActionTextRes: StringResource?
     get() = when (this) {
         ConditionErrorType.GPS -> MR.strings.location_banner_fix
-        ConditionErrorType.PERMISSION_NOTIFICATIONS -> MR.strings.location_banner_fix
-        ConditionErrorType.PERMISSION_LOCATION -> MR.strings.location_banner_fix
-        ConditionErrorType.PERMISSION_LOCATION_PRECISE -> MR.strings.location_banner_fix
-        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> MR.strings.location_banner_fix
-        ConditionErrorType.NETWORK -> null
-        is ConditionErrorType.EMAIL_VERIFICATION -> MR.strings.button_verify
-        ConditionErrorType.GUEST_ACCOUNT -> MR.strings.location_banner_fix
+        ConditionErrorType.PermissionNotifications -> MR.strings.location_banner_fix
+        is ConditionErrorType.PermissionLocation -> MR.strings.location_banner_fix
+        ConditionErrorType.PermissionLocationBackground -> MR.strings.location_banner_fix
+        ConditionErrorType.Network -> null
+        is ConditionErrorType.EmailVerification -> MR.strings.button_verify
+        ConditionErrorType.GuestAccount -> MR.strings.location_banner_fix
     }

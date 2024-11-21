@@ -1,10 +1,15 @@
 package app.paralino.core.ui.invite.manage
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,9 +24,16 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,24 +48,30 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.delay
 
 @Composable
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     state: PersonalCodeScreenCodeData,
+    hintDelayMillis: Long = 0,
     onCopy: () -> Unit,
-    onShare: () -> Unit,
+    onShare: (String) -> Unit,
     onDelete: () -> Unit,
     onActivate: (String) -> Unit = {},
 ) {
     if (state.isValid) {
         PersonalCodeItem(
             modifier = modifier,
+            hintDelayMillis = hintDelayMillis,
             code = state.code,
             userImage = state.userImage,
             userName = state.userName,
@@ -95,18 +113,27 @@ fun PersonalCodeItemInactive(
 @Composable
 fun PersonalCodeItem(
     modifier: Modifier = Modifier,
+    hintDelayMillis: Long,
     code: String,
     userImage: ImageModel,
     userName: String,
     hasDelete: Boolean,
     deleteLoading: Boolean,
     onCopy: () -> Unit,
-    onShare: () -> Unit,
+    onShare: (String) -> Unit,
     onDelete: () -> Unit,
 ) {
+    var animatedInfoText by rememberSaveable { mutableFloatStateOf(0f) }
+    LaunchedEffect(Unit) {
+        delay(hintDelayMillis)
+        animatedInfoText = 1f
+    }
+
     Column(modifier = modifier) {
         Surface(
-            modifier = Modifier.zIndex(1f).padding(horizontal = 20.dp),
+            modifier = Modifier
+                .zIndex(1f)
+                .padding(horizontal = 20.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colors.primary,
             elevation = 16.dp
@@ -168,7 +195,9 @@ fun PersonalCodeItem(
                         icon = CoreAppIcons.Share.asPainterResource(),
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
                         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-                        onClick = onShare
+                        onClick = {
+                            onShare(DeeplinkType.ParalinoID.buildUrl(code))
+                        }
                     ) {
                         Text(text = stringResource(MR.strings.invite_code_button_share))
                     }
@@ -186,7 +215,7 @@ fun PersonalCodeItem(
                             } else {
                                 Icon(
                                     painter = CoreAppIcons.Block.asPainterResource(),
-                                    tint = MaterialTheme.colors.onError,
+                                    tint = MaterialTheme.colors.error,
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -200,6 +229,7 @@ fun PersonalCodeItem(
             Text(
                 modifier = Modifier
                     .zIndex(0f)
+                    .offset(y = animateDpAsState((1f - animatedInfoText).times(-200).dp).value)
                     .padding(horizontal = 30.dp)
                     .shadow(
                         elevation = 8.dp,
@@ -215,5 +245,55 @@ fun PersonalCodeItem(
             )
         }
         Spacer(modifier = Modifier.size(50.dp))
+    }
+}
+
+
+@Composable
+fun PersonalCodeItemWithHints(
+    modifier: Modifier = Modifier,
+    hintDelayMillis: Long = 0,
+    personalCodeItem: @Composable Modifier.() -> Unit
+) {
+    var animatedCardInfo by rememberSaveable { mutableFloatStateOf(0f) }
+    LaunchedEffect(Unit) {
+        delay(hintDelayMillis)
+        animatedCardInfo = 1f
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(MR.strings.dashboard_paralino_id_title).annotatedBold(),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier
+                .alpha(animateFloatAsState(animatedCardInfo).value)
+                .padding(horizontal = 20.dp)
+        )
+        DataInfoChip(
+            modifier = Modifier
+                .alpha(animateFloatAsState(animatedCardInfo).value)
+                .padding(horizontal = 20.dp)
+                .padding(top = 4.dp),
+            image = null,
+            backgroundColor = AppColors.accentLight.copy(alpha = 0.3f),
+            text = stringResource(MR.strings.dashboard_paralino_id_description)
+        )
+        Box(
+            modifier = Modifier.padding(top = 8.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            personalCodeItem(Modifier.padding(top = 40.dp))
+            Icon(
+                modifier = Modifier
+                    .alpha(animateFloatAsState(animatedCardInfo).value)
+                    .height(70.dp)
+                    .rotate(-10f),
+                painter = CoreAppIcons.ArrowSpinny.asPainterResource(),
+                tint = AppColors.highlightGold,
+                contentDescription = null
+            )
+        }
     }
 }

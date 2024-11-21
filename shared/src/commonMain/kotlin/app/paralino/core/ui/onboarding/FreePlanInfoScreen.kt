@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.BlurredCircle
 import app.paralino.core.ui.components.CoreAppIcons
@@ -48,7 +48,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.drawBlurredCircles
-import app.paralino.core.ui.settings.PremiumPlanBannerSmall
+import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
@@ -138,7 +138,8 @@ fun FreePlanInfoScreenCore(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 32.dp),
+                    .padding(horizontal = 20.dp, vertical = 32.dp)
+                    .padding(bottom = if (showBanner) 0.dp else 32.dp),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -153,8 +154,7 @@ fun FreePlanInfoScreenCore(
 
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     elevation = 8.dp,
                     backgroundColor = MaterialTheme.colors.primary
@@ -175,20 +175,26 @@ fun FreePlanInfoScreenCore(
                         Text(
                             text = stringResource(MR.strings.plans_gift_screen_box_title),
                             style = MaterialTheme.typography.h5,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = stringResource(MR.strings.plans_gift_screen_box_message),
+                            text = stringResource(MR.strings.plans_gift_screen_box_message).annotatedBold(),
                             style = MaterialTheme.typography.subtitle1,
                             textAlign = TextAlign.Center
                         )
                     }
                 }
 
+                val benefits = remember(uiState) {
+                    uiState.planBenefits().joinToString(separator = "\n") {
+                        "⭐️ ${it.content}"
+                    }.annotatedBold()
+                }
                 Column {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
                         text = stringResource(MR.strings.plans_gift_screen_benefits_title),
                         style = MaterialTheme.typography.h4,
                         fontWeight = FontWeight.Bold,
@@ -197,20 +203,7 @@ fun FreePlanInfoScreenCore(
                     )
 
                     Text(
-                        text = if (uiState.groupsLimit == 1) {
-                            stringResource(
-                                MR.strings.plans_gift_screen_benefits_content,
-                                uiState.membersLimit,
-                                uiState.placesLimit
-                            ).annotatedBold()
-                        } else {
-                            stringResource(
-                                MR.strings.plans_gift_screen_benefits_content_multiple,
-                                uiState.groupsLimit,
-                                uiState.membersLimit,
-                                uiState.placesLimit
-                            ).annotatedBold()
-                        },
+                        text = benefits,
                         style = MaterialTheme.typography.h6,
                         color = MaterialTheme.colors.onBackground,
                         modifier = Modifier.padding(vertical = 16.dp).padding(horizontal = 8.dp)
@@ -260,7 +253,7 @@ fun FreePlanInfoScreenCore(
                     onClick = openPaywall
                 )
             } else {
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(30.dp))
             }
         }
     }

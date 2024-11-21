@@ -1,10 +1,9 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.UserConfigEntity
-import app.paralino.core.data.db.mapToList
-import app.paralino.core.models.BackendDatabaseType
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.user.UserConfigEntity
+import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.user.UserConfigModel
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.api.IDocumentsApi
@@ -19,9 +18,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.minutes
 
 class UserConfigRepository(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val documentsApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val scopeProvider: ICoroutineScopeProvider,
@@ -38,24 +38,21 @@ class UserConfigRepository(
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "config_refresh",
-                timeMillis = if (force) 0 else 120_000,
+                timeMillis = if (force) 0 else 2.minutes.inWholeMilliseconds,
                 failOnError = false
             )
         ) { getConfigFromRemote() }
             ?.also { config ->
-                database.userConfigQueries.transaction {
-                    database.userConfigQueries.clearAll()
-                    config.nodes.forEach { node ->
-                        database.userConfigQueries.createConfig(
-                            UserConfigEntity(
-                                id = node.id,
-                                ownerUserId = node.ownerUserId,
-                                type = node.type,
-                                data_ = node.data
-                            )
+                database.userConfigDao.recreateConfig(
+                    config.nodes.map { node ->
+                        UserConfigEntity(
+                            id = node.id,
+                            ownerUserId = node.ownerUserId,
+                            type = node.type,
+                            data = node.data
                         )
                     }
-                }
+                )
             }
     }
 
@@ -81,7 +78,7 @@ class UserConfigRepository(
     }
 
     private fun getConfig(): Flow<UserConfigModel> {
-        return database.mapToList { userConfigQueries.getAll() }
+        return database.userConfigDao.getAll()
             .map { UserConfigModel.fromDatabase(it) }
             .distinctUntilChanged()
     }

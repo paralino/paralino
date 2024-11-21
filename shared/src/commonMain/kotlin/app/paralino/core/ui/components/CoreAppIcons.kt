@@ -22,6 +22,7 @@ import paralino.shared.generated.resources.ic_check
 import paralino.shared.generated.resources.ic_check_circle
 import paralino.shared.generated.resources.ic_chevron_left
 import paralino.shared.generated.resources.ic_chevron_right
+import paralino.shared.generated.resources.ic_circle_only_outline
 import paralino.shared.generated.resources.ic_circle_with_outline
 import paralino.shared.generated.resources.ic_close
 import paralino.shared.generated.resources.ic_code
@@ -41,6 +42,7 @@ import paralino.shared.generated.resources.ic_home_work
 import paralino.shared.generated.resources.ic_how_to_reg
 import paralino.shared.generated.resources.ic_incognito
 import paralino.shared.generated.resources.ic_key
+import paralino.shared.generated.resources.ic_launcher_foreground
 import paralino.shared.generated.resources.ic_library_books
 import paralino.shared.generated.resources.ic_location_off
 import paralino.shared.generated.resources.ic_location_on
@@ -86,12 +88,11 @@ import paralino.shared.generated.resources.ic_wifi_1
 import paralino.shared.generated.resources.ic_wifi_2
 import paralino.shared.generated.resources.ic_wifi_3
 import paralino.shared.generated.resources.ic_wifi_off
-import paralino.shared.generated.resources.image_map_type_default_dark
-import paralino.shared.generated.resources.image_map_type_default_light
-import paralino.shared.generated.resources.image_map_type_satellite
+import paralino.shared.generated.resources.image_map_mockup_dark
+import paralino.shared.generated.resources.image_map_mockup_light
 
-@OptIn(ExperimentalResourceApi::class)
 object CoreAppIcons {
+    val LauncherLogo get() = Res.drawable.ic_launcher_foreground
     val Check get() = Res.drawable.ic_check
     val PhonelinkSetup get() = Res.drawable.ic_phonelink_setup
     val NotificationsActive get() = Res.drawable.ic_notifications_active
@@ -175,9 +176,13 @@ object CoreAppIcons {
 
     val CircleFull get() = MR.images.ic_circle_full
     val CircleWithOutline get() = Res.drawable.ic_circle_with_outline
-    val MapModeSatellite get() = Res.drawable.image_map_type_satellite
-    val MapModeDefaultLight get() = Res.drawable.image_map_type_default_light
-    val MapModeDefaultDark get() = Res.drawable.image_map_type_default_dark
+    val CircleOnlyOutline get() = Res.drawable.ic_circle_only_outline
+//    val MapModeSatellite get() = Res.drawable.image_map_type_satellite
+//    val MapModeDefaultLight get() = Res.drawable.image_map_type_default_light
+//    val MapModeDefaultDark get() = Res.drawable.image_map_type_default_dark
+
+    val MapMockupDark get() = Res.drawable.image_map_mockup_dark
+    val MapMockupLight get() = Res.drawable.image_map_mockup_light
 
     @Composable
     inline fun DrawableResource.asPainterResource(): Painter {

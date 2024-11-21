@@ -6,16 +6,18 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalRippleConfiguration
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.RippleConfiguration
+import androidx.compose.material.RippleDefaults
 import androidx.compose.material.Shapes
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -28,12 +30,12 @@ private val LightThemeColors = lightColors(
 	surface = AppColors.lightSurface,
 	primary = AppColors.lightThemePrimary,
 	secondary = AppColors.lightThemeSecondary,
-	error = AppColors.errorBackground,
+	error = AppColors.redMain,
 	primaryVariant = AppColors.darkSurface,
 	secondaryVariant = AppColors.lightThemeSecondary,
 	onPrimary = AppColors.lightBackground,
 	onSecondary = AppColors.darkBackground,
-	onError = AppColors.redMain,
+	onError = AppColors.lightBackground,
 	onBackground = AppColors.darkBackground,
 	onSurface = AppColors.darkBackground
 )
@@ -43,12 +45,12 @@ private val DarkThemeColors = darkColors(
 	surface = AppColors.darkSurface,
 	primary = AppColors.darkThemePrimary,
 	secondary = AppColors.darkThemeSecondary,
-	error = AppColors.errorBackground,
+	error = AppColors.redMain,
 	primaryVariant = AppColors.lightSurface,
 	secondaryVariant = AppColors.darkThemeSecondary,
 	onPrimary = AppColors.lightBackground,
 	onSecondary = AppColors.lightBackground,
-	onError = AppColors.redMain,
+	onError = AppColors.lightBackground,
 	onBackground = AppColors.lightBackground,
 	onSurface = AppColors.lightBackground
 )
@@ -94,7 +96,7 @@ sealed interface ButtonStyle {
 
 	data class SMALL_ACTION(
 		override val defaultModifier: Modifier = Modifier,
-		override val paddingValues: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+		override val paddingValues: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
 		override val shape: CornerBasedShape = RoundedCornerShape(percent = 50),
 		override val iconSize: Dp = 12.dp,
 		override val iconSpacing: Dp = 4.dp,
@@ -102,6 +104,7 @@ sealed interface ButtonStyle {
 	): ButtonStyle
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AppTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -113,38 +116,44 @@ fun AppTheme(
         DarkThemeColors
     }
 
-    MaterialTheme(
-        colors = colors,
-        typography = AppTypography,
-		shapes = shapes
-    ){
-		CompositionLocalProvider(
-			LocalRippleTheme provides AppRippleTheme,
-			LocalIndication provides ScaleIndication,
-			content = content
-		)
+	CompositionLocalProvider(LocalRippleConfiguration provides AppRippleTheme.RippleConfig()) {
+		MaterialTheme(
+			colors = colors,
+			typography = AppTypography,
+			shapes = shapes
+		){
+			CompositionLocalProvider(
+				LocalIndication provides ScaleIndication,
+				content = content
+			)
+		}
 	}
 }
 
-private object AppRippleTheme : RippleTheme {
-
+private object AppRippleTheme  {
+	@OptIn(ExperimentalMaterialApi::class)
 	@Composable
-	override fun defaultColor(): Color {
-		val lightTheme = MaterialTheme.colors.isLight
+	fun RippleConfig(): RippleConfiguration {
 		val contentLuminance = LocalContentColor.current.luminance()
+		val lightTheme = MaterialTheme.colors.isLight
+		val contentColor = LocalContentColor.current
 
-		return when {
-			!lightTheme && contentLuminance < 0.3 -> {
-				Color.Black
-			}
-			else -> {
-				return RippleTheme.defaultRippleColor(LocalContentColor.current, MaterialTheme.colors.isLight)
+		val rippleColor = remember (contentLuminance, lightTheme) {
+			when {
+				!lightTheme && contentLuminance < 0.3 -> {
+					Color.Black
+				}
+				else -> {
+					Color.Unspecified
+				}
 			}
 		}
-	}
 
-	@Composable
-	override fun rippleAlpha(): RippleAlpha {
-		return RippleTheme.defaultRippleAlpha(LocalContentColor.current, false)
+		return remember (contentLuminance, lightTheme, contentColor) {
+			RippleConfiguration(
+				color = rippleColor,
+				rippleAlpha = RippleDefaults.rippleAlpha(contentColor = contentColor, lightTheme = false)
+			)
+		}
 	}
 }

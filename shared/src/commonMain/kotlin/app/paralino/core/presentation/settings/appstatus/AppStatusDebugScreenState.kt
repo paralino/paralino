@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.settings.appstatus
 
+import app.paralino.core.models.AppHost
 import app.paralino.core.provider.InAppLoggerLogType
 import app.paralino.core.provider.LogPriority
 
@@ -25,6 +26,7 @@ data class AppStatusItemLogState(
 data class AppStatusFilterState(
     val logPriorityFilters: List<LogPriorityFilterItemState> = emptyList(),
     val logTypeFilters: List<LogTypeFilterItemState> = emptyList(),
+    val logHostsFilters: List<LogAppHostFilterItemState> = emptyList()
 )
 
 data class LogPriorityFilterItemState(
@@ -43,6 +45,14 @@ data class LogTypeFilterItemState(
     val name: String = type.name.lowercase()
 }
 
+data class LogAppHostFilterItemState(
+    val host: AppHost,
+    val isOn: Boolean
+) {
+    val key: String = host.key
+    val name: String = host.key.lowercase()
+}
+
 sealed class AppStatusDebugScreenEvent {
 
 }
@@ -50,9 +60,13 @@ sealed class AppStatusDebugScreenEvent {
 sealed class AppStatusDebugScreenUiEvent {
     data object ClearLogs : AppStatusDebugScreenUiEvent()
     data class SearchLogs(val query: String) : AppStatusDebugScreenUiEvent()
+
     data class ToggleLogPriorityFilter(val filter: LogPriorityFilterItemState) :
         AppStatusDebugScreenUiEvent()
 
     data class ToggleLogTypeFilter(val filter: LogTypeFilterItemState) :
+        AppStatusDebugScreenUiEvent()
+
+    data class ToggleAppHostTypeFilter(val filter: LogAppHostFilterItemState) :
         AppStatusDebugScreenUiEvent()
 }

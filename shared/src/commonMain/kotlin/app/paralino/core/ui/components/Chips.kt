@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -88,20 +89,21 @@ fun DataInfoChip(
 @Composable
 fun SmallActionButton(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.onError,
-    contentColor: Color = MaterialTheme.colors.onPrimary,
+    backgroundColor: Color = MaterialTheme.colors.error,
+    contentColor: Color = MaterialTheme.colors.onError,
+    shape: Shape = RoundedCornerShape(percent = 50),
     hasEndArrow: Boolean = false,
     icon: Painter?,
     text: @Composable () -> Unit,
-    onClick: () -> Unit
+    onClick: (() -> Unit)?
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(percent = 50))
-            .clickable { onClick() }
+            .clip(shape)
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .background(
-                backgroundColor,
-                RoundedCornerShape(percent = 50)
+                color = backgroundColor,
+                shape = shape
             )
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -126,6 +128,8 @@ fun SmallActionButton(
                 tint = contentColor,
                 contentDescription = null
             )
+        } else {
+            Spacer(modifier = Modifier.size(4.dp))
         }
     }
 }

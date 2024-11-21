@@ -5,9 +5,9 @@ import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
-import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -16,9 +16,9 @@ import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
 
 class GroupValidityVerification(
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val appPrefs: AppPrefs
 ) {
 

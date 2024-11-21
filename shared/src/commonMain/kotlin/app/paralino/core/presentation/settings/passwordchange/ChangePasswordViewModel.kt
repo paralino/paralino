@@ -18,6 +18,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -28,7 +29,7 @@ class ChangePasswordViewModel(
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ChangePasswordScreenState())
-    val uiState: Flow<ChangePasswordScreenState> = _uiState
+    val uiState: StateFlow<ChangePasswordScreenState> = _uiState
 
     private val _eventChannel = Channel<ChangePasswordScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -39,7 +40,7 @@ class ChangePasswordViewModel(
         val passwordNew = _uiState.value.newPassword
         val passwordConfirm = _uiState.value.confirmPassword
 
-        val oldPasswordValidation = FormValidation.Password.validate(passwordOld)
+        val oldPasswordValidation = FormValidation.TextNotEmpty.validate(passwordOld)
         val newPasswordValidation = FormValidation.Password.validate(passwordNew)
         val confirmPasswordValidation =
             FormValidation.PasswordConfirm.validate(passwordNew, passwordConfirm)
@@ -52,9 +53,12 @@ class ChangePasswordViewModel(
             )
         }
 
-        val firstValidation =
-            arrayOf(oldPasswordValidation, newPasswordValidation, confirmPasswordValidation)
-                .firstOrNull { !it.result }
+        val firstValidation = arrayOf(
+            oldPasswordValidation,
+            newPasswordValidation,
+            confirmPasswordValidation
+        )
+            .firstOrNull { !it.result }
 
         if (firstValidation != null) {
             showSnackbar(getFormValidationErrorText(validation = firstValidation.type))

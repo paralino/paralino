@@ -3,17 +3,21 @@ package app.paralino.core.domain.location
 import app.paralino.core.MR
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppHost
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
+import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
@@ -50,7 +54,9 @@ class LocationUploadEngine constructor(
     private val locationCacheRepo: LocationCacheRepository,
     private val scopeProvider: ICoroutineScopeProvider,
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
-    private val placeActivityRepo: PlaceActivityDataSource
+    private val placeActivityRepo: PlaceActivityDataSource,
+    private val accessLogDataSource: AccessLogDataSource,
+    private val appBuildConfig: AppBuildConfig
 ) : LimitedExecutionRepository() {
 
     private val maxUploadRate: Duration
@@ -67,6 +73,7 @@ class LocationUploadEngine constructor(
             }
         }
     private var locationUploadMonitoringJob: Job? = null
+    private var locationStatusMonitoringJob: Job? = null
     private var lastLocationPush = MutableStateFlow<Instant?>(null)
 
     private val _pendingLocation = MutableStateFlow<LocationDataModel?>(null)
@@ -76,7 +83,8 @@ class LocationUploadEngine constructor(
     private var failedRegistrationAttempts = MutableStateFlow(mapOf<String, Int>())
 
     fun startLocationUploadEngine() {
-        locationSharingManager.sharingStatus
+        locationStatusMonitoringJob?.cancel()
+        locationStatusMonitoringJob = locationSharingManager.sharingStatus
             .mapNotNull { it.data }
             .onEach { sharingActive ->
                 if (sharingActive) {
@@ -112,13 +120,14 @@ class LocationUploadEngine constructor(
                             }
                         }
 
+                        logg.d(tag = "location_service", message = "Location (${it.timeUTC}) ready for upload")
                         lastLocationPush.update { nowUTC() }
                         locationCacheRepo.updateCache(it)
                         scopeProvider.userSessionIOScope.launch {
                             try {
                                 uploadLocation(it)
                             } catch (e: Exception) {
-                                lastLocationPush.update { null }
+//                                lastLocationPush.update { null }
                                 logg.w(
                                     tag = "location_service",
                                     message = "Error uploading new location: ${e.message}"
@@ -161,6 +170,14 @@ class LocationUploadEngine constructor(
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {
+
+        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+            accessLogDataSource.deleteLocationRequestAccessLog()
+        } else if(!accessLogDataSource.canProcessLocationRequest()) {
+            logg.i("location_service", "Can not process location upload request")
+            return
+        }
+
         triggerRemoteOnly {
             val contracts = locationSharingManager.allValidContracts()
             val mapped = contracts.mapNotNull { contract ->
@@ -238,11 +255,13 @@ class LocationUploadEngine constructor(
                     "Current member is unverified in group ${groupId}, ignore location update"
                 )
                 infoNotificationPresenter.notify(
-                    notificationId = 6345,
-                    title = MR.strings.error_something_wrong.localizedString(),
-                    message = MR.strings.error_unverified_member_notification_message.localizedString(),
-                    timeMillis = null,
-                    timeInfo = null
+                    IPushNotificationPresenter.Payload(
+                        notificationId = 6345,
+                        title = MR.strings.error_something_wrong.localizedString(),
+                        message = MR.strings.error_unverified_member_notification_message.localizedString(),
+                        timeMillis = null,
+                        timeInfo = null
+                    )
                 )
                 null
             }
@@ -290,11 +309,13 @@ class LocationUploadEngine constructor(
                         it.toMutableMap().apply { set(groupId, 0) }
                     }
                     infoNotificationPresenter.notify(
-                        notificationId = 54343,
-                        title = MR.strings.error_something_wrong.localizedString(),
-                        message = MR.strings.error_device_registration_notification_message.localizedString(),
-                        timeMillis = null,
-                        timeInfo = null
+                        IPushNotificationPresenter.Payload(
+                            notificationId = 54343,
+                            title = MR.strings.error_something_wrong.localizedString(),
+                            message = MR.strings.error_device_registration_notification_message.localizedString(),
+                            timeMillis = null,
+                            timeInfo = null
+                        )
                     )
                 }
                 return null
@@ -302,11 +323,13 @@ class LocationUploadEngine constructor(
         } catch (e: Exception) {
             logg.w("location_service", "Error registering device for group sharing", e)
             infoNotificationPresenter.notify(
-                notificationId = 54343,
-                title = MR.strings.error_something_wrong.localizedString(),
-                message = MR.strings.error_device_registration_notification_message.localizedString(),
-                timeMillis = null,
-                timeInfo = null
+                IPushNotificationPresenter.Payload(
+                    notificationId = 54343,
+                    title = MR.strings.error_something_wrong.localizedString(),
+                    message = MR.strings.error_device_registration_notification_message.localizedString(),
+                    timeMillis = null,
+                    timeInfo = null
+                )
             )
             return null
         }

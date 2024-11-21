@@ -11,8 +11,8 @@ import app.paralino.core.MR
 import app.paralino.core.models.data
 import app.paralino.core.presentation.groups.GroupSettingsViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.groups.GroupSettingsScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.map

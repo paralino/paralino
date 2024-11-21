@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <plurals name="groups_sharing_duration_type_minutes">
         <item quantity="one">%d minuta</item>
         <item quantity="few">%d minute</item>
         <item quantity="other">%d minuta</item>
     </plurals>
-    <plurals name="groups_sharing_duration_type_hours" tools:ignore="UnusedQuantity">
+    <plurals name="groups_sharing_duration_type_hours">
         <item quantity="one">%d sat</item>
         <item quantity="few">%d sata</item>
         <item quantity="other">%d sati</item>
@@ -29,5 +29,20 @@
         <item quantity="one">Dijeljenje lokacije sa %s grupom</item>
         <item quantity="few">Dijeljenje lokacije sa %d grupe</item>
         <item quantity="other">Dijeljenje lokacije sa %d grupa</item>
+    </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one">**%d grupa**</item>
+        <item quantity="few">**%d grupe**</item>
+        <item quantity="other">**%d grupa**</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">**%d član**</item>
+        <item quantity="few">**%d člana**</item>
+        <item quantity="other">**%d članova**</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one">**%d mjesto**</item>
+        <item quantity="few">**%d mjesta**</item>
+        <item quantity="other">**%d mjesta**</item>
     </plurals>
 </resources>

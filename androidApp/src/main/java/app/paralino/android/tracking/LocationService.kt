@@ -3,10 +3,13 @@ package app.paralino.android.tracking
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.IBinder
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.remote.sync.FullRefreshSyncWorker
+import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
@@ -15,7 +18,6 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
-import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,9 +52,11 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
         logg.v(this.hashCode().toString(), "Location service created")
-        startForeground(
+        ServiceCompat.startForeground(
+            this,
             notificationHandler.notificationId,
-            notificationHandler.notify(this, groupCount = 0, errors = emptyList())
+            notificationHandler.notify(this, groupCount = 0, errors = emptyList()),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
         )
     }
 
@@ -106,7 +110,7 @@ class LocationService : Service() {
                 )
             )
             if(!deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
-                add(ConditionErrorType.NETWORK)
+                add(ConditionErrorType.Network)
             }
         }
         val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0

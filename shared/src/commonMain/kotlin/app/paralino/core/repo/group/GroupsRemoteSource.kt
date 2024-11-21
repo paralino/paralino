@@ -1,11 +1,10 @@
 package app.paralino.core.repo.group
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -42,7 +41,8 @@ class GroupsRemoteSource constructor(
     private val appBuildConfig: AppBuildConfig,
     private val mapper: GroupMapperCore,
     private val cryptoCore: CryptoCore,
-    private val cryptoUserKeyRepo: CryptoUserKeyRepository
+    private val cryptoUserKeyRepo: CryptoUserKeysLocalSource,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun updateGroup(group: UserGroup): GroupDocumentRaw {

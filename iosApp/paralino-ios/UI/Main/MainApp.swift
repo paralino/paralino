@@ -7,6 +7,7 @@
 
 import SwiftUI
 import shared
+import paralino_apple_core
 
 @main
 struct MainApp: App {
@@ -17,14 +18,14 @@ struct MainApp: App {
     @State var isOrWasActive = false
     
     init() {
-        AppDelegate.shared = appDelegate
+        AppDelegate.sharedInstance = appDelegate
     }
     
     var body: some Scene {
         WindowGroup {
             ZStack {
                 if isOrWasActive {
-                    switch appState.uiState {
+                    switch appState.accountState {
                     case .notInitialized: VStack {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
                     }
@@ -50,6 +51,18 @@ struct MainApp: App {
             }
             .environmentObject(appDelegate)
             .environmentObject(appDelegate.locationManager)
+            .environmentObject(appState)
+            .onOpenURL { url in
+                if let deeplink = DeeplinkType.companion.parse(deeplink: url.absoluteString) {
+                    appState.vm.setDeeplink(deeplinkType: deeplink)
+                } else {
+                    Logr.w(tag:"delegate", message: "Unknown url launched")
+                }
+            }
+            .mainAlert($appState.sessionExpiredDialog) { action in
+                appState.vm.cancelSessionExpired()
+            }
+            .loadingOverlay(isLoading: appState.uiState.dataRefreshBlockingLoadingShown)
         }
     }
     

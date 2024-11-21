@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.places.detail
 
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -15,12 +16,15 @@ import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -32,6 +36,7 @@ class PlaceDetailViewModel(
     val placeId: String,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val placeFlow =
@@ -48,7 +53,7 @@ class PlaceDetailViewModel(
     init {
         combine(
             groupRepo.getGroupWithMembersLocally(groupId).filterNotNull(),
-            placesRepo.getPlaceWithSettings(placeId)
+            placesRepo.getPlaceWithSettingsLocally(placeId)
         ) { group, place ->
 
             placeFlow.update { Resource.Ready(place) }
@@ -92,7 +97,16 @@ class PlaceDetailViewModel(
         }
             .mapToPayload { it }
             .onEach { result -> _uiState.update { result } }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
+
+        coroutineScope.launch {
+            try {
+                placesRepo.refreshPlaceWithSettingsMaybe(placeId = placeId)
+            } catch (e: Exception) {
+                logg.w("places", "Failed to refresh place: ${e.message}")
+            }
+        }
     }
 
     fun deletePlace() {

@@ -14,8 +14,8 @@ import app.paralino.core.MR
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.ui.components.EmojiBottomSheetPicker
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import dev.icerock.moko.resources.compose.stringResource
@@ -64,6 +64,7 @@ fun CreatePlaceScreen(
                     modifier = Modifier.fillMaxSize(),
                     state = state,
                     onMapInteraction = { },
+                    onMapTap = { lat, lng -> vm.updatePosition(lat, lng) },
                     onMapLongPress = { lat, lng -> vm.updatePosition(lat, lng) }
                 )
             }

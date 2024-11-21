@@ -8,27 +8,30 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
 import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
 import app.paralino.core.MR
+import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.logg
-import app.paralino.core.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.provider.InAppLogger
 import app.paralino.core.ui.theme.AppColors
 
-class GroupActivityNotificationPresenter(private val context: Context) : IGroupActivityNotificationPresenter {
+class GroupActivityNotificationPresenter(
+    private val context: Context,
+    inAppLogger: InAppLogger
+) : IGroupActivityNotificationPresenter(inAppLogger) {
 
     private val channelId = "group_activity_channel"
     private val notificationColor: Int by lazy {
         AppColors.lightThemePrimary.toArgb()
     }
 
-
-    override fun notify(notificationId: Int, title: String, message: String?, timeMillis: Long?, timeInfo: String?) {
+    override fun showPushNotification(payload: Payload) {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
@@ -41,18 +44,17 @@ class GroupActivityNotificationPresenter(private val context: Context) : IGroupA
         val notificationManager = NotificationManagerCompat.from(context)
 
         val intent = buildNotificationIntent(context)
-        intent.apply { flags = Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED }
-        val pendingIntent = TaskStackBuilder.create(context)
-            .apply { addNextIntentWithParentStack(intent) }
-            .getPendingIntent(
-                100,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSubText(timeInfo)
+            .setContentTitle(payload.title)
+            .setContentText(payload.message)
+            .setSubText(payload.timeInfo)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_notification_icon)
@@ -64,17 +66,19 @@ class GroupActivityNotificationPresenter(private val context: Context) : IGroupA
             .setColor(notificationColor)
             .setColorized(true)
             .setShowWhen(true)
-            .setWhen(timeMillis ?: System.currentTimeMillis())
+            .setWhen(payload.timeMillis ?: System.currentTimeMillis())
 
         registerNotificationChannel(context)
 
         val notification = notificationBuilder.build()
-        notificationManager.notify(notificationId, notification)
+        notificationManager.notify(payload.notificationId, notification)
     }
 
     private fun buildNotificationIntent(context: Context): Intent {
         // TODO deeplink to a group
-        return Intent(context, MainActivity::class.java)
+        return Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
     }
 
     private fun registerNotificationChannel(context: Context) {

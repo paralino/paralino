@@ -3,7 +3,7 @@ package app.paralino.core.models.mappers
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberSenderKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
@@ -23,7 +23,7 @@ import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 
 class MemberMapperCore constructor(
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val cryptoCore: CryptoCore,
     private val groupVerification: GroupValidityVerification
 ) {
@@ -112,7 +112,9 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(it)
                         }.let {
-                            if(verification is VerificationResult.Verified) {
+                            if (it.isMasked) {
+                                CryptoResource.NotInitialized
+                            } else if(verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)

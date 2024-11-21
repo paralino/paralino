@@ -1,6 +1,9 @@
 package app.paralino.core.repo.api
 
+import app.paralino.core.models.Payload
 import app.paralino.core.models.base.RealtimeResponse
+import app.paralino.core.models.data
+import app.paralino.core.models.getOrThrow
 import app.paralino.core.provider.IConnectionStatusProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +24,7 @@ class RealtimeApiWrapperIOS(
                     channels = channels,
                     filters = filters,
                     onResult = { trySend(it) }
-                )
+                ).getOrThrow()
             } else {
                 RealtimeSubscriptionCallbackIOS()
             }
@@ -37,7 +40,7 @@ interface IRealtimeApiIOS {
         channels: List<String>,
         filters: List<String> = listOf(),
         onResult: (RealtimeResponse<Map<String, Any>>) -> Unit
-    ): RealtimeSubscriptionCallbackIOS
+    ): Payload<RealtimeSubscriptionCallbackIOS>
 }
 
 class RealtimeSubscriptionCallbackIOS(var close: (() -> Unit)? = null)

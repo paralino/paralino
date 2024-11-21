@@ -1,0 +1,26 @@
+package app.paralino.core.db
+
+import app.paralino.core.db.logs.AppLogsDatabase
+import app.paralino.core.db.main.AppMainDatabase
+
+class LogsDatabaseHelper(
+    private val database: AppLogsDatabase
+) {
+    val debugLogsQueries = database.debugLogsDao()
+    val accessLogQueries = database.accessLogDao()
+}
+
+class MainDatabaseHelper(
+    private val roomDatabase: AppMainDatabase
+) {
+    val userDao by lazy { roomDatabase.userDao() }
+    val blocklistDao by lazy { roomDatabase.blocklistDao() }
+    val sharingContractsDao by lazy { roomDatabase.sharingContractsDao() }
+    val userConfigDao by lazy { roomDatabase.userConfigDao() }
+    val remoteConfigDao by lazy { roomDatabase.remoteConfigDao() }
+    val personalCodeDao by lazy { roomDatabase.personalCodeDao() }
+    val userKeysDao by lazy { roomDatabase.userKeysDao() }
+    val groupRelatedKeysDao by lazy { roomDatabase.groupRelatedKeysDao() }
+    val placeActivityDao by lazy { roomDatabase.placeActivityDao() }
+    val groupRelatedDao by lazy { roomDatabase.groupRelatedDao() }
+}

@@ -9,9 +9,11 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -65,7 +67,7 @@ fun GroupStatusTag(
 
             GroupStatusTagType.UNVERIFIED,
             GroupStatusTagType.GPS_OFF,
-            GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.onError
+            GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.error
 
             GroupStatusTagType.TOO_MANY_REQUESTS,
             GroupStatusTagType.IDLE,
@@ -77,7 +79,7 @@ fun GroupStatusTag(
             GroupStatusTagType.OFFLINE,
             null -> MaterialTheme.colors.secondary
         }
-        val tagTextColor = MaterialTheme.colors.onPrimary
+        val tagTextColor = MaterialTheme.colors.contentColorFor(tagColor).takeOrElse { MaterialTheme.colors.onPrimary }
         val tagText = when (status) {
             GroupStatusTagType.SHARING_ACTIVE,
             GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_active)

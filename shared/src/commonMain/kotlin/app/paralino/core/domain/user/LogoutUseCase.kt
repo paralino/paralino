@@ -1,8 +1,8 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.location.LocationUploadEngine
@@ -11,6 +11,7 @@ import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
@@ -25,8 +26,8 @@ class LogoutUseCase(
     private val groupsRepo: UserGroupLocalDataSource,
     private val placeActivityRepo: PlaceActivityDataSource,
     private val sharingManager: LocationSharingManager,
-    private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
     private val deviceStatus: IDeviceApiProvider,
@@ -35,6 +36,7 @@ class LogoutUseCase(
     private val geofenceManager: IGeofenceManager,
     private val sessionMonitor: UserSessionMonitor,
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
+    private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 
@@ -105,7 +107,7 @@ class LogoutUseCase(
         appPrefs.clear()
         scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
 
-        userKeyRepo.clearAll()
+        userKeyRepo.clearAllKeys()
         cryptoKEKRepo.clearKeys()
         pushManager.logout()
         deviceStatus.logout()
@@ -116,6 +118,7 @@ class LogoutUseCase(
         sharingManager.stopAllSharing()
         geofenceManager.deleteAllGeofences()
         userRepo.clearLocally()
+        accessLogs.clearAll()
         logg.i("account_state", "Cleared all data on logout")
     }
 }

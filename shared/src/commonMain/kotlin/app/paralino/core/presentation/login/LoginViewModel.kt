@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.login
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.CreateAccountUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
@@ -132,7 +132,10 @@ class LoginViewModel constructor(
         val password = _uiState.value.password
 
         val emailValidation = FormValidation.Email.validate(email)
-        val passwordValidation = FormValidation.Password.validate(password)
+
+        // validating only for not empty value to allow login with currently lower quality password
+        // account creating is still behind higher validation
+        val passwordValidation = FormValidation.TextNotEmpty.validate(password)
 
         _uiState.update {
             it.copy(

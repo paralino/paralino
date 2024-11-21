@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,15 +28,12 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileScreenEven
 import app.paralino.core.presentation.settings.editprofile.EditProfileScreenState
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -73,7 +68,7 @@ fun EditProfileScreen(
             onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.userEmojis))
         },
         onNameChange = { vm.onNameChange(it) },
-        onCreateGroupClick = { vm.proceed() }
+        onConfirm = { vm.proceed() }
     )
 }
 
@@ -82,71 +77,63 @@ fun EditProfileScreen(
     state: EditProfileScreenState,
     onImageClick: () -> Unit,
     onNameChange: (String) -> Unit,
-    onCreateGroupClick: () -> Unit,
+    onConfirm: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            }
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    ActionScaffold(
+        modifier = Modifier.fillMaxSize(),
+        buttonState = AppButtonState.loadingStateWithCheck(state.actionLoading),
+        buttonText = stringResource(MR.strings.button_save),
+        buttonIcon = null,
+        onConfirm = {
+            focusManager.clearFocus()
+            onConfirm()
+        }
     ) {
-
-        Spacer(modifier = Modifier.fillMaxHeight(1f))
-
-        Box(
-            modifier = Modifier.size(100.dp),
-            contentAlignment = Alignment.Center
+        Column(
+            Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
+                .verticalScroll(rememberScrollState())
+                .padding(it)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ImageModelImage(
-                imageModel = state.image,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clickable {
-                        onImageClick()
-                    }
-            )
-        }
+            Spacer(modifier = Modifier.weight(1f))
 
-        Spacer(modifier = Modifier.size(20.dp))
-
-        MainInputField(
-            text = state.name,
-            hint = stringResource(resource = MR.strings.settings_profile_name_placeholder),
-            hasError = state.hasNameError,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done,
-            capitalization = KeyboardCapitalization.Words,
-            focusManager = focusManager,
-            onInputChange = onNameChange
-        )
-
-        Spacer(modifier = Modifier.size(80.dp))
-
-        FilledButton(
-            style = ButtonStyle.BIG,
-            state = if (state.actionLoading == null)
-                AppButtonState.CONTENT
-            else
-                AppButtonState.loadingStateWithCheck(state.actionLoading!!),
-            icon = CoreAppIcons.Save.asPainterResource(),
-            onClick = {
-                focusManager.clearFocus()
-                onCreateGroupClick()
+            Box(
+                modifier = Modifier.size(100.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ImageModelImage(
+                    imageModel = state.image,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clickable(onClick = onImageClick)
+                )
             }
-        ) {
-            Text(text = stringResource(resource = MR.strings.button_save))
-        }
 
-        Spacer(modifier = Modifier.fillMaxHeight(1f))
+            Spacer(modifier = Modifier.size(20.dp))
+
+            MainInputField(
+                text = state.name,
+                hint = stringResource(resource = MR.strings.settings_profile_name_placeholder),
+                hasError = state.hasNameError,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                capitalization = KeyboardCapitalization.Words,
+                focusManager = focusManager,
+                onInputChange = onNameChange
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+        }
     }
 }

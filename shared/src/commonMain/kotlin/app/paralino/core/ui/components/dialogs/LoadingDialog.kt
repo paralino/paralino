@@ -1,6 +1,5 @@
 package app.paralino.core.ui.components.dialogs
 
-import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.AlertDialog
@@ -19,7 +18,7 @@ import app.paralino.core.utils.extensions.annotatedBold
 @Composable
 fun LoadingDialog(
     text: String?,
-    @FloatRange(0.0, 1.0) progress: Float? = null
+    progress: Float? = null
 ) {
     val title: (@Composable () -> Unit)? = if (text != null) {
         @Composable {

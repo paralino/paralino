@@ -1,11 +1,12 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.LocationDeletePayload
@@ -30,7 +31,8 @@ class LocationRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val appBuildConfig: AppBuildConfig,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKRepository
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun deleteLocation(memberId: String, locationId: String) {
@@ -52,14 +54,42 @@ class LocationRemoteSource constructor(
         }
     }
 
-    suspend fun clearLocation(id: String) {
+    suspend fun clearLocation(
+        groupId: String,
+        locationId: String
+    ) {
+        // passing fake data here so we hide the fact that users cleared their location
         blocking {
+            val memberKey = cryptoKEKRepo.getMemberSenderKey(
+                groupId = groupId,
+                memberUserId = appPrefs.userId,
+                locationId = locationId
+            )
+            if (memberKey !is GroupMemberSenderKey.Valid)
+                throw MissingMemberKeyException(groupId, appPrefs.userId)
+
+            val payload = LocationDataModel(
+                lat = 0.0,
+                lng = 0.0,
+                accuracy = 10000000f,
+                timeUTC = "2021-01-17T21:47:27+01:00",
+                endTimeUTC = null,
+                speed = null,
+                altitude = null,
+                isMasked = true
+            )
+
+            val locationData = cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(payload),
+                key = memberKey.key
+            )
+
             documentApi.updateDocument(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
-                docId = id,
+                docId = locationId,
                 data = mapOf(
-                    "locationData" to "",
+                    "locationData" to locationData,
                 )
             )
         }

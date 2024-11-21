@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,16 +39,15 @@ import app.paralino.core.presentation.groups.CreateGroupScreenEvent
 import app.paralino.core.presentation.groups.CreateGroupState
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
-import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -132,69 +129,64 @@ private fun GroupCreateScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            }
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    ActionScaffold(
+        modifier = Modifier.fillMaxSize(),
+        buttonState = AppButtonState.loadingStateWithCheck(state.isLoading),
+        buttonText = if (state.isNewGroup) {
+            stringResource(MR.strings.group_create_button_text)
+        } else {
+            stringResource(MR.strings.button_save)
+        },
+        buttonIcon = if (state.isNewGroup) null else CoreAppIcons.Save.asPainterResource(),
+        onConfirm = {
+            focusManager.clearFocus()
+            onCreateGroupClick(state.image, groupName)
+        }
     ) {
-
-        Spacer(modifier = Modifier.fillMaxHeight(1f))
-
-        Box(
-            modifier = Modifier.size(100.dp),
-            contentAlignment = Alignment.Center
+        Column(
+            Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
+                .verticalScroll(rememberScrollState())
+                .padding(it)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ImageModelImage(
-                imageModel = state.image,
-                modifier = Modifier
-                    .size(100.dp)
-                    .rotate(rotation)
-                    .clickable {
-                        onImageClick()
-                    }
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box(
+                modifier = Modifier.size(100.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ImageModelImage(
+                    imageModel = state.image,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .rotate(rotation)
+                        .clickable(onClick = onImageClick)
+                )
+            }
+
+            Spacer(modifier = Modifier.size(20.dp))
+
+            MainInputField(
+                text = groupName,
+                hint = stringResource(MR.strings.group_create_name_placeholder),
+                hasError = state.hasError,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                focusManager = focusManager,
+                onInputChange = { groupName = it.take(nameLengthLimit) }
             )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
-
-        Spacer(modifier = Modifier.size(20.dp))
-
-        MainInputField(
-            text = groupName,
-            hint = stringResource(MR.strings.group_create_name_placeholder),
-            hasError = state.hasError,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done,
-            focusManager = focusManager,
-            onInputChange = { groupName = it.take(nameLengthLimit) }
-        )
-
-        Spacer(modifier = Modifier.size(80.dp))
-
-        FilledButton(
-            style = ButtonStyle.BIG,
-            state = AppButtonState.loadingStateWithCheck(state.isLoading),
-            icon = if (state.isNewGroup) null else CoreAppIcons.Save.asPainterResource(),
-            onClick = {
-                focusManager.clearFocus()
-                onCreateGroupClick(state.image, groupName)
-            }
-        ) {
-            if (state.isNewGroup) {
-                Text(text = stringResource(MR.strings.group_create_button_text))
-            } else {
-                Text(text = stringResource(MR.strings.button_save))
-            }
-        }
-
-        Spacer(modifier = Modifier.fillMaxHeight(1f))
     }
 }
 

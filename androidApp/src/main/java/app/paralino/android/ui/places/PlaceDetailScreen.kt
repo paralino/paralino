@@ -19,8 +19,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlaceDetailUserListItem
 import app.paralino.core.ui.theme.AppTheme

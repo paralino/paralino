@@ -62,7 +62,8 @@ class LocationPayloadProvider(
                                 lng = data.lng,
                                 accuracy = data.accuracy,
                                 speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
-                                altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f }
+                                altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
+                                isMasked = false
                             )
                         },
                         deviceStatus = memberDeviceStatusProvider.getStatus(groupId = groupId)

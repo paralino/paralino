@@ -1,6 +1,5 @@
 package app.paralino.core.ui.invite.manage
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +40,6 @@ import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PersonalCodeScreenCore(
     appState: CoreUiState,
@@ -74,13 +72,13 @@ fun PersonalCodeScreenCore(
                 data = it
             ) {
                 when (it) {
-                    ConditionErrorType.NETWORK -> {
+                    ConditionErrorType.Network -> {
                         vm.showSnackbar(
                             text = MR.strings.error_no_connection_snackbar.localizedString()
                         )
                     }
 
-                    ConditionErrorType.PERMISSION_NOTIFICATIONS -> {
+                    ConditionErrorType.PermissionNotifications -> {
                         askNotificationPermission()
                     }
 
@@ -99,19 +97,31 @@ fun PersonalCodeScreenCore(
 
         if (uiState.activeCode != null) {
             this.item(key = "activeCode") {
-                PersonalCodeItem(
-                    modifier = Modifier.padding(bottom = 4.dp).animateItemPlacement(),
-                    state = uiState.activeCode!!,
-                    onCopy = {
-                        vm.onEvent(PersonalCodeScreenUiEvent.CopyPersonalCode)
-                        vm.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
-                    },
-                    onShare = {
-                        onShare(uiState.activeCode!!.code)
-                    },
-                    onDelete = {
-                        vm.onEvent(PersonalCodeScreenUiEvent.DisableCode)
-                    }
+                PersonalCodeItemWithHints(
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .animateItem()
+                ) {
+                    PersonalCodeItem(
+                        modifier = this,
+                        state = uiState.activeCode!!,
+                        onCopy = {
+                            vm.onEvent(PersonalCodeScreenUiEvent.CopyPersonalCode)
+                            vm.showSnackbar(text = MR.strings.toast_copy_invite_code.localizedString())
+                        },
+                        onShare = onShare,
+                        onDelete = {
+                            vm.onEvent(PersonalCodeScreenUiEvent.DisableCode)
+                        }
+                    )
+                }
+            }
+        } else {
+            this.item(key = "inactiveCode") {
+                DefaultEmptyState(
+                    modifier = Modifier.animateItem(),
+                    icon = CoreAppIcons.AddLink.asPainterResource(),
+                    content = stringResource(MR.strings.invite_manage_empty_description)
                 )
             }
         }
@@ -122,7 +132,7 @@ fun PersonalCodeScreenCore(
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .padding(horizontal = 20.dp)
-                        .animateItemPlacement(),
+                        .animateItem(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -139,7 +149,7 @@ fun PersonalCodeScreenCore(
             }
             this.items(uiState.inactiveCodes, key = { it.id }) { code ->
                 PersonalCodeItemInactive(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItem(),
                     state = code
                 ) {
                     vm.onEvent(PersonalCodeScreenUiEvent.ActivateCode(it))

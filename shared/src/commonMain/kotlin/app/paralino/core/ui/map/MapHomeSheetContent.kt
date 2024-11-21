@@ -2,6 +2,7 @@ package app.paralino.core.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,19 +27,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SwipeableState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
@@ -59,12 +62,15 @@ import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MapHomeSheetContent(
-    swipeableState: SwipeableState<BottomSheetPosition>,
+    swipeableState: SwipeableSheetState,
     readyState: MapHomeScreenState.Ready?,
     members: List<GroupMemberItemState>,
     places: List<PlaceListItemData>,
@@ -74,11 +80,22 @@ fun MapHomeSheetContent(
     onOpenPlaces: () -> Unit,
     onCreatePlace: () -> Unit,
     onWholeContentClick: () -> Unit,
-    onExpandSheet: () -> Unit,
-    onCollapseSheet: () -> Unit,
     onFocusOnMembersClick: () -> Unit,
     onFocusOnPlacesClick: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(swipeableState) {
+        snapshotFlow { swipeableState.settledValue }
+            .distinctUntilChanged()
+            .collectLatest {
+                if (it >= BottomSheetPosition.HALF_EXPANDED) {
+                    scope.launch {
+                        swipeableState.mapContentListState.scrollToItem(0, 0)
+                    }
+                }
+            }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,12 +109,17 @@ fun MapHomeSheetContent(
 
         val contentAlpha by remember {
             derivedStateOf {
-                if (swipeableState.progress.to == BottomSheetPosition.COLLAPSED) {
-                    1f - swipeableState.progress.fraction
-                } else if (swipeableState.progress.from == BottomSheetPosition.COLLAPSED) {
-                    swipeableState.progress.fraction
-                } else {
-                    1f
+                when (swipeableState.currentValue) {
+                    BottomSheetPosition.HALF_EXPANDED -> {
+                        1f - (swipeableState.progress.takeIf { it < 0.5f } ?: 0f)
+                    }
+
+                    BottomSheetPosition.COLLAPSED -> {
+                        1f - (swipeableState.progress.takeIf { it > 0.5f && !swipeableState.isPastCollapsed }
+                            ?: 1f)
+                    }
+
+                    else -> 1f
                 }
             }
         }
@@ -122,9 +144,10 @@ fun MapHomeSheetContent(
                 idleUserCount = readyState.idleUserCount,
                 verified = readyState.allMembersVerified,
                 interactionVisibilityFraction = contentAlpha,
-                onGroupClick = {
+                onGroupContentClick = onWholeContentClick,
+                onGroupDetailButtonClick = {
                     if (swipeableState.isCollapsed()) {
-                        onExpandSheet()
+                        onWholeContentClick()
                     } else {
                         onGroupClick()
                     }
@@ -135,10 +158,10 @@ fun MapHomeSheetContent(
 
             Row(
                 modifier = Modifier
-                    .padding(start = 20.dp)
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp)
                     .alpha(contentAlpha)
-                    .align(Alignment.Start)
-                    .horizontalScroll(rememberScrollState()),
+                    .align(Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MapBottomSheetTab(
@@ -161,14 +184,35 @@ fun MapHomeSheetContent(
             }
         }
 
-        Spacer(modifier = Modifier.size(12.dp))
-
         LazyColumn(
             modifier = Modifier
+                .padding(top = 2.dp)
                 .weight(1f)
                 .alpha(contentAlpha),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 80.dp)
+            state = swipeableState.mapContentListState,
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                end = 20.dp,
+                top = 8.dp,
+                bottom = swipeableState.contentBottomPadding
+            )
         ) {
+            this.stickyHeader(key = "top_gradient") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colors.background,
+                                    MaterialTheme.colors.background,
+                                    Color.Transparent
+                                )
+                            )
+                        )
+                )
+            }
             when (readyState?.mapSheetSelectedContentType) {
                 MapSheetSelectedContentType.PLACES -> {
                     placesList(

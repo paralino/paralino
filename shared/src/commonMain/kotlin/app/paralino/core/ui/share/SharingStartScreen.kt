@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
@@ -50,6 +48,7 @@ import app.paralino.core.presentation.share.SharingStartScreenUiEvent
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.ConditionErrorItem
@@ -169,10 +168,10 @@ fun SharingStartScreenCore(
                 is SharingStartScreenEvent.AskForPermission -> {
                     when (event.error) {
                         ConditionErrorType.GPS -> askLocationService()
-                        ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
-                        ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
-                        ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
-                        ConditionErrorType.NETWORK -> vm.showSnackbar(
+                        is ConditionErrorType.PermissionLocation -> askLocationPermission()
+                        ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
+                        ConditionErrorType.PermissionNotifications -> askNotificationPermission()
+                        ConditionErrorType.Network -> vm.showSnackbar(
                             text = MR.strings.error_no_connection_snackbar.localizedString()
                         )
 
@@ -196,29 +195,12 @@ fun SharingStartScreenCore(
         vm.onEvent(SharingStartScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 
-    Scaffold(
+    ActionScaffold(
         modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.background)
-                    .padding(bottom = 20.dp, top = 8.dp)
-                    .padding(horizontal = 20.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                FilledButton(
-                    modifier = Modifier,
-                    style = ButtonStyle.BIG(iconSize = 24.dp),
-                    state = AppButtonState.CONTENT,
-                    icon = if (state.canShare) CoreAppIcons.ShareLocation.asPainterResource()
-                    else CoreAppIcons.NotListedLocation.asPainterResource(),
-                    onClick = { vm.startSharing() }
-                ) {
-                    Text(text = stringResource(MR.strings.groups_sharing_button_start))
-                }
-            }
-        },
+        buttonText = stringResource(MR.strings.groups_sharing_button_start),
+        buttonIcon = if (state.canShare) CoreAppIcons.ShareLocation.asPainterResource()
+        else CoreAppIcons.NotListedLocation.asPainterResource(),
+        onConfirm = { vm.startSharing() },
     ) {
         val focusManager = LocalFocusManager.current
         Column(
@@ -235,7 +217,7 @@ fun SharingStartScreenCore(
                 .padding(
                     start = 20.dp,
                     end = 20.dp,
-                    bottom = it.calculateBottomPadding() + 100.dp,
+                    bottom = it.calculateBottomPadding() + 60.dp,
                 ),
         ) {
 
@@ -248,10 +230,10 @@ fun SharingStartScreenCore(
                         ConditionErrorItem(data = it) {
                             when (it) {
                                 ConditionErrorType.GPS -> askLocationService()
-                                ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
-                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
-                                ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
-                                ConditionErrorType.NETWORK -> vm.showSnackbar(
+                                is ConditionErrorType.PermissionLocation -> askLocationPermission()
+                                ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
+                                ConditionErrorType.PermissionNotifications -> askNotificationPermission()
+                                ConditionErrorType.Network -> vm.showSnackbar(
                                     text = MR.strings.error_no_connection_snackbar.localizedString()
                                 )
 
@@ -305,6 +287,24 @@ fun SharingStartScreenCore(
 
             Spacer(modifier = Modifier.size(20.dp))
 
+            if (AppBuildConfig.instance.hasPreviewFeatures) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.background)
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.groups_sharing_devices),
+                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
+                        modifier = Modifier.alpha(ContentAlpha.medium)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
+                }
+            }
+
             MainInputField(
                 text = state.deviceName,
                 hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
@@ -316,32 +316,10 @@ fun SharingStartScreenCore(
                 onInputChange = { vm.onDeviceNameChange(it) }
             )
 
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colors.surface,
-                            shape = RoundedCornerShape(percent = 20)
-                        )
-                        .padding(vertical = 8.dp, horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.groups_sharing_devices),
-                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
-                }
-            }
-
             SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
 
             LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 icon = CoreAppIcons.AccessTime.asPainterResource(),
                 title = stringResource(MR.strings.groups_sharing_section_title_duration),
                 description = getTime(state.sharingTimeMillis),

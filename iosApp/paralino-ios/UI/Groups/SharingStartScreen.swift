@@ -7,16 +7,16 @@
 
 import SwiftUI
 import shared
+import paralino_apple_core
+import SwiftLocation
 
 struct SharingStartScreen: View {
     
     @EnvironmentObject var appDelegate: AppDelegate
-    @EnvironmentObject var locationManager: LocationManager
     @Binding var path: [NavigationGraph]
-    @StateObject var appState: ViewModelFactoryIOS<SharingStartViewModel>
+    @StateObject var appState: SharingStartState
     
-    @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
-    let notificationPermissionHandler = NotificationPermissionHandler()
+    @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -25,31 +25,107 @@ struct SharingStartScreen: View {
                 ScreensIOS.shared.home.StartSharingScreenVC(
                     vm: appState.vm,
                     groupId: nil,
-                    onPickGroup: { sheet in bottomSheet = sheet },
-                    onNavigateBack: {
-                        path.removeLast()
+                    onPickGroup: { sheet in groupPicker = sheet },
+                    onSharingStarted: {
+                        finishWithSharingScreen(isOnboarding: appState.isOnboarding)
+                    },
+                    openSubscriptions: {
+                        path.append(.settings(.subscriptions))
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
-                    }, 
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
+                    },
                     askLocationService: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationServices(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askLocationPermission: {
-                        locationManager.requestLocationPermission()
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askBackgroundLocationPermission: {
-                        locationManager.requestAlwaysOnLocationPermission()
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
         }
+        .toolbar {
+            if appState.isOnboarding {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    SmallActionButtonView(
+                        text: MR.shared.strings.button_skip.localizedString(),
+                        action: {
+                            finishWithSharingScreen(isOnboarding: appState.isOnboarding)
+                        },
+                        hasEndArrow: true
+                    )
+                }
+            }
+        }
+        .toolbarTitleDisplayMode(.inline)
+        .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
+        .navigationBarBackButtonHidden(appState.isOnboarding)
+        .groupPickerSheet(
+            $groupPicker,
+            onSelectGroup: { state in
+                groupPicker = nil
+                appState.vm.setSelectedGroup(groupId: state.id)
+            },
+            onEditGroup: { group in },
+            onCreateGroup: {},
+            onJoinGroup: {},
+            onOpenSubscription: {}
+        )
     }
     
-    static func createState(groupId: String?) -> ViewModelFactoryIOS<SharingStartViewModel> {
-        ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.sharingStartVM(groupId: groupId))
+    private func finishWithSharingScreen(isOnboarding: Bool) {
+        if appState.vm.shouldProceedToPaywall {
+            if let index = path.firstIndex(where: { $0 == .home(.map) }) {
+                path.removeSubrange(index+1..<path.count)
+            }
+            path.append(
+                .settings(
+                    .paywall(groupId: appState.groupId, type: isOnboarding ? BillingScreenSourceType.onboarding : BillingScreenSourceType.normal)
+                )
+            )
+        } else if isOnboarding {
+            if let index = path.firstIndex(where: { $0 == .home(.map) }) {
+                path.removeSubrange(index+1..<path.count)
+            }
+            if let groupId = appState.groupId {
+                path.append(.home(.groupDetail(groupId: groupId)))
+            }
+        } else {
+            path.removeLast()
+        }
+    }
+
+    
+    static func createState(groupId: String?, isOnboarding: Bool) -> SharingStartState {
+        SharingStartState(groupId: groupId, isOnboarding: isOnboarding)
     }
 }
 
+class SharingStartState: ObservableObject {
+    
+    let groupId: String?
+    let isOnboarding: Bool
+    let vm: SharingStartViewModel
+    
+    init (groupId: String?, isOnboarding: Bool) {
+        self.groupId = groupId
+        self.isOnboarding = isOnboarding
+        self.vm = KoinIOS.ViewModels.shared.sharingStartVM(groupId: groupId, isOnboarding: isOnboarding)
+    }
+    
+    deinit {
+        vm.cleanup()
+    }
+}

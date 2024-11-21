@@ -1,5 +1,5 @@
 {
-  "originHash" : "046588fc0a2212eb7fb94155c7c1bcdc91e0937540b9f0fa64376f1f7f101049",
+  "originHash" : "86651cc258eb4b8a7ade054eb3d9e2c62a845cf9853d8c441525ee862d3b7f5c",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -11,12 +11,12 @@
       }
     },
     {
-      "identity" : "sdk-for-apple",
+      "identity" : "purchases-ios-spm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/appwrite/sdk-for-apple",
+      "location" : "https://github.com/RevenueCat/purchases-ios-spm.git",
       "state" : {
-        "revision" : "c39030db9af1e2dd7b36f8df45f838c5f7dfb0da",
-        "version" : "5.0.0"
+        "revision" : "7f0b552b4d9b446a12740192fe0174dd6d77c6b2",
+        "version" : "5.7.1"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-atomics.git",
       "state" : {
-        "revision" : "6c89474e62719ddcc1e9614989fff2f68208fe10",
-        "version" : "1.1.0"
+        "revision" : "cd142fd2f64be2100422d658e7411e39489da985",
+        "version" : "1.2.0"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio.git",
       "state" : {
-        "revision" : "fc63f0cf4e55a4597407a9fc95b16a2bc44b4982",
-        "version" : "2.64.0"
+        "revision" : "665206000b8307cab5ac51203d29b0f232d7e31b",
+        "version" : "2.74.0"
       }
     },
     {

@@ -65,7 +65,7 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
-import app.paralino.core.ui.settings.PremiumPlanBannerSmall
+import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
@@ -85,7 +85,7 @@ fun GroupDetailScreenCore(
     openGroupSettings: () -> Unit,
     openMemberRawData: (String) -> Unit,
     openSharing: () -> Unit,
-    openSubscriptions: () -> Unit,
+    openPaywall: () -> Unit,
     onNavigateBack: () -> Unit,
     askNotificationPermission: () -> Unit,
     askLocationService: () -> Unit,
@@ -124,7 +124,7 @@ fun GroupDetailScreenCore(
                 }
 
                 is GroupDetailScreenEvent.GroupMembersLimitReached -> {
-                    openSubscriptions()
+                    openPaywall()
                 }
 
                 GroupDetailScreenEvent.UserBlockActionCompleted -> {}
@@ -215,8 +215,8 @@ fun GroupDetailScreenCore(
                                     contentDescription = null
                                 )
                             },
-                            backgroundColor = MaterialTheme.colors.onError,
-                            contentColor = MaterialTheme.colors.onPrimary,
+                            backgroundColor = MaterialTheme.colors.error,
+                            contentColor = MaterialTheme.colors.onError,
                             elevation = FloatingActionButtonDefaults.elevation(
                                 2.dp, 4.dp, 3.dp, 3.dp
                             ),
@@ -256,10 +256,10 @@ fun GroupDetailScreenCore(
                         ConditionErrorItem(data = it) {
                             when (it) {
                                 ConditionErrorType.GPS -> askLocationService()
-                                ConditionErrorType.PERMISSION_NOTIFICATIONS -> askNotificationPermission()
-                                ConditionErrorType.PERMISSION_LOCATION -> askLocationPermission()
-                                ConditionErrorType.PERMISSION_LOCATION_BACKGROUND -> askBackgroundLocationPermission()
-                                ConditionErrorType.NETWORK -> vm.showSnackbar(
+                                ConditionErrorType.PermissionNotifications -> askNotificationPermission()
+                                is ConditionErrorType.PermissionLocation -> askLocationPermission()
+                                ConditionErrorType.PermissionLocationBackground -> askBackgroundLocationPermission()
+                                ConditionErrorType.Network -> vm.showSnackbar(
                                     text = MR.strings.error_no_connection_snackbar.localizedString()
                                 )
 
@@ -300,7 +300,7 @@ fun GroupDetailScreenCore(
                         this.item(key = "plan_upgrade_banner") {
                             PremiumPlanBannerSmall(
                                 description = stringResource(MR.strings.plans_banner_inline_group_detail),
-                                onClick = openSubscriptions
+                                onClick = openPaywall
                             )
                             Spacer(modifier = Modifier.size(40.dp))
                         }
@@ -361,7 +361,7 @@ fun GroupDetailScreenCore(
                         }
 
                         GroupMember(
-                            modifier = Modifier.animateItemPlacement(),
+                            modifier = Modifier.animateItem(),
                             state = item,
                             forceExpandAction = expanded,
                             collapseOnActionClick = false,

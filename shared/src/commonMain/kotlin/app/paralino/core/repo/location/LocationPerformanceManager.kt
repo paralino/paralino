@@ -1,6 +1,6 @@
 package app.paralino.core.repo.location
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType

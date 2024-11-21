@@ -1,6 +1,7 @@
 package app.paralino.android.ui.share
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -17,12 +18,12 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
-import app.paralino.core.ui.groups.GroupBottomSheetPicker
-import app.paralino.core.ui.groups.GroupPickerAction
-import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
-import app.paralino.core.ui.settings.BillingScreenSourceType
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
+import app.paralino.android.ui.groups.GroupBottomSheetPicker
+import app.paralino.android.ui.groups.GroupPickerAction
+import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -42,13 +43,13 @@ fun SharingStartScreen(
     val permissionHandler = rememberLocationPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        locationStatusProvider = vm.deviceApiProvider.locationStatusProvider
     )
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
     )
 
     val pickerState = rememberGroupBottomSheetPickerState()
@@ -133,11 +134,17 @@ fun SharingStartScreen(
         )
     }
 
+
+    BackHandler (enabled = isOnboarding) {
+        // block back for onboarding
+    }
+
     GroupBottomSheetPicker(
         state = pickerState,
         onClick = {
             when (it) {
                 is GroupPickerAction.GroupPicked -> {
+                    appState.uiScope.launch { pickerState.hide() }
                     vm.setSelectedGroup(it.group.id)
                 }
 

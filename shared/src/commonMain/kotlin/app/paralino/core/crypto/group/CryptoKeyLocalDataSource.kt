@@ -1,20 +1,51 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.GroupDeviceIntegrityEntity
-import app.paralino.core.data.db.mapToList
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class CryptoKeyLocalDataSource constructor(
-    private val database: AppDatabaseHelper,
+    private val database: MainDatabaseHelper,
     private val keysMapper: GroupKeysMapper,
 ) {
+
+    private var cachedGroupKeys = MutableStateFlow<List<GroupCryptoKeyDataRaw>>(emptyList())
+    private var cachedMemberKeys = MutableStateFlow<List<GroupMemberCryptoKeyDataRaw>>(emptyList())
+    private var cachedGroupDeviceKeys = MutableStateFlow<List<GroupDeviceCryptoKeyRaw>>(emptyList())
+    private var cachedPersonalGroupKeys = MutableStateFlow<List<PersonalGroupKeyRaw>>(emptyList())
+
+    suspend fun getGroupKeys(): List<GroupCryptoKeyDataRaw> {
+        return cachedGroupKeys.value.ifEmpty {
+            getAllGroupKeys()
+                .also { cachedGroupKeys.value = it }
+        }
+    }
+
+    suspend fun getMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
+        return cachedMemberKeys.value.ifEmpty {
+            getAllMemberKeys()
+                .also { cachedMemberKeys.value = it }
+        }
+    }
+
+    suspend fun getGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
+        return cachedGroupDeviceKeys.value.ifEmpty {
+            getAllGroupDeviceKeys()
+                .also { cachedGroupDeviceKeys.value = it }
+        }
+    }
+
+    suspend fun getPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return cachedPersonalGroupKeys.value.ifEmpty {
+            getAllPersonalGroupKeys()
+                .also { cachedPersonalGroupKeys.value = it }
+        }
+    }
 
     suspend fun recreateAllGroupKeys(
         groupKeys: List<GroupCryptoKeyDataRaw>,
@@ -22,24 +53,17 @@ class CryptoKeyLocalDataSource constructor(
         deviceKeys: List<GroupDeviceCryptoKeyRaw>,
         personalKeys: List<PersonalGroupKeyRaw>
     ) {
-        database.transaction {
-            database.groupKeysQueries.clearAll()
-            database.memberKeysQueries.clearAll()
-            database.groupDeviceKeysQueries.clearAll()
-            database.personalGroupKeysQueries.clearAll()
-            groupKeys.forEach {
-                database.groupKeysQueries.createGroupKey(keysMapper.remote2Local(it))
-            }
-            memberKeys.forEach {
-                database.memberKeysQueries.createGroupMemberKey(keysMapper.remote2Local(it))
-            }
-            deviceKeys.forEach {
-                database.groupDeviceKeysQueries.createKey(keysMapper.remote2Local(it))
-            }
-            personalKeys.forEach {
-                database.personalGroupKeysQueries.createKey(keysMapper.remote2Local(it))
-            }
-        }
+        cachedGroupKeys.value = groupKeys
+        cachedMemberKeys.value = memberKeys
+        cachedGroupDeviceKeys.value = deviceKeys
+        cachedPersonalGroupKeys.value = personalKeys
+
+        database.groupRelatedKeysDao.recreateAllKeys(
+            groupKeys = groupKeys.map { keysMapper.remote2Local(it) },
+            memberKeys = memberKeys.map { keysMapper.remote2Local(it) },
+            deviceKeys = deviceKeys.map { keysMapper.remote2Local(it) },
+            personalKeys = personalKeys.map { keysMapper.remote2Local(it) }
+        )
     }
 
     suspend fun recreateGroupKeyForGroup(
@@ -47,127 +71,126 @@ class CryptoKeyLocalDataSource constructor(
         groupKeys: List<GroupCryptoKeyDataRaw>,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
         deviceKeys: List<GroupDeviceCryptoKeyRaw>,
-        preKeys: List<PersonalGroupKeyRaw>
+        personalKeys: List<PersonalGroupKeyRaw>
     ) {
-        database.transaction {
-            database.groupKeysQueries.deleteForGroup(groupId)
-            database.memberKeysQueries.deleteForGroup(groupId)
-            database.groupDeviceKeysQueries.deleteForGroup(groupId)
-            database.personalGroupKeysQueries.deleteForGroup(groupId)
-            groupKeys.forEach {
-                database.groupKeysQueries.createGroupKey(keysMapper.remote2Local(it))
-            }
-            memberKeys.forEach {
-                database.memberKeysQueries.createGroupMemberKey(keysMapper.remote2Local(it))
-            }
-            deviceKeys.forEach {
-                database.groupDeviceKeysQueries.createKey(keysMapper.remote2Local(it))
-            }
-            preKeys.forEach {
-                database.personalGroupKeysQueries.createKey(keysMapper.remote2Local(it))
-            }
-        }
+        cachedGroupKeys.value = emptyList()
+        cachedMemberKeys.value = emptyList()
+        cachedGroupDeviceKeys.value = emptyList()
+        cachedPersonalGroupKeys.value = emptyList()
+
+        database.groupRelatedKeysDao.recreateAllKeys(
+            groupId = groupId,
+            groupKeys = groupKeys.map { keysMapper.remote2Local(it) },
+            memberKeys = memberKeys.map { keysMapper.remote2Local(it) },
+            deviceKeys = deviceKeys.map { keysMapper.remote2Local(it) },
+            personalKeys = personalKeys.map { keysMapper.remote2Local(it) }
+        )
     }
 
     suspend fun recreateGroupKeyForGroup(
         groupId: String,
         keys: List<GroupCryptoKeyDataRaw>,
     ) {
-        database.groupKeysQueries.transaction {
-            database.groupKeysQueries.deleteForGroup(groupId)
-            keys.forEach {
-                database.groupKeysQueries.createGroupKey(keysMapper.remote2Local(it))
-            }
-        }
+        cachedGroupKeys.value = emptyList()
+        database.groupRelatedKeysDao.recreateGroupKeys(
+            groupId = groupId,
+            groupKeys = keys.map { keysMapper.remote2Local(it) }
+        )
     }
 
     suspend fun recreateMemberKeysForGroup(
         groupId: String,
         memberKeys: List<GroupMemberCryptoKeyDataRaw>,
-        preKeys: List<PersonalGroupKeyRaw>,
+        personalKeys: List<PersonalGroupKeyRaw>,
     ) {
-        database.transaction {
-            database.memberKeysQueries.deleteForGroup(groupId)
-            database.personalGroupKeysQueries.deleteForGroup(groupId)
-            memberKeys.forEach {
-                database.memberKeysQueries.createGroupMemberKey(keysMapper.remote2Local(it))
-            }
-            preKeys.forEach {
-                database.personalGroupKeysQueries.createKey(keysMapper.remote2Local(it))
-            }
-        }
+        cachedMemberKeys.value = emptyList()
+        cachedPersonalGroupKeys.value = emptyList()
+
+        database.groupRelatedKeysDao.recreateMemberKeys(
+            groupId = groupId,
+            memberKeys = memberKeys.map { keysMapper.remote2Local(it) },
+            personalKeys = personalKeys.map { keysMapper.remote2Local(it) }
+        )
     }
 
     suspend fun recreateDeviceKeysForGroup(
         groupId: String,
         deviceKeys: List<GroupDeviceCryptoKeyRaw>,
     ) {
-        database.transaction {
-            database.groupDeviceKeysQueries.deleteForGroup(groupId)
-            deviceKeys.forEach {
-                database.groupDeviceKeysQueries.createKey(keysMapper.remote2Local(it))
-            }
-        }
-    }
-
-    suspend fun getGroupDeviceIntegrity(groupId: String): GroupDeviceIntegrityEntity? {
-        return database.groupDeviceIntegrityQueries.getForGroup(groupId).executeAsOneOrNull()
-    }
-
-    suspend fun updateGroupDeviceIntegrity(groupId: String, integrity: String, userKeyVersion: Long) {
-        database.groupDeviceIntegrityQueries.createKey(
-            GroupDeviceIntegrityEntity(id = groupId, integrity = integrity, userKeyVersion = userKeyVersion)
+        cachedGroupDeviceKeys.value = emptyList()
+        database.groupRelatedKeysDao.recreateDeviceKeys(
+            groupId = groupId,
+            deviceKeys = deviceKeys.map { keysMapper.remote2Local(it) }
         )
     }
 
-    fun getAllGroupKeys(): Flow<List<GroupCryptoKeyDataRaw>> {
-        return database.mapToList { groupKeysQueries.getAll() }
-            .map { it.map { keysMapper.local2Remote(it) } }
+    suspend fun getGroupDeviceIntegrity(groupId: String): GroupDeviceIntegrityEntity? {
+        return database.groupRelatedKeysDao.getGroupDeviceIntegrityKey(groupId)
     }
 
-    fun getAllMemberKeys(): Flow<List<GroupMemberCryptoKeyDataRaw>> {
-        return database.mapToList { memberKeysQueries.getAll() }
-            .map { it.map { keysMapper.local2Remote(it) } }
+    suspend fun updateGroupDeviceIntegrity(
+        groupId: String,
+        integrity: String,
+        userKeyVersion: Long
+    ) {
+        database.groupRelatedKeysDao.createGroupDeviceIntegrityKey(
+            GroupDeviceIntegrityEntity(
+                id = groupId,
+                integrity = integrity,
+                userKeyVersion = userKeyVersion
+            )
+        )
     }
 
-    fun getAllGroupDeviceKeys(): Flow<List<GroupDeviceCryptoKeyRaw>> {
-        return database.mapToList { groupDeviceKeysQueries.getAll() }
-            .map { it.map { keysMapper.local2Remote(it) } }
+    private suspend fun getAllGroupKeys(): List<GroupCryptoKeyDataRaw> {
+        return database.groupRelatedKeysDao.getAllGroupKeys()
+            .map { keysMapper.local2Remote(it) }
     }
 
-    fun getAllPersonalGroupKeys(): Flow<List<PersonalGroupKeyRaw>> {
-        return database.mapToList { personalGroupKeysQueries.getAllKeys() }
-            .map { it.map { keysMapper.local2Remote(it) } }
+    private suspend fun getAllMemberKeys(): List<GroupMemberCryptoKeyDataRaw> {
+        return database.groupRelatedKeysDao.getAllGroupMembersKeys()
+            .map { keysMapper.local2Remote(it) }
+    }
+
+    private suspend fun getAllGroupDeviceKeys(): List<GroupDeviceCryptoKeyRaw> {
+        return database.groupRelatedKeysDao.getAllGroupDeviceKeys()
+            .map { keysMapper.local2Remote(it) }
+    }
+
+    private suspend fun getAllPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return database.groupRelatedKeysDao.getAllPersonalGroupKeys()
+            .map { keysMapper.local2Remote(it) }
     }
 
     suspend fun getGroupOwnerId(groupId: String): String? {
-        return database.groupQueries.getGroupOwnerId(groupId).executeAsOneOrNull()
+        return database.groupRelatedDao.getGroupOwnerUserId(groupId)
     }
 
     suspend fun deleteAllKeysForGroup(groupId: String) {
-        database.transaction {
-            database.groupKeysQueries.deleteForGroup(groupId)
-            database.memberKeysQueries.deleteForGroup(groupId)
-            database.groupDeviceKeysQueries.deleteForGroup(groupId)
-            database.personalGroupKeysQueries.deleteForGroup(groupId)
-            database.groupDeviceIntegrityQueries.deleteForGroup(groupId)
-        }
+        cachedGroupKeys.value = cachedGroupKeys.value.filter { it.groupId != groupId }
+        cachedMemberKeys.value = cachedMemberKeys.value.filter { it.groupId != groupId }
+        cachedGroupDeviceKeys.value = cachedGroupDeviceKeys.value.filter { it.groupId != groupId }
+        cachedPersonalGroupKeys.value = cachedPersonalGroupKeys.value.filter { it.groupId != groupId }
+
+        database.groupRelatedKeysDao.clearAllGroupRelatedKeys(groupId = groupId)
     }
 
     suspend fun deleteKeysForUser(groupId: String, userId: String) {
-        database.transaction {
-            memberKeysQueries.deleteForMember(groupId = groupId, userId = userId)
-            groupDeviceKeysQueries.deleteForMember(groupId = groupId, userId = userId)
+        cachedGroupDeviceKeys.value = cachedGroupDeviceKeys.value.filter {
+            // remove all keys that were either created by or for userId
+            !(it.memberUserId == userId || it.ownerUserId == userId)
         }
+        cachedMemberKeys.value = cachedMemberKeys.value.filter { it.ownerUserId != userId }
+
+        database.groupRelatedKeysDao.clearAllKeysForUser(groupId = groupId, userId = userId)
     }
 
     suspend fun deleteAllKeys() {
-        database.transaction {
-            database.groupKeysQueries.clearAll()
-            database.memberKeysQueries.clearAll()
-            database.groupDeviceKeysQueries.clearAll()
-            database.personalGroupKeysQueries.clearAll()
-            database.groupDeviceIntegrityQueries.clearAll()
-        }
+        cachedMemberKeys.value = emptyList()
+        cachedGroupKeys.value = emptyList()
+        cachedGroupDeviceKeys.value = emptyList()
+        cachedPersonalGroupKeys.value = emptyList()
+
+        database.groupRelatedKeysDao.clearAllGroupRelatedKeys()
     }
 }

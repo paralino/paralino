@@ -1,5 +1,6 @@
 package app.paralino.android.ui.invite.input
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -14,11 +15,11 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
-import app.paralino.core.ui.groups.GroupBottomSheetPicker
-import app.paralino.core.ui.groups.GroupPickerAction
-import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
+import app.paralino.android.ui.groups.GroupBottomSheetPicker
+import app.paralino.android.ui.groups.GroupPickerAction
+import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.core.ui.invite.MemberInviteScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
@@ -90,6 +91,10 @@ fun MemberInviteScreen(
                 }
             }
         )
+    }
+
+    BackHandler (enabled = isOnboarding) {
+        // block back for onboarding
     }
 
     GroupBottomSheetPicker(

@@ -25,12 +25,13 @@ import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
-import app.paralino.android.ui.settings.BillingScreen
+import app.paralino.android.ui.settings.billing.PaywallScreen
 import app.paralino.android.ui.settings.BlocklistScreen
+import app.paralino.android.ui.settings.GeneralInfoScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.SettingsScreen
-import app.paralino.android.ui.settings.SubscriptionScreen
+import app.paralino.android.ui.settings.billing.SubscriptionScreen
 import app.paralino.android.ui.settings.profile.AccountScreen
 import app.paralino.android.ui.settings.profile.ChangeEmailScreen
 import app.paralino.android.ui.settings.profile.ChangePasswordScreen
@@ -41,7 +42,7 @@ import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.main.DeeplinkType
-import app.paralino.core.ui.settings.BillingScreenSourceType
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 
 @Composable
@@ -152,7 +153,7 @@ fun NavGraphBuilder.homeGraph(
                 it.arguments?.getString(AppScreen.MainHome.BillingPaywall.argumentGroupId)
             val type = it.arguments?.getString(AppScreen.MainHome.BillingPaywall.argumentSourceType)
                 .let { BillingScreenSourceType.fromKey(it) }
-            BillingScreen(appState, groupId = groupId, type = type)
+            PaywallScreen(appState, groupId = groupId, type = type)
         }
         composable(AppScreen.MainHome.FreePlanNoticeScreen.routeSignature) {
             val groupId =
@@ -200,10 +201,13 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         composable(AppScreen.Settings.Subscriptions.routeSignature) {
             SubscriptionScreen(appState)
         }
+        composable(AppScreen.Settings.GeneralInfo.routeSignature) {
+            GeneralInfoScreen(appState)
+        }
         composable(AppScreen.Settings.BillingPaywall.routeSignature) {
             val type = it.arguments?.getString(AppScreen.Settings.BillingPaywall.argumentSourceType)
                 .let { BillingScreenSourceType.fromKey(it) }
-            BillingScreen(appState, groupId = null, type = type)
+            PaywallScreen(appState, groupId = null, type = type)
         }
         composable(AppScreen.Settings.ProfileDetails.RawDataScreen.routeSignature) {
             val type =
@@ -239,14 +243,7 @@ fun NavGraphBuilder.loggedOutGraph(
         composable(AppScreen.LoggedOut.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
         }
-        composable(
-            AppScreen.LoggedOut.PasswordReset.routeSignature,
-            deepLinks = listOf(
-                navDeepLink {
-                    this.uriPattern = DeeplinkType.PasswordReset.uriPattern()
-                }
-            )
-        ) {
+        composable(AppScreen.LoggedOut.PasswordReset.routeSignature) {
             val userId = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentUserId)
             val secret = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentSecret)
             ResetPasswordScreen(appState, userId = userId!!, secret = secret!!)

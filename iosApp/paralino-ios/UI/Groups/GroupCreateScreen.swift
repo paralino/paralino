@@ -21,18 +21,18 @@ struct GroupCreateScreen: View {
                 ScreensIOS.shared.home.GroupCreateScreenVC(
                     vm: appState.vm,
                     onBottomSheetAction: { screen in
-                        bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
+                        bottomSheet = screen
                     },
                     groupUpdated: { newGroupId in
                         if appState.vm.isGroupCreate() {
-                            path[path.count - 1] = .home(.groupDetail(groupId: newGroupId))
+                            path[path.count - 1] = .home(HomeGraph.memberInvite(groupId: newGroupId, code: nil, isOnboarding: true))
                         } else {
                             path.removeLast()
                         }
                     }
                 )
             }
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.updateImage(image: image)

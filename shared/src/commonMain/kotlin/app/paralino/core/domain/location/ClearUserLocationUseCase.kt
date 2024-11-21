@@ -9,9 +9,12 @@ class ClearUserLocationUseCase(
     private val local: LocationLocalDataSource,
     private val remote: LocationRemoteSource,
 ) : BaseRepository() {
-    fun clearLocation(locationId: String): Flow<Unit> {
+    fun clearLocation(
+        groupId: String,
+        locationId: String
+    ): Flow<Unit> {
         return getDataOnce(
-            remote = { remote.clearLocation(locationId) },
+            remote = { remote.clearLocation(groupId = groupId, locationId = locationId) },
             localUpdate = { local.clearMemberLocationData(locationId = locationId) }
         )
     }

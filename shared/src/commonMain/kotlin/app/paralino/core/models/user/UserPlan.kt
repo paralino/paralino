@@ -11,13 +11,15 @@ data class UserPlans(
     val plans = rawPlans.map {
         UserPlan(
             plan = it,
-            config = config.planConfigForPlanType(it.planType)
+            config = config.planConfigForPlanTypeOrDefault(it.planType)
         )
     }
 
     val nonExpiredPlans get() = plans.filter { !it.plan.isExpired }
     val highestValidPlan: UserPlan? get() = nonExpiredPlans.maxByOrNull { it.plan.planTypeEnum.order }
     val highestValidPlanConfig: PlanConfig get() = highestValidPlan?.config ?: config.defaultFreePlanConfig()
+
+    val groupsLimit: Int = highestValidPlan?.plan?.groupsLimitOverride?.toInt() ?: highestValidPlanConfig.groupsLimit
 }
 
 data class UserPlan(

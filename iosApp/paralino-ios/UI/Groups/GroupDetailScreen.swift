@@ -14,7 +14,8 @@ struct GroupDetailScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState: ViewModelFactoryIOS<GroupDetailViewModel>
     @State var alertDialog: AlertDialogData? = nil
-    let notificationPermissionHandler = NotificationPermissionHandler()
+    
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
     
     var body: some View {
         ZStack {
@@ -23,15 +24,21 @@ struct GroupDetailScreen: View {
                 ScreensIOS.shared.home.GroupDetailScreenVC(
                     vm: appState.vm,
                     groupId: appState.vm.groupId,
+                    paddingValues: AppleScreenPaddingValues(
+                        start: safeAreaInsets.start,
+                        top: 0,
+                        end: safeAreaInsets.end,
+                        bottom: safeAreaInsets.bottom
+                    ),
                     openMemberAdd: {
-                        path.append(.home(.memberInvite(groupId: appState.vm.groupId, code: nil)))
+                        path.append(.home(HomeGraph.memberInvite(groupId: appState.vm.groupId, code: nil, isOnboarding: false)))
                     },
                     openMap: {
                         path.removeAll()
                         path.append(.home(.map))
                     },
                     openPlaces: {
-                        path.append(.home(.places(groupId: appState.vm.groupId)))
+                        path.append(.home(.places(groupId: appState.vm.groupId, isOnboarding: false)))
                     },
                     openGroupSettings: {
                         path.append(.home(.groupSettings(groupId: appState.vm.groupId)))
@@ -40,22 +47,33 @@ struct GroupDetailScreen: View {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupMemberPresentation(memberId: memberId))))
                     },
                     openSharing: {
-                        path.append(.home(.sharingStart(groupId: appState.vm.groupId)))
+                        path.append(.home(.sharingStart(groupId: appState.vm.groupId, isOnboarding: false)))
+                    },
+                    openPaywall: {
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
                     onNavigateBack: {
                         path.removeLast()
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askLocationService: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationServices(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askLocationPermission: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     askBackgroundLocationPermission: {
-                        
+                        appDelegate.locationPermissionHandler.requestLocationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }

@@ -1,7 +1,8 @@
 package app.paralino.core.presentation.login.recover
 
 import app.paralino.core.MR
-import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.models.Payload
@@ -31,8 +32,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RecoverKeysViewModel(
-    val logoutUseCase: LogoutUseCase,
-    val recoverAccountUseCase: RecoverAccountUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val recoverAccountUseCase: RecoverAccountUseCase,
+    private val appAccountStateMonitor: AppAccountStateMonitor,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<RecoverKeysScreenState>>(Payload.Loading)
@@ -46,7 +49,7 @@ class RecoverKeysViewModel(
     init {
         coroutineScope.launch(Dispatchers.IO) {
             val userKeys = try {
-                recoverAccountUseCase.getUserKeys()
+                recoverAccountUseCase.getUserKeysFromRemote()
             } catch (e: Exception) {
                 showSnackbar(e.errorString())
                 emptyList()
@@ -92,6 +95,10 @@ class RecoverKeysViewModel(
                             it.mapSuccess {
                                 it.copy(checkLoading = result is Payload.Loading)
                             }
+                        }
+
+                        if (result is Payload.Success) {
+                            appAccountStateMonitor.triggerStateCheck()
                         }
                     }
                     .launchIn(coroutineScope)

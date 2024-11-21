@@ -14,7 +14,8 @@ struct PlacesScreen: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: PlacesState
-    let notificationPermissionHandler = NotificationPermissionHandler()
+    
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
     
     var body: some View {
         ZStack {
@@ -22,49 +23,79 @@ struct PlacesScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.PlacesScreenVC(
                     vm: appState.vm,
+                    paddingValues: AppleScreenPaddingValues(
+                        start: safeAreaInsets.start,
+                        top: 0,
+                        end: safeAreaInsets.end,
+                        bottom: safeAreaInsets.bottom
+                    ),
                     addNewPlace: {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, lat: nil, lng: nil)))
+                    },
+                    openPaywall: {
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
                     openPlaceDetailScreen: { place in
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                     },
                     askNotificationPermission: {
-                        notificationPermissionHandler.requestNotificationPermission(appDelegate: appDelegate, messageDispather: appState.vm.messageDispatcher)
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     },
                     mapUIView: { state in
                         appState.updateMarkers(state: state)
-                        return SwiftUIInUIView(
-                            content: VStack {
-                                MapComponent(
-                                    mapState: appState,
-                                    onMapTap: { point in },
-                                    onMapLongPress: { point in },
-                                    onMapTouch: {}
-                                )
-                            }
-                        )
+                        let controller = MapComponentVC()
+                        controller.mapState = appState
+                        return controller
                     }
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.places_list_screen_title.localizedString())
-            .navigationBarTitleDisplayMode(.inline)
         }
+        .toolbar {
+            if appState.isOnboarding {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if appState.markers.isEmpty {
+                        SmallActionButtonView(
+                            text: MR.shared.strings.button_skip.localizedString(),
+                            action: {
+                                path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
+                            },
+                            hasEndArrow: true
+                        )
+                    } else {
+                        SmallActionButtonView(
+                            text: MR.shared.strings.button_next.localizedString(),
+                            action: {
+                                path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
+                            },
+                            hasEndArrow: true
+                        )
+                    }
+                }
+            }
+        }
+        .toolbarTitleDisplayMode(.inline)
+        .navigationTitle(MR.shared.strings.places_list_screen_title.localizedString())
+        .navigationBarBackButtonHidden(appState.isOnboarding)
     }
     
-    static func createState(groupId: String) -> PlacesState {
-        PlacesState(groupId: groupId)
+    static func createState(groupId: String, isOnboarding: Bool) -> PlacesState {
+        PlacesState(groupId: groupId, isOnboarding: isOnboarding)
     }
 }
 
 class PlacesState: BaseMapObservableObject {
     
     let groupId: String
+    let isOnboarding: Bool
     let vm: PlacesViewModel
     
-    init(groupId: String) {
+    init(groupId: String, isOnboarding: Bool) {
         self.groupId = groupId
-        self.vm = KoinIOS.ViewModels.shared.placesVM(groupId: groupId)
+        self.isOnboarding = isOnboarding
+        self.vm = KoinIOS.ViewModels.shared.placesVM(groupId: groupId, isOnboarding: isOnboarding)
     }
     
     func updateMarkers(state: PlacesListScreenState) {

@@ -202,6 +202,7 @@ data class LocationCreatePayload constructor(
     val groupId: String,
     val deviceId: String,
     val deviceData: String?,
+    val locationData: String?,
     val status: String,
     val groupKeyVersion: Long,
     val notify: Boolean,
@@ -219,7 +220,8 @@ data class UpdateUserDeviceFunctionData constructor(
     val sessionId: String,
     val deviceId: String,
     val pushToken: String,
-    val deviceType: String
+    val deviceType: String,
+    val locationPushToken: String?
 )
 
 @Serializable

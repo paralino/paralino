@@ -2,64 +2,75 @@ package app.paralino.core.ui.theme
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Indication
-import androidx.compose.foundation.IndicationInstance
+import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.node.DelegatableNode
+import androidx.compose.ui.node.DrawModifierNode
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-object ScaleIndication : Indication {
-    @Composable
-    override fun rememberUpdatedInstance(interactionSource: InteractionSource): IndicationInstance {
-        val instance = remember(interactionSource) { ScaleIndicationInstance() }
-        LaunchedEffect(interactionSource) {
-            interactionSource.interactions
-
-                .collect { interaction ->
-                    when (interaction) {
-                        is PressInteraction.Press -> instance.animateToPressed()
-                        is HoverInteraction.Enter,
-                        is FocusInteraction.Focus-> instance.animateToSelected()
-                        is PressInteraction.Release,
-                        is PressInteraction.Cancel,
-                        is HoverInteraction.Exit,
-                        is FocusInteraction.Unfocus -> instance.animateToResting()
-                        else -> {
-                            instance.animateToPressed()
-                            instance.animateToResting()
-                        }
-                    }
-                }
-        }
-
-        return instance
+object ScaleIndication : IndicationNodeFactory {
+    override fun create(interactionSource: InteractionSource): DelegatableNode {
+        return ScaleIndicationNode(interactionSource)
     }
+
+    override fun hashCode(): Int = -1
+
+    override fun equals(other: Any?) = other === this
 }
 
-private class ScaleIndicationInstance : IndicationInstance {
-    val scaleAnimation = Animatable(1f)
+private class ScaleIndicationNode(
+    private val interactionSource: InteractionSource
+) : Modifier.Node(), DrawModifierNode {
+    var currentPressPosition: Offset = Offset.Zero
+    val animatedScalePercent = Animatable(1f)
 
-    suspend fun animateToPressed() {
-        scaleAnimation.animateTo(0.93f, spring())
+    private suspend fun animateToPressed(pressPosition: Offset) {
+        currentPressPosition = pressPosition
+        animatedScalePercent.animateTo(0.93f, spring())
     }
 
-    suspend fun animateToSelected() {
-        scaleAnimation.animateTo(0.96f, spring())
+    private suspend fun animateToSelected() {
+        animatedScalePercent.animateTo(0.97f, spring())
     }
 
-    suspend fun animateToResting() {
-        scaleAnimation.animateTo(1f, spring())
+    private suspend fun animateToResting() {
+        animatedScalePercent.animateTo(1f, spring())
     }
 
-    override fun ContentDrawScope.drawIndication() {
-        scale(scale = scaleAnimation.value) {
-            this@drawIndication.drawContent()
+    override fun onAttach() {
+        coroutineScope.launch {
+            interactionSource.interactions.collectLatest { interaction ->
+                when (interaction) {
+                    is PressInteraction.Press -> animateToPressed(interaction.pressPosition)
+                    is HoverInteraction.Enter,
+                    is FocusInteraction.Focus-> animateToSelected()
+                    is PressInteraction.Release,
+                    is PressInteraction.Cancel,
+                    is HoverInteraction.Exit,
+                    is FocusInteraction.Unfocus -> animateToResting()
+                    else -> {
+                        animateToSelected()
+                        animateToResting()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun ContentDrawScope.draw() {
+        scale(
+            scale = animatedScalePercent.value,
+            pivot = currentPressPosition
+        ) {
+            this@draw.drawContent()
         }
     }
 }

@@ -39,11 +39,17 @@ struct SettingsScreen: View {
                     openProfileRawScreen: {
                         path.append(.settings(.rawData(type: .UserPresentation())))
                     },
-                    openLicences: {
-                        
+                    openGeneralInfo: {
+                        path.append(.settings(.generalInfo))
                     },
                     openAppStatus: {
                         path.append(.settings(.appStatusDebug))
+                    },
+                    openSubscriptions: {
+                        path.append(.settings(.subscriptions))
+                    },
+                    openPaywall: {
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
                     onShare: { data in
                         shareText = ShareText(text: data)

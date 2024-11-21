@@ -13,8 +13,8 @@ import app.paralino.android.utils.extensions.share
 import app.paralino.core.MR
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.SettingSectionInfo
 import app.paralino.core.ui.settings.SettingsScreenCore
 import app.paralino.core.ui.theme.AppTheme
@@ -62,8 +62,8 @@ fun SettingsScreen(
                     )
                 )
             },
-            openLicences = {
-                appState.navController.navigate(AppScreen.Settings.Licences.routeSignature)
+            openGeneralInfo = {
+                appState.navController.navigate(AppScreen.Settings.GeneralInfo.routeSignature)
             },
             openAppStatus = {
                 appState.navController.navigate(AppScreen.Settings.AppStatusDebug.routeSignature)
@@ -88,12 +88,9 @@ fun MainPreview() {
     AppTheme {
         Surface {
             SettingSectionInfo(
-                appVersion = "v1.2.3 (43)",
-                isErrorReportingEnabled = true,
-                onLicencesClick = {},
                 onAppStatusClick = {},
+                onGeneralInfoClick = {},
                 onShareApp = {},
-                toggleErrorReporting = {},
             )
         }
     }

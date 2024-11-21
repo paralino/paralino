@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -39,6 +40,7 @@ import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
@@ -50,6 +52,7 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.ScaffoldBottomBarButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
@@ -105,30 +108,19 @@ fun CreatePlaceScreenCore(
                 is Payload.Error -> {}
                 Payload.Loading -> {}
                 is Payload.Success -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 20.dp, top = 8.dp)
-                            .padding(horizontal = 20.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        FilledButton(
-                            modifier = Modifier,
-                            style = ButtonStyle.BIG,
-                            state = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
-                            icon = if (finalState.data.isNewPlace) null else CoreAppIcons.Save.asPainterResource(),
-                            onClick = { vm.createPlace() }
-                        ) {
-                            if (finalState.data.isNewPlace) {
-                                Text(text = stringResource(MR.strings.places_create_button_create))
-                            } else {
-                                Text(text = stringResource(MR.strings.button_save))
-                            }
-                        }
-                    }
+                    ScaffoldBottomBarButton(
+                        buttonState = AppButtonState.loadingStateWithCheck(finalState.data.actionLoading),
+                        buttonText = if (finalState.data.isNewPlace) {
+                            stringResource(MR.strings.places_create_button_create)
+                        } else {
+                            stringResource(MR.strings.button_save)
+                        },
+                        buttonIcon = if (finalState.data.isNewPlace) null else CoreAppIcons.Save.asPainterResource(),
+                        onClick = { vm.createPlace() }
+                    )
                 }
             }
-        },
+        }
     ) {
         when (val finalState = state) {
             Payload.Loading -> {
@@ -226,7 +218,7 @@ private fun CreatePlaceScreenCore(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            shape = MaterialTheme.shapes.medium,
+            shape = RoundedCornerShape(20.dp),
             color = MaterialTheme.colors.surface,
             border = BorderStroke(6.dp, MaterialTheme.colors.surface),
             elevation = 12.dp
@@ -239,8 +231,8 @@ private fun CreatePlaceScreenCore(
                 Surface(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(4.dp),
-                    shape = MaterialTheme.shapes.medium,
+                        .padding(6.dp),
+                    shape = RoundedCornerShape(15.dp),
                     color = MaterialTheme.colors.surface,
                 ) {
                     mapContent(state)
@@ -273,7 +265,7 @@ private fun CreatePlaceScreenCore(
                 .fillMaxWidth(),
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
-            text = stringResource(MR.strings.places_create_location_hint).annotatedBold()
+            text = state.hintText
         )
 
         Spacer(modifier = Modifier.size(30.dp))

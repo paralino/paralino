@@ -14,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import app.paralino.android.provider.isLocationOn
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.ICoreMessageDispatcher
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LocationConditionStatus
+import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.onAction
@@ -199,7 +201,7 @@ data class LocationPermissionHandlerState constructor(
             messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
                     text = context.getString(MR.strings.error_location_service_missing_sheet_message.resourceId),
-                    actionText = "Settings",
+                    actionText = MR.strings.button_open_settings.getString(context),
                     duration = SnackbarDuration.Long
                 )
             )?.result?.onAction {
@@ -218,7 +220,7 @@ data class LocationPermissionHandlerState constructor(
             messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
                     text = context.getString(messageRes.resourceId),
-                    actionText = "Settings",
+                    actionText = MR.strings.button_open_settings.getString(context),
                     duration = SnackbarDuration.Long
                 )
             )?.result?.onAction {
@@ -247,7 +249,7 @@ data class LocationPermissionHandlerState constructor(
             messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
                     text = message,
-                    actionText = "Settings",
+                    actionText = MR.strings.button_open_settings.getString(context),
                     duration = SnackbarDuration.Long
                 )
             )?.result?.onAction {

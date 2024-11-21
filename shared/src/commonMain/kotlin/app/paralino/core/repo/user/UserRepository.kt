@@ -1,15 +1,16 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.domain.user.UserSessionState
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.LoginDetailsRaw
@@ -21,8 +22,8 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -42,13 +43,12 @@ class UserRepository constructor(
     private val local: UserLocalDataSource,
     private val remote: UserRemoteSource,
     private val sessionMonitor: UserSessionMonitor,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val userMapper: UserMapperCore,
     private val cryptoCore: CryptoCore,
-    private val remoteConfigRepo: RemoteConfigRepository
+    private val remoteConfigRepo: RemoteConfigRepository,
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
-
-    val cachedUserId: String get() = appPrefs.userId
 
     val localUser: StateFlow<Resource<UserMe?>> = combine(
         local.getMeRaw(),
@@ -105,6 +105,11 @@ class UserRepository constructor(
         )
 
     val cachedUser: UserMe? get() = localUser.value.data
+
+    val shouldShowFreePlanNoticeScreen: Boolean get() {
+        return userPlans.value.highestValidPlanConfig.planTypeEnum == PlanType.SILVER
+                && !appPrefs.didStartedGroupOnboarding
+    }
 
     suspend fun login(email: String, password: String): UserSession {
         return triggerRemoteOnly { remote.login(email, password) }
@@ -233,9 +238,11 @@ class UserRepository constructor(
         )
     }
 
-    suspend fun refreshBlocklist() {
-        triggerRemoteOnly { remote.getBlocklist() }
-            .also { local.recreateBlocklist(it) }
+    suspend fun refreshBlocklist(cacheTimeMillis: Long) {
+        triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(key = "blocklist", timeMillis = cacheTimeMillis)
+        ) { remote.getBlocklist() }
+            ?.also { local.recreateBlocklist(it) }
     }
 
     suspend fun removeUserFromBlocklist(userId: String) {

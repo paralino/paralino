@@ -1,18 +1,46 @@
 package app.paralino.core.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.SnackbarResult
+import androidx.compose.material.Text
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
+import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -26,6 +54,8 @@ fun AppSnackbar(
     }
     var size by remember { mutableStateOf(Size.Zero) }
     val swipeableState = rememberSwipeableState(SwipeDirection.Initial)
+    val density = LocalDensity.current
+
     val width = remember(size) {
         if (size.width == 0f) {
             1f
@@ -50,7 +80,7 @@ fun AppSnackbar(
         }
     }
 
-    val offset = with(LocalDensity.current) {
+    val offset = with(density) {
         swipeableState.offset.value.toDp()
     }
 
@@ -72,14 +102,12 @@ fun AppSnackbar(
             val actionLabel = snackbarData.actionLabel
             val actionComposable: (@Composable () -> Unit)? = if (actionLabel != null) {
                 @Composable {
-                    TextButton(
-                        modifier = Modifier.padding(end = 4.dp),
-                        colors = ButtonDefaults.textButtonColors(
-                            backgroundColor = MaterialTheme.colors.primary,
-                            contentColor = MaterialTheme.colors.onPrimary
-                        ),
+                    FilledButton(
+                        style = ButtonStyle.BIG,
                         onClick = { snackbarData.performAction() },
-                        content = { Text(actionLabel) }
+                        content = {
+                            Text(text = actionLabel)
+                        }
                     )
                 }
             } else {
@@ -88,33 +116,70 @@ fun AppSnackbar(
 
             LaunchedEffect(snackbarData) {
                 swipeableState.animateTo(SwipeDirection.Initial)
+                when (snackbarData.duration) {
+                    androidx.compose.material.SnackbarDuration.Short -> {
+                        delay(3600)
+                        if (snackbarHostState.currentSnackbarData != null) {
+                            swipeableState.animateTo(SwipeDirection.Right)
+                        }
+                    }
+
+                    androidx.compose.material.SnackbarDuration.Long -> {
+                        delay(9500)
+                        if (snackbarHostState.currentSnackbarData != null) {
+                            swipeableState.animateTo(SwipeDirection.Right)
+                        }
+                    }
+
+                    androidx.compose.material.SnackbarDuration.Indefinite -> {}
+                }
             }
 
-            Snackbar(
-                modifier = Modifier
-                    .padding(bottom = 20.dp)
-                    .alpha(((width - offset.value).absoluteValue / width))
-                    .offset(x = offset)
-                    .padding(20.dp),
-                content = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .alpha(((width - offset.value.absoluteValue * 6) / width))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    MaterialTheme.colors.background,
+                                    MaterialTheme.colors.background
+                                )
+                            )
+                        )
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(x = offset)
+                        .padding(horizontal = 10.dp)
+                        .padding(top = 120.dp, bottom = 30.dp)
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colors.surface)
+                        .padding(20.dp),
+                ) {
                     Text(
                         modifier = Modifier
-                            .padding(bottom = if (actionLabel != null) 8.dp else 0.dp)
-                            .padding(
-                                horizontal = 4.dp,
-                                vertical = if (actionLabel != null) 0.dp else 16.dp
-                            ),
+                            .padding(4.dp),
                         text = snackbarData.message.annotatedBold(),
                         textAlign = TextAlign.Start,
                     )
-                },
-                action = actionComposable,
-                actionOnNewLine = false,
-                shape = MaterialTheme.shapes.medium,
-                backgroundColor = MaterialTheme.colors.surface,
-                contentColor = MaterialTheme.colors.onSurface,
-                elevation = 1.dp
-            )
+                    actionComposable?.let {
+                        Spacer(modifier = Modifier.size(20.dp))
+                        it()
+                    }
+                }
+            }
         }
     )
 }

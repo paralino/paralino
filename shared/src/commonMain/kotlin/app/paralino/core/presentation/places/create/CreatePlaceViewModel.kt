@@ -1,15 +1,21 @@
 package app.paralino.core.presentation.places.create
 
+import androidx.compose.ui.text.AnnotatedString
+import app.paralino.core.MR
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +33,8 @@ class CreatePlaceViewModel(
     placeId: String?,
     lat: Double? = null,
     lng: Double? = null,
-    private val placesRepo: PlacesRepository
+    private val placesRepo: PlacesRepository,
+    private val deviceApiProvider: IDeviceApiProvider
 ) : CoreViewModel() {
 
     private val placeFlow = MutableStateFlow<Payload<GroupPlace>>(Payload.Loading)
@@ -54,6 +61,7 @@ class CreatePlaceViewModel(
                     placeId.isNullOrBlank() -> Payload.Success(
                         CreatePlaceScreenState.empty(
                             groupId = groupId,
+                            hintText = hintText(),
                             lat = lat,
                             lng = lng
                         )
@@ -70,6 +78,7 @@ class CreatePlaceViewModel(
                             lat = place.data.data?.lat,
                             lng = place.data.data?.lng,
                             radiusMeters = place.data.data?.radiusMeters ?: 0,
+                            hintText = hintText(),
                             actionLoading = false,
                             fullLoading = false
                         )
@@ -172,6 +181,13 @@ class CreatePlaceViewModel(
     fun updateRadius(radiusMeters: Int) {
         _uiState.update {
             it.mapSuccess { it.copy(radiusMeters = radiusMeters) }
+        }
+    }
+
+    private fun hintText(): AnnotatedString {
+        return when (deviceApiProvider.deviceType) {
+            DeviceType.Android -> MR.strings.places_create_location_hint_longpress.localizedString().annotatedBold()
+            DeviceType.iOS -> MR.strings.places_create_location_hint_tap.localizedString().annotatedBold()
         }
     }
 }

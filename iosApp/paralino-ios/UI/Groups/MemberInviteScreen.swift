@@ -11,10 +11,9 @@ import shared
 struct MemberInviteScreen: View {
     
     @Binding var path: [NavigationGraph]
-    @StateObject var appState: ViewModelFactoryIOS<MemberInviteViewModel>
+    @StateObject var appState: MemberInviteState
     
-    // TODO add group picker
-    @State var bottomSheet: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
+    @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     var body: some View {
         ZStack {
@@ -22,23 +21,67 @@ struct MemberInviteScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.MemberInviteScreenVC(
                     vm: appState.vm,
-                    onPickGroup: { sheet in bottomSheet = sheet },
-                    onExit: { path.removeLast() }
+                    onPickGroup: { sheet in groupPicker = sheet },
+                    onMemberAdded: {
+                        if appState.isOnboarding {
+                            path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
+                        } else {
+                            path.removeLast()
+                        }
+                    }
                 )
             }
-            .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
+        .toolbar {
+            if appState.isOnboarding {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    SmallActionButtonView(
+                        text: MR.shared.strings.button_skip.localizedString(),
+                        action: {
+                            path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
+                        },
+                        hasEndArrow: true
+                    )
+                }
+            }
+        }
+        .toolbarTitleDisplayMode(.inline)
+        .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())
+        .navigationBarBackButtonHidden(appState.isOnboarding)
+        .groupPickerSheet(
+            $groupPicker,
+            onSelectGroup: { state in
+                groupPicker = nil
+                appState.vm.selectGroup(group: state)
+            },
+            onEditGroup: { group in },
+            onCreateGroup: {},
+            onJoinGroup: {},
+            onOpenSubscription: {}
+        )
     }
     
-    static func createState(groupId: String?, code: String?) -> ViewModelFactoryIOS<MemberInviteViewModel> {
-        ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code))
+    static func createState(groupId: String?, code: String?, isOnboarding: Bool) -> MemberInviteState {
+        MemberInviteState(groupId: groupId, code: code, isOnboarding: isOnboarding)
     }
 }
 
-struct MemberInviteScreen_Previews: PreviewProvider {
-    @State static var path: [NavigationGraph] = [.home(.groupCreate(groupId: nil))]
-    static var previews: some View {
-        MemberInviteScreen(path: $path, appState: MemberInviteScreen.createState(groupId: nil, code: nil))
+class MemberInviteState: ObservableObject {
+    
+    let groupId: String?
+    let code: String?
+    let isOnboarding: Bool
+    let vm: MemberInviteViewModel
+    
+    init (groupId: String?, code: String?, isOnboarding: Bool) {
+        self.groupId = groupId
+        self.code = code
+        self.isOnboarding = isOnboarding
+        self.vm = KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code)
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }

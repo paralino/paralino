@@ -14,12 +14,20 @@ struct PlaceDetailScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState: PlaceDetailState
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.home.PlaceDetailScreenVC(
                     vm: appState.vm,
+                    paddingValues: AppleScreenPaddingValues(
+                        start: safeAreaInsets.start,
+                        top: 0,
+                        end: safeAreaInsets.end,
+                        bottom: safeAreaInsets.bottom
+                    ),
                     openPlaceRawDataScreen: {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupPlacePresentation(placeId: appState.vm.placeId))))
                     },
@@ -31,16 +39,9 @@ struct PlaceDetailScreen: View {
                     },
                     mapUIView: { state in
                         appState.updateMarkers(state: state)
-                        return SwiftUIInUIView(
-                            content: VStack {
-                                MapComponent(
-                                    mapState: appState,
-                                    onMapTap: { point in },
-                                    onMapLongPress: { point in },
-                                    onMapTouch: {}
-                                )
-                            }
-                        )
+                        let controller = MapComponentVC()
+                        controller.mapState = appState
+                        return controller
                     }
                 )
             }

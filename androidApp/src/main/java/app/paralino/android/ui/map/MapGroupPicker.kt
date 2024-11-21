@@ -297,7 +297,7 @@ fun MapGroupPicker(
             } else {
                 Icon(
                     painter = AppIcons.Warning,
-                    tint = MaterialTheme.colors.onError,
+                    tint = MaterialTheme.colors.error,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )

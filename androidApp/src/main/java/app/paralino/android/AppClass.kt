@@ -22,10 +22,11 @@ import app.paralino.android.tracking.LocationService
 import app.paralino.core.CoreAppManager
 import app.paralino.core.MR
 import app.paralino.core.ParalinoCore
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.data
-import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
@@ -88,6 +89,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                 if (it.data == true) {
                     logg.v("Location sharing contract ready, starting location service from state: $appState")
                     try {
+                        // TODO check if background location permission is enabled before starting
                         LocationService.start(this, isForeground)
                     } catch (e: Exception) {
                         val message =
@@ -97,11 +99,13 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                                 MR.strings.error_location_sharing_start_notification_message.getString(this)
                             }
                         infoMessagesNotifications.notify(
-                            notificationId = 54343,
-                            title = MR.strings.error_something_wrong.getString(this),
-                            message = message,
-                            timeMillis = null,
-                            timeInfo = null
+                            IPushNotificationPresenter.Payload(
+                                notificationId = 54343,
+                                title = MR.strings.error_something_wrong.getString(this),
+                                message = message,
+                                timeMillis = null,
+                                timeInfo = null
+                            )
                         )
                     }
                 }
@@ -141,6 +145,10 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     }
 
     override fun onStart(owner: LifecycleOwner) {
+        coreAppManager.onAppActive()
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
         coreAppManager.onAppActive()
     }
 

@@ -45,7 +45,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendResourceIDs
+import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.login.LoginScreenEvent
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiEvent
@@ -63,6 +64,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.components.PasswordValidationElement
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
@@ -139,9 +141,9 @@ fun LoginScreenCore(
             ) {
                 focusManager.clearFocus()
             }
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
-            .padding(bottom = 20.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(bottom = 20.dp),
         verticalArrangement = Arrangement.Center
     ) {
 
@@ -252,6 +254,19 @@ fun LoginScreenCore(
                     }
 
                     AnimatedVisibility(
+                        visible = uiState.uiType == LoginScreenUiType.SIGNUP,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        PasswordValidationElement(
+                            modifier = Modifier.padding(top = 12.dp),
+                            minPasswordLength = FormValidation.Password.PasswordStrength.minPasswordLength,
+                            hasMinPasswordLength = uiState.passwordValidation.minPasswordLength,
+                            hasMinPasswordStrength = uiState.passwordValidation.passwordStrength.isOK,
+                            doPasswordsMatch = uiState.passwordValidation.passwordsMatch
+                        )
+                    }
+
+                    AnimatedVisibility(
                         visible = uiState.uiType == LoginScreenUiType.LOGIN,
                         modifier = Modifier.align(Alignment.End)
                     ) {
@@ -289,7 +304,7 @@ fun LoginScreenCore(
                         .clip(RoundedCornerShape(8.dp))
                         .background(
                             if (uiState.stepInfo is SignUpStepInfo.Error)
-                                MaterialTheme.colors.error
+                                AppColors.errorBackground
                             else
                                 AppColors.accent.copy(alpha = 0.1f)
                         )

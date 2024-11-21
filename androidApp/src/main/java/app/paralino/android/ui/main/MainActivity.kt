@@ -112,30 +112,31 @@ fun RootApp(
                     is AppAccountState.ACCOUNT_RESET -> {
                         AppStartScreen(
                             appState = appState,
-                            start = AppScreen.LoggedOut.AccountRecovery
+                            start = AppScreen.LoggedOut.AccountRecovery,
+                            pendingDeeplink = null,
+                            onDeeplinkComplete = { vm.setDeeplink(null) }
                         )
                     }
 
                     is AppAccountState.NO_PROFILE -> {
                         AppStartScreen(
                             appState = appState,
-                            start = AppScreen.LoggedOut.ProfileSetup
+                            start = AppScreen.LoggedOut.ProfileSetup,
+                            pendingDeeplink = null,
+                            onDeeplinkComplete = { vm.setDeeplink(null) }
                         )
                     }
 
                     is AppAccountState.NO_USER -> {
-                        val start = if (finalState.canRecoverGuest) {
-                            AppScreen.LoggedOut.Login
-                        } else {
-                            AppScreen.LoggedOut.Welcome
-                        }
                         AppStartScreen(
                             appState = appState,
                             start = if (finalState.canRecoverGuest) {
                                 AppScreen.LoggedOut.Login
                             } else {
                                 AppScreen.LoggedOut.Welcome
-                            }
+                            },
+                            pendingDeeplink = uiState.pendingDeeplinkType.takeIf { !finalState.canRecoverGuest },
+                            onDeeplinkComplete = { vm.setDeeplink(null) }
                         )
                     }
 
@@ -153,9 +154,7 @@ fun RootApp(
                             appState = appState,
                             pendingDeeplink = uiState.pendingDeeplinkType,
                             onAppClose = onAppClose,
-                            onDeeplinkComplete = {
-                                vm.setDeeplink(null)
-                            }
+                            onDeeplinkComplete = { vm.setDeeplink(null) }
                         )
                     }
                 }
@@ -207,7 +206,22 @@ fun RootApp(
 fun AppStartScreen(
     appState: MainAppState,
     start: AppScreen,
+    pendingDeeplink: DeeplinkType?,
+    onDeeplinkComplete: () -> Unit,
 ) {
+    LaunchedEffect(pendingDeeplink) {
+        delay(500)
+        when (pendingDeeplink) {
+            is DeeplinkType.PasswordReset -> {
+                appState.navController.navigate(
+                    AppScreen.LoggedOut.PasswordReset.route(deeplink = pendingDeeplink)
+                )
+                onDeeplinkComplete()
+            }
+
+            else -> {}
+        }
+    }
     RootAppScreen(appState) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -229,8 +243,8 @@ fun AppStartScreen(
 fun MainAppScreen(
     appState: MainAppState,
     pendingDeeplink: DeeplinkType?,
-    onAppClose: () -> Unit,
-    onDeeplinkComplete: () -> Unit
+    onDeeplinkComplete: () -> Unit,
+    onAppClose: () -> Unit
 ) {
     LaunchedEffect(pendingDeeplink) {
         delay(500)

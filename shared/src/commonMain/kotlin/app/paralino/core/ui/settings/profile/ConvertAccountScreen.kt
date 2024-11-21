@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -25,16 +24,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenEvent
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenState
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
-import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.ui.components.PasswordValidationElement
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -64,35 +64,37 @@ fun ConvertAccountScreenCore(
         }
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            }
-            .verticalScroll(rememberScrollState())
-            .padding(contentPadding)
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center
+    ActionScaffold(
+        modifier = Modifier.fillMaxSize(),
+        buttonState = AppButtonState.loadingStateWithCheck(uiState.actionLoading),
+        buttonText = stringResource(MR.strings.settings_account_edit_guest_account_button),
+        buttonIcon = null,
+        onConfirm = {
+            focusManager.clearFocus()
+            vm.proceed()
+        }
     ) {
-
-        Spacer(modifier = Modifier.size(30.dp))
-
-        Text(
-            text = stringResource(MR.strings.settings_account_edit_guest_account_info),
-            style = MaterialTheme.typography.h6
-        )
-
-        Spacer(modifier = Modifier.size(30.dp))
-
         Column(
             Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
+                .verticalScroll(rememberScrollState())
+                .padding(contentPadding)
+                .padding(it)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.Top
         ) {
+            Text(
+                text = stringResource(MR.strings.settings_account_edit_guest_account_info),
+                style = MaterialTheme.typography.h6
+            )
+
+            Spacer(modifier = Modifier.size(30.dp))
 
             MainInputField(
                 text = uiState.email,
@@ -124,24 +126,13 @@ fun ConvertAccountScreenCore(
                 onInputChange = { vm.onConfirmPasswordChange(it) }
             )
 
-            Spacer(modifier = Modifier.size(80.dp))
-
-            FilledButton(
-                style = ButtonStyle.BIG,
-                state = if (uiState.actionLoading == null)
-                    AppButtonState.CONTENT
-                else
-                    AppButtonState.loadingStateWithCheck(uiState.actionLoading!!),
-                onClick = {
-                    focusManager.clearFocus()
-                    vm.proceed()
-                }
-            ) {
-                Text(text = stringResource(MR.strings.settings_account_edit_guest_account_button))
-            }
-
+            PasswordValidationElement(
+                modifier = Modifier.padding(top = 12.dp),
+                minPasswordLength = FormValidation.Password.PasswordStrength.minPasswordLength,
+                hasMinPasswordLength = uiState.passwordValidation.minPasswordLength,
+                hasMinPasswordStrength = uiState.passwordValidation.passwordStrength.isOK,
+                doPasswordsMatch = uiState.passwordValidation.passwordsMatch
+            )
         }
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }

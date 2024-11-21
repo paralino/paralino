@@ -27,7 +27,7 @@ class MemberDeviceStatusProvider(
 
         return when {
             !isSharingActive -> MemberDeviceStatusType.NOT_SHARING
-            !locationStatus.isPermissionAllowed -> MemberDeviceStatusType.MISSING_PERMISSIONS
+            !locationStatus.isAnyLocationPermissionAllowed -> MemberDeviceStatusType.MISSING_PERMISSIONS
             missingBackgroundPermission -> MemberDeviceStatusType.MISSING_PERMISSIONS
             !locationStatus.isGpsOn -> MemberDeviceStatusType.GPS_OFF
             locationPerformanceManager.locationPerformanceType.value.isThrottlingLocationRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS

@@ -1,5 +1,7 @@
 package app.paralino.core.models.base
 
+import app.paralino.core.MR
+import app.paralino.core.provider.localizedString
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -37,8 +39,24 @@ sealed class PlanType {
     data class UNKNOWN(override val key: String, override val order: Int = -1) : PlanType()
 
     val isPremium: Boolean get() = order >= PRO.order
-    val isFree: Boolean get() = this == FREE
     val isOtherThanSilver get() = this != SILVER
+
+    override fun hashCode(): Int {
+        var result = key.hashCode()
+        result = 31 * result + order
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        if (other !is PlanType) return false
+        if (key != other.key) return false
+        if (order != other.order) return false
+
+        return true
+    }
 
     companion object {
         fun fromKey(key: String): PlanType {
@@ -105,10 +123,57 @@ data class PlanConfig(
     val historyDaysLimit: Int,
     val paralinoIdsLimit: Int,
     val personalDevicesLimit: Int,
-    val isActive: Boolean
+    val isActive: Boolean = true,
+    val productIds: List<String> = emptyList(),
+    val productPlanIds: List<String> = emptyList(),
 ) {
 
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
+
+    fun planBenefits(): List<PlanBenefit> {
+        val planConfig = this
+        return buildList {
+            add(
+                PlanBenefit(
+                    content = MR.plurals.plan_benefit_group.localizedString(
+                        planConfig.groupsLimit,
+                        planConfig.groupsLimit
+                    ),
+                    isHighlighted = true
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.plurals.plan_benefit_members.localizedString(
+                        planConfig.membersLimit,
+                        planConfig.membersLimit
+                    ),
+                    isHighlighted = true
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.plurals.plan_benefit_places.localizedString(
+                        planConfig.placesLimit,
+                        planConfig.placesLimit
+                    ),
+                    isHighlighted = true
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.strings.plans_benefit_place_alerts.localizedString(),
+                    isHighlighted = false
+                )
+            )
+            add(
+                PlanBenefit(
+                    content = MR.strings.plans_benefit_sharing.localizedString(),
+                    isHighlighted = false
+                )
+            )
+        }
+    }
 
     companion object {
         val default = PlanConfig(
@@ -121,7 +186,14 @@ data class PlanConfig(
             historyDaysLimit = 2,
             paralinoIdsLimit = 1,
             personalDevicesLimit = 2,
-            isActive = true
+            isActive = true,
+            productIds = listOf("free"),
+            productPlanIds = listOf("free")
         )
     }
+
+    data class PlanBenefit(
+        val content: String,
+        val isHighlighted: Boolean
+    )
 }

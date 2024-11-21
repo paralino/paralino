@@ -1,9 +1,9 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.MemberModelData
@@ -14,6 +14,7 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserDevicesRemoteSource
@@ -24,6 +25,7 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
+import kotlin.time.Duration.Companion.seconds
 
 class UpdateUserDataUseCase constructor(
     private val userRepo: UserRepository,
@@ -32,8 +34,9 @@ class UpdateUserDataUseCase constructor(
     private val groupLocal: UserGroupLocalDataSource,
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val personalCodes: PersonalCodesRepository,
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
     fun updateUserData(data: UserMeData): Flow<Unit> {
@@ -52,7 +55,7 @@ class UpdateUserDataUseCase constructor(
     }
 
     private suspend fun updateMemberDataInGroups(data: UserMeData) {
-        val userMembers = groupLocal.getMemberModelsForUser(userRepo.cachedUserId)
+        val userMembers = groupLocal.getMemberModelsForUser(appPrefs.userId)
 
         val nodes = userMembers.map { member ->
 
@@ -102,25 +105,47 @@ class UpdateUserDataUseCase constructor(
                 return null
             }
 
-            val newPushToken = appPrefs.pushTokenUnsynced
+            val hasNewLocationPushToken = appPrefs.locationPushTokenUnsynced
+                .takeIf { it.isNotBlank() && it != appPrefs.locationPushTokenSynced }
+                ?.isNotBlank()
+                ?: false
+
+            val hasNewPushToken = appPrefs.pushTokenUnsynced
                 .takeIf { it.isNotBlank() && it != appPrefs.pushTokenSynced }
-                ?: let {
-                    appPrefs.pushTokenUnsynced = ""
-                    logg.tag("push_notifications").v("No new push token to register")
-                    return null
-                }
+                ?.isNotBlank()
+                ?: false
 
-            logg.tag("push_notifications").v("Found unsynced push token, syncing...")
+            if (!hasNewPushToken && !hasNewLocationPushToken) {
+                logg.tag("push_notifications").v("No new push token to sync")
+                return null
+            }
 
-            userDevicesRemoteSource.updateDeviceData(newPushToken)
-            appPrefs.pushTokenUnsynced = ""
-            appPrefs.pushTokenSynced = newPushToken
+            logg.tag("push_notifications").i("Found unsynced push tokens, syncing...")
 
-            logg.tag("push_notifications").v("Push token registered")
+            triggerRemoteMaybe(
+                remotePreference = RemotePreference.CACHE(
+                    key = "push_token_sync",
+                    timeMillis = 5.seconds.inWholeMilliseconds
+                )
+            ) {
+                val newPushToken = appPrefs.pushTokenUnsynced.takeIf { it.isNotBlank() } ?: appPrefs.pushTokenSynced.takeIf { it.isNotBlank() } ?: return@triggerRemoteMaybe null
+                val newLocationPushToken = appPrefs.locationPushTokenUnsynced.takeIf { it.isNotBlank() } ?: appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() }
+                userDevicesRemoteSource.updateDeviceData(
+                    pushToken = newPushToken,
+                    locationPushToken = newLocationPushToken
+                )
+
+                appPrefs.pushTokenUnsynced = ""
+                appPrefs.pushTokenSynced = newPushToken
+
+                appPrefs.locationPushTokenUnsynced = ""
+                appPrefs.locationPushTokenSynced = newLocationPushToken ?: ""
+
+                logg.tag("push_notifications").i("Push token registered")
+            }
             return Payload.Success(Unit)
         } catch (e: Exception) {
             return Payload.Error(e)
         }
     }
-
 }

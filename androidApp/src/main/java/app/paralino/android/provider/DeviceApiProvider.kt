@@ -8,32 +8,23 @@ import app.paralino.android.BuildConfig
 import app.paralino.android.utils.extensions.batterLevel
 import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.isBatteryCharging
-import app.paralino.core.appPrefs
-import app.paralino.core.data.db.AppPrefs
-import app.paralino.core.data.db.AppPrefsProvider
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
-import app.paralino.core.provider.LogPriority
+import app.paralino.core.provider.INotificationStatusProvider
 import app.paralino.core.provider.SystemLogr
-import app.paralino.core.utils.exceptions.InternalConnectionException
-import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import io.sentry.Sentry
-import java.net.ConnectException
-import java.net.SocketTimeoutException
 
 class DeviceApiProvider constructor(
     private val appClass: AppClass,
     private val appBuildConfig: AppBuildConfig,
     locationStatusProvider: ILocationStatusProvider,
     connectionStatusProvider: IConnectionStatusProvider,
-) : IDeviceApiProvider(locationStatusProvider, connectionStatusProvider) {
-
-    override val deviceType: DeviceType
-        get() = DeviceType.Android
+    notificationStatusProvider: INotificationStatusProvider,
+) : IDeviceApiProvider(locationStatusProvider, connectionStatusProvider, notificationStatusProvider) {
 
     override val _batteryLevel: Int
         get() = appClass.batterLevel
@@ -53,38 +44,11 @@ class DeviceApiProvider constructor(
     override val deviceOSVersion: Int
         get() = Build.VERSION.SDK_INT
 
+    override val packageName: String
+        get() = BuildConfig.APPLICATION_ID
+
     override fun createSystemLogr(): SystemLogr {
         return DebugLogr(enabled = appBuildConfig.logToConsole, tagPrefix = "Paralino")
-    }
-
-    override fun createCrashReportingLogr(): SystemLogr {
-        return object : SystemLogr() {
-            override fun systemLog(
-                priority: LogPriority,
-                tag: String?,
-                message: String,
-                t: Throwable?
-            ) {
-                if (!appPrefs.errorReporting) {
-                    return
-                }
-
-                if (priority != LogPriority.ERROR || !appBuildConfig.logErrorsToRemote) {
-                    return
-                }
-
-                val exceptionAllowed =
-                    t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException &&
-                            t !is MissingGroupKeyException
-                if (exceptionAllowed) {
-                    Sentry.captureException(t!!)
-                }
-            }
-        }
-    }
-
-    override fun createConfig(): AppPrefs {
-        return AppPrefs(AppPrefsProvider(appClass))
     }
 
     override fun copyToClipboard(data: String) {

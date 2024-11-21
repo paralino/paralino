@@ -1,6 +1,6 @@
 package app.paralino.core.repo.api
 
-import app.paralino.core.models.BackendDatabaseType
+import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.Payload
 import app.paralino.core.models.getOrThrow
 

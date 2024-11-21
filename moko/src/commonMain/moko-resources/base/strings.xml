@@ -1,14 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Paralino</string>
     <string name="title_dashboard">Groups</string>
     <string name="title_map">Location</string>
     <string name="title_settings">Settings</string>
-
     <string name="date_name_today">Today</string>
     <string name="date_name_tomorrow">Tomorrow</string>
     <string name="date_name_yesterday">Yesterday</string>
-
     <string name="button_cancel">Cancel</string>
     <string name="button_ok">OK</string>
     <string name="button_done">Done</string>
@@ -22,7 +20,7 @@
     <string name="button_open">Open</string>
     <string name="button_cool">Cool</string>
     <string name="button_continue">Continue</string>
-
+    <string name="button_open_settings">Open settings</string>
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
     <string name="alert_sessionExpired_message">Your session expired, please login again.</string>
@@ -38,19 +36,17 @@
     <string name="error_location_permission_missing_sheet_message">Location permission is **required** in order to successfully track and share your location with others.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Please grant **precise location permission** in order to successfully track and share your location with others.</string>
     <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
-    <string name="error_location_background_permission_missing_sheet_message_android11">Please change location permission settings to\n**%s**\nin order to **reliably and always** track and share your location with others.</string>
+    <string name="error_location_background_permission_missing_sheet_message_android11">Please change location permission settings to **%s** in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to locate your device.</string>
     <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your places.</string>
     <string name="error_location_background_permission_missing_notification_message">Location sharing can\'t start because you are missing all time location permission!\nPlease open the app to restart location sharing!</string>
     <string name="error_location_sharing_start_notification_message">Location sharing can\'t start!\nPlease open the app again!</string>
     <string name="error_device_registration_notification_message">Your device can not be registered!\nPlease restart location sharing!</string>
     <string name="error_unverified_member_notification_message">Your membership could not be verified. Please try refreshing data or contact group admin.</string>
-
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
     <string name="error_crypto_encryption_generic">Unable to encrypt data, please try again.</string>
     <string name="error_crypto_decryption_generic">Unable to decrypt data, please try again.</string>
-
     <string name="notifications_sharing_active_title">Sharing active</string>
     <string name="notifications_sharing_error_title">Sharing on hold!</string>
     <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
@@ -60,40 +56,39 @@
     <string name="notifications_channel_push_sync">Notification sync</string>
     <string name="notifications_channel_data_sync">Data sync</string>
     <string name="notifications_channel_info_message">System information</string>
-
     <string name="location_banner_info_stop">Stop sharing</string>
     <string name="location_banner_fix">Fix</string>
-
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
-    <string name="dashboard_groups_add_button">Create new group</string>
+    <string name="dashboard_groups_add_button">Create a new group</string>
     <string name="dashboard_groups_join_button">Join a group</string>
+    <string name="dashboard_groups_title_created">Created groups</string>
+    <string name="dashboard_groups_title_joined">Joined groups</string>
+    <string name="dashboard_groups_create_plan_limit">To create more groups, upgrade your plan</string>
     <string name="dashboard_groups_create_info">Or create your own group</string>
     <string name="dashboard_paralino_id_title">This is your **Paralino.ID**</string>
     <string name="dashboard_paralino_id_description">Share it to join a group</string>
-
     <string name="location_banner_error_gps_off">Device location is disabled</string>
     <string name="location_banner_error_no_permission_notifications">Missing notifications permission</string>
     <string name="location_banner_error_no_permission_location">Missing location permission</string>
+    <string name="location_banner_error_no_permission_location_precise">Missing precise location permission</string>
     <string name="location_banner_error_no_permission_location_background">Missing all time location permission</string>
     <string name="location_banner_error_offline">Device is offline</string>
-
     <string name="settings_section_account_title">Account</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inactive codes</string>
     <string name="settings_account_edit_profile">Edit profile</string>
     <string name="settings_account_edit_email">Change email</string>
     <string name="settings_account_edit_password">Change password</string>
-    <string name="settings_account_edit_email_button">CHANGE EMAIL</string>
+    <string name="settings_account_edit_email_button">Change email</string>
     <string name="settings_account_edit_email_placeholder_email">New email*</string>
     <string name="settings_account_edit_email_placeholder_password">Current password*</string>
-    <string name="settings_account_edit_password_button">CHANGE PASSWORD</string>
+    <string name="settings_account_edit_password_button">Change password</string>
     <string name="settings_account_edit_password_placeholder_password_new">New password*</string>
     <string name="settings_account_edit_password_placeholder_password_confirm">Confirm password*</string>
     <string name="settings_account_guest_convert">Convert account</string>
     <string name="settings_account_guest_badge">Guest account</string>
-    <string name="settings_account_edit_guest_account_button">CONVERT ACCOUNT</string>
-    <string name="settings_account_edit_guest_account_info">When you add email and password to your account you will be able to login on another device or recover your account if your delete the app or lose your device.</string>
-
+    <string name="settings_account_edit_guest_account_button">Convert account&gt;</string>
+    <string name="settings_account_edit_guest_account_info">When you add email and password to your account, you will be able to login on another device or recover your account, if your delete the app or lose your device.</string>
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
     <string name="settings_account_delete_alert_title">Delete account</string>
@@ -104,9 +99,7 @@
     <string name="settings_account_delete_alert_cancel_button2">Never mind</string>
     <string name="settings_account_delete_alert_cancel_button3">Abort</string>
     <string name="settings_account_delete_alert_cancel_button4">Close</string>
-
     <string name="settings_profile_name_placeholder">Your name*</string>
-
     <string name="settings_section_general_title">Info</string>
     <string name="setting_title_share">Share with friends</string>
     <string name="setting_title_rate">Give some stars 🌟🌟🌟🌟🌟</string>
@@ -118,16 +111,14 @@
     <string name="setting_title_logout">Logout</string>
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
-
     <string name="setting_title_errorReporting">Anonymous crash logs</string>
-    <string name="setting_description_errorReporting">Share anonymous error logs in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
+    <string name="setting_description_errorReporting">Share anonymous error logs, in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_title_locationBoost">Location boost</string>
     <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
     <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>
     <string name="setting_title_placeActivityThrottle">Throttle place activity</string>
     <string name="setting_description_placeActivityThrottle_enabled">Your device will create place activity notification if you spend more time in or out of certain place.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in short time (for example: if you shortly drive by a certain place).</string>
-
     <string name="plans_banner_settings_title">Upgrade your Plan</string>
     <string name="plans_banner_settings_description">Get more of everything and take your experience to the next level!</string>
     <string name="plans_banner_settings_action">Upgrade now</string>
@@ -136,20 +127,59 @@
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
     <string name="plans_management_screen_title">Subscription</string>
-    <string name="plans_management_info_not_subscribed">You are currently not subscribed to premium plan!</string>
-    <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\nUse device you originally used for purchase.</string>
-    <string name="plans_management_info_plan">You currently have **%1$s** plan!</string>
+    <string name="plans_management_info_not_subscribed">You are currently not subscribed to Premium plan!</string>
+    <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\n\nUse the device you originally used for purchasing.</string>
+    <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
-    <string name="plans_paywall_onboarding_skip_button">Use free version</string>
-
-    <string name="plans_gift_screen_title">Lets celebrate 🎉</string>
-    <string name="plans_gift_screen_box_title">Special Launch Gift!</string>
-    <string name="plans_gift_screen_box_message">As an early adopter you get specially crafted plan, yours to keep!</string>
-    <string name="plans_gift_screen_benefits_title">🎁 What you get 🎁</string>
-    <string name="plans_gift_screen_benefits_content">⭐  **1 group**\n⭐️  **%1$s members**\n⭐️  **%2$s places**\n⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
-    <string name="plans_gift_screen_benefits_content_multiple">⭐  **%1$s groups**\n⭐️  **%2$s members**\n⭐️  **%3$s places**⭐️  Unlimited place alerts\n⭐️  Unlimited location sharing</string>
+    <string name="plans_management_action_change">Change plan</string>
+    <string name="plan_period_weekly_name">Weekly</string>
+    <string name="plan_period_monthly_name">Monthly</string>
+    <string name="plan_period_annually_name">Annually</string>
+    <string name="plan_period_onetime_name">Lifetime</string>
+    <string name="paywall_onboarding_skip_button">Use free version</string>
+    <string name="paywall_screen_title">Select the plan that is right for you</string>
+    <string name="paywall_current_plan_label">Current plan</string>
+    <string name="paywall_special_offer_label">Special offer 🎁</string>
+    <string name="paywall_all_members_features_notice">All %s members get group benefits</string>
+    <string name="paywall_free_trial_notice">First **%s days** are free</string>
+    <string name="paywall_start_button_free">Start **free trial**</string>
+    <string name="paywall_start_button_continue">Continue with **%s**</string>
+    <string name="paywall_cancellation_notice">You can cancel anytime</string>
+    <string name="paywall_button_restore">Restore</string>
+    <string name="paywall_privacy_policy_label">Privacy</string>
+    <string name="paywall_terms_of_use_label">Terms</string>
+    <string name="paywall_faq_section_title">Learn more</string>
+    <string name="paywall_select_plan_label">Select your plan</string>
+    <string name="paywall_free_plan_name">Basic</string>
+    <string name="paywall_silver_plan_name">Starter</string>
+    <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
+    <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
+    <string name="paywall_discount_percentage_badge_text">%s OFF</string>
+    <string name="paywall_faq_question_how_to_cancel">How can I cancel my subscription?</string>
+    <string name="paywall_faq_question_upgrade_downgrade">How can I upgrade or downgrade my plan?</string>
+    <string name="paywall_faq_question_plan_features">How many members and places can a group have in a %s plan?</string>
+    <string name="paywall_faq_question_premium_group_features">Do all members get group benefits?</string>
+    <string name="paywall_faq_question_refund">How can I request a refund?</string>
+    <string name="paywall_faq_question_payment_security">Is my payment information secure?</string>
+    <string name="paywall_faq_question_free_trial">Is there a free trial available?</string>
+    <string name="paywall_faq_question_contact_support">How can I contact support?</string>
+    <string name="paywall_faq_answer_how_to_cancel">You can cancel your subscription at any time in your account settings under **Subscription** and tap **Cancel**. You will be taken to the store settings where you can cancel your plan.</string>
+    <string name="paywall_faq_answer_upgrade_downgrade">To change your plan, go to **Subscriptions** in your account settings, then tap on **Change** and select the plan you like.</string>
+    <string name="paywall_faq_answer_plan_features">Each group in the %1$s plan can have %2$s members and %3$s places.</string>
+    <string name="paywall_faq_answer_premium_group_features">Yes, all members in your group will have access to premium group features. Only one person pays for the premium plan but every group member can use additional benefits.</string>
+    <string name="paywall_faq_answer_refund_apple">Since Apple is handling your payment, you will need to go to reportaproblem.apple.com and follow the steps there.</string>
+    <string name="paywall_faq_answer_refund_google">You can contact our support team by emailing **contact@paralino.com**.</string>
+    <string name="paywall_faq_answer_payment_security_apple">Yes, your payment is processed directly by the Apple App Store. We do not process or store any payment information.</string>
+    <string name="paywall_faq_answer_payment_security_google">Yes, your payment is processed directly by the Google Play Store. We do not process or store any payment information.</string>
+    <string name="paywall_faq_answer_free_trial">Yes, we offer a free trial period for the first time you start your subscription. You can then enjoy premium features at no cost.</string>
+    <string name="paywall_faq_answer_contact_support">You can contact our support team by emailing **contact@paralino.com**.</string>
+    <string name="plans_gift_screen_title">Lets celebrate!</string>
+    <string name="plans_gift_screen_box_title">Early Adopter Gift</string>
+    <string name="plans_gift_screen_box_message">You get a special lifetime **Starter** plan, completely for FREE!</string>
+    <string name="plans_gift_screen_benefits_title">What you get</string>
     <string name="plans_gift_screen_separator_text">Need more?</string>
-
+    <string name="plans_benefit_place_alerts">Unlimited place alerts</string>
+    <string name="plans_benefit_sharing">Unlimited location sharing</string>
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
     <string name="login_placeholder_password">Password*</string>
@@ -176,39 +206,36 @@
     <string name="login_signup_terms_privacy_text">By creating an account you agree to the privacy policy and terms of use.</string>
     <string name="login_signup_terms_privacy_privacy">privacy policy</string>
     <string name="login_signup_terms_privacy_terms">terms of use</string>
-
     <string name="login_step_logIn">Logging you in</string>
     <string name="login_step_signUp">Creating an account</string>
     <string name="login_step_encryption">Setting up encryption</string>
     <string name="login_step_allDone">Success!</string>
     <string name="login_step_user_setup">Preparing user</string>
     <string name="login_step_generic_loading">Please wait…</string>
-
     <string name="login_step_error_signUp">Error while creating account</string>
     <string name="login_step_error_encryption_signUp">Error while setting up encryption</string>
     <string name="login_step_error_user_setup">Unable to prepare user data</string>
     <string name="login_info_password_reset_done">Check your email for password reset instructions</string>
-
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
     <string name="login_step_error_recoverGuest">Unable to recover guest account</string>
     <string name="login_step_error_encryption_logIn">Your encryption keys seems to be corrupted or non existent, please try again or reset your password (This will delete all your previous data)</string>
-
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>
     <string name="form_invalid_email_conflict_description">Please use another email.</string>
-    <string name="form_invalid_password_length_description">Your password has to be at least 8 characters long.</string>
+    <string name="form_invalid_password_length_description">Please use a better password.</string>
     <string name="form_invalid_password_match_description">Passwords don\'t match.</string>
     <string name="form_invalid_name_description">Your name is not valid.</string>
     <string name="form_generic_validation">Please fill in all the details.</string>
-
+    <string name="form_rules_password_min_length">Minimum %d characters</string>
+    <string name="form_rules_password_min_strength">Contains different characters</string>
+    <string name="form_rules_password_match">Passwords match</string>
     <string name="info_email_confirm">Please verify your email address!</string>
     <string name="info_email_confirm_alert_title">Verify email</string>
     <string name="info_email_confirm_alert_message">Verify your email address to make sure you can login again to your account!\n\nYour email:\n**%s**</string>
     <string name="info_email_confirm_alert_button_resend">Resend verification link</string>
     <string name="info_email_verified">Email verified successfully</string>
     <string name="info_email_check_instructions">Check your email for instructions</string>
-
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>
     <string name="groups_sharing_setting_battery_share">Battery level</string>
@@ -226,17 +253,15 @@
     <string name="groups_sharing_potential_error_background_location_message">Your location can not be shared in the background or if you restart your phone!\n\nPlease allow **all the time** location access for reliable sharing.</string>
     <string name="groups_sharing_error_unverified_group_title">Unverified group or member</string>
     <string name="groups_sharing_error_unverified_group_message">You can not share location to unverified group or member.\n\nTry refreshing the group data.</string>
-
     <string name="groups_sharing_duration_type_infinite">Always on</string>
-
-    <string name="invite_create_button">CREATE PARALINO.ID</string>
-    <string name="invite_create_new_button">CREATE ALTERNATIVE ID</string>
+    <string name="invite_create_button">Create Paralino.ID</string>
+    <string name="invite_create_new_button">Create alternative ID</string>
     <string name="toast_copy_invite_code">Code copied</string>
     <string name="invite_delete_alert_title">Are you sure you want to disable this code?\n\nYou will not be able to join any new groups but you can always come back and enable Paralino.ID again.</string>
     <string name="invite_manage_empty_description">You don\'t have an active **Paralino.ID**.\nCreate one to join other groups and start securely sharing your location with your friends.</string>
-    <string name="invite_manage_description">Share this code to join a group and start securely sharing your location.</string>
+    <string name="invite_manage_description">Share this code to join a group.</string>
     <string name="invite_create_alternative_description">Alternative Paralino.IDs allow you to diversify your identity and share different IDs with different people. You can have **%s** Paralino.IDs with your plan.</string>
-    <string name="invite_connect_code_placeholder">User Paralino.ID</string>
+    <string name="invite_connect_code_placeholder">User\'s Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
     <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>
     <string name="invite_connect_button_pickGroup">Choose a group</string>
@@ -250,10 +275,9 @@
     <string name="invite_code_button_share">Share code</string>
     <string name="invite_code_button_activate">Activate</string>
     <string name="invite_connect_already_member_message">This user is already a member of your group!</string>
-
-    <string name="group_members_item_remove_button">REMOVE</string>
-    <string name="group_members_item_clear_location_button">CLEAR LOCATION</string>
-    <string name="group_members_item_request_location_button">REFRESH</string>
+    <string name="group_members_item_remove_button">Remove</string>
+    <string name="group_members_item_clear_location_button">Clear location</string>
+    <string name="group_members_item_request_location_button">Refresh</string>
     <string name="group_members_item_old_location_button">Show last location</string>
     <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
     <string name="group_member_title">Member</string>
@@ -286,7 +310,6 @@
     <string name="group_settings_verification_description_off">Group members can be added by other users now and there is no extra verification from group owner.</string>
     <string name="group_settings_verification_dialog_message_on">Enabling verification will trigger re-verification process for all current members.\n\nMembers will be cryptographically verified and no one else will be able to add new members to this group.</string>
     <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
-
     <string name="group_create_start_title">Connect</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
@@ -302,7 +325,6 @@
     <string name="group_member_device_setup_invalid">Device is not fully compatible and can not be reached</string>
     <string name="group_member_device_request_failed">Request failed, please try again</string>
     <string name="group_member_device_request_disabled">Please wait a few moments before requesting location again 🙏</string>
-
     <string name="group_members_last_active_status_now">Just now</string>
     <string name="group_members_last_active_status_recently_1">1 minute ago</string>
     <string name="group_members_last_active_status_recently_2">2 minutes ago</string>
@@ -316,22 +338,23 @@
     <string name="group_members_status_throttle">Idle</string>
     <string name="group_members_status_too_many_requests">Too many requests</string>
     <string name="group_members_status_missing_permissions">Missing permissions</string>
-
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>
-    <string name="places_list_screen_empty_info">You don\'t have any places yet</string>
-    <string name="places_create_screen_title">Create new place</string>
+    <string name="places_list_screen_empty_info">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
+    <string name="places_notification_demo_home">Home</string>
+    <string name="places_notification_demo_school">School</string>
+    <string name="places_create_screen_title">Create a new place</string>
     <string name="places_edit_screen_title">Edit place</string>
     <string name="places_create_seekbar_info">Radius</string>
-    <string name="places_create_button_create">Create place</string>
+    <string name="places_create_button_create">Create a place</string>
     <string name="places_create_error_no_place">Please add location by long pressing on the map</string>
-    <string name="places_create_location_hint">**TIP:** Long press on the map to add or adjust your place</string>
+    <string name="places_create_location_hint_longpress">**TIP:** Long press on the map to add or adjust your place</string>
+    <string name="places_create_location_hint_tap">**TIP:** Tap on the map to add or adjust your place</string>
     <string name="place_list_menu_delete">Delete place</string>
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
     <string name="place_detail_notification_settings_title">Notification settings</string>
-
     <string name="place_notification_enter">%s arrived at %s</string>
     <string name="place_notification_exit">%s left %s</string>
     <string name="place_notification_default">Your place have activity</string>
@@ -344,7 +367,6 @@
     <string name="group_member_sharing_started_notification_default">Your friend started sharing their location</string>
     <string name="group_member_sharing_started_notification">%s started location sharing</string>
     <string name="group_member_current_sharing_started_notification">Your device started location sharing</string>
-
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>
@@ -354,9 +376,7 @@
     <string name="placeholder_unit_speed_mph">%s m/h</string>
     <string name="welcome_screen_info_1">SECURE - PRIVATE - ENCRYPTED</string>
     <string name="welcome_screen_button_join">JOIN</string>
-
     <string name="welcome_account_edit_profile">Complete your profile</string>
-
     <string name="recover_account_screen_error">Unable to load account recovery</string>
     <string name="recover_account_screen_title">Account recovery</string>
     <string name="recover_account_button_recover">Recover account</string>
@@ -367,11 +387,10 @@
     <string name="recover_account_step_password_correct">Key can be recovered 🙌</string>
     <string name="recover_account_step_password_wrong">Password does not match</string>
     <string name="recover_account_header_recover_possible">Your password does not match your decryption keys</string>
-    <string name="recover_account_caption_recover_possible">To recover you account, try recovering the key with old password.</string>
+    <string name="recover_account_caption_recover_possible">To recover your account, try recovering the key with old password.</string>
     <string name="recover_account_header_recover_not_possible">Your account does not have matching keys! Please reset your account.</string>
     <string name="recover_account_caption_recover_not_possible">If you can not recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
     <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
-
     <string name="reset_password_screen_title">Reset password</string>
     <string name="reset_password_success_message">Please login again!</string>
     <string name="reset_password_error_token_message">Your password reset link expired, please request a new one.</string>
@@ -379,7 +398,6 @@
     <string name="raw_data_screen_title">Encryption</string>
     <string name="raw_data_section_encrypted">Encrypted data on server</string>
     <string name="raw_data_section_decrypted">Decrypted data on device</string>
-
     <string name="plan_limit_alert_title">BETA version</string>
     <string name="plan_limit_alert_message">You reached the maximum number of %1$s (**%2$d**) while in BETA.\n\nMore plans will be available soon.\n\nThank you for your patience while we scale up our infrastructure!</string>
     <string name="plan_limit_contact_owner_alert_title">Plan limit</string>
@@ -388,14 +406,11 @@
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>
     <string name="plan_limit_groups_alert_info">groups</string>
-    <string name="plan_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
-
     <string name="app_version_alert_title">New app update</string>
     <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>
     <string name="app_version_alert_title_mandatory">Please update</string>
     <string name="app_version_alert_message_mandatory">This app version is deprecated!\n\nTo continue using the app, please update to the latest version!</string>
     <string name="app_version_alert_button_update">Update</string>
-
     <string name="blocklist_screen_title">Blocklist</string>
     <string name="blocklist_screen_empty_title">Your blocklist is empty</string>
     <string name="blocklist_screen_title_groups">Blocked groups</string>
@@ -406,5 +421,4 @@
     <string name="blocklist_unblock_user_alert_message">Unblocking will allow user to add you to new groups and you will be notified about users\' location updates.</string>
     <string name="blocklist_unblock_alert_button">Unblock</string>
     <string name="blocklist_unblock_alert_unknown">Remove unknown blocked type?</string>
-
 </resources>

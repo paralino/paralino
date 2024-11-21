@@ -1,13 +1,12 @@
 package app.paralino.core.domain.group
 
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
-import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -15,9 +14,9 @@ class GroupRemoveUseCase(
     private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val placeActivityRepo: PlaceActivityDataSource,
-    private val userRepository: UserRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val locationSharingManager: LocationSharingManager,
+    private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository() {
 
     fun deleteGroup(groupId: String): Flow<Unit> {
@@ -36,7 +35,11 @@ class GroupRemoveUseCase(
         return getDataOnce(
             remote = {
                 val groupOwnerId = local.getGroupOwnerId(groupId)
-                remote.removeUserFromGroup(groupId, groupOwnerId!!, userRepository.cachedUserId)
+                remote.removeUserFromGroup(
+                    groupId = groupId,
+                    groupOwnerId = groupOwnerId!!,
+                    memberUserId = appPrefs.userId
+                )
             },
             localUpdate = {
                 clearGroupLocally(groupId)

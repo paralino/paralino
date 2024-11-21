@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -15,12 +13,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.interop.UIKitView
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
+import androidx.compose.ui.viewinterop.UIKitInteropProperties
+import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
@@ -41,6 +41,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
@@ -54,19 +55,23 @@ import app.paralino.core.ui.login.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
+import app.paralino.core.ui.map.rememberSwipeableSheetState
+import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.collectLatest
-import platform.UIKit.UIView
+import kotlinx.coroutines.flow.distinctUntilChanged
+import platform.UIKit.UIViewController
 
 object HomeScreens {
     fun GroupInitScreenVC(
         vm: GroupInitViewModel,
         openSettings: () -> Unit,
         onCreateGroup: () -> Unit,
+        openFreePlanInfo: () -> Unit,
         openPersonalCodes: () -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
@@ -77,6 +82,7 @@ object HomeScreens {
                 vm = vm,
                 openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
+                openFreePlanInfo = openFreePlanInfo,
                 openPersonalCodes = openPersonalCodes,
                 onSharePersonalCode = onSharePersonalCode,
                 askNotificationPermission = askNotificationPermission,
@@ -102,13 +108,14 @@ object HomeScreens {
     fun GroupDetailScreenVC(
         vm: GroupDetailViewModel,
         groupId: String?,
+        paddingValues: AppleScreenPaddingValues,
         openMemberAdd: () -> Unit,
         openMap: () -> Unit,
         openPlaces: () -> Unit,
         openGroupSettings: () -> Unit,
         openMemberRawData: (String) -> Unit,
         openSharing: () -> Unit,
-        openSubscriptions: () -> Unit,
+        openPaywall: () -> Unit,
         onNavigateBack: () -> Unit,
         askNotificationPermission: () -> Unit,
         askLocationService: () -> Unit,
@@ -120,14 +127,14 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 groupId = groupId,
-                contentPadding = PaddingValues(bottom = 30.dp),
+                contentPadding = paddingValues.toComposePaddingValues(),
                 openMemberAdd = openMemberAdd,
                 openMap = openMap,
                 openPlaces = openPlaces,
                 openGroupSettings = openGroupSettings,
                 openMemberRawData = openMemberRawData,
                 openSharing = openSharing,
-                openSubscriptions = openSubscriptions,
+                openPaywall = openPaywall,
                 onNavigateBack = onNavigateBack,
                 askNotificationPermission = askNotificationPermission,
                 askLocationService = askLocationService,
@@ -197,9 +204,10 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class, ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalComposeUiApi::class)
     fun MapSheet(
         vm: MapHomeViewModel,
+        paddingValues: AppleScreenPaddingValues,
         initialUiState: MapHomeScreenState,
         trackMarker: (FocusedMarkerData) -> Unit,
         onOpenPlacesScreen: () -> Unit,
@@ -211,7 +219,9 @@ object HomeScreens {
         onSettingsClick: () -> Unit,
         onPlaceClick: (PlaceListItemData) -> Unit,
         onCreateGroup: () -> Unit,
-        mapUIView: () -> UIView,
+        openFreePlanInfo: () -> Unit,
+        openPaywall: () -> Unit,
+        mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
         RootScreenIOS {
             MessageDispatcherEffect(vm, it)
@@ -222,53 +232,52 @@ object HomeScreens {
             BoxWithConstraints {
                 val height = this.maxHeight
                 val density = LocalDensity.current
-                val sheetState = rememberSwipeableState(
+
+                val collapsedAnchorBottomPaddingPixels = with(LocalDensity.current) {
+                    15.dp.toPx()
+                }
+
+                val sheetState = rememberSwipeableSheetState(
                     initialValue = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused != false) {
                         BottomSheetPosition.HIDDEN
                     } else {
                         BottomSheetPosition.HIDDEN
                     },
-                    confirmStateChange = {
+                    collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
+                    confirmValueChange = {
                         it != BottomSheetPosition.HIDDEN
                     }
                 )
 
                 val bottomOffset = density.run {
                     try {
-                        sheetState.offset.value.toDp()
+                        sheetState.offset.toDp()
                     } catch (e: Exception) {
                         0.dp
                     }
                 }
 
-                val collapsedAnchorBottomPaddingPixels = with(LocalDensity.current) {
-                    15.dp.toPx()
-                }
-
                 LaunchedEffect(key1 = Unit) {
                     vm.events.collectLatest { event ->
                         when (event) {
-                            MapHomeScreenEvent.AddGroup -> {
-                                onCreateGroup()
-                            }
-
-                            MapHomeScreenEvent.GroupsPlanLimitReached -> {
-                                // TODO react
-                            }
-
+                            MapHomeScreenEvent.AddGroup -> onCreateGroup()
+                            MapHomeScreenEvent.ShowFreePlanInfo -> openFreePlanInfo()
+                            MapHomeScreenEvent.GroupsPlanLimitReached -> openPaywall()
                             null -> {}
                         }
                     }
                 }
 
-                LaunchedEffect(sheetState.currentValue) {
-                    snapshotFlow { sheetState.currentValue }.collectLatest {
-                        val bottomOffset = (height - bottomOffset).coerceIn(
-                            0.dp,
-                            height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                        )
-                        onSheetOffsetChange(bottomOffset.value)
-                    }
+                LaunchedEffect(bottomOffset) {
+                    snapshotFlow { bottomOffset }
+                        .distinctUntilChanged()
+                        .collectLatest {
+                            val bottomOffset = (height - bottomOffset).coerceIn(
+                                0.dp,
+                                height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                            )
+                            onSheetOffsetChange(bottomOffset.value)
+                        }
                 }
 
                 val dialog = uiState.alertDialog
@@ -281,12 +290,6 @@ object HomeScreens {
                     swipeableState = sheetState,
                     trackMarker = trackMarker,
                     readyState = readyState,
-                    createAnchors = {
-                        BottomSheetPosition.swipeAnchors(
-                            screenHeightPixels = it,
-                            collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels
-                        )
-                    },
                     onOpenPlacesScreen = onOpenPlacesScreen,
                     onOpenCreatePlaceScreen = onOpenCreatePlaceScreen,
                     onOpenGroupScreen = onGroupDetailsClick,
@@ -297,17 +300,22 @@ object HomeScreens {
                         vm.setSelectedContentType(MapSheetSelectedContentType.MEMBERS)
                     },
                     screenContent = {
-                        UIKitView(
-                            factory = mapUIView,
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = mapUIView,
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
 
                         MapHomeScreenElements(
-                            modifier = Modifier.padding(top = 50.dp),
+                            modifier = Modifier.padding(top = paddingValues.top.dp),
                             state = uiState,
-                            sheetPeekHeight = (this.maxHeight - bottomOffset)
-                                .plus(if (sheetState.currentValue == BottomSheetPosition.HIDDEN) 35.dp else 0.dp)
-                                .coerceAtMost(this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent),
+                            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
+                                minimumValue = if (sheetState.currentValue == BottomSheetPosition.HIDDEN) paddingValues.bottom.dp else 0.dp,
+                                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                            ),
                             onGroupPickerClick = onGroupPickerClick,
                             onGroupDetailsClick = onGroupDetailsClick,
                             onSharingStartClick = onSharingStartClick,
@@ -339,14 +347,15 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlacesScreenVC(
         vm: PlacesViewModel,
+        paddingValues: AppleScreenPaddingValues,
         addNewPlace: () -> Unit,
-        openSubscriptions: () -> Unit,
+        openPaywall: () -> Unit,
         openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
         askNotificationPermission: () -> Unit,
-        mapUIView: (PlacesListScreenState) -> UIView,
+        mapUIView: (PlacesListScreenState) -> UIViewController,
     ) = ComposeUIViewController {
         RootScreenIOS {
 
@@ -358,18 +367,22 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 userScrollEnabled = userScroll,
-                contentPadding = PaddingValues(bottom = 30.dp),
+                contentPadding = paddingValues.toComposePaddingValues(),
                 askNotificationPermission = askNotificationPermission,
                 addNewPlace = addNewPlace,
-                openSubscriptions = openSubscriptions,
+                openPaywall = openPaywall,
                 openPlaceDetails = openPlaceDetailScreen,
                 mapContent = { state ->
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        UIKitView(
-                            factory = { mapUIView(state) },
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = { mapUIView(state) },
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
                     }
                 }
@@ -377,13 +390,14 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlaceDetailScreenVC(
         vm: PlaceDetailViewModel,
+        paddingValues: AppleScreenPaddingValues,
         openPlaceRawDataScreen: () -> Unit,
         openPlaceEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
-        mapUIView: (PlaceDetailScreenState) -> UIView,
+        mapUIView: (PlaceDetailScreenState) -> UIViewController,
     ) = ComposeUIViewController {
         RootScreenIOS {
 
@@ -395,7 +409,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 userScrollEnabled = userScroll,
-                contentPadding = PaddingValues(bottom = 30.dp),
+                contentPadding = paddingValues.toComposePaddingValues(),
                 onNavigateBack = onNavigateBack,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceEditScreen = openPlaceEditScreen,
@@ -403,9 +417,13 @@ object HomeScreens {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        UIKitView(
-                            factory = { mapUIView(state) },
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = { mapUIView(state) },
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
                     }
                 }
@@ -413,12 +431,12 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
     fun PlaceCreateScreenVC(
         vm: CreatePlaceViewModel,
         onNavigateBack: () -> Unit,
         onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
-        mapUIView: () -> UIView,
+        mapUIView: () -> UIViewController,
     ) = ComposeUIViewController {
         RootScreenIOS {
             CreatePlaceScreenCore(
@@ -430,12 +448,33 @@ object HomeScreens {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        UIKitView(
-                            factory = { mapUIView() },
+                        UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
+                            factory = mapUIView,
+                            properties = UIKitInteropProperties(
+                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                                isNativeAccessibilityEnabled = true
+                            )
                         )
                     }
                 }
+            )
+        }
+    }
+
+    fun FreePlanInfoScreenVC(
+        vm: PlanInfoViewModel,
+        showBanner: Boolean,
+        onContinue: () -> Unit,
+        openPaywall: () -> Unit
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            FreePlanInfoScreenCore(
+                coreUiState = it,
+                vm = vm,
+                showBanner = showBanner,
+                onContinue = onContinue,
+                openPaywall = openPaywall,
             )
         }
     }

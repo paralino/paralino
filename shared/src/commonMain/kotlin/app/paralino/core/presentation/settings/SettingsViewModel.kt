@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.settings
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -106,7 +106,7 @@ class SettingsViewModel(
         userPlans: UserPlans
     ): Payload<AccountScreenState> {
         return when (userState) {
-            Resource.NotInitialized -> _accountState.value
+            Resource.NotInitialized -> Payload.Loading
             is Resource.Ready -> {
                 if (userState.data != null) {
                     Payload.Success(
@@ -118,16 +118,15 @@ class SettingsViewModel(
                                 personalCode = personalCode?.formattedCode,
                                 isGuestUser = userState.data.isGuestUser,
                                 errorItem = if (userState.data.needsEmailVerification)
-                                    ConditionErrorType.EMAIL_VERIFICATION(userState.data.email)
+                                    ConditionErrorType.EmailVerification(userState.data.email)
                                 else null
                             ),
                             canUseEmail = remoteConfig?.isEmailEnabled ?: false,
                             logoutState = null,
                             deleteAccountState = null,
-                            versionName = "v${deviceApiProvider.appVersion} (${deviceApiProvider.appVersionCode})",
+                            versionName = deviceApiProvider.appVersionText,
                             boostTime = null,
                             placeActivityThrottleEnabled = appPrefs.placeActivityThrottle,
-                            isErrorReportingEnabled = appPrefs.errorReporting,
                             userPlan = userPlans.highestValidPlanConfig
                         )
                     )
@@ -225,17 +224,6 @@ class SettingsViewModel(
         }
     }
 
-    private fun toggleErrorReporting() {
-        _accountState.update {
-            it.mapSuccess {
-                val newValue = !it.isErrorReportingEnabled
-                logg.v("Toggle error reporting: $newValue")
-                appPrefs.errorReporting = newValue
-                it.copy(isErrorReportingEnabled = newValue)
-            }
-        }
-    }
-
     private fun onShowDialog(dialog: MainAlertDialog?) {
         _accountState.update { it.mapSuccess { it.copy(alertDialog = dialog) } }
     }
@@ -251,7 +239,6 @@ class SettingsViewModel(
             AccountScreenUiEvent.LogoutConfirm -> logout()
             AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
             AccountScreenUiEvent.TogglePlaceActivityThrottle -> togglePlaceActivityThrottle()
-            AccountScreenUiEvent.ToggleErrorReporting -> toggleErrorReporting()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
             AccountScreenUiEvent.SendEmailVerification -> {
                 _accountState.update {

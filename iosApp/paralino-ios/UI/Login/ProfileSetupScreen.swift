@@ -20,10 +20,10 @@ struct ProfileSetupScreen: View {
                 ScreensIOS.shared.login.CompleteProfileVC(
                     vm: appState.vm
                 ) { screen in
-                    bottomSheet = screen as? BottomSheetPickerTypeEmojiPickerBottomSheet
+                    bottomSheet = screen
                 }
             }
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.onImageChange(image: image)

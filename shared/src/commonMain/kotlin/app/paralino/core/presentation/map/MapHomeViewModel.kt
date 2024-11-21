@@ -1,7 +1,7 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
@@ -557,13 +557,18 @@ class MapHomeViewModel constructor(
     }
 
     fun setSelectedContentType(selectedContentType: MapSheetSelectedContentType) =
-        updateReadyState {
-            it.copy(
+        updateReadyState { currentState ->
+            currentState.copy(
                 trackingMarker = null,
-                markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
-                mapHomeScreenFocusType = when (selectedContentType) {
-                    MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
-                    MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
+                markers = currentState.markers.map { it.copy(focused = false, hidden = it.obsolete) },
+                mapHomeScreenFocusType = if (currentState.mapSheetSelectedContentType == selectedContentType) {
+                    // refocus only if tapping again
+                    when (selectedContentType) {
+                        MapSheetSelectedContentType.PLACES -> MapHomeScreenFocusType.ALL_PLACES
+                        MapSheetSelectedContentType.MEMBERS -> MapHomeScreenFocusType.ALL_MEMBERS
+                    }
+                } else {
+                    currentState.mapHomeScreenFocusType
                 },
                 mapSheetSelectedContentType = selectedContentType
             )
@@ -594,14 +599,17 @@ class MapHomeViewModel constructor(
     }
 
     fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        val allGroups = getAllGroupsItemState()
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = false,
             userPlan = userRepository.userPlans.value.highestValidPlanConfig,
-            groups = getAllGroupsItemState()
+            groupsLimit = userRepository.userPlans.value.groupsLimit,
+            createdGroups = allGroups.filter { it.isCurrentUserOwner },
+            joinedGroups = allGroups.filter { !it.isCurrentUserOwner }
         )
     }
 
-    fun getAllGroupsItemState(): List<GroupItemState> {
+    private fun getAllGroupsItemState(): List<GroupItemState> {
         return allGroups.value.data?.map { group ->
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
@@ -685,7 +693,7 @@ class MapHomeViewModel constructor(
             return
         }
 
-        clearUserLocation.clearLocation(state.location.locationId)
+        clearUserLocation.clearLocation(groupId = state.memberState.groupId, locationId = state.location.locationId)
             .onStart {
                 updateReadyState { readyState ->
                     readyState.copy(
@@ -854,10 +862,10 @@ class MapHomeViewModel constructor(
     }
 
     fun tryCreateGroup() {
-        val limit = userRepository.userPlans.value.highestValidPlan?.plan?.groupsLimitOverride?.toInt()
-            ?: userRepository.userPlans.value.highestValidPlanConfig.groupsLimit
+        val limit = userRepository.userPlans.value.groupsLimit
         val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
         val maxGroupLimit = remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.groupsLimit
+        val shouldShowFreePlanNoticeScreen = userRepository.shouldShowFreePlanNoticeScreen
 
         coroutineScope.launch {
             if (groupCount >= maxGroupLimit) {
@@ -871,6 +879,8 @@ class MapHomeViewModel constructor(
                 }
             } else if (limit in 0..groupCount) {
                 _eventChannel.send(MapHomeScreenEvent.GroupsPlanLimitReached)
+            } else if (shouldShowFreePlanNoticeScreen) {
+                _eventChannel.send(MapHomeScreenEvent.ShowFreePlanInfo)
             } else {
                 _eventChannel.send(MapHomeScreenEvent.AddGroup)
             }

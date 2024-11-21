@@ -31,13 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.BackendResourceIDs
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
@@ -46,7 +45,7 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
@@ -62,7 +61,7 @@ fun SettingsScreenCore(
     openPersonalCodes: () -> Unit,
     openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
-    openLicences: () -> Unit,
+    openGeneralInfo: () -> Unit,
     openAppStatus: () -> Unit,
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
@@ -95,7 +94,7 @@ fun SettingsScreenCore(
                 onErrorItemClick = { },
                 onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
                 onShareCode = onShareCode,
-                onClick = openProfileDetails
+                onClick = openPersonalCodes
             )
         }
 
@@ -111,10 +110,10 @@ fun SettingsScreenCore(
 
         if (readyState != null) {
             SettingsActionItem(
-                name = stringResource(MR.strings.settings_section_personal_code_title),
-                icon = CoreAppIcons.Key.asPainterResource()
+                name = stringResource(MR.strings.settings_section_account_title),
+                icon = CoreAppIcons.Person.asPainterResource()
             ) {
-                openPersonalCodes()
+                openProfileDetails()
             }
 
             SettingsActionItem(
@@ -172,31 +171,20 @@ fun SettingsScreenCore(
         }
 
         SettingSectionInfo(
-            appVersion = accountState.data?.versionName ?: "",
-            isErrorReportingEnabled = readyState?.isErrorReportingEnabled ?: false,
-            onLicencesClick = { openLicences() },
-            onAppStatusClick = { openAppStatus() },
-            onShareApp = onShareApp,
-            toggleErrorReporting = {
-                viewModel.onEvent(AccountScreenUiEvent.ToggleErrorReporting)
-            }
+            onAppStatusClick = openAppStatus,
+            onGeneralInfoClick = openGeneralInfo,
+            onShareApp = onShareApp
         )
     }
 }
 
 @Composable
 fun SettingSectionInfo(
-    appVersion: String,
-    isErrorReportingEnabled: Boolean,
-    onLicencesClick: () -> Unit,
+    onGeneralInfoClick: () -> Unit,
     onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
-    toggleErrorReporting: () -> Unit
 ) {
-    val uriHandler = LocalUriHandler.current
     Column {
-        SettingsSectionHeader(name = stringResource(MR.strings.settings_section_general_title))
-
         if (AppBuildConfig.instance.hasPreviewFeatures) {
             SettingsActionItem(
                 name = "App status",
@@ -214,6 +202,14 @@ fun SettingSectionInfo(
                 onShareApp(BackendResourceIDs.homeUrl)
             }
         }
+
+        SettingsActionItem(
+            name = stringResource(MR.strings.settings_section_general_title),
+            icon = CoreAppIcons.LibraryBooks.asPainterResource()
+        ) {
+            onGeneralInfoClick()
+        }
+
 //    SettingsActionItem(
 //        name = stringResource(MR.strings.setting_title_help),
 //        icon = AppIcons.Help
@@ -224,42 +220,6 @@ fun SettingSectionInfo(
 //        ) {
 //            uriHandler.openUri(BackendResourceIDs.sourceCodeUrl)
 //        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_privacy),
-            icon = CoreAppIcons.PrivacyTip.asPainterResource()
-        ) {
-            uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl)
-        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_terms),
-            icon = CoreAppIcons.PrivacyTip.asPainterResource()
-        ) {
-            uriHandler.openUri(BackendResourceIDs.termsOfUseUrl)
-        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_libraries),
-            icon = CoreAppIcons.LibraryBooks.asPainterResource()
-        ) {
-            onLicencesClick()
-        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_errorReporting),
-            description = stringResource(MR.strings.setting_description_errorReporting),
-            icon = CoreAppIcons.LibraryBooks.asPainterResource(),
-            type = SettingsActionItemType.Switch(isErrorReportingEnabled),
-            onClick = toggleErrorReporting
-        )
-
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = appVersion,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                style = MaterialTheme.typography.caption,
-                textAlign = TextAlign.Center
-            )
-        }
     }
 }
 
@@ -310,6 +270,14 @@ fun SettingsActionItem(
                     Icon(
                         modifier = Modifier.width(20.dp),
                         painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                        contentDescription = null
+                    )
+                }
+                SettingsActionItemType.Link -> {
+                    Icon(
+                        modifier = Modifier.width(24.dp),
+                        painter = CoreAppIcons.ArrowOpenNew.asPainterResource(),
                         tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
                         contentDescription = null
                     )
@@ -365,5 +333,6 @@ fun SettingsActionItem(
 sealed interface SettingsActionItemType {
     object Navigation : SettingsActionItemType
     object Action : SettingsActionItemType
+    object Link : SettingsActionItemType
     data class Switch(val checked: Boolean) : SettingsActionItemType
 }

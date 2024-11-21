@@ -25,7 +25,7 @@ class LocationSharingManager(
     val sharingStatus: StateFlow<Resource<Boolean>> = allContractsFlow.map {
         when(it) {
             Resource.NotInitialized -> Resource.NotInitialized
-            is Resource.Ready -> Resource.Ready(!it.data.isNullOrEmpty())
+            is Resource.Ready -> Resource.Ready(it.data.any { it.asValidContract() != null })
         }
     }
         .stateIn(
@@ -51,7 +51,7 @@ class LocationSharingManager(
     }
 
     fun currentSharingContractForGroup(id: String): LocationSharingContract? {
-        return allContractsFlow.value.data?.firstOrNull { it.groupId == id }
+        return allContractsFlow.value.data?.firstOrNull { it.groupId == id }?.asValidContract()
     }
 
     fun isSharingActive(): Boolean {
@@ -59,7 +59,7 @@ class LocationSharingManager(
     }
 
     fun isSharingActiveForGroup(id: String): Boolean {
-        return allContractsFlow.value.data?.any { it.groupId == id } ?: false
+        return currentSharingContractForGroup(id = id) != null
     }
 
     suspend fun startSharing(contract: LocationSharingContract) {

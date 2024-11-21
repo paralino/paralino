@@ -1,11 +1,13 @@
 package app.paralino.core.presentation.places.list
 
 import app.paralino.core.MR
+import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -13,8 +15,8 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -29,11 +31,12 @@ class PlacesViewModel(
     private val remoteConfig: RemoteConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,
-    val locationStatusProvider: ILocationStatusProvider,
+    private val notificationPresenter: IGroupActivityNotificationPresenter,
+    val deviceApiProvider: IDeviceApiProvider,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PlacesListScreenState>>(Payload.Loading)
-    val uiState: Flow<Payload<PlacesListScreenState>> = _uiState
+    val uiState: StateFlow<Payload<PlacesListScreenState>> = _uiState
 
     private val _eventChannel = Channel<PlacesScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -42,17 +45,17 @@ class PlacesViewModel(
         combine(
             groupRepo.getGroupWithoutMembers(groupId),
             placesRepo.getAndRefreshPlacesForGroup(groupId),
-            locationStatusProvider.status
-        ) { group, places, status ->
+            deviceApiProvider.deviceStatus
+        ) { group, places, deviceStatus ->
 
             val placesState = places.map {
                 PlaceListItemData(it)
             }
 
-            val errors = if (places.isNotEmpty() && !status.isNotificationPermissionAllowed) {
-                listOf(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+            val error = if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                ConditionErrorType.PermissionNotifications
             } else {
-                emptyList()
+                null
             }
 
             val placesLimit = group.placesLimit(remoteConfig.configState.value)
@@ -78,7 +81,7 @@ class PlacesViewModel(
                 } else {
                     canShowPlanBanner
                 },
-                errors = errors,
+                error = error,
                 alertDialog = _uiState.value.data?.alertDialog
             )
             state
@@ -100,6 +103,23 @@ class PlacesViewModel(
                     }
 
                     else -> {}
+                }
+            }
+
+            is PlacesScreenUiEvent.PostSampleNotification -> {
+                if (uiState.value.data?.error != null) {
+                    _eventChannel.trySend(PlacesScreenEvent.MissingNotificationPermission)
+                } else {
+                    notificationPresenter.notify(
+                        payload = IPushNotificationPresenter.Payload(
+                            notificationId = event.content.hashCode(),
+                            title = event.content,
+                            message = null,
+                            timeMillis = null,
+                            timeInfo = null,
+                            loggerTag = null
+                        )
+                    )
                 }
             }
         }

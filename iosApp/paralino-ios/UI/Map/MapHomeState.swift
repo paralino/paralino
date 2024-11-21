@@ -7,17 +7,18 @@
 
 import Foundation
 import shared
-import SwiftUI
-import CoreLocation
-import MapKit
 
 class MapHomeState : BaseMapObservableObject {
     
     let vm: MapHomeViewModel
     
     @Published var groupState: Bool? = nil
-    @Published var path: [NavigationGraph] = []
-    @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(currentUserImage: ImageModel.companion.placeholder(), isSatelliteMode: false, alertDialog: nil)
+    
+    @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(
+        currentUserImage: ImageModel.companion.placeholder(),
+        isSatelliteMode: false,
+        alertDialog: nil
+    )
     
     override init() {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
@@ -25,20 +26,7 @@ class MapHomeState : BaseMapObservableObject {
         super.init()
         
         vm.observe(flow: vm.allGroupsState) { [weak self] state in
-            if let state = state as? Bool {
-                self?.groupState = state
-                if state {
-                    if self?.path.isEmpty != false {
-                        self?.path = [.home(.map)]
-                    } else {
-                        self?.path[0] = .home(.map)
-                    }
-                } else {
-                    self?.path = [.home(.groupInit)]
-                }
-            } else {
-                self?.groupState = nil
-            }
+            self?.groupState = state as? Bool
         }
         
         vm.observe(flow: vm.uiState) { [weak self] state in
@@ -49,9 +37,7 @@ class MapHomeState : BaseMapObservableObject {
                         MapAnnotatedItem(marker: marker)
                     }
                     
-                    withAnimation {
-                        self?.markers = markers
-                    }
+                    self?.markers = markers
                     
                     if readyState.mapHomeScreenFocusType is shared.MapHomeScreenFocusTypeALL_PLACES {
                         self?.focusToMarkers(markers.filter { $0.data.pinType == MapPinType.place }, animate: true)

@@ -10,10 +10,12 @@ import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
-import app.paralino.android.provider.BillingProvider
+import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.provider.ConnectionStatusProvider
+import app.paralino.android.provider.CrashReportingLogr
 import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
+import app.paralino.android.provider.NotificationStatusProvider
 import app.paralino.android.provider.OneTimeLocationProvider
 import app.paralino.android.provider.ValueFormatter
 import app.paralino.android.remote.appwrite.AppWriteRemoteModule
@@ -26,13 +28,17 @@ import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.appPrefs
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
-import app.paralino.core.data.db.AppDatabaseHelper
-import app.paralino.core.data.db.LogsDatabaseHelper
-import app.paralino.core.data.db.SqlDriverFactory
+import app.paralino.core.db.AppPrefsProvider
+import app.paralino.core.db.LogsDatabaseHelper
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.SqlDriverFactory
+import app.paralino.core.db.logs.AppLogsDatabase
+import app.paralino.core.db.main.AppMainDatabase
+import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.notifications.IGroupActivityNotificationPresenter
-import app.paralino.core.notifications.IInfoMessagesNotificationPresenter
-import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.models.AppHost
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.presentation.groups.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupInitViewModel
@@ -53,20 +59,23 @@ import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
+import app.paralino.core.presentation.settings.billing.PaywallViewModel
+import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
+import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
+import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
-import app.paralino.core.presentation.settings.subscriptions.PaywallViewModel
-import app.paralino.core.presentation.settings.subscriptions.PlanInfoViewModel
-import app.paralino.core.presentation.settings.subscriptions.SubscriptionViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.INotificationStatusProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.api.IDocumentsApi
@@ -75,6 +84,7 @@ import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -86,30 +96,35 @@ object KoinSetup {
     val modules get() = listOf(coreDependencyModule, appSpecificModule)
 
     private val coreDependencyModule = module {
-        single { AppDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
-        single { LogsDatabaseHelper(SqlDriverFactory(androidContext()), get()) }
+        single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(androidContext()))) }
+        single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(androidContext()))) }
 
         single { CryptoFrameworkLibsodium() } bind ICryptoServiceProvider::class
 
         single<ICoroutineScopeProvider> { androidApplication() as AppClass }
+
+        single<AppPrefsProvider>(createdAtStart = true) { AppPrefsProvider(androidContext()) }
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get()) }
+        single<INotificationStatusProvider>(createdAtStart = true) { NotificationStatusProvider(androidContext()) }
+        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) }
+
+        single<ICrashReportingLogr> { CrashReportingLogr(get(), appPrefs) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
         single<IValueFormatter> { ValueFormatter() }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
-        factory { PlaceNotificationPresenter(androidContext()) } bind IPlaceActivityNotificationPresenter::class
-        factory { GroupActivityNotificationPresenter(androidContext()) } bind IGroupActivityNotificationPresenter::class
-        factory { InfoMessagesNotificationPresenter(androidContext()) } bind IInfoMessagesNotificationPresenter::class
+        factory { PlaceNotificationPresenter(androidContext(), get()) } bind IPlaceActivityNotificationPresenter::class
+        factory { GroupActivityNotificationPresenter(androidContext(), get()) } bind IGroupActivityNotificationPresenter::class
+        factory { InfoMessagesNotificationPresenter(androidContext(), get()) } bind IInfoMessagesNotificationPresenter::class
 
         single<IUserApi> { UserApi(get()) }
         single<IDocumentsApi> { DocumentsApi(get()) }
         single<IFunctionsApi> { FunctionsApi(get(), get()) }
         single<IRealtimeApi> { RealtimeApi(get()) }
 
-        single<IBillingProvider> { BillingProvider(androidApplication() as AppClass, get(), get()) }
+        single<IBillingProvider> { BillingProviderAndroid(androidApplication() as AppClass, get(), get(), get()) }
 
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
     }
@@ -124,10 +139,13 @@ object KoinSetup {
                 serverUrl = BuildConfig.serverUrl,
                 projectId = BuildConfig.serverKey,
                 publicServerUrl = BuildConfig.publicServerUrl,
+                billingRCApiKey = BuildConfig.revenueCatApiKey,
+                iOSTeamId = "",
+                iOSAppGroup = "",
+                appHost = AppHost.MAIN_APP,
                 isDevMode = BuildConfig.internalTesting,
                 hasPreviewFeatures = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem,
-                billingRCApiKey = BuildConfig.revenueCatApiKey,
                 logErrorsToRemote = true
             )
         }
@@ -139,7 +157,7 @@ object KoinSetup {
             )
         }
 
-        viewModel { GroupInitViewModel(get(), get(), get(), get(), get(), appPrefs) }
+        viewModel { GroupInitViewModel(get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
@@ -148,7 +166,7 @@ object KoinSetup {
             SharingStartViewModel(groupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get()) }
-        viewModel { PersonalCodeViewModel(get(), get(), get(), get()) }
+        viewModel { PersonalCodeViewModel(get(), get(), get()) }
         viewModel { (groupId: String?, code: String?) ->
             MemberInviteViewModel(
                 groupId = groupId,
@@ -159,23 +177,24 @@ object KoinSetup {
                 userRepo = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
         viewModel { ConvertAccountViewModel(get()) }
         viewModel { EditProfileViewModel(get(), get()) }
-        viewModel { RecoverKeysViewModel(get(), get()) }
+        viewModel { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
-        viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get()) }
-        viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get()) }
-        viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get()) }
+        viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get(), appPrefs) }
+        viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
-        viewModel { AppStatusDebugViewModel(get(), get(), get(), get()) }
+        viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get()) }
-        viewModel { PaywallViewModel(get(), get(), get()) }
+        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), appPrefs) }
+        viewModel { GeneralInfoViewModel(get(), get()) }
     }
 }

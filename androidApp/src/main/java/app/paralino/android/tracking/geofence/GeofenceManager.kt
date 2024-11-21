@@ -100,14 +100,8 @@ class GeofenceManager(
         return result.first()
     }
 
-    override fun deleteGeofences(placesIds: List<String>) {
-        val geofencingClient = LocationServices.getGeofencingClient(application)
-        geofencingClient.removeGeofences(placesIds)
-    }
-
     override fun deleteAllGeofences() {
         val geofencingClient = LocationServices.getGeofencingClient(application)
         geofencingClient.removeGeofences(geofencePendingIntent)
     }
-
 }

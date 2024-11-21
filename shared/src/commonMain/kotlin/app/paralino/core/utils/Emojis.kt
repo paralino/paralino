@@ -10,6 +10,10 @@ object Emojis {
     val lock = "emoji_u26a0"
     val robot = "emoji_u1f916"
     val star = "emoji_u2b50"
+    val cow = "emoji_u1f42e"
+    val goat = "emoji_u1f410"
+    val home = "emoji_u1f3e0"
+    val schoolBooks = "emoji_u1f4da"
 
     private val userSpecific = listOf(
 //        "emoji_u1f4a9",
@@ -25,7 +29,7 @@ object Emojis {
         "emoji_u1f41f",
         "emoji_u1f42c",
         "emoji_u1f42d",
-        "emoji_u1f42e",
+        cow,
         "emoji_u1f42f",
         "emoji_u1f43a",
         "emoji_u1f43b",
@@ -38,7 +42,7 @@ object Emojis {
         "emoji_u1f98f",
         "emoji_u1f99c",
         "emoji_u1f383",
-        "emoji_u1f410",
+        goat,
         "emoji_u1f414",
         "emoji_u1f418",
         "emoji_u1f419",
@@ -96,14 +100,14 @@ object Emojis {
         "emoji_u1f3db",
         "emoji_u1f3de",
         "emoji_u1f3df",
-        "emoji_u1f3e0",
+        home,
         "emoji_u1f3e2",
         "emoji_u1f3e5",
         "emoji_u1f3eb",
         "emoji_u1f3f0",
-        "emoji_u1f4a1",
+        lightBulb,
         "emoji_u1f4b0",
-        "emoji_u1f4da",
+        schoolBooks,
         "emoji_u1f6b2",
         "emoji_u1f6cd",
         "emoji_u1f6d2",
@@ -132,7 +136,7 @@ object Emojis {
         "emoji_u1f950",
         "emoji_u1fa82",
         "emoji_u1fab7",
-        "emoji_u2b50",
+        star,
         "emoji_u26bd",
         "emoji_u26f0",
         "emoji_u26f2",

@@ -46,9 +46,7 @@ import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
-import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.CoreUiState
@@ -61,6 +59,7 @@ import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
@@ -109,7 +108,7 @@ fun AccountScreenCore(
                     },
                     onErrorItemClick = {
                         when (it) {
-                            is ConditionErrorType.EMAIL_VERIFICATION -> {
+                            is ConditionErrorType.EmailVerification -> {
                                 viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
                             }
 
@@ -155,7 +154,7 @@ fun AccountScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.setting_title_logout),
                         icon = CoreAppIcons.Logout.asPainterResource(),
-                        iconTint = MaterialTheme.colors.error,
+                        iconTint = AppColors.errorBackground,
                         type = SettingsActionItemType.Action
                     ) {
                         viewModel.onEvent(AccountScreenUiEvent.Logout)
@@ -168,7 +167,7 @@ fun AccountScreenCore(
                         SettingsActionItem(
                             name = stringResource(MR.strings.setting_title_delete_account),
                             icon = CoreAppIcons.DeleteForever.asPainterResource(),
-                            iconTint = MaterialTheme.colors.error,
+                            iconTint = AppColors.errorBackground,
                             type = SettingsActionItemType.Action
                         ) {
                             viewModel.onEvent(AccountScreenUiEvent.DeleteAccount)
@@ -180,7 +179,7 @@ fun AccountScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.setting_title_dangerZone),
                         icon = CoreAppIcons.Warning.asPainterResource(),
-                        iconTint = MaterialTheme.colors.error,
+                        iconTint = AppColors.errorBackground,
                         type = SettingsActionItemType.Action
                     ) {
                         showDangerZoneContent = true
@@ -285,7 +284,7 @@ fun AccountInfoHeader(
                     ) {
                         if (isGuestUser) {
                             AccountHeaderChip(
-                                backgroundColor = MaterialTheme.colors.onError,
+                                backgroundColor = AppColors.redMain,
                                 contentColor = MaterialTheme.colors.onPrimary,
                                 icon = CoreAppIcons.Incognito.asPainterResource(),
                                 text = stringResource(MR.strings.settings_account_guest_badge),
@@ -328,7 +327,9 @@ fun AccountInfoHeader(
                             modifier = Modifier
                         ) {
                             IconButton(
-                                onClick = { onShareCode(personalCode) }
+                                onClick = {
+                                    onShareCode(DeeplinkType.ParalinoID.buildUrl(personalCode))
+                                }
                             ) {
                                 Icon(
                                     modifier = Modifier.size(16.dp),

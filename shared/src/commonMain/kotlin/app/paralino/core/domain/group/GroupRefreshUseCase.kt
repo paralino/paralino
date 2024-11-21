@@ -1,6 +1,6 @@
 package app.paralino.core.domain.group
 
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.logg
@@ -9,7 +9,6 @@ import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -17,8 +16,7 @@ import app.paralino.core.utils.exceptions.asRemoteException
 class GroupRefreshUseCase constructor(
     private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
-    private val placesLocal: PlacesLocalDataSource,
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRefreshUseCase: CryptoKEKRefreshUseCase,
     private val groupMapperCore: GroupMapperCore,
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
@@ -32,8 +30,7 @@ class GroupRefreshUseCase constructor(
                 getRemoteGroupWithMembersAndPlaces(groupId)
                     .also {
                         logg.tag("tag_crypto_key_group").d("Finished processing group and keys, save group ${it.group.group.id}")
-                        local.updateOrCreateGroup(it.group)
-                        placesLocal.recreatePlacesForGroup(groupId = groupId, places = it.places)
+                        local.updateOrCreateGroupWithMembersAndPlaces(it)
                     }
             }
         )
@@ -43,7 +40,7 @@ class GroupRefreshUseCase constructor(
         return try {
             triggerRemoteOnly {
                 remote.getGroupWithMembers(groupId)
-                    .also { cryptoKEKRepo.refreshKeysForGroup(groupId, it, force = false) }
+                    .also { cryptoKEKRefreshUseCase.refreshKeysForGroup(groupId, it, force = false) }
                     .let { handleGroupKeysUpdate(it, retry) }
             }
         } catch (e: Exception) {

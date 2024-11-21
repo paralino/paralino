@@ -68,6 +68,6 @@ fun getFormValidationErrorText(validation: FormValidation): String {
         FormValidation.Email -> MR.strings.form_invalid_email_description.localizedString()
         FormValidation.Password -> MR.strings.form_invalid_password_length_description.localizedString()
         FormValidation.PasswordConfirm -> MR.strings.form_invalid_password_match_description.localizedString()
-        FormValidation.TextNotEmpty -> MR.strings.form_invalid_name_description.localizedString()
+        FormValidation.TextNotEmpty -> MR.strings.form_generic_validation.localizedString()
     }
 }

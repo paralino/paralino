@@ -17,17 +17,21 @@ import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
 import app.paralino.core.MR
 import app.paralino.core.logg
-import app.paralino.core.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.provider.InAppLogger
 import app.paralino.core.ui.theme.AppColors
 
-class PlaceNotificationPresenter(private val context: Context) : IPlaceActivityNotificationPresenter {
+class PlaceNotificationPresenter(
+    private val context: Context,
+    inAppLogger: InAppLogger
+) : IPlaceActivityNotificationPresenter(inAppLogger) {
 
     private val channelId = "place_activity_channel"
     private val notificationColor: Int by lazy {
         AppColors.lightThemePrimary.toArgb()
     }
 
-    override fun notify(notificationId: Int, title: String, message: String?, timeMillis: Long?, timeInfo: String?) {
+    override fun showPushNotification(payload: Payload) {
 
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -50,9 +54,9 @@ class PlaceNotificationPresenter(private val context: Context) : IPlaceActivityN
             )
 
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSubText(timeInfo)
+            .setContentTitle(payload.title)
+            .setContentText(payload.message)
+            .setSubText(payload.timeInfo)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_notification_icon)
@@ -64,12 +68,12 @@ class PlaceNotificationPresenter(private val context: Context) : IPlaceActivityN
             .setColor(notificationColor)
             .setColorized(true)
             .setShowWhen(true)
-            .setWhen(timeMillis ?: System.currentTimeMillis())
+            .setWhen(payload.timeMillis ?: System.currentTimeMillis())
 
         registerNotificationChannel(context)
 
         val notification = notificationBuilder.build()
-        notificationManager.notify(notificationId, notification)
+        notificationManager.notify(payload.notificationId, notification)
     }
 
     private fun buildNotificationIntent(context: Context): Intent {

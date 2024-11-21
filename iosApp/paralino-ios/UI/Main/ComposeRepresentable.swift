@@ -49,3 +49,27 @@ class SwiftUIInUIView<Content: View>: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+private struct SafeAreaInsetsKey: EnvironmentKey {
+    static var defaultValue: AppleScreenPaddingValues {
+        guard let scene = UIApplication.shared.connectedScenes.first,
+              let windowSceneDelegate = scene.delegate as? UIWindowSceneDelegate,
+              let window = windowSceneDelegate.window,
+              let safeAreaInsets = window?.safeAreaInsets else {
+            return AppleScreenPaddingValues(start: 0, top: 0, end: 0, bottom: 0)
+        }
+
+        return AppleScreenPaddingValues(
+            start: Float(safeAreaInsets.left),
+            top: Float(safeAreaInsets.top),
+            end: Float(safeAreaInsets.right),
+            bottom: Float(safeAreaInsets.bottom)
+        )
+    }
+}
+
+extension EnvironmentValues {
+    var safeAreaInsets: AppleScreenPaddingValues {
+        self[SafeAreaInsetsKey.self]
+    }
+}

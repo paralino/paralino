@@ -1,5 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.daemon.common.trimQuotes
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.Properties
@@ -8,30 +9,30 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.sqldelight)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.moko.resources)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.aboutlibraries)
 }
 
 kotlin {
     androidTarget()
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries {
-            framework {
-                baseName = "shared"
-                isStatic = true
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
-                // required so iOS app can use resource directly in Swift code
-                export(project(":moko"))
-                export(libs.moko.resources)
-            }
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.framework {
+            baseName = "shared"
+            isStatic = true
+
+            // required so iOS app can use resource directly in Swift code
+            export(project(":moko"))
+            export(libs.moko.resources)
         }
     }
 
@@ -49,13 +50,15 @@ kotlin {
             api(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.datetime)
             api(libs.kotlinx.serialization.json)
-            api(libs.sqldelight.coroutines)
-            api(libs.sqldelight.adapters)
+            api(libs.koin.core)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.multiplatform.settings)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)
-            api(libs.koin.core)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite.bundled)
+            implementation(libs.aboutLibraries.core)
+            implementation(libs.aboutLibraries.compose)
         }
 
         androidMain.dependencies {
@@ -63,7 +66,6 @@ kotlin {
             api(libs.lifecycle.viewmodel.ktx)
             implementation(libs.androidx.preference.ktx)
             implementation(libs.androidx.security.crypto.ktx)
-            implementation(libs.sqldelight.driver.android)
             api(libs.activity.compose)
             api(libs.appcompat)
             api(libs.androidx.core.ktx)
@@ -73,20 +75,10 @@ kotlin {
 
         iosMain.get().dependsOn(commonMain.get())
         iosMain.dependencies {
-            implementation(libs.sqldelight.driver.native)
             implementation(libs.ktor.client.darwin)
         }
     }
 }
-
-// Workaround for compose multiplatform not using latest kotlin version
-// this silences the error and it should be fine for minor versions
-// sqldelight uses 1.8.22 which causes build problems
-// remove after compose catches up
-//compose {
-//    kotlinCompilerPlugin.set(dependencies.compiler.forKotlin("1.8.20"))
-//    kotlinCompilerPluginArgs.add("suppressKotlinVersionCompatibilityCheck=1.8.22")
-//}
 
 android {
     namespace = "app.paralino"
@@ -107,17 +99,15 @@ android {
     }
 }
 
-sqldelight {
-    databases {
-        create("MainAppDatabase") {
-            packageName.set("app.paralino.core.data.db")
-            srcDirs.setFrom("src/commonMain/db/main")
-        }
-        create("LogsDatabase") {
-            packageName.set("app.paralino.core.data.db")
-            srcDirs.setFrom("src/commonMain/db/logs")
-        }
-    }
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 buildkonfig {
@@ -139,4 +129,10 @@ buildkonfig {
             buildConfigField(FieldSpec.Type.STRING, "glitchTipDSN", props.getProperty("glitchTipDSNiOS").trimQuotes())
         }
     }
+}
+
+aboutLibraries {
+    configPath = "config"
+    additionalLicenses = arrayOf("svg_backgrounds")
+    prettyPrint = true
 }

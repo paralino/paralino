@@ -90,7 +90,9 @@ class MainViewModel constructor(
             is DeeplinkType.ParalinoID -> {
                 _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
             }
-            is DeeplinkType.PasswordReset -> {}
+            is DeeplinkType.PasswordReset -> {
+                _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+            }
             null -> {
                 _uiState.update { it.copy(pendingDeeplinkType = null) }
             }

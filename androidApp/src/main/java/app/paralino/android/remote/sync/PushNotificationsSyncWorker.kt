@@ -13,7 +13,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.paralino.android.notification.SyncNotificationProvider
 import app.paralino.core.logg
-import app.paralino.core.notifications.PushNotificationHandler
+import app.paralino.core.domain.notifications.PushNotificationHandler
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -26,7 +26,7 @@ class PushNotificationsSyncWorker(
 
     override suspend fun doWork(): Result {
         try {
-            logg.tag("push_notifications").v("Try to get push notifications from server")
+            logg.tag("push_notifications").i("Try to get push notifications from server")
             pushHandler.pushHandler.checkForPushNotifications()
                 .onFailure {
                     if (runAttemptCount < 3) Result.retry() else Result.failure()

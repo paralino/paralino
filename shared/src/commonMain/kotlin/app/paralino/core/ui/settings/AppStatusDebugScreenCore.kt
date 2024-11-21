@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
@@ -84,8 +85,7 @@ fun AppStatusDebugScreenCore(
             Row(
                 modifier = Modifier
                     .fillParentMaxWidth()
-                    .background(MaterialTheme.colors.background)
-                    .padding(vertical = 8.dp),
+                    .background(MaterialTheme.colors.background),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SettingsSectionHeader(name = "Info")
@@ -94,11 +94,12 @@ fun AppStatusDebugScreenCore(
         this.items(items = uiState.status, key = { it.key }) {
             Text(
                 text = it.text.annotatedBold(),
-                color = if (it.isError) MaterialTheme.colors.onError else MaterialTheme.colors.onBackground
+                color = if (it.isError) MaterialTheme.colors.error else MaterialTheme.colors.onBackground,
+                style = MaterialTheme.typography.caption.copy(lineHeight = 12.sp)
             )
         }
         this.item (key = "section_spacer") {
-            Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.size(8.dp))
         }
         this.stickyHeader {
             Column(
@@ -138,11 +139,11 @@ fun AppStatusDebugScreenCore(
                         vm.onEvent(AppStatusDebugScreenUiEvent.SearchLogs(it))
                     }
                 )
-                Spacer(modifier = Modifier.size(12.dp))
+                Spacer(modifier = Modifier.size(6.dp))
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     uiState.filters.logPriorityFilters.forEach {
                         DataInfoChip(
@@ -159,13 +160,11 @@ fun AppStatusDebugScreenCore(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.size(8.dp))
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                Spacer(modifier = Modifier.size(4.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    uiState.filters.logTypeFilters.forEach {
+                    items(uiState.filters.logTypeFilters, key = { it.key }) {
                         DataInfoChip(
                             image = null,
                             text = it.name,
@@ -176,6 +175,20 @@ fun AppStatusDebugScreenCore(
                             },
                             onClick = {
                                 vm.onEvent(AppStatusDebugScreenUiEvent.ToggleLogTypeFilter(it))
+                            }
+                        )
+                    }
+                    items(uiState.filters.logHostsFilters, key = { it.key }) {
+                        DataInfoChip(
+                            image = null,
+                            text = it.name,
+                            backgroundColor = if (it.isOn) {
+                                AppColors.accentLight
+                            } else {
+                                MaterialTheme.colors.surface
+                            },
+                            onClick = {
+                                vm.onEvent(AppStatusDebugScreenUiEvent.ToggleAppHostTypeFilter(it))
                             }
                         )
                     }

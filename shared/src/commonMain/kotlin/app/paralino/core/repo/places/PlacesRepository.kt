@@ -1,6 +1,6 @@
 package app.paralino.core.repo.places
 
-import app.paralino.core.data.db.AppPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.data
@@ -22,7 +22,6 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -32,6 +31,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.math.absoluteValue
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
@@ -42,7 +42,6 @@ class PlacesRepository constructor(
     private val placeActivityRepo: PlaceActivityDataSource,
     private val placeActivityUploadEngine: PlaceActivityUploadEngine,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
-    private val userRepository: UserRepository,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val geofenceManager: IGeofenceManager,
@@ -50,10 +49,8 @@ class PlacesRepository constructor(
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
-    fun subscribeToAllActivePlaces(): Flow<List<GroupPlace>> {
-        return local.getAllPlaces().map {
-            it.filter { locationSharingManager.isSharingActiveForGroup(it.groupId) }
-        }
+    fun getAllPlacesLocally(): Flow<List<GroupPlace>> {
+        return local.getAllPlaces()
     }
 
     suspend fun getAllActivePlaces(): List<GroupPlace> {
@@ -70,19 +67,17 @@ class PlacesRepository constructor(
         return local.getPlaceWithoutSettings(placeId)
     }
 
-    suspend fun getPlaceLocallyOnce(placeId: String): GroupPlace? {
-        return local.getPlaceWithoutSettingsOnce(placeId)
+    fun getPlaceWithSettingsLocally(placeId: String): Flow<GroupPlaceWithSettings> {
+        return local.getPlaceWithSettings(placeId)
     }
 
-    fun getPlaceWithSettings(placeId: String): Flow<GroupPlaceWithSettings> {
-        return mergeDataWithRemote(
-            local = local.getPlaceWithSettings(placeId),
-            remote = {
-                remote.getPlaceWithSettings(placeId)
-            },
-            localUpdate = { local.updateOrCreatePlace(it) },
-            remotePreference = RemotePreference.CACHE(key = "place_detail", timeMillis = 5_000)
-        )
+    suspend fun refreshPlaceWithSettingsMaybe(placeId: String) {
+        triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(key = "place_detail_$placeId", timeMillis = 10000)
+        ) {
+            remote.getPlaceWithSettings(placeId = placeId)
+                .also { groupLocal.updateOrCreatePlace(it) }
+        }
     }
 
     fun getAndRefreshPlacesForGroup(groupId: String): Flow<List<GroupPlace>> {
@@ -92,8 +87,7 @@ class PlacesRepository constructor(
                 remote.getPlacesForGroup(groupId)
             },
             localUpdate = {
-                local.recreatePlacesForGroup(groupId, it)
-                placeActivityRepo.recreatePlacesForGroup(groupId, it)
+                groupLocal.recreatePlacesForGroup(groupId, it)
             }
         )
     }
@@ -107,7 +101,7 @@ class PlacesRepository constructor(
                     private = private
                 )
             },
-            localUpdate = { local.updateOrCreatePlace(it) }
+            localUpdate = { groupLocal.updateOrCreatePlace(it) }
         ).map { Unit }
     }
 
@@ -153,7 +147,7 @@ class PlacesRepository constructor(
                         id = "",
                         groupId = place.place.groupId,
                         placeId = placeId,
-                        ownerUserId = userRepository.cachedUserId,
+                        ownerUserId = appPrefs.userId,
                         alertData = listOf(data)
                     )
                 }
@@ -246,6 +240,7 @@ class PlacesRepository constructor(
     }
 
     fun placesEnter(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        logg.i("place_activity_geofence", "User entered geofence")
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
@@ -264,6 +259,7 @@ class PlacesRepository constructor(
     }
 
     fun placesExit(placesIds: List<String>, trigger: PlaceActivityTriggerType) {
+        logg.i("place_activity_geofence", "User exited geofence")
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
@@ -385,7 +381,13 @@ class PlacesRepository constructor(
         logg.tag("place_activity").i("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
-            placeActivityDelay()
+            val delay = placeActivityDelay(trigger = trigger)
+            logg.tag("place_activity").i("Delay place notify $activityTag - $placeId for ${delay?.inWholeSeconds}")
+
+            if (delay != null) {
+                delay(delay)
+            }
+
             try {
                 processPlaceActivity(
                     activityTag = activityTag,
@@ -525,11 +527,16 @@ class PlacesRepository constructor(
         )
     }
 
-    suspend fun placeActivityDelay() {
-        if (appPrefs.placeActivityThrottle) {
-            delay(20.seconds)
-        } else {
-            delay(5.seconds)
+    private fun placeActivityDelay(trigger: PlaceActivityTriggerType): Duration? {
+        return when (trigger) {
+            PlaceActivityTriggerType.GOEFENCE -> {
+                if (appPrefs.placeActivityThrottle) null
+                else null
+            }
+            else -> {
+                if (appPrefs.placeActivityThrottle) 20.seconds
+                else 5.seconds
+            }
         }
     }
 

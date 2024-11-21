@@ -12,7 +12,7 @@ import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
+import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.settings.profile.EditProfileScreen
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
@@ -40,7 +40,7 @@ fun ProfileSetupScreenCore(
             state = uiState,
             onImageClick = { onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.userEmojis)) },
             onNameChange = { vm.onNameChange(it) },
-            onCreateGroupClick = { vm.proceed() }
+            onConfirm = { vm.proceed() }
         )
     }
 }

@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -64,7 +64,6 @@ import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
-import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
@@ -142,24 +141,30 @@ fun GroupMemberWithLocations(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
+                                Box(
                                     modifier = Modifier
-                                        .size(14.dp)
-                                        .rotate(90f),
-                                    painter = if (state.singleVisibleLocation.isBatteryCharging) {
-                                        CoreAppIcons.BatteryChargingFull.asPainterResource()
-                                    } else {
-                                        CoreAppIcons.BatteryFull.asPainterResource()
-                                    },
-                                    tint = when {
-                                        state.singleVisibleLocation.visibleBatteryLevel > 85 -> AppColors.accent
-                                        state.singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
-                                        state.singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
-                                        else -> MaterialTheme.colors.onSurface
-                                    },
-                                    contentDescription = null
-                                )
-                                Spacer(modifier = Modifier.size(4.dp))
+                                        .size(width = 16.dp, height = 16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .requiredSize(16.dp)
+                                            .rotate(90f),
+                                        painter = if (state.singleVisibleLocation.isBatteryCharging) {
+                                            CoreAppIcons.BatteryChargingFull.asPainterResource()
+                                        } else {
+                                            CoreAppIcons.BatteryFull.asPainterResource()
+                                        },
+                                        tint = when {
+                                            state.singleVisibleLocation.visibleBatteryLevel > 85 -> AppColors.accent
+                                            state.singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
+                                            state.singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
+                                            else -> MaterialTheme.colors.onSurface
+                                        },
+                                        contentDescription = null
+                                    )
+                                }
+                                Spacer(modifier = Modifier.size(2.dp))
                                 Text(
                                     text = "${state.singleVisibleLocation.visibleBatteryLevel}%",
                                     style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium),
@@ -563,7 +568,7 @@ private fun GroupMemberAction(
         ) {
             Text(
                 text = stringResource(state.type.actionText),
-                style = MaterialTheme.typography.subtitle2.copy(fontSize = 10.sp)
+                style = MaterialTheme.typography.caption
             )
         }
         Spacer(modifier = Modifier.size(4.dp))
@@ -615,24 +620,29 @@ fun GroupMemberLocationChild(
             )
             if (state.visibleBatteryLevel != null) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        Icon(
+                        Box(
                             modifier = Modifier
-                                .size(12.dp)
-                                .rotate(90f),
-                            painter = if (state.isBatteryCharging) {
-                                CoreAppIcons.BatteryChargingFull.asPainterResource()
-                            } else {
-                                CoreAppIcons.BatteryFull.asPainterResource()
-                            },
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.size(2.dp))
+                                .size(width = 18.dp, height = 10.dp)
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .requiredSize(18.dp)
+                                    .rotate(90f),
+                                painter = if (state.isBatteryCharging) {
+                                    CoreAppIcons.BatteryChargingFull.asPainterResource()
+                                } else {
+                                    CoreAppIcons.BatteryFull.asPainterResource()
+                                },
+                                contentDescription = null
+                            )
+                        }
                         Text(
+                            modifier = Modifier.offset(y = -(3.dp)),
                             text = "${state.visibleBatteryLevel}%",
                             style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium)
                         )

@@ -1,10 +1,10 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.appPrefs
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
-import app.paralino.core.crypto.group.CryptoKEKRepository
-import app.paralino.core.crypto.user.CryptoUserKeyRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
@@ -27,12 +27,13 @@ class RegisterDeviceForSharingUseCase constructor(
     private val functionsApi: IFunctionsApi,
     private val userMemberId: UserMemberIdUseCase,
     private val groupLocal: UserGroupLocalDataSource,
-    private val cryptoKEKRepo: CryptoKEKRepository,
-    private val userKeyRepo: CryptoUserKeyRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val cryptoCore: CryptoCore,
     private val deviceKeyRotation: MemberDeviceKeyRotation,
-    private val deviceStatusProvider: MemberDeviceStatusProvider
+    private val deviceStatusProvider: MemberDeviceStatusProvider,
+    private val appPrefs: AppPrefs
 ) : LimitedExecutionRepository() {
 
     suspend fun isDeviceAlreadyRegistered(groupId: String): Boolean {
@@ -91,6 +92,8 @@ class RegisterDeviceForSharingUseCase constructor(
                     groupId = groupId,
                     deviceId = appPrefs.deviceId,
                     deviceData = deviceData,
+                    // TODO pass location data already
+                    locationData = null,
                     status = status,
                     groupKeyVersion = groupKey.version,
                     notify = notifyOthers,

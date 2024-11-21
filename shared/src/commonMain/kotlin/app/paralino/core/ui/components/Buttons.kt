@@ -136,12 +136,12 @@ enum class AppButtonState {
     CONTENT, LOADING, CHECK_THEN_CONTENT;
 
     companion object {
-        fun loadingState(isLoading: Boolean): AppButtonState {
-            return if (isLoading) LOADING else CONTENT
+        fun loadingState(isLoading: Boolean?): AppButtonState {
+            return if (isLoading == null) CONTENT else if (isLoading) LOADING else CONTENT
         }
 
-        fun loadingStateWithCheck(isLoading: Boolean): AppButtonState {
-            return if (isLoading) LOADING else CHECK_THEN_CONTENT
+        fun loadingStateWithCheck(isLoading: Boolean?): AppButtonState {
+            return if (isLoading == null) CONTENT else if (isLoading) LOADING else CHECK_THEN_CONTENT
         }
     }
 }

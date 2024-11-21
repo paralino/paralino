@@ -1,6 +1,6 @@
 package app.paralino.core.models.base
 
-import app.paralino.core.data.db.ConfigNodeEntity
+import app.paralino.core.db.main.common.RemoteConfigEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.utils.BaseRemoteModule
@@ -19,11 +19,11 @@ data class ConfigData(
     val plans: List<PlanConfig> = emptyList()
 ) {
 
-    val isEmailEnabled: Boolean get() = AppBuildConfig.instance.hasPreviewFeatures && emailEnabled
+    val isEmailEnabled: Boolean get() = AppBuildConfig.instance.isDevMode || (AppBuildConfig.instance.hasPreviewFeatures && emailEnabled)
 
     companion object {
-        fun init(nodes: List<ConfigNodeEntity>): ConfigData {
-            val map = nodes.associateBy { it.id }.mapValues { it.value.value_ }
+        fun init(nodes: List<RemoteConfigEntity>): ConfigData {
+            val map = nodes.associateBy { it.id }.mapValues { it.value.value }
             return ConfigData(
                 minVersionAndroid = map.get("minVersionAndroid")?.toLongOrNull() ?: 0,
                 minUiVersionAndroid = map.get("minUiVersionAndroid")?.toLongOrNull() ?: 0,
@@ -45,8 +45,12 @@ data class ConfigData(
         }
     }
 
-    fun planConfigForPlanType(planType: String): PlanConfig {
-        return plans.firstOrNull { it.planType == planType } ?: defaultFreePlanConfig()
+    fun planConfigForPlanTypeOrDefault(planType: String): PlanConfig {
+        return planConfigForPlanType(planType) ?: defaultFreePlanConfig()
+    }
+
+    fun planConfigForPlanType(planType: String): PlanConfig? {
+        return plans.firstOrNull { it.planType == planType }
     }
 
     fun defaultFreePlanConfig(): PlanConfig {
@@ -54,5 +58,10 @@ data class ConfigData(
             .filter { !it.planTypeEnum.isPremium && it.isActive }
             .maxByOrNull { it.planTypeEnum.order }
             ?: PlanConfig.default
+    }
+
+    fun listedPlanConfigs(): List<PlanConfig> {
+        val freePlan = defaultFreePlanConfig()
+        return listOf(freePlan) + plans.filter { it.planTypeEnum.isPremium && it.isActive }
     }
 }

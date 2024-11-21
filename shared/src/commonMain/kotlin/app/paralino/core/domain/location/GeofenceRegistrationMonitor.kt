@@ -10,6 +10,7 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.extensions.distinctFlowOfList
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.hours
 
@@ -28,6 +30,9 @@ class GeofenceRegistrationMonitor(
     private val locationSharingManager: LocationSharingManager,
     private val scopeProvider: ICoroutineScopeProvider
 ) {
+
+    private var geofenceMonitoringJob: Job? = null
+
     fun startGeofenceRegistration(reRegisterPeriodically: Boolean) {
         // timer to reregister places after certain time
         val timer = flow {
@@ -40,7 +45,7 @@ class GeofenceRegistrationMonitor(
             }
         }
 
-        val places = placesRepo.subscribeToAllActivePlaces()
+        val places = placesRepo.getAllPlacesLocally()
             .map {
                 it.mapNotNull { place ->
                     place.data.data?.let {
@@ -55,20 +60,35 @@ class GeofenceRegistrationMonitor(
                 }
             }
             .distinctFlowOfList()
+            .onEach {
+                logg.i(
+                    tag = "place_activity_geofence",
+                    message = "Places list updated (${it.size}), ready to register geofences"
+                )
+            }
 
-        combine(
+        geofenceMonitoringJob?.cancel()
+        geofenceMonitoringJob = combine(
             places,
             deviceApiProvider.locationStatusProvider.status.map { it.isOK(forAlwaysOnAccess = true) },
-            locationSharingManager.sharingStatus.mapNotNull { it.data },
+            locationSharingManager.allContractsFlow.mapNotNull { it.data },
             timer
-        ) { geofences, locationStatus, sharingStatus, _ ->
-            logg.v(
-                tag = "place_activity_geofence",
-                message = "App status changed, reinit geofences (sharing: $sharingStatus, app status: $locationStatus)"
-            )
-            if (locationStatus && sharingStatus) {
-                geofenceManager.registerGeofences(geofences)
+        ) { geofences, locationStatus, sharingContracts, _ ->
+
+            val filteredContractsIds = sharingContracts.mapNotNull { it.asValidContract()?.groupId }
+            val filteredGeofences = geofences.filter { it.groupId in filteredContractsIds }
+
+            if (locationStatus && filteredContractsIds.isNotEmpty() && filteredGeofences.isNotEmpty()) {
+                logg.i(
+                    tag = "place_activity_geofence",
+                    message = "App status changed, register ${filteredGeofences.size} geofences"
+                )
+                geofenceManager.registerGeofences(filteredGeofences)
             } else {
+                logg.i(
+                    tag = "place_activity_geofence",
+                    message = "App status changed, delete geofences (sharing: ${filteredContractsIds.size}, places: ${filteredGeofences.size}, app status: $locationStatus)"
+                )
                 geofenceManager.deleteAllGeofences()
             }
         }

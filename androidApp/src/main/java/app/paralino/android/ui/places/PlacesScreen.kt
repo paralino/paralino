@@ -1,6 +1,7 @@
 package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -15,22 +16,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.SimplePlaceMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.ToolbarButtons
+import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.flow.map
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -46,12 +50,16 @@ fun PlacesScreen(
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
         messageDispatcher = vm.messageDispatcher,
-        locationStatusProvider = vm.locationStatusProvider
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
     )
 
     var userScroll by remember {
         mutableStateOf(true)
     }
+
+    val placesCount by vm.uiState
+        .map { it.data?.places?.size }
+        .collectAsStateWithLifecycle(0)
 
     Scaffold(
         topBar = {
@@ -72,7 +80,13 @@ fun PlacesScreen(
                             hasEndArrow = true,
                             text = {
                                 Text(
-                                    text = stringResource(MR.strings.button_skip),
+                                    text = stringResource(
+                                        if (placesCount == 0) {
+                                            MR.strings.button_skip
+                                        } else {
+                                            MR.strings.button_next
+                                        }
+                                    ),
                                     fontSize = 14.sp
                                 )
                             },
@@ -113,17 +127,22 @@ fun PlacesScreen(
                     )
                 )
             },
-            openSubscriptions = {
+            openPaywall = {
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             },
             mapContent = { state ->
                 SimplePlaceMapComposable(
                     markers = state.markers,
                     onMapInteraction = { userScroll = !it },
+                    onMapTap = { lat, lng -> },
                     onMapLongPress = { lat, lng -> }
                 )
             }
         )
+    }
+
+    BackHandler (enabled = isOnboarding) {
+        // block back for onboarding
     }
 }
 

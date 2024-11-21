@@ -15,19 +15,22 @@ struct MapHomeScreen: View {
     @StateObject var mapState: MapHomeState
     @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         ZStack {
             if mapState.uiState is MapHomeScreenState.Ready {
                 ComposeRepresentable {
                     ScreensIOS.shared.home.MapSheet(
                         vm: mapState.vm,
+                        paddingValues: safeAreaInsets,
                         initialUiState: mapState.uiState,
                         trackMarker: { data in
                             mapState.vm.trackMarker(markerData: data)
                         },
                         onOpenPlacesScreen: {
                             if let groupId = mapState.uiState.asReady()?.groupId {
-                                path.append(.home(.places(groupId: groupId)))
+                                path.append(.home(.places(groupId: groupId, isOnboarding: false)))
                             }
                         },
                         onOpenCreatePlaceScreen: {
@@ -36,12 +39,10 @@ struct MapHomeScreen: View {
                             }
                         },
                         onSheetOffsetChange: { offset in
-                            withAnimation(.linear(duration: 0.1)) {
-                                mapState.bottomSafeArea = CGFloat(offset.floatValue) - 35
-                            }
+                            mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)
                         },
                         onGroupPickerClick: {
-                            groupPicker = BottomSheetPickerTypeGroupPickerBottomSheet(groups: mapState.vm.getAllGroups())
+                            groupPicker = mapState.vm.getGroupPickerState()
                         },
                         onGroupDetailsClick: {
                             if let groupId = mapState.uiState.asReady()?.groupId {
@@ -50,7 +51,7 @@ struct MapHomeScreen: View {
                         },
                         onSharingStartClick: {
                             if let groupId = mapState.uiState.asReady()?.groupId {
-                                path.append(.home(.sharingStart(groupId: groupId)))
+                                path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
                             }
                         },
                         onSettingsClick: {
@@ -62,28 +63,30 @@ struct MapHomeScreen: View {
                         onCreateGroup: {
                             path.append(.home(.groupCreate(groupId: nil)))
                         },
-                        mapUIView: { () -> UIView in
-                            SwiftUIInUIView(
-                                content: VStack {
-                                    MapComponent(
-                                        mapState: mapState,
-                                        onMapTap: { point in },
-                                        onMapLongPress: { point in
-                                            if let readyState = mapState.uiState.asReady() {
-                                                path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
-                                            }
-                                        },
-                                        onMapTouch: {
-                                            mapState.vm.onMapTouch()
-                                        }
-                                    )
-                                    .safeAreaPadding(.top, 70)
+                        openFreePlanInfo: {
+                            path.append(.home(.freePlanInfo))
+                        },
+                        openPaywall: {
+                            path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
+                        },
+                        mapUIView: { () -> UIViewController in
+                            let controller = MapComponentVC()
+                            controller.additionalSafeAreaInsets = .init(top: 60, left: 0, bottom: 0, right: 0)
+                            controller.mapState = mapState
+                            controller.onMapPan = {
+                                mapState.vm.onMapTouch()
+                            }
+                            controller.onMapLongPress = { point in
+                                if let readyState = mapState.uiState.asReady() {
+                                    path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
                                 }
-                            )
+                            }
+                            return controller
                         }
                     )
                 }
                 .ignoresSafeArea(.all, edges: .vertical)
+                .toolbar(.hidden, for: .navigationBar)
             } else if mapState.uiState is MapHomeScreenState.Empty {
                 VStack {
                     Image("paralino_logo")
@@ -126,6 +129,10 @@ struct MapHomeScreen: View {
             onJoinGroup: {
                 groupPicker = nil
                 path.append(.settings(.personalCodes))
+            },
+            onOpenSubscription: {
+                groupPicker = nil
+                path.append(.settings(.paywall(groupId: nil, type: .normal)))
             }
         )
         .navigationBarBackButtonHidden(true)

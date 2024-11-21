@@ -1,6 +1,7 @@
 package app.paralino.core.domain.group
 
-import app.paralino.core.crypto.group.CryptoKEKRepository
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -8,7 +9,6 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
@@ -17,14 +17,15 @@ class GroupMemberRemoveUseCase(
     private val remote: GroupsRemoteSource,
     private val memberRemote: LocationRemoteSource,
     private val userRepository: UserRepository,
-    private val cryptoKEKRepo: CryptoKEKRepository,
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val groupRemoveUseCase: GroupRemoveUseCase,
-    private val groupRefreshUseCase: GroupRefreshUseCase
+    private val groupRefreshUseCase: GroupRefreshUseCase,
+    private val appPrefs: AppPrefs
 ) : LimitedExecutionRepository() {
 
     fun removeMember(groupId: String, memberUserId: String): Flow<Unit> {
 
-        if (memberUserId == userRepository.cachedUserId) {
+        if (memberUserId == appPrefs.userId) {
             return groupRemoveUseCase.leaveGroup(groupId)
         }
 
@@ -62,7 +63,7 @@ class GroupMemberRemoveUseCase(
                 remote.blockUser(member)
             },
             localUpdate = {
-                userRepository.refreshBlocklist()
+                userRepository.refreshBlocklist(cacheTimeMillis = 0)
             }
         ).map { Unit }
     }

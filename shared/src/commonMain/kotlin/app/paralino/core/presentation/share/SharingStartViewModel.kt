@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.share
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
@@ -10,12 +11,12 @@ import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
-import app.paralino.core.provider.IConnectionStatusProvider
-import app.paralino.core.provider.ILocationStatusProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -42,14 +43,14 @@ class SharingStartViewModel(
     groupId: String?,
     private val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,
-    val locationStatusProvider: ILocationStatusProvider,
-    private val connectionStatus: IConnectionStatusProvider,
+    val deviceApiProvider: IDeviceApiProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
     private val locationRepo: LocationLocalDataSource,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState =
@@ -78,32 +79,32 @@ class SharingStartViewModel(
         groupId?.let { setSelectedGroup(it) }
 
         combine(
-            locationStatusProvider.status,
-            connectionStatus.status,
+            deviceApiProvider.deviceStatus,
             currentGroup.flatMapMerge {
                 if (it == null) {
                     flowOf(0)
                 } else {
                     locationRepo.getLocationCountForMember(
-                        userMemberIdUseCase.getCurrentUserMemberIdForGroup(it.id)!!
+                        groupId = it.id,
+                        userId = appPrefs.userId
                     )
                 }
             }
-        ) { locationStatus, connection, locationCount ->
+        ) { deviceStatus, locationCount ->
             _uiState.update {
                 it.copy(
                     deviceName = userMemberIdUseCase.getDefaultDeviceName(groupId),
                     devicesCount = locationCount,
                     errors = buildList {
-                        addAll(locationStatus.getPossibleErrors(it.isLongTerm))
+                        addAll(deviceStatus.locationStatus.getPossibleErrors(it.isLongTerm))
 
-                        if (!connection.isOnline) {
-                            add(ConditionErrorType.NETWORK)
+                        if (!deviceStatus.networkStatus.isOnline) {
+                            add(ConditionErrorType.Network)
                         }
                     },
                     warnings = buildList {
-                        if (!locationStatus.isNotificationPermissionAllowed) {
-                            add(ConditionErrorType.PERMISSION_NOTIFICATIONS)
+                        if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                            add(ConditionErrorType.PermissionNotifications)
                         }
                     }
                 )
@@ -123,7 +124,7 @@ class SharingStartViewModel(
                         _uiState.update { it.copy(alertDialog = null) }
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             coroutineScope.launch {
-                                _eventChannel.send(SharingStartScreenEvent.AskForPermission(ConditionErrorType.PERMISSION_LOCATION_BACKGROUND))
+                                _eventChannel.send(SharingStartScreenEvent.AskForPermission(ConditionErrorType.PermissionLocationBackground))
                             }
                         }
                     }
@@ -151,20 +152,18 @@ class SharingStartViewModel(
     }
 
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+        val allGroups = groupRepo.getAllGroupsWithMetadata().firstOrNull() ?: emptyList()
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
-            userPlan = userRepo.userPlans.value.highestValidPlanConfig,
-            groups = getAllGroups().map { GroupItemState(it) }
+            userPlan = null,
+            createdGroups = allGroups.filter { it.group.isCurrentUserOwner }.map { GroupItemState(it) },
+            joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }.map { GroupItemState(it) },
         )
-    }
-
-    private suspend fun getAllGroups(): List<UserGroupWithMetadata> {
-        return groupRepo.getAllGroupsLocally().firstOrNull() ?: emptyList()
     }
 
     fun setSelectedGroup(groupId: String) {
         coroutineScope.launch {
-            getAllGroups().firstOrNull { it.id == groupId }?.let { group ->
+            groupRepo.getGroupWithMetadata(groupId = groupId).firstOrNull()?.let { group ->
                 setSelectedGroup(group)
             } ?: let {
                 currentGroup.update { null }
@@ -366,11 +365,12 @@ class SharingStartViewModel(
 
     private fun getErrors(forLongTerm: Boolean): List<ConditionErrorType> {
         return buildList {
+            val deviceStatus = deviceApiProvider.currentDeviceStatus()
             addAll(
-                locationStatusProvider.currentStatus.getPossibleErrors(forLongTerm)
+                deviceStatus.locationStatus.getPossibleErrors(forLongTerm)
             )
-            if (!connectionStatus.status.value.isOnline) {
-                add(ConditionErrorType.NETWORK)
+            if (!deviceStatus.networkStatus.isOnline) {
+                add(ConditionErrorType.Network)
             }
         }
     }

@@ -4,8 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,13 +29,14 @@ import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.groups.GroupBottomSheetPicker
-import app.paralino.core.ui.groups.GroupPickerAction
-import app.paralino.core.ui.groups.rememberGroupBottomSheetPickerState
+import app.paralino.android.ui.groups.GroupBottomSheetPicker
+import app.paralino.android.ui.groups.GroupPickerAction
+import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.isFullyExpanded
+import app.paralino.core.ui.map.rememberSwipeableSheetState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -70,7 +69,6 @@ fun MapHomeScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MapHomeContent(
     appState: MainAppState,
@@ -83,15 +81,17 @@ private fun MapHomeContent(
     val density = LocalDensity.current
     val pickerState = rememberGroupBottomSheetPickerState()
 
-    val sheetState = rememberSwipeableState(
-        initialValue = BottomSheetPosition.HALF_EXPANDED,
-        confirmStateChange = {
+    val sheetState = rememberSwipeableSheetState(
+        initialValue = BottomSheetPosition.default,
+        collapsedAnchorBottomPaddingPixels = 0f,
+        confirmValueChange = {
             it != BottomSheetPosition.HIDDEN
         }
     )
+
     val bottomOffset = density.run {
         try {
-            sheetState.offset.value.toDp()
+            sheetState.offset.toDp()
         } catch (e: Exception) {
             0.dp
         }
@@ -101,7 +101,11 @@ private fun MapHomeContent(
         vm.events.collectLatest { event ->
             when (event) {
                 MapHomeScreenEvent.AddGroup -> {
-                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.routeSignature)
+                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
+                }
+
+                MapHomeScreenEvent.ShowFreePlanInfo -> {
+                    appState.navController.navigate(AppScreen.MainHome.FreePlanNoticeScreen.route())
                 }
 
                 MapHomeScreenEvent.GroupsPlanLimitReached -> {

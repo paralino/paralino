@@ -24,4 +24,16 @@
         <item quantity="one">Sharing location to 1 group</item>
         <item quantity="other">Sharing location to %d groups</item>
     </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one">**%d group**</item>
+        <item quantity="other">**%d groups**</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">**%d member**</item>
+        <item quantity="other">**%d members**</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one">**%d place**</item>
+        <item quantity="other">**%d places**</item>
+    </plurals>
 </resources>

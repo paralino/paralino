@@ -1,6 +1,6 @@
 package app.paralino.core.models.mappers
 
-import app.paralino.core.data.db.PersonalCodeEntity
+import app.paralino.core.db.main.user.PersonalCodeEntity
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.raw.PersonalCodeRaw
 
