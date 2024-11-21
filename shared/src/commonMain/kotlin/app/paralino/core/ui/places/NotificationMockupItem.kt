@@ -39,8 +39,8 @@ fun NotificationMockupItem(
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.surface)
             .clickable(onClick = onClick)
+            .background(MaterialTheme.colors.surface)
             .padding(vertical = 8.dp, horizontal = 8.dp),
     ) {
         Row(

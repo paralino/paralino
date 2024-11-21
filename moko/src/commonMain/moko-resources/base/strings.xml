@@ -341,8 +341,8 @@
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>
     <string name="places_list_screen_empty_info">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
-    <string name="places_notification_demo_peter_arrived">Peter arrived at Home</string>
-    <string name="places_notification_demo_heidi_left">Heidi left School</string>
+    <string name="places_notification_demo_home">Home</string>
+    <string name="places_notification_demo_school">School</string>
     <string name="places_create_screen_title">Create a new place</string>
     <string name="places_edit_screen_title">Edit place</string>
     <string name="places_create_seekbar_info">Radius</string>

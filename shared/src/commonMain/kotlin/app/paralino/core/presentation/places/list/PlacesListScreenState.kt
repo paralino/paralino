@@ -18,7 +18,7 @@ data class PlacesListScreenState constructor(
     val canShowPlacesLimit: Boolean,
     val shouldShowPlanBanner: Boolean,
     val places: List<PlaceListItemData>,
-    val errors: List<ConditionErrorType>,
+    val error: ConditionErrorType.PermissionNotifications?,
     val alertDialog: MainAlertDialog?
 ) {
     val markers: List<MapPinData> = places.filter { it.lat != null && it.lng != null }
@@ -51,9 +51,11 @@ sealed class PlacesScreenEvent() {
     data class Error(val error: Throwable) : PlacesScreenEvent()
     object AddPlace : PlacesScreenEvent()
     data class GroupPlacesLimitReached(val limit: Int) : PlacesScreenEvent()
+    data object MissingNotificationPermission : PlacesScreenEvent()
 }
 
 sealed interface PlacesScreenUiEvent {
     data object CreatePlace : PlacesScreenUiEvent
+    data class PostSampleNotification(val content: String) : PlacesScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : PlacesScreenUiEvent
 }

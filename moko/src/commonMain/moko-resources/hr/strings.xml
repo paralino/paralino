@@ -343,8 +343,8 @@
     <string name="places_edit_screen_title">Uredite mjesto</string>
     <string name="places_create_screen_title">Stvorite novo mjesto</string>
     <string name="places_list_screen_empty_info">Kreirajte novo mjesto te **budite obaviješteni** kada netko stigne ili napusti područje kao kuća, posao ili škola.</string>
-    <string name="places_notification_demo_peter_arrived">Peter je sada kod Kuće</string>
-    <string name="places_notification_demo_heidi_left">Heidi je napustila Školu</string>
+    <string name="places_notification_demo_home">Kuća</string>
+    <string name="places_notification_demo_school">Škola</string>
     <string name="places_create_seekbar_info">Radijus</string>
     <string name="places_create_button_create">Stvorite mjesto</string>
     <string name="places_create_error_no_place">Dodajte lokaciju dugim pritiskom na kartu</string>
@@ -355,8 +355,8 @@
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>
     <string name="place_detail_setting_button_notify_exit">Odlazak</string>
     <string name="place_detail_notification_settings_title">Postavke obavijesti</string>
-    <string name="place_notification_enter">%s je stigao/la u %s</string>
-    <string name="place_notification_exit">%s je napustio/la %s</string>
+    <string name="place_notification_enter">%s je stigao/la u mjesto %s</string>
+    <string name="place_notification_exit">%s je napustio/la mjesto %s</string>
     <string name="place_notification_default">Vaše mjesto ima aktivnost</string>
     <string name="place_created_notification">Grupa %1$s je dobila novo mjesto: %2$s</string>
     <string name="place_created_notification_default">Novo mjesto je kreirano u Vašoj grupi</string>

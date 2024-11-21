@@ -10,12 +10,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -50,19 +50,26 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
+import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.ActionScaffold
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 
 @Composable
 fun PlacesEmptyState(
     modifier: Modifier = Modifier,
+    permissionError: ConditionErrorType.PermissionNotifications?,
+    onPostSampleNotification: (String) -> Unit,
+    onErrorItemClick: (ConditionErrorType) -> Unit,
     onCreateClick: () -> Unit
 ) {
     ActionScaffold(
@@ -75,12 +82,33 @@ fun PlacesEmptyState(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(it)
+                .padding(vertical = 20.dp)
         ) {
             var notificationVisibility by rememberSaveable { mutableStateOf(false) }
+            val notificationContentEnter = remember {
+                MR.strings.place_notification_enter.localizedString(
+                    "Peter",
+                    MR.strings.places_notification_demo_school.localizedString()
+                )
+            }
+            val notificationContentExit = remember {
+                MR.strings.place_notification_exit.localizedString(
+                    "Heidi",
+                    MR.strings.places_notification_demo_home.localizedString()
+                )
+            }
 
             LaunchedEffect(Unit) {
-                delay(2500)
+                delay(3000)
                 notificationVisibility = true
+            }
+
+            AnimatedVisibility(visible = permissionError != null) {
+                ConditionErrorItem(
+                    modifier = Modifier.padding(horizontal = 20.dp).padding(bottom = 20.dp),
+                    data = ConditionErrorType.PermissionNotifications,
+                    onClick = { onErrorItemClick(ConditionErrorType.PermissionNotifications) }
+                )
             }
 
             AnimatedVisibility(
@@ -89,13 +117,11 @@ fun PlacesEmptyState(
                 NotificationMockupItem(
                     modifier = Modifier
                         .rotate(2f)
-                        .padding(top = 20.dp),
-                    description = stringResource(MR.strings.places_notification_demo_peter_arrived),
-                    onClick = {}
+                        .pulsate(pulseAmount = 0.95f),
+                    description = notificationContentEnter,
+                    onClick = { onPostSampleNotification(notificationContentEnter) }
                 )
             }
-
-            Spacer(modifier = Modifier.size(12.dp))
 
             AnimatedVisibility(
                 visible = notificationVisibility
@@ -103,9 +129,28 @@ fun PlacesEmptyState(
                 NotificationMockupItem(
                     modifier = Modifier
                         .rotate(-2f)
-                        .padding(bottom = 20.dp),
-                    description = stringResource(MR.strings.places_notification_demo_heidi_left),
-                    onClick = {}
+                        .padding(top = 12.dp, bottom = 30.dp)
+                        .pulsate(pulseAmount = 0.9f),
+                    description = notificationContentExit,
+                    onClick = { onPostSampleNotification(notificationContentExit) }
+                )
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxWidth(),
+                visible = !notificationVisibility
+            ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 20.dp, bottom = 40.dp)
+                        .requiredSize(10.dp)
+                        .pulsate(pulseAmount = 1.8f)
+                        .clip(CircleShape)
+                        .background(
+                            color = AppColors.accent,
+                            shape = CircleShape
+                        )
                 )
             }
 
@@ -160,7 +205,7 @@ fun PlacesEmptyState(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(150.dp)
+                                    .size(markers.school.accuracy.dp)
                                     .clip(CircleShape)
                                     .background(
                                         if (isSystemInDarkTheme()) {
@@ -170,7 +215,7 @@ fun PlacesEmptyState(
                                         }
                                     )
                             )
-                            MapMarkerContent(state = markers.home)
+                            MapMarkerContent(state = markers.school)
                         }
                         MapMarkerContent(
                             modifier = Modifier
@@ -204,7 +249,7 @@ fun PlacesEmptyState(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(100.dp)
+                                    .size(markers.home.accuracy.dp)
                                     .clip(CircleShape)
                                     .background(
                                         if (isSystemInDarkTheme()) {
@@ -214,7 +259,7 @@ fun PlacesEmptyState(
                                         }
                                     )
                             )
-                            MapMarkerContent(state = markers.school)
+                            MapMarkerContent(state = markers.home)
                         }
                         MapMarkerContent(
                             modifier = Modifier
@@ -308,7 +353,7 @@ private data class PlacesEmptyStateMarkers(
         image = ImageModel.emoji(Emojis.schoolBooks),
         lat = 0.0,
         lng = 0.0,
-        accuracy = 100f,
+        accuracy = 150f,
         shouldShowApproximateCircle = true
     )
 )

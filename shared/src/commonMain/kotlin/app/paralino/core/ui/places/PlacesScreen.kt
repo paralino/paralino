@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -86,6 +85,10 @@ fun PlacesScreenCore(
                     openPaywall()
                 }
 
+                PlacesScreenEvent.MissingNotificationPermission -> {
+                    askNotificationPermission()
+                }
+
                 null -> { /* do nothing */
                 }
             }
@@ -127,6 +130,9 @@ fun PlacesScreenCore(
                 onErrorItemClick = {
                     askNotificationPermission()
                 },
+                onPostSampleNotification = {
+                    vm.onEvent(PlacesScreenUiEvent.PostSampleNotification(it))
+                },
                 mapContent = mapContent
             )
         }
@@ -143,11 +149,15 @@ private fun PlacesScreen(
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onCreatePlace: () -> Unit,
     onPlanBannerClick: () -> Unit,
+    onPostSampleNotification: (String) -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
     if (state.places.isEmpty()) {
         PlacesEmptyState(
             modifier = Modifier.padding(contentPadding),
+            permissionError = state.error,
+            onErrorItemClick = onErrorItemClick,
+            onPostSampleNotification = onPostSampleNotification,
             onCreateClick = onCreatePlace
         )
     } else {
@@ -173,9 +183,11 @@ private fun PlacesScreen(
                         )
                     }
 
-                    this.items(items = state.errors, key = { it.toString() }) {
-                        ConditionErrorItem(data = it) {
-                            onErrorItemClick(it)
+                    if (state.error != null) {
+                        this.item(key = { state.error.toString() }) {
+                            ConditionErrorItem(data = state.error) {
+                                onErrorItemClick(state.error)
+                            }
                         }
                     }
 
