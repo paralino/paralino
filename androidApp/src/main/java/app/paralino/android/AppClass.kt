@@ -23,17 +23,23 @@ import app.paralino.core.CoreAppManager
 import app.paralino.core.MR
 import app.paralino.core.ParalinoCore
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.logg
-import app.paralino.core.models.data
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.logg
+import app.paralino.core.models.data
 import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
 import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -60,6 +66,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     private val coreAppManager: CoreAppManager by inject()
     private val locationSharingManager: LocationSharingManager by inject()
     private val infoMessagesNotifications: IInfoMessagesNotificationPresenter by inject()
+    private val deviceApiProvider: IDeviceApiProvider by inject()
 
     val isForeground get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
     val appState get() = ProcessLifecycleOwner.get().lifecycle.currentState
@@ -83,34 +90,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
 
         androidPreCheck.start()
         coreAppManager.onAppStart()
-        locationSharingManager.sharingStatus
-            .onEach {
-                logg.v("Location sharing status changed: $it")
-                if (it.data == true) {
-                    logg.v("Location sharing contract ready, starting location service from state: $appState")
-                    try {
-                        // TODO check if background location permission is enabled before starting
-                        LocationService.start(this, isForeground)
-                    } catch (e: Exception) {
-                        val message =
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException) {
-                                MR.strings.error_location_background_permission_missing_notification_message.getString(this)
-                            } else {
-                                MR.strings.error_location_sharing_start_notification_message.getString(this)
-                            }
-                        infoMessagesNotifications.notify(
-                            IPushNotificationPresenter.Payload(
-                                notificationId = 54343,
-                                title = MR.strings.error_something_wrong.getString(this),
-                                message = message,
-                                timeMillis = null,
-                                timeInfo = null
-                            )
-                        )
-                    }
-                }
-            }
-            .launchIn(defaultScope)
+        initLocationService()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(
@@ -142,6 +122,59 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
             it.isSendDefaultPii = false
             it.isEnabled = AppPrefs.instance.errorReporting
         }
+    }
+
+    private fun initLocationService() {
+        combine(
+            locationSharingManager.sharingStatus,
+            deviceApiProvider.appLifecycleState
+        ) { sharingStatus, appState ->
+            if (sharingStatus.data == true) {
+                appState.wasEverActive || deviceApiProvider.locationStatusProvider.currentStatus.isOK(forAlwaysOnAccess = true)
+            } else {
+                null
+            }
+        }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .debounce { if (!it) 6000L else 0L }
+            .onEach {
+                logg.v(
+                    "location_service",
+                    "Location sharing contract ready ($it), starting location service from state: $appState"
+                )
+                if (it) {
+                    LocationService.start(this, isForeground)
+                } else {
+                    notifyLocationServiceError(backgroundLocationError = true)
+                }
+            }
+            .catch { e ->
+                notifyLocationServiceError(
+                    backgroundLocationError = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException
+                )
+            }
+            .launchIn(defaultScope)
+    }
+
+    private fun notifyLocationServiceError(backgroundLocationError: Boolean) {
+        val message =
+            if (backgroundLocationError) {
+                MR.strings.error_location_background_permission_missing_notification_message.getString(
+                    this
+                )
+            } else {
+                MR.strings.error_location_sharing_start_notification_message.getString(this)
+            }
+        infoMessagesNotifications.notify(
+            IPushNotificationPresenter.Payload(
+                notificationId = 54343,
+                title = MR.strings.error_something_wrong.getString(this),
+                message = message,
+                timeMillis = null,
+                timeInfo = null
+            )
+        )
     }
 
     override fun onStart(owner: LifecycleOwner) {
