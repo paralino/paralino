@@ -47,7 +47,7 @@ class FullRefreshSyncWorker(
         return ForegroundInfo(
             SyncNotificationProvider.DataSyncNotification.notificationId,
             SyncNotificationProvider.DataSyncNotification.create(applicationContext),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
         )
     }
 
