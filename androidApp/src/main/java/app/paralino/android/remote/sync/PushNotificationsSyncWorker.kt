@@ -12,8 +12,8 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.paralino.android.notification.SyncNotificationProvider
-import app.paralino.core.logg
 import app.paralino.core.domain.notifications.PushNotificationHandler
+import app.paralino.core.logg
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -25,6 +25,9 @@ class PushNotificationsSyncWorker(
     private val pushHandler by lazy { PushHandlerComponent() }
 
     override suspend fun doWork(): Result {
+        try { setForeground(getForegroundInfo()) }
+        catch (_: Exception) { }
+
         try {
             logg.tag("push_notifications").i("Try to get push notifications from server")
             pushHandler.pushHandler.checkForPushNotifications()
@@ -43,7 +46,7 @@ class PushNotificationsSyncWorker(
         return ForegroundInfo(
             SyncNotificationProvider.PushSyncNotification.notificationId,
             SyncNotificationProvider.PushSyncNotification.create(applicationContext),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
         )
     }
 

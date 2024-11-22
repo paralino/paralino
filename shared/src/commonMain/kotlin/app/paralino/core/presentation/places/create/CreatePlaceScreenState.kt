@@ -13,6 +13,7 @@ data class CreatePlaceScreenState constructor(
     val lat: Double?,
     val lng: Double?,
     val radiusMeters: Int,
+    val radiusText: String,
     val hintText: AnnotatedString,
     val hasNameError: Boolean,
     val actionLoading: Boolean,
@@ -37,7 +38,9 @@ data class CreatePlaceScreenState constructor(
             groupId: String,
             hintText: AnnotatedString,
             lat: Double? = null,
-            lng: Double? = null
+            lng: Double? = null,
+            radiusMeters: Int,
+            radiusText: String
         ): CreatePlaceScreenState {
             return CreatePlaceScreenState(
                 groupId = groupId,
@@ -47,7 +50,8 @@ data class CreatePlaceScreenState constructor(
                 private = false,
                 lat = lat,
                 lng = lng,
-                radiusMeters = defaultRadiusMeters,
+                radiusMeters = radiusMeters,
+                radiusText = radiusText,
                 hintText = hintText,
                 hasNameError = false,
                 actionLoading = false,

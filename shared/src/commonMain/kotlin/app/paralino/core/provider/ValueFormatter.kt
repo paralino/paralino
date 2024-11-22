@@ -21,6 +21,7 @@ import kotlin.time.Duration.Companion.seconds
 abstract class IValueFormatter {
 
     abstract val unitType: DistanceUnitType
+    private val kmInMile = 1.609344
 
     abstract fun formatTimeOnly(timeUTC: LocalDateTime?): String?
     abstract fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String
@@ -43,10 +44,15 @@ abstract class IValueFormatter {
                 }
             }
             DistanceUnitType.IMPERIAL -> {
-                // TODO add smaller imperial values
-                val mile = meters / 1000 / 1.609344
-                val value = formatNumber(mile, minFractions = 0, maxFractions = 2)
-                MR.strings.placeholder_unit_mile.localizedString(value)
+                if (meters / 1000 < kmInMile / 10) { // Less than 1/10 mile
+                    val feet = meters * 3.28084
+                    val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
+                    MR.strings.placeholder_unit_feet.localizedString(value)
+                } else {
+                    val miles = meters / 1000 / kmInMile
+                    val value = formatNumber(miles, minFractions = 0, maxFractions = 2)
+                    MR.strings.placeholder_unit_mile.localizedString(value)
+                }
             }
         }
     }
@@ -171,7 +177,7 @@ abstract class IValueFormatter {
             }
 
             DistanceUnitType.IMPERIAL -> {
-                val mph = kmh / 1.609344
+                val mph = kmh / kmInMile
                 MR.strings.placeholder_unit_speed_mph.localizedString(mph.toInt().toString())
             }
         }

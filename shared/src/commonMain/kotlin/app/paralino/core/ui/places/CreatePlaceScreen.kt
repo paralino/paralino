@@ -248,7 +248,7 @@ private fun CreatePlaceScreenCore(
                         .padding(bottom = 6.dp, top = 2.dp)
                         .height(sliderSize.minHeight),
                     title = stringResource(MR.strings.places_create_seekbar_info),
-                    value = "${state.radiusMeters}m",
+                    value = state.radiusText,
                     size = sliderSize,
                     progress = state.currentStep,
                     steps = CreatePlaceScreenState.radiusSteps.size,

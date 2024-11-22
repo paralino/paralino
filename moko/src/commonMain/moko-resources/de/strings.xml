@@ -372,6 +372,7 @@
     <string name="placeholder_unit_meter">%s m</string>
     <string name="placeholder_unit_km">%s km</string>
     <string name="placeholder_unit_mile">%s mi</string>
+    <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
     <string name="placeholder_unit_speed_mph">%s m/h</string>
     <string name="welcome_screen_info_1">SICHER - PRIVAT - VERSCHLÜSSELT</string>
