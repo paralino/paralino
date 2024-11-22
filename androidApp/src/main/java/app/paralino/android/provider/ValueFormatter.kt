@@ -1,6 +1,8 @@
 package app.paralino.android.provider
 
 import android.icu.text.DecimalFormat
+import android.icu.util.LocaleData
+import android.icu.util.ULocale
 import android.text.format.DateFormat
 import app.paralino.android.utils.extensions.fromUTCtoLocal
 import app.paralino.core.provider.IValueFormatter
@@ -17,7 +19,16 @@ import java.util.Locale
 class ValueFormatter() : IValueFormatter() {
 
     override val unitType: DistanceUnitType
-        get() = DistanceUnitType.METRIC
+        get() {
+            return try {
+                when (LocaleData.getMeasurementSystem(ULocale.getDefault())) {
+                    LocaleData.MeasurementSystem.US -> DistanceUnitType.IMPERIAL
+                    else -> DistanceUnitType.METRIC
+                }
+            } catch (e: Exception) {
+                DistanceUnitType.METRIC
+            }
+        }
 
     override fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String {
         val formatter = DecimalFormat.getInstance().apply {

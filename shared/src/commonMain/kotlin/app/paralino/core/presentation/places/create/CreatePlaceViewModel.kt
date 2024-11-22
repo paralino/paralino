@@ -12,6 +12,7 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.Emojis
@@ -34,7 +35,8 @@ class CreatePlaceViewModel(
     lat: Double? = null,
     lng: Double? = null,
     private val placesRepo: PlacesRepository,
-    private val deviceApiProvider: IDeviceApiProvider
+    private val deviceApiProvider: IDeviceApiProvider,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val placeFlow = MutableStateFlow<Payload<GroupPlace>>(Payload.Loading)
@@ -63,7 +65,9 @@ class CreatePlaceViewModel(
                             groupId = groupId,
                             hintText = hintText(),
                             lat = lat,
-                            lng = lng
+                            lng = lng,
+                            radiusMeters = CreatePlaceScreenState.defaultRadiusMeters,
+                            radiusText = valueFormatter.getDistanceSmall(meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble())
                         )
                     )
 
@@ -78,6 +82,7 @@ class CreatePlaceViewModel(
                             lat = place.data.data?.lat,
                             lng = place.data.data?.lng,
                             radiusMeters = place.data.data?.radiusMeters ?: 0,
+                            radiusText = valueFormatter.getDistanceSmall(meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0),
                             hintText = hintText(),
                             actionLoading = false,
                             fullLoading = false
@@ -180,7 +185,12 @@ class CreatePlaceViewModel(
 
     fun updateRadius(radiusMeters: Int) {
         _uiState.update {
-            it.mapSuccess { it.copy(radiusMeters = radiusMeters) }
+            it.mapSuccess {
+                it.copy(
+                    radiusMeters = radiusMeters,
+                    radiusText = valueFormatter.getDistanceSmall(meters = radiusMeters.toDouble()),
+                )
+            }
         }
     }
 

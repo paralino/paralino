@@ -211,7 +211,8 @@ object KoinIOS {
                     lat = lat,
                     lng = lng,
                     placesRepo = get(),
-                    deviceApiProvider = get()
+                    deviceApiProvider = get(),
+                    valueFormatter = get()
                 )
             }
             factory { (rawDataType: RawPresentationDataType) ->
