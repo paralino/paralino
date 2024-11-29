@@ -55,6 +55,7 @@ import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.SecurityNoticeInfoChip
 import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
@@ -287,6 +288,13 @@ fun PlacesEmptyState(
                     textAlign = TextAlign.Center
                 )
             }
+
+            SecurityNoticeInfoChip(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(vertical = 20.dp),
+                text = stringResource(MR.strings.places_list_screen_encryption_info)
+            )
         }
     }
 }

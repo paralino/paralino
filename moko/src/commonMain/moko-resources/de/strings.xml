@@ -254,6 +254,7 @@
     <string name="groups_sharing_error_unverified_group_title">Unbestätigte Gruppe oder Mitglied</string>
     <string name="groups_sharing_error_unverified_group_message">Sie können Ihren Standort nicht an eine unbestätigte Gruppe oder ein unbestätigtes Mitglied freigeben.\n\nVersuchen Sie, die Gruppendaten zu aktualisieren.</string>
     <string name="groups_sharing_duration_type_infinite">Immer an</string>
+    <string name="groups_sharing_encryption_info">Ihr Standort und die zugehörigen Daten sind immer **Ende-zu-Ende verschlüsselt** und nur für Gruppenmitglieder zugänglich.</string>
     <string name="invite_create_button">Paralino.ID erstellen</string>
     <string name="invite_create_new_button">Alternative ID erstellen</string>
     <string name="toast_copy_invite_code">Code kopiert</string>
@@ -341,6 +342,7 @@
     <string name="places_list_add_button">Neuer Ort</string>
     <string name="places_list_screen_title">Orte</string>
     <string name="places_list_screen_empty_info">Erstellen Sie einen Ort und erhalten Sie eine **Benachrichtigung**, wenn jemand einen vordefinierten Bereich wie Zuhause, Arbeit oder Schule betritt oder verlässt.</string>
+    <string name="places_list_screen_encryption_info">Die Informationen, die Sie zu Ihren Orten eingeben, sind **Ende-zu-Ende verschlüsselt** und nur für Gruppenmitglieder lesbar.</string>
     <string name="places_notification_demo_home">Hause</string>
     <string name="places_notification_demo_school">Schule</string>
     <string name="places_create_screen_title">Neuen Ort erstellen</string>
