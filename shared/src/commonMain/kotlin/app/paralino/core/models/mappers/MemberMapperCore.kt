@@ -2,6 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.crypto.GroupValidityVerification
@@ -48,13 +49,18 @@ class MemberMapperCore constructor(
             groupKey = groupKey
         )
 
+        val memberKxKey = cryptoKEKRepo.getMemberPublicKey(
+            groupId = group.id,
+            memberUserId = model.member.ownerUserId
+        )
+
         // data encrypted with user senderKey DEK
         val locations = model.locations.map { location ->
             val deviceData = if (groupKey is GroupMasterKey.Valid) {
                 if (location.deviceData.isNullOrBlank()) {
                     CryptoResource.NotInitialized
                 } else {
-                    val deviceGroupKey = if(location.groupKeyVersion == groupKey.version) {
+                    val deviceGroupKey = if (location.groupKeyVersion == groupKey.version) {
                         groupKey
                     } else {
                         cryptoKEKRepo.getGroupKey(
@@ -72,7 +78,7 @@ class MemberMapperCore constructor(
                             ).let {
                                 BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(it)
                             }.let {
-                                if(verification is VerificationResult.Verified) {
+                                if (verification is VerificationResult.Verified) {
                                     CryptoResource.Ready(it)
                                 } else {
                                     CryptoResource.UnverifiedKeyOrData(it)
@@ -114,15 +120,18 @@ class MemberMapperCore constructor(
                         }.let {
                             if (it.isMasked) {
                                 CryptoResource.NotInitialized
-                            } else if(verification is VerificationResult.Verified) {
+                            } else if (verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)
                             }
                         }
                     } catch (e: Exception) {
-                        if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
-                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion}) ${e.message}")
+                        if (memberKey.deviceKeyVersion != location.deviceKeyVersion) {
+                            logg.w(
+                                tag = "tag_crypto_key_group_member",
+                                message = "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion}) ${e.message}"
+                            )
                             CryptoResource.MissingKey
                         } else {
                             logg.tag("tag_crypto_key_group_member")
@@ -150,15 +159,18 @@ class MemberMapperCore constructor(
                         ).let {
                             BaseRemoteModule.formatter.decodeFromString<MemberDeviceStatus>(it)
                         }.let {
-                            if(verification is VerificationResult.Verified) {
+                            if (verification is VerificationResult.Verified) {
                                 CryptoResource.Ready(it)
                             } else {
                                 CryptoResource.UnverifiedKeyOrData(it)
                             }
                         }
                     } catch (e: Exception) {
-                        if(memberKey.deviceKeyVersion != location.deviceKeyVersion) {
-                            logg.w("tag_crypto_key_group_member", "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion}) ${e.message}")
+                        if (memberKey.deviceKeyVersion != location.deviceKeyVersion) {
+                            logg.w(
+                                tag = "tag_crypto_key_group_member",
+                                message = "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion}) ${e.message}"
+                            )
                             CryptoResource.MissingKey
                         } else {
                             logg.tag("tag_crypto_key_group_member")
@@ -197,7 +209,7 @@ class MemberMapperCore constructor(
                 ).let {
                     BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
                 }.let {
-                    if(verification is VerificationResult.Verified) {
+                    if (verification is VerificationResult.Verified) {
                         CryptoResource.Ready(it)
                     } else {
                         CryptoResource.UnverifiedKeyOrData(it)
@@ -216,18 +228,25 @@ class MemberMapperCore constructor(
                 CryptoResource.NotInitialized
             } else {
                 try {
-                    cryptoCore.decryptDataWithKey(
+                    val verifiedParalinoId = cryptoCore.verifySignature(
                         data = model.member.paralinoId,
+                        publicKey = (memberKxKey as GroupMemberMainPublicKey.Valid).identityKey.key
+                    )
+
+                    cryptoCore.decryptDataWithKey(
+                        data = verifiedParalinoId ?: model.member.paralinoId,
                         key = groupKey.key
-                    ).let {
-                        BaseRemoteModule.formatter.decodeFromString<MemberModelParalinoIdData>(it)
-                    }.let {
-                        if (verification is VerificationResult.Verified) {
-                            CryptoResource.Ready(it)
-                        } else {
-                            CryptoResource.UnverifiedKeyOrData(it)
+                    )
+                        .let {
+                            BaseRemoteModule.formatter.decodeFromString<MemberModelParalinoIdData>(it)
                         }
-                    }
+                        .let {
+                            if (verification is VerificationResult.Verified && !verifiedParalinoId.isNullOrBlank()) {
+                                CryptoResource.Ready(it)
+                            } else {
+                                CryptoResource.UnverifiedKeyOrData(it)
+                            }
+                        }
                 } catch (e: Exception) {
                     CryptoResource.WrongKeyOrData
                 }

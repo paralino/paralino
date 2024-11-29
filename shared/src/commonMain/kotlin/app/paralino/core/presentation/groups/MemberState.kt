@@ -2,6 +2,7 @@ package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.dataIfReady
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
@@ -43,7 +44,7 @@ data class GroupMemberState constructor(
         userId = member.userId,
         name = member.name,
         image = member.image,
-        paralinoId = member.paralinoId.data?.formattedCode,
+        paralinoId = member.paralinoId.dataIfReady?.formattedCode,
         isCurrentUser = isCurrentUser,
         isVerified = member.isVerified,
         canHaveExpandButton = canHaveExpandButton

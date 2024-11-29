@@ -102,6 +102,9 @@ val <T> CryptoResource<T>.data: T?
     get() = (this as? CryptoResource.Ready)?.data
         ?: (this as? CryptoResource.UnverifiedKeyOrData)?.data
 
+val <T> CryptoResource<T>.dataIfReady: T?
+    get() = (this as? CryptoResource.Ready)?.data
+
 inline fun <reified T, R> CryptoResource<T>.mapSuccess(action: (T) -> R): CryptoResource<R> {
     return when (this) {
         CryptoResource.MissingKey -> CryptoResource.MissingKey

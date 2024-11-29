@@ -16,6 +16,7 @@ import app.paralino.core.models.raw.UpdateOwnMemberPublicKeyPayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
@@ -28,6 +29,7 @@ class MemberCryptoKeyRotation(
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val cryptoKEKRepository: CryptoKEKLocalRepository,
     private val validityVerification: GroupValidityVerification,
+    private val personalCodesRepo: PersonalCodesRepository,
     private val appPrefs: AppPrefs
 ) : LimitedExecution() {
 
@@ -87,18 +89,23 @@ class MemberCryptoKeyRotation(
         group: UserGroupWithMembers
     ) {
         val myKey = userKeyRepo.signatureKeyPair()
-        val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
-        val groupKey = cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
+
+        val groupKey =
+            cryptoKEKRepository.getGroupKey(group.id, group.ownerUserId, keyVersion = null)
+        if (groupKey !is GroupMasterKey.Valid)
+            throw MissingGroupKeyException(group.id)
+
+        val member = group.members.firstOrNull { it.member.userId == appPrefs.userId }!!
+
+        val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(
+            groupId = group.id,
+            version = 0
+        )
 
         if (myMembershipKeys !is UserGroupPersonalKeyPair.Valid)
             throw MissingMemberKeyException(group.id, appPrefs.userId)
 
-        if (groupKey !is GroupMasterKey.Valid)
-            throw MissingGroupKeyException(group.id)
-
         val newExchangeKeys = cryptoCore.getNewCryptoKeyPair()
-
-        val member = group.members.filter { it.member.userId == appPrefs.userId }.firstOrNull()!!
 
         val userKey = userKeyRepo.activePersonalKeyWithVersion()
         val groupIntegrity = GroupIntegrity(
@@ -120,7 +127,8 @@ class MemberCryptoKeyRotation(
 
         val memberKeyVersionsToKeep = cryptoKEKRepository.getAllActiveMemberKeyVersions(group.id)
 
-        logg.tag("tag_crypto_key_group_member_rotation").v("Keep member keys: $memberKeyVersionsToKeep")
+        logg.tag("tag_crypto_key_group_member_rotation")
+            .v("Keep member keys: $memberKeyVersionsToKeep")
 
         val payloadData = UpdateOwnMemberPublicKeyPayload(
             groupId = group.id,
@@ -130,12 +138,26 @@ class MemberCryptoKeyRotation(
                 BaseRemoteModule.formatter.encodeToString(member.member.memberData.data),
                 groupKey.key
             ),
-            paralinoId = member.member.paralinoId.data?.let {
-                cryptoCore.encryptDataWithKey(
-                    BaseRemoteModule.formatter.encodeToString(it),
-                    groupKey.key
-                )
-            },
+            paralinoId = member.member.paralinoId.data
+                ?.takeIf { codeInfo ->
+                    // only sign code if it belongs to the user
+                    // for now we are not checking if code is active
+                    // user is already added with this code
+                    personalCodesRepo.personalCodeLocalState.value.any {
+                        it.code == codeInfo.paralinoId
+                    }
+                }
+                ?.let {
+                    cryptoCore.encryptDataWithKey(
+                        BaseRemoteModule.formatter.encodeToString(it),
+                        groupKey.key
+                    )
+                }?.let {
+                    cryptoCore.signData(
+                        data = it,
+                        myPrivateKey = myKey.privateKey
+                    )
+                },
             signedPublicKey = cryptoCore.signData(
                 data = newExchangeKeys.publicKey,
                 myPrivateKey = myKey.privateKey

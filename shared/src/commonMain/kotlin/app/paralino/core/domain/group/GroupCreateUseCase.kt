@@ -132,7 +132,7 @@ class GroupCreateUseCase(
             )
         }
 
-        val paralinoId = personalCodesRepo.getActivePersonalCodeOnce()?.code
+        val paralinoId = personalCodesRepo.activePersonalCodeState.value?.code
 
         val payload = CreateGroupPayload(
             encryptedGroupKey = encryptedGroupKey,
@@ -167,7 +167,12 @@ class GroupCreateUseCase(
                         MemberModelParalinoIdData(paralinoId)
                     ),
                     key = groupKey
-                )
+                ).let {
+                    cryptoCore.signData(
+                        data = it,
+                        myPrivateKey = myIdentityKeys.privateKey
+                    )
+                }
             }
         )
 
