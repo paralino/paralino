@@ -3,9 +3,13 @@ package app.paralino.core.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,19 +28,97 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBold
-import dev.icerock.moko.resources.compose.stringResource
+
+
+@Composable
+fun SecurityNoticeInfoChip(
+    modifier: Modifier = Modifier,
+    icon: Painter = CoreAppIcons.Security.asPainterResource(),
+    text: String,
+    onClick: (() -> Unit)? = null
+) {
+    DataInfoChip(
+        modifier = modifier,
+        backgroundColor = AppColors.accentLight.copy(alpha = 0.3f),
+        imageOrIcon = {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = AppColors.accent
+            )
+            Spacer(Modifier.size(4.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .requiredHeightIn(min = 40.dp)
+                    .width(0.5.dp)
+                    .background(color = AppColors.accent.copy(alpha = 0.2f))
+            )
+            Spacer(Modifier.size(8.dp))
+        },
+        text = {
+            Text(
+                text = text.annotatedBold(),
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
+            )
+        },
+        onClick = onClick
+    )
+}
+
+@Composable
+fun DataInfoChip(
+    modifier: Modifier = Modifier,
+    image: ImageModel?,
+    text: String,
+    backgroundColor: Color = MaterialTheme.colors.surface,
+    hasEndArrow: Boolean = false,
+    onClick: (() -> Unit)? = null
+) {
+    DataInfoChip(
+        modifier = modifier,
+        backgroundColor = backgroundColor,
+        hasEndArrow = hasEndArrow,
+        imageOrIcon = if (image != null) {
+            {
+                ImageModelImage(
+                    imageModel = image,
+                    modifier = Modifier
+                        .size(26.dp)
+                        .border(
+                            0.5.dp,
+                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                            RoundedCornerShape(6.dp)
+                        ),
+                    clipShape = RoundedCornerShape(6.dp)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+        } else null,
+        text = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.subtitle1,
+                color = contentColorFor(backgroundColor)
+            )
+        },
+        onClick = onClick
+    )
+}
 
 @Composable
 fun DataInfoChip(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.surface,
     hasEndArrow: Boolean = false,
-    image: ImageModel?,
-    text: String,
+    imageOrIcon: (@Composable RowScope.() -> Unit)?,
+    text: @Composable RowScope.() -> Unit,
     onClick: (() -> Unit)? = null
 ) {
     Row(
@@ -52,27 +134,12 @@ fun DataInfoChip(
             .padding(start = 5.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (image != null) {
-            ImageModelImage(
-                imageModel = image,
-                modifier = Modifier
-                    .size(26.dp)
-                    .border(
-                        0.5.dp,
-                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                        RoundedCornerShape(6.dp)
-                    ),
-                clipShape = RoundedCornerShape(6.dp)
-            )
-            Spacer(modifier = Modifier.size(8.dp))
+        if (imageOrIcon != null) {
+            imageOrIcon()
         } else {
             Spacer(modifier = Modifier.size(3.dp))
         }
-        Text(
-            text = text,
-            style = MaterialTheme.typography.subtitle1,
-            color = contentColorFor(backgroundColor)
-        )
+        text()
         if (hasEndArrow) {
             Icon(
                 modifier = Modifier

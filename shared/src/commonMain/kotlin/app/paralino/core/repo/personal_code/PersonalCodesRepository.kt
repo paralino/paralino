@@ -89,7 +89,7 @@ class PersonalCodesRepository constructor(
         }
     }
 
-    fun getActivePersonalCodeOnce(): UserPersonalCode? {
+    private fun getActivePersonalCodeOnce(): UserPersonalCode? {
         return activePersonalCodeState.value
     }
 

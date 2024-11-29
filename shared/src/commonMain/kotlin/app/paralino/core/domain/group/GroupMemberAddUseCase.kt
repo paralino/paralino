@@ -153,6 +153,8 @@ class GroupMemberAddUseCase constructor(
                 ),
                 key = groupKey.key
             ),
+            // this is only encrypted, not signed. Only member we are adding can sign it
+            // Then it will be verified and visible to others
             paralinoId = cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
                     MemberModelParalinoIdData(codeData.keyData.code)

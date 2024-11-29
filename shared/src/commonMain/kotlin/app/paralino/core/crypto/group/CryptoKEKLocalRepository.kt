@@ -240,7 +240,8 @@ class CryptoKEKLocalRepository(
         return GroupMemberSenderKey.Valid(
             key = memberKey,
             deviceKeyVersion = keyRaw.deviceKeyVersion,
-            memberKeyVersion = keyRaw.memberKeyVersion
+            memberKeyVersion = keyRaw.memberKeyVersion,
+            kxKey = memberPublicKey
         )
     }
 

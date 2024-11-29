@@ -254,6 +254,7 @@
     <string name="groups_sharing_error_unverified_group_title">Nepotvrđena grupa ili član</string>
     <string name="groups_sharing_error_unverified_group_message">Nemoguće je dijeliti lokaciju s nepotvrđenom grupom ili članom.\nPokušajte osvježiti podatke grupe.</string>
     <string name="groups_sharing_duration_type_infinite">Uvijek uključeno</string>
+    <string name="groups_sharing_encryption_info">Vaša lokacija i povezani podaci su uvijek **šifrirani i zaštićeni** te dostupni samo članovima grupe.</string>
     <string name="invite_create_button">Kreirajte PARALINO.ID</string>
     <string name="invite_create_new_button">Kreirajte dodatni ID</string>
     <string name="toast_copy_invite_code">Kod kopiran</string>
@@ -343,6 +344,7 @@
     <string name="places_edit_screen_title">Uredite mjesto</string>
     <string name="places_create_screen_title">Stvorite novo mjesto</string>
     <string name="places_list_screen_empty_info">Kreirajte novo mjesto te **budite obaviješteni** kada netko stigne ili napusti područje kao kuća, posao ili škola.</string>
+    <string name="places_list_screen_encryption_info">Informacije koje unesete o svojim mjestima su **šifrirane** i vidljive samo članovima grupe.</string>
     <string name="places_notification_demo_home">Kuća</string>
     <string name="places_notification_demo_school">Škola</string>
     <string name="places_create_seekbar_info">Radijus</string>

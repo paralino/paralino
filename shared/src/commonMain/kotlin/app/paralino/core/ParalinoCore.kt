@@ -233,7 +233,7 @@ val coreModule = module {
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), appPrefs) }
+    single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), appPrefs) }
     single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), appPrefs) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), appPrefs) }

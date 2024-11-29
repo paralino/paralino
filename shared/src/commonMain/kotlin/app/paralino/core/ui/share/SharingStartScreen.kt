@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +47,6 @@ import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
-import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
@@ -60,6 +57,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.SecurityNoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
@@ -217,7 +215,7 @@ fun SharingStartScreenCore(
                 .padding(
                     start = 20.dp,
                     end = 20.dp,
-                    bottom = it.calculateBottomPadding() + 60.dp,
+                    bottom = it.calculateBottomPadding() + 40.dp,
                 ),
         ) {
 
@@ -287,19 +285,19 @@ fun SharingStartScreenCore(
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colors.background)
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.groups_sharing_devices),
-                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.background)
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(MR.strings.groups_sharing_devices),
+                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
+                    modifier = Modifier.alpha(ContentAlpha.medium)
+                )
+                if (AppBuildConfig.instance.hasPreviewFeatures) {
                     Spacer(modifier = Modifier.size(8.dp))
                     PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
                 }
@@ -430,6 +428,12 @@ fun SharingStartScreenCore(
                     }
                 )
             }
+
+            SecurityNoticeInfoChip(
+                modifier = Modifier
+                    .padding(top = 40.dp),
+                text = stringResource(MR.strings.groups_sharing_encryption_info)
+            )
         }
     }
 

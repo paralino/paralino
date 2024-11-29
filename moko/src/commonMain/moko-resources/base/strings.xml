@@ -254,6 +254,7 @@
     <string name="groups_sharing_error_unverified_group_title">Unverified group or member</string>
     <string name="groups_sharing_error_unverified_group_message">You can not share location to unverified group or member.\n\nTry refreshing the group data.</string>
     <string name="groups_sharing_duration_type_infinite">Always on</string>
+    <string name="groups_sharing_encryption_info">Your location and related data are always **end-to-end encrypted** and only accessible to group members.</string>
     <string name="invite_create_button">Create Paralino.ID</string>
     <string name="invite_create_new_button">Create alternative ID</string>
     <string name="toast_copy_invite_code">Code copied</string>
@@ -341,6 +342,7 @@
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>
     <string name="places_list_screen_empty_info">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
+    <string name="places_list_screen_encryption_info">The information you enter about your places is **end-to-end encrypted** and only readable to group members.</string>
     <string name="places_notification_demo_home">Home</string>
     <string name="places_notification_demo_school">School</string>
     <string name="places_create_screen_title">Create a new place</string>
