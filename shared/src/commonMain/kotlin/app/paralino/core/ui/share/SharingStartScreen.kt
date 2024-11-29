@@ -285,19 +285,19 @@ fun SharingStartScreenCore(
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colors.background)
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.groups_sharing_devices),
-                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colors.background)
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(MR.strings.groups_sharing_devices),
+                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
+                    modifier = Modifier.alpha(ContentAlpha.medium)
+                )
+                if (AppBuildConfig.instance.hasPreviewFeatures) {
                     Spacer(modifier = Modifier.size(8.dp))
                     PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
                 }
