@@ -124,7 +124,8 @@ class CreatePlaceViewModel(
             lng = data.lng,
             radiusMeters = data.radiusMeters,
             expiresAt = "",
-            type = ""
+            type = "",
+            eventSeed = place?.data?.data?.eventSeed
         )
 
         val groupUpdateFlow = if (place != null) {

@@ -1,6 +1,7 @@
 package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.MR
+import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -21,7 +22,8 @@ class PlaceActivityNotificationProcessor(
     private val groupRepo: UserGroupLocalDataSource,
     private val placeRepo: PlacesLocalDataSource,
     private val valueFormatter: IValueFormatter,
-    private val accessLogSource: AccessLogDataSource
+    private val cryptoCore: CryptoCore,
+    private val accessLogSource: AccessLogDataSource,
 ) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
@@ -34,21 +36,36 @@ class PlaceActivityNotificationProcessor(
 
         var placeName: String? = null
         var userName: String? = null
+        var eventSeed: String? = null
 
         try {
             val place = placeRepo.getPlaceWithoutSettingsOnce(payload.placeId)
             placeName = place?.data?.data?.name
             userName = groupRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
+            eventSeed = place.eventSeed
         } catch (_: Exception) {
         }
 
         val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
             MR.strings.place_notification_default.localizedString()
         } else {
-            if (payload.enter) {
-                MR.strings.place_notification_enter.localizedString(userName, placeName)
-            } else {
-                MR.strings.place_notification_exit.localizedString(userName, placeName)
+            val isEnter = when {
+                payload.event != null && eventSeed != null -> {
+                    when (payload.event) {
+                        cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true) -> true
+                        cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = false) -> false
+                        else -> null
+                    }
+                }
+
+                payload.enter != null -> payload.enter
+                else -> null
+            }
+
+            when (isEnter) {
+                true -> MR.strings.place_notification_enter.localizedString(userName, placeName)
+                false -> MR.strings.place_notification_exit.localizedString(userName, placeName)
+                else -> MR.strings.place_notification_default.localizedString()
             }
         }
 
@@ -82,7 +99,11 @@ class PlaceActivityNotificationProcessor(
         val memberUserId: String,
         val locationId: String,
         val placeId: String,
-        val enter: Boolean,
+
+        @Deprecated("Use event instead")
+        val enter: Boolean? = null,
+
+        val event: String? = null,
         val triggerAt: String? = null
     )
 }

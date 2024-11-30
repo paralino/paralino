@@ -6,6 +6,8 @@ import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceSettings
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
+import app.paralino.core.utils.BaseRemoteModule
+import kotlinx.serialization.encodeToString
 
 class GroupPlaceMapperLocal(
     private val coreMapper: PlaceMapperCore,
@@ -23,7 +25,12 @@ class GroupPlaceMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             private = model.privatePlace,
-            data = model.data
+            data = model.data,
+            eventKeys = try {
+                BaseRemoteModule.formatter.decodeFromString(model.eventKeys)
+            } catch (e: Exception) {
+                emptyList()
+            }
         )
     }
 
@@ -34,7 +41,8 @@ class GroupPlaceMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             privatePlace = model.private,
-            data = model.data
+            data = model.data,
+            eventKeys = BaseRemoteModule.formatter.encodeToString(model.eventKeys)
         )
     }
 

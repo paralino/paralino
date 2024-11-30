@@ -3,6 +3,7 @@ package app.paralino.core.repo.places
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.logg
+import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
@@ -23,20 +24,18 @@ class PlaceActivityUploadEngine(
     private val executionKey = "place_activity_pending_sync"
 
     suspend fun notifyPlaceEvent(
-        placeId: String,
-        groupId: String,
+        place: GroupPlace,
         isEnter: Boolean,
         timeMillis: Long
     ) {
         try {
             sendPlaceEventImpl(
-                placeId = placeId,
-                groupId = groupId,
+                place = place,
                 isEnter = isEnter,
                 timeMillis = timeMillis
             )
             logg.tag(executionKey)
-                .i("Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${placeId}) at ${Instant.fromEpochMilliseconds(timeMillis)}")
+                .i("Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${place.id}) at ${Instant.fromEpochMilliseconds(timeMillis)}")
 
             // sync pending events, but on different thread so we do not block current flow
             scopeProvider.userSessionIOScope.launch {
@@ -44,12 +43,12 @@ class PlaceActivityUploadEngine(
             }
         } catch (e: Exception) {
             logg.tag(executionKey)
-                .w("Error sending place activity ${if (isEnter) "enter" else "exit"} event for place (${placeId}), create pending event - ${e.message}")
+                .w("Error sending place activity ${if (isEnter) "enter" else "exit"} event for place (${place.id}), create pending event - ${e.message}")
             database.groupRelatedDao.createPendingEvent(
                 PendingPlaceEventsEntity(
                     id = 0,
-                    placeId = placeId,
-                    groupId = groupId,
+                    placeId = place.id,
+                    groupId = place.groupId,
                     isEnter = isEnter,
                     notifyTimeMillis = timeMillis
                 )
@@ -92,8 +91,7 @@ class PlaceActivityUploadEngine(
                         .i("Place ${event.placeId} exists, sync pending place event (id: ${event.id})")
                     try {
                         sendPlaceEventImpl(
-                            placeId = event.placeId,
-                            groupId = event.groupId,
+                            place = place,
                             isEnter = event.isEnter,
                             timeMillis = event.notifyTimeMillis
                         )
@@ -119,21 +117,18 @@ class PlaceActivityUploadEngine(
     }
 
     private suspend fun sendPlaceEventImpl(
-        placeId: String,
-        groupId: String,
+        place: GroupPlace,
         isEnter: Boolean,
         timeMillis: Long
     ) {
         if (isEnter) {
             remote.notifyPlaceEnter(
-                placeId = placeId,
-                groupId = groupId,
+                place = place,
                 timeMillis = timeMillis
             )
         } else {
             remote.notifyPlaceExit(
-                placeId = placeId,
-                groupId = groupId,
+                place = place,
                 timeMillis = timeMillis
             )
         }
