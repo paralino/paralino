@@ -15,6 +15,7 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -31,7 +32,7 @@ class CreateGroupViewModel(
 
     private val groupFlow = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)
     private val _uiState = MutableStateFlow<Payload<CreateGroupState>>(Payload.Loading)
-    val uiState: Flow<Payload<CreateGroupState>> = _uiState
+    val uiState: StateFlow<Payload<CreateGroupState>> = _uiState
 
     private val _eventChannel = Channel<CreateGroupScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -66,6 +67,11 @@ class CreateGroupViewModel(
     }
 
     fun createGroup(image: ImageModel, name: String) {
+
+        val uiState = uiState.value
+        if (uiState is Payload.Loading || uiState.data?.isLoading == true) {
+            return
+        }
 
         val filteredName = name.trim().replace("\n", " ")
 

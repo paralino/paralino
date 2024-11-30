@@ -97,6 +97,10 @@ class CreatePlaceViewModel(
 
         val data = _uiState.value.data ?: return
 
+        if (data.fullLoading || data.actionLoading) {
+            return
+        }
+
         val filteredName = data.name.trim().replace("\n", " ")
 
         if (data.lat == null || data.lng == null) {
