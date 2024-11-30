@@ -14,6 +14,5 @@ data class GroupPlaceSettings constructor(
 @Serializable
 data class GroupPlaceSettingsData constructor(
     val memberUserId: String,
-    val enter: Boolean = true,
-    val exit: Boolean = true
+    val events: Map<String, Boolean> = emptyMap()
 )

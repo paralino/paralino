@@ -14,9 +14,12 @@ data class GroupPlace constructor(
     val groupKeyVersion: Long,
     val private: Boolean,
     @Contextual
-    val data: CryptoResource<GroupPlaceData>
+    val data: CryptoResource<GroupPlaceData>,
+    val eventKeys: List<String>
 ) {
     val nameOrNull: String? get() = data.data?.name
+
+    val eventSeed: String? = data.data?.eventSeed
 }
 
 @Serializable
@@ -28,6 +31,7 @@ data class GroupPlaceData constructor(
     val radiusMeters: Int,
     val expiresAt: String,
     val type: String,
+    val eventSeed: String? = null
 )
 
 @Serializable

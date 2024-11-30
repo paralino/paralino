@@ -50,6 +50,7 @@ class PlaceMapperCore constructor(
             groupKeyVersion = model.groupKeyVersion,
             private = model.private,
             data = placeData,
+            eventKeys = model.eventKeys
         )
     }
 }

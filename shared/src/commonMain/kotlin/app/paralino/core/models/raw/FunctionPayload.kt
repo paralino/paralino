@@ -154,21 +154,24 @@ data class CreatePlacePayload(
     val groupId: String,
     val keyVersion: Long,
     val private: Boolean,
-    val data: String
+    val data: String,
+    val eventKeys: List<String>
 )
 
 @Serializable
 data class UpdatePlacePayload constructor(
     val placeId: String,
     val placeData: String,
-    val groupKeyVersion: Long
+    val groupKeyVersion: Long,
+    val eventKeys: List<String>?
 )
 
 @Serializable
 data class PlaceEventPayload constructor(
     val placeId: String,
     val locationId: String?,
-    val enter: Boolean,
+    val enter: Boolean?,
+    val event: String,
     val timeDifferenceMillis: Long
 )
 

@@ -269,7 +269,7 @@ val coreModule = module {
     factory { PushNotificationDeleteUseCase(get(), get()) }
     single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
 
-    factory { PlaceActivityNotificationProcessor(get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationProcessor(get(), get(), get(), get(), get()) }
     factory { PlaceCreatedNotificationProcessor(get(), get(), get()) }
     factory { PlaceDeletedNotificationProcessor(get()) }
     factory { PlaceUpdatedNotificationProcessor(get()) }

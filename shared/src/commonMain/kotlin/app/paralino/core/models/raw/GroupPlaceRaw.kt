@@ -11,7 +11,8 @@ data class GroupPlaceRaw constructor(
     val ownerUserId: String,
     val groupKeyVersion: Long,
     val private: Boolean,
-    val data: String = ""
+    val data: String = "",
+    val eventKeys: List<String>
 ) {
 
     companion object {
@@ -24,6 +25,7 @@ data class GroupPlaceRaw constructor(
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 private = map["private"] as Boolean,
                 data = map["data"] as String,
+                eventKeys = map["eventKeys"] as List<String>
             )
         }
     }

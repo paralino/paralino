@@ -11,5 +11,6 @@ data class PlaceEntity(
     @ColumnInfo(name = "ownerUserId") val ownerUserId: String,
     @ColumnInfo(name = "groupKeyVersion") val groupKeyVersion: Long,
     @ColumnInfo(name = "privatePlace") val privatePlace: Boolean,
-    @ColumnInfo(name = "data") val data: String
+    @ColumnInfo(name = "data") val data: String,
+    @ColumnInfo(name = "eventKeys") val eventKeys: String
 )

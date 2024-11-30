@@ -485,8 +485,7 @@ class PlacesRepository constructor(
 
         try {
             placeActivityUploadEngine.notifyPlaceEvent(
-                placeId = placeId,
-                groupId = place.groupId,
+                place = place,
                 isEnter = currentState.isEnter,
                 timeMillis = currentState.stateChangeTimeMillis
             )

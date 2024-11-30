@@ -363,6 +363,17 @@ class CryptoCore(
             keyBytes = 32
         )
     }
+
+    fun getPlaceEventKey(
+        seed: String,
+        isEnter: Boolean
+    ): String {
+        return hashProvider.computeHash(
+            data = "${seed}_${if (isEnter) "enter" else "exit"}",
+            type = HashType.GENERIC_256,
+            encodingType = EncodingType.BASE64_URL
+        )
+    }
 }
 
 class GeneratedUserKeys(

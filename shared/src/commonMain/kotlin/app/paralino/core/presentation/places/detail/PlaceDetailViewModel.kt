@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.places.detail
 
+import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
@@ -36,6 +37,7 @@ class PlaceDetailViewModel(
     val placeId: String,
     private val placesRepo: PlacesRepository,
     private val groupRepo: GroupRepository,
+    private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
@@ -70,8 +72,8 @@ class PlaceDetailViewModel(
                         name = member.member.name,
                         image = member.member.image ?: ImageModel.emoji(Emojis.robot),
                         // default to true for other members and false to current user
-                        notifyEnter = memberSetting?.enter ?: (member.member.userId != appPrefs.userId),
-                        notifyExit = memberSetting?.exit ?: (member.member.userId != appPrefs.userId),
+                        notifyEnter = memberSetting?.events?.get(enterEvent() ?: "") ?: (member.member.userId != appPrefs.userId),
+                        notifyExit = memberSetting?.events?.get(exitEvent() ?: "") ?: (member.member.userId != appPrefs.userId),
                         loadingEnter = false,
                         loadingExit = false
                     )
@@ -151,8 +153,7 @@ class PlaceDetailViewModel(
         toggleSetting(userId, isEnter = true) { setting ->
             GroupPlaceSettingsData(
                 memberUserId = setting.memberUserId,
-                enter = !setting.notifyEnter,
-                exit = setting.notifyExit
+                events = buildEvents(enter = !setting.notifyEnter, exit = setting.notifyExit)
             )
         }
     }
@@ -161,8 +162,7 @@ class PlaceDetailViewModel(
         toggleSetting(userId, isEnter = false) { setting ->
             GroupPlaceSettingsData(
                 memberUserId = setting.memberUserId,
-                enter = setting.notifyEnter,
-                exit = !setting.notifyExit
+                events = buildEvents(enter = setting.notifyEnter, exit = !setting.notifyExit)
             )
         }
     }
@@ -213,4 +213,25 @@ class PlaceDetailViewModel(
             .sortedBy { it.memberUserId == appPrefs.userId }
     }
 
+    private fun buildEvents(
+        enter: Boolean,
+        exit: Boolean
+    ): Map<String, Boolean> {
+        val enterEvent = enterEvent() ?: return emptyMap()
+        val exitEvent = exitEvent() ?: return emptyMap()
+        return buildMap {
+            put(enterEvent, enter)
+            put(exitEvent, exit)
+        }
+    }
+
+    private fun enterEvent(): String? {
+        val eventSeed = placeFlow.value.data?.place?.eventSeed ?: return null
+        return cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true)
+    }
+
+    private fun exitEvent(): String? {
+        val eventSeed = placeFlow.value.data?.place?.eventSeed ?: return null
+        return cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = false)
+    }
 }

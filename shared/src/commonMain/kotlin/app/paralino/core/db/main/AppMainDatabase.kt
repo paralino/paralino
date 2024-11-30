@@ -62,7 +62,7 @@ import kotlinx.coroutines.IO
         PlaceSettingsEntity::class,
         PendingPlaceEventsEntity::class
     ],
-    version = 4
+    version = 5
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
 abstract class AppMainDatabase : RoomDatabase() {
