@@ -406,28 +406,25 @@ fun SharingStartScreenCore(
 //                )
             }
 
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
+            Spacer(modifier = Modifier.size(10.dp))
 
-                Spacer(modifier = Modifier.size(10.dp))
-
-                val notifyOthersState by rememberSeekbarState(
-                    key = state,
-                    LargeSeekbarSwitchState.SeekbarSwitchState(
-                        seekbarState = null,
-                        switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
-                    )
+            val notifyOthersState by rememberSeekbarState(
+                key = state,
+                LargeSeekbarSwitchState.SeekbarSwitchState(
+                    seekbarState = null,
+                    switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
                 )
-                LargeSeekbarSwitch(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = CoreAppIcons.NotificationsActive.asPainterResource(),
-                    title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
-                    description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
-                    state = notifyOthersState,
-                    onStateChange = {
-                        vm.toggleNotifyOthers(it)
-                    }
-                )
-            }
+            )
+            LargeSeekbarSwitch(
+                modifier = Modifier.fillMaxWidth(),
+                icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+                title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
+                description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
+                state = notifyOthersState,
+                onStateChange = {
+                    vm.toggleNotifyOthers(it)
+                }
+            )
 
             SecurityNoticeInfoChip(
                 modifier = Modifier
