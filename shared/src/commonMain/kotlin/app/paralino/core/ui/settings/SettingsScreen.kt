@@ -65,6 +65,7 @@ fun SettingsScreenCore(
     openAppStatus: () -> Unit,
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
+    openLocationSettings: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -128,6 +129,13 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.Security.asPainterResource()
             ) {
                 openProfileRawScreen()
+            }
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_location_title),
+                icon = CoreAppIcons.ShareLocation.asPainterResource()
+            ) {
+                openLocationSettings()
             }
 
             SettingsActionItem(

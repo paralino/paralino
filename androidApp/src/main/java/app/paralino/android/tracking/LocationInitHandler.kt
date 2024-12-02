@@ -7,6 +7,7 @@ import android.os.Looper
 import app.paralino.android.provider.getLocationStatus
 import app.paralino.android.utils.extensions.millisToDateTimeUTC
 import app.paralino.android.utils.extensions.toLocalString
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationDataModel
@@ -34,6 +35,7 @@ class LocationInitHandler constructor(
     private val context: Context,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val scope: ICoroutineScopeProvider,
+    private val appPrefs: AppPrefs
 ) {
 
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -56,7 +58,11 @@ class LocationInitHandler constructor(
                 val status = LocationConditionStatus.getLocationStatus(context)
                 if (status.isOK()) {
                     logg.tag("location_request").v("new request: $performanceType")
-                    val locationRequest = LocationRequestModels.getRequest(performanceType.current)
+                    val locationRequest = LocationRequestModels.getRequest(
+                        type = performanceType.current,
+                        balancedSettings = performanceType.balancedPerformanceSettings,
+                        batterySaverSettings = performanceType.batterySaverPerformanceSettings
+                    )
                     fusedLocationClient.requestLocationUpdates(
                         locationRequest,
                         locationCallback,
@@ -130,7 +136,7 @@ class LocationInitHandler constructor(
         return suspendCancellableCoroutine { continuation ->
             val cancellationTokenSource = CancellationTokenSource()
 
-            val priority = LocationRequestModels.getRequest(performanceType).priority
+            val priority = LocationRequestModels.getRequest(performanceType, appPrefs).priority
             val request = CurrentLocationRequest.Builder()
                 .setDurationMillis(timeout.inWholeMilliseconds)
                 .setMaxUpdateAgeMillis(20.seconds.inWholeMilliseconds)

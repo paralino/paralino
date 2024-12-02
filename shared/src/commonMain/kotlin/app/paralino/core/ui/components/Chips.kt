@@ -32,10 +32,11 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.conditional
 
 
 @Composable
-fun SecurityNoticeInfoChip(
+fun NoticeInfoChip(
     modifier: Modifier = Modifier,
     icon: Painter = CoreAppIcons.Security.asPainterResource(),
     text: String,
@@ -160,6 +161,7 @@ fun SmallActionButton(
     contentColor: Color = MaterialTheme.colors.onError,
     shape: Shape = RoundedCornerShape(percent = 50),
     hasEndArrow: Boolean = false,
+    compactMode: Boolean = false,
     icon: Painter?,
     text: @Composable () -> Unit,
     onClick: (() -> Unit)?
@@ -167,12 +169,14 @@ fun SmallActionButton(
     Row(
         modifier = modifier
             .clip(shape)
-            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .conditional(onClick != null) {
+                clickable(onClick = { onClick?.invoke()} )
+            }
             .background(
                 color = backgroundColor,
                 shape = shape
             )
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+            .padding(horizontal = if (compactMode) 2.dp else 8.dp, vertical = if (compactMode) 2.dp else 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {

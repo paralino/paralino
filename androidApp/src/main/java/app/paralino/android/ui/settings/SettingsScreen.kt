@@ -74,6 +74,9 @@ fun SettingsScreen(
             openPaywall = {
                 appState.navController.navigate(AppScreen.Settings.BillingPaywall.route())
             },
+            openLocationSettings = {
+                appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)
+            },
             onShareCode = {
                 context.share(it)
             }

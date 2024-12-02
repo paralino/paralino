@@ -6,6 +6,8 @@ import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.datetime.Instant
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 expect class AppPrefsProvider {
     val userSettings: Settings
@@ -63,6 +65,10 @@ class AppPrefs(
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
         const val keyDidStartedGroupOnboarding = "prefs.group.onboardingStarted"
         const val keyErrorReporting = "prefs.user.errorReporting"
+        const val keyHighPerformanceDuration = "prefs.location.highPerformance.duration"
+        const val keyBatterySaverPerformance = "prefs.location.batterySaver.performance"
+        const val keyBalancedPerformance = "prefs.location.balanced.performance"
+        const val keyBalancedHighAccuracy = "prefs.location.balanced.highAccuracy"
     }
 
     val isTokenValid: Boolean
@@ -215,6 +221,31 @@ class AppPrefs(
         set(value) {
             provider.userSettings.putBoolean(keyDidStartedGroupOnboarding, value)
         }
+
+    var locationSettingsHighPerformanceDurationType: String?
+        get() = provider.userSettings.getStringOrNull(keyHighPerformanceDuration).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyHighPerformanceDuration, value ?: "")
+        }
+
+    var locationSettingsBatterySaverPerformanceType: String?
+        get() = provider.userSettings.getStringOrNull(keyBatterySaverPerformance).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyBatterySaverPerformance, value ?: "")
+        }
+
+    var locationSettingsBalancedHighAccuracy: Boolean
+        get() = provider.userSettings.getBoolean(keyBalancedHighAccuracy, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyBalancedHighAccuracy, value)
+        }
+
+    var locationSettingsBalancedPerformanceType: String?
+        get() = provider.userSettings.getStringOrNull(keyBalancedPerformance).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyBalancedPerformance, value ?: "")
+        }
+
 
     fun hasGuestAccount(): Boolean {
         val emailValidation = FormValidation.Email.validate(appPrefs.guestEmail)

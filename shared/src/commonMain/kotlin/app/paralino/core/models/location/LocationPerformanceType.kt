@@ -1,6 +1,7 @@
 package app.paralino.core.models.location
 
 enum class LocationPerformanceType {
+    HIGH_BATTERY_SAVER,
     BATTERY_SAVER,
     BALANCED,
     MEDIUM_HIGH,
@@ -10,6 +11,7 @@ enum class LocationPerformanceType {
 
     val defaultDurationMillis: Long
         get() = when (this) {
+            HIGH_BATTERY_SAVER -> 0
             BATTERY_SAVER -> 0
             BALANCED -> 0
             MEDIUM_HIGH -> 30_000
@@ -20,6 +22,7 @@ enum class LocationPerformanceType {
 
     val stepDown: LocationPerformanceType
         get() = when (this) {
+            HIGH_BATTERY_SAVER -> HIGH_BATTERY_SAVER
             BATTERY_SAVER -> BATTERY_SAVER
             BALANCED -> BALANCED
             MEDIUM_HIGH -> BALANCED

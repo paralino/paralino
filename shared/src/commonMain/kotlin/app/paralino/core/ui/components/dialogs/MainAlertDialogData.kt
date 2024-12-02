@@ -715,4 +715,24 @@ sealed interface MainAlertDialog {
             ),
         )
     }
+
+    object LocationPerformancePremiumInfo : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.setting_location_premium_banner_title),
+            message = stringResource(resource = MR.strings.setting_location_premium_banner_alert_message),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.plans_banner_settings_action_small),
+                    color = AlertDialogButtonData.positiveColor,
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
 }

@@ -62,6 +62,7 @@ class LocationUploadEngine constructor(
     private val maxUploadRate: Duration
         get() {
             return when (locationPerformanceManager.locationPerformanceType.value.current) {
+                LocationPerformanceType.HIGH_BATTERY_SAVER -> 20.seconds
                 LocationPerformanceType.BATTERY_SAVER -> 10.seconds
 
                 LocationPerformanceType.BALANCED,

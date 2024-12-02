@@ -57,7 +57,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
-import app.paralino.core.ui.components.SecurityNoticeInfoChip
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
@@ -426,7 +426,7 @@ fun SharingStartScreenCore(
                 }
             )
 
-            SecurityNoticeInfoChip(
+            NoticeInfoChip(
                 modifier = Modifier
                     .padding(top = 40.dp),
                 text = stringResource(MR.strings.groups_sharing_encryption_info)
