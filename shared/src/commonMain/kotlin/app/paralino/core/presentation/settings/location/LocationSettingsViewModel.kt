@@ -27,10 +27,10 @@ class LocationSettingsViewModel(
         LocationSettingsScreenState(
             highPerformanceSettings = LocationSettingsHighPerformance(
                 items = listOfNotNull(
-                    LocationPerformanceSettingsType.HighPerformance.Level1(),
-                    LocationPerformanceSettingsType.HighPerformance.Level2(),
-                    LocationPerformanceSettingsType.HighPerformance.Level3(),
-                    LocationPerformanceSettingsType.HighPerformance.LevelMax().takeIf {
+                    LocationPerformanceSettingsType.HighPerformance.Level1,
+                    LocationPerformanceSettingsType.HighPerformance.Level2,
+                    LocationPerformanceSettingsType.HighPerformance.Level3,
+                    LocationPerformanceSettingsType.HighPerformance.LevelMax.takeIf {
                         AppBuildConfig.instance.hasPreviewFeatures
                     }
                 ).map { level ->
@@ -48,9 +48,9 @@ class LocationSettingsViewModel(
             ),
             batterySaverSettings = LocationSettingsBatterySaver(
                 items = listOf(
-                    LocationPerformanceSettingsType.BatterySaver.Level1(),
-                    LocationPerformanceSettingsType.BatterySaver.Level2(),
-                    LocationPerformanceSettingsType.BatterySaver.Level3()
+                    LocationPerformanceSettingsType.BatterySaver.Level1,
+                    LocationPerformanceSettingsType.BatterySaver.Level2,
+                    LocationPerformanceSettingsType.BatterySaver.Level3
                 ).map { level ->
                     LocationSettingsItemState(
                         performance = level,
@@ -67,11 +67,11 @@ class LocationSettingsViewModel(
             balancedSettings = LocationSettingsBalanced(
                 useHighPerformanceLocation = appPrefs.locationSettingsBalancedHighAccuracy,
                 items = listOf(
-                    LocationPerformanceSettingsType.Balanced.Level1(),
-                    LocationPerformanceSettingsType.Balanced.Level2(),
-                    LocationPerformanceSettingsType.Balanced.Level3(),
-                    LocationPerformanceSettingsType.Balanced.Level4(),
-                    LocationPerformanceSettingsType.Balanced.Level5()
+                    LocationPerformanceSettingsType.Balanced.Level1,
+                    LocationPerformanceSettingsType.Balanced.Level2,
+                    LocationPerformanceSettingsType.Balanced.Level3,
+                    LocationPerformanceSettingsType.Balanced.Level4,
+                    LocationPerformanceSettingsType.Balanced.Level5
                 ).map { level ->
                     LocationSettingsItemState(
                         performance = level,

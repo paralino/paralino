@@ -37,6 +37,7 @@ class OneTimeLocationProvider: IOneTimeLocationProvider, CLLocationManagerDelega
         var accuracyFilter = AccuracyFilter.horizontal(50)
         
         switch requestType.type {
+        case .highBatterySaver: accuracyFilter = .horizontal(300)
         case .batterySaver: accuracyFilter = .horizontal(200)
         case .balanced: accuracyFilter = .horizontal(100)
         case .mediumHigh: accuracyFilter = .horizontal(50)

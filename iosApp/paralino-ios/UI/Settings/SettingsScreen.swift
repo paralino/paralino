@@ -51,6 +51,9 @@ struct SettingsScreen: View {
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
+                    openLocationSettings: {
+                        path.append(.settings(.locationSettings))
+                    },
                     onShare: { data in
                         shareText = ShareText(text: data)
                     }

@@ -50,7 +50,7 @@ object LocationRequestModels {
             }
 
             LocationPerformanceType.HIGH_BATTERY_SAVER -> {
-                val settings = LocationPerformanceSettingsType.BatterySaver.Level1()
+                val settings = LocationPerformanceSettingsType.BatterySaver.Level1
                 LocationRequest.Builder(
                     Priority.PRIORITY_BALANCED_POWER_ACCURACY,
                     settings.updateInterval.inWholeMilliseconds

@@ -39,10 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.settings.location.LocationSettingsItemState
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
+import app.paralino.core.provider.current
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
@@ -290,8 +292,9 @@ private fun SubscriptionOptionItem(
         ) {
             Text(
                 text = title,
+                style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
+                lineHeight = if (DeviceType.current == DeviceType.iOS) 22.sp else 24.sp,
                 color = contentColor
             )
 

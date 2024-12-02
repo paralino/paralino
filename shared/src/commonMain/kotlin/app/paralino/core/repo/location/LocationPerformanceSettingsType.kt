@@ -18,58 +18,38 @@ sealed interface LocationPerformanceSettingsType {
         override val minUpdateDistanceMeters: Int = 0
         abstract val maxAllowedDuration: Duration
 
-        data class Level1(
-            override val maxAllowedDuration: Duration = 10.minutes,
+        data object Level1 : HighPerformance() {
+            override val maxAllowedDuration: Duration = 10.minutes
             override val isPremiumFeature: Boolean = false
-        ) : HighPerformance() {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "high_performance_100"
-            }
+            override val key: String = "high_performance_100"
         }
 
-        data class Level2(
-            override val maxAllowedDuration: Duration = 20.minutes,
+        data object Level2 : HighPerformance() {
+            override val maxAllowedDuration: Duration = 20.minutes
             override val isPremiumFeature: Boolean = false
-        ) : HighPerformance() {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "high_performance_200"
-            }
+            override val key: String = "high_performance_200"
         }
 
-        data class Level3(
-            override val maxAllowedDuration: Duration = 30.minutes,
+        data object Level3 : HighPerformance() {
+            override val maxAllowedDuration: Duration = 30.minutes
             override val isPremiumFeature: Boolean = true
-        ) : HighPerformance() {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "high_performance_300"
-            }
+            override val key: String = "high_performance_300"
         }
 
-        data class LevelMax(
-            override val maxAllowedDuration: Duration = 60.minutes,
+        data object LevelMax : HighPerformance() {
+            override val maxAllowedDuration: Duration = 60.minutes
             override val isPremiumFeature: Boolean = true
-        ) : HighPerformance() {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "high_performance_400"
-            }
+            override val key: String = "high_performance_400"
         }
 
         companion object {
-            val default: HighPerformance = Level2()
+            val default: HighPerformance = Level2
             fun fromKey(key: String?): HighPerformance {
                 return when (key) {
-                    Level1.key -> Level1()
-                    Level2.key -> Level2()
-                    Level3.key -> Level3()
-                    LevelMax.key -> LevelMax()
+                    Level1.key -> Level1
+                    Level2.key -> Level2
+                    Level3.key -> Level3
+                    LevelMax.key -> LevelMax
                     else -> default
                 }
             }
@@ -77,52 +57,37 @@ sealed interface LocationPerformanceSettingsType {
     }
 
     sealed interface BatterySaver : LocationPerformanceSettingsType {
-        data class Level1(
-            override val updateInterval: Duration = 6.hours,
-            override val minUpdateInterval: Duration = 2.hours,
-            override val minUpdateDistanceMeters: Int = 1000,
+        data object Level1 : BatterySaver {
+            override val updateInterval: Duration = 6.hours
+            override val minUpdateInterval: Duration = 2.hours
+            override val minUpdateDistanceMeters: Int = 1000
             override val isPremiumFeature: Boolean = false
-        ) : BatterySaver {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "battery_level_100"
-            }
+            override val key: String = "battery_level_100"
         }
 
-        data class Level2(
-            override val updateInterval: Duration = 3.hours,
-            override val minUpdateInterval: Duration = 1.hours,
-            override val minUpdateDistanceMeters: Int = 500,
+        data object Level2 : BatterySaver {
+            override val updateInterval: Duration = 3.hours
+            override val minUpdateInterval: Duration = 1.hours
+            override val minUpdateDistanceMeters: Int = 500
             override val isPremiumFeature: Boolean = false
-        ) : BatterySaver {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "battery_level_200"
-            }
+            override val key: String = "battery_level_200"
         }
 
-        data class Level3(
-            override val updateInterval: Duration = 1.hours,
-            override val minUpdateInterval: Duration = 20.minutes,
-            override val minUpdateDistanceMeters: Int = 200,
+        data object Level3 : BatterySaver {
+            override val updateInterval: Duration = 1.hours
+            override val minUpdateInterval: Duration = 20.minutes
+            override val minUpdateDistanceMeters: Int = 200
             override val isPremiumFeature: Boolean = true
-        ) : BatterySaver {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "battery_level_300"
-            }
+            override val key: String = "battery_level_300"
         }
 
         companion object {
-            val default: BatterySaver = Level1()
+            val default: BatterySaver = Level1
             fun fromKey(key: String?): BatterySaver {
                 return when (key) {
-                    Level1.key -> Level1()
-                    Level2.key -> Level2()
-                    Level3.key -> Level3()
+                    Level1.key -> Level1
+                    Level2.key -> Level2
+                    Level3.key -> Level3
                     else -> default
                 }
             }
@@ -130,80 +95,55 @@ sealed interface LocationPerformanceSettingsType {
     }
 
     sealed interface Balanced : LocationPerformanceSettingsType {
-        data class Level1(
-            override val updateInterval: Duration = 4.hours,
-            override val minUpdateInterval: Duration = 2.hours,
-            override val minUpdateDistanceMeters: Int = 1000,
+        data object Level1 : Balanced {
+            override val updateInterval: Duration = 4.hours
+            override val minUpdateInterval: Duration = 2.hours
+            override val minUpdateDistanceMeters: Int = 1000
             override val isPremiumFeature: Boolean = false
-        ) : Balanced {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "balanced_level_100"
-            }
+            override val key: String = "balanced_level_100"
         }
 
-        data class Level2(
-            override val updateInterval: Duration = 2.hours,
-            override val minUpdateInterval: Duration = 40.minutes,
-            override val minUpdateDistanceMeters: Int = 500,
+        data object Level2 : Balanced {
+            override val updateInterval: Duration = 2.hours
+            override val minUpdateInterval: Duration = 40.minutes
+            override val minUpdateDistanceMeters: Int = 500
             override val isPremiumFeature: Boolean = false
-        ) : Balanced {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "balanced_level_200"
-            }
+            override val key: String = "balanced_level_200"
         }
 
-        data class Level3(
-            override val updateInterval: Duration = 1.hours,
-            override val minUpdateInterval: Duration = 20.minutes,
-            override val minUpdateDistanceMeters: Int = 200,
+        data object Level3 : Balanced {
+            override val updateInterval: Duration = 1.hours
+            override val minUpdateInterval: Duration = 20.minutes
+            override val minUpdateDistanceMeters: Int = 200
             override val isPremiumFeature: Boolean = false
-        ) : Balanced {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "balanced_level_300"
-            }
+            override val key: String = "balanced_level_300"
         }
 
-        data class Level4(
-            override val updateInterval: Duration = 30.minutes,
-            override val minUpdateInterval: Duration = 10.minutes,
-            override val minUpdateDistanceMeters: Int = 100,
+        data object Level4 : Balanced {
+            override val updateInterval: Duration = 30.minutes
+            override val minUpdateInterval: Duration = 10.minutes
+            override val minUpdateDistanceMeters: Int = 100
             override val isPremiumFeature: Boolean = true
-        ) : Balanced {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "balanced_level_400"
-            }
+            override val key: String = "balanced_level_400"
         }
 
-        data class Level5(
-            override val updateInterval: Duration = 30.minutes,
-            override val minUpdateInterval: Duration = 2.minutes,
-            override val minUpdateDistanceMeters: Int = 0,
+        data object Level5 : Balanced {
+            override val updateInterval: Duration = 30.minutes
+            override val minUpdateInterval: Duration = 2.minutes
+            override val minUpdateDistanceMeters: Int = 0
             override val isPremiumFeature: Boolean = true
-        ) : Balanced {
-            override val key: String get() = Companion.key
-
-            companion object {
-                const val key: String = "balanced_level_500"
-            }
+            override val key: String = "balanced_level_500"
         }
 
         companion object {
-            val default: Balanced = Level2()
+            val default: Balanced = Level2
             fun fromKey(key: String?): Balanced {
                 return when (key) {
-                    Level1.key -> Level1()
-                    Level2.key -> Level2()
-                    Level3.key -> Level3()
-                    Level4.key -> Level4()
-                    Level5.key -> Level5()
+                    Level1.key -> Level1
+                    Level2.key -> Level2
+                    Level3.key -> Level3
+                    Level4.key -> Level4
+                    Level5.key -> Level5
                     else -> default
                 }
             }
