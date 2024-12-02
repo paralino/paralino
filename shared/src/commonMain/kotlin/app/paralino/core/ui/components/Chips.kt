@@ -44,7 +44,7 @@ fun NoticeInfoChip(
 ) {
     DataInfoChip(
         modifier = modifier,
-        backgroundColor = AppColors.accentLight.copy(alpha = 0.3f),
+        backgroundColor = AppColors.accentLight.copy(alpha = 0.2f),
         imageOrIcon = {
             Icon(
                 painter = icon,
