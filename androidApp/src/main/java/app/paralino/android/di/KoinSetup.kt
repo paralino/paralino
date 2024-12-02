@@ -67,6 +67,7 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.IBillingProvider
@@ -131,7 +132,7 @@ object KoinSetup {
 
     private val appSpecificModule = module {
         single { PreCheckControl() }
-        single { LocationInitHandler(androidContext(), get(), get()) }
+        single { LocationInitHandler(androidContext(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
 
         single {
@@ -196,5 +197,6 @@ object KoinSetup {
         viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), appPrefs) }
         viewModel { GeneralInfoViewModel(get(), get()) }
+        viewModel { LocationSettingsViewModel(get(), get(), get()) }
     }
 }

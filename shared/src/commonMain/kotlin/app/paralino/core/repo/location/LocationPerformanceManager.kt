@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
@@ -27,7 +28,25 @@ class LocationPerformanceManager constructor(
 ) {
 
     private val _locationPerformanceType = MutableStateFlow(
-        LocationPerformanceModel(isBoostedManually = appPrefs.trackingBoostEndTime?.let { it > nowUTC() } == true)
+        LocationPerformanceModel(
+            isBoostedManually = appPrefs.trackingBoostEndTime?.let { it > nowUTC() } == true,
+            balancedPerformanceSettings = LocationPerformanceSettingsType.Balanced.fromKey(
+                appPrefs.locationSettingsBalancedPerformanceType
+            ).let {
+                LocationPerformanceSettings(
+                    settingsType = it,
+                    useHighPerformanceLocation = appPrefs.locationSettingsBalancedHighAccuracy
+                )
+            },
+            batterySaverPerformanceSettings = LocationPerformanceSettingsType.BatterySaver.fromKey(
+                appPrefs.locationSettingsBatterySaverPerformanceType
+            ).let {
+                LocationPerformanceSettings(
+                    settingsType = it,
+                    useHighPerformanceLocation = false
+                )
+            }
+        )
     )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
@@ -69,6 +88,25 @@ class LocationPerformanceManager constructor(
     fun disableManualBoost() {
         setPerformance(type = LocationPerformanceType.HIGH, allowDowngrade = true)
         schedulePerformanceReset(type = LocationPerformanceType.BALANCED, resetDelayMillis = 30_000)
+    }
+
+    fun updateLocationSettings(
+        useHighPerformanceLocation: Boolean,
+        balancedPerformanceSettings: LocationPerformanceSettingsType,
+        batterySaverPerformanceSettings: LocationPerformanceSettingsType
+    ) {
+        _locationPerformanceType.update {
+            it.copy(
+                balancedPerformanceSettings = LocationPerformanceSettings(
+                    settingsType = balancedPerformanceSettings,
+                    useHighPerformanceLocation = useHighPerformanceLocation
+                ),
+                batterySaverPerformanceSettings = LocationPerformanceSettings(
+                    settingsType = batterySaverPerformanceSettings,
+                    useHighPerformanceLocation = false
+                )
+            )
+        }
     }
 
     private fun preparePerformanceReset(
@@ -210,7 +248,7 @@ class LocationPerformanceManager constructor(
             )
 
         locationBoostTracker.put(now, newType)
-        _locationPerformanceType.value = LocationPerformanceModel(
+        _locationPerformanceType.value = _locationPerformanceType.value.copy(
             old = _locationPerformanceType.value.current,
             requested = type,
             current = newType
@@ -226,15 +264,22 @@ class LocationPerformanceManager constructor(
     ): LocationPerformanceType {
 
         // allow only certain amount of boost per hour
-        val timeCriteriaLow = lastMediumBoostDiff > 40.minutes
-        val timeCriteriaHigh = lastHighBoostDiff > 20.minutes
+        val highPerformanceDuration = LocationPerformanceSettingsType
+            .HighPerformance
+            .fromKey(appPrefs.locationSettingsHighPerformanceDurationType)
+            .maxAllowedDuration
+            .coerceIn(10.minutes, 60.minutes)
+        val timeCriteriaHigh = lastHighBoostDiff > highPerformanceDuration
+        val timeCriteriaLow = lastMediumBoostDiff > highPerformanceDuration.plus(20.minutes)
+            .coerceIn(10.minutes, 60.minutes)
         val timeCriteriaVeryHigh = lastVeryHighBoostDiff > 3.minutes
 
         // take certain range of battery in account
         // assume decent battery level if battery level unavailable
         val batteryLevelAdjusted = batteryLevel ?: 30
-        val batteryLow = batteryLevelAdjusted < 10
-        val batteryMedium = batteryLevelAdjusted < 20
+        val batteryVeryLow = batteryLevelAdjusted < 10
+        val batteryLow = batteryLevelAdjusted < 30
+        val batteryMedium = batteryLevelAdjusted < 40
 
         return when (type) {
             LocationPerformanceType.MANUAL_BOOST -> {
@@ -258,7 +303,7 @@ class LocationPerformanceManager constructor(
             }
 
             LocationPerformanceType.HIGH -> {
-                if (batteryLow) {
+                if (batteryVeryLow) {
                     LocationPerformanceType.BATTERY_SAVER
                 } else if (batteryMedium) {
                     if (timeCriteriaLow || timeCriteriaHigh) {
@@ -279,7 +324,8 @@ class LocationPerformanceManager constructor(
             }
 
             LocationPerformanceType.MEDIUM_HIGH -> {
-                if (batteryLow) LocationPerformanceType.BATTERY_SAVER
+                if (batteryVeryLow) LocationPerformanceType.HIGH_BATTERY_SAVER
+                else if (batteryLow) LocationPerformanceType.BALANCED
                 else if (timeCriteriaLow) LocationPerformanceType.BALANCED
                 else LocationPerformanceType.MEDIUM_HIGH
             }
@@ -290,8 +336,13 @@ class LocationPerformanceManager constructor(
             }
 
             LocationPerformanceType.BATTERY_SAVER -> {
+                if (batteryVeryLow) LocationPerformanceType.HIGH_BATTERY_SAVER
+                else LocationPerformanceType.BATTERY_SAVER
+            }
+
+            LocationPerformanceType.HIGH_BATTERY_SAVER -> {
                 // accept
-                LocationPerformanceType.BATTERY_SAVER
+                LocationPerformanceType.HIGH_BATTERY_SAVER
             }
         }
     }
@@ -300,16 +351,41 @@ class LocationPerformanceManager constructor(
         val old: LocationPerformanceType = LocationPerformanceType.BALANCED,
         val requested: LocationPerformanceType = LocationPerformanceType.BALANCED,
         val current: LocationPerformanceType = LocationPerformanceType.BALANCED,
+        val balancedPerformanceSettings: LocationPerformanceSettings,
+        val batterySaverPerformanceSettings: LocationPerformanceSettings
     ) {
 
-        constructor(isBoostedManually: Boolean) : this(
+        constructor(
+            isBoostedManually: Boolean,
+            balancedPerformanceSettings: LocationPerformanceSettings,
+            batterySaverPerformanceSettings: LocationPerformanceSettings
+        ) : this(
             old = LocationPerformanceType.BALANCED,
             requested = if (isBoostedManually) LocationPerformanceType.MANUAL_BOOST else LocationPerformanceType.BALANCED,
             current = if (isBoostedManually) LocationPerformanceType.MANUAL_BOOST else LocationPerformanceType.BALANCED,
+            balancedPerformanceSettings = balancedPerformanceSettings,
+            batterySaverPerformanceSettings = batterySaverPerformanceSettings
         )
 
         val isThrottling get() = requested > current
         val isThrottlingLocationRequest get() = isThrottling && requested == LocationPerformanceType.VERY_HIGH
         val isSlow get() = isThrottling || current <= LocationPerformanceType.BALANCED
+    }
+
+    data class LocationPerformanceSettings(
+        val updateIntervalMillis: Long,
+        val minUpdateIntervalMillis: Long,
+        val minUpdateDistanceMeters: Int,
+        val useHighPerformanceLocation: Boolean
+    ) {
+        constructor(
+            settingsType: LocationPerformanceSettingsType,
+            useHighPerformanceLocation: Boolean
+        ) : this(
+            updateIntervalMillis = settingsType.updateInterval.inWholeMilliseconds,
+            minUpdateIntervalMillis = settingsType.minUpdateInterval.inWholeMilliseconds,
+            minUpdateDistanceMeters = settingsType.minUpdateDistanceMeters,
+            useHighPerformanceLocation = useHighPerformanceLocation
+        )
     }
 }

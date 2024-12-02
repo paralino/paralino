@@ -15,6 +15,7 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
@@ -26,6 +27,7 @@ import app.paralino.core.ui.settings.RawDataScreenCore
 import app.paralino.core.ui.settings.SettingsScreenCore
 import app.paralino.core.ui.settings.billing.PaywallScreenCore
 import app.paralino.core.ui.settings.billing.SubscriptionScreenCore
+import app.paralino.core.ui.settings.location.LocationSettingsScreenCore
 import app.paralino.core.ui.settings.profile.AccountScreenCore
 import app.paralino.core.ui.settings.profile.ChangeEmailScreenCore
 import app.paralino.core.ui.settings.profile.ChangePasswordScreenCore
@@ -45,6 +47,7 @@ object SettingsScreens {
         openAppStatus: () -> Unit,
         openSubscriptions: () -> Unit,
         openPaywall: () -> Unit,
+        openLocationSettings: () -> Unit,
         onShare: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -61,6 +64,7 @@ object SettingsScreens {
                 openAppStatus = openAppStatus,
                 openSubscriptions = openSubscriptions,
                 openPaywall = openPaywall,
+                openLocationSettings = openLocationSettings,
                 onShareCode = onShare
             )
         }
@@ -247,6 +251,20 @@ object SettingsScreens {
                 vm = vm,
                 paddingValues = PaddingValues(),
                 onLicencesClick = openLicencesScreen
+            )
+        }
+    }
+
+    fun LocationSettingsScreenVC(
+        vm: LocationSettingsViewModel,
+        openPaywall: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            LocationSettingsScreenCore(
+                coreUiState = it,
+                vm = vm,
+                paddingValues = PaddingValues(bottom = 20.dp),
+                openPaywall = openPaywall
             )
         }
     }

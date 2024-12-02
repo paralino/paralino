@@ -62,7 +62,7 @@ fun GroupCreateScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState(initial = Payload.Loading)
+    val state by vm.uiState.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->

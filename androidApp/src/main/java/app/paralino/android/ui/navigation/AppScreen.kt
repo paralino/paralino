@@ -248,6 +248,10 @@ sealed class AppScreen {
         object GeneralInfo : AppScreen() {
             override val routeSignature: String = "general-info"
         }
+
+        object LocationSettings : AppScreen() {
+            override val routeSignature: String = "location-settings"
+        }
     }
 
     object Common {

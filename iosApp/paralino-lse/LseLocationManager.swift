@@ -54,7 +54,7 @@ class LseLocationManager: NSObject, ObservableObject, CoreLocationManagerDelegat
         
         locationPerformanceManager.locationPerformanceStatus { [weak self] model in
             switch model.current {
-            case .batterySaver, .balanced:
+            case .highBatterySaver, .batterySaver, .balanced:
                 if self?.wasLocationPerformanceActive == true {
                     self?.stopLocationUpdates()
                 }

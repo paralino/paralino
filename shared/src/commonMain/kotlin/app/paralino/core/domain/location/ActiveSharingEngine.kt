@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
@@ -47,6 +48,7 @@ class ActiveSharingEngine(
                     deviceApiProvider.deviceStatus,
                     locationPerformanceManager.locationPerformanceType
                         .filter { it.current <= LocationPerformanceType.BALANCED }
+                        .map { it.current }
                         .distinctUntilChanged()
                 ) { deviceStatus, locationPerformance ->
                     if (locationSharingManager.isSharingActive()) {
