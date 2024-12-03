@@ -223,8 +223,9 @@ class PlacesRemoteSource(
         place: GroupPlace,
         timeMillis: Long
     ) {
-        val eventSeed = place.eventSeed ?: throw MissingCryptoKeyException("Missing place event seed")
-        val enterEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true)
+        val enterEvent = place.eventSeed?.let {
+            cryptoCore.getPlaceEventKey(seed = it, isEnter = true)
+        }
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
@@ -240,13 +241,14 @@ class PlacesRemoteSource(
         place: GroupPlace,
         timeMillis: Long
     ) {
-        val eventSeed = place.eventSeed ?: throw MissingCryptoKeyException("Missing place event seed")
-        val exitEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = false)
+        val exitEvent = place.eventSeed?.let {
+            cryptoCore.getPlaceEventKey(seed = it, isEnter = false)
+        }
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
                 locationId = userMemberId.getCurrentLocationIdForGroup(place.groupId),
-                enter = true,
+                enter = false,
                 event = exitEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )
