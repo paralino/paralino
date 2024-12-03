@@ -26,6 +26,22 @@ class LocationRequestUseCase constructor(
     private val locationPerformanceManager: LocationPerformanceManager
 ) : BaseRepository() {
 
+    fun keepLocationBoost(
+        groupId: String
+    ): Flow<Unit> {
+        return flow {
+            do {
+                emit(Unit)
+                locationPerformanceManager.locationBoostRequested(
+                    performanceType = LocationPerformanceType.HIGH,
+                    groupId = groupId,
+                    from = "map focus ping"
+                )
+                delay(20_000L)
+            } while (currentCoroutineContext().isActive)
+        }.catch { emit(Unit) }
+    }
+
     fun keepLocationFocus(
         groupId: String,
         focusType: MapHomeScreenFocusType
@@ -55,12 +71,7 @@ class LocationRequestUseCase constructor(
             )
         ) {
             logg.tag("location_performance")
-                .v("Map is active (${focusType::class.simpleName}), boosting location and sending ping")
-            locationPerformanceManager.locationBoostRequested(
-                performanceType = LocationPerformanceType.HIGH,
-                groupId = groupId,
-                from = "map focus ping"
-            )
+                .v("Map is active (${focusType::class.simpleName}), sending ping")
             try {
                 val requestPayload = LocationFocusPayload(
                     groupId = groupId,

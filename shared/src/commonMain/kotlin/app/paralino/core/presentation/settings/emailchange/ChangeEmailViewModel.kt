@@ -36,6 +36,8 @@ class ChangeEmailViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     fun proceed() {
+        if (_uiState.value.actionLoading == true) return
+
         val email = _uiState.value.email
         val password = _uiState.value.password
 
@@ -53,7 +55,7 @@ class ChangeEmailViewModel(
             showSnackbar(getFormValidationErrorText(validation = emailValidation.type))
         } else if (!passwordValidation.result) {
             showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
-        } else {
+        } else if (!changeCredentials.isProcessingAny()) {
             changeCredentials.changeEmail(email = email, password = password)
                 .mapToPayload { it }
                 .onEach { result ->
@@ -95,5 +97,4 @@ class ChangeEmailViewModel(
         if (_uiState.value.actionLoading == true) return
         _uiState.update { it.copy(password = password, hasPasswordError = false) }
     }
-
 }

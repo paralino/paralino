@@ -102,11 +102,13 @@ class MapHomeViewModel constructor(
     private val _eventChannel = Channel<MapHomeScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
+    private val uiFocusedStatus = MutableStateFlow(false)
     private val groupIdData = MutableStateFlow("")
     private val uiRefreshPingFlow = MutableStateFlow<Instant?>(null)
 
     private var uiRefreshPingSubscriptionJob: Job? = null
     private var activePingSubscriptionJob: Job? = null
+    private var activeLocationBoostJob: Job? = null
     private var realtimeSubscriptionJob: Job? = null
     private var groupSubscriptionJob: Job = SupervisorJob()
     private val locationRequestDuration = 20.seconds
@@ -169,17 +171,23 @@ class MapHomeViewModel constructor(
             deviceApiProvider.appLifecycleState
                 .map { it.current.activeOrInactive }
                 .distinctUntilChanged(),
+            uiFocusedStatus,
             uiState.map { it.asReady()?.mapHomeScreenFocusType }
                 .filterNotNull()
-                .distinctUntilChanged()
-        ) { groupId, appState, focusType ->
-            Triple(groupId, appState, focusType)
+                .distinctUntilChanged(),
+        ) { groupId, appState, isUiFocused, mapFocusType ->
+            MapScreenLifecycleData(
+                groupId = groupId,
+                isAppFocused = appState,
+                isUiFocused = isUiFocused,
+                mapFocusType = mapFocusType
+            )
         }
             .debounce(2000)
             .distinctUntilChanged()
             .onEach {
                 initRealtime()
-                keepLocationFocusOn(focusType = it.third)
+                keepLocationFocusOn(focusType = it.mapFocusType)
             }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
@@ -643,6 +651,7 @@ class MapHomeViewModel constructor(
         focusType: MapHomeScreenFocusType
     ) {
         activePingSubscriptionJob?.cancel()
+        activeLocationBoostJob?.cancel()
 
         val groupId = groupIdData.value
 
@@ -653,6 +662,17 @@ class MapHomeViewModel constructor(
 
         if (!deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
             logg.v("location_performance", "App is in background, ignore active ping")
+            return
+        }
+
+        activeLocationBoostJob = locationRequestUseCase.keepLocationBoost(
+            groupId = groupId
+        )
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        if (!uiFocusedStatus.value) {
+            logg.v("location_performance", "Map Ui is not focused, ignore active ping")
             return
         }
 
@@ -902,6 +922,9 @@ class MapHomeViewModel constructor(
 
                     else -> {}
                 }
+            }
+            is MapHomeScreenUiEvent.UiLifecycleChange -> {
+                uiFocusedStatus.update { event.active }
             }
         }
     }

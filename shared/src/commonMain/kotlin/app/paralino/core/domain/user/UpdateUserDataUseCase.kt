@@ -4,6 +4,7 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.MemberModelData
@@ -37,7 +38,7 @@ class UpdateUserDataUseCase constructor(
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val personalCodes: PersonalCodesRepository,
     private val appPrefs: AppPrefs
-) : BaseRepository() {
+) : LimitedExecutionRepository() {
 
     fun updateUserData(data: UserMeData): Flow<Unit> {
         return getDataOnce(
@@ -51,6 +52,7 @@ class UpdateUserDataUseCase constructor(
                 userRepo.updateLocalUser(it)
             }
         )
+            .startProcessing("update_user_data")
             .map { Unit }
     }
 

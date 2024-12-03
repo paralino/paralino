@@ -136,7 +136,7 @@ sealed interface LocationPerformanceSettingsType {
         }
 
         companion object {
-            val default: Balanced = Level2
+            val default: Balanced = Level3
             fun fromKey(key: String?): Balanced {
                 return when (key) {
                     Level1.key -> Level1

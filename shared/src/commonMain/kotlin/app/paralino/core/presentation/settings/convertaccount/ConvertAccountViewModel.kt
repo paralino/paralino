@@ -36,6 +36,8 @@ class ConvertAccountViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     fun proceed() {
+        if (_uiState.value.actionLoading == true) return
+
         val email = _uiState.value.email
         val password = _uiState.value.password
         val passwordConfirm = _uiState.value.passwordConfirm
@@ -58,7 +60,7 @@ class ConvertAccountViewModel(
             showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
         } else if (!passwordConfirmValidation.result) {
             showSnackbar(getFormValidationErrorText(validation = passwordConfirmValidation.type))
-        } else {
+        } else if (!convertAccount.isProcessingAny()){
             convertAccount.convertAccount(
                 email = email,
                 password = password

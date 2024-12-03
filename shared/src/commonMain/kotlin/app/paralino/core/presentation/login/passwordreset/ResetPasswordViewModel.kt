@@ -47,7 +47,7 @@ class ResetPasswordViewModel constructor(
             coroutineScope.launch {
                 _eventChannel.send(ResetPasswordScreenEvent.ValidationError(firstValidation))
             }
-        } else {
+        } else if (!resetPassword.isProcessingAny()) {
             resetPassword.resetPassword(userId = userId, secret = secret, password = passwordNew)
                 .mapToPayload { it }
                 .onEach { result ->
@@ -93,5 +93,4 @@ class ResetPasswordViewModel constructor(
         if (_uiState.value.actionLoading == true) return
         _uiState.update { it.copy(confirmPassword = password, hasConfirmPasswordError = false) }
     }
-
 }

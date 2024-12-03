@@ -150,6 +150,11 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                 }
             }
             .catch { e ->
+                logg.e(
+                    tag = "location_service",
+                    message = "Can not start location service from state: $appState",
+                    t = e
+                )
                 notifyLocationServiceError(
                     backgroundLocationError = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException
                 )

@@ -3,7 +3,6 @@ package app.paralino.core.repo.places
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
-import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.AppBuildConfig
@@ -26,7 +25,6 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.api.runAsync
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
-import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -120,39 +118,43 @@ class PlacesRemoteSource(
                 else -> throw CryptoException("Place data is missing: ${place.id}")
             }
 
-            val payload: UpdatePlacePayload = if (placeData.eventSeed.isNullOrBlank() || place.eventKeys.isEmpty()) {
-                val eventSeed = placeData.eventSeed ?: cryptoCore.randomId(length = 32, AlphabetType.EXTENDED)
+            val payload: UpdatePlacePayload =
+                if (placeData.eventSeed.isNullOrBlank() || place.eventKeys.isEmpty()) {
+                    val eventSeed = placeData.eventSeed ?: cryptoCore.randomId(
+                        length = 32,
+                        AlphabetType.EXTENDED
+                    )
 
-                val mappedData = placeData.copy(
-                    eventSeed = eventSeed
-                )
+                    val mappedData = placeData.copy(
+                        eventSeed = eventSeed
+                    )
 
-                val encryptedPlaceData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(mappedData),
-                    key = groupKey.key
-                )
+                    val encryptedPlaceData = cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.formatter.encodeToString(mappedData),
+                        key = groupKey.key
+                    )
 
-                val enterEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true)
-                val exitEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = false)
+                    val enterEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true)
+                    val exitEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = false)
 
-                UpdatePlacePayload(
-                    placeId = place.id,
-                    placeData = encryptedPlaceData,
-                    groupKeyVersion = groupKey.version,
-                    eventKeys = listOf(enterEvent, exitEvent)
-                )
-            } else {
-                val encryptedPlaceData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.formatter.encodeToString(placeData),
-                    key = groupKey.key
-                )
-                UpdatePlacePayload(
-                    placeId = place.id,
-                    placeData = encryptedPlaceData,
-                    groupKeyVersion = groupKey.version,
-                    eventKeys = null
-                )
-            }
+                    UpdatePlacePayload(
+                        placeId = place.id,
+                        placeData = encryptedPlaceData,
+                        groupKeyVersion = groupKey.version,
+                        eventKeys = listOf(enterEvent, exitEvent)
+                    )
+                } else {
+                    val encryptedPlaceData = cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.formatter.encodeToString(placeData),
+                        key = groupKey.key
+                    )
+                    UpdatePlacePayload(
+                        placeId = place.id,
+                        placeData = encryptedPlaceData,
+                        groupKeyVersion = groupKey.version,
+                        eventKeys = null
+                    )
+                }
 
             val response = functionsApi.runAndWait(
                 function = ServerFunction.PLACE_UPDATE,
@@ -218,13 +220,13 @@ class PlacesRemoteSource(
         }
     }
 
-
     suspend fun notifyPlaceEnter(
         place: GroupPlace,
         timeMillis: Long
     ) {
-        val eventSeed = place.eventSeed ?: throw MissingCryptoKeyException("Missing place event seed")
-        val enterEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true)
+        val enterEvent = place.eventSeed?.let {
+            cryptoCore.getPlaceEventKey(seed = it, isEnter = true)
+        }
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
@@ -240,13 +242,14 @@ class PlacesRemoteSource(
         place: GroupPlace,
         timeMillis: Long
     ) {
-        val eventSeed = place.eventSeed ?: throw MissingCryptoKeyException("Missing place event seed")
-        val exitEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = false)
+        val exitEvent = place.eventSeed?.let {
+            cryptoCore.getPlaceEventKey(seed = it, isEnter = false)
+        }
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
                 locationId = userMemberId.getCurrentLocationIdForGroup(place.groupId),
-                enter = true,
+                enter = false,
                 event = exitEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )

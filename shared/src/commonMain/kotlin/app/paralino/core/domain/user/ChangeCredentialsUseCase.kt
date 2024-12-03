@@ -7,6 +7,7 @@ import app.paralino.core.crypto.UserAuthDerivedKey
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.OldMasterKeys
@@ -29,7 +30,7 @@ class ChangeCredentialsUseCase(
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val appPrefs: AppPrefs
-) {
+): LimitedExecution() {
 
     fun changeEmail(email: String, password: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
@@ -43,6 +44,7 @@ class ChangeCredentialsUseCase(
                 )
             }
         )
+            .startProcessing("change_email")
     }
 
     fun changePassword(oldPassword: String, newPassword: String): Flow<ChangeCredentialsStep> {
@@ -57,6 +59,7 @@ class ChangeCredentialsUseCase(
                 )
             }
         )
+            .startProcessing("change_password")
     }
 
     fun changeCredentials(

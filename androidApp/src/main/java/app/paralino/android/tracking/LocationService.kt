@@ -16,6 +16,8 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.LocationConditionStatus
+import app.paralino.core.provider.NotificationConditionStatus
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.utils.ConditionErrorType
@@ -52,18 +54,30 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
         logg.v(this.hashCode().toString(), "Location service created")
-        ServiceCompat.startForeground(
-            this,
-            notificationHandler.notificationId,
-            notificationHandler.notify(this, groupCount = 0, errors = emptyList()),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-        )
+        try {
+            ServiceCompat.startForeground(
+                this,
+                notificationHandler.notificationId,
+                notificationHandler.notify(this, groupCount = 0, errors = emptyList()),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+            )
+        } catch (e: Exception) {
+            throw LocationServiceCanNotStartException(
+                cause = e,
+                locationConditionStatus = deviceApiProvider.locationStatusProvider.currentStatus,
+                notificationConditionStatus = deviceApiProvider.notificationStatusProvider.currentStatus,
+                alwaysOnSharing = locationSharingManager.allContractsFlow.value.data?.any { it.isAlwaysOn }
+            )
+        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         launchedInForeground = intent.getBooleanExtra(startedInForeground, false)
-        logg.v(this.hashCode().toString(), "Location service started - action: ${intent.action} - launched in foreground: $launchedInForeground")
+        logg.v(
+            this.hashCode().toString(),
+            "Location service started - action: ${intent.action} - launched in foreground: $launchedInForeground"
+        )
         isServiceActive = true
         serviceDefaultScope.coroutineContext.cancelChildren()
         initTracking()
@@ -109,7 +123,7 @@ class LocationService : Service() {
                     forBackground = !launchedInForeground
                 )
             )
-            if(!deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
+            if (!deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
                 add(ConditionErrorType.Network)
             }
         }
@@ -129,6 +143,7 @@ class LocationService : Service() {
                     null -> {
                         logg.v(this.hashCode().toString(), "Got null location")
                     }
+
                     else -> {
                         launchedInForeground = true
                         updateNotification()
@@ -186,5 +201,24 @@ class LocationService : Service() {
             intent.putExtra(startedInForeground, appForeground)
             ContextCompat.startForegroundService(context, intent)
         }
+    }
+
+    class LocationServiceCanNotStartException(
+        override val cause: Throwable?,
+        val locationConditionStatus: LocationConditionStatus,
+        val notificationConditionStatus: NotificationConditionStatus,
+        val alwaysOnSharing: Boolean?
+    ) : Exception() {
+
+        override val message: String?
+            get() = buildString {
+                cause?.message?.let { append(it) }
+                append("\n")
+                append(locationConditionStatus.toString())
+                append("\n")
+                append("alwaysOnSharing: $alwaysOnSharing")
+                append("\n")
+                append("notificationPermission: ${notificationConditionStatus.isNotificationPermissionAllowed}")
+            }
     }
 }
