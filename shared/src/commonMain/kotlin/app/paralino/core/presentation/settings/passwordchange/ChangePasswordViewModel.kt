@@ -36,6 +36,8 @@ class ChangePasswordViewModel(
 
 
     fun proceed() {
+        if (_uiState.value.actionLoading == true) return
+
         val passwordOld = _uiState.value.oldPassword
         val passwordNew = _uiState.value.newPassword
         val passwordConfirm = _uiState.value.confirmPassword
@@ -62,7 +64,7 @@ class ChangePasswordViewModel(
 
         if (firstValidation != null) {
             showSnackbar(getFormValidationErrorText(validation = firstValidation.type))
-        } else {
+        } else if (!changePassword.isProcessingAny()){
             changePassword.changePassword(oldPassword = passwordOld, newPassword = passwordNew)
                 .mapToPayload { it }
                 .onEach { result ->
@@ -95,7 +97,6 @@ class ChangePasswordViewModel(
         }
     }
 
-
     fun onOldPasswordChange(password: String) {
         if (_uiState.value.actionLoading == true) return
         _uiState.update { it.copy(oldPassword = password, hasOldPasswordError = false) }
@@ -110,5 +111,4 @@ class ChangePasswordViewModel(
         if (_uiState.value.actionLoading == true) return
         _uiState.update { it.copy(confirmPassword = password, hasConfirmPasswordError = false) }
     }
-
 }

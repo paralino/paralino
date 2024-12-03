@@ -48,7 +48,7 @@ class EditProfileViewModel constructor(
                 validation = nameValidation.type
             )
             messageDispatcher.showSnackbar(errorText)
-        } else {
+        } else if (!updateUserData.isProcessingAny()){
             val userData = UserMeData(userImage = image, userName = name)
             updateUserData.updateUserData(userData)
                 .mapToPayload { it }

@@ -5,6 +5,7 @@ import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserMeRaw
@@ -29,7 +30,7 @@ class LoginUseCase constructor(
     private val keyMapper: UserKeyMapperCore,
     private val logoutUseCase: LogoutUseCase,
     private val appPrefs: AppPrefs
-) {
+): LimitedExecution() {
 
     fun login(email: String, password: String): Flow<SignUpStep> {
         return flow {
@@ -170,9 +171,11 @@ class LoginUseCase constructor(
 
             logg.d("login", "Login success")
             emit(SignUpStep.ALL_DONE)
-        }.catch {
-            logg.e("login", "Login not successful", it)
-            throw it
         }
+            .startProcessing("user_login")
+            .catch {
+                logg.e("login", "Login not successful", it)
+                throw it
+            }
     }
 }

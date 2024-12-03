@@ -7,6 +7,7 @@ import app.paralino.core.crypto.UserAuthDerivedKey
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.UserMe
@@ -34,7 +35,7 @@ class CreateAccountUseCase constructor(
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val logoutUseCase: LogoutUseCase,
     private val appPrefs: AppPrefs
-) {
+): LimitedExecution() {
 
     fun signUpAsGuest(): Flow<SignUpStep> {
         val email = "${
@@ -45,6 +46,7 @@ class CreateAccountUseCase constructor(
         }${UserMe.guestUserEmail}"
         val password = cryptoCore.getNewSymmetricKey()
         return signUp(email, password)
+            .startProcessing("create_account")
             .onEach {
                 if (it >= SignUpStep.GENERATING_KEYS) {
                     appPrefs.guestEmail = email

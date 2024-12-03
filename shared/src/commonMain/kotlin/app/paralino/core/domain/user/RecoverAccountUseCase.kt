@@ -5,6 +5,7 @@ import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.UserAuthDerivedKey
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.utils.BaseRemoteModule
@@ -20,7 +21,7 @@ class RecoverAccountUseCase(
     private val logoutUseCase: LogoutUseCase,
     private val changeCredential: ChangeCredentialsUseCase,
     private val appPrefs: AppPrefs
-) {
+): LimitedExecution() {
 
     suspend fun getCorrectUserKeyForPassword(
         keys: List<UserCryptoKeyRaw>,
@@ -90,28 +91,33 @@ class RecoverAccountUseCase(
             )
             emit(Unit)
         }
+            .startProcessing("reset_user_account")
             .onEach { appPrefs.temporaryMasterAuthKey = "" }
     }
 
-    suspend fun recoverUserAccount(masterAuthKey: String, key: GeneratedUserKeys) {
+    fun recoverUserAccount(masterAuthKey: String, key: GeneratedUserKeys): Flow<Unit> {
+        return flow {
+            // private asymmetric key is encrypted with symmetric key and keys don't change here
+            val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
 
-        // private asymmetric key is encrypted with symmetric key and keys don't change here
-        val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
-
-        changeCredential.changeCredentials(
-            userId = appPrefs.userId,
-            oldKey = key,
-            oldMasterAuthKey = null,
-            newMasterAuthKey = authKey,
-            action = { _, _ -> }
-        )
-            .onEach {
-                if (it == ChangeCredentialsStep.DONE) {
-                    // at this point encryption keys are correct and updated and old keys are removed
-                    // we can remove temporary password
-                    appPrefs.temporaryMasterAuthKey = ""
+            changeCredential.changeCredentials(
+                userId = appPrefs.userId,
+                oldKey = key,
+                oldMasterAuthKey = null,
+                newMasterAuthKey = authKey,
+                action = { _, _ -> }
+            )
+                .onEach {
+                    if (it == ChangeCredentialsStep.DONE) {
+                        // at this point encryption keys are correct and updated and old keys are removed
+                        // we can remove temporary password
+                        appPrefs.temporaryMasterAuthKey = ""
+                    }
                 }
-            }
-            .collect()
+                .collect()
+
+            emit(Unit)
+        }
+            .startProcessing("recover_user_account")
     }
 }

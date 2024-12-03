@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlin.math.log
 
 class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
@@ -74,6 +75,10 @@ class LoginViewModel constructor(
 
         if (_uiState.value.uiType != LoginScreenUiType.SIGNUP_GUEST && !_uiState.value.canUseEmail) {
             _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP_GUEST) }
+            return
+        }
+
+        if (createAccountUseCase.isProcessingAny() || loginUseCase.isProcessingAny()) {
             return
         }
 
@@ -444,6 +449,11 @@ class LoginViewModel constructor(
     fun onEvent(event: LoginScreenUiEvent) {
         when (event) {
             LoginScreenUiEvent.LoginOrSignup -> {
+
+                if (createAccountUseCase.isProcessingAny() || loginUseCase.isProcessingAny()) {
+                    return
+                }
+
                 if (_uiState.value.uiType == LoginScreenUiType.SIGNUP_GUEST) {
                     if (_uiState.value.canUseEmail) {
                         _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }

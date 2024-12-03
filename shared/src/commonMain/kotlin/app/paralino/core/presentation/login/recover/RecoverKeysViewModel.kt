@@ -77,13 +77,10 @@ class RecoverKeysViewModel(
         val key = validState.recoverState.data
         if (validatePassword()) {
             if (validState.canRecoverOldKey && key != null) {
-                flow {
-                    recoverAccountUseCase.recoverUserAccount(
-                        masterAuthKey = validState.masterAuthKey,
-                        key = key
-                    )
-                    emit(Unit)
-                }
+                recoverAccountUseCase.recoverUserAccount(
+                    masterAuthKey = validState.masterAuthKey,
+                    key = key
+                )
                     .mapToPayload { it }
                     .onEach { result ->
 
@@ -214,6 +211,11 @@ class RecoverKeysViewModel(
     }
 
     fun onEvent(event: RecoverKeysScreenUiEvent) {
+
+        if (logoutUseCase.isProcessingAny() || recoverAccountUseCase.isProcessingAny()) {
+            return
+        }
+
         when (event) {
             RecoverKeysScreenUiEvent.HideDialog -> {
                 _uiState.update {
