@@ -100,13 +100,17 @@ class LocationSettingsViewModel(
             is LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance -> {
                 val newValue = !appPrefs.locationSettingsBalancedHighAccuracy
                 appPrefs.locationSettingsBalancedHighAccuracy = newValue
+                val newSettings = uiState.value.balancedSettings.copy(
+                    useHighPerformanceLocation = newValue
+                )
                 _uiState.update {
-                    it.copy(
-                        balancedSettings = it.balancedSettings.copy(
-                            useHighPerformanceLocation = newValue
-                        )
-                    )
+                    it.copy(balancedSettings = newSettings)
                 }
+                locationPerformanceManager.updateLocationSettings(
+                    useHighPerformanceLocation = newSettings.useHighPerformanceLocation,
+                    balancedPerformanceSettings = newSettings.selectedItem.performance,
+                    batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
+                )
             }
 
             is LocationSettingsScreenUiEvent.ChangePerformance -> {
