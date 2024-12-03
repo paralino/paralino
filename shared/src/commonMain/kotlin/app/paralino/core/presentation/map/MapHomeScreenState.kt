@@ -6,6 +6,7 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -77,6 +78,7 @@ sealed class MapHomeScreenEvent {
 
 sealed interface MapHomeScreenUiEvent {
     data class DialogAction(val action: AlertDialogAction) : MapHomeScreenUiEvent
+    data class UiLifecycleChange(val active: Boolean) : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {
@@ -108,3 +110,10 @@ sealed interface MapHomeScreenFocusType {
         }
     }
 }
+
+data class MapScreenLifecycleData(
+    val groupId: String,
+    val isAppFocused: Boolean,
+    val isUiFocused: Boolean,
+    val mapFocusType: MapHomeScreenFocusType,
+)

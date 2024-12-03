@@ -15,7 +15,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleStartEffect
+import app.paralino.android.ui.groups.GroupBottomSheetPicker
 import app.paralino.android.ui.groups.GroupInitScreen
+import app.paralino.android.ui.groups.GroupPickerAction
+import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.Resource
@@ -29,9 +33,6 @@ import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.android.ui.groups.GroupBottomSheetPicker
-import app.paralino.android.ui.groups.GroupPickerAction
-import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
@@ -94,6 +95,13 @@ private fun MapHomeContent(
             sheetState.offset.toDp()
         } catch (e: Exception) {
             0.dp
+        }
+    }
+
+    LifecycleStartEffect(Unit) {
+        vm.onEvent(MapHomeScreenUiEvent.UiLifecycleChange(active = true))
+        onStopOrDispose {
+            vm.onEvent(MapHomeScreenUiEvent.UiLifecycleChange(active = false))
         }
     }
 
@@ -310,4 +318,3 @@ private fun MapContent(
         )
     }
 }
-
