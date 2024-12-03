@@ -52,7 +52,9 @@ fun Context.copy(data: String, copyKey: String = app.paralino.android.BuildConfi
 
 fun Context.openUri(uri: Uri) {
     val intent = Intent(Intent.ACTION_VIEW, uri)
-    startActivity(Intent.createChooser(intent, "Open"))
+    val chooserIntent = Intent.createChooser(intent, "Open")
+    chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    startActivity(chooserIntent)
 }
 
 fun Context.openUri(uri: String) {
