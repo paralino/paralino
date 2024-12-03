@@ -1,11 +1,11 @@
 package app.paralino.core.provider
 
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 
 abstract class IDeviceApiProvider(
@@ -23,7 +23,7 @@ abstract class IDeviceApiProvider(
         notificationStatusProvider.status
     ) { locationStatus, connectionStatus, notificationStatus ->
         DeviceStatusData(locationStatus, connectionStatus, notificationStatus)
-    }
+    }.debounce(100)
 
     fun currentDeviceStatus(): DeviceStatusData {
         return DeviceStatusData(
