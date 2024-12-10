@@ -75,7 +75,7 @@ fun GroupMemberPreview() {
                 GroupMember(
                     state = GroupMemberItemStateWithLocations(
                         memberState = dummyMemberState,
-                        locations = dummyLocations.take(1),
+                        locations = listOf(dummyLocations.get(1)),
                         allowShowingDevices = false,
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
@@ -95,12 +95,12 @@ val dummyMemberState = GroupMemberState(
     groupId = "",
     memberId = "",
     userId = "",
-    name = "User name",
+    name = "Peter",
     image = ImageModel.emoji(Emojis.robot),
     paralinoId = null,
     isCurrentUser = true,
     isVerified = true,
-    canHaveExpandButton = true
+    canHaveExpandButton = false
 )
 
 val dummyLocations = listOf(
@@ -125,21 +125,21 @@ val dummyLocations = listOf(
     ),
     GroupMemberItemLocationState(
         locationId = "",
-        name = "Device 2",
+        name = "Primary",
         image = ImageModel.emoji(Emojis.lock),
-        actualBatteryLevel = 20,
+        actualBatteryLevel = 34,
         adjustedBatteryLevel = 20,
         isBatteryCharging = false,
         speed = "35 km/h",
         elevation = "250m",
         lastLocationPing = null,
         lastStatusPing = "16:30",
-        deviceStatus = MemberDeviceStatusType.GPS_OFF,
+        deviceStatus = MemberDeviceStatusType.ACTIVE,
         canEdit = true,
         currentDevice = true,
-        onlineStatus = MemberDeviceOnlineStatusType.OFFLINE,
-        networkType = NetworkType.G4,
-        signalStrength = NetworkSignalStrength.POOR,
+        onlineStatus = MemberDeviceOnlineStatusType.ONLINE,
+        networkType = NetworkType.G3,
+        signalStrength = NetworkSignalStrength.GOOD,
         visibility = MemberLocationVisibilityType.VISIBLE_ONCE
     ),
     GroupMemberItemLocationState(

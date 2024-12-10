@@ -132,6 +132,8 @@ fun RootApp(
                             appState = appState,
                             start = if (finalState.canRecoverGuest) {
                                 AppScreen.LoggedOut.Login
+                            } else if (!uiState.didHaveWelcomeOnboarding) {
+                                AppScreen.LoggedOut.WelcomeOnboarding
                             } else {
                                 AppScreen.LoggedOut.Welcome
                             },

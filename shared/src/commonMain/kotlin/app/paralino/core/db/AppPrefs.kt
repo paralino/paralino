@@ -6,8 +6,6 @@ import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.datetime.Instant
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 expect class AppPrefsProvider {
     val userSettings: Settings
@@ -69,6 +67,7 @@ class AppPrefs(
         const val keyBatterySaverPerformance = "prefs.location.batterySaver.performance"
         const val keyBalancedPerformance = "prefs.location.balanced.performance"
         const val keyBalancedHighAccuracy = "prefs.location.balanced.highAccuracy"
+        const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
     }
 
     val isTokenValid: Boolean
@@ -244,6 +243,12 @@ class AppPrefs(
         get() = provider.userSettings.getStringOrNull(keyBalancedPerformance).takeIf { !it.isNullOrBlank() }
         set(value) {
             provider.userSettings.putString(keyBalancedPerformance, value ?: "")
+        }
+
+    var didHaveWelcomeOnboarding: Boolean
+        get() = provider.userSettings.getBoolean(keyWelcomeOnboarding, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyWelcomeOnboarding, value)
         }
 
 

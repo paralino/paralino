@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.main
 
 import app.paralino.core.app_update.IAppUpdateManager
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -27,10 +28,11 @@ class MainViewModel constructor(
     private val userRepo: UserRepository,
     private val remoteConfigRepository: RemoteConfigRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
-    private val appUpdateManager: IAppUpdateManager
+    private val appUpdateManager: IAppUpdateManager,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(MainActivityState())
+    private val _uiState = MutableStateFlow(MainActivityState(didHaveWelcomeOnboarding = appPrefs.didHaveWelcomeOnboarding))
     val uiState: StateFlow<MainActivityState> = _uiState
 
     private val _eventChannel = Channel<MainScreenEvent?>()

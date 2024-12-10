@@ -18,6 +18,10 @@ sealed class AppScreen {
             override val routeSignature: String = "welcome"
         }
 
+        object WelcomeOnboarding : AppScreen() {
+            override val routeSignature: String = "welcome-onboarding"
+        }
+
         object Login : AppScreen() {
 
             val argumentStartScreenType: String = "startScreenType"

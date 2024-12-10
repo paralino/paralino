@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
@@ -21,6 +20,7 @@ import app.paralino.android.ui.login.ResetPasswordScreen
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
+import app.paralino.android.ui.onboarding.welcome.WelcomeOnboardingScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
@@ -42,7 +42,6 @@ import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 
@@ -234,6 +233,20 @@ fun NavGraphBuilder.loggedOutGraph(
     ) {
         composable(AppScreen.LoggedOut.Welcome.routeSignature) {
             LoggedOutScreen(appState)
+        }
+        composable(AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
+            WelcomeOnboardingScreen(
+                coreUiState = appState,
+                onNext = {
+                    appState.navController.navigate(
+                        AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP)
+                    ) {
+                        this.popUpTo(route = AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
+                            this.inclusive = true
+                        }
+                    }
+                }
+            )
         }
         composable(AppScreen.LoggedOut.Login.routeSignature) {
             val startScreen = it.arguments?.getString(AppScreen.LoggedOut.Login.argumentStartScreenType)

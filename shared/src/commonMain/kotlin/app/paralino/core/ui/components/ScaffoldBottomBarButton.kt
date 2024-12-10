@@ -3,7 +3,8 @@ package app.paralino.core.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,15 +46,11 @@ fun ActionScaffold(
 }
 
 @Composable
-fun ScaffoldBottomBarButton(
+fun ScaffoldBottomBarButtons(
     modifier: Modifier = Modifier,
-    buttonStyle: ButtonStyle = ButtonStyle.BIG,
-    buttonState: AppButtonState = AppButtonState.CONTENT,
-    buttonIcon: Painter?,
-    buttonText: String,
-    onClick: () -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.background)
@@ -64,8 +61,21 @@ fun ScaffoldBottomBarButton(
             )
             .padding(bottom = 20.dp, top = 8.dp)
             .padding(horizontal = 20.dp),
-        contentAlignment = Alignment.Center
-    ) {
+        horizontalAlignment = Alignment.CenterHorizontally,
+        content = content
+    )
+}
+
+@Composable
+fun ScaffoldBottomBarButton(
+    modifier: Modifier = Modifier,
+    buttonStyle: ButtonStyle = ButtonStyle.BIG,
+    buttonState: AppButtonState = AppButtonState.CONTENT,
+    buttonIcon: Painter?,
+    buttonText: String,
+    onClick: () -> Unit
+) {
+    ScaffoldBottomBarButtons(modifier = modifier) {
         FilledButton(
             modifier = Modifier,
             style = buttonStyle,
