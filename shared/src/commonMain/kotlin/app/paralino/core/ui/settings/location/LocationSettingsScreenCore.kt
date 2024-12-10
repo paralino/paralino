@@ -234,7 +234,8 @@ private fun LocationPerformanceSettingsOptions(
 }
 
 @Composable
-private fun SubscriptionOptionItem(
+fun SubscriptionOptionItem(
+    modifier: Modifier = Modifier,
     title: String,
     description: String,
     batteryImpact: String?,
@@ -247,7 +248,7 @@ private fun SubscriptionOptionItem(
     val backgroundColor by animateColorAsState(targetValue = sourceColor)
     val contentColor by animateColorAsState(targetValue = contentColorFor(backgroundColor = sourceColor))
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(2.dp)
             .clickable(onClick = onClick)

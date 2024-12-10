@@ -3,11 +3,10 @@ package app.paralino.android.ui.onboarding.welcome
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,10 +56,12 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import io.viascom.nanoid.NanoId
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 @Composable
 fun WelcomeOnboardingPage1(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEncryptionOn: Boolean
 ) {
     Box(
         modifier = modifier
@@ -74,7 +75,7 @@ fun WelcomeOnboardingPage1(
     ) {
         MapContent(modifier = Modifier.fillMaxSize())
         MemberItem(modifier = Modifier.align(Alignment.BottomCenter))
-        EncryptedOverlay()
+        EncryptedOverlay(isEncryptionOn = isEncryptionOn)
     }
 }
 
@@ -86,11 +87,7 @@ private fun MapContent(
         modifier = modifier.fillMaxWidth()
     ) {
         Image(
-            painter = if (isSystemInDarkTheme()) {
-                CoreAppIcons.MapMockupDark.asPainterResource()
-            } else {
-                CoreAppIcons.MapMockupLight.asPainterResource()
-            },
+            painter = CoreAppIcons.MapMockupSatelliteLawn.asPainterResource(),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -116,7 +113,7 @@ private fun MapContent(
             ) {
                 var markerPadding by rememberSaveable { mutableFloatStateOf(0f) }
                 LaunchedEffect(Unit) {
-                    delay(200)
+                    delay(10)
                     markerPadding = 1f
                 }
 
@@ -125,8 +122,7 @@ private fun MapContent(
                         .offset(
                             x = animateDpAsState(
                                 targetValue = markerPadding.times(maxWidth.value).minus(100).dp,
-                                animationSpec = repeatable(
-                                    iterations = 2,
+                                animationSpec = infiniteRepeatable(
                                     animation = tween(durationMillis = 5000),
                                     repeatMode = RepeatMode.Reverse,
                                 )
@@ -134,8 +130,7 @@ private fun MapContent(
                             y = animateDpAsState(
                                 targetValue = markerPadding.times(-maxHeight.value / 3)
                                     .plus(200).dp,
-                                animationSpec = repeatable(
-                                    iterations = 4,
+                                animationSpec = infiniteRepeatable(
                                     animation = tween(durationMillis = 2500),
                                     repeatMode = RepeatMode.Reverse,
                                 )
@@ -173,21 +168,18 @@ private fun MemberItem(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun EncryptedOverlay(modifier: Modifier = Modifier) {
+private fun EncryptedOverlay(
+    modifier: Modifier = Modifier,
+    isEncryptionOn: Boolean
+) {
 
-    var isEncryptionOn by rememberSaveable { mutableFloatStateOf(0f) }
     var text by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        delay(1500)
-        isEncryptionOn = 1f
-    }
-
-    LaunchedEffect(Unit) {
         val seed = NanoId.generate(50)
-        repeat(11) {
+        while (coroutineContext.isActive) {
             text = buildString {
-                repeat(20) {
+                repeat(40) {
                     append(seed)
                 }
             }.toList().shuffled().joinToString("")
@@ -201,12 +193,12 @@ private fun EncryptedOverlay(modifier: Modifier = Modifier) {
             .clip(
                 TiltedRectangleShape(
                     percentage = animateFloatAsState(
-                        isEncryptionOn,
-                        tween(3000)
+                        if (isEncryptionOn) 1f else 0f,
+                        tween(1000)
                     ).value
                 )
             )
-            .background(MaterialTheme.colors.primary)
+            .background(AppColors.accentDark)
     ) {
         Text(
             text = text,
@@ -266,7 +258,7 @@ private class TiltedRectangleShape(val percentage: Float) : Shape {
             close()
         }
 
-        path.translate(Offset(x = size.width * 0.8f * (1f - percentage), 0f))
+        path.translate(Offset(x = size.width * 0.72f * (1f - percentage), 0f))
 
         return Outline.Generic(path)
     }

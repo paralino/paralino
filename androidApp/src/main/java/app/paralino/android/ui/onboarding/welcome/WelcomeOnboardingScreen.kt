@@ -3,12 +3,6 @@ package app.paralino.android.ui.onboarding.welcome
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -43,9 +37,9 @@ fun WelcomeOnboardingScreen(
     coreUiState: CoreUiState,
     onNext: () -> Unit,
 ) {
-    var step by rememberSaveable { mutableStateOf<WelcomeOnboardingContent>(WelcomeOnboardingContent.STEP_1) }
+    var step by rememberSaveable { mutableStateOf<WelcomeOnboardingContent>(WelcomeOnboardingContent.STEP_LOCATION) }
 
-    BackHandler(step.order > 1) {
+    BackHandler(step.ordinal > 0) {
         val previous = step.previous()
         if (previous != null) {
             step = previous
@@ -55,6 +49,7 @@ fun WelcomeOnboardingScreen(
     BaseOnboardingScreen(
         modifier = Modifier
             .fillMaxSize(),
+        order = step.ordinal,
         title = step.title,
         info = step.info,
         buttonText = stringResource(MR.strings.button_continue),
@@ -73,6 +68,7 @@ fun WelcomeOnboardingScreen(
     )
 }
 
+@SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 private fun WelcomeOnboardingHeaderContent(
     modifier: Modifier = Modifier,
@@ -85,9 +81,10 @@ private fun WelcomeOnboardingHeaderContent(
                     .padding(top = 20.dp)
                     .padding(horizontal = 20.dp)
                     .zIndex(1f),
-                targetState = step.titleTag,
-                label = "animated info"
-            ) { contentText ->
+                targetState = step.ordinal,
+                label = "animated info",
+                transitionSpec = onboardingContentTransitionSpec()
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = CoreAppIcons.LauncherLogo.asPainterResource(),
@@ -102,7 +99,7 @@ private fun WelcomeOnboardingHeaderContent(
                             )
                     )
                     Text(
-                        text = contentText,
+                        text = step.titleTag,
                         style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
                     )
                 }
@@ -111,50 +108,45 @@ private fun WelcomeOnboardingHeaderContent(
         }
         AnimatedContent(
             modifier = Modifier.zIndex(0f),
-            targetState = step.order,
-            transitionSpec = {
-                if (targetState > initialState) {
-                    slideInVertically { height -> height } + fadeIn() togetherWith
-                            slideOutVertically { height -> -height } + fadeOut()
-                } else {
-                    slideInVertically { height -> -height } + fadeIn() togetherWith
-                            slideOutVertically { height -> height } + fadeOut()
-                }.using(
-                    // Disable clipping since the faded slide-in/out should
-                    // be displayed out of bounds.
-                    SizeTransform(clip = false)
-                )
-            }, label = "animated header"
+            targetState = step.parentKey,
+            transitionSpec = onboardingContentTransitionSpec(),
+            label = "animated header"
         ) {
             when (it) {
                 2 -> WelcomeOnboardingPage2()
                 3 -> WelcomeOnboardingPage3()
-                else -> WelcomeOnboardingPage1()
+                else -> WelcomeOnboardingPage1(isEncryptionOn = step == WelcomeOnboardingContent.STEP_LOCATION_ENCRYPTION)
             }
         }
     }
 }
 
 enum class WelcomeOnboardingContent(
-    val order: Int,
+    val parentKey: Int,
     val title: String,
     val titleTag: String?,
     val info: String?
 ) {
-    STEP_1(
-        order = 1,
+    STEP_LOCATION(
+        parentKey = 1,
         title = "Real-time location sharing",
-        titleTag = "Privacy",
-        info = "In private groups where all your data is always safe and for your eyes only"
+        titleTag = "Paralino",
+        info = "Battery, speed, elevation and network monitoring. Private groups with family, friends or only your devices."
     ),
-    STEP_2(
-        order = 2,
+    STEP_LOCATION_ENCRYPTION(
+        parentKey = 1,
+        title = "With privacy",
+        titleTag = "Encryption",
+        info = "Everything always safe and encrypted."
+    ),
+    STEP_PLACES(
+        parentKey = 2,
         title = "Place alerts",
         titleTag = "Simplicity",
         info = "Get notified when someone enters/leaves predefined area"
     ),
-    STEP_3(
-        order = 3,
+    STEP_OPTIONS(
+        parentKey = 3,
         title = "Full sharing control",
         titleTag = "Control",
         info = "You are always in control with whom, how and what you share"

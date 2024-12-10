@@ -1,6 +1,15 @@
 package app.paralino.android.ui.onboarding.welcome
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,9 +40,11 @@ import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
+@SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun BaseOnboardingScreen(
     modifier: Modifier = Modifier,
+    order: Int,
     title: String,
     info: String?,
     buttonText: String,
@@ -69,12 +80,13 @@ fun BaseOnboardingScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 AnimatedContent(
-                    targetState = title,
-                    label = "animated title"
-                ) { contentText ->
+                    targetState = order,
+                    label = "animated title",
+                    transitionSpec = onboardingContentTransitionSpec()
+                ) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = contentText,
+                        text = title,
                         style = MaterialTheme.typography.h5,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -84,12 +96,13 @@ fun BaseOnboardingScreen(
                 if (info != null) {
                     Spacer(modifier = Modifier.height(8.dp))
                     AnimatedContent(
-                        targetState = info,
-                        label = "animated info"
-                    ) { contentText ->
+                        targetState = order,
+                        label = "animated info",
+                        transitionSpec = onboardingContentTransitionSpec()
+                    ) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = contentText.annotatedBold(),
+                            text = info.annotatedBold(),
                             style = MaterialTheme.typography.subtitle1,
                             textAlign = TextAlign.Center
                         )
@@ -142,4 +155,20 @@ fun BaseOnboardingScreen(
         },
         content = content
     )
+}
+
+inline fun <reified T : Comparable<T>> onboardingContentTransitionSpec(): AnimatedContentTransitionScope<T>.() -> ContentTransform {
+    return {
+        if (targetState > initialState) {
+            slideInVertically { height -> height } + fadeIn() togetherWith
+                    slideOutVertically { height -> -height } + fadeOut()
+        } else {
+            slideInVertically { height -> -height } + fadeIn() togetherWith
+                    slideOutVertically { height -> height } + fadeOut()
+        }.using(
+            // Disable clipping since the faded slide-in/out should
+            // be displayed out of bounds.
+            SizeTransform(clip = false)
+        )
+    }
 }
