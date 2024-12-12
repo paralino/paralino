@@ -396,6 +396,7 @@
     <string name="places_create_error_no_place">Dodajte lokaciju dugim pritiskom na kartu</string>
     <string name="places_create_location_hint_longpress">**SAVJET:** Dugim pritiskom na kartu dodajte ili prilagodite Vaše mjesto</string>
     <string name="places_create_location_hint_tap">**SAVJET:** Dodirom na kartu dodajte ili prilagodite Vaše mjesto</string>
+    <string name="places_create_plan_limit_info">Da bi kreirali više mjesta, nadogradite svoj plan.</string>
     <string name="place_list_menu_delete">Izbrišite mjesto</string>
     <string name="place_list_delete_place_alert_title">Jeste li sigurni da želite izbrisati ovo mjesto?</string>
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>

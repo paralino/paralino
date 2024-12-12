@@ -159,6 +159,9 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT * FROM placeEntity WHERE groupId = :groupId")
     fun getAllPlacesForGroup(groupId: String): Flow<List<PlaceEntity>>
 
+    @Query("SELECT COUNT(id) FROM placeEntity WHERE groupId = :groupId")
+    suspend fun getPlacesCountForGroupOnce(groupId: String): Int?
+
     @Query("SELECT * FROM placeEntity")
     suspend fun getAllPlacesOnce(): List<PlaceEntity>
 

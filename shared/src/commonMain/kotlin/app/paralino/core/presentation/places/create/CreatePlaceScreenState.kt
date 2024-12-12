@@ -2,6 +2,8 @@ package app.paralino.core.presentation.places.create
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 
 data class CreatePlaceScreenState constructor(
@@ -17,7 +19,8 @@ data class CreatePlaceScreenState constructor(
     val hintText: AnnotatedString,
     val hasNameError: Boolean,
     val actionLoading: Boolean,
-    val fullLoading: Boolean
+    val fullLoading: Boolean,
+    val alertDialog: MainAlertDialog?
 ) {
 
     val currentStep: Int = radiusSteps.indexOfFirst { radiusMeters <= it }.takeIf { it >= 0 } ?: 0
@@ -55,7 +58,8 @@ data class CreatePlaceScreenState constructor(
                 hintText = hintText,
                 hasNameError = false,
                 actionLoading = false,
-                fullLoading = false
+                fullLoading = false,
+                alertDialog = null
             )
         }
     }
@@ -67,4 +71,9 @@ sealed class CreatePlaceScreenEvent() {
     object MissingInfo: CreatePlaceScreenEvent()
     object MissingLocation: CreatePlaceScreenEvent()
     object PlaceUpdated: CreatePlaceScreenEvent()
+}
+
+sealed interface CreatePlaceScreenUiEvent {
+    data object CreatePlace : CreatePlaceScreenUiEvent
+    data class DialogAction(val action: AlertDialogAction) : CreatePlaceScreenUiEvent
 }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,12 +34,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
+import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.create.CreatePlaceScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
@@ -48,15 +48,14 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.EmbeddedSlider
 import app.paralino.core.ui.components.EmbeddedSliderSize
-import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.ScaffoldBottomBarButton
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -72,7 +71,7 @@ fun CreatePlaceScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState(initial = Payload.Loading)
+    val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -101,10 +100,15 @@ fun CreatePlaceScreenCore(
         }
     }
 
+    val dialog = uiState.data?.alertDialog
+    dialog?.Show {
+        vm.onEvent(CreatePlaceScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            when (val finalState = state) {
+            when (val finalState = uiState) {
                 is Payload.Error -> {}
                 Payload.Loading -> {}
                 is Payload.Success -> {
@@ -116,13 +120,13 @@ fun CreatePlaceScreenCore(
                             stringResource(MR.strings.button_save)
                         },
                         buttonIcon = if (finalState.data.isNewPlace) null else CoreAppIcons.Save.asPainterResource(),
-                        onClick = { vm.createPlace() }
+                        onClick = { vm.onEvent(CreatePlaceScreenUiEvent.CreatePlace) }
                     )
                 }
             }
         }
     ) {
-        when (val finalState = state) {
+        when (val finalState = uiState) {
             Payload.Loading -> {
                 Column(
                     modifier = Modifier

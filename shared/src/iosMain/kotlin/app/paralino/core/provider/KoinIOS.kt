@@ -182,7 +182,7 @@ object KoinIOS {
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
             }
-            factory { MainViewModel(get(), get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
@@ -213,6 +213,9 @@ object KoinIOS {
                     lat = lat,
                     lng = lng,
                     placesRepo = get(),
+                    placesLocalDataSource = get(),
+                    groupLocal = get(),
+                    remoteConfig = get(),
                     deviceApiProvider = get(),
                     valueFormatter = get()
                 )

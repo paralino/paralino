@@ -396,6 +396,7 @@
     <string name="places_create_error_no_place">Bitte fügen Sie einen Standort hinzu, indem Sie lange auf die Karte drücken</string>
     <string name="places_create_location_hint_longpress">**TIPP:** Halten Sie die Karte gedrückt, um Ihren Ort hinzuzufügen oder anzupassen</string>
     <string name="places_create_location_hint_tap">**TIPP:** Tippen Sie auf die Karte, um Ihren Ort hinzuzufügen oder anzupassen</string>
+    <string name="places_create_plan_limit_info">Um weitere Orte zu erstellen, aktualisieren Sie Ihren Plan.</string>
     <string name="place_list_menu_delete">Ort löschen</string>
     <string name="place_list_delete_place_alert_title">Sind Sie sicher, dass Sie diesen Ort löschen möchten?</string>
     <string name="place_detail_setting_button_notify_enter">Betreten</string>
