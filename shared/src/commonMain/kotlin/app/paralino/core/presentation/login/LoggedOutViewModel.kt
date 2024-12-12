@@ -17,10 +17,7 @@ class LoggedOutViewModel(
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
-        LoggedOutScreenState(
-            hasLogin = false,
-            didHaveWelcomeOnboarding = appPrefs.didHaveWelcomeOnboarding
-        )
+        LoggedOutScreenState(hasLogin = false)
     )
     val uiState: StateFlow<LoggedOutScreenState> = _uiState
 
@@ -32,5 +29,9 @@ class LoggedOutViewModel(
                 _uiState.update { it.copy(hasLogin = false) }
             }
             .launchIn(coroutineScope)
+    }
+
+    fun didHaveWelcomeOnboarding(): Boolean {
+        return appPrefs.didHaveWelcomeOnboarding
     }
 }

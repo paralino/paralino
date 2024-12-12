@@ -222,7 +222,8 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.WelcomeOnboarding.routeSignature) {
             WelcomeOnboardingScreen(
-                onNext = { appState.navController.popBackStack() }
+                isDemo = true,
+                onFinish = { appState.navController.popBackStack() }
             )
         }
     }
@@ -241,7 +242,8 @@ fun NavGraphBuilder.loggedOutGraph(
         }
         composable(AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
             WelcomeOnboardingScreen(
-                onNext = {
+                isDemo = false,
+                onFinish = {
                     appState.navController.navigate(
                         AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP)
                     ) {

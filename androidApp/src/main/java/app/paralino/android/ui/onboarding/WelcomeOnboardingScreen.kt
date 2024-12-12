@@ -11,8 +11,9 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun WelcomeOnboardingScreen(
-    onNext: () -> Unit,
-    vm: WelcomeOnboardingViewModel = koinViewModel()
+    vm: WelcomeOnboardingViewModel = koinViewModel(),
+    isDemo: Boolean,
+    onFinish: () -> Unit,
 ) {
     val step = rememberSaveable { mutableStateOf(WelcomeOnboardingContent.STEP_LOCATION) }
     BackHandler(step.value.ordinal > 0) {
@@ -23,7 +24,8 @@ fun WelcomeOnboardingScreen(
     }
     WelcomeOnboardingScreenCore(
         vm = vm,
+        isDemo = isDemo,
         step = step,
-        onNext = onNext
+        onFinish = onFinish
     )
 }

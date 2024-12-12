@@ -43,7 +43,7 @@ fun LoggedOutScreen(
     WelcomeScreen(
         vm = vm,
         onLoginClick = {
-            appState.navController.navigate(AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN))
+            appState.navController.navigate(AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP))
         },
         onStartClick = {
             appState.navController.navigate(

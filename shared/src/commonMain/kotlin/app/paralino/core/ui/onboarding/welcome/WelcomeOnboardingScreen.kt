@@ -33,10 +33,11 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun WelcomeOnboardingScreenCore(
     vm: WelcomeOnboardingViewModel,
+    isDemo: Boolean,
     step: MutableState<WelcomeOnboardingContent> = rememberSaveable {
         mutableStateOf(WelcomeOnboardingContent.STEP_LOCATION)
     },
-    onNext: () -> Unit
+    onFinish: () -> Unit
 ) {
 
     WelcomeOnboardingScreen(
@@ -46,7 +47,10 @@ fun WelcomeOnboardingScreenCore(
             if (next != null) {
                 step.value = next
             } else {
-                onNext()
+                if (!isDemo) {
+                    vm.completeOnboarding()
+                }
+                onFinish()
             }
         },
         onNewRandomString = {

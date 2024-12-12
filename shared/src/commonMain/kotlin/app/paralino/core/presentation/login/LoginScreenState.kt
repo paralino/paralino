@@ -26,8 +26,7 @@ data class LoginScreenState constructor(
 }
 
 data class LoggedOutScreenState(
-    val hasLogin: Boolean,
-    val didHaveWelcomeOnboarding: Boolean
+    val hasLogin: Boolean
 )
 
 enum class LoginScreenUiType {

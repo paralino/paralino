@@ -199,6 +199,6 @@ object KoinSetup {
         viewModel { PlanInfoViewModel(get(), appPrefs) }
         viewModel { GeneralInfoViewModel(get(), get()) }
         viewModel { LocationSettingsViewModel(get(), get(), get()) }
-        viewModel { WelcomeOnboardingViewModel(get()) }
+        viewModel { WelcomeOnboardingViewModel(get(), get()) }
     }
 }

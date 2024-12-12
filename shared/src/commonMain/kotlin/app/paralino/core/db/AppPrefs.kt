@@ -246,9 +246,9 @@ class AppPrefs(
         }
 
     var didHaveWelcomeOnboarding: Boolean
-        get() = provider.userSettings.getBoolean(keyWelcomeOnboarding, false)
+        get() = provider.appSettings.getBoolean(keyWelcomeOnboarding, false)
         set(value) {
-            provider.userSettings.putBoolean(keyWelcomeOnboarding, value)
+            provider.appSettings.putBoolean(keyWelcomeOnboarding, value)
         }
 
 
