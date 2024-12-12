@@ -166,7 +166,7 @@ object KoinSetup {
         viewModel { (groupId: String?, isOnboarding: Boolean) ->
             SharingStartViewModel(groupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
-        viewModel { LoggedOutViewModel(get()) }
+        viewModel { LoggedOutViewModel(get(), get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
         viewModel { (groupId: String?, code: String?) ->
             MemberInviteViewModel(
@@ -180,7 +180,7 @@ object KoinSetup {
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
-        viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
         viewModel { ConvertAccountViewModel(get()) }

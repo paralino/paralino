@@ -3,41 +3,33 @@ package app.paralino.core.ui.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.login.LoggedOutScreenState
 import app.paralino.core.presentation.login.LoggedOutViewModel
+import app.paralino.core.ui.components.ActionScaffold
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import paralino.shared.generated.resources.Res
 import paralino.shared.generated.resources.ic_launcher_foreground
@@ -50,24 +42,29 @@ fun WelcomeScreen(
     onLoginClick: () -> Unit,
     onStartClick: () -> Unit,
 ) {
-    val state by vm.uiState.collectAsState(LoggedOutScreenState())
+    val state by vm.uiState.collectAsState()
     WelcomeScreen(
-        state = state,
-        onLoginClick = onLoginClick,
-        onStartClick = onStartClick
+        onStartClick = {
+            if (state.didHaveWelcomeOnboarding) {
+                onLoginClick()
+            } else {
+                onStartClick()
+            }
+        }
     )
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun WelcomeScreen(
-    state: LoggedOutScreenState,
-    onLoginClick: () -> Unit,
     onStartClick: () -> Unit,
 ) {
     AppTheme(useDarkTheme = true) {
-        Surface(color = MaterialTheme.colors.background) {
-
+        ActionScaffold(
+            buttonIcon = Res.drawable.ic_login.asPainterResource(),
+            buttonText = stringResource(MR.strings.welcome_screen_button_join),
+            buttonBackground = Color.Transparent,
+            onConfirm = onStartClick
+        ) {
             Image(
                 painter = painterResource(resource = Res.drawable.paralino_start_background),
                 contentDescription = null,
@@ -79,6 +76,7 @@ fun WelcomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
+                    .padding(it)
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
@@ -114,35 +112,6 @@ fun WelcomeScreen(
                 )
 
                 Spacer(Modifier.weight(1f))
-
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-                    onClick = onStartClick
-                ) {
-                    Icon(
-                        painterResource(resource = Res.drawable.ic_login),
-                        contentDescription = null
-                    )
-                    Spacer(Modifier.size(8.dp))
-                    Text(stringResource(MR.strings.welcome_screen_button_join))
-                }
-                Spacer(Modifier.size(10.dp))
-
-                if (state.hasLogin) {
-                    Text(
-                        text = stringResource(MR.strings.login_signup_switch_button_login).annotatedBold(),
-                        style = MaterialTheme.typography.body2,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                onLoginClick()
-                            }
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                    )
-                }
-                Spacer(Modifier.size(20.dp))
             }
         }
     }

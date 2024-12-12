@@ -47,7 +47,7 @@ fun LoggedOutScreen(
         },
         onStartClick = {
             appState.navController.navigate(
-                AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP)
+                AppScreen.LoggedOut.WelcomeOnboarding.routeSignature
             )
         }
     )
@@ -59,7 +59,7 @@ fun LoggedOutScreen(
 fun LoggedOutScreenPreview() {
     AppTheme() {
         Surface {
-            WelcomeScreen(state = LoggedOutScreenState(hasLogin = false), onLoginClick = {}, onStartClick = {})
+            WelcomeScreen(onStartClick = {})
         }
     }
 }

@@ -3,11 +3,11 @@ package app.paralino.android.ui.onboarding.welcome
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ import app.paralino.core.MR
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
@@ -50,9 +52,13 @@ fun WelcomeOnboardingScreen(
         modifier = Modifier
             .fillMaxSize(),
         order = step.ordinal,
-        title = step.title,
-        info = step.info,
-        buttonText = stringResource(MR.strings.button_continue),
+        title = stringResource(step.title),
+        info = step.info?.let { stringResource(it) },
+        buttonText = if (step.next() == null) {
+            stringResource(MR.strings.button_continue)
+        } else {
+            stringResource(MR.strings.button_next)
+        },
         onSkip = null,
         onNext = {
             val next = step.next()
@@ -75,36 +81,34 @@ private fun WelcomeOnboardingHeaderContent(
     step: WelcomeOnboardingContent
 ) {
     Column(modifier = modifier) {
-        if (step.titleTag != null) {
-            AnimatedContent(
-                modifier = Modifier
-                    .padding(top = 20.dp)
-                    .padding(horizontal = 20.dp)
-                    .zIndex(1f),
-                targetState = step.ordinal,
-                label = "animated info",
-                transitionSpec = onboardingContentTransitionSpec()
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = CoreAppIcons.LauncherLogo.asPainterResource(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(32.dp)
-                            .background(
-                                color = MaterialTheme.colors.primary,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                    )
-                    Text(
-                        text = step.titleTag,
-                        style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
+        AnimatedContent(
+            modifier = Modifier
+                .padding(top = 20.dp, bottom = 12.dp)
+                .padding(horizontal = 20.dp)
+                .zIndex(1f),
+            targetState = step.ordinal,
+            label = "animated info",
+            transitionSpec = onboardingContentTransitionSpec()
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = CoreAppIcons.LauncherLogo.asPainterResource(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(32.dp)
+                        .alpha(animateFloatAsState(if (step.titleTag != null) 1f else 0f).value)
+                        .background(
+                            color = MaterialTheme.colors.primary,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+                Text(
+                    text = step.titleTag?.let { stringResource(it) } ?: "",
+                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
+                )
             }
-            Spacer(Modifier.size(12.dp))
         }
         AnimatedContent(
             modifier = Modifier.zIndex(0f),
@@ -113,9 +117,9 @@ private fun WelcomeOnboardingHeaderContent(
             label = "animated header"
         ) {
             when (it) {
-                2 -> WelcomeOnboardingPage2()
-                3 -> WelcomeOnboardingPage3()
-                else -> WelcomeOnboardingPage1(isEncryptionOn = step == WelcomeOnboardingContent.STEP_LOCATION_ENCRYPTION)
+                200 -> WelcomeOnboardingPagePlaces()
+                300 -> WelcomeOnboardingPageControl()
+                else -> WelcomeOnboardingPageLocation(isEncryptionOn = step == WelcomeOnboardingContent.STEP_LOCATION_ENCRYPTION)
             }
         }
     }
@@ -123,33 +127,33 @@ private fun WelcomeOnboardingHeaderContent(
 
 enum class WelcomeOnboardingContent(
     val parentKey: Int,
-    val title: String,
-    val titleTag: String?,
-    val info: String?
+    val title: StringResource,
+    val titleTag: StringResource?,
+    val info: StringResource?
 ) {
     STEP_LOCATION(
-        parentKey = 1,
-        title = "Real-time location sharing",
-        titleTag = "Paralino",
-        info = "Battery, speed, elevation and network monitoring. Private groups with family, friends or only your devices."
+        parentKey = 100,
+        title = MR.strings.onboarding_step_location_title,
+        titleTag = MR.strings.onboarding_step_location_title_tag,
+        info = MR.strings.onboarding_step_location_info
     ),
     STEP_LOCATION_ENCRYPTION(
-        parentKey = 1,
-        title = "With privacy",
-        titleTag = "Encryption",
-        info = "Everything always safe and encrypted."
+        parentKey = 100,
+        title = MR.strings.onboarding_step_location_encryption_title,
+        titleTag = MR.strings.onboarding_step_location_encryption_title_tag,
+        info = MR.strings.onboarding_step_location_encryption_info
     ),
     STEP_PLACES(
-        parentKey = 2,
-        title = "Place alerts",
-        titleTag = "Simplicity",
-        info = "Get notified when someone enters/leaves predefined area"
+        parentKey = 200,
+        title = MR.strings.onboarding_step_places_title,
+        titleTag = MR.strings.onboarding_step_places_title_tag,
+        info = MR.strings.onboarding_step_places_info
     ),
     STEP_OPTIONS(
-        parentKey = 3,
-        title = "Full sharing control",
-        titleTag = "Control",
-        info = "You are always in control with whom, how and what you share"
+        parentKey = 300,
+        title = MR.strings.onboarding_step_options_title,
+        titleTag = MR.strings.onboarding_step_options_title_tag,
+        info = MR.strings.onboarding_step_options_info
     );
 
     fun next(): WelcomeOnboardingContent? {

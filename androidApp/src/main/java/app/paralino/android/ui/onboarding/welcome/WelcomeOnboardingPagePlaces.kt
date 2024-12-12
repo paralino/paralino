@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun WelcomeOnboardingPage2(
+fun WelcomeOnboardingPagePlaces(
     modifier: Modifier = Modifier
 ) {
     Box(

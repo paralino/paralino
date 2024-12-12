@@ -90,6 +90,7 @@ import paralino.shared.generated.resources.ic_wifi_off
 import paralino.shared.generated.resources.image_map_mockup_dark
 import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
+import paralino.shared.generated.resources.paralino_start_background
 
 object CoreAppIcons {
     val LauncherLogo get() = Res.drawable.ic_launcher_foreground
@@ -184,6 +185,8 @@ object CoreAppIcons {
     val MapMockupDark get() = Res.drawable.image_map_mockup_dark
     val MapMockupLight get() = Res.drawable.image_map_mockup_light
     val MapMockupSatelliteLawn get() = Res.drawable.image_map_satellite_lawn
+
+    val StartBackground get() = Res.drawable.paralino_start_background
 
     @Composable
     inline fun DrawableResource.asPainterResource(): Painter {

@@ -1,13 +1,12 @@
 package app.paralino.core.presentation.main
 
 import app.paralino.core.app_update.IAppUpdateManager
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.AppUpdateType
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.main.DeeplinkType
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +27,10 @@ class MainViewModel constructor(
     private val userRepo: UserRepository,
     private val remoteConfigRepository: RemoteConfigRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
-    private val appUpdateManager: IAppUpdateManager,
-    private val appPrefs: AppPrefs
+    private val appUpdateManager: IAppUpdateManager
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(MainActivityState(didHaveWelcomeOnboarding = appPrefs.didHaveWelcomeOnboarding))
+    private val _uiState = MutableStateFlow(MainActivityState())
     val uiState: StateFlow<MainActivityState> = _uiState
 
     private val _eventChannel = Channel<MainScreenEvent?>()

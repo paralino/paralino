@@ -59,7 +59,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Composable
-fun WelcomeOnboardingPage1(
+fun WelcomeOnboardingPageLocation(
     modifier: Modifier = Modifier,
     isEncryptionOn: Boolean
 ) {

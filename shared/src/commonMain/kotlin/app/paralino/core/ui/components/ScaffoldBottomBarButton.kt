@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.theme.ButtonStyle
@@ -24,6 +25,7 @@ fun ActionScaffold(
     modifier: Modifier = Modifier,
     buttonStyle: ButtonStyle = ButtonStyle.BIG(iconSize = 24.dp),
     buttonState: AppButtonState = AppButtonState.CONTENT,
+    buttonBackground: Color = MaterialTheme.colors.background,
     buttonIcon: Painter?,
     buttonText: String,
     onConfirm: () -> Unit,
@@ -36,6 +38,7 @@ fun ActionScaffold(
                 modifier = Modifier,
                 buttonStyle = buttonStyle,
                 buttonState = buttonState,
+                buttonBackground = buttonBackground,
                 buttonIcon = buttonIcon,
                 buttonText = buttonText,
                 onClick = onConfirm
@@ -48,12 +51,13 @@ fun ActionScaffold(
 @Composable
 fun ScaffoldBottomBarButtons(
     modifier: Modifier = Modifier,
+    buttonBackground: Color = MaterialTheme.colors.background,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.background)
+            .background(buttonBackground)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -71,11 +75,15 @@ fun ScaffoldBottomBarButton(
     modifier: Modifier = Modifier,
     buttonStyle: ButtonStyle = ButtonStyle.BIG,
     buttonState: AppButtonState = AppButtonState.CONTENT,
+    buttonBackground: Color = MaterialTheme.colors.background,
     buttonIcon: Painter?,
     buttonText: String,
     onClick: () -> Unit
 ) {
-    ScaffoldBottomBarButtons(modifier = modifier) {
+    ScaffoldBottomBarButtons(
+        modifier = modifier,
+        buttonBackground = buttonBackground
+    ) {
         FilledButton(
             modifier = Modifier,
             style = buttonStyle,

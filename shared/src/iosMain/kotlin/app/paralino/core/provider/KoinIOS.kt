@@ -164,7 +164,7 @@ object KoinIOS {
             factory { (groupID: String?, isOnboarding: Boolean) ->
                 SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
-            factory { LoggedOutViewModel(get()) }
+            factory { LoggedOutViewModel(get(), get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
             factory { (groupId: String?, code: String?) ->
                 MemberInviteViewModel(
@@ -182,7 +182,7 @@ object KoinIOS {
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
             }
-            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }

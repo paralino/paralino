@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -45,7 +46,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
 @Composable
-fun WelcomeOnboardingPage3(
+fun WelcomeOnboardingPageControl(
     modifier: Modifier = Modifier
 ) {
     var animationStarted by remember { mutableFloatStateOf(0f) }
@@ -128,7 +129,7 @@ fun WelcomeOnboardingPage3(
         BatteryPerformanceSwitch2(
             modifier = Modifier
                 .offset(
-                    x = 20.dp,
+                    x = 12.dp,
                     y = animateDpAsState(
                         targetValue = animationStarted
                             .times(-maxHeight.value)
@@ -157,8 +158,9 @@ fun WelcomeOnboardingPage3(
 
         ElevationSwitch(
             modifier = Modifier
+                .align(Alignment.TopEnd)
                 .offset(
-                    x = maxWidth.times(0.6f),
+                    x = maxWidth.times(0.05f),
                     y = animateDpAsState(
                         targetValue = animationStarted
                             .times(-maxHeight.value)
@@ -172,8 +174,9 @@ fun WelcomeOnboardingPage3(
 
         SharingStopButton(
             modifier = Modifier
+                .align(Alignment.TopEnd)
                 .offset(
-                    x = maxWidth.times(0.5f),
+                    x = -maxWidth.times(0.02f),
                     y = animateDpAsState(
                         targetValue = animationStarted
                             .times(-maxHeight.value)

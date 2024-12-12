@@ -12,8 +12,7 @@ data class MainActivityState(
     val isSessionExpiredShown: Boolean = false,
     val appUpdateStatus: AppUpdateStatus = AppUpdateStatus.Idle,
     val dataRefreshBlockingLoadingShown: Boolean = false,
-    val pendingDeeplinkType: DeeplinkType? = null,
-    val didHaveWelcomeOnboarding: Boolean = false
+    val pendingDeeplinkType: DeeplinkType? = null
 ) {
     companion object {
         // used in iOS since KMM still does not propagates default values
