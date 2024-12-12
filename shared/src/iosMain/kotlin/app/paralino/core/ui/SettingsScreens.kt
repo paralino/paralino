@@ -244,13 +244,15 @@ object SettingsScreens {
     fun GeneralInfoScreenVC(
         vm: GeneralInfoViewModel,
         openLicencesScreen: () -> Unit,
+        onShowOnboarding: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GeneralInfoScreenCore(
                 appState = it,
                 vm = vm,
                 paddingValues = PaddingValues(),
-                onLicencesClick = openLicencesScreen
+                onLicencesClick = openLicencesScreen,
+                onShowOnboarding = onShowOnboarding
             )
         }
     }

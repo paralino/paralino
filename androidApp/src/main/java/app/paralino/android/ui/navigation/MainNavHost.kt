@@ -220,6 +220,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
             RawDataScreen(appState = appState, type = rawDataType!!)
         }
+        composable(AppScreen.Settings.WelcomeOnboarding.routeSignature) {
+            WelcomeOnboardingScreen(
+                coreUiState = appState,
+                onNext = { appState.navController.popBackStack() }
+            )
+        }
     }
 }
 

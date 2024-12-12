@@ -108,6 +108,7 @@
     <string name="setting_title_privacy">Privacy Policy</string>
     <string name="setting_title_terms">Terms of Use</string>
     <string name="setting_title_libraries">Acknowledgments</string>
+    <string name="setting_title_onboarding">Show onboarding</string>
     <string name="setting_title_logout">Logout</string>
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
