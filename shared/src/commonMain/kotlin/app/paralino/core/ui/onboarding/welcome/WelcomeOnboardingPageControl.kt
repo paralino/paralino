@@ -1,4 +1,4 @@
-package app.paralino.android.ui.onboarding.welcome
+package app.paralino.core.ui.onboarding.welcome
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -47,12 +47,13 @@ import kotlin.time.Duration.Companion.hours
 
 @Composable
 fun WelcomeOnboardingPageControl(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    animationStarted: Boolean
 ) {
-    var animationStarted by remember { mutableFloatStateOf(0f) }
+    var animationProgress by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         delay(10)
-        animationStarted = 1f
+        animationProgress = 1f
     }
 
     BoxWithConstraints(
@@ -60,7 +61,7 @@ fun WelcomeOnboardingPageControl(
             .fillMaxSize()
             .padding(horizontal = 20.dp)
             .padding(bottom = 20.dp)
-            .shadow(1.dp, RoundedCornerShape(12.dp))
+            .shadow(8.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .padding(6.dp)
@@ -71,7 +72,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = 30.dp,
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value * 0.2).dp,
                         animationSpec = tween(durationMillis = 300, delayMillis = 200)
@@ -86,7 +87,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = 10.dp,
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value).dp,
                         animationSpec = tween(durationMillis = 400, delayMillis = 100)
@@ -101,14 +102,15 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = maxWidth.div(2),
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value.times(0.02)).dp,
                         animationSpec = tween(durationMillis = 300, delayMillis = 100)
                     ).value
                 )
                 .rotate(8f)
-                .scale(0.9f)
+                .scale(0.9f),
+            animationStarted = animationStarted
         )
 
         BatteryPerformanceSwitch(
@@ -116,14 +118,15 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = -30.dp,
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value * 0.42).dp,
                         animationSpec = tween(durationMillis = 400, delayMillis = 300)
                     ).value
                 )
                 .rotate(-1f)
-                .scale(0.8f)
+                .scale(0.8f),
+            animationStarted = animationStarted
         )
 
         BatteryPerformanceSwitch2(
@@ -131,7 +134,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = 12.dp,
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value * 0.55).dp,
                         animationSpec = tween(durationMillis = 400, delayMillis = 400)
@@ -146,7 +149,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = -20.dp,
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value * 0.7).dp,
                         animationSpec = tween(durationMillis = 500, delayMillis = 600)
@@ -162,14 +165,15 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = maxWidth.times(0.05f),
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value.times(0.45f)).dp,
                         animationSpec = tween(durationMillis = 600, delayMillis = 500)
                     ).value
                 )
                 .rotate(5f)
-                .scale(0.7f)
+                .scale(0.7f),
+            animationStarted = animationStarted
         )
 
         SharingStopButton(
@@ -178,23 +182,26 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = -maxWidth.times(0.02f),
                     y = animateDpAsState(
-                        targetValue = animationStarted
+                        targetValue = animationProgress
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value.times(0.8f)).dp,
                         animationSpec = tween(durationMillis = 500, delayMillis = 800)
                     ).value
                 )
-                .rotate(-5f)
+                .rotate(-5f),
+            animationStarted = animationStarted
         )
     }
 }
 
 @Composable
-fun SpeedSwitch(modifier: Modifier = Modifier) {
+fun SpeedSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
-        delay(1500)
-        itemState = !itemState
+    LaunchedEffect(animationStarted) {
+        if (animationStarted) {
+            delay(200)
+            itemState = !itemState
+        }
     }
     LargeSeekbarSwitch(
         modifier = modifier
@@ -217,8 +224,14 @@ fun SpeedSwitch(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ElevationSwitch(modifier: Modifier = Modifier) {
+fun ElevationSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(true) }
+    LaunchedEffect(animationStarted) {
+        if (animationStarted) {
+            delay(1200)
+            itemState = !itemState
+        }
+    }
     LargeSeekbarSwitch(
         modifier = modifier
             .height(LargeSwitchDefaults.minHeight)
@@ -242,7 +255,6 @@ fun ElevationSwitch(modifier: Modifier = Modifier) {
 @Composable
 fun BatterySwitch(modifier: Modifier = Modifier) {
     var itemState by remember { mutableStateOf(true) }
-
     LargeSeekbarSwitch(
         modifier = modifier
             .height(LargeSwitchDefaults.minHeight)
@@ -287,11 +299,13 @@ fun HighAccuracySwitch(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BatteryPerformanceSwitch(modifier: Modifier = Modifier) {
+fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        delay(2000)
-        itemState = !itemState
+    LaunchedEffect(animationStarted) {
+        if (animationStarted) {
+            delay(700)
+            itemState = !itemState
+        }
     }
     SubscriptionOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
@@ -308,10 +322,6 @@ fun BatteryPerformanceSwitch(modifier: Modifier = Modifier) {
 @Composable
 fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
     var itemState by remember { mutableStateOf(false) }
-//    LaunchedEffect(Unit) {
-//        delay(2000)
-//        itemState = !itemState
-//    }
     SubscriptionOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_1),
@@ -325,13 +335,15 @@ fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SharingStopButton(modifier: Modifier = Modifier) {
+fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        delay(3000)
-        itemState = !itemState
-        delay(3000)
-        itemState = !itemState
+    LaunchedEffect(animationStarted) {
+        if (animationStarted) {
+            delay(2000)
+            itemState = !itemState
+            delay(2000)
+            itemState = !itemState
+        }
     }
     if (itemState) {
         ExtendedFloatingActionButton(

@@ -35,6 +35,7 @@ import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
@@ -234,6 +235,7 @@ object KoinIOS {
             factory { PlanInfoViewModel(get(), appPrefs) }
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get()) }
+            factory { WelcomeOnboardingViewModel(get()) }
         }
     }
 
@@ -301,5 +303,6 @@ object KoinIOS {
         val planInfoVM get() = get<PlanInfoViewModel>()
         val generalInfoVM get() = get<GeneralInfoViewModel>()
         val locationSettingsVM get() = get<LocationSettingsViewModel>()
+        val welcomeOnboardingVM get() = get<WelcomeOnboardingViewModel>()
     }
 }

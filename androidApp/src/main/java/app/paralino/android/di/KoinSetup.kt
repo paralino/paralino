@@ -52,6 +52,7 @@ import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
@@ -198,5 +199,6 @@ object KoinSetup {
         viewModel { PlanInfoViewModel(get(), appPrefs) }
         viewModel { GeneralInfoViewModel(get(), get()) }
         viewModel { LocationSettingsViewModel(get(), get(), get()) }
+        viewModel { WelcomeOnboardingViewModel(get()) }
     }
 }

@@ -20,18 +20,18 @@ import app.paralino.android.ui.login.ResetPasswordScreen
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
-import app.paralino.android.ui.onboarding.welcome.WelcomeOnboardingScreen
+import app.paralino.android.ui.onboarding.WelcomeOnboardingScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
-import app.paralino.android.ui.settings.billing.PaywallScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.GeneralInfoScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.LocationSettingsScreen
 import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.SettingsScreen
+import app.paralino.android.ui.settings.billing.PaywallScreen
 import app.paralino.android.ui.settings.billing.SubscriptionScreen
 import app.paralino.android.ui.settings.profile.AccountScreen
 import app.paralino.android.ui.settings.profile.ChangeEmailScreen
@@ -222,7 +222,6 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.WelcomeOnboarding.routeSignature) {
             WelcomeOnboardingScreen(
-                coreUiState = appState,
                 onNext = { appState.navController.popBackStack() }
             )
         }
@@ -242,7 +241,6 @@ fun NavGraphBuilder.loggedOutGraph(
         }
         composable(AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
             WelcomeOnboardingScreen(
-                coreUiState = appState,
                 onNext = {
                     appState.navController.navigate(
                         AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP)

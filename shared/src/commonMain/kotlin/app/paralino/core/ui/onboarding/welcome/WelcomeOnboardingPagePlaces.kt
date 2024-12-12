@@ -1,4 +1,4 @@
-package app.paralino.android.ui.onboarding.welcome
+package app.paralino.core.ui.onboarding.welcome
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -42,13 +42,13 @@ fun WelcomeOnboardingPagePlaces(
         PlaceEmptyScreenMapContent(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 20.dp),
-            mapShadowElevation = 1.dp
+                .padding(bottom = 20.dp, top = 12.dp),
+            mapShadowElevation = 8.dp
         )
         Column(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 20.dp)
+                .padding(bottom = 20.dp, top = 12.dp)
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
                 .background(
@@ -72,7 +72,7 @@ fun WelcomeOnboardingPagePlaces(
             verticalArrangement = Arrangement.Center
         ) {
             PlaceEmptyStateNotificationItems(
-                showNotificationsAfter = 2.seconds,
+                notificationVisibility = notificationVisibility,
                 permissionError = null,
                 onPostSampleNotification = {},
                 onErrorItemClick = {}

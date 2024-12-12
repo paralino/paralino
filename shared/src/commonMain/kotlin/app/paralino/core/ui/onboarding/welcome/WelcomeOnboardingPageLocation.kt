@@ -1,4 +1,4 @@
-package app.paralino.android.ui.onboarding.welcome
+package app.paralino.core.ui.onboarding.welcome
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
@@ -40,8 +40,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.groups.dummyLocations
-import app.paralino.android.ui.groups.dummyMemberState
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -50,24 +48,26 @@ import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.groups.components.dummyLocations
+import app.paralino.core.ui.groups.components.dummyMemberState
 import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.places.PlacesEmptyStateMarkers
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
-import io.viascom.nanoid.NanoId
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Composable
 fun WelcomeOnboardingPageLocation(
     modifier: Modifier = Modifier,
-    isEncryptionOn: Boolean
+    isEncryptionOn: Boolean,
+    onNewRandomString: () -> String
 ) {
     Box(
         modifier = modifier
             .padding(horizontal = 20.dp)
             .padding(bottom = 20.dp)
-            .shadow(1.dp, RoundedCornerShape(12.dp))
+            .shadow(8.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .padding(6.dp)
@@ -75,7 +75,7 @@ fun WelcomeOnboardingPageLocation(
     ) {
         MapContent(modifier = Modifier.fillMaxSize())
         MemberItem(modifier = Modifier.align(Alignment.BottomCenter))
-        EncryptedOverlay(isEncryptionOn = isEncryptionOn)
+        EncryptedOverlay(isEncryptionOn = isEncryptionOn, onNewRandomString = onNewRandomString)
     }
 }
 
@@ -170,13 +170,14 @@ private fun MemberItem(modifier: Modifier = Modifier) {
 @Composable
 private fun EncryptedOverlay(
     modifier: Modifier = Modifier,
-    isEncryptionOn: Boolean
+    isEncryptionOn: Boolean,
+    onNewRandomString: () -> String
 ) {
 
     var text by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        val seed = NanoId.generate(50)
+        val seed = onNewRandomString()
         while (coroutineContext.isActive) {
             text = buildString {
                 repeat(40) {

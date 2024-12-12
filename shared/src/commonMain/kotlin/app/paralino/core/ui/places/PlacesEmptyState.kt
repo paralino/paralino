@@ -29,6 +29,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -89,7 +90,15 @@ fun PlacesEmptyState(
                 .padding(it)
                 .padding(bottom = 20.dp)
         ) {
+
+            var notificationVisibility by rememberSaveable { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                delay(3.seconds)
+                notificationVisibility = true
+            }
+
             PlaceEmptyStateNotificationItems(
+                notificationVisibility = notificationVisibility,
                 permissionError = permissionError,
                 onPostSampleNotification = onPostSampleNotification,
                 onErrorItemClick = onErrorItemClick
@@ -247,12 +256,11 @@ fun PlaceEmptyScreenMapContent(
 
 @Composable
 fun ColumnScope.PlaceEmptyStateNotificationItems(
-    showNotificationsAfter: Duration = 3.seconds,
+    notificationVisibility: Boolean,
     permissionError: ConditionErrorType.PermissionNotifications?,
     onPostSampleNotification: (String) -> Unit,
     onErrorItemClick: (ConditionErrorType) -> Unit,
 ) {
-    var notificationVisibility by rememberSaveable { mutableStateOf(false) }
     val notificationContentEnter = remember {
         MR.strings.place_notification_enter.localizedString(
             "Peter",
@@ -264,11 +272,6 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
             "Heidi",
             MR.strings.places_notification_demo_home.localizedString()
         )
-    }
-
-    LaunchedEffect(Unit) {
-        delay(showNotificationsAfter)
-        notificationVisibility = true
     }
 
     AnimatedVisibility(visible = permissionError != null) {

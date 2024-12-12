@@ -1,6 +1,5 @@
-package app.paralino.android.ui.onboarding.welcome
+package app.paralino.core.ui.onboarding.welcome
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
@@ -40,7 +39,6 @@ import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 
-@SuppressLint("UnusedContentLambdaTargetStateParameter")
 @Composable
 fun BaseOnboardingScreen(
     modifier: Modifier = Modifier,
@@ -157,14 +155,16 @@ fun BaseOnboardingScreen(
     )
 }
 
-inline fun <reified T : Comparable<T>> onboardingContentTransitionSpec(): AnimatedContentTransitionScope<T>.() -> ContentTransform {
+inline fun <reified T : Comparable<T>> onboardingContentTransitionSpec(
+    fixedTransitionHeight: Int? = null
+): AnimatedContentTransitionScope<T>.() -> ContentTransform {
     return {
         if (targetState > initialState) {
-            slideInVertically { height -> height } + fadeIn() togetherWith
-                    slideOutVertically { height -> -height } + fadeOut()
+            slideInVertically { height -> fixedTransitionHeight ?: height } + fadeIn() togetherWith
+                    slideOutVertically { height -> -(fixedTransitionHeight ?: height) } + fadeOut()
         } else {
-            slideInVertically { height -> -height } + fadeIn() togetherWith
-                    slideOutVertically { height -> height } + fadeOut()
+            slideInVertically { height -> -(fixedTransitionHeight ?: height) } + fadeIn() togetherWith
+                    slideOutVertically { height -> fixedTransitionHeight ?: height } + fadeOut()
         }.using(
             // Disable clipping since the faded slide-in/out should
             // be displayed out of bounds.
