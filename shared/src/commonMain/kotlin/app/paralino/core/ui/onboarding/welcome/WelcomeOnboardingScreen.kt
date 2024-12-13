@@ -27,6 +27,8 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.onboarding.BaseOnboardingScreen
+import app.paralino.core.ui.onboarding.onboardingContentTransitionSpec
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 

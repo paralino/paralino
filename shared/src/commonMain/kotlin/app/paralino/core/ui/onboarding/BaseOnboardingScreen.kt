@@ -1,4 +1,4 @@
-package app.paralino.core.ui.onboarding.welcome
+package app.paralino.core.ui.onboarding
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
