@@ -4,6 +4,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.domain.crypto.VerificationResultError
+import app.paralino.core.models.Resource
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
@@ -16,16 +17,24 @@ import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.utils.extensions.distinctFlowOfList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class UserGroupLocalDataSource constructor(
     private val database: MainDatabaseHelper,
@@ -34,8 +43,23 @@ class UserGroupLocalDataSource constructor(
     private val placeMapper: GroupPlaceMapperLocal,
     private val memberLocal: LocationLocalDataSource,
     private val placeActivity: PlaceActivityDataSource,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val scopeProvider: ICoroutineScopeProvider
 ) {
+
+    val allGroupsState: StateFlow<Resource<List<UserGroupWithMetadata>>> =
+        getAllGroupsWithMetadata()
+            .map { Resource.Ready(it) }
+            .conflate()
+            .distinctUntilChanged { old, new ->
+                old.data.sortedBy { it.id }.toTypedArray()
+                    .contentDeepEquals(new.data.sortedBy { it.id }.toTypedArray())
+            }
+            .stateIn(
+                scope = scopeProvider.defaultIOScope,
+                started = SharingStarted.Eagerly,
+                initialValue = Resource.NotInitialized
+            )
 
     suspend fun recreateGroups(data: List<GroupWithMembersAndPlacesRaw>) {
         database.groupRelatedDao.recreateGroupsWithMembersAndPlaces(
@@ -185,6 +209,10 @@ class UserGroupLocalDataSource constructor(
             }
             .distinctFlowOfList()
             .map { it.sortedBy { it.name } }
+    }
+
+    fun getGroupsCount(): Flow<Int?> {
+        return database.groupRelatedDao.getGroupsCount()
     }
 
     suspend fun getMemberModelsWithLocationForUser(userId: String): List<MemberModelWithLocations> {

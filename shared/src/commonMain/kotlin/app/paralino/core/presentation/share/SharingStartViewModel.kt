@@ -15,7 +15,6 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.user.UserRepository

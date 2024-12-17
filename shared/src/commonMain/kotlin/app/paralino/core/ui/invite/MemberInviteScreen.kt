@@ -195,11 +195,12 @@ private fun MemberInviteScreen(
                     Spacer(modifier = Modifier.size(20.dp))
                     SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_group))
                     GroupListItem(
+                        modifier = Modifier
+                            .clickable {
+                                if (state.canChangeGroup) onPickGroup()
+                            },
                         data = state.group,
-                        onEdit = {},
-                        onClick = {
-                            if (state.canChangeGroup) onPickGroup()
-                        }
+                        onEdit = {}
                     )
                 }
 

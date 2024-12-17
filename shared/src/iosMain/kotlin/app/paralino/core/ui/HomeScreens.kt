@@ -51,7 +51,7 @@ import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import app.paralino.core.ui.groups.GroupSettingsScreenCore
 import app.paralino.core.ui.invite.MemberInviteScreenCore
-import app.paralino.core.ui.login.GroupInitScreenCore
+import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
@@ -464,17 +464,13 @@ object HomeScreens {
 
     fun FreePlanInfoScreenVC(
         vm: PlanInfoViewModel,
-        showBanner: Boolean,
         onContinue: () -> Unit,
-        openPaywall: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             FreePlanInfoScreenCore(
                 coreUiState = it,
                 vm = vm,
-                showBanner = showBanner,
                 onContinue = onContinue,
-                openPaywall = openPaywall,
             )
         }
     }

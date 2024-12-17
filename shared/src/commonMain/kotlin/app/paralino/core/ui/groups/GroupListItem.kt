@@ -31,16 +31,13 @@ import app.paralino.core.ui.components.ImageModelImage
 
 @Composable
 fun GroupListItem(
-    data: GroupItemState,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    data: GroupItemState,
     onEdit: () -> Unit,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onClick() }
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colors.surface)
             .run {

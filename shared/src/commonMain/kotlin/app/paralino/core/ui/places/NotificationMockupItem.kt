@@ -2,7 +2,6 @@ package app.paralino.core.ui.places
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,14 +30,11 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun NotificationMockupItem(
     modifier: Modifier = Modifier,
-    description: String,
-    onClick: () -> Unit
+    description: String
 ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 12.dp)
             .fillMaxWidth()
-            .clickable(onClick = onClick)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .padding(vertical = 8.dp, horizontal = 8.dp),

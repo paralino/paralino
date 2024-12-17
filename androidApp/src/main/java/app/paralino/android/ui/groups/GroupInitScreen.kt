@@ -7,18 +7,17 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.presentation.groups.GroupInitViewModel
-import app.paralino.core.ui.login.GroupInitScreenCore
-import org.koin.androidx.compose.getViewModel
+import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
 
 
 @Composable
 fun GroupInitScreen(
     appState: MainAppState,
-    vm: GroupInitViewModel = getViewModel(),
+    vm: GroupInitViewModel
 ) {
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
-        messageDispatcher = vm.messageDispatcher,
+        messageDispatcher = vm,
         notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
     )
 

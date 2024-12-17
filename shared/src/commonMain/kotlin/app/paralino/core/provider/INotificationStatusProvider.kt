@@ -3,6 +3,7 @@ package app.paralino.core.provider
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.toResource
+import app.paralino.core.presentation.ICoreMessageDispatcherEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -29,3 +30,5 @@ data class NotificationConditionStatus constructor(
      */
     companion object { }
 }
+
+data class NotificationPermissionResultEvent(val granted: Boolean): ICoreMessageDispatcherEvent

@@ -3,10 +3,9 @@ package app.paralino.core.ui.places
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +65,6 @@ import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -289,9 +286,10 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
             modifier = Modifier
                 .rotate(2f)
                 .padding(top = 30.dp)
-                .pulsate(pulseAmount = 0.95f),
-            description = notificationContentEnter,
-            onClick = { onPostSampleNotification(notificationContentEnter) }
+                .padding(horizontal = 12.dp)
+                .pulsate(pulseAmount = 0.95f)
+                .clickable { onPostSampleNotification(notificationContentEnter) },
+            description = notificationContentEnter
         )
     }
 
@@ -302,9 +300,11 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
             modifier = Modifier
                 .rotate(-2f)
                 .padding(top = 12.dp, bottom = 30.dp)
-                .pulsate(pulseAmount = 0.9f),
-            description = notificationContentExit,
-            onClick = { onPostSampleNotification(notificationContentExit) }
+                .padding(horizontal = 12.dp)
+                .pulsate(pulseAmount = 0.9f)
+                .clickable { onPostSampleNotification(notificationContentExit) }
+            ,
+            description = notificationContentExit
         )
     }
 

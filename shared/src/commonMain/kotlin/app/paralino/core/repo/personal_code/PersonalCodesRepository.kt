@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class PersonalCodesRepository constructor(
     private val remote: PersonalCodesRemoteSource,
@@ -97,16 +99,21 @@ class PersonalCodesRepository constructor(
         return personalCodeLocalState.value.size < userRepo.userPlans.value.highestValidPlanConfig.paralinoIdsLimit
     }
 
-    suspend fun refreshPersonalCodes() {
-        triggerRemoteOnly {
+    suspend fun refreshPersonalCodes(cacheDelayMillis: Duration = 0.seconds) {
+        triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(
+                key = "personal_code_refresh",
+                timeMillis = cacheDelayMillis.inWholeMilliseconds
+            )
+        ) {
             remote.getMyPersonalCodes()
                 .also { local.replacePersonalCodes(it) }
         }
     }
 
-    suspend fun refreshPersonalCodesAndRestockKeys() {
+    suspend fun refreshPersonalCodesAndRestockKeys(cacheDelayMillis: Duration = 0.seconds) {
         if (sessionMonitor.isSessionValid()) {
-            refreshPersonalCodes()
+            refreshPersonalCodes(cacheDelayMillis = cacheDelayMillis)
             tryToRestockPreKeys(20.minutes.inWholeMilliseconds)
         }
     }

@@ -30,6 +30,9 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT * FROM groupEntity")
     fun getAllGroups(): Flow<List<GroupEntity>>
 
+    @Query("SELECT COUNT(id) FROM groupEntity")
+    fun getGroupsCount(): Flow<Int?>
+
     @Query("SELECT ownerUserId FROM groupEntity WHERE id = :groupId")
     suspend fun getGroupOwnerUserId(groupId: String): String?
 

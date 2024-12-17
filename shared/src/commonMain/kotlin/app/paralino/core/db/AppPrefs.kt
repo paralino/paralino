@@ -68,6 +68,7 @@ class AppPrefs(
         const val keyBalancedPerformance = "prefs.location.balanced.performance"
         const val keyBalancedHighAccuracy = "prefs.location.balanced.highAccuracy"
         const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
+        const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
     }
 
     val isTokenValid: Boolean
@@ -249,6 +250,12 @@ class AppPrefs(
         get() = provider.appSettings.getBoolean(keyWelcomeOnboarding, false)
         set(value) {
             provider.appSettings.putBoolean(keyWelcomeOnboarding, value)
+        }
+
+    var didHaveAccountWelcomeOnboarding: Boolean
+        get() = provider.appSettings.getBoolean(keyAccountWelcomeOnboarding, false)
+        set(value) {
+            provider.appSettings.putBoolean(keyAccountWelcomeOnboarding, value)
         }
 
 

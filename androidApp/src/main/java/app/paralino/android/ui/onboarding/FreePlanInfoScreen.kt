@@ -5,7 +5,6 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -15,7 +14,6 @@ fun FreePlanInfoScreen(
 ) {
     FreePlanInfoScreenCore(
         coreUiState = appState,
-        showBanner = false,
         vm = vm,
         onContinue = {
             appState.navController.navigate(
@@ -25,14 +23,6 @@ fun FreePlanInfoScreen(
                     this.inclusive = false
                 }
             }
-        },
-        openPaywall = {
-            appState.navController.navigate(
-                AppScreen.MainHome.BillingPaywall.route(
-                    groupId = null,
-                    type = BillingScreenSourceType.FREE_PLAN_NOTICE
-                )
-            )
         }
     )
 }

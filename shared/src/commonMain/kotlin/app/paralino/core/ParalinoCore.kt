@@ -80,7 +80,6 @@ import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
@@ -190,7 +189,7 @@ val dataSourceModule = module {
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
 
@@ -244,7 +243,6 @@ val coreModule = module {
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), appPrefs) }
-    single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }

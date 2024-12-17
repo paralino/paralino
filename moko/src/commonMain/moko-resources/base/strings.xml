@@ -20,6 +20,7 @@
     <string name="button_open">Open</string>
     <string name="button_cool">Cool</string>
     <string name="button_continue">Continue</string>
+    <string name="button_notNow">Not now</string>
     <string name="button_open_settings">Open settings</string>
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -38,7 +39,7 @@
     <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_background_permission_missing_sheet_message_android11">Please change location permission settings to **%s** in order to **reliably and always** track and share your location with others.</string>
     <string name="error_location_service_missing_sheet_message">Please enable **device location** in order to locate your device.</string>
-    <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your places.</string>
+    <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your group events, places, and account.</string>
     <string name="error_location_background_permission_missing_notification_message">Location sharing can\'t start because you are missing all time location permission!\nPlease open the app to restart location sharing!</string>
     <string name="error_location_sharing_start_notification_message">Location sharing can\'t start!\nPlease open the app again!</string>
     <string name="error_device_registration_notification_message">Your device can not be registered!\nPlease restart location sharing!</string>
@@ -85,6 +86,25 @@
     <string name="onboarding_step_options_title">Full sharing control</string>
     <string name="onboarding_step_options_title_tag">Control</string>
     <string name="onboarding_step_options_info">You are always in control of what you share and how you share it.</string>
+
+    <string name="onboarding_step_paralinoID_title_tag">Welcome</string>
+    <string name="onboarding_step_paralinoID_title">Already have a group?</string>
+    <string name="onboarding_step_paralinoID_info">Share the code and join your family and friends.</string>
+    <string name="onboarding_step_paralinoID_button_next">Share and join</string>
+
+    <string name="onboarding_step_notifications_title_tag">Notifications</string>
+    <string name="onboarding_step_notifications_title">Your group updates</string>
+    <string name="onboarding_step_notifications_info">Get updates about your account, places and important group events.</string>
+    <string name="onboarding_step_notifications_button_next">Allow notifications</string>
+
+    <string name="onboarding_step_groupCreate_title_tag">Groups</string>
+    <string name="onboarding_step_groupCreate_title">Your first group</string>
+    <string name="onboarding_step_groupCreate_info">Create multiple groups and control how you share your location and with with whom.</string>
+    <string name="onboarding_step_groupCreate_button_next">Let\'s go</string>
+    <string name="onboarding_step_groupCreate_group_home">Family</string>
+    <string name="onboarding_step_groupCreate_group_friends">Best friends</string>
+    <string name="onboarding_step_groupCreate_group_work">Work trip</string>
+
     <string name="settings_section_account_title">Account</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inactive codes</string>
@@ -233,7 +253,7 @@
     <string name="plans_gift_screen_title">Lets celebrate!</string>
     <string name="plans_gift_screen_box_title">Early Adopter Gift</string>
     <string name="plans_gift_screen_box_message">You get a special lifetime **Starter** plan, completely for FREE!</string>
-    <string name="plans_gift_screen_benefits_title">What you get</string>
+    <string name="plans_gift_screen_benefits_title">⭐️ What you get ⭐️</string>
     <string name="plans_gift_screen_separator_text">Need more?</string>
     <string name="plans_benefit_place_alerts">Unlimited place alerts</string>
     <string name="plans_benefit_sharing">Unlimited location sharing</string>

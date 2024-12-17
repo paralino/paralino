@@ -38,7 +38,7 @@
     <string name="error_location_background_permission_missing_sheet_message">Molimo omogućite pristup lokaciji **cijelo vrijeme** kako biste **pouzdano i uvijek** pratili i dijelili Vašu lokaciju s drugima.</string>
     <string name="error_location_background_permission_missing_sheet_message_android11">Molimo omogućite pristup lokaciji **%s** kako biste **pouzdano i uvijek** pratili i dijelili Vašu lokaciju s drugima.</string>
     <string name="error_location_service_missing_sheet_message">Molimo omogućite **lokaciju uređaja** kako biste pronašli Vaš uređaj.</string>
-    <string name="error_notification_permission_missing_sheet_message">Molimo omogućite **obavijesti** kako biste primili **važne** obavijesti za Vaša mjesta.</string>
+    <string name="error_notification_permission_missing_sheet_message">Molimo omogućite **obavijesti** kako biste primali **važne** obavijesti za događaje u grupi, mjesta i Vaš račun.</string>
     <string name="error_location_background_permission_missing_notification_message">Nemoguće pokrenuti dijeljenje lokacije jer nedostaje dopuštenje za stalnu lokaciju!\nPonovno pokrenite aplikaciju da bi nastavili dijeliti lokaciju!</string>
     <string name="error_location_sharing_start_notification_message">Nemoguće pokrenuti dijeljenje lokacije!\nPonovno pokrenite aplikaciju!</string>
     <string name="error_device_registration_notification_message">Vaš uređaj nije registriran!\nMolimo ponovno započnite dijeljenje lokacije!</string>

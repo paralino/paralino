@@ -1,72 +1,97 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.Resource
+import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.ICoreMessageDispatcherEvent
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.NotificationPermissionResultEvent
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
+import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class GroupInitViewModel(
     private val userRepo: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
-    val deviceApiProvider: IDeviceApiProvider
+    private val groupLocalDataSource: UserGroupLocalDataSource,
+    val deviceApiProvider: IDeviceApiProvider,
+    private val appPrefs: AppPrefs,
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        mapState(
-            user = userRepo.localUser.value,
-            deviceStatus = deviceApiProvider.currentDeviceStatus(),
-            codes = personalCodesRepo.personalCodeLocalState.value
-        )
-    )
-    val uiState: StateFlow<GroupInitScreenState> = _uiState
+    private val _uiState = MutableStateFlow<Resource<GroupInitScreenState>>(Resource.NotInitialized)
+    val uiState: StateFlow<Resource<GroupInitScreenState>> = _uiState
 
     private val _eventChannel = Channel<GroupInitScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
-    val shouldShowFreePlanNoticeScreen: Boolean get() {
-        return userRepo.shouldShowFreePlanNoticeScreen
-    }
-
-    init {
-        coroutineScope.launch {
-            try {
-                personalCodesRepo.refreshPersonalCodesAndRestockKeys()
-            } catch (e: Exception) {
+    val canDisplayMap: Flow<Resource<Boolean>> = uiState
+        .map { state ->
+            if (state is Resource.Ready) {
+                Resource.Ready(
+                    data = state.data.groupCount != null
+                            && state.data.groupCount > 0
+                            && state.data.onboardingStep == null
+                )
+            } else {
+                Resource.NotInitialized
             }
         }
 
+    val shouldShowFreePlanNoticeScreen: Boolean
+        get() = userRepo.shouldShowFreePlanNoticeScreen
+
+    init {
         combine(
             userRepo.localUser,
             deviceApiProvider.deviceStatus,
-            personalCodesRepo.personalCodeLocalState
-        ) { user, deviceStatus, codes ->
+            personalCodesRepo.personalCodeLocalState,
+            groupLocalDataSource.allGroupsState
+                .map { it.data?.size }
+                .distinctUntilChanged()
+        ) { user, deviceStatus, codes, groupCount ->
             _uiState.update {
-                mapState(user, deviceStatus, codes)
+                Resource.Ready(
+                    mapState(
+                        previousState = it.data,
+                        user = user,
+                        deviceStatus = deviceStatus,
+                        codes = codes,
+                        groupCount = groupCount
+                    )
+                )
             }
         }
             .catch {
@@ -74,12 +99,21 @@ class GroupInitViewModel(
             }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
+
+        coroutineScope.launch {
+            try {
+                personalCodesRepo.refreshPersonalCodesAndRestockKeys(cacheDelayMillis = 2.minutes)
+            } catch (e: Exception) {
+            }
+        }
     }
 
     private fun mapState(
+        previousState: GroupInitScreenState?,
         user: Resource<UserMe?>,
         deviceStatus: DeviceStatusData,
-        codes: List<UserPersonalCode>
+        codes: List<UserPersonalCode>,
+        groupCount: Int?
     ): GroupInitScreenState {
         val errors = buildList {
             if (!deviceStatus.networkStatus.isOnline) {
@@ -112,8 +146,143 @@ class GroupInitViewModel(
             userEmail = user.data?.email,
             userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
             personalCode = personalCode,
-            errors = errors
+            errors = errors,
+            alertDialog = previousState?.alertDialog,
+            onboardingStep = if (previousState != null) {
+                if (previousState.onboardingStep is AccountOnboardingContent.ParalinoID) {
+                    previousState.onboardingStep.copy(personalCode = personalCode)
+                } else {
+                    previousState.onboardingStep
+                }
+            } else {
+                if (appPrefs.didHaveAccountWelcomeOnboarding) {
+                    null
+                } else if (groupCount == 0) {
+                    AccountOnboardingContent.ParalinoID(personalCode)
+                } else {
+                    null
+                }
+            },
+            groupCount = groupCount
         )
+    }
+
+    fun onEvent(event: GroupInitScreenUiEvent) {
+        when (event) {
+            GroupInitScreenUiEvent.ConfirmSendEmailVerification -> {
+                sendEmailVerification()
+            }
+
+            GroupInitScreenUiEvent.CopyPersonalCode -> {
+                copyPersonalCodeToClipboard()
+            }
+
+            GroupInitScreenUiEvent.HideDialog -> {
+                _uiState.update { it.mapReady { it.copy(alertDialog = null) } }
+            }
+
+            GroupInitScreenUiEvent.SendEmailVerification -> {
+                _uiState.update {
+                    it.mapReady {
+                        it.copy(alertDialog = it.userEmail?.let { MainAlertDialog.VerifyEmail(it) })
+                    }
+                }
+            }
+
+            is GroupInitScreenUiEvent.OnboardingStep -> {
+                when (event.event) {
+                    AccountOnboardingUiEvent.ConfirmOnboarding -> confirmOnboarding()
+                    AccountOnboardingUiEvent.SkipOnboarding -> skipOnboarding()
+                    AccountOnboardingUiEvent.CopyPersonalCode -> copyPersonalCodeToClipboard()
+                    AccountOnboardingUiEvent.SharePersonalCode -> sharePersonalCode()
+                }
+            }
+        }
+    }
+
+    private fun confirmOnboarding() {
+        when (uiState.value.data?.onboardingStep) {
+            AccountOnboardingContent.GroupCreate -> {
+                if (shouldShowFreePlanNoticeScreen) {
+                    _uiState.update {
+                        it.mapReady {
+                            it.copy(
+                                onboardingStep = AccountOnboardingContent.SilverPlan(
+                                    userRepo.userPlans.value.highestValidPlanConfig
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    openGroupCreate()
+                }
+            }
+
+            is AccountOnboardingContent.ParalinoID -> {
+                if (uiState.value.data?.personalCode != null) {
+                    sharePersonalCode()
+                } else {
+                    _eventChannel.trySend(GroupInitScreenEvent.OpenPersonalCodes)
+                }
+            }
+
+            AccountOnboardingContent.PushNotifications -> {
+                _eventChannel.trySend(GroupInitScreenEvent.AskNotificationPermission)
+            }
+
+            is AccountOnboardingContent.SilverPlan -> openGroupCreate()
+
+            null -> {}
+        }
+    }
+
+    private fun skipOnboarding() {
+        when (uiState.value.data?.onboardingStep) {
+            AccountOnboardingContent.GroupCreate -> {
+                finishOnboarding()
+            }
+
+            is AccountOnboardingContent.ParalinoID -> {
+                _uiState.update {
+                    if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
+                        it.mapReady {
+                            it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
+                        }
+                    } else {
+                        it.mapReady {
+                            it.copy(onboardingStep = AccountOnboardingContent.PushNotifications)
+                        }
+                    }
+                }
+            }
+
+            AccountOnboardingContent.PushNotifications -> {
+                _uiState.update {
+                    it.mapReady {
+                        it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
+                    }
+                }
+            }
+
+            is AccountOnboardingContent.SilverPlan -> {
+                finishOnboarding()
+            }
+
+            null -> {}
+        }
+    }
+
+    private fun finishOnboarding() {
+        appPrefs.didHaveAccountWelcomeOnboarding = true
+        _uiState.update { it.mapReady { it.copy(onboardingStep = null) } }
+    }
+
+    private fun openGroupCreate() {
+        _eventChannel.trySend(GroupInitScreenEvent.OpenGroupCreate)
+        coroutineScope.launch {
+            delay(1000)
+            skipOnboarding()
+        }
     }
 
     private fun sendEmailVerification() {
@@ -127,29 +296,25 @@ class GroupInitViewModel(
         }
     }
 
-    private fun copyToClipboard() {
-        deviceApiProvider.copyToClipboard(_uiState.value.personalCode?.code ?: "")
+    private fun copyPersonalCodeToClipboard() {
+        deviceApiProvider.copyToClipboard(_uiState.value.data?.personalCode?.code ?: "")
+        showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
     }
 
-    fun onEvent(event: GroupInitScreenUiEvent) {
-        when (event) {
-            GroupInitScreenUiEvent.ConfirmSendEmailVerification -> {
-                sendEmailVerification()
-            }
-
-            GroupInitScreenUiEvent.CopyPersonalCode -> {
-                copyToClipboard()
-            }
-
-            GroupInitScreenUiEvent.HideDialog -> {
-                _uiState.update { it.copy(alertDialog = null) }
-            }
-
-            GroupInitScreenUiEvent.SendEmailVerification -> {
-                _uiState.update {
-                    it.copy(alertDialog = it.userEmail?.let { MainAlertDialog.VerifyEmail(it) })
-                }
-            }
+    private fun sharePersonalCode() {
+        uiState.value.data?.personalCode?.code?.let {
+            _eventChannel.trySend(
+                GroupInitScreenEvent.SharePersonalCode(DeeplinkType.ParalinoID.buildUrl(it))
+            )
         }
+    }
+
+    override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {
+        if (event is NotificationPermissionResultEvent && uiState.value.data?.onboardingStep is AccountOnboardingContent.PushNotifications) {
+            onEvent(GroupInitScreenUiEvent.OnboardingStep(AccountOnboardingUiEvent.SkipOnboarding))
+            return true
+        }
+
+        return false
     }
 }

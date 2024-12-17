@@ -39,6 +39,7 @@ import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.settings.location.SubscriptionOptionItem
 import app.paralino.core.ui.share.getTime
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.SharingDurationPreset
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -66,6 +67,7 @@ fun WelcomeOnboardingPageControl(
             .background(MaterialTheme.colors.surface)
             .padding(6.dp)
             .clip(RoundedCornerShape(8.dp))
+            .background(AppColors.accentDark.copy(alpha = 0.2f)),
     ) {
         HighAccuracySwitch(
             modifier = Modifier
@@ -195,7 +197,7 @@ fun WelcomeOnboardingPageControl(
 }
 
 @Composable
-fun SpeedSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
+private fun SpeedSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(true) }
     LaunchedEffect(animationStarted) {
         if (animationStarted) {
@@ -224,7 +226,7 @@ fun SpeedSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
 }
 
 @Composable
-fun ElevationSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
+private fun ElevationSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(true) }
     LaunchedEffect(animationStarted) {
         if (animationStarted) {
@@ -253,7 +255,7 @@ fun ElevationSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
 }
 
 @Composable
-fun BatterySwitch(modifier: Modifier = Modifier) {
+private fun BatterySwitch(modifier: Modifier = Modifier) {
     var itemState by remember { mutableStateOf(true) }
     LargeSeekbarSwitch(
         modifier = modifier
@@ -276,7 +278,7 @@ fun BatterySwitch(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun HighAccuracySwitch(modifier: Modifier = Modifier) {
+private fun HighAccuracySwitch(modifier: Modifier = Modifier) {
     var itemState by remember { mutableStateOf(false) }
     LargeSeekbarSwitch(
         modifier = modifier
@@ -299,7 +301,7 @@ fun HighAccuracySwitch(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
+private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(false) }
     LaunchedEffect(animationStarted) {
         if (animationStarted) {
@@ -320,7 +322,7 @@ fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationStarted: Bo
 }
 
 @Composable
-fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
+private fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
     var itemState by remember { mutableStateOf(false) }
     SubscriptionOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
@@ -335,7 +337,7 @@ fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: Boolean) {
+private fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: Boolean) {
     var itemState by remember { mutableStateOf(false) }
     LaunchedEffect(animationStarted) {
         if (animationStarted) {
@@ -382,7 +384,7 @@ fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: Boolean) 
 }
 
 @Composable
-fun DurationSwitch(modifier: Modifier = Modifier) {
+private fun DurationSwitch(modifier: Modifier = Modifier) {
     var itemState by remember {
         mutableLongStateOf(8.hours.inWholeMilliseconds)
     }
