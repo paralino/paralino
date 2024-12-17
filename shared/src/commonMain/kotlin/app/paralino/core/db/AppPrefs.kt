@@ -69,6 +69,10 @@ class AppPrefs(
         const val keyBalancedHighAccuracy = "prefs.location.balanced.highAccuracy"
         const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
         const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
+        const val keyLoggedInAppLaunchCount = "prefs.device.appLaunchCount.account"
+        const val keyShowedAppRatingTime = "prefs.user.appRating.shownTime"
+        const val keyPreviousAppVersion = "prefs.device.appVersion.previous"
+        const val keyCurrentAppVersion = "prefs.device.appVersion.current"
     }
 
     val isTokenValid: Boolean
@@ -257,6 +261,39 @@ class AppPrefs(
         set(value) {
             provider.appSettings.putBoolean(keyAccountWelcomeOnboarding, value)
         }
+
+    var lastShowedAppRatingDialogUTC: Instant
+        get() = provider.appSettings.getLong(keyShowedAppRatingTime, 0).let { Instant.fromEpochMilliseconds(it) }
+        set(value) {
+            provider.appSettings.putLong(keyShowedAppRatingTime, value.toEpochMilliseconds())
+        }
+
+    var appLaunchedCountWhenLoggedIn: Int
+        get() = provider.userSettings.getInt(keyLoggedInAppLaunchCount, 0)
+        set(value) {
+            provider.userSettings.putInt(keyLoggedInAppLaunchCount, value)
+        }
+
+    var previousAppVersionNumber: Long?
+        get() = provider.appSettings.getLongOrNull(keyPreviousAppVersion)
+        set(value) {
+            if (value == null) {
+                provider.appSettings.remove(keyPreviousAppVersion)
+            } else {
+                provider.appSettings.putLong(keyPreviousAppVersion, value)
+            }
+        }
+
+    var currentAppVersionNumber: Long?
+        get() = provider.appSettings.getLongOrNull(keyCurrentAppVersion)
+        set(value) {
+            if (value == null) {
+                provider.appSettings.remove(keyCurrentAppVersion)
+            } else {
+                provider.appSettings.putLong(keyCurrentAppVersion, value)
+            }
+        }
+
 
 
     fun hasGuestAccount(): Boolean {

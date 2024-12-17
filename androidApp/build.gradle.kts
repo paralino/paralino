@@ -250,6 +250,7 @@ dependencies {
     // region utils
     implementation(libs.play.services.location)
     googleImplementation(libs.firebase.messaging.ktx)
+    googleImplementation(libs.play.review)
 
     googleImplementation(libs.revenuecat.android)
 

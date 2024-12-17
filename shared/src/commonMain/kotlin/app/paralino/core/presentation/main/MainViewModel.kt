@@ -1,9 +1,12 @@
 package app.paralino.core.presentation.main
 
 import app.paralino.core.app_update.IAppUpdateManager
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -14,8 +17,10 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -27,7 +32,8 @@ class MainViewModel constructor(
     private val userRepo: UserRepository,
     private val remoteConfigRepository: RemoteConfigRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
-    private val appUpdateManager: IAppUpdateManager
+    private val appUpdateManager: IAppUpdateManager,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(MainActivityState())
@@ -42,7 +48,16 @@ class MainViewModel constructor(
             .launchIn(coroutineScope)
 
         userStateMonitor.userState
-            .onEach { userState -> _uiState.update { it.copy(userState = userState) } }
+            .onEach { userState ->
+                _uiState.update { it.copy(userState = userState) }
+            }
+            .map { it.data is AppAccountState.USER_READY }
+            .distinctUntilChanged()
+            .onEach {
+                if (it) {
+                    appPrefs.appLaunchedCountWhenLoggedIn += 1
+                }
+            }
             .launchIn(coroutineScope)
 
         remoteConfigRepository.getUpdateType()

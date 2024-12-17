@@ -125,6 +125,8 @@
 -dontwarn org.joda.time.Instant
 
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+
+-dontwarn com.google.android.gms.common.annotation.NoNullnessRewrite
 # endregion
 
 # region gson

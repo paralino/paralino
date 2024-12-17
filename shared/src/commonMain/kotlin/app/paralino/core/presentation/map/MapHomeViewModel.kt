@@ -1,6 +1,8 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
+import app.paralino.core.app_rating.AppRatingManager
+import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
@@ -87,7 +89,8 @@ class MapHomeViewModel constructor(
     private val appPrefs: AppPrefs,
     private val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
-    private val remoteConfig: RemoteConfigRepository
+    private val remoteConfig: RemoteConfigRepository,
+    private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -127,6 +130,8 @@ class MapHomeViewModel constructor(
     }
 
     init {
+        appRatingManager.tryShowingAppRating(source = AppRatingSource.MAIN_MAP)
+
         allGroups.onEach { groupsData ->
             val selectedGroup = groupIdData.value.takeIf { it.isNotBlank() }
                 ?: appPrefs.selectedGroupId

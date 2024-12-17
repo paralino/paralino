@@ -2,6 +2,7 @@ package app.paralino.android.di
 
 import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
+import app.paralino.android.app_rating.AppRatingPresenter
 import app.paralino.android.app_update.AppUpdateManager
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
@@ -26,6 +27,8 @@ import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.appPrefs
+import app.paralino.core.app_rating.AppRatingManager
+import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.db.AppPrefsProvider
@@ -129,6 +132,7 @@ object KoinSetup {
         single<IBillingProvider> { BillingProviderAndroid(androidApplication() as AppClass, get(), get(), get()) }
 
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
+        single { AppRatingPresenter(androidApplication(), get()) } bind IAppRatingPresenter::class
     }
 
     private val appSpecificModule = module {
@@ -160,7 +164,7 @@ object KoinSetup {
         }
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
-        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get()) }
+        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
@@ -179,9 +183,9 @@ object KoinSetup {
                 userRepo = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
-        viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
+        viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
         viewModel { ConvertAccountViewModel(get()) }

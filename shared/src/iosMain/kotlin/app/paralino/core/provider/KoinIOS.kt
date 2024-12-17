@@ -2,6 +2,7 @@ package app.paralino.core.provider
 
 import app.paralino.core.CoreAppManager
 import app.paralino.core.appPrefs
+import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.db.AppPrefsProvider
@@ -109,7 +110,8 @@ object KoinIOS {
         cryptoServiceProvider: () -> ICryptoServiceProviderIOS,
         valueFormatter: () -> IValueFormatter,
         appUpdateManager: () -> IAppUpdateManager,
-        billingProvider: () -> IBillingProvider
+        billingProvider: () -> IBillingProvider,
+        appRatingPresenter: () -> IAppRatingPresenter
     ): List<Module> {
         return buildList {
             add(
@@ -138,6 +140,7 @@ object KoinIOS {
                     single { CryptoServiceWrapperIOS(cryptoServiceProvider()) } bind ICryptoServiceProvider::class
                     single { valueFormatter() } bind IValueFormatter::class
                     single { appUpdateManager() } bind IAppUpdateManager::class
+                    single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
                     single { LocationRepositoryWrapper(get(), get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
@@ -153,9 +156,9 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get()) }
+            factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
             factory { (startScreenType: LoginScreenUiType) ->
@@ -178,12 +181,12 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs)
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
             }
-            factory { MainViewModel(get(), get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
@@ -204,7 +207,7 @@ object KoinIOS {
                     placesRepo = get(),
                     groupRepo = get(),
                     cryptoCore = get(),
-                    appPrefs = appPrefs
+                    appPrefs = get()
                 )
             }
             factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->
@@ -235,7 +238,7 @@ object KoinIOS {
             factory { PlanInfoViewModel(get(), appPrefs) }
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get()) }
-            factory { WelcomeOnboardingViewModel(get()) }
+            factory { WelcomeOnboardingViewModel(get(), get()) }
         }
     }
 

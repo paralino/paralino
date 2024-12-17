@@ -1,5 +1,6 @@
 package app.paralino.core
 
+import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
@@ -156,6 +157,11 @@ object ParalinoCore {
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
+        if (appPrefs.currentAppVersionNumber != deviceApiProvider.appVersionCode) {
+            appPrefs.previousAppVersionNumber = appPrefs.currentAppVersionNumber
+            appPrefs.currentAppVersionNumber = deviceApiProvider.appVersionCode
+        }
+
         logr.i("paralino_core", "Paralino core initialized: ${deviceApiProvider.clientHeaderValue}")
 
         if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
@@ -280,4 +286,6 @@ val coreModule = module {
 
     single { InAppLogger(get(), get(), get()) }
     single { LimitedExecutionParentManager() }
+
+    single { AppRatingManager(get(), get()) }
 }

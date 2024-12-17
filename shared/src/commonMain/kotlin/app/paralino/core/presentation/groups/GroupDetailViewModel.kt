@@ -1,5 +1,7 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.app_rating.AppRatingManager
+import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
@@ -43,7 +45,8 @@ class GroupDetailViewModel(
     private val groupRefresh: GroupPreRefreshUseCase,
     private val valueFormatter: IValueFormatter,
     val deviceApiProvider: IDeviceApiProvider,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
@@ -54,6 +57,8 @@ class GroupDetailViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
+        appRatingManager.tryShowingAppRating(source = AppRatingSource.GROUP_DETAIL)
+
         combine(
             deviceApiProvider.deviceStatus,
             groupRefresh.getAndRefreshGroupWithMembers(groupId),
