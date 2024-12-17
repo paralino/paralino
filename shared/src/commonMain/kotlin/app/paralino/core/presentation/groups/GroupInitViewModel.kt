@@ -230,7 +230,10 @@ class GroupInitViewModel(
                 _eventChannel.trySend(GroupInitScreenEvent.AskNotificationPermission)
             }
 
-            is AccountOnboardingContent.SilverPlan -> openGroupCreate()
+            is AccountOnboardingContent.SilverPlan -> {
+                appPrefs.didStartedGroupOnboarding = true
+                openGroupCreate()
+            }
 
             null -> {}
         }
