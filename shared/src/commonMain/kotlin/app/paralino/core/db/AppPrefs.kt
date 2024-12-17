@@ -71,6 +71,7 @@ class AppPrefs(
         const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
         const val keyLoggedInAppLaunchCount = "prefs.device.appLaunchCount.account"
         const val keyShowedAppRatingTime = "prefs.user.appRating.shownTime"
+        const val keyShowedAppRatingVersion = "prefs.user.appRating.appVersion"
         const val keyPreviousAppVersion = "prefs.device.appVersion.previous"
         const val keyCurrentAppVersion = "prefs.device.appVersion.current"
     }
@@ -266,6 +267,12 @@ class AppPrefs(
         get() = provider.appSettings.getLong(keyShowedAppRatingTime, 0).let { Instant.fromEpochMilliseconds(it) }
         set(value) {
             provider.appSettings.putLong(keyShowedAppRatingTime, value.toEpochMilliseconds())
+        }
+
+    var lastShowedAppRatingDialogAppVersion: Long
+        get() = provider.appSettings.getLong(keyShowedAppRatingVersion, 0)
+        set(value) {
+            provider.appSettings.putLong(keyShowedAppRatingVersion, value)
         }
 
     var appLaunchedCountWhenLoggedIn: Int

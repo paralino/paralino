@@ -287,5 +287,5 @@ val coreModule = module {
     single { InAppLogger(get(), get(), get()) }
     single { LimitedExecutionParentManager() }
 
-    single { AppRatingManager(get(), get()) }
+    single { AppRatingManager(get(), get(), get()) }
 }
