@@ -15,11 +15,14 @@ struct WelcomeScreen: View {
     @EnvironmentObject var mainAppState: MainAppObject
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.welcomeVM)
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         NavigationStack(path: $mainAppState.appStartGraph) {
             ComposeRepresentable {
                 ScreensIOS.shared.login.WelcomeScreenVC(
                     vm: appState.vm,
+                    paddingValues: safeAreaInsets,
                     onLoginClick: { mainAppState.appStartGraph.append(.login) },
                     onStartClick: { mainAppState.appStartGraph.append(.onboarding) }
                 )
@@ -31,7 +34,7 @@ struct WelcomeScreen: View {
                 case .onboarding: WelcomeOnboardingScreen(
                     isDemoMode: false,
                     onFinish: {
-                        mainAppState.appStartGraph = [.signup]
+                        mainAppState.appStartGraph.append(.signup)
                     }
                 )
                 case .login:
@@ -45,11 +48,5 @@ struct WelcomeScreen: View {
                 }
             }
         }
-    }
-}
-
-struct WelcomeScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        WelcomeScreen()
     }
 }

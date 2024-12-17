@@ -1,6 +1,8 @@
 package app.paralino.core.ui.onboarding.account
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,11 +19,12 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun AccountOnboardingScreen(
     coreUiState: CoreUiState,
+    paddingValues: PaddingValues,
     step: AccountOnboardingContent,
     onEvent: (AccountOnboardingUiEvent) -> Unit
 ) {
     BaseOnboardingScreen(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(paddingValues),
         buttonText = stringResource(step.buttonText),
         skipButtonText = step.skipButtonText?.let { stringResource(it) }
             ?: stringResource(MR.strings.button_skip),

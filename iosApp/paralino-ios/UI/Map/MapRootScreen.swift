@@ -12,7 +12,7 @@ import paralino_apple_core
 struct MapRootScreen: View {
     
     @EnvironmentObject var mainAppState: MainAppObject
-    @StateObject var mapState = MapHomeState()
+    @StateObject var initState = GroupInitState()
     
     var body: some View {
         NavigationStack(path: $mainAppState.userReadyGraph) {
@@ -55,8 +55,8 @@ struct MapRootScreen: View {
                                     path: $mainAppState.userReadyGraph,
                                     appState: SharingStartScreen.createState(groupId: groupId, isOnboarding: isOnboarding)
                                 )
-                            case .map: MapHomeScreen(path: $mainAppState.userReadyGraph, mapState: mapState)
-                            case .groupInit: GroupInitScreen(path: $mainAppState.userReadyGraph)
+                            case .map: MapHomeScreen(path: $mainAppState.userReadyGraph)
+                            case .groupInit: GroupInitScreen(path: $mainAppState.userReadyGraph, appState: initState)
                             case .memberInvite(let groupId, let code, let isOnboarding):
                                 MemberInviteScreen(
                                     path: $mainAppState.userReadyGraph,
@@ -79,7 +79,7 @@ struct MapRootScreen: View {
                     }
                 }
         }
-        .onChange(of: mapState.groupState, initial: true) { oldValue, newValue in
+        .onChange(of: initState.groupState, initial: true) { oldValue, newValue in
             if newValue == true {
                 if mainAppState.userReadyGraph.isEmpty == true {
                     mainAppState.userReadyGraph = [.home(.map)]
@@ -97,8 +97,3 @@ struct MapRootScreen: View {
     }
 }
 
-struct MapRootScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        MapRootScreen()
-    }
-}

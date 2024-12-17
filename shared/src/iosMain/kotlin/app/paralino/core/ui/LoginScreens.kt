@@ -1,6 +1,5 @@
 package app.paralino.core.ui
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.window.ComposeUIViewController
@@ -22,11 +21,13 @@ import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingScreenCore
 object LoginScreens {
     fun WelcomeScreenVC(
         vm: LoggedOutViewModel,
+        paddingValues: AppleScreenPaddingValues,
         onLoginClick: () -> Unit,
         onStartClick: () -> Unit,
     ) = ComposeUIViewController {
         WelcomeScreen(
-            vm,
+            vm = vm,
+            paddingValues = paddingValues.toComposePaddingValues(),
             onLoginClick = onLoginClick,
             onStartClick = onStartClick
         )

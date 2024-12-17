@@ -1,5 +1,6 @@
 package app.paralino.core.ui.onboarding
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,12 +15,14 @@ import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
 fun FreePlanInfoScreenCore(
     coreUiState: CoreUiState,
     vm: PlanInfoViewModel,
+    paddingValues: PaddingValues,
     onContinue: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
     AccountOnboardingScreen(
         coreUiState = coreUiState,
+        paddingValues = paddingValues,
         step = AccountOnboardingContent.SilverPlan(planConfig = uiState),
         onEvent = {
             if (it == AccountOnboardingUiEvent.ConfirmOnboarding) {

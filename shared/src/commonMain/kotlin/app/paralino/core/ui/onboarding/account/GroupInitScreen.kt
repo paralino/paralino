@@ -2,6 +2,7 @@ package app.paralino.core.ui.onboarding.account
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun GroupInitScreenCore(
     appState: CoreUiState,
     vm: GroupInitViewModel,
+    paddingValues: PaddingValues,
     openSettings: () -> Unit,
     onCreateGroup: () -> Unit,
     openFreePlanInfo: () -> Unit,
@@ -98,6 +100,7 @@ fun GroupInitScreenCore(
                 is AccountOnboardingContent -> {
                     AccountOnboardingScreen(
                         coreUiState = appState,
+                        paddingValues = paddingValues,
                         step = finalStep,
                         onEvent = {
                             vm.onEvent(GroupInitScreenUiEvent.OnboardingStep(event = it))

@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,6 +32,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -93,7 +95,14 @@ fun BaseOnboardingScreen(
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            ScaffoldBottomBarButtons {
+            ScaffoldBottomBarButtons(
+                paddingValues = PaddingValues(
+                    start = 20.dp,
+                    end = 20.dp,
+                    top = 8.dp,
+                    bottom = animateDpAsState(if (onSkip != null) 8.dp else 20.dp).value
+                )
+            ) {
                 FilledButton(
                     modifier = Modifier,
                     style = ButtonStyle.BIG,
@@ -206,7 +215,7 @@ fun BaseOnboardingHeaderContent(
                 .zIndex(1f),
             targetState = titleKey,
             label = "animated info",
-            transitionSpec = onboardingContentTransitionSpec(fixedTransitionHeight = 50)
+            transitionSpec = onboardingContentTransitionSpec(fixedTransitionHeight = 24)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(

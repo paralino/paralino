@@ -1,6 +1,8 @@
 package app.paralino.android.ui.onboarding
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
@@ -15,6 +17,7 @@ fun FreePlanInfoScreen(
     FreePlanInfoScreenCore(
         coreUiState = appState,
         vm = vm,
+        paddingValues = remember { PaddingValues() },
         onContinue = {
             appState.navController.navigate(
                 AppScreen.MainHome.GroupCreate.route(groupId = null)

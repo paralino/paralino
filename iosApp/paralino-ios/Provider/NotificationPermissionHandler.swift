@@ -27,9 +27,13 @@ class NotificationPermissionHandler {
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             Logr.d(tag: "permission_request", message: "Notification result: \(granted)", t: KotlinThrowable(message: error?.localizedDescription))
             self.notificationStatusProvider.refreshNotificationsStatus()
+            
             if !granted {
                 if self.requested {
-                    self.openAppSettingsPage()
+                    let handled = messageDispather.onMessageEvent(event: NotificationPermissionResultEvent(granted: granted))
+                    if !handled {
+                        self.openAppSettingsPage()
+                    }
                 } else {
                     let data = AppSnackbarData(
                         text: MR.shared.strings.error_notification_permission_missing_sheet_message.localizedString(),
@@ -46,6 +50,8 @@ class NotificationPermissionHandler {
                         }
                     }
                 }
+            } else {
+                messageDispather.onMessageEvent(event: NotificationPermissionResultEvent(granted: granted))
             }
         }
     }

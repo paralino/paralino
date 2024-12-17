@@ -17,12 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.theme.ButtonStyle
 
 @Composable
 fun ActionScaffold(
     modifier: Modifier = Modifier,
+    additionalButtonBottomPadding: Dp = 0.dp,
     buttonStyle: ButtonStyle = ButtonStyle.BIG(iconSize = 24.dp),
     buttonState: AppButtonState = AppButtonState.CONTENT,
     buttonBackground: Color = MaterialTheme.colors.background,
@@ -36,6 +38,12 @@ fun ActionScaffold(
         bottomBar = {
             ScaffoldBottomBarButton(
                 modifier = Modifier,
+                paddingValues = PaddingValues(
+                    top = 8.dp,
+                    bottom = 20.dp + additionalButtonBottomPadding,
+                    start = 20.dp,
+                    end = 20.dp
+                ),
                 buttonStyle = buttonStyle,
                 buttonState = buttonState,
                 buttonBackground = buttonBackground,
@@ -52,6 +60,12 @@ fun ActionScaffold(
 fun ScaffoldBottomBarButtons(
     modifier: Modifier = Modifier,
     buttonBackground: Color = MaterialTheme.colors.background,
+    paddingValues: PaddingValues = PaddingValues(
+        top = 8.dp,
+        bottom = 20.dp,
+        start = 20.dp,
+        end = 20.dp
+    ),
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
@@ -63,8 +77,7 @@ fun ScaffoldBottomBarButtons(
                 indication = null,
                 onClick = { }
             )
-            .padding(bottom = 20.dp, top = 8.dp)
-            .padding(horizontal = 20.dp),
+            .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
         content = content
     )
@@ -73,6 +86,12 @@ fun ScaffoldBottomBarButtons(
 @Composable
 fun ScaffoldBottomBarButton(
     modifier: Modifier = Modifier,
+    paddingValues: PaddingValues = PaddingValues(
+        top = 8.dp,
+        bottom = 20.dp,
+        start = 20.dp,
+        end = 20.dp
+    ),
     buttonStyle: ButtonStyle = ButtonStyle.BIG,
     buttonState: AppButtonState = AppButtonState.CONTENT,
     buttonBackground: Color = MaterialTheme.colors.background,
@@ -82,7 +101,8 @@ fun ScaffoldBottomBarButton(
 ) {
     ScaffoldBottomBarButtons(
         modifier = modifier,
-        buttonBackground = buttonBackground
+        buttonBackground = buttonBackground,
+        paddingValues = paddingValues
     ) {
         FilledButton(
             modifier = Modifier,

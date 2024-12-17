@@ -110,14 +110,14 @@ fun AccountOnboardingSilverPlanBackground(
         val blurredCircles = remember {
             listOf(
                 BlurredCircle(
-                    center = Offset(x = 1.3f, y = 0.25f),
-                    radius = 0.2f,
+                    center = Offset(x = 1.3f, y = 0.35f),
+                    radius = 0.15f,
                     color = AppColors.accentDark.copy(alpha = 0.35f),
                     blurRadius = 0.12f
                 ),
                 BlurredCircle(
                     center = Offset(x = 0.65f, y = 0.3f),
-                    radius = 0.35f,
+                    radius = 0.25f,
                     color = AppColors.accentDark.copy(alpha = 0.2f),
                     blurRadius = 0.1f
                 ),

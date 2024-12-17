@@ -23,7 +23,7 @@ struct LoginScreen: View {
                     )
                 }
                 .ignoresSafeArea(.all, edges: .bottom)
-//                .navigationBarBackButtonHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
         }
     

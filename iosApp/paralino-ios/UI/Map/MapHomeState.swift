@@ -12,8 +12,6 @@ class MapHomeState : BaseMapObservableObject {
     
     let vm: MapHomeViewModel
     
-    @Published var groupState: Bool? = nil
-    
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(
         currentUserImage: ImageModel.companion.placeholder(),
         isSatelliteMode: false,
@@ -24,10 +22,6 @@ class MapHomeState : BaseMapObservableObject {
         vm = KoinIOS.ViewModels.shared.mapHomeVM
         
         super.init()
-        
-        vm.observe(flow: vm.allGroupsState) { [weak self] state in
-            self?.groupState = state as? Bool
-        }
         
         vm.observe(flow: vm.uiState) { [weak self] state in
             if let state = state as? MapHomeScreenState {

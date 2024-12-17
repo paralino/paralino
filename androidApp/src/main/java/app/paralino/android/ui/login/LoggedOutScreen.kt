@@ -1,11 +1,14 @@
 package app.paralino.android.ui.login
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.login.LoggedOutScreenState
@@ -42,6 +45,7 @@ fun LoggedOutScreen(
 
     WelcomeScreen(
         vm = vm,
+        paddingValues = remember { PaddingValues() },
         onLoginClick = {
             appState.navController.navigate(AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP))
         },
@@ -59,7 +63,10 @@ fun LoggedOutScreen(
 fun LoggedOutScreenPreview() {
     AppTheme() {
         Surface {
-            WelcomeScreen(onStartClick = {})
+            WelcomeScreen(
+                paddingValues = PaddingValues(vertical = 20.dp),
+                onStartClick = {}
+            )
         }
     }
 }

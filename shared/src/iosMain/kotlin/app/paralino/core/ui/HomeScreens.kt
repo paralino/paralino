@@ -69,6 +69,7 @@ import platform.UIKit.UIViewController
 object HomeScreens {
     fun GroupInitScreenVC(
         vm: GroupInitViewModel,
+        paddingValues: AppleScreenPaddingValues,
         openSettings: () -> Unit,
         onCreateGroup: () -> Unit,
         openFreePlanInfo: () -> Unit,
@@ -80,6 +81,7 @@ object HomeScreens {
             GroupInitScreenCore(
                 appState = it,
                 vm = vm,
+                paddingValues = paddingValues.toComposePaddingValues(),
                 openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
                 openFreePlanInfo = openFreePlanInfo,
@@ -464,12 +466,14 @@ object HomeScreens {
 
     fun FreePlanInfoScreenVC(
         vm: PlanInfoViewModel,
+        paddingValues: AppleScreenPaddingValues,
         onContinue: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             FreePlanInfoScreenCore(
                 coreUiState = it,
                 vm = vm,
+                paddingValues = paddingValues.toComposePaddingValues(),
                 onContinue = onContinue,
             )
         }

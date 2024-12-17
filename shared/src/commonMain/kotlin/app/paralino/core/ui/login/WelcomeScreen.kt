@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -37,10 +38,12 @@ import paralino.shared.generated.resources.paralino_start_background
 @Composable
 fun WelcomeScreen(
     vm: LoggedOutViewModel,
+    paddingValues: PaddingValues,
     onLoginClick: () -> Unit,
     onStartClick: () -> Unit,
 ) {
     WelcomeScreen(
+        paddingValues = paddingValues,
         onStartClick = {
             if (vm.didHaveWelcomeOnboarding()) {
                 onLoginClick()
@@ -53,10 +56,13 @@ fun WelcomeScreen(
 
 @Composable
 fun WelcomeScreen(
+    paddingValues: PaddingValues,
     onStartClick: () -> Unit,
 ) {
     AppTheme(useDarkTheme = true) {
         ActionScaffold(
+            modifier = Modifier,
+            additionalButtonBottomPadding = paddingValues.calculateBottomPadding(),
             buttonIcon = Res.drawable.ic_login.asPainterResource(),
             buttonText = stringResource(MR.strings.welcome_screen_button_join),
             buttonBackground = Color.Transparent,
@@ -74,6 +80,7 @@ fun WelcomeScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(it)
+                    .padding(paddingValues)
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
