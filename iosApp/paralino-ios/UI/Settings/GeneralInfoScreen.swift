@@ -20,6 +20,9 @@ struct GeneralInfoScreen: View {
                     vm: appState.vm,
                     openLicencesScreen: {
                         path.append(.settings(.licences))
+                    },
+                    onShowOnboarding: {
+                        path.append(.settings(.onboarding))
                     }
                 )
             }

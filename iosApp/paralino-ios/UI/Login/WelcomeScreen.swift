@@ -21,13 +21,19 @@ struct WelcomeScreen: View {
                 ScreensIOS.shared.login.WelcomeScreenVC(
                     vm: appState.vm,
                     onLoginClick: { mainAppState.appStartGraph.append(.login) },
-                    onStartClick: { mainAppState.appStartGraph.append(.signup) }
+                    onStartClick: { mainAppState.appStartGraph.append(.onboarding) }
                 )
             }
             .ignoresSafeArea(.all, edges: .vertical)
             .navigationDestination(for: WelcomeGraph.self) { route in
                 switch route {
                 case .welcome: WelcomeScreen()
+                case .onboarding: WelcomeOnboardingScreen(
+                    isDemoMode: false,
+                    onFinish: {
+                        mainAppState.appStartGraph = [.signup]
+                    }
+                )
                 case .login:
                     let loginAppState = LoginScreen.createState(screenUiType: LoginScreenUiType.login)
                     LoginScreen(appState: loginAppState)

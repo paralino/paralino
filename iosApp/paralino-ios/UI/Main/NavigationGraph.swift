@@ -15,6 +15,7 @@ enum NavigationGraph: Hashable {
 
 enum WelcomeGraph: Hashable {
     case welcome
+    case onboarding
     case login
     case signup
     case passwordReset(deeplink: DeeplinkType.PasswordReset)
@@ -50,4 +51,5 @@ enum SettingsGraph: Hashable {
     case licences
     case generalInfo
     case locationSettings
+    case onboarding
 }

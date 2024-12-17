@@ -17,6 +17,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     static internal var sharedInstance: AppDelegate!
     
     lazy var locationManager = LocationManager(setupManager: true)
+    lazy var appRatingPresenter = AppRatingPresenter()
     
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
@@ -34,7 +35,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         
         locationManager.manager.delegate = locationManager
         
-        KoinSetup.initKoin(locationManager: locationManager)
+        KoinSetup.initKoin(locationManager: locationManager, appRatingPresenter: appRatingPresenter)
         
         Logr.i(tag:"delegate", message: "App start")
         

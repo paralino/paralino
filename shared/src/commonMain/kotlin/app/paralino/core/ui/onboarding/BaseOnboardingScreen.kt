@@ -201,7 +201,7 @@ fun BaseOnboardingHeaderContent(
     Column(modifier = modifier) {
         AnimatedContent(
             modifier = Modifier
-                .padding(top = 20.dp)
+                .padding(top = 8.dp)
                 .padding(horizontal = 20.dp)
                 .zIndex(1f),
             targetState = titleKey,

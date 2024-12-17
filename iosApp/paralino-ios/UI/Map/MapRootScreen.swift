@@ -38,6 +38,12 @@ struct MapRootScreen: View {
                             case .paywall(let groupId, let type): PaywallScreen(path: $mainAppState.userReadyGraph, state: PaywallScreenState(groupId: groupId, type: type))
                             case .generalInfo: GeneralInfoScreen(path: $mainAppState.userReadyGraph)
                             case .locationSettings: LocationSettingsScreen(path: $mainAppState.userReadyGraph)
+                            case .onboarding: WelcomeOnboardingScreen(
+                                isDemoMode: true,
+                                onFinish: {
+                                    mainAppState.userReadyGraph.removeLast()
+                                }
+                            )
                             }
                         case let .home(homeGraph):
                             switch homeGraph {

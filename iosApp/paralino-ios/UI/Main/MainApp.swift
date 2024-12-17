@@ -14,7 +14,10 @@ struct MainApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var appState = MainAppObject()
+    
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.requestReview) private var requestReview
+    
     @State var isOrWasActive = false
     
     init() {
@@ -63,6 +66,15 @@ struct MainApp: App {
                 appState.vm.cancelSessionExpired()
             }
             .loadingOverlay(isLoading: appState.uiState.dataRefreshBlockingLoadingShown)
+            .onChange(of: appDelegate.appRatingPresenter.appRatingRequested, initial: false) { oldState, newState in
+                if newState == true {
+                    Task {
+                        try await Task.sleep(for: .seconds(2))
+                        Logr.v(tag: "app_rating", message: "Trigger iOS app rating dialog")
+                        requestReview()
+                    }
+                }
+            }
         }
     }
     

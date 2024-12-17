@@ -17,6 +17,7 @@ class KoinSetup {
             crashReportingLogr: { appBuildConfig in CrashReportingLogr() },
             locationManager: { locationManager },
             appUpdateManager: { AppUpdateManager() },
+            appRatingPresenter: { AppRatingPresenter() },
             billingProvider: { BillingProviderIOS() },
             locationStatusProvider: { LocationStatusProvider() },
             connectionStatusProvider: { appBuildConfig in ConnectionStatusProvider(appBuildConfig: appBuildConfig) },
@@ -33,6 +34,10 @@ class KoinSetup {
     
     class AppUpdateManager: IAppUpdateManager {
         override func startUpdateProcess(data: ConfigData) {}
+    }
+    
+    class AppRatingPresenter: IAppRatingPresenter {
+        func startAppRatingFlow() {}
     }
     
     class BillingProviderIOS: IBillingProvider {

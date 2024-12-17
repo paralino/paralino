@@ -18,12 +18,8 @@ struct FreePlanInfoScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.FreePlanInfoScreenVC(
                     vm: appState.vm,
-                    showBanner: false,
                     onContinue: {
                         path[path.count - 1] = .home(.groupCreate(groupId: nil))
-                    },
-                    openPaywall: {
-                        path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
                     }
                 )
             }
