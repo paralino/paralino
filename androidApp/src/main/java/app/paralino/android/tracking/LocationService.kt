@@ -1,9 +1,11 @@
 package app.paralino.android.tracking
 
+import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
@@ -15,6 +17,7 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.NotificationConditionStatus
@@ -54,34 +57,57 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
         logg.v(this.hashCode().toString(), "Location service created")
-        try {
-            ServiceCompat.startForeground(
-                this,
-                notificationHandler.notificationId,
-                notificationHandler.notify(this, groupCount = 0, errors = emptyList()),
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-            )
-        } catch (e: Exception) {
-            throw LocationServiceCanNotStartException(
-                cause = e,
-                locationConditionStatus = deviceApiProvider.locationStatusProvider.currentStatus,
-                notificationConditionStatus = deviceApiProvider.notificationStatusProvider.currentStatus,
-                alwaysOnSharing = locationSharingManager.allContractsFlow.value.data?.any { it.isAlwaysOn }
-            )
-        }
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        launchedInForeground = intent.getBooleanExtra(startedInForeground, false)
+
+        launchedInForeground = intent?.getBooleanExtra(startedInForeground, false) ?: false
+
         logg.v(
             this.hashCode().toString(),
-            "Location service started - action: ${intent.action} - launched in foreground: $launchedInForeground"
+            "Location service started - action: ${intent?.action} - launched in foreground: $launchedInForeground"
         )
+
+        if (!isServiceActive) {
+            serviceDefaultScope.coroutineContext.cancelChildren()
+            initTracking()
+        } else if (intent?.action == Intent.ACTION_BOOT_COMPLETED || intent?.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+            serviceDefaultScope.coroutineContext.cancelChildren()
+            initTracking()
+        } else {
+        }
+
+        if (!isServiceActive || deviceApiProvider.appLifecycleState.value.current == AppLifecycleType.ACTIVE) {
+            try {
+                ServiceCompat.startForeground(
+                    this,
+                    notificationHandler.notificationId,
+                    notificationHandler.notify(this, groupCount = 0, errors = emptyList()),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+                )
+            } catch (e: Exception) {
+                val wrappedError = LocationServiceCanNotStartException(
+                    cause = e,
+                    locationConditionStatus = deviceApiProvider.locationStatusProvider.currentStatus,
+                    notificationConditionStatus = deviceApiProvider.notificationStatusProvider.currentStatus,
+                    alwaysOnSharing = locationSharingManager.allContractsFlow.value.data?.any { it.isAlwaysOn }
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException) {
+                    logg.e(
+                        tag = "location_service",
+                        message = "Unable to start as foreground service due to ForegroundServiceStartNotAllowedException",
+                        t = wrappedError
+                    )
+                } else {
+                    throw wrappedError
+                }
+            }
+        }
+
         isServiceActive = true
-        serviceDefaultScope.coroutineContext.cancelChildren()
-        initTracking()
-        return Service.START_REDELIVER_INTENT
+
+        return START_STICKY
     }
 
     private fun initTracking() {
@@ -195,10 +221,16 @@ class LocationService : Service() {
         @Volatile
         var isServiceActive = false
         const val startedInForeground = "startedInForeground"
+        const val INTENT_ACTION_LOCATION_SERVICE_START = "app.paralino.android.LOCATION_SERVICE_START"
 
-        fun start(context: Context, appForeground: Boolean) {
+        fun start(
+            context: Context,
+            appForeground: Boolean,
+            action: String?
+        ) {
             val intent = Intent(context, LocationService::class.java)
             intent.putExtra(startedInForeground, appForeground)
+            intent.action = action
             ContextCompat.startForegroundService(context, intent)
         }
     }

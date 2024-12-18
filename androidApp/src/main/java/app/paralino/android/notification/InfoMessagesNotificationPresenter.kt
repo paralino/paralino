@@ -18,6 +18,7 @@ import app.paralino.android.ui.main.MainActivity
 import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.ui.theme.AppColors
 
@@ -99,5 +100,28 @@ class InfoMessagesNotificationPresenter(
         channel.enableVibration(true)
         channel.enableLights(true)
         notificationManager?.createNotificationChannel(channel)
+    }
+
+    fun notifyLocationServiceError(
+        context: Context,
+        backgroundLocationError: Boolean
+    ) {
+        val message =
+            if (backgroundLocationError) {
+                MR.strings.error_location_background_permission_missing_notification_message.getString(
+                    context
+                )
+            } else {
+                MR.strings.error_location_sharing_start_notification_message.getString(context)
+            }
+        notify(
+            IPushNotificationPresenter.Payload(
+                notificationId = 54343,
+                title = MR.strings.error_something_wrong.getString(context),
+                message = message,
+                timeMillis = null,
+                timeInfo = null
+            )
+        )
     }
 }

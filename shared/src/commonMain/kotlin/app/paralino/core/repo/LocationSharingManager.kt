@@ -54,8 +54,12 @@ class LocationSharingManager(
         return allContractsFlow.value.data?.firstOrNull { it.groupId == id }?.asValidContract()
     }
 
-    fun isSharingActive(): Boolean {
+    fun isSharingActiveMaybe(): Boolean {
         return sharingStatus.value.data == true
+    }
+
+    suspend fun isSharingActive(): Boolean {
+        return sharingStatus.value.data ?: allValidContracts().isNotEmpty()
     }
 
     fun isSharingActiveForGroup(id: String): Boolean {

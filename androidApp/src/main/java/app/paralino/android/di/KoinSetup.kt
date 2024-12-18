@@ -25,6 +25,7 @@ import app.paralino.android.remote.appwrite.FunctionsApi
 import app.paralino.android.remote.appwrite.RealtimeApi
 import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
+import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.appPrefs
 import app.paralino.core.app_rating.AppRatingManager
@@ -112,7 +113,7 @@ object KoinSetup {
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
         single<INotificationStatusProvider>(createdAtStart = true) { NotificationStatusProvider(androidContext()) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) }
+        single(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) } bind IDeviceApiProvider::class
 
         single<ICrashReportingLogr> { CrashReportingLogr(get(), appPrefs) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
@@ -137,6 +138,7 @@ object KoinSetup {
 
     private val appSpecificModule = module {
         single { PreCheckControl() }
+        single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
 
