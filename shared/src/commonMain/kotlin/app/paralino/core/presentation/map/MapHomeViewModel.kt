@@ -132,19 +132,21 @@ class MapHomeViewModel constructor(
             }
         }.launchIn(coroutineScope)
 
-        deviceApiProvider.appLifecycleState
-            .onEach {
-                keepUiRefreshPing()
-                if (it.comingFromBackground) {
-                    delay(2000)
-                    if (groupIdData.value.isNotBlank()) {
-                        logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
-                        coroutineScope.launch(Dispatchers.IO) {
-                            groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
-                        }
+        combine(
+            deviceApiProvider.appLifecycleState,
+            uiFocusedStatus
+        ) { appLifecycleState, uiFocused ->
+            keepUiRefreshPing()
+            if (appLifecycleState.comingFromBackground && uiFocused) {
+                delay(2000)
+                if (groupIdData.value.isNotBlank()) {
+                    logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
+                    coroutineScope.launch(Dispatchers.IO) {
+                        groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
                     }
                 }
             }
+        }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
@@ -626,7 +628,7 @@ class MapHomeViewModel constructor(
 
     private fun keepUiRefreshPing() {
         uiRefreshPingSubscriptionJob?.cancel()
-        if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
+        if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive && uiFocusedStatus.value) {
             uiRefreshPingSubscriptionJob = coroutineScope.launch(Dispatchers.IO) {
                 while (currentCoroutineContext().isActive) {
                     uiRefreshPingFlow.update { nowUTC() }
