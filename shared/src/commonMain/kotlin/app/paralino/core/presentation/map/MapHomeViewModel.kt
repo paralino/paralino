@@ -119,16 +119,6 @@ class MapHomeViewModel constructor(
     val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> =
         groupRepo.allGroupsState
 
-    /**
-     * Used in iOS
-     */
-    val allGroupsState: Flow<Boolean?> = allGroups.map {
-        when (it) {
-            Resource.NotInitialized -> null
-            is Resource.Ready -> it.data.isNotEmpty()
-        }
-    }
-
     init {
         appRatingManager.tryShowingAppRating(source = AppRatingSource.MAIN_MAP)
 

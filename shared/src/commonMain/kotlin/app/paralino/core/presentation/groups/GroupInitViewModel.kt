@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -61,8 +62,7 @@ class GroupInitViewModel(
         .map { state ->
             if (state is Resource.Ready) {
                 Resource.Ready(
-                    data = state.data.groupCount != null
-                            && state.data.groupCount > 0
+                    data = state.data.groupCount > 0
                             && state.data.onboardingStep == null
                 )
             } else {
@@ -79,7 +79,7 @@ class GroupInitViewModel(
             deviceApiProvider.deviceStatus,
             personalCodesRepo.personalCodeLocalState,
             groupLocalDataSource.allGroupsState
-                .map { it.data?.size }
+                .mapNotNull { it.data?.size }
                 .distinctUntilChanged()
         ) { user, deviceStatus, codes, groupCount ->
             _uiState.update {
@@ -113,7 +113,7 @@ class GroupInitViewModel(
         user: Resource<UserMe?>,
         deviceStatus: DeviceStatusData,
         codes: List<UserPersonalCode>,
-        groupCount: Int?
+        groupCount: Int
     ): GroupInitScreenState {
         val errors = buildList {
             if (!deviceStatus.networkStatus.isOnline) {
@@ -143,7 +143,6 @@ class GroupInitViewModel(
         }
 
         return GroupInitScreenState(
-            userEmail = user.data?.email,
             userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
             personalCode = personalCode,
             errors = errors,
@@ -184,7 +183,7 @@ class GroupInitViewModel(
             GroupInitScreenUiEvent.SendEmailVerification -> {
                 _uiState.update {
                     it.mapReady {
-                        it.copy(alertDialog = it.userEmail?.let { MainAlertDialog.VerifyEmail(it) })
+                        it.copy(alertDialog = userRepo.cachedUser?.email?.let { MainAlertDialog.VerifyEmail(it) })
                     }
                 }
             }

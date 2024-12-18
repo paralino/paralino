@@ -8,13 +8,12 @@ import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
 import app.paralino.core.utils.ConditionErrorType
 
 data class GroupInitScreenState constructor(
-    val userEmail: String?,
     val userImage: ImageModel,
     val personalCode: PersonalCodeScreenCodeData?,
     val errors: List<ConditionErrorType> = emptyList(),
     val alertDialog: MainAlertDialog?,
     val onboardingStep: AccountOnboardingContent?,
-    val groupCount: Int?
+    val groupCount: Int
 )
 
 sealed interface GroupInitScreenEvent {
