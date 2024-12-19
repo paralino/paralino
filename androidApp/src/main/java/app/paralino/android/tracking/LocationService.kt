@@ -72,7 +72,7 @@ class LocationService : Service() {
         if (!isServiceActive) {
             serviceDefaultScope.coroutineContext.cancelChildren()
             initTracking()
-        } else if (intent?.action == Intent.ACTION_BOOT_COMPLETED || intent?.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+        } else if (LocationServiceLauncher.isPackageBootAction(intent?.action)) {
             serviceDefaultScope.coroutineContext.cancelChildren()
             initTracking()
         } else {
