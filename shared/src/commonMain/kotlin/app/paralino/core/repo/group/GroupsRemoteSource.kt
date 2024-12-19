@@ -71,7 +71,7 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             if (memberUserId == groupOwnerId)
-                throw PermissionDeniedException("Owner can not be removed from the group")
+                throw PermissionDeniedException(code = 403, message = "Owner can not be removed from the group")
 
             val payload = DeleteGroupMemberPayload(
                 groupId = groupId,
@@ -239,7 +239,7 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             if (appPrefs.userId == group.ownerUserId)
-                throw PermissionDeniedException("Owner can not block the group")
+                throw PermissionDeniedException(code = 403, message = "Owner can not block the group")
 
             val userKey = cryptoUserKeyRepo.activePersonalKeyWithVersion()
             val groupData = group.data.data?.let {
@@ -273,7 +273,7 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             if (appPrefs.userId == user.userId)
-                throw PermissionDeniedException("You can not block yourself")
+                throw PermissionDeniedException(code = 403, message = "You can not block yourself")
 
             val userKey = cryptoUserKeyRepo.activePersonalKeyWithVersion()
             val userData = user.memberData.data?.let {

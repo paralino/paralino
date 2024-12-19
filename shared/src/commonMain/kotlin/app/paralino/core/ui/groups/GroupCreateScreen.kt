@@ -34,8 +34,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.presentation.groups.CreateGroupScreenEvent
+import app.paralino.core.presentation.groups.CreateGroupScreenUiEvent
 import app.paralino.core.presentation.groups.CreateGroupState
 import app.paralino.core.presentation.groups.CreateGroupViewModel
 import app.paralino.core.ui.CoreUiState
@@ -48,6 +49,8 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -62,7 +65,7 @@ fun GroupCreateScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState()
+    val uiState by vm.uiState.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -79,8 +82,12 @@ fun GroupCreateScreenCore(
         }
     }
 
+    val dialog = uiState.data?.alertDialog
+    dialog?.Show {
+        vm.onEvent(CreateGroupScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+    }
 
-    when (val finalState = state) {
+    when (val finalState = uiState) {
         Payload.Loading -> {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -98,12 +105,14 @@ fun GroupCreateScreenCore(
         is Payload.Success -> {
             GroupCreateScreen(
                 state = finalState.data,
-                nameLengthLimit = vm.groupNameLengthLimit,
                 onImageClick = {
                     onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.groupEmojis))
                 },
-                onCreateGroupClick = { image, name ->
-                    vm.createGroup(image, name)
+                onNameChange = {
+                    vm.updateName(it)
+                },
+                onCreateGroupClick = {
+                    vm.onEvent(CreateGroupScreenUiEvent.CreateGroup)
                 }
             )
         }
@@ -113,12 +122,11 @@ fun GroupCreateScreenCore(
 @Composable
 private fun GroupCreateScreen(
     state: CreateGroupState,
-    nameLengthLimit: Int,
     onImageClick: () -> Unit,
-    onCreateGroupClick: (ImageModel, String) -> Unit,
+    onNameChange: (String) -> Unit,
+    onCreateGroupClick: () -> Unit,
 ) {
 
-    var groupName by remember { mutableStateOf(state.name) }
     var rotation by remember { mutableStateOf(0f) }
     val focusManager = LocalFocusManager.current
 
@@ -140,7 +148,7 @@ private fun GroupCreateScreen(
         buttonIcon = if (state.isNewGroup) null else CoreAppIcons.Save.asPainterResource(),
         onConfirm = {
             focusManager.clearFocus()
-            onCreateGroupClick(state.image, groupName)
+            onCreateGroupClick()
         }
     ) {
         Column(
@@ -176,13 +184,13 @@ private fun GroupCreateScreen(
             Spacer(modifier = Modifier.size(20.dp))
 
             MainInputField(
-                text = groupName,
+                text = state.name,
                 hint = stringResource(MR.strings.group_create_name_placeholder),
-                hasError = state.hasError,
+                hasError = state.hasNameError,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done,
                 focusManager = focusManager,
-                onInputChange = { groupName = it.take(nameLengthLimit) }
+                onInputChange = onNameChange
             )
 
             Spacer(modifier = Modifier.weight(1f))
