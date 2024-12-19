@@ -248,17 +248,18 @@ fun SharingStartScreenCore(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     SettingsSectionHeader(name = stringResource(MR.strings.groups_sharing_section_title_group))
                     GroupListItem(
-                        modifier = Modifier.fillMaxWidth(),
-                        data = state.groupState.data!!,
-                        onEdit = {},
-                        onClick = {
-                            if (groupId.isNullOrBlank()) {
-                                appState.uiScope.launch {
-                                    val groupPickerState = vm.getGroupPickerState()
-                                    onPickGroup(groupPickerState)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                if (groupId.isNullOrBlank()) {
+                                    appState.uiScope.launch {
+                                        val groupPickerState = vm.getGroupPickerState()
+                                        onPickGroup(groupPickerState)
+                                    }
                                 }
-                            }
-                        }
+                            },
+                        data = state.groupState.data!!,
+                        onEdit = {}
                     )
                 }
             }

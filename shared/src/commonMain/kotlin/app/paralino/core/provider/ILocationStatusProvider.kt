@@ -32,7 +32,11 @@ data class LocationConditionStatus constructor(
     val isAnyLocationPermissionAllowed: Boolean = isCoarsePermissionAllowed || isFinePermissionAllowed
 
     fun isOK(forAlwaysOnAccess: Boolean = false): Boolean {
-        return isGpsOn && isAnyLocationPermissionAllowed && (if (forAlwaysOnAccess) isBackgroundPermissionAllowed else true)
+        return isGpsOn && areOnlyPermissionsOk(forAlwaysOnAccess = forAlwaysOnAccess)
+    }
+
+    fun areOnlyPermissionsOk(forAlwaysOnAccess: Boolean = false): Boolean {
+        return isAnyLocationPermissionAllowed && (if (forAlwaysOnAccess) isBackgroundPermissionAllowed else true)
     }
 
     fun getPossibleErrors(forBackground: Boolean = true): MutableList<ConditionErrorType> {

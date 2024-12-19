@@ -351,9 +351,10 @@ private fun LazyListScope.groupSection(
 
     items(groups, key = { it.id }) { group ->
         GroupListItem(
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 4.dp)
+                .clickable { onClick(GroupPickerAction.GroupPicked(group)) },
             data = group,
-            onClick = { onClick(GroupPickerAction.GroupPicked(group)) },
             onEdit = { onClick(GroupPickerAction.GroupEditPicked(group)) }
         )
     }

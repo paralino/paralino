@@ -19,6 +19,7 @@ public class CoreKoinSetup {
         crashReportingLogr: @escaping (AppBuildConfig) -> ICrashReportingLogr,
         locationManager: @escaping () -> CoreLocationManagerDelegate,
         appUpdateManager: @escaping () -> IAppUpdateManager,
+        appRatingPresenter: @escaping () -> IAppRatingPresenter,
         billingProvider: @escaping () -> IBillingProvider,
         locationStatusProvider: @escaping () -> ILocationStatusProvider,
         connectionStatusProvider: @escaping (AppBuildConfig) -> IConnectionStatusProvider,
@@ -36,6 +37,7 @@ public class CoreKoinSetup {
                 crashReportingLogr: crashReportingLogr,
                 locationManager: locationManager,
                 appUpdateManager: appUpdateManager,
+                appRatingPresenter: appRatingPresenter,
                 billingProvider: billingProvider,
                 locationStatusProvider: locationStatusProvider,
                 connectionStatusProvider: connectionStatusProvider,
@@ -50,6 +52,7 @@ public class CoreKoinSetup {
         crashReportingLogr: @escaping (AppBuildConfig) -> ICrashReportingLogr,
         locationManager: @escaping () -> CoreLocationManagerDelegate,
         appUpdateManager: @escaping () -> IAppUpdateManager,
+        appRatingPresenter: @escaping () -> IAppRatingPresenter,
         billingProvider: @escaping () -> IBillingProvider,
         locationStatusProvider: @escaping () -> ILocationStatusProvider,
         connectionStatusProvider: @escaping (AppBuildConfig) -> IConnectionStatusProvider,
@@ -113,7 +116,8 @@ public class CoreKoinSetup {
             cryptoServiceProvider: { CryptoFrameworkProvider() },
             valueFormatter: { ValueFormatter() },
             appUpdateManager: appUpdateManager,
-            billingProvider: billingProvider
+            billingProvider: billingProvider,
+            appRatingPresenter: appRatingPresenter
         )
         
         return coreIOSModules

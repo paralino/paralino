@@ -1,10 +1,13 @@
 package app.paralino.core.ui
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
+import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.login.LoginScreenCore
@@ -12,15 +15,19 @@ import app.paralino.core.ui.login.ProfileSetupScreenCore
 import app.paralino.core.ui.login.RecoverKeysScreenCore
 import app.paralino.core.ui.login.ResetPasswordScreenCore
 import app.paralino.core.ui.login.WelcomeScreen
+import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingContent
+import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingScreenCore
 
 object LoginScreens {
     fun WelcomeScreenVC(
         vm: LoggedOutViewModel,
+        paddingValues: AppleScreenPaddingValues,
         onLoginClick: () -> Unit,
         onStartClick: () -> Unit,
     ) = ComposeUIViewController {
         WelcomeScreen(
-            vm,
+            vm = vm,
+            paddingValues = paddingValues.toComposePaddingValues(),
             onLoginClick = onLoginClick,
             onStartClick = onStartClick
         )
@@ -72,6 +79,22 @@ object LoginScreens {
                 appState = it,
                 vm = vm,
                 openLoginScreen = openLoginScreen
+            )
+        }
+    }
+
+    fun WelcomeOnboardingScreen(
+        vm: WelcomeOnboardingViewModel,
+        isDemo: Boolean,
+        onFinish: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            val step = rememberSaveable { mutableStateOf(WelcomeOnboardingContent.STEP_LOCATION) }
+            WelcomeOnboardingScreenCore(
+                vm = vm,
+                isDemo = isDemo,
+                step = step,
+                onFinish = onFinish
             )
         }
     }

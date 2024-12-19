@@ -44,6 +44,7 @@ revenuecat-android = "8.7.0"
 androidx-room = "2.7.0-alpha11"
 sqlite = "2.5.0-alpha11"
 ksp = "2.0.20-1.0.24"
+googlePlayReview = "2.0.2"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -111,6 +112,7 @@ revenuecat-android = { module = "com.revenuecat.purchases:purchases", version.re
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+play-review = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

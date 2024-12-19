@@ -2,6 +2,7 @@ package app.paralino.android.di
 
 import app.paralino.android.AppClass
 import app.paralino.android.BuildConfig
+import app.paralino.android.app_rating.AppRatingPresenter
 import app.paralino.android.app_update.AppUpdateManager
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
@@ -24,8 +25,11 @@ import app.paralino.android.remote.appwrite.FunctionsApi
 import app.paralino.android.remote.appwrite.RealtimeApi
 import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
+import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.appPrefs
+import app.paralino.core.app_rating.AppRatingManager
+import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.db.AppPrefsProvider
@@ -52,6 +56,7 @@ import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
@@ -108,7 +113,7 @@ object KoinSetup {
         single<IConnectionStatusProvider>(createdAtStart = true) { ConnectionStatusProvider(androidContext(), get()) }
         single<ILocationStatusProvider>(createdAtStart = true) { LocationStatusProvider(androidContext()) }
         single<INotificationStatusProvider>(createdAtStart = true) { NotificationStatusProvider(androidContext()) }
-        single<IDeviceApiProvider>(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) }
+        single(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) } bind IDeviceApiProvider::class
 
         single<ICrashReportingLogr> { CrashReportingLogr(get(), appPrefs) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
@@ -128,10 +133,12 @@ object KoinSetup {
         single<IBillingProvider> { BillingProviderAndroid(androidApplication() as AppClass, get(), get(), get()) }
 
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
+        single { AppRatingPresenter(androidApplication(), get()) } bind IAppRatingPresenter::class
     }
 
     private val appSpecificModule = module {
         single { PreCheckControl() }
+        single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
 
@@ -158,15 +165,15 @@ object KoinSetup {
             )
         }
 
-        viewModel { GroupInitViewModel(get(), get(), get()) }
-        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs, get(), get(), get()) }
+        viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
+        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
-        viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get()) }
+        viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get()) }
         viewModel { (groupId: String?, isOnboarding: Boolean) ->
             SharingStartViewModel(groupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
-        viewModel { LoggedOutViewModel(get()) }
+        viewModel { LoggedOutViewModel(get(), get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
         viewModel { (groupId: String?, code: String?) ->
             MemberInviteViewModel(
@@ -178,9 +185,9 @@ object KoinSetup {
                 userRepo = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
-        viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
+        viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
         viewModel { ConvertAccountViewModel(get()) }
@@ -189,7 +196,7 @@ object KoinSetup {
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
         viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get(), get(), appPrefs) }
-        viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get(), get(), get()) }
+        viewModel { (groupID: String, placeId: String?, lat: Double?, lng: Double?) -> CreatePlaceViewModel(groupID, placeId, lat, lng, get(), get(), get(), get(), get(), get()) }
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
@@ -198,5 +205,6 @@ object KoinSetup {
         viewModel { PlanInfoViewModel(get(), appPrefs) }
         viewModel { GeneralInfoViewModel(get(), get()) }
         viewModel { LocationSettingsViewModel(get(), get(), get()) }
+        viewModel { WelcomeOnboardingViewModel(get(), get()) }
     }
 }

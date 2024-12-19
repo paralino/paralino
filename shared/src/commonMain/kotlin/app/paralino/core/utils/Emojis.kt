@@ -14,6 +14,8 @@ object Emojis {
     val goat = "emoji_u1f410"
     val home = "emoji_u1f3e0"
     val schoolBooks = "emoji_u1f4da"
+    val suitecase = "emoji_u1f9f3"
+    val heart = "emoji_u2764"
 
     private val userSpecific = listOf(
 //        "emoji_u1f4a9",
@@ -112,7 +114,7 @@ object Emojis {
         "emoji_u1f6cd",
         "emoji_u1f6d2",
         "emoji_u1f6dd",
-        "emoji_u1f9f3",
+        suitecase,
         "emoji_u1f30a",
         "emoji_u1f30d",
         "emoji_u1f31b",
@@ -145,7 +147,7 @@ object Emojis {
         "emoji_u26fa",
         "emoji_u2600",
         "emoji_u2615",
-        "emoji_u2764",
+        heart,
     )
 
     val circles = listOf(

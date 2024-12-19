@@ -1,5 +1,6 @@
 package app.paralino.core
 
+import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
@@ -80,7 +81,6 @@ import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.GroupRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
@@ -157,6 +157,11 @@ object ParalinoCore {
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
+        if (appPrefs.currentAppVersionNumber != deviceApiProvider.appVersionCode) {
+            appPrefs.previousAppVersionNumber = appPrefs.currentAppVersionNumber
+            appPrefs.currentAppVersionNumber = deviceApiProvider.appVersionCode
+        }
+
         logr.i("paralino_core", "Paralino core initialized: ${deviceApiProvider.clientHeaderValue}")
 
         if (appBuildConfig.serverUrl.isBlank() || appBuildConfig.projectId.isBlank()) {
@@ -190,7 +195,7 @@ val dataSourceModule = module {
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
     single { CryptoKeyLocalDataSource(get(), get()) }
-    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
     single { PlacesLocalDataSource(get(), get()) }
 
@@ -244,7 +249,6 @@ val coreModule = module {
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), appPrefs) }
-    single { GroupRepository(get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
@@ -282,4 +286,6 @@ val coreModule = module {
 
     single { InAppLogger(get(), get(), get()) }
     single { LimitedExecutionParentManager() }
+
+    single { AppRatingManager(get(), get(), get()) }
 }

@@ -14,6 +14,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.ICoreMessageDispatcher
 import app.paralino.core.provider.INotificationStatusProvider
+import app.paralino.core.provider.NotificationPermissionResultEvent
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.onAction
@@ -73,16 +74,16 @@ class NotificationsPermissionHandlerState constructor(
     fun permissionRequestResult(state: Map<String, Boolean>) {
         denied = state.any { !it.value }
 
-        if (denied) {
+        val handled = updateStatus(granted = !denied)
+        if (denied && !handled) {
             showPermissionDeniedInfo()
         }
-        updateStatus()
     }
 
     fun askNotificationPermission() {
         when {
             notificationPermissionState?.allPermissionsGranted == true -> {
-                updateStatus()
+                updateStatus(granted = true)
             }
             notificationPermissionState?.shouldShowRationale == true -> {
                 showPermissionDeniedInfo()
@@ -93,8 +94,9 @@ class NotificationsPermissionHandlerState constructor(
         }
     }
 
-    private fun updateStatus() {
+    private fun updateStatus(granted: Boolean): Boolean {
         notificationStatusProvider.refreshNotificationsStatus()
+        return messageDispatcher.onMessageEvent(NotificationPermissionResultEvent(granted = granted))
     }
 
     private fun showPermissionDeniedInfo() {
@@ -129,5 +131,4 @@ class NotificationsPermissionHandlerState constructor(
             context.startActivity(intent)
         }
     }
-
 }

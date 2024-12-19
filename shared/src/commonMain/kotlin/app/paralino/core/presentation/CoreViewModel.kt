@@ -4,9 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 
 abstract class CoreViewModel constructor(
     val messageDispatcher: CoreMessageDispatcher = CoreMessageDispatcher()
-) : BaseViewModel(), ICoreMessageDispatcher by messageDispatcher {
-
-}
+) : BaseViewModel(), ICoreMessageDispatcher by messageDispatcher
 
 expect abstract class BaseViewModel constructor() {
     val coroutineScope: CoroutineScope

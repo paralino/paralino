@@ -25,6 +25,8 @@ import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.groups.components.dummyLocations
+import app.paralino.core.ui.groups.components.dummyMemberState
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
 
@@ -75,7 +77,7 @@ fun GroupMemberPreview() {
                 GroupMember(
                     state = GroupMemberItemStateWithLocations(
                         memberState = dummyMemberState,
-                        locations = dummyLocations.take(1),
+                        locations = listOf(dummyLocations.get(1)),
                         allowShowingDevices = false,
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
@@ -90,75 +92,3 @@ fun GroupMemberPreview() {
         }
     }
 }
-
-val dummyMemberState = GroupMemberState(
-    groupId = "",
-    memberId = "",
-    userId = "",
-    name = "User name",
-    image = ImageModel.emoji(Emojis.robot),
-    paralinoId = null,
-    isCurrentUser = true,
-    isVerified = true,
-    canHaveExpandButton = true
-)
-
-val dummyLocations = listOf(
-    GroupMemberItemLocationState(
-        locationId = "",
-        name = "Device 1",
-        image = ImageModel.emoji(Emojis.lock),
-        actualBatteryLevel = 20,
-        adjustedBatteryLevel = 20,
-        isBatteryCharging = false,
-        speed = "35 km/h",
-        elevation = "250m",
-        lastLocationPing = "16:30",
-        lastStatusPing = "16:30",
-        deviceStatus = MemberDeviceStatusType.ACTIVE,
-        canEdit = true,
-        currentDevice = true,
-        onlineStatus = MemberDeviceOnlineStatusType.ONLINE,
-        networkType = NetworkType.G2,
-        signalStrength = NetworkSignalStrength.GOOD,
-        visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
-    ),
-    GroupMemberItemLocationState(
-        locationId = "",
-        name = "Device 2",
-        image = ImageModel.emoji(Emojis.lock),
-        actualBatteryLevel = 20,
-        adjustedBatteryLevel = 20,
-        isBatteryCharging = false,
-        speed = "35 km/h",
-        elevation = "250m",
-        lastLocationPing = null,
-        lastStatusPing = "16:30",
-        deviceStatus = MemberDeviceStatusType.GPS_OFF,
-        canEdit = true,
-        currentDevice = true,
-        onlineStatus = MemberDeviceOnlineStatusType.OFFLINE,
-        networkType = NetworkType.G4,
-        signalStrength = NetworkSignalStrength.POOR,
-        visibility = MemberLocationVisibilityType.VISIBLE_ONCE
-    ),
-    GroupMemberItemLocationState(
-        locationId = "",
-        name = "Device 3",
-        image = ImageModel.emoji(Emojis.lock),
-        actualBatteryLevel = 20,
-        adjustedBatteryLevel = 20,
-        isBatteryCharging = true,
-        speed = "35 km/h",
-        elevation = "250m",
-        lastLocationPing = "16:30",
-        lastStatusPing = "16:30",
-        deviceStatus = MemberDeviceStatusType.NOT_SHARING,
-        canEdit = false,
-        currentDevice = false,
-        onlineStatus = MemberDeviceOnlineStatusType.BUSY,
-        networkType = NetworkType.WIFI,
-        signalStrength = NetworkSignalStrength.GOOD,
-        visibility = MemberLocationVisibilityType.HIDDEN
-    )
-)

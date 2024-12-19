@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
@@ -21,17 +20,18 @@ import app.paralino.android.ui.login.ResetPasswordScreen
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
+import app.paralino.android.ui.onboarding.WelcomeOnboardingScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
-import app.paralino.android.ui.settings.billing.PaywallScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.GeneralInfoScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.LocationSettingsScreen
 import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.SettingsScreen
+import app.paralino.android.ui.settings.billing.PaywallScreen
 import app.paralino.android.ui.settings.billing.SubscriptionScreen
 import app.paralino.android.ui.settings.profile.AccountScreen
 import app.paralino.android.ui.settings.profile.ChangeEmailScreen
@@ -42,7 +42,6 @@ import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 
@@ -221,6 +220,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             val rawDataType = RawPresentationDataType.fromKey(type, id ?: "")
             RawDataScreen(appState = appState, type = rawDataType!!)
         }
+        composable(AppScreen.Settings.WelcomeOnboarding.routeSignature) {
+            WelcomeOnboardingScreen(
+                isDemo = true,
+                onFinish = { appState.navController.popBackStack() }
+            )
+        }
     }
 }
 
@@ -234,6 +239,20 @@ fun NavGraphBuilder.loggedOutGraph(
     ) {
         composable(AppScreen.LoggedOut.Welcome.routeSignature) {
             LoggedOutScreen(appState)
+        }
+        composable(AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
+            WelcomeOnboardingScreen(
+                isDemo = false,
+                onFinish = {
+                    appState.navController.navigate(
+                        AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP)
+                    ) {
+                        this.popUpTo(route = AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
+                            this.inclusive = true
+                        }
+                    }
+                }
+            )
         }
         composable(AppScreen.LoggedOut.Login.routeSignature) {
             val startScreen = it.arguments?.getString(AppScreen.LoggedOut.Login.argumentStartScreenType)

@@ -23,6 +23,7 @@ import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.Resource
+import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
@@ -40,30 +41,28 @@ import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MapHomeScreen(
     appState: MainAppState,
     groupId: String?,
-    vm: MapHomeViewModel = getViewModel(),
+    vm: GroupInitViewModel = koinViewModel(),
     onClose: () -> Unit,
 ) {
-    MessageDispatcherEffect(vm, appState)
-
-    val groupState by vm.allGroups.collectAsState()
+    val groupState by vm.canDisplayMap.collectAsState(Resource.NotInitialized)
     when (val state = groupState) {
         Resource.NotInitialized -> {}
         is Resource.Ready -> {
-            if (state.data.isNotEmpty()) {
+            if (state.data) {
                 MapHomeContent(
                     appState = appState,
                     startGroupId = groupId,
-                    vm = vm
                 )
             } else {
                 GroupInitScreen(
-                    appState = appState
+                    appState = appState,
+                    vm = vm
                 )
             }
         }
@@ -74,8 +73,9 @@ fun MapHomeScreen(
 private fun MapHomeContent(
     appState: MainAppState,
     startGroupId: String?,
-    vm: MapHomeViewModel,
+    vm: MapHomeViewModel = koinViewModel(),
 ) {
+    MessageDispatcherEffect(vm, appState)
 
     val uiState by vm.uiState.collectAsState()
     val readyState by rememberUpdatedState(newValue = uiState.asReady())

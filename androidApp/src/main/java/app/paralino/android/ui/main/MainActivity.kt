@@ -18,7 +18,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.NavHost
+import app.paralino.android.app_rating.AppRatingPresenter
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
@@ -41,12 +45,15 @@ import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    val vm: MainViewModel by viewModel()
+    private val vm: MainViewModel by viewModel()
+    private val appRatingPresenter: AppRatingPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +65,16 @@ class MainActivity : AppCompatActivity() {
             )
         }
         handleExtraDeeplink(intent?.data)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                appRatingPresenter.ratingEvent.collectLatest {
+                    if (it != null) {
+                        appRatingPresenter.triggerAppRatingDialog(this@MainActivity)
+                    }
+                }
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

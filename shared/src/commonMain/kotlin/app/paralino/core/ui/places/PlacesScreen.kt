@@ -184,8 +184,11 @@ private fun PlacesScreen(
                     }
 
                     if (state.error != null) {
-                        this.item(key = { state.error.toString() }) {
-                            ConditionErrorItem(data = state.error) {
+                        this.item(key = state.error.toString()) {
+                            ConditionErrorItem(
+                                modifier = Modifier.padding(top = 8.dp),
+                                data = state.error
+                            ) {
                                 onErrorItemClick(state.error)
                             }
                         }

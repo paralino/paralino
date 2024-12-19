@@ -13,7 +13,7 @@ import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlaceSettingsData
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.mapToPayload
@@ -36,7 +36,7 @@ class PlaceDetailViewModel(
     val groupId: String,
     val placeId: String,
     private val placesRepo: PlacesRepository,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
@@ -54,7 +54,7 @@ class PlaceDetailViewModel(
 
     init {
         combine(
-            groupRepo.getGroupWithMembersLocally(groupId).filterNotNull(),
+            groupRepo.getGroupWithMembers(groupId).filterNotNull(),
             placesRepo.getPlaceWithSettingsLocally(placeId)
         ) { group, place ->
 

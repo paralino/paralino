@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.components.AppSnackbar
@@ -34,8 +35,11 @@ data class AppleScreenPaddingValues(
     val top: Float,
     val end: Float,
     val bottom: Float
-) {
-    fun toComposePaddingValues() = PaddingValues(
+)
+
+@Composable
+fun AppleScreenPaddingValues.toComposePaddingValues() = remember {
+    PaddingValues(
         start = start.dp,
         top = top.dp,
         end = end.dp,

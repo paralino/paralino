@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlin.math.log
 
 class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
@@ -37,7 +36,7 @@ class LoginViewModel constructor(
 ) : CoreViewModel() {
 
     val initialUiType: LoginScreenUiType
-        get() = if (remoteConfigRepository.configState.value.isEmailEnabled) startScreenUiType else LoginScreenUiType.SIGNUP_GUEST
+        get() = defaultUiType(startScreenUiType)
 
     private val _uiState: MutableStateFlow<LoginScreenState>
     val uiState: StateFlow<LoginScreenState>
@@ -69,6 +68,10 @@ class LoginViewModel constructor(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    private fun defaultUiType(preferred: LoginScreenUiType): LoginScreenUiType {
+        return if (remoteConfigRepository.configState.value.isEmailEnabled) preferred else LoginScreenUiType.SIGNUP_GUEST
     }
 
     private fun proceed() {
@@ -110,7 +113,7 @@ class LoginViewModel constructor(
                     dismissGuestAccount()
                     _uiState.update {
                         it.copy(
-                            uiType = LoginScreenUiType.SIGNUP,
+                            uiType = defaultUiType(LoginScreenUiType.SIGNUP),
                             email = "",
                             password = ""
                         )
@@ -381,7 +384,7 @@ class LoginViewModel constructor(
         resetValidationState()
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> _uiState.update {
-                it.copy(uiType = LoginScreenUiType.SIGNUP, stepInfo = null)
+                it.copy(uiType = defaultUiType(LoginScreenUiType.SIGNUP), stepInfo = null)
             }
 
             LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> _uiState.update {

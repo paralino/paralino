@@ -88,4 +88,8 @@ class PlacesLocalDataSource(
     suspend fun getGroupId(placeId: String): String? {
         return database.groupRelatedDao.getGroupIdForPlace(placeId = placeId)
     }
+
+    suspend fun getPlacesCountForGroupOnce(groupId: String): Int? {
+        return database.groupRelatedDao.getPlacesCountForGroupOnce(groupId)
+    }
 }

@@ -13,8 +13,9 @@ struct GroupInitScreen: View {
     @Binding var path: [NavigationGraph]
 
     @EnvironmentObject var appDelegate: AppDelegate
-    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.groupInitVM)
+    @StateObject var appState: GroupInitState
     @State var shareText: ShareText?
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
     
     var body: some View {
         ZStack {
@@ -22,6 +23,12 @@ struct GroupInitScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.GroupInitScreenVC(
                     vm: appState.vm,
+                    paddingValues:  AppleScreenPaddingValues(
+                        start: safeAreaInsets.start,
+                        top: 0,
+                        end: safeAreaInsets.end,
+                        bottom: safeAreaInsets.bottom
+                    ),
                     openSettings: { path.append(.settings(.settings)) },
                     onCreateGroup: { path.append(.home(.groupCreate(groupId: nil))) },
                     openFreePlanInfo: { path.append(.home(.freePlanInfo)) },
@@ -31,7 +38,7 @@ struct GroupInitScreen: View {
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(
-                            messageDispather: appState.vm.messageDispatcher
+                            messageDispather: appState.vm
                         )
                     }
                 )
@@ -45,9 +52,21 @@ struct GroupInitScreen: View {
     }
 }
 
-struct GroupInitScreen_Previews: PreviewProvider {
-    @State static var graph: [NavigationGraph] = []
-    static var previews: some View {
-        GroupInitScreen(path: $graph)
+class GroupInitState: ObservableObject {
+    
+    @Published var groupState: Bool? = nil
+    let vm: GroupInitViewModel
+    
+    init() {
+        self.vm = KoinIOS.ViewModels.shared.groupInitVM
+        
+        vm.observe(flow: vm.canDisplayMap) { [weak self] value in
+            let state = ResourceSwift<KotlinBoolean>(data: value)
+            self?.groupState = state.data?.boolValue
+        }
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }
