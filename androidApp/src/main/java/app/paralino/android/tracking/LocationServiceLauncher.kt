@@ -83,8 +83,12 @@ class LocationServiceLauncher(
                     if (hasPermissionForBackground) {
                         startLocationService(isForeground = false, action = action)
                     } else {
-                        // we could still launch the service here below Android 14,
-                        // but location would not be accessible
+                        // Android <= 11, we can start foreground service
+                        // but location data is not accessible
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+                            startLocationService(isForeground = false, action = action)
+                        }
+
                         logg.w(
                             tag = "location_service",
                             message = "App in background but missing background permissions for $action"
