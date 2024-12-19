@@ -104,12 +104,16 @@
             android:name=".tracking.LocationService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location" />
+            android:foregroundServiceType="location" >
+            <intent-filter>
+                <action android:name="app.paralino.android.LOCATION_SERVICE_START" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".tracking.LocationStartBroadcastReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

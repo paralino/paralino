@@ -30,6 +30,9 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT * FROM groupEntity")
     fun getAllGroups(): Flow<List<GroupEntity>>
 
+    @Query("SELECT COUNT(id) FROM groupEntity")
+    fun getGroupsCount(): Flow<Int?>
+
     @Query("SELECT ownerUserId FROM groupEntity WHERE id = :groupId")
     suspend fun getGroupOwnerUserId(groupId: String): String?
 
@@ -158,6 +161,9 @@ interface GroupRelatedEntitiesDao {
 
     @Query("SELECT * FROM placeEntity WHERE groupId = :groupId")
     fun getAllPlacesForGroup(groupId: String): Flow<List<PlaceEntity>>
+
+    @Query("SELECT COUNT(id) FROM placeEntity WHERE groupId = :groupId")
+    suspend fun getPlacesCountForGroupOnce(groupId: String): Int?
 
     @Query("SELECT * FROM placeEntity")
     suspend fun getAllPlacesOnce(): List<PlaceEntity>

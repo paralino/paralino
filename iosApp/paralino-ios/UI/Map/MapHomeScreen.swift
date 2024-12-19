@@ -12,7 +12,7 @@ import MapKit
 struct MapHomeScreen: View {
     
     @Binding var path: [NavigationGraph]
-    @StateObject var mapState: MapHomeState
+    @StateObject var mapState: MapHomeState = MapHomeState()
     @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     @Environment(\.safeAreaInsets) private var safeAreaInsets

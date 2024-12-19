@@ -1,7 +1,9 @@
 package app.paralino.core.ui.invite.manage
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -63,6 +66,7 @@ fun PersonalCodeItem(
     modifier: Modifier = Modifier,
     state: PersonalCodeScreenCodeData,
     hintDelayMillis: Long = 0,
+    hasShareHint: Boolean = true,
     onCopy: () -> Unit,
     onShare: (String) -> Unit,
     onDelete: () -> Unit,
@@ -77,6 +81,7 @@ fun PersonalCodeItem(
             userName = state.userName,
             hasDelete = state.canDisable,
             deleteLoading = state.isActionLoading,
+            hasShareHint = hasShareHint,
             onCopy = onCopy,
             onShare = onShare,
             onDelete = onDelete
@@ -119,6 +124,7 @@ fun PersonalCodeItem(
     userName: String,
     hasDelete: Boolean,
     deleteLoading: Boolean,
+    hasShareHint: Boolean,
     onCopy: () -> Unit,
     onShare: (String) -> Unit,
     onDelete: () -> Unit,
@@ -129,7 +135,10 @@ fun PersonalCodeItem(
         animatedInfoText = 1f
     }
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Surface(
             modifier = Modifier
                 .zIndex(1f)
@@ -225,26 +234,28 @@ fun PersonalCodeItem(
                 }
             }
         }
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                modifier = Modifier
-                    .zIndex(0f)
-                    .offset(y = animateDpAsState((1f - animatedInfoText).times(-200).dp).value)
-                    .padding(horizontal = 30.dp)
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp)
-                    )
-                    .clip(RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp))
-                    .background(MaterialTheme.colors.surface)
-                    .padding(top = 12.dp, bottom = 8.dp)
-                    .padding(horizontal = 8.dp),
-                text = stringResource(MR.strings.invite_manage_description).annotatedBold(),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.SemiBold)
-            )
+        if (hasShareHint) {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                Text(
+                    modifier = Modifier
+                        .zIndex(0f)
+                        .offset(y = animateDpAsState((1f - animatedInfoText).times(-200).dp).value)
+                        .padding(horizontal = 30.dp)
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp)
+                        )
+                        .clip(RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp))
+                        .background(MaterialTheme.colors.surface)
+                        .padding(top = 12.dp, bottom = 8.dp)
+                        .padding(horizontal = 8.dp),
+                    text = stringResource(MR.strings.invite_manage_description).annotatedBold(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.SemiBold)
+                )
+            }
+            Spacer(modifier = Modifier.size(50.dp))
         }
-        Spacer(modifier = Modifier.size(50.dp))
     }
 }
 
@@ -255,10 +266,10 @@ fun PersonalCodeItemWithHints(
     hintDelayMillis: Long = 0,
     personalCodeItem: @Composable Modifier.() -> Unit
 ) {
-    var animatedCardInfo by rememberSaveable { mutableFloatStateOf(0f) }
+    var animatedCardInfo by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(hintDelayMillis)
-        animatedCardInfo = 1f
+        animatedCardInfo = true
     }
 
     Column(
@@ -268,18 +279,22 @@ fun PersonalCodeItemWithHints(
             text = stringResource(MR.strings.dashboard_paralino_id_title).annotatedBold(),
             style = MaterialTheme.typography.h6,
             modifier = Modifier
-                .alpha(animateFloatAsState(animatedCardInfo).value)
                 .padding(horizontal = 20.dp)
         )
-        DataInfoChip(
-            modifier = Modifier
-                .alpha(animateFloatAsState(animatedCardInfo).value)
-                .padding(horizontal = 20.dp)
-                .padding(top = 4.dp),
-            image = null,
-            backgroundColor = AppColors.accentLight.copy(alpha = 0.3f),
-            text = stringResource(MR.strings.dashboard_paralino_id_description)
-        )
+
+        AnimatedVisibility(
+            visible = animatedCardInfo
+        ) {
+            DataInfoChip(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 4.dp),
+                image = null,
+                backgroundColor = AppColors.accentLight.copy(alpha = 0.3f),
+                text = stringResource(MR.strings.dashboard_paralino_id_description)
+            )
+        }
+
         Box(
             modifier = Modifier.padding(top = 8.dp),
             contentAlignment = Alignment.TopCenter
@@ -287,9 +302,10 @@ fun PersonalCodeItemWithHints(
             personalCodeItem(Modifier.padding(top = 40.dp))
             Icon(
                 modifier = Modifier
-                    .alpha(animateFloatAsState(animatedCardInfo).value)
                     .height(70.dp)
-                    .rotate(-10f),
+                    .offset(x = (-40).dp)
+                    .rotate(animateFloatAsState(if (animatedCardInfo) -10f else 10f, tween(800)).value)
+                    .alpha(animateFloatAsState(if (animatedCardInfo) 1f else 0f, tween(1000)).value),
                 painter = CoreAppIcons.ArrowSpinny.asPainterResource(),
                 tint = AppColors.highlightGold,
                 contentDescription = null

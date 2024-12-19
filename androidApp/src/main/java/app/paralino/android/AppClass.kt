@@ -1,7 +1,6 @@
 package app.paralino.android
 
 import android.annotation.SuppressLint
-import android.app.ForegroundServiceStartNotAllowedException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,20 +12,16 @@ import android.net.Network
 import android.os.Build
 import androidx.core.content.getSystemService
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.di.KoinSetup
 import app.paralino.android.tracking.LocationService
+import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.core.CoreAppManager
-import app.paralino.core.MR
 import app.paralino.core.ParalinoCore
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
-import app.paralino.core.domain.notifications.IPushNotificationPresenter
-import app.paralino.core.logg
-import app.paralino.core.models.data
+import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
@@ -35,11 +30,8 @@ import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -65,10 +57,9 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     private val androidPreCheck: PreCheckControl by inject()
     private val coreAppManager: CoreAppManager by inject()
     private val locationSharingManager: LocationSharingManager by inject()
-    private val infoMessagesNotifications: IInfoMessagesNotificationPresenter by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
+    private val locationServiceLauncher: LocationServiceLauncher by inject()
 
-    val isForeground get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
     val appState get() = ProcessLifecycleOwner.get().lifecycle.currentState
 
     override fun onCreate() {
@@ -129,57 +120,15 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
             locationSharingManager.sharingStatus,
             deviceApiProvider.appLifecycleState
         ) { sharingStatus, appState ->
-            if (sharingStatus.data == true) {
-                appState.wasEverActive || deviceApiProvider.locationStatusProvider.currentStatus.isOK(forAlwaysOnAccess = true)
-            } else {
-                null
-            }
+            sharingStatus to appState
         }
-            .filterNotNull()
-            .distinctUntilChanged()
-            .debounce { if (!it) 6000L else 0L }
+            .debounce(500)
             .onEach {
-                logg.v(
-                    "location_service",
-                    "Location sharing contract ready ($it), starting location service from state: $appState"
-                )
-                if (it) {
-                    LocationService.start(this, isForeground)
-                } else {
-                    notifyLocationServiceError(backgroundLocationError = true)
+                if (it.second.current == AppLifecycleType.ACTIVE) {
+                    locationServiceLauncher.startLocationService(action = LocationService.INTENT_ACTION_LOCATION_SERVICE_START)
                 }
             }
-            .catch { e ->
-                logg.e(
-                    tag = "location_service",
-                    message = "Can not start location service from state: $appState",
-                    t = e
-                )
-                notifyLocationServiceError(
-                    backgroundLocationError = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException
-                )
-            }
             .launchIn(defaultScope)
-    }
-
-    private fun notifyLocationServiceError(backgroundLocationError: Boolean) {
-        val message =
-            if (backgroundLocationError) {
-                MR.strings.error_location_background_permission_missing_notification_message.getString(
-                    this
-                )
-            } else {
-                MR.strings.error_location_sharing_start_notification_message.getString(this)
-            }
-        infoMessagesNotifications.notify(
-            IPushNotificationPresenter.Payload(
-                notificationId = 54343,
-                title = MR.strings.error_something_wrong.getString(this),
-                message = message,
-                timeMillis = null,
-                timeInfo = null
-            )
-        )
     }
 
     override fun onStart(owner: LifecycleOwner) {
@@ -202,6 +151,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == LocationManager.PROVIDERS_CHANGED_ACTION) {
                 coreAppManager.updateLocationStatus()
+                locationServiceLauncher.startLocationService(action = intent.action)
             }
         }
     }

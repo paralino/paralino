@@ -1,3 +1,4 @@
+// TODO change package
 package app.paralino.core.presentation
 
 import app.paralino.core.logg
@@ -19,6 +20,11 @@ open class CoreMessageDispatcher: ICoreMessageDispatcher {
         extraBufferCapacity = 2,
         onBufferOverflow = BufferOverflow.SUSPEND
     )
+
+    /**
+     * Returns true if handled
+     */
+    override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean = false
 }
 
 interface ICoreMessageDispatcher {
@@ -47,4 +53,8 @@ interface ICoreMessageDispatcher {
         logg.d("snackbar", "Got snackbar result: ${result.result}")
         snackbarResultChannel.tryEmit(result)
     }
+
+    fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean
 }
+
+interface ICoreMessageDispatcherEvent

@@ -12,22 +12,22 @@ struct FreePlanInfoScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.planInfoVM)
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.home.FreePlanInfoScreenVC(
                     vm: appState.vm,
-                    showBanner: false,
+                    paddingValues: safeAreaInsets,
                     onContinue: {
                         path[path.count - 1] = .home(.groupCreate(groupId: nil))
-                    },
-                    openPaywall: {
-                        path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
                     }
                 )
             }
             .navigationBarBackButtonHidden(true)
+            .ignoresSafeArea(.all, edges: .vertical)
         }
     }
 }

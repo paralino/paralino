@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.groups
 
+import app.paralino.core.MR
 import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
@@ -9,7 +10,12 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
@@ -27,6 +33,8 @@ import kotlinx.coroutines.launch
 class CreateGroupViewModel(
     val groupId: String?,
     private val groupRepo: UserGroupLocalDataSource,
+    private val userRepo: UserRepository,
+    private val remoteConfig: RemoteConfigRepository,
     private val createGroup: GroupCreateUseCase
 ) : CoreViewModel() {
 
@@ -57,8 +65,9 @@ class CreateGroupViewModel(
                             isNewGroup = false,
                             name = group.name,
                             image = group.image,
-                            hasError = false,
-                            isLoading = false
+                            hasNameError = false,
+                            isLoading = false,
+                            alertDialog = it.data?.alertDialog
                         )
                     }
                 }
@@ -66,24 +75,46 @@ class CreateGroupViewModel(
         }
     }
 
-    fun createGroup(image: ImageModel, name: String) {
+    fun onEvent(event: CreateGroupScreenUiEvent) {
+        when (event) {
+            CreateGroupScreenUiEvent.CreateGroup -> {
+                tryCreateGroup()
+            }
+
+            is CreateGroupScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                        _uiState.update {
+                            it.mapSuccess { it.copy(alertDialog = null) }
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun tryCreateGroup() {
 
         val uiState = uiState.value
-        if (uiState is Payload.Loading || uiState.data?.isLoading == true) {
+        if (uiState !is Payload.Success || uiState.data.isLoading) {
             return
         }
 
-        val filteredName = name.trim().replace("\n", " ")
+        val filteredName = uiState.data.name.trim().replace("\n", " ")
 
         if (filteredName.isBlank()) {
             _uiState.update {
-                it.mapSuccess { it.copy(hasError = true) }
+                it.mapSuccess { it.copy(hasNameError = true) }
             }
             return
         }
 
         val group = groupFlow.value.data
-        val groupUpdateFlow = if (group != null) {
+        val image = uiState.data.image
+
+        if (group != null) {
             val newData = when (group.data) {
                 is CryptoResource.Ready, is CryptoResource.WrongKeyOrData, is CryptoResource.NotInitialized -> {
                     CryptoResource.Ready(
@@ -97,19 +128,34 @@ class CreateGroupViewModel(
             val newGroup = group.copy(data = newData)
             createGroup.updateGroup(newGroup)
                 .map { group.id }
+                .processGroupFlow()
         } else {
-            createGroup.createGroup(filteredName, image)
+            coroutineScope.launch {
+                if (checkGroupCreateLimits()) {
+                    createGroup.createGroup(filteredName, image)
+                        .processGroupFlow()
+                }
+            }
         }
+    }
 
-        groupUpdateFlow
+    private fun Flow<String>.processGroupFlow() {
+        this
             .mapToPayload { it }
             .onEach { data ->
                 _uiState.update {
-                    it.mapSuccess { it.copy(isLoading = data is Payload.Loading, hasError = false) }
+                    it.mapSuccess { it.copy(isLoading = data is Payload.Loading, hasNameError = false) }
                 }
                 when (data) {
                     is Payload.Error -> {
-                        showSnackbar(data.exception.errorString())
+                        if (data.exception.asRemoteException()?.code == 402) {
+                            if (checkGroupCreateLimits()) {
+                                // if limits are still somehow ok, show generic error
+                                showSnackbar(data.exception.errorString())
+                            }
+                        } else {
+                            showSnackbar(data.exception.errorString())
+                        }
                     }
 
                     Payload.Loading -> {}
@@ -127,7 +173,40 @@ class CreateGroupViewModel(
         }
     }
 
+    fun updateName(name: String) {
+        if (name.trim().length > groupNameLengthLimit)
+            return
+        _uiState.update {
+            it.mapSuccess { it.copy(name = name, hasNameError = false) }
+        }
+    }
+
     fun isGroupCreate(): Boolean {
         return groupId.isNullOrBlank()
+    }
+
+    private suspend fun checkGroupCreateLimits(): Boolean {
+        val limit = userRepo.userPlans.value.groupsLimit
+        val groupCount = groupRepo.allGroupsState.value.data?.filter { it.group.isCurrentUserOwner }?.size ?: 0
+        val maxGroupLimit = remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.groupsLimit
+
+        if (groupCount >= maxGroupLimit) {
+            _uiState.update {
+                it.mapSuccess {
+                    it.copy(
+                        alertDialog = MainAlertDialog.PlanLimit(
+                            content = MR.strings.plan_limit_groups_alert_info.localizedString(),
+                            limit = limit
+                        )
+                    )
+                }
+            }
+            return false
+        } else if (limit in 0..groupCount) {
+            showSnackbar(MR.strings.dashboard_groups_create_plan_limit.localizedString())
+            return false
+        } else {
+            return true
+        }
     }
 }

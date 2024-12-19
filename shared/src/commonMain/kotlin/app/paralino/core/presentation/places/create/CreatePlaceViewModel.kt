@@ -14,16 +14,19 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -35,6 +38,9 @@ class CreatePlaceViewModel(
     lat: Double? = null,
     lng: Double? = null,
     private val placesRepo: PlacesRepository,
+    private val placesLocalDataSource: PlacesLocalDataSource,
+    private val groupLocal: UserGroupLocalDataSource,
+    private val remoteConfig: RemoteConfigRepository,
     private val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
@@ -52,9 +58,8 @@ class CreatePlaceViewModel(
         coroutineScope.launch {
             val value = when {
                 placeId.isNullOrBlank() -> null
-                else -> placesRepo.getPlaceLocally(placeId)
-                    .map { Payload.Success(it) }
-                    .firstOrNull()
+                else -> placesLocalDataSource.getPlaceWithoutSettingsOnce(placeId)
+                    ?.let { Payload.Success(it) }
             } ?: Payload.Error(NullPointerException("No such place"))
 
             placeFlow.update { value }
@@ -82,10 +87,13 @@ class CreatePlaceViewModel(
                             lat = place.data.data?.lat,
                             lng = place.data.data?.lng,
                             radiusMeters = place.data.data?.radiusMeters ?: 0,
-                            radiusText = valueFormatter.getDistanceSmall(meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0),
+                            radiusText = valueFormatter.getDistanceSmall(
+                                meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0
+                            ),
                             hintText = hintText(),
                             actionLoading = false,
-                            fullLoading = false
+                            fullLoading = false,
+                            alertDialog = null
                         )
                     }
                 }
@@ -93,7 +101,27 @@ class CreatePlaceViewModel(
         }
     }
 
-    fun createPlace() {
+    fun onEvent(event: CreatePlaceScreenUiEvent) {
+        when (event) {
+            CreatePlaceScreenUiEvent.CreatePlace -> {
+                tryCreatePlace()
+            }
+
+            is CreatePlaceScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                        _uiState.update {
+                            it.mapSuccess { it.copy(alertDialog = null) }
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun tryCreatePlace() {
 
         val data = _uiState.value.data ?: return
 
@@ -132,18 +160,66 @@ class CreatePlaceViewModel(
             eventSeed = place?.data?.data?.eventSeed
         )
 
-        val groupUpdateFlow = if (place != null) {
+        if (place != null) {
             val newPlace = place.copy(data = CryptoResource.Ready(placeData))
             placesRepo.updatePlace(newPlace)
+                .processPlaceFlow()
         } else {
-            placesRepo.createPlace(
-                groupId = groupId,
-                private = data.private,
-                data = placeData
-            )
+            coroutineScope.launch {
+                if (checkPlaceLimits()) {
+                    placesRepo.createPlace(
+                        groupId = groupId,
+                        private = data.private,
+                        data = placeData
+                    ).processPlaceFlow()
+                }
+            }
         }
+    }
 
-        groupUpdateFlow
+    private suspend fun checkPlaceLimits(): Boolean {
+        val group = groupLocal.getGroupOnce(groupId) ?: return false
+        val limit = group.placesLimit(remoteConfig.configState.value)
+        val placeCount = placesLocalDataSource.getPlacesCountForGroupOnce(groupId) ?: 0
+        val isGroupOwner = group.isCurrentUserOwner
+        val maxPlaceLimit =
+            remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.placesLimit
+
+        if (isGroupOwner && placeCount >= maxPlaceLimit) {
+            _uiState.update {
+                it.mapSuccess {
+                    it.copy(
+                        alertDialog = MainAlertDialog.PlanLimit(
+                            content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                            limit = limit
+                        )
+                    )
+                }
+            }
+            return false
+        } else if (limit in 0..placeCount) {
+            if (isGroupOwner) {
+                messageDispatcher.showSnackbar(MR.strings.places_create_plan_limit_info.localizedString())
+            } else {
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(
+                            alertDialog = MainAlertDialog.PlanLimitForMembers(
+                                content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                                limit = limit
+                            )
+                        )
+                    }
+                }
+            }
+            return false
+        } else {
+            return true
+        }
+    }
+
+    private fun Flow<Unit>.processPlaceFlow() {
+        this
             .mapToPayload<Unit, Unit>()
             .onEach { data ->
                 _uiState.update {
@@ -156,7 +232,13 @@ class CreatePlaceViewModel(
                 }
                 when (data) {
                     is Payload.Error -> {
-                        _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
+                        if (data.exception.asRemoteException()?.code == 402) {
+                            if (checkPlaceLimits()) {
+                                _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
+                            }
+                        } else {
+                            _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
+                        }
                     }
 
                     Payload.Loading -> {}
@@ -201,8 +283,11 @@ class CreatePlaceViewModel(
 
     private fun hintText(): AnnotatedString {
         return when (deviceApiProvider.deviceType) {
-            DeviceType.Android -> MR.strings.places_create_location_hint_longpress.localizedString().annotatedBold()
-            DeviceType.iOS -> MR.strings.places_create_location_hint_tap.localizedString().annotatedBold()
+            DeviceType.Android -> MR.strings.places_create_location_hint_longpress.localizedString()
+                .annotatedBold()
+
+            DeviceType.iOS -> MR.strings.places_create_location_hint_tap.localizedString()
+                .annotatedBold()
         }
     }
 }

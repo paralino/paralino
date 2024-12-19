@@ -1,7 +1,8 @@
-package app.paralino.core.ui.login
+package app.paralino.core.ui.onboarding.account
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,12 +14,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.Resource
+import app.paralino.core.models.data
+import app.paralino.core.presentation.groups.GroupInitScreenEvent
+import app.paralino.core.presentation.groups.GroupInitScreenState
 import app.paralino.core.presentation.groups.GroupInitScreenUiEvent
 import app.paralino.core.presentation.groups.GroupInitViewModel
 import app.paralino.core.provider.localizedString
@@ -39,12 +45,14 @@ import app.paralino.core.ui.invite.manage.PersonalCodeItem
 import app.paralino.core.ui.invite.manage.PersonalCodeItemWithHints
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
 fun GroupInitScreenCore(
     appState: CoreUiState,
     vm: GroupInitViewModel,
+    paddingValues: PaddingValues,
     openSettings: () -> Unit,
     onCreateGroup: () -> Unit,
     openFreePlanInfo: () -> Unit,
@@ -56,7 +64,23 @@ fun GroupInitScreenCore(
     MessageDispatcherEffect(vm, appState)
     val state by vm.uiState.collectAsState()
 
-    when (val dialog = state.alertDialog) {
+    LaunchedEffect(key1 = Unit) {
+        vm.events.collectLatest { event ->
+            when (event) {
+                GroupInitScreenEvent.AskNotificationPermission -> askNotificationPermission()
+                is GroupInitScreenEvent.SharePersonalCode -> onSharePersonalCode(event.code)
+                GroupInitScreenEvent.OpenPersonalCodes -> openPersonalCodes()
+                GroupInitScreenEvent.OpenGroupCreate -> onCreateGroup()
+
+                null -> {
+                    /* do nothing */
+                }
+
+            }
+        }
+    }
+
+    when (val dialog = state.data?.alertDialog) {
         is MainAlertDialog.VerifyEmail -> {
             dialog.Show {
                 vm.onEvent(GroupInitScreenUiEvent.HideDialog)
@@ -69,6 +93,48 @@ fun GroupInitScreenCore(
         else -> {}
     }
 
+    when (val finalState = state) {
+        Resource.NotInitialized -> {}
+        is Resource.Ready -> {
+            when (val finalStep = finalState.data.onboardingStep) {
+                is AccountOnboardingContent -> {
+                    AccountOnboardingScreen(
+                        coreUiState = appState,
+                        paddingValues = paddingValues,
+                        step = finalStep,
+                        onEvent = {
+                            vm.onEvent(GroupInitScreenUiEvent.OnboardingStep(event = it))
+                        }
+                    )
+                }
+                null -> {
+                    GroupInitScreenFinal(
+                        state = finalState.data,
+                        vm = vm,
+                        openSettings = openSettings,
+                        onCreateGroup = onCreateGroup,
+                        openFreePlanInfo = openFreePlanInfo,
+                        openPersonalCodes = openPersonalCodes,
+                        onSharePersonalCode = onSharePersonalCode,
+                        askNotificationPermission = askNotificationPermission
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GroupInitScreenFinal(
+    state: GroupInitScreenState,
+    vm: GroupInitViewModel,
+    openSettings: () -> Unit,
+    onCreateGroup: () -> Unit,
+    openFreePlanInfo: () -> Unit,
+    openPersonalCodes: () -> Unit,
+    onSharePersonalCode: (String) -> Unit,
+    askNotificationPermission: () -> Unit
+) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -133,7 +199,6 @@ fun GroupInitScreenCore(
                         state = state.personalCode!!,
                         onCopy = {
                             vm.onEvent(GroupInitScreenUiEvent.CopyPersonalCode)
-                            vm.showSnackbar(MR.strings.toast_copy_invite_code.localizedString())
                         },
                         onShare = onSharePersonalCode,
                         onDelete = {}

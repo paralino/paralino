@@ -1,6 +1,8 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
+import app.paralino.core.app_rating.AppRatingManager
+import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
@@ -30,7 +32,7 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.GroupRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -42,7 +44,6 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -52,24 +53,23 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -79,7 +79,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class MapHomeViewModel constructor(
     private val sharingManager: LocationSharingManager,
-    private val groupRepo: GroupRepository,
+    private val groupRepo: UserGroupLocalDataSource,
     private val placesRepo: PlacesRepository,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
@@ -89,7 +89,8 @@ class MapHomeViewModel constructor(
     private val appPrefs: AppPrefs,
     private val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
-    private val remoteConfig: RemoteConfigRepository
+    private val remoteConfig: RemoteConfigRepository,
+    private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -116,30 +117,11 @@ class MapHomeViewModel constructor(
 
 
     val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> =
-        groupRepo.getAllGroupsLocally()
-            .map { Resource.Ready(it) }
-            .conflate()
-            .distinctUntilChanged { old, new ->
-                old.data.sortedBy { it.id }.toTypedArray()
-                    .contentDeepEquals(new.data.sortedBy { it.id }.toTypedArray())
-            }
-            .stateIn(
-                scope = CoroutineScope(Dispatchers.IO + groupSubscriptionJob),
-                started = SharingStarted.Eagerly,
-                initialValue = Resource.NotInitialized
-            )
-
-    /**
-     * Used in iOS
-     */
-    val allGroupsState: Flow<Boolean?> = allGroups.map {
-        when (it) {
-            Resource.NotInitialized -> null
-            is Resource.Ready -> it.data.isNotEmpty()
-        }
-    }
+        groupRepo.allGroupsState
 
     init {
+        appRatingManager.tryShowingAppRating(source = AppRatingSource.MAIN_MAP)
+
         allGroups.onEach { groupsData ->
             val selectedGroup = groupIdData.value.takeIf { it.isNotBlank() }
                 ?: appPrefs.selectedGroupId
@@ -150,19 +132,21 @@ class MapHomeViewModel constructor(
             }
         }.launchIn(coroutineScope)
 
-        deviceApiProvider.appLifecycleState
-            .onEach {
-                keepUiRefreshPing()
-                if (it.comingFromBackground) {
-                    delay(2000)
-                    if (groupIdData.value.isNotBlank()) {
-                        logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
-                        coroutineScope.launch(Dispatchers.IO) {
-                            groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
-                        }
+        combine(
+            deviceApiProvider.appLifecycleState,
+            uiFocusedStatus
+        ) { appLifecycleState, uiFocused ->
+            keepUiRefreshPing()
+            if (appLifecycleState.comingFromBackground && uiFocused) {
+                delay(2000)
+                if (groupIdData.value.isNotBlank()) {
+                    logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
+                    coroutineScope.launch(Dispatchers.IO) {
+                        groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
                     }
                 }
             }
+        }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
@@ -212,7 +196,7 @@ class MapHomeViewModel constructor(
                 } else {
                     combine(
                         uiRefreshPingFlow.filterNotNull(),
-                        groupRepo.getGroupWithMembersLocally(it),
+                        groupRepo.getGroupWithMembers(it),
                         placesRepo.getPlacesForGroupLocally(it),
                         getSharingContract(),
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
@@ -448,12 +432,19 @@ class MapHomeViewModel constructor(
     }
 
     fun switchGroup(groupId: String) {
-        val newGroupId = allGroups.value.data?.firstOrNull { it.id == groupId }?.id
-            ?: allGroups.value.data?.firstOrNull { it.id == appPrefs.selectedGroupId }?.id
-            ?: allGroups.value.data?.firstOrNull()?.id
-            ?: ""
-        appPrefs.selectedGroupId = newGroupId
-        groupIdData.update { newGroupId }
+        coroutineScope.launch {
+            val allGroups = allGroups.mapNotNull { it.data }
+                .firstOrNull()
+                ?: emptyList()
+
+            val newGroupId = allGroups.firstOrNull { it.id == groupId }?.id
+                ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }?.id
+                ?: allGroups.firstOrNull()?.id
+                ?: ""
+
+            appPrefs.selectedGroupId = newGroupId
+            groupIdData.update { newGroupId }
+        }
     }
 
     fun toggleMarkerVisibility(memberItem: GroupMemberItemState) {
@@ -637,7 +628,7 @@ class MapHomeViewModel constructor(
 
     private fun keepUiRefreshPing() {
         uiRefreshPingSubscriptionJob?.cancel()
-        if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
+        if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive && uiFocusedStatus.value) {
             uiRefreshPingSubscriptionJob = coroutineScope.launch(Dispatchers.IO) {
                 while (currentCoroutineContext().isActive) {
                     uiRefreshPingFlow.update { nowUTC() }

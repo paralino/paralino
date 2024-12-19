@@ -35,6 +35,7 @@ fun GeneralInfoScreenCore(
     vm: GeneralInfoViewModel,
     paddingValues: PaddingValues,
     onLicencesClick: () -> Unit,
+    onShowOnboarding: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -67,6 +68,12 @@ fun GeneralInfoScreenCore(
             icon = CoreAppIcons.LibraryBooks.asPainterResource()
         ) {
             onLicencesClick()
+        }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_onboarding),
+            icon = CoreAppIcons.Replay.asPainterResource()
+        ) {
+            onShowOnboarding()
         }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_errorReporting),

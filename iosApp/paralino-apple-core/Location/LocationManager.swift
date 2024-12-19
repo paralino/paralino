@@ -31,7 +31,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
         manager.allowsBackgroundLocationUpdates = true
         manager.showsBackgroundLocationIndicator = false
         manager.pausesLocationUpdatesAutomatically = true
-        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
     }
     
     public var lastLocation: CLLocation? {
@@ -86,7 +86,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                 }
                 self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
             case .mediumHigh:
-                self?.manager.pausesLocationUpdatesAutomatically = true
+                self?.manager.pausesLocationUpdatesAutomatically = false
                 self?.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
                 self?.manager.distanceFilter = 50
             case .high:
