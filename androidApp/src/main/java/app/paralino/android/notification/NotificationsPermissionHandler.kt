@@ -85,7 +85,7 @@ class NotificationsPermissionHandlerState constructor(
             notificationPermissionState?.allPermissionsGranted == true -> {
                 updateStatus(granted = true)
             }
-            notificationPermissionState?.shouldShowRationale?.not() == true -> {
+            notificationPermissionState?.shouldShowRationale == true -> {
                 showPermissionDeniedInfo()
             }
             else -> {
