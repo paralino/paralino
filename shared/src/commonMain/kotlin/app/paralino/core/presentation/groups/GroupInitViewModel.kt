@@ -157,7 +157,7 @@ class GroupInitViewModel(
                 if (appPrefs.didHaveAccountWelcomeOnboarding) {
                     null
                 } else if (groupCount == 0) {
-                    AccountOnboardingContent.ParalinoID(personalCode)
+                    AccountOnboardingContent.ParalinoID(personalCode = personalCode, didShareCode = false)
                 } else {
                     null
                 }
@@ -309,6 +309,16 @@ class GroupInitViewModel(
                 GroupInitScreenEvent.SharePersonalCode(DeeplinkType.ParalinoID.buildUrl(it))
             )
         }
+
+        uiState.value.data
+            ?.onboardingStep
+            ?.let { it as? AccountOnboardingContent.ParalinoID }
+            ?.copy(didShareCode = true)
+            ?.let { newStep ->
+                _uiState.update {
+                    it.mapReady { it.copy(onboardingStep = newStep) }
+                }
+            }
     }
 
     override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {

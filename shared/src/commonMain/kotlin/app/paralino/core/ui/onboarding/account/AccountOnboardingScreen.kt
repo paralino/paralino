@@ -95,14 +95,19 @@ sealed class AccountOnboardingContent(
     abstract fun infoText(): String?
 
     data class ParalinoID(
-        val personalCode: PersonalCodeScreenCodeData?
+        val personalCode: PersonalCodeScreenCodeData?,
+        val didShareCode: Boolean
     ) : AccountOnboardingContent(
         parentKey = 100,
         titleKey = 100,
         titleTag = MR.strings.onboarding_step_paralinoID_title_tag,
         title = MR.strings.onboarding_step_paralinoID_title,
         buttonText = MR.strings.onboarding_step_paralinoID_button_next,
-        skipButtonText = MR.strings.button_notNow,
+        skipButtonText = if (didShareCode) {
+            MR.strings.button_next
+        } else {
+            MR.strings.button_notNow
+        },
         contentSizeRatio = 0.2f
     ) {
         @Composable
@@ -152,7 +157,7 @@ sealed class AccountOnboardingContent(
         titleTag = MR.strings.onboarding_step_notifications_title_tag,
         title = MR.strings.onboarding_step_notifications_title,
         buttonText = MR.strings.onboarding_step_notifications_button_next,
-        skipButtonText = MR.strings.button_skip
+        skipButtonText = MR.strings.button_notNow
     ) {
         @Composable
         override fun infoText(): String {
