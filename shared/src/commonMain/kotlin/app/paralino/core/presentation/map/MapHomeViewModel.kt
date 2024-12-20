@@ -435,6 +435,7 @@ class MapHomeViewModel constructor(
         coroutineScope.launch {
             val allGroups = allGroups.mapNotNull { it.data }
                 .firstOrNull()
+                ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
                 ?: emptyList()
 
             val newGroupId = allGroups.firstOrNull { it.id == groupId }?.id
