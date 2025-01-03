@@ -200,7 +200,7 @@ class GroupInitViewModel(
     }
 
     private fun confirmOnboarding() {
-        when (uiState.value.data?.onboardingStep) {
+        when (val step = uiState.value.data?.onboardingStep) {
             AccountOnboardingContent.GroupCreate -> {
                 if (shouldShowFreePlanNoticeScreen) {
                     _uiState.update {
@@ -218,10 +218,10 @@ class GroupInitViewModel(
             }
 
             is AccountOnboardingContent.ParalinoID -> {
-                if (uiState.value.data?.personalCode != null) {
-                    sharePersonalCode()
+                if (step.didShareCode) {
+                    skipParalinoIDOnboarding()
                 } else {
-                    _eventChannel.trySend(GroupInitScreenEvent.OpenPersonalCodes)
+                    confirmParalinoIDOnboarding()
                 }
             }
 
@@ -239,22 +239,16 @@ class GroupInitViewModel(
     }
 
     private fun skipOnboarding() {
-        when (uiState.value.data?.onboardingStep) {
+        when (val step = uiState.value.data?.onboardingStep) {
             AccountOnboardingContent.GroupCreate -> {
                 finishOnboarding()
             }
 
             is AccountOnboardingContent.ParalinoID -> {
-                _uiState.update {
-                    if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
-                        it.mapReady {
-                            it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
-                        }
-                    } else {
-                        it.mapReady {
-                            it.copy(onboardingStep = AccountOnboardingContent.PushNotifications)
-                        }
-                    }
+                if (step.didShareCode) {
+                    confirmParalinoIDOnboarding()
+                } else {
+                    skipParalinoIDOnboarding()
                 }
             }
 
@@ -271,6 +265,28 @@ class GroupInitViewModel(
             }
 
             null -> {}
+        }
+    }
+
+    private fun confirmParalinoIDOnboarding() {
+        if (uiState.value.data?.personalCode != null) {
+            sharePersonalCode()
+        } else {
+            _eventChannel.trySend(GroupInitScreenEvent.OpenPersonalCodes)
+        }
+    }
+
+    private fun skipParalinoIDOnboarding() {
+        _uiState.update {
+            if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
+                it.mapReady {
+                    it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
+                }
+            } else {
+                it.mapReady {
+                    it.copy(onboardingStep = AccountOnboardingContent.PushNotifications)
+                }
+            }
         }
     }
 
@@ -310,15 +326,18 @@ class GroupInitViewModel(
             )
         }
 
-        uiState.value.data
-            ?.onboardingStep
-            ?.let { it as? AccountOnboardingContent.ParalinoID }
-            ?.copy(didShareCode = true)
-            ?.let { newStep ->
-                _uiState.update {
-                    it.mapReady { it.copy(onboardingStep = newStep) }
+        coroutineScope.launch {
+            delay(1000)
+            uiState.value.data
+                ?.onboardingStep
+                ?.let { it as? AccountOnboardingContent.ParalinoID }
+                ?.copy(didShareCode = true)
+                ?.let { newStep ->
+                    _uiState.update {
+                        it.mapReady { it.copy(onboardingStep = newStep) }
+                    }
                 }
-            }
+        }
     }
 
     override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {

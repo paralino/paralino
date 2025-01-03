@@ -102,9 +102,13 @@ sealed class AccountOnboardingContent(
         titleKey = 100,
         titleTag = MR.strings.onboarding_step_paralinoID_title_tag,
         title = MR.strings.onboarding_step_paralinoID_title,
-        buttonText = MR.strings.onboarding_step_paralinoID_button_next,
-        skipButtonText = if (didShareCode) {
+        buttonText = if (didShareCode) {
             MR.strings.button_next
+        } else {
+            MR.strings.onboarding_step_paralinoID_button_next
+        },
+        skipButtonText = if (didShareCode) {
+            MR.strings.onboarding_step_paralinoID_button_next
         } else {
             MR.strings.button_notNow
         },
