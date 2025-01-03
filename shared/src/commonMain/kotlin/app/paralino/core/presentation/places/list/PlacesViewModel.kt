@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 class PlacesViewModel(
     groupId: String,
-    isOnboarding: Boolean,
+    val isOnboarding: Boolean,
     private val remoteConfig: RemoteConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,

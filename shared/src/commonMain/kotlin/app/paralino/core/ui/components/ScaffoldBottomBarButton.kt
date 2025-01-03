@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -19,7 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.paralino.core.MR
 import app.paralino.core.ui.theme.ButtonStyle
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun ActionScaffold(
@@ -113,5 +116,27 @@ fun ScaffoldBottomBarButton(
         ) {
             Text(text = buttonText)
         }
+    }
+}
+
+@Composable
+fun OnboardingSkipButton(
+    modifier: Modifier = Modifier,
+    skipButtonText: String = stringResource(MR.strings.button_skip),
+    onSkip: () -> Unit
+) {
+    FilledButton(
+        modifier = modifier.padding(top = 6.dp),
+        style = remember { ButtonStyle.BIG(paddingValues = PaddingValues(horizontal = 24.dp, vertical = 12.dp)) },
+        state = AppButtonState.CONTENT,
+        icon = null,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.Transparent,
+            contentColor = MaterialTheme.colors.onBackground
+        ),
+        elevation = null,
+        onClick = onSkip
+    ) {
+        Text(text = skipButtonText)
     }
 }

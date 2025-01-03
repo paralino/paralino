@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
     groupId: String?,
-    private val isOnboarding: Boolean,
+    val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,

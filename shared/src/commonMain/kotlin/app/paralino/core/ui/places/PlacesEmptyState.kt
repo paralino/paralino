@@ -52,7 +52,6 @@ import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -72,53 +71,44 @@ fun PlacesEmptyState(
     modifier: Modifier = Modifier,
     permissionError: ConditionErrorType.PermissionNotifications?,
     onPostSampleNotification: (String) -> Unit,
-    onErrorItemClick: (ConditionErrorType) -> Unit,
-    onCreateClick: () -> Unit
+    onErrorItemClick: (ConditionErrorType) -> Unit
 ) {
-    ActionScaffold(
-        modifier = modifier.fillMaxSize(),
-        buttonText = stringResource(MR.strings.places_create_button_create),
-        buttonIcon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-        onConfirm = onCreateClick,
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 20.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(it)
-                .padding(bottom = 20.dp)
-        ) {
 
-            var notificationVisibility by rememberSaveable { mutableStateOf(false) }
-            LaunchedEffect(Unit) {
-                delay(3.seconds)
-                notificationVisibility = true
-            }
+        var notificationVisibility by rememberSaveable { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            delay(3.seconds)
+            notificationVisibility = true
+        }
 
-            PlaceEmptyStateNotificationItems(
-                notificationVisibility = notificationVisibility,
-                permissionError = permissionError,
-                onPostSampleNotification = onPostSampleNotification,
-                onErrorItemClick = onErrorItemClick
-            )
+        PlaceEmptyStateNotificationItems(
+            notificationVisibility = notificationVisibility,
+            permissionError = permissionError,
+            onPostSampleNotification = onPostSampleNotification,
+            onErrorItemClick = onErrorItemClick
+        )
 
-            PlaceEmptyScreenMapContent(modifier = Modifier.padding(horizontal = 20.dp))
+        PlaceEmptyScreenMapContent(modifier = Modifier.padding(horizontal = 20.dp))
 
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    modifier = Modifier.padding(20.dp),
-                    text = stringResource(MR.strings.places_list_screen_empty_info).annotatedBold(),
-                    style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            NoticeInfoChip(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(vertical = 20.dp),
-                text = stringResource(MR.strings.places_list_screen_encryption_info)
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Text(
+                modifier = Modifier.padding(20.dp),
+                text = stringResource(MR.strings.places_list_screen_empty_info).annotatedBold(),
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
+                textAlign = TextAlign.Center
             )
         }
+
+        NoticeInfoChip(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(vertical = 20.dp),
+            text = stringResource(MR.strings.places_list_screen_encryption_info)
+        )
     }
 }
 

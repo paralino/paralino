@@ -17,6 +17,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,16 +28,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +45,7 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.ScaffoldBottomBarButtons
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
@@ -92,6 +91,37 @@ fun BaseOnboardingScreen(
     onSkip: (() -> Unit)?,
     content: @Composable (PaddingValues) -> Unit
 ) {
+    BaseOnboardingScreen(
+        modifier = modifier,
+        nextButton = @Composable {
+            FilledButton(
+                modifier = Modifier,
+                style = ButtonStyle.BIG,
+                state = AppButtonState.CONTENT,
+                icon = null,
+                onClick = onNext
+            ) {
+                Text(text = buttonText)
+            }
+        },
+        skipButton = if (onSkip != null) {
+            @Composable {
+                OnboardingSkipButton(skipButtonText = skipButtonText, onSkip = onSkip)
+            }
+        } else {
+            null
+        },
+        content = content
+    )
+}
+
+@Composable
+fun BaseOnboardingScreen(
+    modifier: Modifier = Modifier,
+    nextButton: @Composable ColumnScope.() -> Unit,
+    skipButton: (@Composable () -> Unit)?,
+    content: @Composable (PaddingValues) -> Unit
+) {
     Scaffold(
         modifier = modifier,
         bottomBar = {
@@ -100,35 +130,14 @@ fun BaseOnboardingScreen(
                     start = 20.dp,
                     end = 20.dp,
                     top = 8.dp,
-                    bottom = animateDpAsState(if (onSkip != null) 8.dp else 20.dp).value
+                    bottom = animateDpAsState(if (skipButton != null) 6.dp else 20.dp).value
                 )
             ) {
-                FilledButton(
-                    modifier = Modifier,
-                    style = ButtonStyle.BIG,
-                    state = AppButtonState.CONTENT,
-                    icon = null,
-                    onClick = onNext
-                ) {
-                    Text(text = buttonText)
-                }
+                nextButton()
                 AnimatedVisibility(
-                    visible = onSkip != null
+                    visible = skipButton != null
                 ) {
-                    FilledButton(
-                        modifier = Modifier.padding(top = 8.dp),
-                        style = ButtonStyle.BIG,
-                        state = AppButtonState.CONTENT,
-                        icon = null,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Transparent,
-                            contentColor = MaterialTheme.colors.onBackground
-                        ),
-                        elevation = null,
-                        onClick = { onSkip?.invoke() }
-                    ) {
-                        Text(text = skipButtonText)
-                    }
+                    skipButton?.invoke()
                 }
             }
         },
@@ -243,28 +252,28 @@ fun BaseOnboardingHeaderContent(
 }
 
 @Composable
-inline fun <reified T: Comparable<T>> BaseOnboardingHeaderContent(
+inline fun <reified T : Comparable<T>> BaseOnboardingHeaderContent(
     modifier: Modifier = Modifier,
     titleKey: Int,
     animatedContentKey: T,
     titleTag: String?,
     crossinline content: @Composable (T) -> Unit,
 ) {
-   BaseOnboardingHeaderContent(
-       modifier = modifier,
-       titleKey = titleKey,
-       titleTag = titleTag,
-       content = {
-           AnimatedContent(
-               modifier = Modifier.zIndex(0f),
-               targetState = animatedContentKey,
-               transitionSpec = onboardingContentTransitionSpec(fixedTransitionHeight = 100),
-               label = "animated header"
-           ) {
-               content(it)
-           }
-       }
-   )
+    BaseOnboardingHeaderContent(
+        modifier = modifier,
+        titleKey = titleKey,
+        titleTag = titleTag,
+        content = {
+            AnimatedContent(
+                modifier = Modifier.zIndex(0f),
+                targetState = animatedContentKey,
+                transitionSpec = onboardingContentTransitionSpec(fixedTransitionHeight = 100),
+                label = "animated header"
+            ) {
+                content(it)
+            }
+        }
+    )
 }
 
 inline fun <reified T : Comparable<T>> onboardingContentTransitionSpec(
@@ -275,7 +284,9 @@ inline fun <reified T : Comparable<T>> onboardingContentTransitionSpec(
             slideInVertically { height -> fixedTransitionHeight ?: height } + fadeIn() togetherWith
                     slideOutVertically { height -> -(fixedTransitionHeight ?: height) } + fadeOut()
         } else {
-            slideInVertically { height -> -(fixedTransitionHeight ?: height) } + fadeIn() togetherWith
+            slideInVertically { height ->
+                -(fixedTransitionHeight ?: height)
+            } + fadeIn() togetherWith
                     slideOutVertically { height -> fixedTransitionHeight ?: height } + fadeOut()
         }.using(
             // Disable clipping since the faded slide-in/out should

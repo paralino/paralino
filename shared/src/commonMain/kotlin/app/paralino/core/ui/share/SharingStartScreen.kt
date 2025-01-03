@@ -46,7 +46,7 @@ import app.paralino.core.presentation.share.SharingStartScreenUiEvent
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.ActionScaffold
+import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
@@ -56,14 +56,16 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.NoticeInfoChip
+import app.paralino.core.ui.components.OnboardingSkipButton
+import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.GroupListItem
+import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.PluralsResource
@@ -80,6 +82,7 @@ fun SharingStartScreenCore(
     groupId: String?,
     vm: SharingStartViewModel,
     onSharingStarted: () -> Unit,
+    onSkipOnboarding: () -> Unit,
     onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
     openSubscriptions: () -> Unit,
     askNotificationPermission: () -> Unit,
@@ -193,12 +196,30 @@ fun SharingStartScreenCore(
         vm.onEvent(SharingStartScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 
-    ActionScaffold(
+    BaseOnboardingScreen(
         modifier = Modifier.fillMaxSize(),
-        buttonText = stringResource(MR.strings.groups_sharing_button_start),
-        buttonIcon = if (state.canShare) CoreAppIcons.ShareLocation.asPainterResource()
-        else CoreAppIcons.NotListedLocation.asPainterResource(),
-        onConfirm = { vm.startSharing() },
+        nextButton = @Composable {
+            FilledButton(
+                modifier = Modifier,
+                style = ButtonStyle.BIG,
+                state = AppButtonState.loadingState(state.loadingAction),
+                icon = if (state.canShare) {
+                    CoreAppIcons.ShareLocation.asPainterResource()
+                } else {
+                    CoreAppIcons.NotListedLocation.asPainterResource()
+                },
+                onClick = { vm.startSharing() }
+            ) {
+                Text(text = stringResource(MR.strings.groups_sharing_button_start))
+            }
+        },
+        skipButton = if (vm.isOnboarding) {
+            @Composable {
+                OnboardingSkipButton(onSkip = onSkipOnboarding)
+            }
+        } else {
+            null
+        }
     ) {
         val focusManager = LocalFocusManager.current
         Column(
