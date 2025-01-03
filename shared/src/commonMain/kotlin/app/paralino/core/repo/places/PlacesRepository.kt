@@ -73,7 +73,10 @@ class PlacesRepository constructor(
 
     suspend fun refreshPlaceWithSettingsMaybe(placeId: String) {
         triggerRemoteMaybe(
-            remotePreference = RemotePreference.CACHE(key = "place_detail_$placeId", timeMillis = 10000)
+            remotePreference = RemotePreference.CACHE(
+                key = "place_detail_$placeId",
+                timeMillis = 10000
+            )
         ) {
             remote.getPlaceWithSettings(placeId = placeId)
                 .also { groupLocal.updateOrCreatePlace(it) }
@@ -197,8 +200,24 @@ class PlacesRepository constructor(
                 // this is used to help filter location jumping when user stays in one closed place (like house)
                 // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
                 // also adding few meters of buffer to improve filter
-                val isExit =
-                    distance > (placeData.radiusMeters + data.accuracy + if (appPrefs.placeActivityThrottle) 5 else 0)
+                val exitThreshold = when {
+                    // TODO check for coarse location
+                    data.accuracy > 500 -> {
+                        // if accuracy is quite bad, only consider exit if user is very far away
+                        2000f
+                    }
+
+                    data.accuracy > 100 -> {
+                        // if accuracy is not that great, only consider exit if user is  somewhat far away
+                        if (appPrefs.placeActivityThrottle) data.accuracy else data.accuracy / 2
+                    }
+
+                    else -> {
+                        // if accuracy is decent,
+                        if (appPrefs.placeActivityThrottle) (data.accuracy / 10).coerceAtLeast(5f) else 0f
+                    }
+                }
+                val isExit = distance > placeData.radiusMeters + data.accuracy + exitThreshold
                 val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
 
 //                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
@@ -382,7 +401,8 @@ class PlacesRepository constructor(
         oldState.tryNotifyJob?.cancel()
         val updateJob = scopeProvider.userSessionIOScope.launch {
             val delay = placeActivityDelay(trigger = trigger)
-            logg.tag("place_activity").i("Delay place notify $activityTag - $placeId for ${delay?.inWholeSeconds}")
+            logg.tag("place_activity")
+                .i("Delay place notify $activityTag - $placeId for ${delay?.inWholeSeconds}")
 
             if (delay != null) {
                 delay(delay)
@@ -532,6 +552,7 @@ class PlacesRepository constructor(
                 if (appPrefs.placeActivityThrottle) null
                 else null
             }
+
             else -> {
                 if (appPrefs.placeActivityThrottle) 20.seconds
                 else 5.seconds
