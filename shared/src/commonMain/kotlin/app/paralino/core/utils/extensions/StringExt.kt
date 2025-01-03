@@ -39,7 +39,7 @@ fun Throwable?.errorString(): String {
         is BaseRemoteException -> {
             when {
                 error.code != null -> {
-                    MR.strings.error_something_wrong_http.localizedString(error.code)
+                    MR.strings.error_something_wrong_http.localizedString(error.code!!)
                 }
                 error is DataStillLoadingException -> {
                     MR.strings.error_still_loading_snackbar.localizedString()
