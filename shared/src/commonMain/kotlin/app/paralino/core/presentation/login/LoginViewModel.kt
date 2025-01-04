@@ -47,7 +47,7 @@ class LoginViewModel constructor(
     init {
         _uiState = MutableStateFlow(
             LoginScreenState(
-                canUseEmail = remoteConfigRepository.configState.value.isEmailEnabled,
+                canUseEmail = remoteConfigRepository.getCachedConfigOnce().isEmailEnabled,
                 uiType = initialUiType,
                 alertDialog = if (appPrefs.hasGuestAccount()) {
                     MainAlertDialog.GuestAccountRecover
@@ -58,7 +58,7 @@ class LoginViewModel constructor(
         )
         uiState = _uiState
 
-        remoteConfigRepository.getConfig()
+        remoteConfigRepository.getConfigLocally()
             .onEach { config ->
                 _uiState.update {
                     it.copy(
@@ -71,7 +71,7 @@ class LoginViewModel constructor(
     }
 
     private fun defaultUiType(preferred: LoginScreenUiType): LoginScreenUiType {
-        return if (remoteConfigRepository.configState.value.isEmailEnabled) preferred else LoginScreenUiType.SIGNUP_GUEST
+        return if (remoteConfigRepository.getCachedConfigOnce().isEmailEnabled) preferred else LoginScreenUiType.SIGNUP_GUEST
     }
 
     private fun proceed() {

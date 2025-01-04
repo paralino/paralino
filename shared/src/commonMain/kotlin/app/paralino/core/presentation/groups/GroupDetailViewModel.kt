@@ -143,7 +143,7 @@ class GroupDetailViewModel(
                 )
             }
 
-            val membersLimit = group.group.membersLimit(remoteConfigRepo.configState.value)
+            val membersLimit = group.group.membersLimit(remoteConfigRepo.getConfigOnce())
             GroupDetailScreenState(
                 id = groupId,
                 canEdit = group.isCurrentUserOwner,
@@ -154,7 +154,7 @@ class GroupDetailViewModel(
                 members = members,
                 membersLimit = membersLimit,
                 canShowMembersLimit = group.isCurrentUserOwner,
-                shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(remoteConfigRepo.configState.value),
+                shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(remoteConfigRepo.getConfigOnce()),
                 errors = errors
             )
         }

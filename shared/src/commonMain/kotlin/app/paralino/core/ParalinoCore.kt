@@ -253,7 +253,7 @@ val coreModule = module {
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
     single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-    single { RemoteConfigRepository(get(), get(), get(), get(), appPrefs) }
+    single { RemoteConfigRepository(get(), get(), get(), get()) }
     single { UserConfigRepository(get(), get(), get(), get()) }
 
     single { GroupValidityVerification(get(), get(), get(), appPrefs) }

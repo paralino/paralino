@@ -171,13 +171,13 @@ class SharingStartViewModel(
         }
     }
 
-    private fun setSelectedGroup(group: UserGroupWithMetadata) {
+    private suspend fun setSelectedGroup(group: UserGroupWithMetadata) {
         val groupItem = GroupItemState(group)
         currentGroup.update { group }
         _uiState.update {
             it.copy(
                 groupState = Payload.Success(groupItem),
-                devicesLimit = group.group.devicesLimit(remoteConfigRepo.configState.value)
+                devicesLimit = group.group.devicesLimit(remoteConfigRepo.getConfigOnce())
             )
         }
     }
@@ -216,10 +216,10 @@ class SharingStartViewModel(
             val limit = _uiState.value.devicesLimit
             val devicesCount = _uiState.value.devicesCount
             val maxDeviceLimit =
-                remoteConfigRepo.configState.value.plans.maxBy { it.planTypeEnum.order }.devicesLimit
+                remoteConfigRepo.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.devicesLimit
             val isDeviceRegistered = registerDevice.isDeviceAlreadyRegistered(groupId = group.id)
 
-            if (group.isCurrentUserOwner && devicesCount >= maxDeviceLimit && !isDeviceRegistered) {
+            if (group.isCurrentUserOwner && maxDeviceLimit != null && devicesCount >= maxDeviceLimit && !isDeviceRegistered) {
                 _uiState.update {
                     it.copy(
                         alertDialog = MainAlertDialog.PlanLimit(

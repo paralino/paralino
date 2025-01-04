@@ -87,7 +87,7 @@ class UserRepository constructor(
 
     val userPlans: StateFlow<UserPlans> = combine(
         local.getPlans(),
-        remoteConfigRepo.configState
+        remoteConfigRepo.getConfigLocally()
     ) { plans, config ->
         UserPlans(
             rawPlans = plans,
@@ -96,12 +96,12 @@ class UserRepository constructor(
     }
         .catch {
             logg.w("User plans parsing error: ${it.message}")
-            emit(UserPlans(emptyList(), remoteConfigRepo.configState.value))
+            emit(UserPlans(emptyList(), remoteConfigRepo.getConfigOnce()))
         }
         .stateIn(
             scope = scopeProvider.defaultIOScope,
             started = SharingStarted.Eagerly,
-            initialValue = UserPlans(emptyList(), remoteConfigRepo.configState.value)
+            initialValue = UserPlans(emptyList(), remoteConfigRepo.getCachedConfigOnce())
         )
 
     val cachedUser: UserMe? get() = localUser.value.data

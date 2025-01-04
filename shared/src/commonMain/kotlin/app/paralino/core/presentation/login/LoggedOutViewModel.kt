@@ -22,7 +22,7 @@ class LoggedOutViewModel(
     val uiState: StateFlow<LoggedOutScreenState> = _uiState
 
     init {
-        remoteConfigRepository.getConfig()
+        remoteConfigRepository.getConfigLocally()
             .map { it.isEmailEnabled }
             .distinctUntilChanged()
             .onEach { canUseEmail ->

@@ -63,7 +63,7 @@ class SettingsViewModel(
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(
         mapUserState(
             userState = userRepo.localUser.value,
-            remoteConfig = remoteConfigRepository.configState.value,
+            remoteConfig = remoteConfigRepository.getCachedConfigOnce(),
             personalCode = personalCodeRepo.activePersonalCodeState.value,
             userPlans = userRepo.userPlans.value
         )
@@ -86,7 +86,7 @@ class SettingsViewModel(
 
         combine(
             userRepo.localUser,
-            remoteConfigRepository.getConfig(),
+            remoteConfigRepository.getConfigLocally(),
             personalCodeRepo.activePersonalCodeState,
             userRepo.userPlans
         ) { userState, appConfig, personalCode, userPlans ->
