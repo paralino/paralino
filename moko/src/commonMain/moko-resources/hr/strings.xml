@@ -127,7 +127,7 @@
     <string name="settings_account_delete_alert_cancel_button3">Prekinite</string>
     <string name="settings_account_delete_alert_cancel_button4">Zatvorite</string>
     <string name="settings_profile_name_placeholder">Vaše ime*</string>
-    <string name="settings_section_general_title">Informacije</string>
+    <string name="settings_section_general_title">Informacije i podrška</string>
     <string name="setting_title_share">Podijelite s prijateljima</string>
     <string name="setting_title_rate">Ocijenite sa zvjezdicama 🌟🌟🌟🌟🌟</string>
     <string name="setting_title_help">Pomoć i podrška</string>

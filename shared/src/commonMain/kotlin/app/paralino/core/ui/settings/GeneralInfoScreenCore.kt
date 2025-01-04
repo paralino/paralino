@@ -51,9 +51,16 @@ fun GeneralInfoScreenCore(
             .padding(top = 20.dp, bottom = 60.dp)
     ) {
         SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_help),
+            icon = CoreAppIcons.LibraryBooks.asPainterResource(),
+            type = SettingsActionItemType.Link
+        ) {
+            uriHandler.openUri(BackendResourceIDs.helpSupportUrl)
+        }
+        SettingsActionItem(
             name = stringResource(MR.strings.setting_title_contactSupport),
             icon = CoreAppIcons.Email.asPainterResource(),
-            description = BackendResourceIDs.supportEmail
+            tag = BackendResourceIDs.supportEmail
         ) {
             onContactSupport()
         }

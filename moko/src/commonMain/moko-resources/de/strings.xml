@@ -127,7 +127,7 @@
     <string name="settings_account_delete_alert_cancel_button3">Abbrechen</string>
     <string name="settings_account_delete_alert_cancel_button4">Schließen</string>
     <string name="settings_profile_name_placeholder">Ihr Name*</string>
-    <string name="settings_section_general_title">Info</string>
+    <string name="settings_section_general_title">Info &amp; Support</string>
     <string name="setting_title_share">Mit Freunden teilen</string>
     <string name="setting_title_rate">Geben Sie ein paar Sterne 🌟🌟🌟🌟🌟</string>
     <string name="setting_title_help">Hilfe &amp; Support</string>
