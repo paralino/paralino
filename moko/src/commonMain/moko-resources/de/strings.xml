@@ -136,6 +136,7 @@
     <string name="setting_title_terms">Nutzungsbedingungen</string>
     <string name="setting_title_libraries">Lizenzen</string>
     <string name="setting_title_onboarding">Onboarding anzeigen</string>
+    <string name="setting_title_contactSupport">Support kontaktieren</string>
     <string name="setting_title_logout">Abmelden</string>
     <string name="setting_title_delete_account">Konto löschen</string>
     <string name="setting_title_dangerZone">Gefahrenbereich</string>

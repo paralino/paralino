@@ -36,6 +36,7 @@ fun GeneralInfoScreenCore(
     paddingValues: PaddingValues,
     onLicencesClick: () -> Unit,
     onShowOnboarding: () -> Unit,
+    onContactSupport: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -49,6 +50,19 @@ fun GeneralInfoScreenCore(
             .padding(horizontal = 20.dp)
             .padding(top = 20.dp, bottom = 60.dp)
     ) {
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_contactSupport),
+            icon = CoreAppIcons.Email.asPainterResource(),
+            description = BackendResourceIDs.supportEmail
+        ) {
+            onContactSupport()
+        }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_onboarding),
+            icon = CoreAppIcons.Replay.asPainterResource()
+        ) {
+            onShowOnboarding()
+        }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_privacy),
             icon = CoreAppIcons.PrivacyTip.asPainterResource(),
@@ -68,12 +82,6 @@ fun GeneralInfoScreenCore(
             icon = CoreAppIcons.LibraryBooks.asPainterResource()
         ) {
             onLicencesClick()
-        }
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_onboarding),
-            icon = CoreAppIcons.Replay.asPainterResource()
-        ) {
-            onShowOnboarding()
         }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_errorReporting),

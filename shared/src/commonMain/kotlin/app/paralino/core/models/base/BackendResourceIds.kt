@@ -18,6 +18,7 @@ object BackendResourceIDs {
     const val storeUrlGooglePlay = "https://play.google.com/store/apps/details?id=app.paralino.android"
     const val subscriptionUrlGooglePlay = "https://play.google.com/store/account/subscriptions"
     const val subscriptionUrlAppleAppStore = "https://apps.apple.com/account/subscriptions"
+    const val supportEmail = "contact@paralino.com"
 
     const val uniqueIdPlaceholder = "unique()"
 

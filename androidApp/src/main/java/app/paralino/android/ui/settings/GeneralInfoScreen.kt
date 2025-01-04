@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.utils.extensions.contactSupport
 import app.paralino.core.MR
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.ui.components.DefaultToolbar
@@ -28,6 +30,7 @@ fun GeneralInfoScreen(
             )
         },
     ) {
+        val context = LocalContext.current
         GeneralInfoScreenCore(
             appState = appState,
             vm = vm,
@@ -37,6 +40,9 @@ fun GeneralInfoScreen(
             },
             onShowOnboarding = {
                 appState.navController.navigate(AppScreen.Settings.WelcomeOnboarding.routeSignature)
+            },
+            onContactSupport = {
+                context.contactSupport()
             }
         )
     }

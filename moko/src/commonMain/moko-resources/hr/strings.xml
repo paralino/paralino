@@ -136,6 +136,7 @@
     <string name="setting_title_terms">Uvjeti korištenja</string>
     <string name="setting_title_libraries">Licencije</string>
     <string name="setting_title_onboarding">Prikaži uvod</string>
+    <string name="setting_title_contactSupport">Kontaktirajte podršku</string>
     <string name="setting_title_logout">Odjava</string>
     <string name="setting_title_delete_account">Izbrišite račun</string>
     <string name="setting_title_dangerZone">Zona opasnosti</string>
