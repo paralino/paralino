@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class PaywallViewModel(
-    private val sourceType: BillingScreenSourceType,
+    val sourceType: BillingScreenSourceType,
     private val userRepo: UserRepository,
     private val refreshUseCase: RefreshEverythingUseCase,
     private val remoteConfigRepo: RemoteConfigRepository,
@@ -336,9 +336,9 @@ class PaywallViewModel(
         return PaywallScreenState(
             canShowMoreInfo = AppBuildConfig.instance.isDevMode,
             plans = buildList {
-                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
-                    add(freeUiPlan)
-                }
+//                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
+//                    add(freeUiPlan)
+//                }
                 addAll(uiPlans)
             },
             isLoading = currentState?.isLoading ?: true,
@@ -354,7 +354,8 @@ class PaywallViewModel(
                 add(
                     FaqSectionItem(
                         title = MR.strings.paywall_faq_question_premium_group_features.string(),
-                        content = MR.strings.paywall_faq_answer_premium_group_features.string()
+                        content = MR.strings.paywall_faq_answer_premium_group_features.string(),
+                        expanded = true
                     )
                 )
 

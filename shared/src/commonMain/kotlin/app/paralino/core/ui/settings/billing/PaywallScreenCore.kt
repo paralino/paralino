@@ -4,13 +4,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,7 +48,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -75,13 +76,16 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
-import app.paralino.core.ui.components.dialogs.AlertDialogAction
-import app.paralino.core.ui.components.DefaultToolbar
-import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.ToolbarButtons
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.settings.SettingsActionItem
+import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
@@ -136,10 +140,31 @@ fun PaywallScreenCore(
                 } else {
                     stringResource(MR.strings.paywall_select_plan_label)
                 },
-                navigationIcon = if (uiState.isLoading) {
+                navigationIcon = if (uiState.isLoading || vm.sourceType == BillingScreenSourceType.ONBOARDING) {
                     null
                 } else {
                     { ToolbarButtons.Close { onNavigateBack(false) } }
+                },
+                actions = {
+                    if (!uiState.isLoading && vm.sourceType == BillingScreenSourceType.ONBOARDING) {
+                        SmallActionButton(
+                            modifier = Modifier.padding(end = 8.dp),
+                            backgroundColor = MaterialTheme.colors.surface,
+                            contentColor = MaterialTheme.colors.onSurface,
+                            icon = null,
+                            hasEndArrow = false,
+                            text = {
+                                Text(
+                                    text = stringResource(MR.strings.button_skip),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            },
+                            onClick = {
+                                onNavigateBack(false)
+                            }
+                        )
+                    }
                 }
             )
         },
@@ -231,48 +256,74 @@ private fun PaywallScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            AnimatedVisibility(state.selectedPlan != null) {
-                if (state.faq != null) {
-                    FaqSection(faqsList = state.faq.faqs)
-                }
+            if (state.faq != null) {
+                FaqSection(faqsList = state.faq.faqs)
             }
 
+            Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.weight(1f))
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_title_privacy),
+                icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+                type = SettingsActionItemType.Link,
+                onClick = onPrivacyClick
+            )
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_title_terms),
+                icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+                type = SettingsActionItemType.Link,
+                onClick = onTermsClick
+            )
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.paywall_button_restore),
+                icon = CoreAppIcons.Sync.asPainterResource(),
+                type = SettingsActionItemType.Action,
+                onClick = onRestoreClick
+            )
+
+            Spacer(modifier = Modifier.size(12.dp))
             Spacer(modifier = Modifier.size(with(density) { bottomCardHeight.toDp() }))
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(with(density) { bottomCardHeight.toDp() })
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            MaterialTheme.colors.background,
-                            MaterialTheme.colors.background
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            visible = state.selectedPlan != null,
+            enter = fadeIn() + slideInVertically { it },
+            exit = fadeOut() + slideOutVertically { it }
+        ) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(with(density) { bottomCardHeight.toDp() })
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colors.background,
+                                MaterialTheme.colors.background
+                            )
                         )
                     )
-                )
-        )
+            )
 
-        PaywallBottomCard(
-            state = state,
-            onStartPurchase = onStartPurchase,
-            onPrivacyPolicy = onPrivacyClick,
-            onTerms = onTermsClick,
-            onRestorePurchase = onRestoreClick,
-            onPeriodSelected = { period ->
-                state.selectedPlan?.let { plan ->
-                    onPeriodSelected(plan.type, period)
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .onGloballyPositioned { coordinates ->
-                    bottomCardHeight = coordinates.size.height
-                }
-        )
+            PaywallBottomCard(
+                state = state,
+                onStartPurchase = onStartPurchase,
+                onPeriodSelected = { period ->
+                    state.selectedPlan?.let { plan ->
+                        onPeriodSelected(plan.type, period)
+                    }
+                },
+                modifier = Modifier
+                    .onGloballyPositioned { coordinates ->
+                        bottomCardHeight = coordinates.size.height
+                    }
+            )
+        }
     }
 }
 
@@ -318,12 +369,18 @@ private fun PlanCardDetails(
                         selected = state.isSelected,
                         text = state.name
                     )
-                    if (state.isCurrentPlan) {
-                        Spacer(modifier = Modifier.weight(1f))
-                        PlanInfoBadge(text = stringResource(MR.strings.paywall_current_plan_label), onClick = onClick)
-                    } else if (state.hasSpecialOffer) {
-                        Spacer(modifier = Modifier.weight(1f))
-                        PlanInfoBadge(text = stringResource(MR.strings.paywall_special_offer_label), onClick = onClick)
+                    Spacer(modifier = Modifier.weight(1f))
+                    AnimatedVisibility(state.isCurrentPlan) {
+                        PlanInfoBadge(
+                            text = stringResource(MR.strings.paywall_current_plan_label),
+                            onClick = onClick
+                        )
+                    }
+                    AnimatedVisibility(state.hasSpecialOffer && !state.isSelected) {
+                        PlanInfoBadge(
+                            text = "${stringResource(MR.strings.paywall_special_offer_label)} 🎁",
+                            onClick = onClick
+                        )
                     }
                 }
 
@@ -337,15 +394,6 @@ private fun PlanCardDetails(
                             text = state.expandedBenefits,
                             style = MaterialTheme.typography.body1
                         )
-//                    Column {
-//                        Spacer(modifier = Modifier.size(16.dp))
-//                        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onPrimary) {
-//                            BillingPeriodOptions(
-//                                selectedPlan = state,
-//                                onPeriodSelected = onPeriodSelected
-//                            )
-//                        }
-//                    }
                     }
                 }
 
@@ -354,6 +402,31 @@ private fun PlanCardDetails(
                         text = state.oneLineBenefits,
                         style = MaterialTheme.typography.body2
                     )
+                }
+
+                AnimatedVisibility(state.isSelected && state.hasSpecialOffer) {
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .background(
+                                color = AppColors.accent.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .padding(vertical = 8.dp, horizontal = 12.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "🎁 ${stringResource(MR.strings.paywall_special_offer_title)}",
+                            style = MaterialTheme.typography.h6,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(MR.strings.paywall_special_offer_info).annotatedBold(),
+                            style = MaterialTheme.typography.subtitle2,
+                            lineHeight = 18.sp
+                        )
+                    }
                 }
             }
         }
@@ -383,15 +456,11 @@ private fun PlanInfoBadge(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PaywallBottomCard(
     state: PaywallScreenState,
     onStartPurchase: () -> Unit,
-    onPrivacyPolicy: () -> Unit,
     onPeriodSelected: (PlanBillingPeriod) -> Unit,
-    onTerms: () -> Unit,
-    onRestorePurchase: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val billingPeriodState = state.selectedBillingPeriod
@@ -413,7 +482,7 @@ private fun PaywallBottomCard(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedVisibility(selectedPlan?.type?.isPremium == true) {
+            AnimatedVisibility(billingPeriodState?.trialDurationDays == null && selectedPlan?.type?.isPremium == true) {
                 Text(
                     modifier = Modifier.padding(bottom = 8.dp),
                     text = stringResource(
@@ -424,6 +493,20 @@ private fun PaywallBottomCard(
                     color = contentColor
                 )
             }
+
+            AnimatedVisibility(billingPeriodState?.trialDurationDays != null) {
+                Text(
+                    modifier = Modifier.padding(bottom = 12.dp),
+                    text = stringResource(
+                        MR.strings.paywall_free_trial_notice,
+                        "${billingPeriodState?.trialDurationDays ?: " "}"
+                    ).annotatedBold(),
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center,
+                    color = contentColor
+                )
+            }
+
             AnimatedVisibility(!selectedPlan?.billingPeriods.isNullOrEmpty()) {
                 CompositionLocalProvider(LocalContentColor provides contentColor) {
                     if (selectedPlan != null) {
@@ -436,18 +519,21 @@ private fun PaywallBottomCard(
                 }
             }
 
-            AnimatedVisibility(billingPeriodState?.trialDurationDays != null) {
-                Text(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    text = stringResource(
-                        MR.strings.paywall_free_trial_notice,
-                        "${billingPeriodState?.trialDurationDays ?: " "}"
-                    ).annotatedBold(),
-                    style = MaterialTheme.typography.body2,
-                    textAlign = TextAlign.Center,
-                    color = contentColor
-                )
-            }
+            SmallActionButton(
+                modifier = Modifier.padding(bottom = 8.dp),
+                backgroundColor = AppColors.accentLight.copy(alpha = 0.6f),
+                contentColor = contentColor,
+                icon = CoreAppIcons.Security.asPainterResource(),
+                iconSize = 12.dp,
+                text = {
+                    Text(
+                        text = stringResource(MR.strings.paywall_cancellation_notice),
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp
+                    )
+                },
+                onClick = null
+            )
 
             AnimatedVisibility(state.selectedPlan != null) {
                 Column {
@@ -479,47 +565,6 @@ private fun PaywallBottomCard(
                         color = contentColor
                     )
                 }
-            }
-
-            Spacer(modifier = Modifier.size(12.dp))
-            SmallActionButton(
-                modifier = Modifier,
-                backgroundColor = AppColors.accentLight.copy(alpha = 0.6f),
-                contentColor = contentColor,
-                icon = CoreAppIcons.Security.asPainterResource(),
-                text = {
-                    Text(
-                        text = stringResource(MR.strings.paywall_cancellation_notice),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                onClick = null
-            )
-
-            Spacer(modifier = Modifier.size(12.dp))
-
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Text(
-                    modifier = Modifier.clickable(onClick = onRestorePurchase),
-                    text = stringResource(MR.strings.paywall_button_restore),
-                    style = MaterialTheme.typography.caption,
-                    color = contentColor
-                )
-                Text(
-                    modifier = Modifier.clickable(onClick = onPrivacyPolicy),
-                    text = stringResource(MR.strings.paywall_privacy_policy_label),
-                    style = MaterialTheme.typography.caption,
-                    color = contentColor
-                )
-                Text(
-                    modifier = Modifier.clickable(onClick = onTerms),
-                    text = stringResource(MR.strings.paywall_terms_of_use_label),
-                    style = MaterialTheme.typography.caption,
-                    color = contentColor
-                )
             }
         }
     }
@@ -575,38 +620,15 @@ private fun PlanName(
 private fun FaqSection(
     faqsList: List<FaqSectionItem>
 ) {
-    var expanded by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.size(32.dp))
-        Row(
-            modifier = Modifier
-                .clickable { expanded = !expanded },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier.alpha(ContentAlpha.medium),
-                text = stringResource(MR.strings.paywall_faq_section_title),
-                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-            )
-            Icon(
-                modifier = Modifier.padding(horizontal = 8.dp).size(20.dp),
-                painter = if (expanded) {
-                    CoreAppIcons.ExpandLess.asPainterResource()
-                } else {
-                    CoreAppIcons.ExpandMore.asPainterResource()
-                },
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
+        SettingsSectionHeader(name = stringResource(MR.strings.paywall_faq_section_title))
         Spacer(modifier = Modifier.size(8.dp))
-        AnimatedVisibility(expanded) {
-            Column {
-                Spacer(modifier = Modifier.size(12.dp))
-                faqsList.forEach { faq ->
-                    FaqItem(faq)
-                    Spacer(modifier = Modifier.size(8.dp))
-                }
+        Column {
+            Spacer(modifier = Modifier.size(12.dp))
+            faqsList.forEach { faq ->
+                FaqItem(faq)
+                Spacer(modifier = Modifier.size(8.dp))
             }
         }
     }
@@ -614,7 +636,7 @@ private fun FaqSection(
 
 @Composable
 private fun FaqItem(faq: FaqSectionItem) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(faq.expanded) }
 
     Card(
         shape = RoundedCornerShape(12.dp),

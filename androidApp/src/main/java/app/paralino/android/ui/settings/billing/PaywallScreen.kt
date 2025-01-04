@@ -1,6 +1,7 @@
 package app.paralino.android.ui.settings.billing
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -113,4 +114,8 @@ fun PaywallScreen(
             }
         }
     )
+
+    BackHandler (enabled = type == BillingScreenSourceType.ONBOARDING) {
+        // block back for onboarding
+    }
 }
