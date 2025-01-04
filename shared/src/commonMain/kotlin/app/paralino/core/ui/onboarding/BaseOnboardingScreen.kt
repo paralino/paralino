@@ -118,7 +118,7 @@ fun BaseOnboardingScreen(
 @Composable
 fun BaseOnboardingScreen(
     modifier: Modifier = Modifier,
-    nextButton: @Composable ColumnScope.() -> Unit,
+    nextButton: (@Composable () -> Unit)?,
     skipButton: (@Composable () -> Unit)?,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -133,7 +133,11 @@ fun BaseOnboardingScreen(
                     bottom = animateDpAsState(if (skipButton != null) 6.dp else 20.dp).value
                 )
             ) {
-                nextButton()
+                AnimatedVisibility(
+                    visible = nextButton != null
+                ) {
+                    nextButton?.invoke()
+                }
                 AnimatedVisibility(
                     visible = skipButton != null
                 ) {

@@ -163,18 +163,38 @@ private fun PlacesScreen(
 ) {
     BaseOnboardingScreen(
         modifier = Modifier.fillMaxSize(),
-        nextButton = @Composable {
-            FilledButton(
-                modifier = Modifier,
-                style = ButtonStyle.BIG,
-                state = AppButtonState.CONTENT,
-                icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                onClick = onCreatePlace
-            ) {
-                Text(text = stringResource(MR.strings.places_create_button_create))
+        nextButton = if (isOnboarding) {
+            @Composable {
+                FilledButton(
+                    modifier = Modifier,
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.CONTENT,
+                    icon = if (state.placesLimitReached) {
+                        null
+                    } else {
+                        CoreAppIcons.MapsHomeWork.asPainterResource()
+                    },
+                    onClick = {
+                        if (state.placesLimitReached) {
+                            onSkipOnboarding()
+                        } else {
+                            onCreatePlace()
+                        }
+                    }
+                ) {
+                    Text(
+                        text = if (state.placesLimitReached) {
+                            stringResource(MR.strings.button_next)
+                        } else {
+                            stringResource(MR.strings.places_create_button_create)
+                        }
+                    )
+                }
             }
+        } else {
+            null
         },
-        skipButton = if (isOnboarding) {
+        skipButton = if (isOnboarding && !state.placesLimitReached) {
             @Composable {
                 OnboardingSkipButton(
                     skipButtonText = if (state.places.isEmpty()) {
