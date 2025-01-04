@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -38,17 +37,22 @@ import app.paralino.core.presentation.places.list.PlacesScreenEvent
 import app.paralino.core.presentation.places.list.PlacesScreenUiEvent
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
@@ -63,6 +67,7 @@ fun PlacesScreenCore(
     askNotificationPermission: () -> Unit,
     addNewPlace: () -> Unit,
     openPaywall: () -> Unit,
+    onSkipOnboarding: () -> Unit,
     openPlaceDetails: (place: PlaceListItemData) -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
@@ -118,6 +123,7 @@ fun PlacesScreenCore(
         is Payload.Success -> {
             PlacesScreen(
                 state = state.data,
+                isOnboarding = vm.isOnboarding,
                 userScrollEnabled = userScrollEnabled,
                 contentPadding = contentPadding,
                 onPlaceClick = {
@@ -126,6 +132,7 @@ fun PlacesScreenCore(
                 onCreatePlace = {
                     vm.onEvent(PlacesScreenUiEvent.CreatePlace)
                 },
+                onSkipOnboarding = onSkipOnboarding,
                 onPlanBannerClick = openPaywall,
                 onErrorItemClick = {
                     askNotificationPermission()
@@ -143,29 +150,75 @@ fun PlacesScreenCore(
 @Composable
 private fun PlacesScreen(
     state: PlacesListScreenState,
+    isOnboarding: Boolean,
     userScrollEnabled: Boolean,
     contentPadding: PaddingValues,
     onPlaceClick: (PlaceListItemData) -> Unit,
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onCreatePlace: () -> Unit,
+    onSkipOnboarding: () -> Unit,
     onPlanBannerClick: () -> Unit,
     onPostSampleNotification: (String) -> Unit,
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
-    if (state.places.isEmpty()) {
-        PlacesEmptyState(
-            modifier = Modifier.padding(contentPadding),
-            permissionError = state.error,
-            onErrorItemClick = onErrorItemClick,
-            onPostSampleNotification = onPostSampleNotification,
-            onCreateClick = onCreatePlace
-        )
-    } else {
-        Scaffold(
-            modifier = Modifier.fillMaxSize()
-        ) {
+    BaseOnboardingScreen(
+        modifier = Modifier.fillMaxSize(),
+        nextButton = if (isOnboarding) {
+            @Composable {
+                FilledButton(
+                    modifier = Modifier,
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.CONTENT,
+                    icon = if (state.placesLimitReached) {
+                        null
+                    } else {
+                        CoreAppIcons.MapsHomeWork.asPainterResource()
+                    },
+                    onClick = {
+                        if (state.placesLimitReached) {
+                            onSkipOnboarding()
+                        } else {
+                            onCreatePlace()
+                        }
+                    }
+                ) {
+                    Text(
+                        text = if (state.placesLimitReached) {
+                            stringResource(MR.strings.button_next)
+                        } else {
+                            stringResource(MR.strings.places_create_button_create)
+                        }
+                    )
+                }
+            }
+        } else {
+            null
+        },
+        skipButton = if (isOnboarding && !state.placesLimitReached) {
+            @Composable {
+                OnboardingSkipButton(
+                    skipButtonText = if (state.places.isEmpty()) {
+                        stringResource(MR.strings.button_skip)
+                    } else {
+                        stringResource(MR.strings.button_next)
+                    },
+                    onSkip = onSkipOnboarding
+                )
+            }
+        } else {
+            null
+        }
+    ) {
+        if (state.places.isEmpty()) {
+            PlacesEmptyState(
+                modifier = Modifier.padding(contentPadding).padding(it),
+                permissionError = state.error,
+                onErrorItemClick = onErrorItemClick,
+                onPostSampleNotification = onPostSampleNotification
+            )
+        } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(it),
                 contentPadding = PaddingValues(
                     top = contentPadding.calculateTopPadding() + 20.dp,
                     bottom = contentPadding.calculateBottomPadding() + 40.dp,

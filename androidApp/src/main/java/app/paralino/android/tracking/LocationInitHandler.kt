@@ -57,20 +57,25 @@ class LocationInitHandler constructor(
                 logg.tag("location_request").v("location request OK: ${performanceType.current.name}")
                 val status = LocationConditionStatus.getLocationStatus(context)
                 if (status.isOK()) {
-                    logg.tag("location_request").v("new request: $performanceType")
+                    logg.tag("location_request").v("Change location request: $performanceType")
                     val locationRequest = LocationRequestModels.getRequest(
                         type = performanceType.current,
                         balancedSettings = performanceType.balancedPerformanceSettings,
                         batterySaverSettings = performanceType.batterySaverPerformanceSettings
                     )
-                    fusedLocationClient.requestLocationUpdates(
-                        locationRequest,
-                        locationCallback,
-                        Looper.getMainLooper()
-                    ).addOnFailureListener {
-                        logg.tag("location_request").v("request error", it)
-                        currentLocation.value = Payload.Error(it)
-                    }
+
+                    fusedLocationClient.removeLocationUpdates(locationCallback)
+                        .addOnCompleteListener {
+                            logg.tag("location_request").v("Old request removed, start new request: $performanceType")
+                            fusedLocationClient.requestLocationUpdates(
+                                locationRequest,
+                                locationCallback,
+                                Looper.getMainLooper()
+                            ).addOnFailureListener {
+                                logg.tag("location_request").v("request error", it)
+                                currentLocation.value = Payload.Error(it)
+                            }
+                        }
                 } else {
                     logg.tag("location_request").v("status not ok: $status")
                     fusedLocationClient.removeLocationUpdates(locationCallback)

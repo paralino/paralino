@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -163,6 +164,7 @@ fun SmallActionButton(
     hasEndArrow: Boolean = false,
     compactMode: Boolean = false,
     icon: Painter?,
+    iconSize: Dp = 14.dp,
     text: @Composable () -> Unit,
     onClick: (() -> Unit)?
 ) {
@@ -183,7 +185,7 @@ fun SmallActionButton(
             Icon(
                 painter = icon,
                 contentDescription = null,
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(iconSize),
                 tint = contentColor
             )
         }

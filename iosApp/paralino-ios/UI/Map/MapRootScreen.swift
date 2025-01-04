@@ -80,13 +80,13 @@ struct MapRootScreen: View {
                 }
         }
         .onChange(of: initState.groupState, initial: true) { oldValue, newValue in
-            if newValue == true {
+            if newValue == .map {
                 if mainAppState.userReadyGraph.isEmpty == true {
                     mainAppState.userReadyGraph = [.home(.map)]
                 } else {
                     mainAppState.userReadyGraph[0] = .home(.map)
                 }
-            } else if newValue == false {
+            } else if newValue == .groupInit {
                 if mainAppState.userReadyGraph.isEmpty == true {
                     mainAppState.userReadyGraph = [.home(.groupInit)]
                 } else {

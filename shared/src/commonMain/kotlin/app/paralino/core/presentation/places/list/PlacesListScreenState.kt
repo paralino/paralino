@@ -23,6 +23,8 @@ data class PlacesListScreenState constructor(
 ) {
     val markers: List<MapPinData> = places.filter { it.lat != null && it.lng != null }
         .map { MapPinData(groupId, it) }
+
+    val placesLimitReached: Boolean = placesLimit <= places.size
 }
 
 data class PlaceListItemData constructor(

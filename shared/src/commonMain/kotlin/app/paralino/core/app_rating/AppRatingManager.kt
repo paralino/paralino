@@ -18,7 +18,7 @@ class AppRatingManager(
         if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(180.days)) {
             when (source) {
                 AppRatingSource.GROUP_DETAIL -> {
-                    if (appPrefs.appLaunchedCountWhenLoggedIn >= 2) {
+                    if (appPrefs.appLaunchedCountWhenLoggedIn >= 1) {
                         logg.v("app_rating", "Start app rating flow from $source")
                         appPrefs.lastShowedAppRatingDialogUTC = nowUTC()
                         appPrefs.lastShowedAppRatingDialogAppVersion = deviceApiProvider.appVersionCode
@@ -26,7 +26,7 @@ class AppRatingManager(
                     }
                 }
                 AppRatingSource.MAIN_MAP -> {
-                    if (appPrefs.appLaunchedCountWhenLoggedIn >= 3) {
+                    if (appPrefs.appLaunchedCountWhenLoggedIn >= 2) {
                         logg.v("app_rating", "Start app rating flow from $source")
                         appPrefs.lastShowedAppRatingDialogUTC = nowUTC()
                         appPrefs.lastShowedAppRatingDialogAppVersion = deviceApiProvider.appVersionCode

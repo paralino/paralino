@@ -180,7 +180,7 @@ data class PlanConfig(
             planType = PlanType.FREE.key,
             planName = PlanType.FREE.name,
             groupsLimit = 1,
-            membersLimit = 5,
+            membersLimit = 3,
             devicesLimit = 1,
             placesLimit = 2,
             historyDaysLimit = 2,

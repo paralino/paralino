@@ -11,6 +11,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import app.paralino.core.MR
+import app.paralino.core.models.base.BackendResourceIDs
 
 
 val Context.batterLevel: Int
@@ -70,4 +72,15 @@ fun Context.getActivity(): AppCompatActivity? = when (this) {
     is AppCompatActivity -> this
     is ContextWrapper -> baseContext.getActivity()
     else -> null
+}
+
+fun Context.contactSupport() {
+    val intent = Intent(Intent.ACTION_SENDTO)
+    intent.setData(Uri.parse("mailto:")) // only email apps should handle this
+    intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(BackendResourceIDs.supportEmail))
+    intent.putExtra(Intent.EXTRA_SUBJECT, "Paralino support")
+
+    val chooserIntent = Intent.createChooser(intent, MR.strings.setting_title_contactSupport.getString(this))
+    chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    startActivity(chooserIntent)
 }

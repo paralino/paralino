@@ -7,8 +7,8 @@ import app.paralino.core.provider.NetworkConnectionInfo
 open class BaseRemoteException constructor(
     message: String?,
     cause: Throwable?,
-    val code: Int? = null,
-    val type: String? = null
+    open val code: Int? = null,
+    open val type: String? = null
 ) : Exception(message, cause) {
     companion object {
 
@@ -42,9 +42,18 @@ open class BaseRemoteException constructor(
                 404 -> NotFoundException(type = type, message = message, cause = cause)
                 409 -> ConflictException(message, cause)
                 429, 503, 504 -> RemoteConnectionException(message, code, cause)
-                else -> GenericServerException(message, code, cause)
+                else -> GenericServerException(
+                    message = message,
+                    code = code,
+                    type = type,
+                    cause = cause
+                )
             }
         }
+    }
+
+    override fun toString(): String {
+        return super.toString() + " code: $code, type: $type"
     }
 }
 
@@ -72,7 +81,14 @@ class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteE
     cause = cause,
     code = 409
 )
-class GenericServerException(message: String?, code: Int?, cause: Throwable? = null) : BaseRemoteException(message, cause, code)
+
+class GenericServerException(
+    override val message: String?,
+    override val code: Int?,
+    override val type: String?,
+    cause: Throwable? = null
+) : BaseRemoteException(message = message, cause = cause, code = code, type = type)
+
 class TimeoutException(message: String?, cause: Throwable? = null) : BaseRemoteException(message, cause)
 class DataStillLoadingException(message: String?, cause: Throwable? = null) : BaseRemoteException(message, cause)
 

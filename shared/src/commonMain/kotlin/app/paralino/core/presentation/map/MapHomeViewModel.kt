@@ -435,6 +435,7 @@ class MapHomeViewModel constructor(
         coroutineScope.launch {
             val allGroups = allGroups.mapNotNull { it.data }
                 .firstOrNull()
+                ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
                 ?: emptyList()
 
             val newGroupId = allGroups.firstOrNull { it.id == groupId }?.id
@@ -873,13 +874,13 @@ class MapHomeViewModel constructor(
     }
 
     fun tryCreateGroup() {
-        val limit = userRepository.userPlans.value.groupsLimit
-        val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
-        val maxGroupLimit = remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.groupsLimit
-        val shouldShowFreePlanNoticeScreen = userRepository.shouldShowFreePlanNoticeScreen
-
         coroutineScope.launch {
-            if (groupCount >= maxGroupLimit) {
+            val limit = userRepository.userPlans.value.groupsLimit
+            val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
+            val maxGroupLimit = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.groupsLimit
+            val shouldShowFreePlanNoticeScreen = userRepository.shouldShowFreePlanNoticeScreen
+
+            if (maxGroupLimit != null && groupCount >= maxGroupLimit) {
                 updateReadyState {
                     it.copy(
                         alertDialog = MainAlertDialog.PlanLimit(

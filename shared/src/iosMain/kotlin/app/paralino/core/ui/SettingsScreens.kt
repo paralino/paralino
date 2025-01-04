@@ -245,6 +245,7 @@ object SettingsScreens {
         vm: GeneralInfoViewModel,
         openLicencesScreen: () -> Unit,
         onShowOnboarding: () -> Unit,
+        onContactSupport: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GeneralInfoScreenCore(
@@ -252,7 +253,8 @@ object SettingsScreens {
                 vm = vm,
                 paddingValues = PaddingValues(),
                 onLicencesClick = openLicencesScreen,
-                onShowOnboarding = onShowOnboarding
+                onShowOnboarding = onShowOnboarding,
+                onContactSupport = onContactSupport
             )
         }
     }

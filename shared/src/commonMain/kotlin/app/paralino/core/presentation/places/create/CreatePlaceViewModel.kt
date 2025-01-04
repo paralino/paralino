@@ -179,13 +179,13 @@ class CreatePlaceViewModel(
 
     private suspend fun checkPlaceLimits(): Boolean {
         val group = groupLocal.getGroupOnce(groupId) ?: return false
-        val limit = group.placesLimit(remoteConfig.configState.value)
+        val limit = group.placesLimit(remoteConfig.getConfigOnce())
         val placeCount = placesLocalDataSource.getPlacesCountForGroupOnce(groupId) ?: 0
         val isGroupOwner = group.isCurrentUserOwner
         val maxPlaceLimit =
-            remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.placesLimit
+            remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.placesLimit
 
-        if (isGroupOwner && placeCount >= maxPlaceLimit) {
+        if (maxPlaceLimit != null && isGroupOwner && placeCount >= maxPlaceLimit) {
             _uiState.update {
                 it.mapSuccess {
                     it.copy(

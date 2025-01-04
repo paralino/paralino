@@ -62,7 +62,8 @@ data class FaqSectionState(
 
 data class FaqSectionItem(
     val title: AnnotatedString,
-    val content: AnnotatedString
+    val content: AnnotatedString,
+    val expanded: Boolean = false
 )
 
 sealed class PaywallScreenEvent() {

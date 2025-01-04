@@ -16,6 +16,7 @@ struct MapHomeScreen: View {
     @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
     
     @Environment(\.safeAreaInsets) private var safeAreaInsets
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         ZStack {
@@ -110,7 +111,26 @@ struct MapHomeScreen: View {
             }
         }
         .onAppear {
+            Logr.d(tag:"home_screen", message: "Home screen appear")
             mapState.vm.switchGroup(groupId: "")
+        }
+        .onDisappear {
+            Logr.d(tag:"home_screen", message: "Home screen disappear")
+            mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
+        }
+        .onChange(of: scenePhase, initial: true) { oldScene, newScene in
+            Logr.d(tag:"home_screen", message: "Home screen scene switch (old: \(oldScene)) - (new: \(newScene))")
+            
+            switch newScene {
+            case .active:
+                mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: true))
+            case .inactive:
+                mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
+            case .background:
+                mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
+            @unknown default:
+                break
+            }
         }
         .groupPickerSheet(
             $groupPicker,

@@ -2,27 +2,19 @@ package app.paralino.android.ui.share
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
+import app.paralino.android.ui.groups.GroupBottomSheetPicker
+import app.paralino.android.ui.groups.GroupPickerAction
+import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.presentation.share.SharingStartViewModel
-import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
-import app.paralino.android.ui.groups.GroupBottomSheetPicker
-import app.paralino.android.ui.groups.GroupPickerAction
-import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
@@ -30,7 +22,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SharingStartScreen(
@@ -92,24 +83,6 @@ fun SharingStartScreen(
                     null
                 } else {
                     { ToolbarButtons.Back { appState.navController.popBackStack() } }
-                },
-                actions = {
-                    if (isOnboarding) {
-                        SmallActionButton(
-                            modifier = Modifier.padding(end = 8.dp),
-                            backgroundColor = MaterialTheme.colors.primary,
-                            contentColor = MaterialTheme.colors.onPrimary,
-                            icon = null,
-                            hasEndArrow = true,
-                            text = {
-                                Text(
-                                    text = stringResource(MR.strings.button_skip),
-                                    fontSize = 14.sp
-                                )
-                            },
-                            onClick = { finishWithSharingScreen(isOnboarding = true) }
-                        )
-                    }
                 }
             )
         }
@@ -120,6 +93,9 @@ fun SharingStartScreen(
             vm = vm,
             onSharingStarted = {
                 finishWithSharingScreen(isOnboarding = isOnboarding)
+            },
+            onSkipOnboarding = {
+                finishWithSharingScreen(isOnboarding = true)
             },
             onPickGroup = {
                 appState.uiScope.launch { pickerState.show(it) }

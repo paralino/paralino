@@ -18,8 +18,8 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -38,7 +38,7 @@ class MemberInviteViewModel(
 
     private val _uiState =
         MutableStateFlow<MemberInviteScreenState>(MemberInviteScreenState.Empty())
-    val uiState: Flow<MemberInviteScreenState> = _uiState
+    val uiState: StateFlow<MemberInviteScreenState> = _uiState
 
     private val currentGroup = MutableStateFlow<GroupItemState?>(null)
 

@@ -51,6 +51,7 @@ class LoginUseCase constructor(
                 logg.d("login", "Start login to remote")
                 delay(500)
 
+                emit(SignUpStep.LOG_USER_IN)
                 session = try {
                     userRepo.login(email = email, password = authKey.loginKey)
                 } catch (e: Exception) {

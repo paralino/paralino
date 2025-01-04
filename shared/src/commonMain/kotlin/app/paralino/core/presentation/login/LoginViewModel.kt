@@ -47,7 +47,7 @@ class LoginViewModel constructor(
     init {
         _uiState = MutableStateFlow(
             LoginScreenState(
-                canUseEmail = remoteConfigRepository.configState.value.isEmailEnabled,
+                canUseEmail = remoteConfigRepository.getCachedConfigOnce().isEmailEnabled,
                 uiType = initialUiType,
                 alertDialog = if (appPrefs.hasGuestAccount()) {
                     MainAlertDialog.GuestAccountRecover
@@ -58,7 +58,7 @@ class LoginViewModel constructor(
         )
         uiState = _uiState
 
-        remoteConfigRepository.getConfig()
+        remoteConfigRepository.getConfigLocally()
             .onEach { config ->
                 _uiState.update {
                     it.copy(
@@ -71,7 +71,7 @@ class LoginViewModel constructor(
     }
 
     private fun defaultUiType(preferred: LoginScreenUiType): LoginScreenUiType {
-        return if (remoteConfigRepository.configState.value.isEmailEnabled) preferred else LoginScreenUiType.SIGNUP_GUEST
+        return if (remoteConfigRepository.getCachedConfigOnce().isEmailEnabled) preferred else LoginScreenUiType.SIGNUP_GUEST
     }
 
     private fun proceed() {
@@ -248,7 +248,9 @@ class LoginViewModel constructor(
             it.copy(
                 actionLoading = step != SignUpStep.ALL_DONE,
                 stepInfo = when (step) {
-                    SignUpStep.STARTING -> when (it.uiType) {
+                    SignUpStep.STARTING,
+                    SignUpStep.CREATING_ACCOUNT,
+                    SignUpStep.LOG_USER_IN -> when (it.uiType) {
                         LoginScreenUiType.LOGIN -> SignUpStepInfo.Info.START_LOGIN
                         LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Info.START_SIGNUP
                         LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Info.START_PASSWORD_RESET
@@ -275,7 +277,9 @@ class LoginViewModel constructor(
         val step = (error as? SignUpStepException)?.step
 
         val stepInfo = when (step) {
-            SignUpStep.STARTING -> when (uiType) {
+            SignUpStep.STARTING,
+            SignUpStep.CREATING_ACCOUNT,
+            SignUpStep.LOG_USER_IN -> when (uiType) {
                 LoginScreenUiType.LOGIN -> {
                     if (onRecoverGuest) SignUpStepInfo.Error.RECOVER_GUEST
                     else SignUpStepInfo.Error.LOGIN

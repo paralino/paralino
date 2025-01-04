@@ -165,16 +165,20 @@ object HomeScreens {
 
     fun MemberInviteScreenVC(
         vm: MemberInviteViewModel,
+        isOnboarding: Boolean,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
         onMemberAdded: () -> Unit,
+        onSkipOnboarding: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             MemberInviteScreenCore(
                 appState = it,
                 vm = vm,
+                isOnboarding = isOnboarding,
                 contentPadding = PaddingValues(),
                 onPickGroup = onPickGroup,
-                onMemberAdded = onMemberAdded
+                onMemberAdded = onMemberAdded,
+                onSkipOnboarding = onSkipOnboarding
             )
         }
     }
@@ -184,6 +188,7 @@ object HomeScreens {
         groupId: String?,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
         onSharingStarted: () -> Unit,
+        onSkipOnboarding: () -> Unit,
         openSubscriptions: () -> Unit,
         askNotificationPermission: () -> Unit,
         askLocationService: () -> Unit,
@@ -197,6 +202,7 @@ object HomeScreens {
                 groupId = groupId,
                 onPickGroup = onPickGroup,
                 onSharingStarted = onSharingStarted,
+                onSkipOnboarding = onSkipOnboarding,
                 openSubscriptions = openSubscriptions,
                 askNotificationPermission = askNotificationPermission,
                 askLocationService = askLocationService,
@@ -355,6 +361,7 @@ object HomeScreens {
         paddingValues: AppleScreenPaddingValues,
         addNewPlace: () -> Unit,
         openPaywall: () -> Unit,
+        onSkipOnboarding: () -> Unit,
         openPlaceDetailScreen: (place: PlaceListItemData) -> Unit,
         askNotificationPermission: () -> Unit,
         mapUIView: (PlacesListScreenState) -> UIViewController,
@@ -373,6 +380,7 @@ object HomeScreens {
                 askNotificationPermission = askNotificationPermission,
                 addNewPlace = addNewPlace,
                 openPaywall = openPaywall,
+                onSkipOnboarding = onSkipOnboarding,
                 openPlaceDetails = openPlaceDetailScreen,
                 mapContent = { state ->
                     Box(

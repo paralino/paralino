@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 class PlacesViewModel(
     groupId: String,
-    isOnboarding: Boolean,
+    val isOnboarding: Boolean,
     private val remoteConfig: RemoteConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,
@@ -58,9 +58,9 @@ class PlacesViewModel(
                 null
             }
 
-            val placesLimit = group.placesLimit(remoteConfig.configState.value)
+            val placesLimit = group.placesLimit(remoteConfig.getConfigOnce())
             val canShowPlanBanner = group.isCurrentUserOwner && !group.isGroupPremium(
-                config = remoteConfig.configState.value
+                config = remoteConfig.getConfigOnce()
             )
             val state = PlacesListScreenState(
                 groupId = groupId,
@@ -131,9 +131,9 @@ class PlacesViewModel(
             val limit = state.placesLimit
             val placeCount = state.places.size
             val maxPlaceLimit =
-                remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.placesLimit
+                remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.placesLimit
 
-            if (state.isGroupOwner && placeCount >= maxPlaceLimit) {
+            if (maxPlaceLimit != null && state.isGroupOwner && placeCount >= maxPlaceLimit) {
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(

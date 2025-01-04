@@ -8,6 +8,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.paralino.android.notification.SyncNotificationProvider
@@ -31,6 +32,9 @@ class PushTokenSyncWorker(
     private val userDataUpdate by lazy { UserRepoComponent() }
 
     override suspend fun doWork(): Result {
+        try { setForeground(getForegroundInfo()) }
+        catch (_: Exception) { }
+
         try {
             logg.tag("push_notifications").v("Try to get and sync push token")
             FirebaseApp.initializeApp(applicationContext)
@@ -52,7 +56,7 @@ class PushTokenSyncWorker(
         return ForegroundInfo(
             SyncNotificationProvider.PushSyncNotification.notificationId,
             SyncNotificationProvider.PushSyncNotification.create(applicationContext),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
         )
     }
 
@@ -65,12 +69,15 @@ class PushTokenSyncWorker(
 
             val request = OneTimeWorkRequestBuilder<PushTokenSyncWorker>()
                 .setConstraints(constraints)
-                // setting as expedited will run as foreground service
-//                .setExpedited()
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
 
             logg.tag("push_notifications").v("Create token sync request")
-            workManager.enqueueUniqueWork("push_token_sync_work", ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+            workManager.enqueueUniqueWork(
+                "push_token_sync_work",
+                ExistingWorkPolicy.APPEND_OR_REPLACE,
+                request
+            )
         }
     }
 }

@@ -54,7 +54,7 @@ struct GroupInitScreen: View {
 
 class GroupInitState: ObservableObject {
     
-    @Published var groupState: Bool? = nil
+    @Published var groupState: State = .loading
     let vm: GroupInitViewModel
     
     init() {
@@ -62,11 +62,20 @@ class GroupInitState: ObservableObject {
         
         vm.observe(flow: vm.canDisplayMap) { [weak self] value in
             let state = ResourceSwift<KotlinBoolean>(data: value)
-            self?.groupState = state.data?.boolValue
+            switch state {
+            case .notInitialized: self?.groupState = .loading
+            case .ready(let data): if data.boolValue { self?.groupState = .map } else { self?.groupState = .groupInit }
+            }
         }
     }
     
     deinit {
         vm.cleanup()
+    }
+    
+    public enum State {
+        case groupInit
+        case map
+        case loading
     }
 }

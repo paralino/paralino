@@ -37,7 +37,6 @@ import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
 import app.paralino.core.presentation.invite.input.MemberInviteScreenState
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
@@ -46,8 +45,10 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.groups.GroupListItem
+import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
@@ -59,13 +60,15 @@ import kotlinx.coroutines.launch
 fun MemberInviteScreenCore(
     appState: CoreUiState,
     vm: MemberInviteViewModel,
+    isOnboarding: Boolean,
     contentPadding: PaddingValues,
     onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
     onMemberAdded: () -> Unit,
+    onSkipOnboarding: () -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState(initial = MemberInviteScreenState.Empty())
+    val state by vm.uiState.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -84,12 +87,14 @@ fun MemberInviteScreenCore(
     MemberInviteScreen(
         modifier = Modifier.padding(contentPadding),
         state = state,
+        isOnboarding = isOnboarding,
         onCodeChange = {
             vm.codeChanged(it)
         },
         onConfirm = {
             vm.addOrLoadMember()
         },
+        onSkipOnboarding = onSkipOnboarding,
         onPickGroup = {
             appState.uiScope.launch {
                 val groupPickerState = vm.getGroupPickerState()
@@ -103,27 +108,45 @@ fun MemberInviteScreenCore(
 private fun MemberInviteScreen(
     modifier: Modifier = Modifier,
     state: MemberInviteScreenState,
+    isOnboarding: Boolean,
     onCodeChange: (String) -> Unit,
     onConfirm: () -> Unit,
+    onSkipOnboarding: () -> Unit,
     onPickGroup: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
-    ActionScaffold(
+    BaseOnboardingScreen(
         modifier = modifier.fillMaxSize(),
-        buttonState = AppButtonState.loadingStateWithCheck(state.actionLoading),
-        buttonText = when (state) {
-            is MemberInviteScreenState.Empty -> stringResource(MR.strings.button_next)
-            is MemberInviteScreenState.Loaded -> stringResource(MR.strings.invite_connect_button_addToGroup)
+        nextButton = @Composable {
+            FilledButton(
+                modifier = Modifier,
+                style = ButtonStyle.BIG,
+                state = AppButtonState.loadingStateWithCheck(state.actionLoading),
+                icon = if (state is MemberInviteScreenState.Loaded) {
+                    CoreAppIcons.PersonAdd.asPainterResource()
+                } else {
+                    null
+                },
+                onClick = {
+                    focusManager.clearFocus()
+                    onConfirm()
+                }
+            ) {
+                Text(
+                    text = when (state) {
+                        is MemberInviteScreenState.Empty -> stringResource(MR.strings.button_next)
+                        is MemberInviteScreenState.Loaded -> stringResource(MR.strings.invite_connect_button_addToGroup)
+                    }
+                )
+            }
         },
-        buttonIcon = if (state is MemberInviteScreenState.Loaded) {
-            CoreAppIcons.PersonAdd.asPainterResource()
+        skipButton = if (isOnboarding) {
+            @Composable {
+                OnboardingSkipButton(onSkip = onSkipOnboarding)
+            }
         } else {
             null
-        },
-        onConfirm = {
-            focusManager.clearFocus()
-            onConfirm()
         }
     ) {
         Column(

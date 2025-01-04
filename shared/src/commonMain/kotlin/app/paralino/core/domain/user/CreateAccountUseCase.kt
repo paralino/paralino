@@ -48,7 +48,7 @@ class CreateAccountUseCase constructor(
         return signUp(email, password)
             .startProcessing("create_account")
             .onEach {
-                if (it >= SignUpStep.GENERATING_KEYS) {
+                if (it >= SignUpStep.CREATING_ACCOUNT) {
                     appPrefs.guestEmail = email
                     appPrefs.guestPassword = password
                 }
@@ -78,7 +78,10 @@ class CreateAccountUseCase constructor(
                 // test encryption before proceeding
                 createNewKey(userId = email, authKey = authKey)
 
+                emit(SignUpStep.CREATING_ACCOUNT)
                 user = userRepo.remoteSignUp(email = email, password = authKey.loginKey)
+
+                emit(SignUpStep.LOG_USER_IN)
 
                 session = try {
                     userRepo.login(email = email, password = authKey.loginKey)

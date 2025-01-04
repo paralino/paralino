@@ -59,7 +59,7 @@ class BillingProviderAndroid(
     private suspend fun loadPlatformHighestUserPlan() {
         Purchases.sharedInstance.awaitCustomerInfo(CacheFetchPolicy.FETCH_CURRENT)
             .let { customer ->
-                val planConfigs = remoteConfigRepo.configState.value.plans
+                val planConfigs = remoteConfigRepo.getConfigOnce().plans
                 customer.entitlements.active.mapNotNull { entitlement ->
                     val matchingConfig = planConfigs.firstOrNull {
                         it.productIds.any { it == entitlement.value.productIdentifier }
@@ -154,7 +154,7 @@ class BillingProviderAndroid(
                     }
                 }
 
-                val planConfig = remoteConfigRepo.configState.value.plans.firstOrNull {
+                val planConfig = remoteConfigRepo.getConfigOnce().plans.firstOrNull {
                     it.productIds.any { it == data.product.googleProduct!!.productId }
                 }
 

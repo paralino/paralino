@@ -217,17 +217,6 @@ fun SettingSectionInfo(
         ) {
             onGeneralInfoClick()
         }
-
-//    SettingsActionItem(
-//        name = stringResource(MR.strings.setting_title_help),
-//        icon = AppIcons.Help
-//    ) {}
-//        SettingsActionItem(
-//            name = stringResource(MR.strings.setting_title_sourceCode),
-//            icon = CoreAppIcons.Code.asPainterResource()
-//        ) {
-//            uriHandler.openUri(BackendResourceIDs.sourceCodeUrl)
-//        }
     }
 }
 
@@ -236,6 +225,7 @@ fun SettingsActionItem(
     modifier: Modifier = Modifier,
     name: String,
     icon: Painter,
+    tag: String? = null,
     description: String? = null,
     iconTint: Color = MaterialTheme.colors.surface,
     type: SettingsActionItemType = SettingsActionItemType.Navigation,
@@ -264,14 +254,28 @@ fun SettingsActionItem(
                     )
                     .padding(12.dp)
             )
-            Text(
+            Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp),
-                text = name,
-                style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
-                textAlign = TextAlign.Start
-            )
+                    .padding(horizontal = 12.dp)
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = name,
+                    style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
+                    textAlign = TextAlign.Start
+                )
+                if (tag != null) {
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(
+                            modifier = Modifier,
+                            text = tag.annotatedBold(),
+                            style = MaterialTheme.typography.caption,
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                }
+            }
             when (type) {
                 SettingsActionItemType.Action -> {}
                 SettingsActionItemType.Navigation -> {

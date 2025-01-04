@@ -188,9 +188,9 @@ class CreateGroupViewModel(
     private suspend fun checkGroupCreateLimits(): Boolean {
         val limit = userRepo.userPlans.value.groupsLimit
         val groupCount = groupRepo.allGroupsState.value.data?.filter { it.group.isCurrentUserOwner }?.size ?: 0
-        val maxGroupLimit = remoteConfig.configState.value.plans.maxBy { it.planTypeEnum.order }.groupsLimit
+        val maxGroupLimit = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.groupsLimit
 
-        if (groupCount >= maxGroupLimit) {
+        if (maxGroupLimit != null && groupCount >= maxGroupLimit) {
             _uiState.update {
                 it.mapSuccess {
                     it.copy(

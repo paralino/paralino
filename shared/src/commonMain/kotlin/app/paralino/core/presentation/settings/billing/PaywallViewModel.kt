@@ -5,6 +5,7 @@ import app.paralino.core.MR
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanType
@@ -35,7 +36,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class PaywallViewModel(
-    private val sourceType: BillingScreenSourceType,
+    val sourceType: BillingScreenSourceType,
     private val userRepo: UserRepository,
     private val refreshUseCase: RefreshEverythingUseCase,
     private val remoteConfigRepo: RemoteConfigRepository,
@@ -47,7 +48,8 @@ class PaywallViewModel(
         mapUserPlans(
             plans = userRepo.userPlans.value,
             products = null,
-            currentState = null
+            currentState = null,
+            config = remoteConfigRepo.getCachedConfigOnce()
         )
     )
     val uiState: StateFlow<PaywallScreenState> = _uiState
@@ -69,7 +71,8 @@ class PaywallViewModel(
                 mapUserPlans(
                     plans = plans,
                     products = products,
-                    currentState = it
+                    currentState = it,
+                    config = remoteConfigRepo.getConfigOnce()
                 )
             }
         }
@@ -225,8 +228,8 @@ class PaywallViewModel(
         plans: UserPlans,
         products: List<IBillingProvider.SubscriptionPlanData>?,
         currentState: PaywallScreenState?,
+        config: ConfigData
     ): PaywallScreenState {
-        val config = remoteConfigRepo.configState.value
 
         val freePlanConfig = plans.nonExpiredPlans.firstOrNull { !it.config.planTypeEnum.isPremium }
             ?.config
@@ -239,7 +242,8 @@ class PaywallViewModel(
         val isFreePlanSelected = isPlanSelected(
             plans = plans,
             planType = freePlanConfig.planTypeEnum,
-            currentState = currentState
+            currentState = currentState,
+            config = config
         )
         val freeUiPlan = PlanInfoState(
             productId = "free",
@@ -263,7 +267,8 @@ class PaywallViewModel(
             val isPlanSelected = isPlanSelected(
                 plans = plans,
                 planType = planConfig.planTypeEnum,
-                currentState = currentState
+                currentState = currentState,
+                config = config
             )
             val billingPeriods = product.periods
                 .groupBy { it.billingPeriod }
@@ -336,29 +341,30 @@ class PaywallViewModel(
         return PaywallScreenState(
             canShowMoreInfo = AppBuildConfig.instance.isDevMode,
             plans = buildList {
-                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
-                    add(freeUiPlan)
-                }
+//                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
+//                    add(freeUiPlan)
+//                }
                 addAll(uiPlans)
             },
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
-            faq = currentState?.faq ?: getFaqSection()
+            faq = currentState?.faq ?: getFaqSection(config)
         )
     }
 
-    private fun getFaqSection(): FaqSectionState {
+    private fun getFaqSection(config: ConfigData): FaqSectionState {
         return FaqSectionState(
             faqs = buildList {
                 add(
                     FaqSectionItem(
                         title = MR.strings.paywall_faq_question_premium_group_features.string(),
-                        content = MR.strings.paywall_faq_answer_premium_group_features.string()
+                        content = MR.strings.paywall_faq_answer_premium_group_features.string(),
+                        expanded = true
                     )
                 )
 
-                remoteConfigRepo.configState.value.listedPlanConfigs()
+                config.listedPlanConfigs()
                     .filter { it.isActive }
                     .forEach {
                         val planName = if (it.planTypeEnum.isPremium) {
@@ -470,7 +476,8 @@ class PaywallViewModel(
     private fun isPlanSelected(
         plans: UserPlans,
         planType: PlanType,
-        currentState: PaywallScreenState?
+        currentState: PaywallScreenState?,
+        config: ConfigData
     ): Boolean {
         val currentlySelected = currentState?.plans?.firstOrNull { it.type == planType }
         if (currentlySelected != null) {
@@ -480,7 +487,7 @@ class PaywallViewModel(
                 return false
             } else {
                 // if user does not have a premium plan, pre-select lowest premium tier
-                return remoteConfigRepo.configState.value.listedPlanConfigs()
+                return config.listedPlanConfigs()
                     .filter { it.planTypeEnum.isPremium }
                     .minByOrNull { it.planTypeEnum.order }?.planTypeEnum == planType
             }
