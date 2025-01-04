@@ -248,7 +248,9 @@ class LoginViewModel constructor(
             it.copy(
                 actionLoading = step != SignUpStep.ALL_DONE,
                 stepInfo = when (step) {
-                    SignUpStep.STARTING -> when (it.uiType) {
+                    SignUpStep.STARTING,
+                    SignUpStep.CREATING_ACCOUNT,
+                    SignUpStep.LOG_USER_IN -> when (it.uiType) {
                         LoginScreenUiType.LOGIN -> SignUpStepInfo.Info.START_LOGIN
                         LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Info.START_SIGNUP
                         LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Info.START_PASSWORD_RESET
@@ -275,7 +277,9 @@ class LoginViewModel constructor(
         val step = (error as? SignUpStepException)?.step
 
         val stepInfo = when (step) {
-            SignUpStep.STARTING -> when (uiType) {
+            SignUpStep.STARTING,
+            SignUpStep.CREATING_ACCOUNT,
+            SignUpStep.LOG_USER_IN -> when (uiType) {
                 LoginScreenUiType.LOGIN -> {
                     if (onRecoverGuest) SignUpStepInfo.Error.RECOVER_GUEST
                     else SignUpStepInfo.Error.LOGIN

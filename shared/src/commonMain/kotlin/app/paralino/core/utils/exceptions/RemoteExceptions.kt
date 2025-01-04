@@ -51,6 +51,10 @@ open class BaseRemoteException constructor(
             }
         }
     }
+
+    override fun toString(): String {
+        return super.toString() + " code: $code, type: $type"
+    }
 }
 
 class InternalConnectionException(val status: NetworkConnectionInfo, message: String? = null): BaseRemoteException(message, null, null)
