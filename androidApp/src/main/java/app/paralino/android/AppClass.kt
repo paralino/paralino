@@ -26,7 +26,10 @@ import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.user.UserConfigRepository
+import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
+import io.sentry.protocol.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -59,6 +62,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     private val locationSharingManager: LocationSharingManager by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
     private val locationServiceLauncher: LocationServiceLauncher by inject()
+    private val userConfigRepo: UserConfigRepository by inject()
 
     val appState get() = ProcessLifecycleOwner.get().lifecycle.currentState
 
@@ -137,6 +141,9 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
 
     override fun onResume(owner: LifecycleOwner) {
         coreAppManager.onAppActive()
+        Sentry.configureScope {
+            it.user = (it.user ?: User()).apply { id = userConfigRepo.configState.value.billingCustomerId }
+        }
     }
 
     override fun onPause(owner: LifecycleOwner) {
