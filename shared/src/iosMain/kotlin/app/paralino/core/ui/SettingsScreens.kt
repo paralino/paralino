@@ -213,6 +213,7 @@ object SettingsScreens {
             PaywallScreenCore(
                 appState = it,
                 vm = vm,
+                paddingValues = PaddingValues(bottom = 20.dp),
                 onNavigateBack = onNavigateBack,
                 onStartPurchase = onStartPurchase,
                 onRestorePurchase = onRestorePurchase

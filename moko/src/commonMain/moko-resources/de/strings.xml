@@ -210,7 +210,8 @@
     <string name="plan_period_annually_name">Jährlich</string>
     <string name="plan_period_onetime_name">Lebenslang</string>
     <string name="paywall_onboarding_skip_button">Kostenlose Version nutzen</string>
-    <string name="paywall_screen_title">Wählen Sie den Plan, der zu Ihnen passt</string>
+    <string name="paywall_screen_header">Wählen Sie den Plan, der zu Ihnen passt</string>
+    <string name="paywall_screen_title">Premium</string>
     <string name="paywall_current_plan_label">Aktueller Plan</string>
     <string name="paywall_special_offer_label">Sonderangebot</string>
     <string name="paywall_special_offer_title">Dauerhafter Rabatt</string>
@@ -224,7 +225,7 @@
     <string name="paywall_privacy_policy_label">Datenschutz</string>
     <string name="paywall_terms_of_use_label">Bedingungen</string>
     <string name="paywall_faq_section_title">Mehr erfahren</string>
-    <string name="paywall_select_plan_label">Premium</string>
+    <string name="paywall_select_plan_label">Wählen Sie Ihren Plan</string>
     <string name="paywall_free_plan_name">Basic</string>
     <string name="paywall_silver_plan_name">Starter</string>
     <string name="paywall_billing_loading_error_alert_message">Abrechnungsverwaltung konnte nicht initialisiert werden, bitte versuchen Sie es erneut.</string>

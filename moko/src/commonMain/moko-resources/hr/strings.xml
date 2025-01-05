@@ -210,7 +210,8 @@
     <string name="plan_period_annually_name">Godišnje</string>
     <string name="plan_period_onetime_name">Zauvijek</string>
     <string name="paywall_onboarding_skip_button">Besplatna verzija</string>
-    <string name="paywall_screen_title">Odaberite plan koji vam odgovara</string>
+    <string name="paywall_screen_header">Odaberite plan koji vam odgovara</string>
+    <string name="paywall_screen_title">Premium</string>
     <string name="paywall_current_plan_label">Trenutni plan</string>
     <string name="paywall_special_offer_label">Posebna ponuda</string>
     <string name="paywall_special_offer_title">Trajni popust</string>
@@ -224,7 +225,7 @@
     <string name="paywall_privacy_policy_label">Privatnost</string>
     <string name="paywall_terms_of_use_label">Uvjeti</string>
     <string name="paywall_faq_section_title">Saznajte više</string>
-    <string name="paywall_select_plan_label">Premium</string>
+    <string name="paywall_select_plan_label">Odaberite svoj plan</string>
     <string name="paywall_free_plan_name">Osnovni</string>
     <string name="paywall_silver_plan_name">Početni</string>
     <string name="paywall_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>

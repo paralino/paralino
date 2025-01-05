@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -96,9 +97,10 @@ import kotlinx.coroutines.flow.collectLatest
 fun PaywallScreenCore(
     appState: CoreUiState,
     vm: PaywallViewModel,
+    paddingValues: PaddingValues,
     onNavigateBack: (Boolean) -> Unit,
     onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
-    onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit
+    onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -138,7 +140,7 @@ fun PaywallScreenCore(
                 title = if (uiState.isLoading || uiState.selectedPlan == null) {
                     null
                 } else {
-                    stringResource(MR.strings.paywall_select_plan_label)
+                    stringResource(MR.strings.paywall_screen_title)
                 },
                 navigationIcon = if (uiState.isLoading || vm.sourceType == BillingScreenSourceType.ONBOARDING) {
                     null
@@ -183,6 +185,7 @@ fun PaywallScreenCore(
             val uriHandler = LocalUriHandler.current
             PaywallScreen(
                 state = uiState,
+                paddingValues = paddingValues,
                 onTermsClick = { uriHandler.openUri(BackendResourceIDs.termsOfUseUrl) },
                 onPrivacyClick = { uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl) },
                 onRestoreClick = { vm.onEvent(PaywallScreenUiEvent.RestorePurchase) },
@@ -204,12 +207,13 @@ fun PaywallScreenCore(
 @Composable
 private fun PaywallScreen(
     state: PaywallScreenState,
+    paddingValues: PaddingValues,
     onTermsClick: () -> Unit,
     onPrivacyClick: () -> Unit,
     onRestoreClick: () -> Unit,
     onStartPurchase: () -> Unit,
     onPlanSelected: (PlanType) -> Unit,
-    onPeriodSelected: (PlanType, PlanBillingPeriod) -> Unit
+    onPeriodSelected: (PlanType, PlanBillingPeriod) -> Unit,
 ) {
     var bottomCardHeight by remember { mutableStateOf(0) }
     val density = LocalDensity.current
@@ -220,6 +224,7 @@ private fun PaywallScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
+                .padding(paddingValues)
                 .padding(top = 12.dp)
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.Top
@@ -229,7 +234,7 @@ private fun PaywallScreen(
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth(),
-                    text = stringResource(MR.strings.paywall_screen_title),
+                    text = stringResource(MR.strings.paywall_screen_header),
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp,
@@ -298,7 +303,7 @@ private fun PaywallScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .height(with(density) { bottomCardHeight.toDp() })
+                    .height(with(density) { bottomCardHeight.toDp() + paddingValues.calculateBottomPadding() + paddingValues.calculateTopPadding() })
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
@@ -319,6 +324,7 @@ private fun PaywallScreen(
                     }
                 },
                 modifier = Modifier
+                    .padding(paddingValues)
                     .onGloballyPositioned { coordinates ->
                         bottomCardHeight = coordinates.size.height
                     }
@@ -372,35 +378,20 @@ private fun PlanCardDetails(
                     Spacer(modifier = Modifier.weight(1f))
                     AnimatedVisibility(state.isCurrentPlan) {
                         PlanInfoBadge(
+                            modifier = Modifier,
                             text = stringResource(MR.strings.paywall_current_plan_label),
-                            onClick = onClick
-                        )
-                    }
-                    AnimatedVisibility(state.hasSpecialOffer && !state.isSelected) {
-                        PlanInfoBadge(
-                            text = "${stringResource(MR.strings.paywall_special_offer_label)} 🎁",
+                            backgroundColor = Color.Transparent,
                             onClick = onClick
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.size(8.dp))
-
-                AnimatedVisibility(state.isExpanded) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = state.expandedBenefits,
-                            style = MaterialTheme.typography.body1
-                        )
-                    }
-                }
-
-                AnimatedVisibility(!state.isExpanded) {
-                    Text(
-                        text = state.oneLineBenefits,
-                        style = MaterialTheme.typography.body2
+                AnimatedVisibility(!state.isSelected && state.hasSpecialOffer) {
+                    PlanInfoBadge(
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = "${stringResource(MR.strings.paywall_special_offer_label)} 🎁",
+                        backgroundColor = AppColors.accent.copy(alpha = 0.8f),
+                        onClick = onClick
                     )
                 }
 
@@ -428,6 +419,26 @@ private fun PlanCardDetails(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                AnimatedVisibility(state.isExpanded) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = state.expandedBenefits,
+                            style = MaterialTheme.typography.body1
+                        )
+                    }
+                }
+
+                AnimatedVisibility(!state.isExpanded) {
+                    Text(
+                        text = state.oneLineBenefits,
+                        style = MaterialTheme.typography.body2
+                    )
+                }
             }
         }
     }
@@ -437,11 +448,12 @@ private fun PlanCardDetails(
 private fun PlanInfoBadge(
     modifier: Modifier = Modifier,
     text: String,
+    backgroundColor: Color,
     onClick: () -> Unit
 ) {
     SmallActionButton(
         modifier = modifier,
-        backgroundColor = AppColors.accent.copy(alpha = 0.8f),
+        backgroundColor = backgroundColor,
         contentColor = AppColors.lightBackground,
         shape = RoundedCornerShape(percent = 25),
         icon = null,
@@ -458,10 +470,10 @@ private fun PlanInfoBadge(
 
 @Composable
 private fun PaywallBottomCard(
+    modifier: Modifier = Modifier,
     state: PaywallScreenState,
     onStartPurchase: () -> Unit,
     onPeriodSelected: (PlanBillingPeriod) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val billingPeriodState = state.selectedBillingPeriod
     val backgroundColor = AppColors.highlightGold
