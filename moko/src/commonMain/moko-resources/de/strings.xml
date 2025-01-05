@@ -214,7 +214,7 @@
     <string name="paywall_current_plan_label">Aktueller Plan</string>
     <string name="paywall_special_offer_label">Sonderangebot</string>
     <string name="paywall_special_offer_title">Dauerhafter Rabatt</string>
-    <string name="paywall_special_offer_info">Genießen Sie unser zeitlich begrenztes Angebot und sichern Sie sich den vergünstigten Preis für immer. Der Wert Ihres Abonnements wird weiter steigen, während wir immer mehr Funktionen hinzufügen. Nur der Preis bleibt gleich!</string>
+    <string name="paywall_special_offer_info">Nur für kurze Zeit! Sichern Sie sich ein spezielles Angebot und **behalten Sie diesen Preis für immer**.</string>
     <string name="paywall_all_members_features_notice">Alle %s Mitglieder erhalten Gruppenleistungen</string>
     <string name="paywall_free_trial_notice">Die ersten **%s Tage** sind kostenlos</string>
     <string name="paywall_start_button_free">**Kostenlose Testversion** starten</string>
