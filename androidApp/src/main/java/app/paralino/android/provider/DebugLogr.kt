@@ -14,7 +14,13 @@ internal open class DebugLogr(
 ) : SystemLogr() {
 
     private val MAX_LOG_LENGTH = 4000
-    override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
+    override fun systemLog(
+        priority: LogPriority,
+        tag: String?,
+        message: String,
+        fullOutput: String,
+        t: Throwable?
+    ) {
 
         if (!enabled) {
             return
@@ -29,20 +35,20 @@ internal open class DebugLogr(
         }
         val debugTag = getDebugTag(tag)
 
-        if (message.length < MAX_LOG_LENGTH) {
-            Log.println(androidPriority, debugTag, message)
+        if (fullOutput.length < MAX_LOG_LENGTH) {
+            Log.println(androidPriority, debugTag, fullOutput)
             return
         }
 
         // Split by line, then ensure each line can fit into Log's maximum length.
         var i = 0
-        val length = message.length
+        val length = fullOutput.length
         while (i < length) {
-            var newline = message.indexOf('\n', i)
+            var newline = fullOutput.indexOf('\n', i)
             newline = if (newline != -1) newline else length
             do {
                 val end = Math.min(newline, i + MAX_LOG_LENGTH)
-                val part = message.substring(i, end)
+                val part = fullOutput.substring(i, end)
                 Log.println(androidPriority, debugTag, part)
                 i = end
             } while (i < newline)
