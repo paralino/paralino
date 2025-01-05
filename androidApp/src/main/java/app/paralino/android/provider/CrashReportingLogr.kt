@@ -6,6 +6,7 @@ import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.LogPriority
 import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import io.sentry.Hint
 import io.sentry.Sentry
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -18,6 +19,7 @@ class CrashReportingLogr(
         priority: LogPriority,
         tag: String?,
         message: String,
+        fullOutput: String,
         t: Throwable?
     ) {
         if (!appPrefs.errorReporting) {

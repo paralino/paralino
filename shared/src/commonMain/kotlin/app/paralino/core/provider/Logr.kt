@@ -1,7 +1,13 @@
 package app.paralino.core.provider
 
 abstract class SystemLogr {
-    abstract fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?)
+    abstract fun systemLog(
+        priority: LogPriority,
+        tag: String?,
+        message: String,
+        fullOutput: String,
+        t: Throwable?
+    )
 }
 
 object Logr : LogrImpl()
@@ -36,7 +42,13 @@ abstract class LogrImpl : ILogr {
         }
 
         logrs?.forEach {
-            it.systemLog(priority, tag, output, t)
+            it.systemLog(
+                priority = priority,
+                tag = tag,
+                message = message,
+                fullOutput = output,
+                t = t
+            )
         }
     }
 }

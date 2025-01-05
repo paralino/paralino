@@ -75,7 +75,13 @@ class InAppLogger(
         }
     }
 
-    override fun systemLog(priority: LogPriority, tag: String?, message: String, t: Throwable?) {
+    override fun systemLog(
+        priority: LogPriority,
+        tag: String?,
+        message: String,
+        fullOutput: String,
+        t: Throwable?
+    ) {
 
         if (!appBuildConfig.isDevMode) {
             return
