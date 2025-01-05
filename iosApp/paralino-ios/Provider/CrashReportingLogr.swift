@@ -15,7 +15,7 @@ class CrashReportingLogr: ICrashReportingLogr {
         self.canLogToRemote = canLogToRemote
     }
     
-    override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
+    override func systemLog(priority: LogPriority, tag: String?, message: String, fullOutput: String, t: KotlinThrowable?) {
         guard canLogToRemote else { return }
         guard priority == LogPriority.error else { return }
         guard let error = t?.description() else { return }

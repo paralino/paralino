@@ -23,6 +23,12 @@ struct GeneralInfoScreen: View {
                     },
                     onShowOnboarding: {
                         path.append(.settings(.onboarding))
+                    },
+                    onContactSupport: {
+                        let email = BackendResourceIDs.shared.supportEmail
+                        if let emailURL = URL(string: "mailto:\(email)?subject=Paralino%20support") {
+                            UIApplication.shared.open(emailURL)
+                        }
                     }
                 )
             }

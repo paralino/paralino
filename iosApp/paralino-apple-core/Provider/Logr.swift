@@ -21,7 +21,7 @@ class DebbugLogr: SystemLogr {
         self.canLogToConsole = canLogToConsole
     }
     
-    override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
+    override func systemLog(priority: LogPriority, tag: String?, message: String, fullOutput: String, t: KotlinThrowable?) {
         
         guard canLogToConsole else { return }
         

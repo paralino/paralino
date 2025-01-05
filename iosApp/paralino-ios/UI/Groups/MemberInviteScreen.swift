@@ -21,6 +21,7 @@ struct MemberInviteScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.MemberInviteScreenVC(
                     vm: appState.vm,
+                    isOnboarding: appState.isOnboarding,
                     onPickGroup: { sheet in groupPicker = sheet },
                     onMemberAdded: {
                         if appState.isOnboarding {
@@ -28,23 +29,13 @@ struct MemberInviteScreen: View {
                         } else {
                             path.removeLast()
                         }
+                    },
+                    onSkipOnboarding: {
+                        path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
                     }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-        }
-        .toolbar {
-            if appState.isOnboarding {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    SmallActionButtonView(
-                        text: MR.shared.strings.button_skip.localizedString(),
-                        action: {
-                            path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
-                        },
-                        hasEndArrow: true
-                    )
-                }
-            }
         }
         .toolbarTitleDisplayMode(.inline)
         .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())

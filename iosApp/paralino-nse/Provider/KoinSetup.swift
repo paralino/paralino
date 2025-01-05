@@ -29,7 +29,7 @@ class KoinSetup {
     // Keep them empty since they are not used in notification service
     
     class CrashReportingLogr: ICrashReportingLogr {
-        override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {}
+        override func systemLog(priority: LogPriority, tag: String?, message: String, fullOutput: String, t: KotlinThrowable?) {}
     }
     
     class AppUpdateManager: IAppUpdateManager {
