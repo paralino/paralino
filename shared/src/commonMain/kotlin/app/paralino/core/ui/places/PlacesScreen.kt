@@ -163,7 +163,7 @@ private fun PlacesScreen(
 ) {
     BaseOnboardingScreen(
         modifier = Modifier.fillMaxSize(),
-        nextButton = if (isOnboarding) {
+        nextButton = if (isOnboarding || state.places.isEmpty()) {
             @Composable {
                 FilledButton(
                     modifier = Modifier,
