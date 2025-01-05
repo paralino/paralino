@@ -14,6 +14,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -54,8 +55,29 @@ class PersonalCodesRepository constructor(
 
     suspend fun createAndSavePersonalCode() {
         triggerRemoteOnly {
-            createPersonalCode(null)
-            refreshPersonalCodes()
+            val currentCodeCount = personalCodeLocalState.value.size
+            val shouldRefresh = try {
+                createPersonalCode(null)
+                true
+            } catch (e: Exception) {
+                // this is to handle a case if user is trying to create a code while local state is not synced
+                if (e.asRemoteException()?.code == 400) {
+                    refreshPersonalCodes()
+                    delay(200)
+                    if (currentCodeCount <= personalCodeLocalState.value.size) {
+                        // there was already a code on the backend, do nothing
+                        false
+                    } else {
+                        throw e
+                    }
+                } else {
+                    throw e
+                }
+            }
+
+            if (shouldRefresh) {
+                refreshPersonalCodes()
+            }
         }
     }
 
