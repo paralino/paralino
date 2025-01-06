@@ -128,7 +128,7 @@ class PaywallViewModel(
 
                         // at this point plans are refreshed and are different
                         // refresh groups as well and we can close the screen
-                        refreshUseCase.scheduleRefreshAllGroupsWithPlaces(time = 0)
+                        refreshUseCase.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 0)
                         _eventChannel.send(PaywallScreenEvent.OnNavigateBack(isSuccess = true))
                     } catch (e: Exception) {
                         _uiState.update {
