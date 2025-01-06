@@ -21,6 +21,6 @@ class CrashReportingLogr: ICrashReportingLogr {
         guard let error = t?.description() else { return }
         if t is InternalConnectionException { return }
         
-        SentrySDK.capture(error: KotlinError(message: message, stackTrace: error))
+        SentrySDK.capture(error: KotlinError.generic(message: message, stackTrace: error))
     }
 }
