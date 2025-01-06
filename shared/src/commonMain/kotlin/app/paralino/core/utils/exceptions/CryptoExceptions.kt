@@ -3,7 +3,15 @@ package app.paralino.core.utils.exceptions
 open class CryptoException(message: String?, cause: Throwable? = null): Exception(message, cause)
 
 class EncryptionException(message: String?, cause: Throwable? = null): CryptoException(message)
-class DecryptionException(message: String, cause: Throwable? = null): CryptoException(message)
+class DecryptionException(
+    val type: String,
+    message: String,
+    cause: Throwable? = null
+): CryptoException(message, cause) {
+    override fun toString(): String {
+        return "${super.toString()}, type: $type, message: $message"
+    }
+}
 
 open class MissingCryptoKeyException(message: String, cause: Throwable? = null): CryptoException(message, cause)
 
