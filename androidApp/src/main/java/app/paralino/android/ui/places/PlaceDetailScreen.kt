@@ -96,6 +96,7 @@ private fun PlaceDetailUserItemPreview() {
                 groupId = "",
                 placeId = "",
                 memberUserId = "",
+                isCurrentUser = false,
                 name = "Some user",
                 image = ImageModel.emoji(Emojis.lightBulb),
                 notifyEnter = false,
@@ -119,7 +120,7 @@ private fun PlaceDetailUserItemPreview() {
                 onExitChange = {}
             )
             PlaceDetailUserListItem(
-                state = item.copy(loadingExit = true),
+                state = item.copy(loadingExit = true, isCurrentUser = true),
                 onEnterChange = {},
                 onExitChange = {}
             )

@@ -434,6 +434,7 @@
     <string name="place_detail_setting_button_notify_enter">Betreten</string>
     <string name="place_detail_setting_button_notify_exit">Verlassen</string>
     <string name="place_detail_notification_settings_title">Benachrichtigungseinstellungen</string>
+    <string name="place_detail_notification_settings_info">Wählen Sie, ob Sie Benachrichtigungen erhalten möchten, wenn jedes Gruppenmitglied diesen Ort betritt oder verlässt.</string>
     <string name="place_notification_enter">%s ist bei %s angekommen</string>
     <string name="place_notification_exit">%s hat %s verlassen</string>
     <string name="place_notification_default">Ihr Ort hat Aktivität</string>

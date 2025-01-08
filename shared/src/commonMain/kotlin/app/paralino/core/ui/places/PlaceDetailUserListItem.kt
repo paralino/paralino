@@ -45,7 +45,8 @@ fun PlaceDetailUserListItem(
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .padding(horizontal = 6.dp)
+            .padding(top = 6.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -56,9 +57,13 @@ fun PlaceDetailUserListItem(
                 modifier = Modifier
                     .size(46.dp)
                     .border(
-                        0.5.dp,
-                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                        RoundedCornerShape(10.dp)
+                        width = if (state.isCurrentUser) 2.dp else 0.5.dp,
+                        color = if (state.isCurrentUser) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
+                        },
+                        shape = RoundedCornerShape(8.dp)
                     )
             )
 
@@ -75,6 +80,7 @@ fun PlaceDetailUserListItem(
                 .padding(top = 4.dp),
         ) {
             PlaceSettingNotifyButton(
+                modifier = Modifier.weight(1f),
                 state = state.notifyEnter,
                 text = stringResource(MR.strings.place_detail_setting_button_notify_enter),
                 loading = state.loadingEnter,
@@ -82,9 +88,10 @@ fun PlaceDetailUserListItem(
                 onEnterChange(state.memberUserId)
             }
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(4.dp))
 
             PlaceSettingNotifyButton(
+                modifier = Modifier.weight(1f),
                 state = state.notifyExit,
                 text = stringResource(MR.strings.place_detail_setting_button_notify_exit),
                 loading = state.loadingExit,
@@ -97,16 +104,32 @@ fun PlaceDetailUserListItem(
 
 @Composable
 fun PlaceSettingNotifyButton(
+    modifier: Modifier = Modifier,
     state: Boolean,
     text: String,
     loading: Boolean,
     onChange: (Boolean) -> Unit
 ) {
-    val backgroundColor by animateColorAsState(targetValue = if (state) MaterialTheme.colors.primary else MaterialTheme.colors.secondary)
+    val backgroundColor by animateColorAsState(
+        targetValue = if (state) {
+            MaterialTheme.colors.primary
+        } else {
+            MaterialTheme.colors.surface
+        }
+    )
+    val contentColor by animateColorAsState(
+        targetValue = if (state) {
+            MaterialTheme.colors.onPrimary
+        } else {
+            MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
+        }
+    )
     val colors = ButtonDefaults.buttonColors(
-        backgroundColor = backgroundColor
+        backgroundColor = backgroundColor,
+        contentColor = contentColor
     )
     FilledButton(
+        modifier = modifier,
         style = ButtonStyle.SMALL_ACTION(
             paddingValues = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
             minContentHeight = 16.dp,
@@ -118,7 +141,7 @@ fun PlaceSettingNotifyButton(
             CoreAppIcons.NotificationsActive.asPainterResource()
         else
             CoreAppIcons.NotificationsOff.asPainterResource(),
-        elevation = ButtonDefaults.elevation(defaultElevation = if (state) 2.dp else 0.dp),
+        elevation = null,
         state = AppButtonState.loadingState(loading),
         colors = colors,
         onClick = {

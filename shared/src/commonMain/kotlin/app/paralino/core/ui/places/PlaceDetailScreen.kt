@@ -17,10 +17,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
@@ -48,6 +52,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -255,6 +260,18 @@ private fun PlaceDetailScreen(
                 }
                 Spacer(modifier = Modifier.size(4.dp))
             }
+
+            this.item(key = "notification_notice") {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        text = stringResource(MR.strings.place_detail_notification_settings_info).annotatedBold(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
+            }
+
             this.itemsIndexed(
                 items = state.settings,
                 key = { index, item -> item.memberUserId }

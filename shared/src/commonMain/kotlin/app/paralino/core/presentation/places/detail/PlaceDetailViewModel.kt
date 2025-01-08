@@ -69,6 +69,7 @@ class PlaceDetailViewModel(
                         groupId = groupId,
                         placeId = placeId,
                         memberUserId = member.member.userId,
+                        isCurrentUser = member.member.userId == appPrefs.userId,
                         name = member.member.name,
                         image = member.member.image ?: ImageModel.emoji(Emojis.robot),
                         // default to true for other members and false to current user

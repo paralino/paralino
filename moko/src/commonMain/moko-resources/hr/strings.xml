@@ -434,6 +434,7 @@
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>
     <string name="place_detail_setting_button_notify_exit">Odlazak</string>
     <string name="place_detail_notification_settings_title">Postavke obavijesti</string>
+    <string name="place_detail_notification_settings_info">Odaberite želite li primati obavijesti kada svaki član grupe uđe u ovo mjesto ili ga napusti.</string>
     <string name="place_notification_enter">%s je stigao/la u mjesto %s</string>
     <string name="place_notification_exit">%s je napustio/la mjesto %s</string>
     <string name="place_notification_default">Vaše mjesto ima aktivnost</string>
