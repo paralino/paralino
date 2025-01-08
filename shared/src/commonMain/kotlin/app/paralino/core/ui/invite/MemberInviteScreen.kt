@@ -45,6 +45,7 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.groups.GroupListItem
@@ -160,7 +161,8 @@ private fun MemberInviteScreen(
                 }
                 .verticalScroll(rememberScrollState())
                 .padding(it)
-                .padding(20.dp),
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 20.dp),
             verticalArrangement = if (state is MemberInviteScreenState.Empty) Arrangement.Center else Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
@@ -169,7 +171,7 @@ private fun MemberInviteScreen(
                 SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_user))
             } else {
                 Text(
-                    modifier = Modifier.padding(bottom = 40.dp),
+                    modifier = Modifier.padding(bottom = 40.dp, top = 20.dp),
                     text = stringResource(MR.strings.invite_connect_title).annotatedBold(),
                     style = MaterialTheme.typography.h6
                 )
@@ -230,23 +232,15 @@ private fun MemberInviteScreen(
                 Spacer(modifier = Modifier.size(20.dp))
 
                 if (state.group != null) {
-                    Text(
+                    NoticeInfoChip(
                         modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .shadow(
-                                elevation = 12.dp,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colors.background)
-                            .background(AppColors.errorBackground)
-                            .padding(10.dp),
+                            .padding(vertical = 10.dp),
+                        icon = CoreAppIcons.Person.asPainterResource(),
                         text = stringResource(
                             MR.strings.invite_connect_disclaimer_user,
                             state.userName,
                             state.group.name
-                        ).annotatedBold(),
-                        style = MaterialTheme.typography.body2
+                        )
                     )
                 }
             }

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -51,6 +52,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.theme.AppColors
@@ -330,22 +332,14 @@ private fun LazyListScope.groupSection(
 ) {
     if (groups.isNotEmpty() && !onlyShowList) {
         stickyHeader(key = id) {
-            Row(
+            SettingsSectionHeader(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.background)
                     .padding(horizontal = 20.dp)
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-                    modifier = Modifier.alpha(ContentAlpha.medium)
-                )
-                Spacer(modifier = Modifier.size(8.dp))
-                PlanLimitCount(count = groups.size, limit = groupsLimit)
-            }
+                    .fillMaxWidth(),
+                name = title,
+                count = groups.size,
+                limit = groupsLimit
+            )
         }
     }
 

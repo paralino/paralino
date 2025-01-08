@@ -314,7 +314,7 @@ private fun PlacesScreen(
                                 icon = CoreAppIcons.Add.asPainterResource(),
                                 text = {
                                     Text(
-                                        modifier = Modifier.padding(end = 4.dp),
+                                        modifier = Modifier.padding(end = 2.dp),
                                         text = stringResource(MR.strings.group_details_add_member_button)
                                     )
                                 },

@@ -39,19 +39,22 @@ import app.paralino.core.utils.extensions.conditional
 @Composable
 fun NoticeInfoChip(
     modifier: Modifier = Modifier,
+    backgroundColor: Color = AppColors.accentLight.copy(alpha = 0.2f),
+    iconTint: Color = AppColors.accent,
+    textColor: Color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f),
     icon: Painter = CoreAppIcons.Security.asPainterResource(),
     text: String,
     onClick: (() -> Unit)? = null
 ) {
     DataInfoChip(
         modifier = modifier,
-        backgroundColor = AppColors.accentLight.copy(alpha = 0.2f),
+        backgroundColor = backgroundColor,
         imageOrIcon = {
             Icon(
                 painter = icon,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = AppColors.accent
+                tint = iconTint
             )
             Spacer(Modifier.size(4.dp))
             Box(
@@ -67,7 +70,7 @@ fun NoticeInfoChip(
             Text(
                 text = text.annotatedBold(),
                 style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
+                color = textColor
             )
         },
         onClick = onClick
@@ -131,6 +134,7 @@ fun DataInfoChip(
                 else it
             }
             .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colors.background)
             .background(backgroundColor)
             .padding(vertical = 5.dp)
             .padding(start = 5.dp, end = 8.dp),

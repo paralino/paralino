@@ -3,6 +3,7 @@ package app.paralino.core.ui.invite.manage
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenUiEvent
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.provider.localizedString
@@ -33,6 +35,7 @@ import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PlanLimitCount
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.ButtonStyle
@@ -128,24 +131,12 @@ fun PersonalCodeScreenCore(
 
         if (uiState.inactiveCodes.isNotEmpty()) {
             this.item(key = "inactive_header") {
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .padding(horizontal = 20.dp)
-                        .animateItem(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.settings_section_personal_code_inactive_title),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    PlanLimitCount(
-                        count = uiState.inactiveCodes.size,
-                        limit = null
-                    )
-                }
+                SettingsSectionHeader(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    name = stringResource(MR.strings.settings_section_personal_code_inactive_title),
+                    count = uiState.inactiveCodes.size,
+                    limit = null
+                )
             }
             this.items(uiState.inactiveCodes, key = { it.id }) { code ->
                 PersonalCodeItemInactive(

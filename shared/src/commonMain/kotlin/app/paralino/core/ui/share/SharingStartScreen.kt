@@ -305,25 +305,14 @@ fun SharingStartScreenCore(
                 }
             }
 
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(10.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.background)
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(MR.strings.groups_sharing_devices),
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-                    modifier = Modifier.alpha(ContentAlpha.medium)
-                )
-                if (AppBuildConfig.instance.hasPreviewFeatures) {
-                    Spacer(modifier = Modifier.size(8.dp))
-                    PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
-                }
-            }
+            SettingsSectionHeader(
+                modifier = Modifier.fillMaxWidth(),
+                name = stringResource(MR.strings.groups_sharing_devices),
+                count = state.devicesCount.takeIf { AppBuildConfig.instance.hasPreviewFeatures },
+                limit = state.devicesLimit
+            )
 
             MainInputField(
                 text = state.deviceName,
@@ -336,6 +325,7 @@ fun SharingStartScreenCore(
                 onInputChange = { vm.onDeviceNameChange(it) }
             )
 
+            Spacer(modifier = Modifier.size(10.dp))
             SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
 
             LargeSeekbarSwitch(
