@@ -28,7 +28,6 @@ import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.appPrefs
-import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
@@ -43,10 +42,10 @@ import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
-import app.paralino.core.presentation.groups.CreateGroupViewModel
-import app.paralino.core.presentation.groups.GroupDetailViewModel
-import app.paralino.core.presentation.groups.GroupInitViewModel
-import app.paralino.core.presentation.groups.GroupSettingsViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
+import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
+import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel

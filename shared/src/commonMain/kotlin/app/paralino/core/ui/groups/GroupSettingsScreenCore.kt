@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
-import app.paralino.core.presentation.groups.GroupSettingsScreenEvent
-import app.paralino.core.presentation.groups.GroupSettingsUiEvent
-import app.paralino.core.presentation.groups.GroupSettingsViewModel
+import app.paralino.core.presentation.groups.settings.GroupSettingsScreenEvent
+import app.paralino.core.presentation.groups.settings.GroupSettingsUiEvent
+import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource

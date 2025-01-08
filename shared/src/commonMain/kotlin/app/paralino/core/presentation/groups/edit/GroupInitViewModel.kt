@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.groups
+package app.paralino.core.presentation.groups.edit
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs

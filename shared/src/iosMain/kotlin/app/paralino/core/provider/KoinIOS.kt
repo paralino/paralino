@@ -23,10 +23,10 @@ import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresente
 import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
-import app.paralino.core.presentation.groups.CreateGroupViewModel
-import app.paralino.core.presentation.groups.GroupDetailViewModel
-import app.paralino.core.presentation.groups.GroupInitViewModel
-import app.paralino.core.presentation.groups.GroupSettingsViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
+import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
+import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
@@ -79,7 +79,6 @@ import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.module.Module
-import org.koin.core.module.factory
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module

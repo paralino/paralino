@@ -1,4 +1,4 @@
-package app.paralino.core.presentation.groups
+package app.paralino.core.presentation.groups.detail
 
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
@@ -13,6 +13,13 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.groups.GroupMemberState
+import app.paralino.core.presentation.groups.MemberActionItemState
+import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.groups.MemberActionsState
+import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager

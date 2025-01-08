@@ -5,7 +5,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.ToolbarButtons

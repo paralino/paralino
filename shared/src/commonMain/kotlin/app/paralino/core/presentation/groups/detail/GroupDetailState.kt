@@ -1,6 +1,7 @@
-package app.paralino.core.presentation.groups
+package app.paralino.core.presentation.groups.detail
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.utils.ConditionErrorType
 
 data class GroupDetailScreenState(

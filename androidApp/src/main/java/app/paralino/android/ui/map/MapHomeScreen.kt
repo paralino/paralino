@@ -23,7 +23,7 @@ import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.Resource
-import app.paralino.core.presentation.groups.GroupInitViewModel
+import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent

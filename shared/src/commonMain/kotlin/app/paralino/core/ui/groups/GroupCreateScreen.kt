@@ -35,10 +35,10 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.presentation.groups.CreateGroupScreenEvent
-import app.paralino.core.presentation.groups.CreateGroupScreenUiEvent
-import app.paralino.core.presentation.groups.CreateGroupState
-import app.paralino.core.presentation.groups.CreateGroupViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupScreenEvent
+import app.paralino.core.presentation.groups.edit.CreateGroupScreenUiEvent
+import app.paralino.core.presentation.groups.edit.CreateGroupState
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
