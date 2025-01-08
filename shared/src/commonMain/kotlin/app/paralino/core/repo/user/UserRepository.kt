@@ -259,6 +259,10 @@ class UserRepository constructor(
             .also { local.removeFromBlocklist(id) }
     }
 
+    suspend fun redeemPromoCode(code: String) {
+        triggerRemoteOnly { remote.redeemPromoCode(code = code) }
+    }
+
     suspend fun clearLocally() {
         local.clear()
     }

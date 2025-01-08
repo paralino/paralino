@@ -207,6 +207,33 @@ class PaywallViewModel(
                 }
             }
 
+            PaywallScreenUiEvent.RequestPromoCode -> {
+                _uiState.update { it.copy(isPromoCodeSectionVisible = true) }
+            }
+
+            is PaywallScreenUiEvent.OnChangePromoCode -> {
+                _uiState.update { it.copy(promoCode = event.code) }
+            }
+
+            PaywallScreenUiEvent.ApplyPromoCode -> {
+                _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
+                coroutineScope.launch {
+                    try {
+                        userRepo.redeemPromoCode(code = uiState.value.promoCode)
+                        onEvent(PaywallScreenUiEvent.RefreshPlans)
+                    } catch (e: Exception) {
+                        _uiState.update {
+                            it.copy(
+                                alertDialog = MainAlertDialog.BillingError(
+                                    code = 0,
+                                    message = MR.strings.paywall_purchase_error_alert_message.localizedString()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
             is PaywallScreenUiEvent.OnPurchaseError -> {
                 if (event.error.userCancelled) {
                     _uiState.update { it.copy(isPurchaseButtonLoading = false) }
@@ -349,7 +376,9 @@ class PaywallViewModel(
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
-            faq = currentState?.faq ?: getFaqSection(config)
+            faq = currentState?.faq ?: getFaqSection(config),
+            isPromoCodeSectionVisible = currentState?.isPromoCodeSectionVisible ?: false,
+            promoCode = currentState?.promoCode ?: ""
         )
     }
 

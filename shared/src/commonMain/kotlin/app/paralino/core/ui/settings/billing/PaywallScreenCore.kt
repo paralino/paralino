@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,8 +58,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -66,7 +71,6 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.PlanBillingPeriod
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.presentation.settings.billing.FaqSectionItem
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallScreenState
@@ -79,6 +83,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
@@ -188,17 +193,7 @@ fun PaywallScreenCore(
                 paddingValues = paddingValues,
                 onTermsClick = { uriHandler.openUri(BackendResourceIDs.termsOfUseUrl) },
                 onPrivacyClick = { uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl) },
-                onRestoreClick = { vm.onEvent(PaywallScreenUiEvent.RestorePurchase) },
-                onStartPurchase = { vm.onEvent(PaywallScreenUiEvent.StartPurchase) },
-                onPlanSelected = { vm.onEvent(PaywallScreenUiEvent.SelectPlanType(it)) },
-                onPeriodSelected = { planType, period ->
-                    vm.onEvent(
-                        PaywallScreenUiEvent.SelectBillingPeriod(
-                            planType = planType,
-                            period = period
-                        )
-                    )
-                }
+                onEvent = { vm.onEvent(it) }
             )
         }
     }
@@ -210,15 +205,22 @@ private fun PaywallScreen(
     paddingValues: PaddingValues,
     onTermsClick: () -> Unit,
     onPrivacyClick: () -> Unit,
-    onRestoreClick: () -> Unit,
-    onStartPurchase: () -> Unit,
-    onPlanSelected: (PlanType) -> Unit,
-    onPeriodSelected: (PlanType, PlanBillingPeriod) -> Unit,
+    onEvent: (PaywallScreenUiEvent) -> Unit,
 ) {
     var bottomCardHeight by remember { mutableStateOf(0) }
     val density = LocalDensity.current
+    val focusManager = LocalFocusManager.current
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                focusManager.clearFocus()
+            }
+    ) {
         val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
@@ -253,8 +255,12 @@ private fun PaywallScreen(
                 CompositionLocalProvider(LocalContentAlpha provides (if (state.selectedPlan == null || plan.isSelected) 1f else 0.5f)) {
                     PlanCardDetails(
                         state = plan,
-                        onPeriodSelected = { onPeriodSelected(plan.type, it) },
-                        onClick = { onPlanSelected(plan.type) }
+
+                        onPeriodSelected = { onEvent(PaywallScreenUiEvent.SelectBillingPeriod(
+                            planType = plan.type,
+                            period = it
+                        )) },
+                        onClick = { onEvent(PaywallScreenUiEvent.SelectPlanType(plan.type)) }
                     )
                 }
             }
@@ -282,14 +288,40 @@ private fun PaywallScreen(
                 onClick = onTermsClick
             )
 
+            AnimatedVisibility (state.isPromoCodeSectionVisible && !state.isPurchaseButtonLoading) {
+                Column {
+                    Spacer(modifier = Modifier.size(20.dp))
+                    MainInputField(
+                        text = state.promoCode,
+                        hint = "Code",
+                        hasError = false,
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done,
+                        capitalization = KeyboardCapitalization.Words,
+                        focusManager = focusManager,
+                        onInputChange = { onEvent(PaywallScreenUiEvent.OnChangePromoCode(it)) }
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
+                    FilledButton(
+                        style = ButtonStyle.BIG,
+                        state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
+                        onClick = { onEvent(PaywallScreenUiEvent.ApplyPromoCode) }
+                    ) {
+                        Text(text = stringResource(MR.strings.button_confirm))
+                    }
+                    Spacer(modifier = Modifier.size(20.dp))
+                }
+            }
+
             SettingsActionItem(
                 name = stringResource(MR.strings.paywall_button_restore),
                 icon = CoreAppIcons.Sync.asPainterResource(),
                 type = SettingsActionItemType.Action,
-                onClick = onRestoreClick
+                onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) },
+                onLongClick = { onEvent(PaywallScreenUiEvent.RequestPromoCode) }
             )
 
-            Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.size(40.dp))
             Spacer(modifier = Modifier.size(with(density) { bottomCardHeight.toDp() }))
         }
 
@@ -317,10 +349,10 @@ private fun PaywallScreen(
 
             PaywallBottomCard(
                 state = state,
-                onStartPurchase = onStartPurchase,
+                onStartPurchase = { onEvent(PaywallScreenUiEvent.StartPurchase) },
                 onPeriodSelected = { period ->
                     state.selectedPlan?.let { plan ->
-                        onPeriodSelected(plan.type, period)
+                        onEvent(PaywallScreenUiEvent.SelectBillingPeriod(plan.type, period))
                     }
                 },
                 modifier = Modifier

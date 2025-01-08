@@ -278,3 +278,8 @@ data class LocationFocusPayload constructor(
     val userId: String?,
     val locationId: String?
 )
+
+@Serializable
+data class PromoCodeRedeemPayload(
+    val code: String
+)

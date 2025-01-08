@@ -3,6 +3,7 @@ package app.paralino.core.ui.settings.billing
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -106,13 +107,7 @@ fun SubscriptionScreenCore(
 
             if (uiState.subscriptionState != null) {
                 if (uiState.subscriptionState?.hasPremiumPlan == false) {
-                    Text(
-                        text = stringResource(MR.strings.plans_management_info_not_subscribed),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(Modifier.size(40.dp))
-                    PremiumPlanBanner(onClick = openPaywall)
+                    NotSubscribedSection(openPaywall = openPaywall)
                 } else if (uiState.subscriptionState?.isCurrentPlatform == true) {
                     Text(
                         text = stringResource(
@@ -146,14 +141,21 @@ fun SubscriptionScreenCore(
                     )
                 }
             } else {
-                Text(
-                    text = stringResource(MR.strings.plans_management_info_not_subscribed),
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.size(40.dp))
-                PremiumPlanBanner(onClick = openPaywall)
+                NotSubscribedSection(openPaywall = openPaywall)
             }
         }
     }
+}
+
+@Composable
+private fun ColumnScope.NotSubscribedSection(
+    openPaywall: () -> Unit
+) {
+    Text(
+        text = stringResource(MR.strings.plans_management_info_not_subscribed),
+        style = MaterialTheme.typography.h6,
+        modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(Modifier.size(40.dp))
+    PremiumPlanBanner(onClick = openPaywall)
 }
