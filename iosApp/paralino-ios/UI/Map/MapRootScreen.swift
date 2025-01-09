@@ -50,6 +50,7 @@ struct MapRootScreen: View {
                             case .groupCreate(let groupId): GroupCreateScreen(path: $mainAppState.userReadyGraph, appState: GroupCreateScreen.createState(groupId: groupId))
                             case .groupDetail(let groupId): GroupDetailScreen(path: $mainAppState.userReadyGraph, appState: GroupDetailScreen.createState(groupId: groupId))
                             case .groupSettings(let groupId): GroupSettingsScreen(path: $mainAppState.userReadyGraph, appState: GroupSettingsScreen.createState(groupId: groupId))
+                            case .batteryNotificationsSettings(let groupId): BatteryNotificationsSettingsScreen(path: $mainAppState.userReadyGraph, appState: BatteryNotificationsSettingsScreen.createState(groupId: groupId))
                             case .sharingStart(let groupId, let isOnboarding):
                                 SharingStartScreen(
                                     path: $mainAppState.userReadyGraph,

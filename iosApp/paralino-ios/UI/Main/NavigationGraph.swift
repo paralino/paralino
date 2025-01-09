@@ -28,6 +28,7 @@ enum HomeGraph: Hashable {
     case groupCreate(groupId: String?)
     case groupDetail(groupId: String)
     case groupSettings(groupId: String)
+    case batteryNotificationsSettings(groupId: String)
     case sharingStart(groupId: String?, isOnboarding: Bool)
     case memberInvite(groupId: String?, code: String?, isOnboarding: Bool)
     case places(groupId: String, isOnboarding: Bool)

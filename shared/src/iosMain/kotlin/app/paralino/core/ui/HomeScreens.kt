@@ -22,9 +22,10 @@ import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
-import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.map.FocusedMarkerData
@@ -47,16 +48,17 @@ import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.BatteryNotificationsScreenCore
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import app.paralino.core.ui.groups.GroupSettingsScreenCore
 import app.paralino.core.ui.invite.MemberInviteScreenCore
-import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
+import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
@@ -151,6 +153,7 @@ object HomeScreens {
         openEditGroup: () -> Unit,
         onGroupDeleted: () -> Unit,
         openRawDataScreen: () -> Unit,
+        openBatteryNotificationsSettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupSettingsScreenCore(
@@ -158,7 +161,23 @@ object HomeScreens {
                 vm = vm,
                 openEditGroup = openEditGroup,
                 onGroupDeleted = onGroupDeleted,
-                openRawDataScreen = openRawDataScreen
+                openRawDataScreen = openRawDataScreen,
+                openBatteryNotificationsSettings = openBatteryNotificationsSettings
+            )
+        }
+    }
+
+    fun BatteryNotificationsSettingsScreenVC(
+        vm: BatteryNotificationsViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        openPaywall: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            BatteryNotificationsScreenCore(
+                appState = it,
+                vm = vm,
+                contentPadding = paddingValues.toComposePaddingValues(),
+                openPaywall = openPaywall
             )
         }
     }

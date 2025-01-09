@@ -151,7 +151,7 @@ fun PlaceSettingNotifyButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.subtitle2.copy(fontSize = 12.sp)
+            style = MaterialTheme.typography.caption
         )
     }
 }
