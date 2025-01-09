@@ -5,20 +5,17 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.domain.location.UserMemberIdUseCase
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.base.BackendDatabaseType
-import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
-import app.paralino.core.models.places.GroupPlaceSettings
+import app.paralino.core.models.places.GroupPlaceSettingsData
 import app.paralino.core.models.raw.CreatePlacePayload
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.models.raw.PlaceEventPayload
+import app.paralino.core.models.raw.PlaceNotificationsUpdatePayload
 import app.paralino.core.models.raw.UpdatePlacePayload
-import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
@@ -26,17 +23,12 @@ import app.paralino.core.repo.api.runAsync
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
-import app.paralino.core.utils.exceptions.NotFoundException
-import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
-    private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val appBuildConfig: AppBuildConfig,
-    private val mapper: PlaceMapperCore,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userMemberId: UserMemberIdUseCase,
@@ -170,39 +162,28 @@ class PlacesRemoteSource(
     }
 
     suspend fun updatePlaceSettings(
-        data: GroupPlaceSettings
+        groupId: String,
+        placeId: String,
+        placeSettingsId: String?,
+        alertData: GroupPlaceSettingsData
     ): GroupPlaceSettingRaw {
         return blocking {
-            val mapped = mapper.settingsMapper.core2Remote(data)
-            if (data.id.isBlank()) {
-                api.createDocument(
-                    databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID,
-                    docId = null,
-                    data = mapped.toPostJson()
-                ).parsePlaceSettings()
+            val payload = PlaceNotificationsUpdatePayload(
+                groupId = groupId,
+                placeId = placeId,
+                placeSettingsId = placeSettingsId,
+                alertData = BaseRemoteModule.formatter.encodeToString(alertData)
+            )
+
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.SETTINGS_NOTIFICATIONS_PLACES_UPDATE,
+                data = payload
+            )
+
+            if (response.isSuccess) {
+                response.responseDataMap!!.parsePlaceSettings()
             } else {
-                try {
-                    // first try to update document
-                    api.updateDocument(
-                        databaseType = BackendDatabaseType.DATA,
-                        collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID,
-                        docId = mapped.id,
-                        data = mapped.toPostJsonUpdate()
-                    ).parsePlaceSettings()
-                } catch (e: Exception) {
-                    if (e.asRemoteException() is NotFoundException) {
-                        // if document is not found, create it
-                        api.createDocument(
-                            databaseType = BackendDatabaseType.DATA,
-                            collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID,
-                            docId = null,
-                            data = mapped.toPostJson()
-                        ).parsePlaceSettings()
-                    } else {
-                        throw e
-                    }
-                }
+                throw response.remoteException
             }
         }
     }

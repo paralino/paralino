@@ -13,6 +13,7 @@ enum class ServerFunction constructor(
     GROUP_UPDATE(method = "PATCH", path = "/groups"),
     GROUP_BLOCK(method = "PUT", path = "/groups/block"),
     SETTINGS_NOTIFICATIONS_BATTERY_UPDATE(method = "PATCH", path = "/groups/notifications/battery"),
+    SETTINGS_NOTIFICATIONS_PLACES_UPDATE(method = "PATCH", path = "/groups/notifications/places"),
 
     MEMBER_CREATE(method = "PUT", path = "/members"),
     MEMBER_DELETE(method = "DELETE", path = "/members"),

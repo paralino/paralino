@@ -205,6 +205,7 @@ object KoinIOS {
                     groupId = groupID,
                     placeId = placeId,
                     placesRepo = get(),
+                    updatePlaceAlerts = get(),
                     groupRepo = get(),
                     cryptoCore = get(),
                     appPrefs = get()

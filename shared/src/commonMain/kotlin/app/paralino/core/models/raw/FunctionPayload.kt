@@ -290,3 +290,11 @@ data class BatteryNotificationsUpdatePayload(
     val memberId: String,
     val alertData: String
 )
+
+@Serializable
+data class PlaceNotificationsUpdatePayload(
+    val groupId: String,
+    val placeId: String,
+    val placeSettingsId: String?,
+    val alertData: String
+)

@@ -1,12 +1,11 @@
 package app.paralino.core.ui.places
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,12 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,8 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
@@ -46,13 +40,16 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.LargeSeekbarSwitch
+import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -70,7 +67,7 @@ fun PlaceDetailScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState(initial = Payload.Loading)
+    val state by vm.uiState.collectAsState()
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     LaunchedEffect(key1 = Unit) {
@@ -131,6 +128,12 @@ fun PlaceDetailScreenCore(
                 onPlaceDelete = {
                     showDialog = MainAlertDialog.DeletePlace
                 },
+                onTogglePlaceAlerts = {
+                    vm.togglePlaceAlertsSettings(revokeItemState = false)
+                },
+                onTogglePlaceAlertsSeparately = {
+                    vm.togglePlaceAlertsSettings(revokeItemState = true)
+                },
                 onEnterChange = {
                     vm.toggleEnterSettings(it)
                 },
@@ -161,6 +164,8 @@ private fun PlaceDetailScreen(
     openPlaceRawDataScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     onPlaceDelete: () -> Unit,
+    onTogglePlaceAlerts: () -> Unit,
+    onTogglePlaceAlertsSeparately: () -> Unit,
     onEnterChange: (String) -> Unit,
     onExitChange: (String) -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
@@ -170,14 +175,12 @@ private fun PlaceDetailScreen(
         contentPadding = PaddingValues(
             top = paddingValues.calculateTopPadding(),
             bottom = paddingValues.calculateBottomPadding() + 40.dp,
-            start = 20.dp,
-            end = 20.dp
         ),
         userScrollEnabled = userScrollEnabled
     ) {
         this.item(key = "main_header") {
             PlaceListItem(
-                modifier = Modifier.padding(top = 26.dp),
+                modifier = Modifier.padding(top = 26.dp).padding(horizontal = 20.dp),
                 state = PlaceListItemData(
                     id = state.placeId,
                     groupId = state.groupId,
@@ -199,7 +202,8 @@ private fun PlaceDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .padding(top = 26.dp),
+                    .padding(top = 26.dp)
+                    .padding(horizontal = 20.dp),
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colors.background,
                 border = BorderStroke(6.dp, MaterialTheme.colors.surface),
@@ -218,58 +222,71 @@ private fun PlaceDetailScreen(
         }
 
         this.item(key = "settings") {
-            Spacer(modifier = Modifier.size(20.dp))
-            SettingsActionItem(
-                name = stringResource(MR.strings.raw_data_screen_title),
-                icon = CoreAppIcons.Security.asPainterResource(),
-            ) {
-                openPlaceRawDataScreen()
-            }
-            if (canEditPlace) {
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                Spacer(modifier = Modifier.size(20.dp))
                 SettingsActionItem(
-                    name = stringResource(MR.strings.places_edit_screen_title),
-                    icon = CoreAppIcons.Edit.asPainterResource(),
+                    name = stringResource(MR.strings.raw_data_screen_title),
+                    icon = CoreAppIcons.Security.asPainterResource(),
                 ) {
-                    openPlaceEditScreen()
+                    openPlaceRawDataScreen()
                 }
-                SettingsActionItem(
-                    name = stringResource(MR.strings.place_list_menu_delete),
-                    icon = CoreAppIcons.Delete.asPainterResource(),
-                    iconTint = AppColors.errorBackground
-                ) {
-                    onPlaceDelete()
+                if (canEditPlace) {
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.places_edit_screen_title),
+                        icon = CoreAppIcons.Edit.asPainterResource(),
+                    ) {
+                        openPlaceEditScreen()
+                    }
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.place_list_menu_delete),
+                        icon = CoreAppIcons.Delete.asPainterResource(),
+                        iconTint = AppColors.errorBackground
+                    ) {
+                        onPlaceDelete()
+                    }
                 }
+                Spacer(modifier = Modifier.size(20.dp))
             }
-            Spacer(modifier = Modifier.size(20.dp))
         }
 
         if (state.settings.isNotEmpty()) {
             this.stickyHeader(key = "notification_header") {
-                Row(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .background(MaterialTheme.colors.background)
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.place_detail_notification_settings_title),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
-                }
-                Spacer(modifier = Modifier.size(4.dp))
+                SettingsSectionHeader(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    name = stringResource(MR.strings.place_detail_notification_settings_title)
+                )
             }
 
             this.item(key = "notification_notice") {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        text = stringResource(MR.strings.place_detail_notification_settings_info).annotatedBold(),
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                        textAlign = TextAlign.Start
+                Spacer(modifier = Modifier.size(4.dp))
+                val notificationState by rememberSeekbarState(
+                    key = state,
+                    LargeSeekbarSwitchState.SeekbarSwitchState(
+                        seekbarState = null,
+                        switchState = LargeSeekbarSwitchState.Switch(
+                            checkState = state.arePlaceAlertsActive,
+                            loadingState = state.isPlaceAlertsSwitchLoading
+                        )
                     )
-                }
+                )
+
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    icon = if (state.arePlaceAlertsActive) {
+                        CoreAppIcons.NotificationsActive.asPainterResource()
+                    } else {
+                        CoreAppIcons.NotificationsOff.asPainterResource()
+                    },
+                    title = stringResource(MR.strings.place_detail_notification_settings_title),
+                    description = stringResource(MR.strings.place_detail_notification_settings_info),
+                    state = notificationState,
+                    elevation = animateDpAsState(if (state.arePlaceAlertsActive) 16.dp else 0.dp).value,
+                    onLongClick = onTogglePlaceAlertsSeparately,
+                    onStateChange = {
+                        onTogglePlaceAlerts()
+                    }
+                )
+                Spacer(modifier = Modifier.size(20.dp))
             }
 
             this.itemsIndexed(
@@ -277,7 +294,10 @@ private fun PlaceDetailScreen(
                 key = { index, item -> item.memberUserId }
             ) { index, item ->
                 PlaceDetailUserListItem(
-                    modifier = Modifier.animateItem(),
+                    modifier = Modifier
+                        .animateItem()
+                        .alpha(if (state.arePlaceAlertsActive) 1f else ContentAlpha.disabled)
+                        .padding(horizontal = 20.dp),
                     state = item,
                     onEnterChange = onEnterChange,
                     onExitChange = onExitChange,

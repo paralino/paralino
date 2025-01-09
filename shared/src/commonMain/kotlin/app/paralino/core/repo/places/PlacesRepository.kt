@@ -10,8 +10,6 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceGeofenceData
-import app.paralino.core.models.places.GroupPlaceSettings
-import app.paralino.core.models.places.GroupPlaceSettingsData
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceRaw
@@ -26,7 +24,6 @@ import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
@@ -120,46 +117,6 @@ class PlacesRepository constructor(
 
     suspend fun updatePlaceLocally(place: GroupPlaceRaw) {
         local.updatePlaceOnly(place)
-    }
-
-    fun updatePlaceSettings(
-        placeId: String,
-        data: GroupPlaceSettingsData
-    ): Flow<Unit> {
-        return getDataOnce(
-            remote = {
-                val place = local.getPlaceWithSettings(placeId).first()
-                val currentSettings = place.settings
-
-                val settings = if (currentSettings != null) {
-                    val currentAlert =
-                        currentSettings.alertData.firstOrNull { it.memberUserId == data.memberUserId }
-
-                    val newAlerts = if (currentAlert != null) {
-                        currentSettings.alertData.toMutableList().apply {
-                            removeAll { it.memberUserId == data.memberUserId }
-                            add(data)
-                        }
-                    } else {
-                        currentSettings.alertData.toMutableList().apply { add(data) }
-                    }
-
-                    currentSettings.copy(alertData = newAlerts)
-                } else {
-                    GroupPlaceSettings(
-                        id = "",
-                        groupId = place.place.groupId,
-                        placeId = placeId,
-                        ownerUserId = appPrefs.userId,
-                        alertData = listOf(data)
-                    )
-                }
-                remote.updatePlaceSettings(settings)
-            },
-            localUpdate = {
-                local.updatePlaceSettings(it)
-            }
-        ).map { Unit }
     }
 
     suspend fun processLocation(data: LocationDataModel) {

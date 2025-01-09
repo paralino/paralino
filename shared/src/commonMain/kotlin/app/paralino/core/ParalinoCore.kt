@@ -23,6 +23,7 @@ import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
+import app.paralino.core.domain.group.PlaceAlertsSettingsUpdateUseCase
 import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
@@ -204,7 +205,7 @@ val dataSourceModule = module {
     single { UserDevicesRemoteSource(get(), get(), get(), get(), appPrefs) }
     single { LocationRemoteSource(get(), get(), get(), get(), get(), appPrefs) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-    single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { PlacesRemoteSource(get(), get(), get(), get(), get()) }
     single { PlacesGetRemoteSource(get(), get()) }
     single { PersonalCodesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { CryptoKeyRemoteDataSource(get(), get()) }
@@ -234,6 +235,7 @@ val coreModule = module {
     factory { RawCryptoPresentation(get(), get(), get(), get(), get(), appPrefs) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
+    factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }

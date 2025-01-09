@@ -6,10 +6,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,12 +59,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.conditional
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.jetbrains.compose.resources.DrawableResource
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LargeSeekbarSwitch(
     modifier: Modifier = Modifier,
@@ -74,6 +77,7 @@ fun LargeSeekbarSwitch(
     focusDescription: Boolean = false,
     elevation: Dp = 16.dp,
     size: LargeSwitchSize = LargeSwitchSize(),
+    onLongClick: (() -> Unit)? = null,
     onProgressChange: ((Int) -> Unit)? = null,
     onStateChange: ((Boolean) -> Unit)? = null,
 ) {
@@ -88,10 +92,15 @@ fun LargeSeekbarSwitch(
             .defaultMinSize(
                 minHeight = size.minHeight
             )
-            .run {
-                if (state.switchState != null)
-                    this.clickable { onStateChange?.invoke(!state.switchState.checkState) }
-                else this
+            .conditional(state.switchState != null) {
+                this.combinedClickable(
+                    onClick = {
+                        state.switchState?.let {
+                            onStateChange?.invoke(!state.switchState.checkState)
+                        }
+                    },
+                    onLongClick = onLongClick
+                )
             }
             .shadow(elevation = elevation, shape = RoundedCornerShape(12.dp), spotColor = Color.DarkGray)
             .clip(RoundedCornerShape(12.dp))

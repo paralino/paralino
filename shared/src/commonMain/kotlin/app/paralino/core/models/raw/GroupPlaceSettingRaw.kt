@@ -12,22 +12,6 @@ data class GroupPlaceSettingRaw(
     val ownerUserId: String,
     val alertData: String
 ) {
-
-    fun toPostJson(): Map<String, Any> {
-        return buildMap {
-            put("groupId", groupId)
-            put("placeId", placeId)
-            put("ownerUserId", ownerUserId)
-            put("alertData", alertData)
-        }
-    }
-
-    fun toPostJsonUpdate(): Map<String, Any> {
-        return buildMap {
-            put("alertData", alertData)
-        }
-    }
-
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): GroupPlaceSettingRaw {
