@@ -283,3 +283,10 @@ data class LocationFocusPayload constructor(
 data class PromoCodeRedeemPayload(
     val code: String
 )
+
+@Serializable
+data class BatteryNotificationsUpdatePayload(
+    val groupId: String,
+    val memberId: String,
+    val alertData: String
+)

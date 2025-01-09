@@ -12,6 +12,7 @@ enum class ServerFunction constructor(
     GROUP_DELETE(method = "DELETE", path = "/groups"),
     GROUP_UPDATE(method = "PATCH", path = "/groups"),
     GROUP_BLOCK(method = "PUT", path = "/groups/block"),
+    SETTINGS_NOTIFICATIONS_BATTERY_UPDATE(method = "PATCH", path = "/groups/notifications/battery"),
 
     MEMBER_CREATE(method = "PUT", path = "/members"),
     MEMBER_DELETE(method = "DELETE", path = "/members"),
@@ -36,6 +37,8 @@ enum class ServerFunction constructor(
 
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
+
+    EVENT_BATTERY(method = "PATCH", path = "/events/battery"),
 
     PERSONAL_CODE_CREATE(method = "POST", path = "/personal_code"),
     PERSONAL_CODE_READ(method = "GET", path = "/personal_code"),

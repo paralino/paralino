@@ -282,7 +282,14 @@ class MemberMapperCore constructor(
                     memberIntegrity = it.memberIntegrity,
                     groupIntegrity = it.groupIntegrity,
                     memberIntegrityUserKeyVersion = it.memberIntegrityUserKeyVersion,
-                    groupIntegrityUserKeyVersion = it.groupIntegrityUserKeyVersion
+                    groupIntegrityUserKeyVersion = it.groupIntegrityUserKeyVersion,
+                    batteryAlertSettings = it.batteryAlertSettings?.let {
+                        try {
+                            BaseRemoteModule.formatter.decodeFromString(it)
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
                 )
             },
             memberData = memberData,

@@ -2,6 +2,10 @@ package app.paralino.core.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
@@ -50,7 +55,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import kotlinx.coroutines.flow.collectLatest
@@ -223,29 +227,50 @@ fun LargeSeekbarSwitch(
                             .size(24.dp)
                     ) {
                         if (state.switchState != null) {
-                            if (state.switchState.checkState) {
-                                Icon(
+                            androidx.compose.animation.AnimatedVisibility(
+                                modifier = Modifier.fillMaxSize(),
+                                visible = state.switchState.loadingState,
+                                enter = fadeIn() + scaleIn(),
+                                exit = fadeOut() + scaleOut()
+                            ) {
+                                CircularProgressIndicator(
+                                    color = contentColor,
+                                    strokeWidth = 2.dp,
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .background(
-                                            MaterialTheme.colors.onPrimary,
-                                            shape = CircleShape
-                                        )
-                                        .padding(1.dp),
-                                    painter = state.switchState.checkedIconRes.asPainterResource(),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.primary
+                                        .padding(2.dp)
                                 )
-                            } else {
-                                Icon(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(backgroundColor, shape = CircleShape)
-                                        .padding(2.dp),
-                                    painter = state.switchState.unCheckedIconRes.asPainterResource(),
-                                    contentDescription = null,
-                                    tint = contentColor.copy(alpha = ContentAlpha.disabled)
-                                )
+                            }
+                            androidx.compose.animation.AnimatedVisibility(
+                                modifier = Modifier.fillMaxSize(),
+                                visible = !state.switchState.loadingState,
+                                enter = fadeIn() + scaleIn(),
+                                exit = fadeOut() + scaleOut()
+                            ) {
+                                if (state.switchState.checkState) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                MaterialTheme.colors.onPrimary,
+                                                shape = CircleShape
+                                            )
+                                            .padding(1.dp),
+                                        painter = state.switchState.checkedIconRes.asPainterResource(),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colors.primary
+                                    )
+                                } else {
+                                    Icon(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(backgroundColor, shape = CircleShape)
+                                            .padding(2.dp),
+                                        painter = state.switchState.unCheckedIconRes.asPainterResource(),
+                                        contentDescription = null,
+                                        tint = contentColor.copy(alpha = ContentAlpha.disabled)
+                                    )
+                                }
                             }
                         }
                     }
@@ -319,6 +344,7 @@ fun rememberSeekbarState(
 object LargeSeekbarSwitchState {
     data class Switch(
         val checkState: Boolean,
+        val loadingState: Boolean = false,
         val checkedIconRes: DrawableResource = CoreAppIcons.CheckCircle,
         val unCheckedIconRes: DrawableResource = CoreAppIcons.RadioButtonUnchecked
     )

@@ -41,6 +41,11 @@ fun GroupSettingsScreen(
             openEditGroup = {
                 appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(vm.groupId))
             },
+            openBatteryNotificationsSettings = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.BatteryNotificationSettings.route(groupId = vm.groupId)
+                )
+            },
             onGroupDeleted = {
                 appState.navController.navigate(AppScreen.MainHome.MainMap.route()) {
                     popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }

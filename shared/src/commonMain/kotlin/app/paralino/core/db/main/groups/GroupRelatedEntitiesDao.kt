@@ -231,6 +231,9 @@ interface GroupRelatedEntitiesDao {
     @Update(entity = MemberLocationEntity::class)
     suspend fun updateMemberLocation(dataUpdate: MemberLocationEntityDataUpdate)
 
+    @Update(entity = MemberEntity::class)
+    suspend fun updateMemberBatterySettings(dataUpdate: MemberEntityBatterySettingsUpdate)
+
     @Query("DELETE FROM memberLocationEntity WHERE groupId = :groupId")
     suspend fun clearLocationsForGroup(groupId: String)
 

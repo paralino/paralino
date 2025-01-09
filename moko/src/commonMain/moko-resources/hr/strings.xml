@@ -387,6 +387,11 @@
     <string name="group_settings_verification_description_off">Nema dodatne verifikacije od strane vlasnika grupe te i ostali mogu dodati nove članove u grupu.</string>
     <string name="group_settings_verification_dialog_message_on">Svaki trenutni član grupe će biti ponovno kriptografski verificiran te nitko osim Vas neće moći dodati nove članove u grupu.</string>
     <string name="group_settings_verification_dialog_message_off">Nepotvrđeni članovi će moći koristiti lokaciju u grupi te nove članove grupe mogu dodati i ostali.</string>
+    <string name="group_settings_battery_notifications_title">Obavijesti o bateriji</string>
+    <string name="group_settings_battery_notifications_info">Odlučite želite li primati obavijesti kada razina baterije člana grupe bude niska.</string>
+    <string name="group_settings_battery_notifications_notice">Obavijesti će biti poslane samo ako članovi odluče dijeliti podatke o bateriji i njihov uređaj otkrije razinu baterije ispod 15%.</string>
+    <string name="group_settings_battery_toggle_active">Aktivno</string>
+    <string name="group_settings_battery_toggle_inactive">Neaktivno</string>
     <string name="group_create_start_title">Povežite se</string>
     <string name="group_load_error">Nemoguće učitati Vašu grupu</string>
     <string name="group_create_name_placeholder">Ime grupe</string>

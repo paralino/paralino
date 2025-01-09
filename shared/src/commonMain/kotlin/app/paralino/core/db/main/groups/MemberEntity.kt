@@ -19,6 +19,13 @@ data class MemberEntity(
     @ColumnInfo(name = "settings_groupIntegrity") val settingsGroupIntegrity: String?,
     @ColumnInfo(name = "settings_memberIntegrityUserKeyVersion") val settingsMemberIntegrityUserKeyVersion: Long?,
     @ColumnInfo(name = "settings_groupIntegrityUserKeyVersion") val settingsGroupIntegrityUserKeyVersion: Long?,
+    @ColumnInfo(name = "settings_batteryAlertSettings") val settingsBatteryAlertSettings: String?,
     @ColumnInfo(name = "paralinoId") val paralinoId: String?,
     @ColumnInfo(name = "memberKeyVersion") val memberKeyVersion: Long
+)
+
+@Entity
+data class MemberEntityBatterySettingsUpdate(
+    @ColumnInfo(name = "id") var id: String,
+    @ColumnInfo(name = "settings_batteryAlertSettings") val settingsBatteryAlertSettings: String?
 )

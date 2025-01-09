@@ -109,7 +109,7 @@ fun FilledButton(
 
                 if (newState == AppButtonState.LOADING || loadingAlpha > 0f) {
                     CircularProgressIndicator(
-                        color = MaterialTheme.colors.onPrimary,
+                        color = colors.contentColor(enabled = true).value,
                         strokeWidth = 2.dp,
                         modifier = Modifier
                             .size(style.minContentHeight)

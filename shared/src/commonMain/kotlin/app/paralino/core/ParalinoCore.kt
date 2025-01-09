@@ -16,6 +16,7 @@ import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.RawCryptoPresentation
+import app.paralino.core.domain.group.GroupBatterySettingsUpdateUseCase
 import app.paralino.core.domain.group.GroupCreateUseCase
 import app.paralino.core.domain.group.GroupMemberAddUseCase
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
@@ -232,6 +233,7 @@ val coreModule = module {
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     factory { RawCryptoPresentation(get(), get(), get(), get(), get(), appPrefs) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
+    factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }

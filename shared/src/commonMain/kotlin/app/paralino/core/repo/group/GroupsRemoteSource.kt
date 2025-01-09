@@ -7,9 +7,11 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
+import app.paralino.core.models.raw.BatteryNotificationsUpdatePayload
 import app.paralino.core.models.raw.BlockGroupFunctionData
 import app.paralino.core.models.raw.BlockGroupMemberFunctionData
 import app.paralino.core.models.raw.DeleteGroupMemberPayload
@@ -28,11 +30,13 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.places.PlacesRemoteSource
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.exceptions.UnsupportedGroupEncryptionSchemeException
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.async
+import kotlinx.serialization.encodeToString
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
@@ -61,6 +65,32 @@ class GroupsRemoteSource constructor(
 
             if (response.isSuccess) {
                 response.responseDataMap!!.parseGroup()
+            } else {
+                throw response.remoteException
+            }
+        }
+    }
+
+    suspend fun updateBatteryNotifications(
+        groupId: String,
+        memberId: String,
+        batterySettings: BatteryNotificationsSettingsData
+    ): GroupSettingsRaw {
+        return blocking {
+
+            val payload = BatteryNotificationsUpdatePayload(
+                groupId = groupId,
+                memberId = memberId,
+                alertData = BaseRemoteModule.formatter.encodeToString(batterySettings)
+            )
+
+            val response = functionsApi.runAndWait(
+                function = ServerFunction.SETTINGS_NOTIFICATIONS_BATTERY_UPDATE,
+                data = payload
+            )
+
+            if (response.isSuccess) {
+                response.responseDataMap!!.parseGroupSettings()
             } else {
                 throw response.remoteException
             }

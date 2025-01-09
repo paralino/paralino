@@ -388,6 +388,11 @@
     <string name="group_settings_verification_description_off">Group members can be added by other users now and there is no extra verification from group owner.</string>
     <string name="group_settings_verification_dialog_message_on">Enabling verification will trigger re-verification process for all current members.\n\nMembers will be cryptographically verified and no one else will be able to add new members to this group.</string>
     <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
+    <string name="group_settings_battery_notifications_title">Battery Notifications</string>
+    <string name="group_settings_battery_notifications_info">Decide if you want to be notified when a group member's battery level is low.</string>
+    <string name="group_settings_battery_notifications_notice">Notifications will only be sent if members choose to share their battery data and their device detects a battery level below 15%.</string>
+    <string name="group_settings_battery_toggle_active">Active</string>
+    <string name="group_settings_battery_toggle_inactive">Inactive</string>
     <string name="group_create_start_title">Connect</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>

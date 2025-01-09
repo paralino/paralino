@@ -107,6 +107,13 @@ sealed class AppScreen {
             }
         }
 
+        data object BatteryNotificationSettings : AppScreen() {
+            override val routeSignature: String = "battery-notifications-settings/{$argumentGroupId}"
+            fun route(groupId: String): String {
+                return "battery-notifications-settings/$groupId"
+            }
+        }
+
         object GroupCreate : AppScreen() {
             override val routeSignature: String = "group-create?$argumentGroupId={$argumentGroupId}"
             fun route(groupId: String? = null): String {

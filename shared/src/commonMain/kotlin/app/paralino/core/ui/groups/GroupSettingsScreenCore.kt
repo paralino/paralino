@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun GroupSettingsScreenCore(
     appState: CoreUiState,
     vm: GroupSettingsViewModel,
+    openBatteryNotificationsSettings: () -> Unit,
     openEditGroup: () -> Unit,
     onGroupDeleted: () -> Unit,
     openRawDataScreen: () -> Unit,
@@ -70,6 +71,12 @@ fun GroupSettingsScreenCore(
                     icon = CoreAppIcons.Security.asPainterResource()
                 ) {
                     openRawDataScreen()
+                }
+                SettingsActionItem(
+                    name = stringResource(MR.strings.group_settings_battery_notifications_title),
+                    icon = CoreAppIcons.NotificationsActive.asPainterResource()
+                ) {
+                    openBatteryNotificationsSettings()
                 }
                 if (state.data.canEdit) {
                     SettingsActionItem(
@@ -119,7 +126,10 @@ fun GroupSettingsScreenCore(
             }
 
             if (state.data.loadingAction) {
-                LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
+                LoadingDialog(
+                    text = stringResource(MR.strings.login_step_generic_loading),
+                    progress = null
+                )
             }
         }
     }

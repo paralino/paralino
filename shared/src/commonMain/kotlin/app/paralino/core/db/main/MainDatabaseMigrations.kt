@@ -38,6 +38,12 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE memberEntity ADD COLUMN settings_batteryAlertSettings TEXT DEFAULT NULL")
+        }
+    }
 
-    val migrations: List<Migration> = listOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+
+    val migrations: List<Migration> = listOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
 }

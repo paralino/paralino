@@ -55,7 +55,7 @@ fun PlaceDetailUserListItem(
             ImageModelImage(
                 imageModel = state.image,
                 modifier = Modifier
-                    .size(46.dp)
+                    .size(42.dp)
                     .border(
                         width = if (state.isCurrentUser) 2.dp else 0.5.dp,
                         color = if (state.isCurrentUser) {
@@ -67,10 +67,10 @@ fun PlaceDetailUserListItem(
                     )
             )
 
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(12.dp))
             Text(
                 text = state.name,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.subtitle1,
                 modifier = Modifier
             )
         }

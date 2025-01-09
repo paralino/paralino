@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import app.paralino.android.ui.groups.BatteryNotificationsScreen
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.groups.GroupSettingsScreen
@@ -86,6 +87,10 @@ fun NavGraphBuilder.homeGraph(
         composable(AppScreen.MainHome.GroupSettings.routeSignature) {
             val groupId = it.arguments!!.getString(AppScreen.MainHome.GroupSettings.argumentGroupId)
             GroupSettingsScreen(appState = appState, groupId = groupId)
+        }
+        composable(AppScreen.MainHome.BatteryNotificationSettings.routeSignature) {
+            val groupId = it.arguments!!.getString(AppScreen.MainHome.BatteryNotificationSettings.argumentGroupId)!!
+            BatteryNotificationsScreen(appState = appState, groupId = groupId)
         }
         composable(AppScreen.MainHome.GroupCreate.routeSignature) {
             val groupId =

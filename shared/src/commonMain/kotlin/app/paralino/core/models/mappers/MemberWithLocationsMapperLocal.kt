@@ -50,7 +50,8 @@ class MemberWithLocationsMapperLocal(
                     memberIntegrity = memberIntegrity,
                     groupIntegrity = model.settingsGroupIntegrity,
                     memberIntegrityUserKeyVersion = memberIntegrityUserKeyVersion,
-                    groupIntegrityUserKeyVersion = model.settingsGroupIntegrityUserKeyVersion
+                    groupIntegrityUserKeyVersion = model.settingsGroupIntegrityUserKeyVersion,
+                    batteryAlertSettings = model.settingsBatteryAlertSettings
                 )
             },
             locationIds = memberLocations.map { it.id }
@@ -107,6 +108,7 @@ class MemberWithLocationsMapperLocal(
             settingsGroupIntegrity = model.settingsRaw?.groupIntegrity,
             settingsMemberIntegrityUserKeyVersion = model.settingsRaw?.memberIntegrityUserKeyVersion,
             settingsGroupIntegrityUserKeyVersion = model.settingsRaw?.groupIntegrityUserKeyVersion,
+            settingsBatteryAlertSettings = model.settingsRaw?.batteryAlertSettings,
             data = model.data,
             paralinoId = model.paralinoId,
         )

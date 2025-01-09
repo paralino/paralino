@@ -12,7 +12,8 @@ data class GroupSettingsRaw(
     val memberIntegrity: String,
     val groupIntegrity: String?,
     val memberIntegrityUserKeyVersion: Long,
-    val groupIntegrityUserKeyVersion: Long?
+    val groupIntegrityUserKeyVersion: Long?,
+    val batteryAlertSettings: String?
 ) {
 
     companion object {
@@ -24,7 +25,8 @@ data class GroupSettingsRaw(
                 memberIntegrity = map["memberIntegrity"] as String,
                 groupIntegrity = map["groupIntegrity"] as? String?,
                 memberIntegrityUserKeyVersion = (map["memberIntegrityUserKeyVersion"] as Number).toLong(),
-                groupIntegrityUserKeyVersion = (map["groupIntegrityUserKeyVersion"] as? Number)?.toLong()
+                groupIntegrityUserKeyVersion = (map["groupIntegrityUserKeyVersion"] as? Number)?.toLong(),
+                batteryAlertSettings = map["batteryAlertSettings"] as? String?
             )
         }
     }

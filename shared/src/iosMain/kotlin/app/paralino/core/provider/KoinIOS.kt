@@ -26,6 +26,7 @@ import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
@@ -238,6 +239,7 @@ object KoinIOS {
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
+            factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
         }
     }
 
@@ -285,6 +287,7 @@ object KoinIOS {
         fun groupCreateVM(groupId: String?) = get<CreateGroupViewModel> { parametersOf(groupId) }
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
         fun groupSettingsVM(groupId: String) = get<GroupSettingsViewModel> { parametersOf(groupId) }
+        fun groupBatterySettingsVM(groupId: String) = get<BatteryNotificationsViewModel> { parametersOf(groupId) }
         fun memberInviteVM(groupId: String?, code: String?) =
             get<MemberInviteViewModel> { parametersOf(groupId, code) }
 

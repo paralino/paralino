@@ -387,6 +387,11 @@
     <string name="group_settings_verification_description_off">Gruppenmitglieder können jetzt von anderen Benutzern hinzugefügt werden, und es gibt keine zusätzliche Überprüfung durch den Gruppeninhaber.</string>
     <string name="group_settings_verification_dialog_message_on">Die Aktivierung der Überprüfung löst den erneuten Verifizierungsprozess für alle aktuellen Mitglieder aus.\n\nMitglieder werden kryptografisch verifiziert und niemand sonst kann neue Mitglieder zu dieser Gruppe hinzufügen.</string>
     <string name="group_settings_verification_dialog_message_off">Die Deaktivierung der Mitgliederüberprüfung ermöglicht es anderen, neue Mitglieder zu Ihrer Gruppe hinzuzufügen.</string>
+    <string name="group_settings_battery_notifications_title">Batteriebenachrichtigungen</string>
+    <string name="group_settings_battery_notifications_info">Entscheiden Sie, ob Sie benachrichtigt werden möchten, wenn der Batteriestand eines Gruppenmitglieds niedrig ist.</string>
+    <string name="group_settings_battery_notifications_notice">Benachrichtigungen werden nur gesendet, wenn Mitglieder ihre Batteriedaten teilen und ihr Gerät einen Batteriestand unter 15% erkennt.</string>
+    <string name="group_settings_battery_toggle_active">Aktiv</string>
+    <string name="group_settings_battery_toggle_inactive">Inaktiv</string>
     <string name="group_create_start_title">Verbinden</string>
     <string name="group_load_error">Ihre Gruppe konnte nicht geladen werden</string>
     <string name="group_create_name_placeholder">Gruppenname</string>

@@ -45,6 +45,7 @@ import app.paralino.core.models.AppHost
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
@@ -205,5 +206,6 @@ object KoinSetup {
         viewModel { GeneralInfoViewModel(get(), get()) }
         viewModel { LocationSettingsViewModel(get(), get(), get()) }
         viewModel { WelcomeOnboardingViewModel(get(), get()) }
+        viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
     }
 }
