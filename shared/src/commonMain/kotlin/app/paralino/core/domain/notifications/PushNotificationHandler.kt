@@ -8,6 +8,7 @@ import app.paralino.core.domain.notifications.processors.GroupMemberDeletedNotif
 import app.paralino.core.domain.notifications.processors.INotificationProcessor
 import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor
 import app.paralino.core.domain.notifications.processors.LocationSharingStartedNotificationsProcessor
+import app.paralino.core.domain.notifications.processors.LowBatteryNotificationProcessor
 import app.paralino.core.domain.notifications.processors.NotificationPreCheckProcessor
 import app.paralino.core.domain.notifications.processors.PlaceActivityNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificationProcessor
@@ -35,6 +36,7 @@ class PushNotificationHandler constructor(
     private val placeUpdatedNotification: PlaceUpdatedNotificationProcessor,
     private val placeActivityNotification: PlaceActivityNotificationProcessor,
     private val locationRequestNotification: LocationRequestNotificationProcessor,
+    private val lowBatteryNotificationProcessor: LowBatteryNotificationProcessor,
     private val notificationPreCheck: NotificationPreCheckProcessor,
     private val placePresenter: IPlaceActivityNotificationPresenter,
     private val groupPresenter: IGroupActivityNotificationPresenter,
@@ -300,6 +302,7 @@ class PushNotificationHandler constructor(
 
     private fun PushNotificationType.processor(): INotificationProcessor<*> {
         return when (this) {
+            PushNotificationType.LOW_BATTERY_ALERT -> lowBatteryNotificationProcessor
             PushNotificationType.PLACE_ALERT -> placeActivityNotification
             PushNotificationType.PLACE_CREATED -> placeCreatedNotification
             PushNotificationType.PLACE_UPDATED -> placeUpdatedNotification
@@ -314,6 +317,7 @@ class PushNotificationHandler constructor(
 
     private fun PushNotificationType.presenter(): IPushNotificationPresenter? {
         return when (this) {
+            PushNotificationType.LOW_BATTERY_ALERT -> groupPresenter
             PushNotificationType.PLACE_ALERT -> placePresenter
             PushNotificationType.PLACE_CREATED -> groupPresenter
             PushNotificationType.PLACE_UPDATED -> null

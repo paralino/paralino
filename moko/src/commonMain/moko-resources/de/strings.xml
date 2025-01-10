@@ -452,6 +452,8 @@
     <string name="group_member_sharing_started_notification_default">Ihr Freund hat begonnen, seinen Standort freizugeben</string>
     <string name="group_member_sharing_started_notification">%s hat die Standortfreigabe gestartet</string>
     <string name="group_member_current_sharing_started_notification">Ihr Gerät hat die Standortfreigabe gestartet</string>
+    <string name="group_low_battery_notification_default">Ein Gruppenmitglied hat einen niedrigen Batteriestand</string>
+    <string name="group_low_battery_notification">%1$s hat einen niedrigen Batteriestand</string>
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>

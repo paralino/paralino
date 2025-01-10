@@ -44,6 +44,7 @@ import app.paralino.core.domain.notifications.processors.GroupMemberAddedNotific
 import app.paralino.core.domain.notifications.processors.GroupMemberDeletedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor
 import app.paralino.core.domain.notifications.processors.LocationSharingStartedNotificationsProcessor
+import app.paralino.core.domain.notifications.processors.LowBatteryNotificationProcessor
 import app.paralino.core.domain.notifications.processors.NotificationPreCheckProcessor
 import app.paralino.core.domain.notifications.processors.PlaceActivityNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificationProcessor
@@ -277,7 +278,7 @@ val coreModule = module {
 
     factory { NotificationPreCheckProcessor(get(), get(), appPrefs) }
     factory { PushNotificationDeleteUseCase(get(), get()) }
-    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     factory { PlaceActivityNotificationProcessor(get(), get(), get(), get(), get()) }
     factory { PlaceCreatedNotificationProcessor(get(), get(), get()) }
@@ -287,6 +288,7 @@ val coreModule = module {
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get()) }
+    factory { LowBatteryNotificationProcessor(get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), appPrefs) }
 

@@ -453,6 +453,8 @@
     <string name="group_member_sharing_started_notification_default">Your friend started sharing their location</string>
     <string name="group_member_sharing_started_notification">%s started location sharing</string>
     <string name="group_member_current_sharing_started_notification">Your device started location sharing</string>
+    <string name="group_low_battery_notification_default">Group member has low battery</string>
+    <string name="group_low_battery_notification">%1$s\'s battery is low</string>
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>
