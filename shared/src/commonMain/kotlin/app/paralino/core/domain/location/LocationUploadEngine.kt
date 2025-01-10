@@ -56,6 +56,7 @@ class LocationUploadEngine constructor(
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
     private val placeActivityRepo: PlaceActivityDataSource,
     private val accessLogDataSource: AccessLogDataSource,
+    private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
     private val appBuildConfig: AppBuildConfig
 ) : LimitedExecutionRepository() {
 
@@ -192,6 +193,8 @@ class LocationUploadEngine constructor(
             if (data != null) {
                 placesRepo.processLocation(data)
             }
+
+            batteryAlertUploadEngine.sendBatteryAlert(payloads = mapped)
 
             logg.v(
                 tag = "location_service",

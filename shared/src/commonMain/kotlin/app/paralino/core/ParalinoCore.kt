@@ -25,6 +25,7 @@ import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.group.PlaceAlertsSettingsUpdateUseCase
 import app.paralino.core.domain.location.ActiveSharingEngine
+import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
 import app.paralino.core.domain.location.LocationCacheRepository
@@ -254,7 +255,8 @@ val coreModule = module {
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), appPrefs) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { BatteryAlertUploadEngine(get(), get(), get(), get()) }
     single { LocationCacheRepository(get()) }
     single { PlacesRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
@@ -266,7 +268,7 @@ val coreModule = module {
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get()) }
-    single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), appPrefs) }
+    single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
 
     single { CryptoCore(get()) }
     single { CryptoKEKLocalRepository(get(), get(), get(), appPrefs) }

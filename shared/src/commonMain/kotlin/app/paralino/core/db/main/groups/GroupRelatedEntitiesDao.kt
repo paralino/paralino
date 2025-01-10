@@ -278,6 +278,24 @@ interface GroupRelatedEntitiesDao {
 
 
 
+    // Battery Alert Events Entity operations
+    @Query("SELECT * FROM batteryAlertEvent")
+    suspend fun getAllBatteryAlertsOnce(): List<BatteryAlertEventEntity>
+
+    @Query("SELECT * FROM batteryAlertEvent WHERE groupId = :groupId")
+    suspend fun getBatteryAlertEventOnce(groupId: String): BatteryAlertEventEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createBatteryAlertEvent(event: BatteryAlertEventEntity)
+
+    @Query("DELETE FROM batteryAlertEvent WHERE groupId = :groupId")
+    suspend fun deleteBatteryAlertEvent(groupId: String)
+
+    @Query("DELETE FROM batteryAlertEvent")
+    suspend fun clearAllBatteryAlertEvents()
+
+
+
     // Transaction operations
 
     @Transaction
@@ -329,6 +347,7 @@ interface GroupRelatedEntitiesDao {
         clearAllPlaceSettings()
         clearAllMemberLocations()
         clearAllPendingEvents()
+        clearAllBatteryAlertEvents()
     }
 
     @Transaction
@@ -339,6 +358,7 @@ interface GroupRelatedEntitiesDao {
         deleteSettingsForGroup(groupId = groupId)
         clearLocationsForGroup(groupId = groupId)
         deletePendingEventsForGroup(groupId = groupId)
+        deleteBatteryAlertEvent(groupId = groupId)
     }
 
     @Transaction

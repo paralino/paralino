@@ -19,6 +19,7 @@ class MemberDeviceStatusProcessor(
     private val payloadProvider: LocationPayloadProvider,
     private val sharingManager: LocationSharingManager,
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
+    private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
@@ -37,6 +38,7 @@ class MemberDeviceStatusProcessor(
 
             if (payload != null) {
                 logg.v("device_status","Update device status in group $groupId with location (${payload.locationData != null})")
+                batteryAlertUploadEngine.sendBatteryAlert(payloads = listOf(payload))
                 remote.saveCurrentLocation(payload)
             }
         }
