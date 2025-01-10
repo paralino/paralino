@@ -187,6 +187,7 @@ sealed class AppScreen {
         }
 
         object PlaceDetail : Common.PlaceDetail("home")
+        object PlaceAlerts : Common.PlaceDetail("place-alerts")
 
         object RawDataScreen : Common.RawDataScreen("home")
 

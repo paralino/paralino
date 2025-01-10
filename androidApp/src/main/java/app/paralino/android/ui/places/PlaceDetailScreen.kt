@@ -68,6 +68,14 @@ fun PlaceDetailScreen(
                     )
                 )
             },
+            openPlaceAlertsScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceAlerts.route(
+                        groupId = groupId,
+                        placeId = placeId
+                    )
+                )
+            },
             openPlaceEditScreen = {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(

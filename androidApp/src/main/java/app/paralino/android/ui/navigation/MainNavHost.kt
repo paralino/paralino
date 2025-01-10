@@ -23,6 +23,7 @@ import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
 import app.paralino.android.ui.onboarding.WelcomeOnboardingScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
+import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
@@ -126,6 +127,13 @@ fun NavGraphBuilder.homeGraph(
             val placeId =
                 it.arguments?.getString(AppScreen.MainHome.PlaceDetail.argumentPlaceId)!!
             PlaceDetailScreen(appState = appState, groupId = groupId, placeId = placeId)
+        }
+        composable(AppScreen.MainHome.PlaceAlerts.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.PlaceAlerts.argumentGroupId)!!
+            val placeId =
+                it.arguments?.getString(AppScreen.MainHome.PlaceAlerts.argumentPlaceId)!!
+            PlaceAlertsSettingsScreen(appState = appState, groupId = groupId, placeId = placeId)
         }
         composable(AppScreen.MainHome.PlaceCreate.routeSignature) {
             val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!

@@ -439,7 +439,7 @@
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
-    <string name="place_detail_notification_settings_title">Notification settings</string>
+    <string name="place_detail_notification_settings_title">Place alerts</string>
     <string name="place_detail_notification_settings_info">Choose whether to receive notifications when each group member enters or exits this place.</string>
     <string name="place_notification_enter">%s arrived at %s</string>
     <string name="place_notification_exit">%s left %s</string>

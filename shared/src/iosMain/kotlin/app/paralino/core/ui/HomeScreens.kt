@@ -60,6 +60,7 @@ import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
 import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
+import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.share.SharingStartScreenCore
@@ -419,11 +420,12 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
+    @OptIn(ExperimentalComposeUiApi::class)
     fun PlaceDetailScreenVC(
         vm: PlaceDetailViewModel,
         paddingValues: AppleScreenPaddingValues,
         openPlaceRawDataScreen: () -> Unit,
+        openPlaceAlertsScreen: () -> Unit,
         openPlaceEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
         mapUIView: (PlaceDetailScreenState) -> UIViewController,
@@ -441,6 +443,7 @@ object HomeScreens {
                 contentPadding = paddingValues.toComposePaddingValues(),
                 onNavigateBack = onNavigateBack,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
+                openPlaceAlertsScreen = openPlaceAlertsScreen,
                 openPlaceEditScreen = openPlaceEditScreen,
                 mapContent = { state ->
                     Box(
@@ -460,7 +463,20 @@ object HomeScreens {
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
+    fun PlaceAlertsSettingsScreenVC(
+        vm: PlaceDetailViewModel,
+        paddingValues: AppleScreenPaddingValues,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            PlaceAlertsSettingsScreenCore(
+                appState = it,
+                vm = vm,
+                contentPadding = paddingValues.toComposePaddingValues()
+            )
+        }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
     fun PlaceCreateScreenVC(
         vm: CreatePlaceViewModel,
         onNavigateBack: () -> Unit,

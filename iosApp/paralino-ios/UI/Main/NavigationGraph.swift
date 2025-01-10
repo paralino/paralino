@@ -33,6 +33,7 @@ enum HomeGraph: Hashable {
     case memberInvite(groupId: String?, code: String?, isOnboarding: Bool)
     case places(groupId: String, isOnboarding: Bool)
     case placeDetail(groupId: String, placeId: String)
+    case placeAlertsSettings(groupId: String, placeId: String)
     case placeCreate(groupId: String, placeId: String?, lat: Double? = nil, lng: Double? = nil)
 }
 

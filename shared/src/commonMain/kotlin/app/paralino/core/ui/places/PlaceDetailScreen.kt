@@ -1,8 +1,6 @@
 package app.paralino.core.ui.places
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,9 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -27,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -40,14 +35,10 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
-import app.paralino.core.ui.components.LargeSeekbarSwitch
-import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
-import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.errorString
@@ -62,6 +53,7 @@ fun PlaceDetailScreenCore(
     contentPadding: PaddingValues,
     onNavigateBack: () -> Unit,
     openPlaceRawDataScreen: () -> Unit,
+    openPlaceAlertsScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
 ) {
@@ -125,20 +117,9 @@ fun PlaceDetailScreenCore(
                 userScrollEnabled = userScrollEnabled,
                 openPlaceEditScreen = openPlaceEditScreen,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
+                openPlaceAlertsScreen = openPlaceAlertsScreen,
                 onPlaceDelete = {
                     showDialog = MainAlertDialog.DeletePlace
-                },
-                onTogglePlaceAlerts = {
-                    vm.togglePlaceAlertsSettings(revokeItemState = false)
-                },
-                onTogglePlaceAlertsSeparately = {
-                    vm.togglePlaceAlertsSettings(revokeItemState = true)
-                },
-                onEnterChange = {
-                    vm.toggleEnterSettings(it)
-                },
-                onExitChange = {
-                    vm.toggleExitSettings(it)
                 },
                 mapContent = mapContent
             )
@@ -153,7 +134,6 @@ fun PlaceDetailScreenCore(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlaceDetailScreen(
     modifier: Modifier = Modifier,
@@ -162,12 +142,9 @@ private fun PlaceDetailScreen(
     canEditPlace: Boolean,
     userScrollEnabled: Boolean,
     openPlaceRawDataScreen: () -> Unit,
+    openPlaceAlertsScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     onPlaceDelete: () -> Unit,
-    onTogglePlaceAlerts: () -> Unit,
-    onTogglePlaceAlertsSeparately: () -> Unit,
-    onEnterChange: (String) -> Unit,
-    onExitChange: (String) -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
 ) {
     LazyColumn(
@@ -230,6 +207,12 @@ private fun PlaceDetailScreen(
                 ) {
                     openPlaceRawDataScreen()
                 }
+                SettingsActionItem(
+                    name = stringResource(MR.strings.place_detail_notification_settings_title),
+                    icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+                ) {
+                    openPlaceAlertsScreen()
+                }
                 if (canEditPlace) {
                     SettingsActionItem(
                         name = stringResource(MR.strings.places_edit_screen_title),
@@ -246,62 +229,6 @@ private fun PlaceDetailScreen(
                     }
                 }
                 Spacer(modifier = Modifier.size(20.dp))
-            }
-        }
-
-        if (state.settings.isNotEmpty()) {
-            this.stickyHeader(key = "notification_header") {
-                SettingsSectionHeader(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                    name = stringResource(MR.strings.place_detail_notification_settings_title)
-                )
-            }
-
-            this.item(key = "notification_notice") {
-                Spacer(modifier = Modifier.size(4.dp))
-                val notificationState by rememberSeekbarState(
-                    key = state,
-                    LargeSeekbarSwitchState.SeekbarSwitchState(
-                        seekbarState = null,
-                        switchState = LargeSeekbarSwitchState.Switch(
-                            checkState = state.arePlaceAlertsActive,
-                            loadingState = state.isPlaceAlertsSwitchLoading
-                        )
-                    )
-                )
-
-                LargeSeekbarSwitch(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                    icon = if (state.arePlaceAlertsActive) {
-                        CoreAppIcons.NotificationsActive.asPainterResource()
-                    } else {
-                        CoreAppIcons.NotificationsOff.asPainterResource()
-                    },
-                    title = stringResource(MR.strings.place_detail_notification_settings_title),
-                    description = stringResource(MR.strings.place_detail_notification_settings_info),
-                    state = notificationState,
-                    elevation = animateDpAsState(if (state.arePlaceAlertsActive) 16.dp else 0.dp).value,
-                    onLongClick = onTogglePlaceAlertsSeparately,
-                    onStateChange = {
-                        onTogglePlaceAlerts()
-                    }
-                )
-                Spacer(modifier = Modifier.size(20.dp))
-            }
-
-            this.itemsIndexed(
-                items = state.settings,
-                key = { index, item -> item.memberUserId }
-            ) { index, item ->
-                PlaceDetailUserListItem(
-                    modifier = Modifier
-                        .animateItem()
-                        .alpha(if (state.arePlaceAlertsActive) 1f else ContentAlpha.disabled)
-                        .padding(horizontal = 20.dp),
-                    state = item,
-                    onEnterChange = onEnterChange,
-                    onExitChange = onExitChange,
-                )
             }
         }
     }

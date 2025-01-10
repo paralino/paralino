@@ -70,6 +70,8 @@ struct MapRootScreen: View {
                                 )
                             case .placeDetail(groupId: let groupId, placeId: let placeId):
                                 PlaceDetailScreen(path: $mainAppState.userReadyGraph, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
+                            case .placeAlertsSettings(groupId: let groupId, placeId: let placeId):
+                                PlaceAlertsSettingsScreen(path: $mainAppState.userReadyGraph, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
                             case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
                                 PlaceCreateScreen(path: $mainAppState.userReadyGraph, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
                             case .freePlanInfo: FreePlanInfoScreen(path: $mainAppState.userReadyGraph)
