@@ -28,7 +28,6 @@ enum class ServerFunction constructor(
     PLACE_CREATE(method = "PUT", path = "/places"),
     PLACE_DELETE(method = "DELETE", path = "/places"),
     PLACE_UPDATE(method = "PATCH", path = "/places"),
-    PLACE_NOTIFY(method = "PATCH", path = "/places/notify"),
 
     KEYS_UPDATE_GROUP(method = "POST", path = "/keys/group"),
     KEYS_UPDATE_MEMBERS(method = "POST", path = "/keys/member"),
@@ -39,7 +38,8 @@ enum class ServerFunction constructor(
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
 
-    EVENT_BATTERY(method = "PATCH", path = "/events/battery"),
+    EVENT_PLACES(method = "POST", path = "/events/places"),
+    EVENT_BATTERY(method = "POST", path = "/events/battery"),
 
     PERSONAL_CODE_CREATE(method = "POST", path = "/personal_code"),
     PERSONAL_CODE_READ(method = "GET", path = "/personal_code"),

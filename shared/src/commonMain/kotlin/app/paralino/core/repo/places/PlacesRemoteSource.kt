@@ -240,7 +240,7 @@ class PlacesRemoteSource(
     private suspend fun notifyPlaceEvent(placePayload: PlaceEventPayload) {
         blocking {
             functionsApi.runAsync(
-                function = ServerFunction.PLACE_NOTIFY,
+                function = ServerFunction.EVENT_PLACES,
                 data = placePayload
             )
         }
