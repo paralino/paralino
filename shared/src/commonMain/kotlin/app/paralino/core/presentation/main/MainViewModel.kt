@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.main
 
+import app.paralino.core.MR
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountState
@@ -8,10 +9,12 @@ import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.utils.NetworkQualityMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -29,6 +32,7 @@ import kotlinx.coroutines.launch
 class MainViewModel constructor(
     private val userStateMonitor: AppAccountStateMonitor,
     private val sessionMonitor: UserSessionMonitor,
+    private val networkQualityMonitor: NetworkQualityMonitor,
     private val userRepo: UserRepository,
     private val remoteConfigRepository: RemoteConfigRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
@@ -71,6 +75,13 @@ class MainViewModel constructor(
 
         expiredSessionHandler.observeProcessing()
             .onEach { state -> _uiState.update { it.copy(dataRefreshBlockingLoadingShown = state) } }
+            .launchIn(coroutineScope)
+
+        networkQualityMonitor.listenForBadNetwork()
+            .onEach {
+                networkQualityMonitor.clearLogs()
+                messageDispatcher.showSnackbar(MR.strings.error_unstable_connection.localizedString())
+            }
             .launchIn(coroutineScope)
     }
 

@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun RootApp(
-    vm: MainViewModel = getViewModel(),
+    vm: MainViewModel,
     onAppClose: () -> Unit,
     onNewVersionDownload: (ConfigData) -> Unit
 ) {

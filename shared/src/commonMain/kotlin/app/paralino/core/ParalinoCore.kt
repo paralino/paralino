@@ -105,6 +105,7 @@ import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserLocalDataSource
 import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.NetworkQualityMonitor
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -266,6 +267,7 @@ val coreModule = module {
     single { GroupValidityVerification(get(), get(), get(), appPrefs) }
     single { LocationSharingManager(get(), get()) }
     single { UserSessionMonitor() }
+    single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get()) }

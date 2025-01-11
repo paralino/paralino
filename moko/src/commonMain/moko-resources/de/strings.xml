@@ -26,6 +26,7 @@
     <string name="alert_sessionExpired_message">Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.</string>
     <string name="alert_comingSoon_title">Kommt bald 🤞</string>
     <string name="alert_comingSoon_message">Diese Funktion ist bereits in Entwicklung und kommt bald.</string>
+    <string name="error_unstable_connection">Ihre **Internetverbindung** ist sehr instabil und einige Anfragen schlagen fehl.\nBitte überprüfen Sie Ihre Einstellungen.</string>
     <string name="error_load_data_generic">Anfrage konnte nicht abgeschlossen werden.</string>
     <string name="error_no_connection_snackbar">Verbindung nicht möglich\n**Überprüfen Sie Ihre Internetverbindung.**</string>
     <string name="error_server_unavailable">Derzeit keine Verbindung möglich, bitte versuchen Sie es in Kürze erneut.</string>
