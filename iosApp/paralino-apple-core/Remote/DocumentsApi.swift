@@ -31,7 +31,7 @@ class DocumentsApi: IDocumentApiIOS {
     
     func deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.execute { module in
-            let result = try await module.database.deleteDocument(
+            let _ = try await module.database.deleteDocument(
                 databaseId: databaseType.id,
                 collectionId: collectionId,
                 documentId: documentId
@@ -63,7 +63,7 @@ class DocumentsApi: IDocumentApiIOS {
             repeat {
                 var mappedQueries: [String] = []
                 
-                mappedQueries.append(contentsOf: buildQueries(queries: queries))
+                mappedQueries.append(contentsOf: self.buildQueries(queries: queries))
                 mappedQueries.append(Query.limit(Int(limit)))
                 if !cursor.isEmpty {
                     mappedQueries.append(Query.cursorAfter(cursor))

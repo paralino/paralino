@@ -77,6 +77,7 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.NetworkQualityMonitor
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.module.Module
@@ -102,7 +103,7 @@ object KoinIOS {
             locationStatusProvider: ILocationStatusProvider,
             locationCacheRepo: LocationCacheRepository
         ) -> IOneTimeLocationProvider,
-        remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
+        remoteModule: (sessionMonitor: UserSessionMonitor, networkQualityMonitor: NetworkQualityMonitor) -> IRemoteModule,
         documentsApi: (IRemoteModule, AppBuildConfig) -> IDocumentApiIOS,
         userApi: (IRemoteModule, AppBuildConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
@@ -128,7 +129,7 @@ object KoinIOS {
                     factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
                     single { billingProvider() } bind IBillingProvider::class
                     single { geofenceManager() }
-                    single { remoteModule(get()) }
+                    single { remoteModule(get(), get()) }
                     single { appBuildConfig }
                     single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                     single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
