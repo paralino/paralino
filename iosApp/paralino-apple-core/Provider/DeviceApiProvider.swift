@@ -62,6 +62,10 @@ class DeviceApiProvider: IDeviceApiProvider {
         return state == .charging || state == .full
     }
     
+    override var isLowPowerMode: Bool {
+        return ProcessInfo.processInfo.isLowPowerModeEnabled
+    }
+    
     override var defaultDeviceName: String {
         "iPhone"
     }

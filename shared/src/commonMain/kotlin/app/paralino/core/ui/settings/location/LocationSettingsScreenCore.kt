@@ -205,15 +205,32 @@ fun LocationSettingsScreenCore(
 
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
-                        modifier = Modifier,
+                        modifier = Modifier.padding(bottom = 20.dp),
                         text = stringResource(MR.strings.setting_location_batterySaver_section_info).annotatedBold(),
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
                         textAlign = TextAlign.Start
                     )
                 }
 
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                    icon = CoreAppIcons.Settings.asPainterResource(),
+                    title = stringResource(MR.strings.setting_location_batterySaver_lowPowerMode_title),
+                    description = stringResource(MR.strings.setting_location_batterySaver_lowPowerMode_description),
+                    state = rememberSeekbarState(
+                        key = uiState,
+                        LargeSeekbarSwitchState.SeekbarSwitchState(
+                            seekbarState = null,
+                            switchState = LargeSeekbarSwitchState.Switch(uiState.batterySaverSettings.activeOnLowPowerMode)
+                        )
+                    ).value,
+                    onStateChange = {
+                        vm.onEvent(LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode)
+                    }
+                )
+
                 LocationPerformanceSettingsOptions(
-                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     items = uiState.batterySaverSettings.items,
                     onOptionSelected = {
                         vm.onEvent(

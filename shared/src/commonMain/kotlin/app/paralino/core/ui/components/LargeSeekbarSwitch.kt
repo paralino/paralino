@@ -305,14 +305,14 @@ fun LargeSeekbarSwitch(
                     if (focusDescription) {
                         Text(
                             text = description,
-                            maxLines = 3,
+                            maxLines = 6,
                             style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
                             color = contentColor
                         )
                     } else {
                         Text(
                             text = description,
-                            maxLines = 3,
+                            maxLines = 6,
                             style = MaterialTheme.typography.caption,
                             color = contentColor.copy(alpha = ContentAlpha.medium)
                         )
