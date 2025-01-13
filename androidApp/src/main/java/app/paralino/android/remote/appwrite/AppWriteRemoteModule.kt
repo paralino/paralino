@@ -15,6 +15,7 @@ import io.appwrite.services.Account
 import io.appwrite.services.Databases
 import io.appwrite.services.Functions
 import io.appwrite.services.Realtime
+import kotlinx.coroutines.delay
 import java.net.UnknownHostException
 import java.util.UUID
 
@@ -46,13 +47,24 @@ class AppWriteRemoteModule(
             }
     }
 
-    inline fun <T> execute(forceLogoutOnError: Boolean = false, action: AppWriteRemoteModule.() -> T): T {
+    suspend inline fun <T> execute(forceLogoutOnError: Boolean = false, action: AppWriteRemoteModule.() -> T): T {
         val key = UUID.randomUUID().toString()
         networkQualityMonitor.addEntry(key)
         try {
-            return action(this).also {
-                networkQualityMonitor.stopEntry(key = key, errorType = null)
+            val result = try {
+                action(this)
+            } catch (e: Exception) {
+                if (e is UnknownHostException) {
+                    delay(200)
+                    action(this)
+                } else {
+                    throw e
+                }
             }
+
+            networkQualityMonitor.stopEntry(key = key, errorType = null)
+
+            return result
         } catch (e: Exception) {
             if (e.isSocketTimeout()) {
                 networkQualityMonitor.stopEntry(key = key, errorType = NetworkQualityMonitor.NetworkRequestErrorType.TIMEOUT)
