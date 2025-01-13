@@ -3,7 +3,6 @@ package app.paralino.core.utils
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -26,7 +25,8 @@ class NetworkQualityMonitor() {
                 errorType = null
             )
 
-            logs + newLog
+            val threshold = nowUTC().minus(5.minutes)
+            logs.filter { it.start > threshold } + newLog
         }
     }
 
@@ -69,7 +69,7 @@ class NetworkQualityMonitor() {
 
     fun clearLogs() {
         val threshold = nowUTC().minus(5.minutes)
-        networkLogs.update { it.filter { it.end != null || it.start < threshold } }
+        networkLogs.update { it.filter { it.end != null || it.start > threshold } }
     }
 
     data class NetworkRequestEntry(
