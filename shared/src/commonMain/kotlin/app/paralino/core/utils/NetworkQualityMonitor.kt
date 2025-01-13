@@ -48,7 +48,7 @@ class NetworkQualityMonitor() {
     fun listenForBadNetwork(): Flow<Unit> {
         return networkLogs
             .map {
-                val threshold = nowUTC().minus(3.minutes)
+                val threshold = nowUTC().minus(2.minutes)
                 it
                     .filter { it.start > threshold && it.end != null && it.errorType != null }
                     .take(100)
