@@ -18,11 +18,14 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.base.AccessLogDataSource
+import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -47,6 +50,7 @@ class LocationUploadEngine constructor(
     private val locationPerformanceManager: LocationPerformanceManager,
     private val remote: LocationRemoteSource,
     private val local: LocationLocalDataSource,
+    private val groupLocal: UserGroupLocalDataSource,
     private val placesRepo: PlacesRepository,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
     private val payloadProvider: LocationPayloadProvider,
@@ -57,6 +61,7 @@ class LocationUploadEngine constructor(
     private val placeActivityRepo: PlaceActivityDataSource,
     private val accessLogDataSource: AccessLogDataSource,
     private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
+    private val remoteConfig: RemoteConfigRepository,
     private val appBuildConfig: AppBuildConfig
 ) : LimitedExecutionRepository() {
 
@@ -221,7 +226,7 @@ class LocationUploadEngine constructor(
     private suspend fun getLocationPayload(
         groupId: String,
         data: LocationDataModel?,
-        contract: LocationSharingContract?,
+        contract: LocationSharingContract,
     ): MemberGroupId? {
 
         val payload = payloadProvider.getLocationPayload(
@@ -230,7 +235,26 @@ class LocationUploadEngine constructor(
             contract = contract
         )
         return when (payload) {
-            is LocationPayloadStatus.Success -> payload.payload
+            is LocationPayloadStatus.Success -> {
+                val group = groupLocal.getGroupOnce(groupId = groupId)
+
+                if (group?.hasPremiumSharingFeatures(remoteConfig.getConfigOnce()) == false) {
+                    val newContract = contract.asValidContract(isPremiumGroup = false)
+
+                    if (newContract != null) {
+                        // update contract if time is reduced
+                        if (contract.endTimeUTC != newContract.endTimeUTC) {
+                            locationSharingManager.startSharing(newContract)
+                        }
+                    } else {
+                        locationSharingManager.stopSharing(groupId = groupId)
+                        placeActivityRepo.clearForGroup(groupId = groupId)
+                        return null
+                    }
+                }
+
+                payload.payload
+            }
 
             LocationPayloadStatus.MissingLocationDocument -> {
                 tryRegisterDeviceAgain(
@@ -245,7 +269,7 @@ class LocationUploadEngine constructor(
                     "location_service",
                     "Location device can not be established for current device, abort sharing"
                 )
-                locationSharingManager.stopSharing(groupId)
+                locationSharingManager.stopSharing(groupId = groupId)
                 placeActivityRepo.clearForGroup(groupId = groupId)
                 null
             }
@@ -275,7 +299,7 @@ class LocationUploadEngine constructor(
     private suspend fun tryRegisterDeviceAgain(
         groupId: String,
         data: LocationDataModel?,
-        contract: LocationSharingContract?,
+        contract: LocationSharingContract,
     ): MemberGroupId? {
         try {
             val timeBetweenRequests = nowUTC() - Instant.fromEpochMilliseconds(

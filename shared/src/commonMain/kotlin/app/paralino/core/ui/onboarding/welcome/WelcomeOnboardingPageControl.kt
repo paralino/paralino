@@ -390,11 +390,11 @@ private fun DurationSwitch(modifier: Modifier = Modifier) {
     }
 
     fun sharingTimeIndex(sharingTimeMillis: Long): Int {
-        return SharingDurationPreset.presets.indexOfFirst { it == sharingTimeMillis }
+        return SharingDurationPreset.premiumPresets.indexOfFirst { it == sharingTimeMillis }
             .takeIf { it >= 0 }
-            ?: SharingDurationPreset.presets.indexOfFirst { sharingTimeMillis < it }
+            ?: SharingDurationPreset.premiumPresets.indexOfFirst { sharingTimeMillis < it }
                 .takeIf { it >= 0 }
-            ?: SharingDurationPreset.presets.lastIndex
+            ?: SharingDurationPreset.premiumPresets.lastIndex
     }
 
     LargeSeekbarSwitch(
@@ -406,7 +406,7 @@ private fun DurationSwitch(modifier: Modifier = Modifier) {
             state = LargeSeekbarSwitchState.SeekbarSwitchState(
                 seekbarState = LargeSeekbarSwitchState.Seekbar(
                     seekbarProgress = sharingTimeIndex(itemState) + 1,
-                    seekbarRange = IntRange(1, SharingDurationPreset.presets.size)
+                    seekbarRange = IntRange(1, SharingDurationPreset.premiumPresets.size)
                 ),
                 switchState = null
             )
@@ -417,7 +417,7 @@ private fun DurationSwitch(modifier: Modifier = Modifier) {
         focusDescription = true,
         onProgressChange = {
             itemState =
-                SharingDurationPreset.presets.getOrNull(it - 1) ?: 1.days.inWholeMilliseconds
+                SharingDurationPreset.premiumPresets.getOrNull(it - 1) ?: 1.days.inWholeMilliseconds
         }
     )
 }

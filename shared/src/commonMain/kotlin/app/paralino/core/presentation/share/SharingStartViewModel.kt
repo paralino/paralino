@@ -162,22 +162,28 @@ class SharingStartViewModel(
 
     fun setSelectedGroup(groupId: String) {
         coroutineScope.launch {
-            groupRepo.getGroupWithMetadata(groupId = groupId).firstOrNull()?.let { group ->
+            groupRepo.getGroupWithMetadata(groupId = groupId).firstOrNull().let { group ->
                 setSelectedGroup(group)
-            } ?: let {
-                currentGroup.update { null }
-                _uiState.update { it.copy(groupState = Payload.Success(null)) }
             }
         }
     }
 
-    private suspend fun setSelectedGroup(group: UserGroupWithMetadata) {
-        val groupItem = GroupItemState(group)
+    private suspend fun setSelectedGroup(group: UserGroupWithMetadata?) {
         currentGroup.update { group }
+        val isGroupPremium = group?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce()) ?: false
+        val presets = SharingDurationPreset.presets(isPremium = isGroupPremium)
         _uiState.update {
             it.copy(
-                groupState = Payload.Success(groupItem),
-                devicesLimit = group.group.devicesLimit(remoteConfigRepo.getConfigOnce())
+                groupState = Payload.Success(group?.let { GroupItemState(it) }),
+                devicesLimit = group?.group?.devicesLimit(remoteConfigRepo.getConfigOnce()) ?: 0,
+                showNotifyOthers = isGroupPremium || group?.group?.isCurrentUserOwner == true,
+                isPremiumSectionVisible = !isGroupPremium && group?.group?.isCurrentUserOwner == true,
+                notifyOthers = if (isGroupPremium) it.notifyOthers else false,
+                sharingPresetsMillis = presets,
+                sharingTimeMillis = it.sharingTimeMillis.let {
+                    if (isGroupPremium) it
+                    else it.coerceIn(presets.first(), presets.last())
+                }
             )
         }
     }
@@ -232,7 +238,7 @@ class SharingStartViewModel(
                 return@launch
             } else if (limit in 0..devicesCount && !isDeviceRegistered) {
                 if (group.isCurrentUserOwner) {
-                    _eventChannel.send(SharingStartScreenEvent.DevicesLimitReached(limit = limit))
+                    _eventChannel.send(SharingStartScreenEvent.OpenPaywall)
                 } else {
                     _uiState.update {
                         it.copy(
@@ -325,11 +331,28 @@ class SharingStartViewModel(
 
     fun sharingDurationChanged(index: Int) {
         _uiState.update {
-            val time = SharingDurationPreset.presets.getOrNull(index) ?: SharingDurationPreset.hour
+            val isGroupPremium = currentGroup.value?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getCachedConfigOnce()) ?: true
+            val time = SharingDurationPreset.presets(isPremium = isGroupPremium).getOrNull(index)
+                ?.let {
+                    if (isGroupPremium) {
+                        it
+                    } else {
+                        it.coerceIn(SharingDurationPreset.freePresets.first(), SharingDurationPreset.freePresets.last())
+                    }
+                }
+                ?: SharingDurationPreset.hour
             it.copy(
                 sharingTimeMillis = time,
                 errors = getErrors(LocationSharingContract.isLongTerm(time))
             )
+        }
+    }
+
+    fun demoSharingDurationChanged(index: Int) {
+        _uiState.update {
+            val time = SharingDurationPreset.presets(isPremium = true).getOrNull(index)
+                ?: SharingDurationPreset.hour
+            it.copy(demoSharingTimeMillis = time)
         }
     }
 
@@ -352,8 +375,12 @@ class SharingStartViewModel(
     }
 
     fun toggleNotifyOthers(state: Boolean) {
-        _uiState.update {
-            it.copy(notifyOthers = state)
+        if (_uiState.value.showNotifyOthers) {
+            _uiState.update {
+                it.copy(notifyOthers = state)
+            }
+        } else {
+            _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
         }
     }
 

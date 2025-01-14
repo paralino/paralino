@@ -6,6 +6,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
@@ -49,6 +50,14 @@ data class UserGroup constructor(
         ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 1.hours)
         ?.let { it < nowUTC() }
         ?: false
+
+    fun hasPremiumSharingFeatures(config: ConfigData): Boolean {
+        if (isPlanExpired) {
+            return false
+        } else {
+            return config.planConfigForPlanTypeOrDefault(planType).planTypeEnum.isSilverOrMore
+        }
+    }
 
     fun isGroupPremium(config: ConfigData): Boolean {
         if (isPlanExpired) {
