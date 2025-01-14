@@ -497,6 +497,9 @@
     <string name="plan_limit_places_alert_info">Gruppenorte</string>
     <string name="plan_limit_devices_alert_info">Geräte</string>
     <string name="plan_limit_groups_alert_info">Gruppen</string>
+    <string name="plan_limit_overLimit_groupOwner_banner_title">**Ihre Gruppe hat die Planlimits überschritten!**\n\nDie Standortfreigabe funktioniert möglicherweise nicht richtig.\n\nBitte entfernen Sie einige Ressourcen oder aktualisieren Sie Ihren Plan, um die volle Funktionalität wiederherzustellen.</string>
+    <string name="plan_limit_overLimit_groupMember_banner_title">**Diese Gruppe hat die Planlimits überschritten!**\n\nDie Standortfreigabe funktioniert möglicherweise nicht richtig.\n\nBitte kontaktieren Sie den Gruppenadministrator, um das Problem zu lösen und die Standortfreigabe fortzusetzen.</string>
+    <string name="plan_limit_overLimit_user_message">Die Standortfreigabe in einigen Gruppen wird gestoppt, da diese die Planlimits überschritten haben.\n\nPassen Sie Ihre Gruppen an oder aktualisieren Sie Ihren Plan, um die Standortfreigabe fortzusetzen!</string>
     <string name="app_version_alert_title">Neues App-Update</string>
     <string name="app_version_alert_message">Eine neue Version von Paralino ist verfügbar, bitte aktualisieren Sie für ein besseres Erlebnis!</string>
     <string name="app_version_alert_title_mandatory">Bitte aktualisieren</string>

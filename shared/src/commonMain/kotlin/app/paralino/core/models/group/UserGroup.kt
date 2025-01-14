@@ -115,6 +115,18 @@ data class UserGroupWithMetadata constructor(
 }
 
 @Serializable
+data class UserGroupWithLimits constructor(
+    val group: UserGroup,
+    val memberCount: Int,
+    val placesCount: Int,
+    val devicesCount: Int
+) {
+    fun isGroupOverLimits(config: ConfigData): Boolean {
+        return memberCount > group.membersLimit(config) || placesCount > group.placesLimit(config) || devicesCount > group.devicesLimit(config)
+    }
+}
+
+@Serializable
 data class UserGroupData constructor(
     val name: String = "",
     val image: ImageModel = ImageModel(),

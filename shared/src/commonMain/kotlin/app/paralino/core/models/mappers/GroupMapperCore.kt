@@ -109,18 +109,6 @@ class GroupMapperCore constructor(
         )
     }
 
-    suspend fun remote2Core(
-        model: GroupDocumentRaw,
-        memberCount: Int = 0,
-        verification: VerificationResult
-    ): UserGroupWithMetadata {
-        return UserGroupWithMetadata(
-            group = remote2Core(model),
-            memberCount = memberCount,
-            verification = verification,
-        )
-    }
-
     suspend fun remote2CoreWithMembers(model: GroupWithMembersRaw): UserGroupWithMembers {
         val group = remote2Core(model.group)
         val members = model.members.map {

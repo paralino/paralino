@@ -497,6 +497,9 @@
     <string name="plan_limit_places_alert_info">mjesta grupe</string>
     <string name="plan_limit_devices_alert_info">uređaja</string>
     <string name="plan_limit_groups_alert_info">grupa</string>
+    <string name="plan_limit_overLimit_groupOwner_banner_title">**Vaša grupa je premašila ograničenja plana!**\n\nDijeljenje lokacije možda neće ispravno funkcionirati.\n\nMolimo uklonite neke resurse ili nadogradite svoj plan kako biste vratili punu funkcionalnost.</string>
+    <string name="plan_limit_overLimit_groupMember_banner_title">**Ova grupa je premašila ograničenja plana!**\n\nDijeljenje lokacije možda neće ispravno funkcionirati.\n\nMolimo kontaktirajte administratora grupe kako biste riješili problem i nastavili dijeliti lokaciju.</string>
+    <string name="plan_limit_overLimit_user_message">Dijeljenje lokacije u nekim grupama će prestati jer su premašili ograničenja plana.\n\nPrilagodite svoje grupe ili nadogradite plan kako biste nastavili dijeliti lokaciju!</string>
     <string name="app_version_alert_title">Nova nadogradnja aplikacije</string>
     <string name="app_version_alert_message">Nova verzija aplikacije Paralino je dostupna, molimo Vas da je ažurirate za bolje iskustvo!</string>
     <string name="app_version_alert_title_mandatory">Ažurirati</string>

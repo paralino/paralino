@@ -19,6 +19,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.nameRes
 import app.paralino.core.utils.ConditionErrorType
@@ -26,14 +27,19 @@ import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.poll
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -67,11 +73,12 @@ class SharingStartViewModel(
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
-    val shouldProceedToPaywall: Boolean get() {
-        return isOnboarding
-                && currentGroup.value?.group?.isCurrentUserOwner == true
-                && !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
-    }
+    val shouldProceedToPaywall: Boolean
+        get() {
+            return isOnboarding
+                    && currentGroup.value?.group?.isCurrentUserOwner == true
+                    && !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+        }
 
     init {
 
@@ -108,7 +115,31 @@ class SharingStartViewModel(
                     }
                 )
             }
-        }.launchIn(coroutineScope)
+        }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        currentGroup
+            .filterNotNull()
+            .flatMapMerge {
+                groupRepo.getGroupWithLimits(it.group.id)
+                    .onEach {
+                        if (it.isGroupOverLimits(remoteConfigRepo.getConfigOnce())) {
+                            if (it.group.isCurrentUserOwner) {
+                                showSnackbar(
+                                    text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                                    duration = SnackbarDuration.Forever
+                                )
+                            } else {
+                                showSnackbar(
+                                    text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                                    duration = SnackbarDuration.Forever
+                                )
+                            }
+                        }
+                    }
+            }
+            .launchIn(coroutineScope)
     }
 
     fun onEvent(event: SharingStartScreenUiEvent) {
@@ -123,7 +154,11 @@ class SharingStartViewModel(
                         _uiState.update { it.copy(alertDialog = null) }
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             coroutineScope.launch {
-                                _eventChannel.send(SharingStartScreenEvent.AskForPermission(ConditionErrorType.PermissionLocationBackground))
+                                _eventChannel.send(
+                                    SharingStartScreenEvent.AskForPermission(
+                                        ConditionErrorType.PermissionLocationBackground
+                                    )
+                                )
                             }
                         }
                     }
@@ -155,8 +190,10 @@ class SharingStartViewModel(
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
             userPlan = null,
-            createdGroups = allGroups.filter { it.group.isCurrentUserOwner }.map { GroupItemState(it) },
-            joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }.map { GroupItemState(it) },
+            createdGroups = allGroups.filter { it.group.isCurrentUserOwner }
+                .map { GroupItemState(it) },
+            joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }
+                .map { GroupItemState(it) },
         )
     }
 
@@ -170,7 +207,8 @@ class SharingStartViewModel(
 
     private suspend fun setSelectedGroup(group: UserGroupWithMetadata?) {
         currentGroup.update { group }
-        val isGroupPremium = group?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce()) ?: false
+        val isGroupPremium =
+            group?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce()) ?: false
         val presets = SharingDurationPreset.presets(isPremium = isGroupPremium)
         _uiState.update {
             it.copy(
@@ -331,13 +369,18 @@ class SharingStartViewModel(
 
     fun sharingDurationChanged(index: Int) {
         _uiState.update {
-            val isGroupPremium = currentGroup.value?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getCachedConfigOnce()) ?: true
+            val isGroupPremium =
+                currentGroup.value?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getCachedConfigOnce())
+                    ?: true
             val time = SharingDurationPreset.presets(isPremium = isGroupPremium).getOrNull(index)
                 ?.let {
                     if (isGroupPremium) {
                         it
                     } else {
-                        it.coerceIn(SharingDurationPreset.freePresets.first(), SharingDurationPreset.freePresets.last())
+                        it.coerceIn(
+                            SharingDurationPreset.freePresets.first(),
+                            SharingDurationPreset.freePresets.last()
+                        )
                     }
                 }
                 ?: SharingDurationPreset.hour

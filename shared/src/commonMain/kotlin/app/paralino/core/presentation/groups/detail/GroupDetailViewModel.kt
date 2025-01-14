@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.groups.detail
 
+import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
@@ -10,6 +11,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroupWithLimits
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
@@ -22,19 +24,25 @@ import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -50,6 +58,7 @@ class GroupDetailViewModel(
     private val placeActivityRepo: PlaceActivityDataSource,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
+    private val groupLocal: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
@@ -175,6 +184,25 @@ class GroupDetailViewModel(
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                 }
             }
+            .launchIn(coroutineScope)
+
+        groupLocal.getGroupWithLimits(groupId)
+            .onEach {
+                if (it.isGroupOverLimits(remoteConfigRepo.getConfigOnce())) {
+                    if (it.group.isCurrentUserOwner) {
+                        showSnackbar(
+                            text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                            duration = SnackbarDuration.Forever
+                        )
+                    } else {
+                        showSnackbar(
+                            text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                            duration = SnackbarDuration.Forever
+                        )
+                    }
+                }
+            }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 

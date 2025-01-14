@@ -6,6 +6,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
@@ -13,6 +14,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.NetworkQualityMonitor
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +39,7 @@ class MainViewModel constructor(
     private val remoteConfigRepository: RemoteConfigRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
     private val appUpdateManager: IAppUpdateManager,
+    private val premiumStatusManager: PremiumStatusManager,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
@@ -81,6 +84,18 @@ class MainViewModel constructor(
             .onEach {
                 networkQualityMonitor.clearLogs()
                 messageDispatcher.showSnackbar(MR.strings.error_unstable_connection.localizedString())
+            }
+            .launchIn(coroutineScope)
+
+        premiumStatusManager.hasGroupOverLimits
+            .onEach {
+                if (it) {
+                    premiumStatusManager.resetLimitState()
+                    messageDispatcher.showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_user_message.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                }
             }
             .launchIn(coroutineScope)
     }

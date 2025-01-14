@@ -239,7 +239,9 @@ class LocationUploadEngine constructor(
                 val group = groupLocal.getGroupOnce(groupId = groupId)
 
                 if (group?.hasPremiumSharingFeatures(remoteConfig.getConfigOnce()) == false) {
-                    val newContract = contract.asValidContract(isPremiumGroup = false)
+                    val newContract = contract.asValidContract(
+                        sharingLimitDuration = SharingDurationPreset.freePresets.last().milliseconds
+                    )
 
                     if (newContract != null) {
                         // update contract if time is reduced

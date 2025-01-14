@@ -5,6 +5,7 @@ import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.*
+import kotlin.time.Duration
 
 data class LocationSharingContract constructor(
     val groupId: String,
@@ -32,11 +33,11 @@ data class LocationSharingContract constructor(
         return endTimeUTC!!.fromUTCtoInstant()?.toEpochMilliseconds()
     }
 
-    fun asValidContract(isPremiumGroup: Boolean = true): LocationSharingContract? {
+    fun asValidContract(sharingLimitDuration: Duration? = null): LocationSharingContract? {
         if(isAlwaysOn) {
-            if (!isPremiumGroup) {
+            if (sharingLimitDuration != null) {
                 val now = nowUTC()
-                val maxSharing = now.plus(SharingDurationPreset.freePresets.last(), DateTimeUnit.MILLISECOND)
+                val maxSharing = now.plus(duration = sharingLimitDuration)
                 return this.copy(endTimeUTC = maxSharing.toLocalDateTime(TimeZone.UTC).toString())
             }
             // invalid public sharing contract
@@ -57,9 +58,9 @@ data class LocationSharingContract constructor(
                 } else {
                     return this
                 }
-            } else if (!isPremiumGroup) {
+            } else if (sharingLimitDuration != null) {
                 // limit duration if needed
-                val maxSharing = now.plus(SharingDurationPreset.freePresets.last(), DateTimeUnit.MILLISECOND)
+                val maxSharing = now.plus(duration = sharingLimitDuration)
                 if(date > maxSharing) {
                     return this.copy(endTimeUTC = maxSharing.toLocalDateTime(TimeZone.UTC).toString())
                 } else {
