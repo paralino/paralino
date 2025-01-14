@@ -116,7 +116,7 @@ private fun MapHomeContent(
                     appState.navController.navigate(AppScreen.MainHome.FreePlanNoticeScreen.route())
                 }
 
-                MapHomeScreenEvent.GroupsPlanLimitReached -> {
+                MapHomeScreenEvent.OpenPaywall -> {
                     appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
                 }
 

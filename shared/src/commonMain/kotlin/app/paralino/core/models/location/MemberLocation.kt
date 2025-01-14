@@ -39,7 +39,8 @@ data class MemberLocation constructor(
         return AppBuildConfig.instance.hasPreviewFeatures
                 && adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS
                 && adaptedStatus != MemberDeviceStatusType.ACTIVE
-                && (isOlderThan(3.minutes) || !hasLocation)
+                && adaptedStatus?.isDeviceSetupWrong != true
+                && (isOlderThan(2.minutes) || !hasLocation)
                 && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
     }
 

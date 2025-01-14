@@ -212,6 +212,8 @@
     <string name="plan_period_monthly_name">Monatlich</string>
     <string name="plan_period_annually_name">Jährlich</string>
     <string name="plan_period_onetime_name">Lebenslang</string>
+    <string name="plan_limit_locationRequest_groupOwner_message">**Premium-Funktion**\n\nUm Standortanfragen mit hoher Priorität für **schnellere Updates** zu aktivieren, aktualisieren Sie bitte Ihren Plan.</string>
+    <string name="plan_limit_locationRequest_groupMember_message">**Premium-Funktion**\n\nKontaktieren Sie Ihren Gruppenadministrator, um Standortanfragen mit hoher Priorität für schnellere Updates zu aktivieren.</string>
     <string name="paywall_onboarding_skip_button">Kostenlose Version nutzen</string>
     <string name="paywall_screen_header">Wählen Sie den Plan, der zu Ihnen passt</string>
     <string name="paywall_screen_title">Premium</string>

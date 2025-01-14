@@ -212,6 +212,8 @@
     <string name="plan_period_monthly_name">Mjesečno</string>
     <string name="plan_period_annually_name">Godišnje</string>
     <string name="plan_period_onetime_name">Zauvijek</string>
+    <string name="plan_limit_locationRequest_groupOwner_message">**Premium opcija**\n\nZa omogućavanje zahtjeva za lokaciju visoke prioritete za **brže ažuriranje**, nadogradite svoj plan.</string>
+    <string name="plan_limit_locationRequest_groupMember_message">**Premium opcija**\n\nKontaktirajte administratora grupe kako biste omogućili zahtjeve za lokaciju visoke prioritete za brže ažuriranje.</string>
     <string name="paywall_onboarding_skip_button">Besplatna verzija</string>
     <string name="paywall_screen_header">Odaberite plan koji vam odgovara</string>
     <string name="paywall_screen_title">Premium</string>

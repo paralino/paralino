@@ -89,7 +89,7 @@ data class MemberDeviceStatus constructor(
             timeUTC == null -> MemberDeviceOnlineStatusType.UNKNOWN
             isOlderThan(3.hours) -> MemberDeviceOnlineStatusType.UNKNOWN
             isOlderThan(10.minutes) -> MemberDeviceOnlineStatusType.OFFLINE
-            isOlderThan(1.minutes) -> MemberDeviceOnlineStatusType.BUSY
+            isOlderThan(20.seconds) -> MemberDeviceOnlineStatusType.BUSY
             else -> MemberDeviceOnlineStatusType.ONLINE
         }
     }

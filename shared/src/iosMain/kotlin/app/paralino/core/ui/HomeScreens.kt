@@ -290,7 +290,7 @@ object HomeScreens {
                         when (event) {
                             MapHomeScreenEvent.AddGroup -> onCreateGroup()
                             MapHomeScreenEvent.ShowFreePlanInfo -> openFreePlanInfo()
-                            MapHomeScreenEvent.GroupsPlanLimitReached -> openPaywall()
+                            MapHomeScreenEvent.OpenPaywall -> openPaywall()
                             null -> {}
                         }
                     }

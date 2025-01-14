@@ -35,9 +35,11 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.onAction
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -206,6 +208,8 @@ class MapHomeViewModel constructor(
                             return@combine MapHomeScreenState.Empty(currentUserImage = ImageModel.emoji(Emojis.robot))
                         }
 
+                        val groupPlanConfig = group.group.planConfig(remoteConfig.getConfigOnce())
+
                         val membersData = group.members.flatMap { member ->
                             if (member.locations.isEmpty()) {
                                 listOf(
@@ -282,12 +286,14 @@ class MapHomeViewModel constructor(
                                                 if (hasUserResponded && !isRequestInProgress) {
                                                     LocationRequestItemState(
                                                         isEnabled = canRequestLocationAgain,
-                                                        lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest
+                                                        lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
+                                                        isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
                                                     )
                                                 } else if (isRequestExpired && !isRequestInProgress) {
                                                     LocationRequestItemState(
                                                         isEnabled = canRequestLocationAgain,
-                                                        lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest
+                                                        lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
+                                                        isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
                                                     )
                                                 } else {
                                                     previousState?.actions?.locationRequest
@@ -409,7 +415,8 @@ class MapHomeViewModel constructor(
                             },
                             verified = group.isGroupVerified,
                             alertDialog = _uiState.value.alertDialog,
-                            isSatelliteMode = _uiState.value.isSatelliteMode
+                            isSatelliteMode = _uiState.value.isSatelliteMode,
+                            groupPlanConfig = groupPlanConfig
                         )
                     }
                         .flowOn(Dispatchers.IO)
@@ -780,6 +787,28 @@ class MapHomeViewModel constructor(
             return
         }
 
+        if (state.actions.locationRequest?.isPremiumFeatureEnabled == false) {
+            coroutineScope.launch {
+                val group = getAllGroupsItemState().firstOrNull { it.id == state.memberState.groupId }
+                if (group != null) {
+                    if (group.isCurrentUserOwner) {
+                        messageDispatcher.showSnackbarForResult(
+                            data = AppSnackbarData(
+                                text = MR.strings.plan_limit_locationRequest_groupOwner_message.localizedString(),
+                                actionText = MR.strings.button_continue.localizedString(),
+                                duration = SnackbarDuration.Long
+                            )
+                        )?.result?.onAction {
+                            _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                        }
+                    } else {
+                        messageDispatcher.showSnackbar(MR.strings.plan_limit_locationRequest_groupMember_message.localizedString())
+                    }
+                }
+            }
+            return
+        }
+
         flow {
             locationRequestUseCase.requestMemberDeviceLocation(
                 groupId = state.memberState.groupId,
@@ -798,7 +827,8 @@ class MapHomeViewModel constructor(
                                     actions = it.actions.copy(
                                         locationRequest = LocationRequestItemState(
                                             isLoading = true,
-                                            isWaitingForUser = false
+                                            isWaitingForUser = false,
+                                            isPremiumFeatureEnabled = readyState.groupPlanConfig.planTypeEnum.isPremium
                                         )
                                     )
                                 )
@@ -827,7 +857,8 @@ class MapHomeViewModel constructor(
                                             hasRequestError = error != null,
                                             hasDeviceUnreachableError = hasDeviceUnreachableError,
                                             hasDeviceSetupWrongError = hasDeviceSetupWrongError,
-                                            lastLocationRequest = nowUTC()
+                                            lastLocationRequest = nowUTC(),
+                                            isPremiumFeatureEnabled = readyState.groupPlanConfig.planTypeEnum.isPremium
                                         )
                                     )
                                 )
@@ -890,7 +921,7 @@ class MapHomeViewModel constructor(
                     )
                 }
             } else if (limit in 0..groupCount) {
-                _eventChannel.send(MapHomeScreenEvent.GroupsPlanLimitReached)
+                _eventChannel.send(MapHomeScreenEvent.OpenPaywall)
             } else if (shouldShowFreePlanNoticeScreen) {
                 _eventChannel.send(MapHomeScreenEvent.ShowFreePlanInfo)
             } else {

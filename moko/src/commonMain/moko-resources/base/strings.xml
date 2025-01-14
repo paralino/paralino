@@ -213,6 +213,8 @@
     <string name="plan_period_monthly_name">Monthly</string>
     <string name="plan_period_annually_name">Annually</string>
     <string name="plan_period_onetime_name">Lifetime</string>
+    <string name="plan_limit_locationRequest_groupOwner_message">**Premium feature**\n\nTo enable high-priority location requests for **faster updates**, please upgrade your plan.</string>
+    <string name="plan_limit_locationRequest_groupMember_message">**Premium feature**\n\nContact your group admin to enable high-priority location requests for faster updates.</string>
     <string name="paywall_onboarding_skip_button">Use free version</string>
     <string name="paywall_screen_header">Select the plan that is right for you</string>
     <string name="paywall_screen_title">Premium</string>

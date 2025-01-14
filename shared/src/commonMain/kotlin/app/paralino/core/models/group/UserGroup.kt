@@ -6,6 +6,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
@@ -91,6 +92,14 @@ data class UserGroup constructor(
         } else {
             return placesLimitOverride?.toInt()
                 ?: config.planConfigForPlanTypeOrDefault(planType).placesLimit
+        }
+    }
+
+    fun planConfig(config: ConfigData): PlanConfig {
+        if (isPlanExpired) {
+            return config.planConfigForPlanTypeOrDefault(fallbackPlanType)
+        } else {
+            return config.planConfigForPlanTypeOrDefault(planType)
         }
     }
 
