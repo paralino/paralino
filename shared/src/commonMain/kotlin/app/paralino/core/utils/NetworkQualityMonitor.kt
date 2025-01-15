@@ -25,7 +25,7 @@ class NetworkQualityMonitor() {
                 errorType = null
             )
 
-            val threshold = nowUTC().minus(5.minutes)
+            val threshold = nowUTC().minus(3.minutes)
             logs.filter { it.start > threshold } + newLog
         }
     }
@@ -68,8 +68,7 @@ class NetworkQualityMonitor() {
     }
 
     fun clearLogs() {
-        val threshold = nowUTC().minus(5.minutes)
-        networkLogs.update { it.filter { it.end != null || it.start > threshold } }
+        networkLogs.update { emptyList() }
     }
 
     data class NetworkRequestEntry(
