@@ -35,10 +35,12 @@ import app.paralino.core.repo.api.runAsync
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.exceptions.UnsupportedGroupEncryptionSchemeException
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 
 class GroupsRemoteSource constructor(
@@ -187,19 +189,31 @@ class GroupsRemoteSource constructor(
 
     suspend fun getGroupWithMembers(groupId: String): GroupWithMembersAndPlacesRaw {
         return blocking {
-            val groupAsync = async {
+            val group = try {
                 api.getDocument(
                     databaseType = BackendDatabaseType.DATA,
                     appBuildConfig.resourceIds.collectionGroupsID,
                     groupId
-                ).parseGroup().also { group ->
-                    if (!AppPrefs.isEncryptionSchemeSupported(group.schemeVersion)) {
-                        throw UnsupportedGroupEncryptionSchemeException(
-                            groupId = group.id,
-                            schemeVersion = group.schemeVersion
-                        )
-                    }
+                ).parseGroup()
+            } catch (e: Exception) {
+                if (e is NotFoundException) {
+                    // try once again
+                    delay(200)
+                    api.getDocument(
+                        databaseType = BackendDatabaseType.DATA,
+                        appBuildConfig.resourceIds.collectionGroupsID,
+                        groupId
+                    ).parseGroup()
+                } else {
+                    throw e
                 }
+            }
+
+            if (!AppPrefs.isEncryptionSchemeSupported(group.schemeVersion)) {
+                throw UnsupportedGroupEncryptionSchemeException(
+                    groupId = group.id,
+                    schemeVersion = group.schemeVersion
+                )
             }
 
             val membersAsync = async {
@@ -232,7 +246,6 @@ class GroupsRemoteSource constructor(
                 placesRemote.getPlacesForGroup(groupId = groupId)
             }
 
-            val group = groupAsync.await()
             val members = membersAsync.await()
             val settings = settingsAsync.await()
             val locations = locationsAsync.await()
