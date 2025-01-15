@@ -64,30 +64,26 @@ class PlaceDetailViewModel(
             placeFlow.update { Resource.Ready(place) }
             groupFlow.update { Resource.Ready(group) }
 
-            val settings = if (AppBuildConfig.instance.hasPreviewFeatures) {
-                group.members.map { member ->
-                    val memberSetting = place.settings?.alertData?.settings?.firstOrNull {
-                        it.memberUserId == member.member.userId
-                    }
-                    PlaceSettingsState(
-                        groupId = groupId,
-                        placeId = placeId,
-                        memberUserId = member.member.userId,
-                        isCurrentUser = member.member.userId == appPrefs.userId,
-                        name = member.member.name,
-                        image = member.member.image ?: ImageModel.emoji(Emojis.robot),
-                        // default to true for other members and false to current user
-                        notifyEnter = memberSetting?.events?.get(enterEvent() ?: "")
-                            ?: (member.member.userId != appPrefs.userId),
-                        notifyExit = memberSetting?.events?.get(exitEvent() ?: "")
-                            ?: (member.member.userId != appPrefs.userId),
-                        loadingEnter = false,
-                        loadingExit = false
-                    )
-                }.sortedSettings()
-            } else {
-                emptyList()
-            }
+            val settings = group.members.map { member ->
+                val memberSetting = place.settings?.alertData?.settings?.firstOrNull {
+                    it.memberUserId == member.member.userId
+                }
+                PlaceSettingsState(
+                    groupId = groupId,
+                    placeId = placeId,
+                    memberUserId = member.member.userId,
+                    isCurrentUser = member.member.userId == appPrefs.userId,
+                    name = member.member.name,
+                    image = member.member.image ?: ImageModel.emoji(Emojis.robot),
+                    // default to true for other members and false to current user
+                    notifyEnter = memberSetting?.events?.get(enterEvent() ?: "")
+                        ?: (member.member.userId != appPrefs.userId),
+                    notifyExit = memberSetting?.events?.get(exitEvent() ?: "")
+                        ?: (member.member.userId != appPrefs.userId),
+                    loadingEnter = false,
+                    loadingExit = false
+                )
+            }.sortedSettings()
 
             PlaceDetailScreenState(
                 groupId = groupId,
