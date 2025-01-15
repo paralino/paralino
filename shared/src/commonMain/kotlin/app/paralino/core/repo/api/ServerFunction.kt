@@ -22,8 +22,10 @@ enum class ServerFunction constructor(
 
     LOCATION_CREATE(method = "POST", path = "/location"),
     LOCATION_DELETE(method = "DELETE", path = "/location"),
-    LOCATION_REQUEST(method = "POST", path = "/location/request", functionId = "ping"),
-    LOCATION_FOCUS(method = "POST", path = "/location/focus", functionId = "ping"),
+
+    LOCATION_FOCUS_MEMBER(method = "POST", path = "/focus/member", functionId = "ping"),
+    LOCATION_FOCUS_GROUP(method = "POST", path = "/focus/group", functionId = "ping"),
+    LOCATION_REQUEST_MEMBER(method = "POST", path = "/refresh/member", functionId = "ping"),
 
     PLACE_CREATE(method = "PUT", path = "/places"),
     PLACE_DELETE(method = "DELETE", path = "/places"),
