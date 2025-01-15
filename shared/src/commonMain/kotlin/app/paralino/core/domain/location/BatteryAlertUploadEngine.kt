@@ -78,7 +78,7 @@ class BatteryAlertUploadEngine(
             // state is valid, we can send event
             val currentEvent = appDatabase.groupRelatedDao
                     .getBatteryAlertEventOnce(groupId = groupId)
-            if (currentEvent == null || currentEvent.notifyTimeMillis < nowUTC().minus(8.hours)
+            if (currentEvent == null || currentEvent.notifyTimeMillis < nowUTC().minus(4.hours)
                     .toEpochMilliseconds()
             ) {
                 sendBatteryAlertImpl(
