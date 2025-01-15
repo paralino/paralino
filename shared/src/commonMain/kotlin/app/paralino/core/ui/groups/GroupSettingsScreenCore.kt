@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.presentation.groups.settings.GroupSettingsScreenEvent
@@ -72,11 +73,13 @@ fun GroupSettingsScreenCore(
                 ) {
                     openRawDataScreen()
                 }
-                SettingsActionItem(
-                    name = stringResource(MR.strings.group_settings_battery_notifications_title),
-                    icon = CoreAppIcons.NotificationsActive.asPainterResource()
-                ) {
-                    openBatteryNotificationsSettings()
+                if (AppBuildConfig.instance.hasPreviewFeatures) {
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.group_settings_battery_notifications_title),
+                        icon = CoreAppIcons.NotificationsActive.asPainterResource()
+                    ) {
+                        openBatteryNotificationsSettings()
+                    }
                 }
                 if (state.data.canEdit) {
                     SettingsActionItem(

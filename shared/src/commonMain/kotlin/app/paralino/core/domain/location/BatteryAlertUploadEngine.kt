@@ -4,6 +4,7 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.BatteryAlertEventEntity
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -25,14 +26,16 @@ class BatteryAlertUploadEngine(
     fun sendBatteryAlert(
         payloads: List<MemberGroupId>
     ) {
-        scopeProvider.userSessionIOScope.launch {
-            payloads.forEach { payload ->
-                sendBatteryAlert(
-                    groupId = payload.groupId,
-                    memberId = payload.member.id,
-                    locationId = payload.locationId,
-                    batteryLevel = payload.deviceStatus.batteryLevel
-                )
+        if (AppBuildConfig.instance.hasPreviewFeatures) {
+            scopeProvider.userSessionIOScope.launch {
+                payloads.forEach { payload ->
+                    sendBatteryAlert(
+                        groupId = payload.groupId,
+                        memberId = payload.member.id,
+                        locationId = payload.locationId,
+                        batteryLevel = payload.deviceStatus.batteryLevel
+                    )
+                }
             }
         }
     }
