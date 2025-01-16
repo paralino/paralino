@@ -684,7 +684,7 @@ fun GroupMemberLocationChild(
                             .size(14.dp)
                     )
                     Text(
-                        text = state.lastLocationPing,
+                        text = state.lastLocationPing.annotatedBold(),
                         style = MaterialTheme.typography.caption,
                         color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                     )
