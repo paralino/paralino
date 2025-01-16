@@ -128,7 +128,7 @@ class PaywallViewModel(
 
                         // at this point plans are refreshed and are different
                         // refresh groups as well and we can close the screen
-                        refreshUseCase.scheduleRefreshAllGroupsWithPlaces(time = 0)
+                        refreshUseCase.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 0)
                         _eventChannel.send(PaywallScreenEvent.OnNavigateBack(isSuccess = true))
                     } catch (e: Exception) {
                         _uiState.update {
@@ -204,6 +204,33 @@ class PaywallViewModel(
                 _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
                 coroutineScope.launch {
                     _eventChannel.send(PaywallScreenEvent.OnRestorePurchase)
+                }
+            }
+
+            PaywallScreenUiEvent.RequestPromoCode -> {
+                _uiState.update { it.copy(isPromoCodeSectionVisible = true) }
+            }
+
+            is PaywallScreenUiEvent.OnChangePromoCode -> {
+                _uiState.update { it.copy(promoCode = event.code) }
+            }
+
+            PaywallScreenUiEvent.ApplyPromoCode -> {
+                _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
+                coroutineScope.launch {
+                    try {
+                        userRepo.redeemPromoCode(code = uiState.value.promoCode)
+                        onEvent(PaywallScreenUiEvent.RefreshPlans)
+                    } catch (e: Exception) {
+                        _uiState.update {
+                            it.copy(
+                                alertDialog = MainAlertDialog.BillingError(
+                                    code = 0,
+                                    message = MR.strings.paywall_purchase_error_alert_message.localizedString()
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
@@ -349,7 +376,9 @@ class PaywallViewModel(
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
-            faq = currentState?.faq ?: getFaqSection(config)
+            faq = currentState?.faq ?: getFaqSection(config),
+            isPromoCodeSectionVisible = currentState?.isPromoCodeSectionVisible ?: false,
+            promoCode = currentState?.promoCode ?: ""
         )
     }
 

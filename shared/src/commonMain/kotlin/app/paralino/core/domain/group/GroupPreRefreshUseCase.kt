@@ -22,6 +22,7 @@ class GroupPreRefreshUseCase constructor(
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupMemberAdd: GroupMemberAddUseCase,
     private val groupRefresh: GroupRefreshUseCase,
+    private val groupCreate: GroupCreateUseCase,
     private val refreshEverything: RefreshEverythingUseCase,
     private val local: UserGroupLocalDataSource,
     private val limitedExecutionParentManager: LimitedExecutionParentManager
@@ -31,6 +32,7 @@ class GroupPreRefreshUseCase constructor(
         val selfProcessing = super.isProcessing(key)
         val fullProcessing = refreshEverything.isProcessingAny()
         val parentProcessing = limitedExecutionParentManager.isProcessingAny()
+        val groupCreateProcessing = groupCreate.isProcessingAny()
         val groupRemoveProcessing = groupRemove.isProcessing(key)
         val groupMemberRemoveProcessing = groupMemberRemove.isProcessing(key)
         val groupMemberAddProcessing = groupMemberAdd.isProcessing(key)
@@ -38,7 +40,7 @@ class GroupPreRefreshUseCase constructor(
         val memberCryptoKeyRotationProcessing = memberCryptoKeyRotation.isProcessing(key)
         val deviceKeyRotationProcessing = deviceKeyRotation.isProcessing(key)
 
-        val processing = selfProcessing || fullProcessing || parentProcessing
+        val processing = selfProcessing || fullProcessing || parentProcessing || groupCreateProcessing
                 || groupRemoveProcessing || groupMemberRemoveProcessing || groupMemberAddProcessing
                 || groupCryptoKeyRotationProcessing || memberCryptoKeyRotationProcessing || deviceKeyRotationProcessing
 
@@ -47,6 +49,7 @@ class GroupPreRefreshUseCase constructor(
                     " self: $selfProcessing" +
                     " full: $fullProcessing" +
                     " parent: $parentProcessing" +
+                    " groupCreate: $groupCreateProcessing" +
                     " groupRemove: $groupRemoveProcessing" +
                     " groupMemberRemove: $groupMemberRemoveProcessing" +
                     " groupAddRemove: $groupMemberAddProcessing" +

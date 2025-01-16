@@ -4,6 +4,9 @@ import android.app.Application
 import app.paralino.android.remote.RemoteClient
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.provider.isConnectionError
+import app.paralino.core.provider.isSocketTimeout
+import app.paralino.core.utils.NetworkQualityMonitor
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.appwrite.Client
@@ -12,12 +15,15 @@ import io.appwrite.services.Account
 import io.appwrite.services.Databases
 import io.appwrite.services.Functions
 import io.appwrite.services.Realtime
+import kotlinx.coroutines.delay
 import java.net.UnknownHostException
+import java.util.UUID
 
 class AppWriteRemoteModule(
     private val app: Application,
     val appBuildConfig: AppBuildConfig,
     val sessionMonitor: UserSessionMonitor,
+    val networkQualityMonitor: NetworkQualityMonitor
 ) {
 
     internal val account: Account by lazy { Account(client) }
@@ -41,10 +47,33 @@ class AppWriteRemoteModule(
             }
     }
 
-    inline fun <T> execute(forceLogoutOnError: Boolean = false, action: AppWriteRemoteModule.() -> T): T {
+    suspend inline fun <T> execute(forceLogoutOnError: Boolean = false, action: AppWriteRemoteModule.() -> T): T {
+        val key = UUID.randomUUID().toString()
+        networkQualityMonitor.addEntry(key)
         try {
-            return action(this)
+            val result = try {
+                action(this)
+            } catch (e: Exception) {
+                if (e is UnknownHostException) {
+                    delay(200)
+                    action(this)
+                } else {
+                    throw e
+                }
+            }
+
+            networkQualityMonitor.stopEntry(key = key, errorType = null)
+
+            return result
         } catch (e: Exception) {
+            if (e.isSocketTimeout()) {
+                networkQualityMonitor.stopEntry(key = key, errorType = NetworkQualityMonitor.NetworkRequestErrorType.TIMEOUT)
+            } else if (e.isConnectionError()) {
+                networkQualityMonitor.stopEntry(key = key, errorType = NetworkQualityMonitor.NetworkRequestErrorType.UNKNOWN_HOST)
+            } else {
+                networkQualityMonitor.stopEntry(key = key, errorType = NetworkQualityMonitor.NetworkRequestErrorType.OTHER)
+            }
+
             throw mapException(e, forceLogoutOnError).also {
                 sessionMonitor.processNetworkError(it)
             }

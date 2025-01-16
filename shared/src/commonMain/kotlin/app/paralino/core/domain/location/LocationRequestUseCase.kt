@@ -73,16 +73,32 @@ class LocationRequestUseCase constructor(
             logg.tag("location_performance")
                 .v("Map is active (${focusType::class.simpleName}), sending ping")
             try {
-                val requestPayload = LocationFocusPayload(
-                    groupId = groupId,
-                    userId = (focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId,
-                    locationId = (focusType as? MapHomeScreenFocusType.MEMBER)?.memberLocationId
-                )
+                when (focusType) {
+                    is MapHomeScreenFocusType.MEMBER -> {
+                        val requestPayload = LocationFocusPayload(
+                            groupId = groupId,
+                            userId = focusType.memberUserId,
+                            locationId = focusType.memberLocationId
+                        )
 
-                functionsApi.runAsync(
-                    function = ServerFunction.LOCATION_FOCUS,
-                    data = requestPayload
-                )
+                        functionsApi.runAsync(
+                            function = ServerFunction.LOCATION_FOCUS_MEMBER,
+                            data = requestPayload
+                        )
+                    }
+                    else -> {
+                        val requestPayload = LocationFocusPayload(
+                            groupId = groupId,
+                            userId = null,
+                            locationId = null
+                        )
+
+                        functionsApi.runAsync(
+                            function = ServerFunction.LOCATION_FOCUS_GROUP,
+                            data = requestPayload
+                        )
+                    }
+                }
             } catch (e: Exception) {
                 throw e
             }
@@ -102,7 +118,7 @@ class LocationRequestUseCase constructor(
             )
 
             val response = functionsApi.runAndWait(
-                function = ServerFunction.LOCATION_REQUEST,
+                function = ServerFunction.LOCATION_REQUEST_MEMBER,
                 data = requestPayload
             )
 

@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.BatteryManager
+import android.os.PowerManager
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +29,12 @@ val Context.isBatteryCharging: Boolean
         }
         val status: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         return (status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL)
+    }
+
+val Context.isLowPowerMode: Boolean
+    get() {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        return powerManager.isPowerSaveMode
     }
 
 fun Context.isDarkThemeOn(): Boolean {

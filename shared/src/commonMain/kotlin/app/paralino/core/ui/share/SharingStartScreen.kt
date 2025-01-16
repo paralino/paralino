@@ -15,8 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,15 +29,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
@@ -58,7 +59,6 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.OnboardingSkipButton
-import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
@@ -66,6 +66,7 @@ import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.PluralsResource
@@ -184,7 +185,7 @@ fun SharingStartScreenCore(
                     /* do nothing */
                 }
 
-                is SharingStartScreenEvent.DevicesLimitReached -> {
+                is SharingStartScreenEvent.OpenPaywall -> {
                     openSubscriptions()
                 }
             }
@@ -265,6 +266,12 @@ fun SharingStartScreenCore(
                 }
             }
 
+            NoticeInfoChip(
+                modifier = Modifier
+                    .padding(top = 20.dp),
+                text = stringResource(MR.strings.groups_sharing_encryption_info)
+            )
+
             AnimatedVisibility(visible = state.groupState.data != null) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     SettingsSectionHeader(name = stringResource(MR.strings.groups_sharing_section_title_group))
@@ -305,25 +312,14 @@ fun SharingStartScreenCore(
                 }
             }
 
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(10.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.background)
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(MR.strings.groups_sharing_devices),
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Light),
-                    modifier = Modifier.alpha(ContentAlpha.medium)
-                )
-                if (AppBuildConfig.instance.hasPreviewFeatures) {
-                    Spacer(modifier = Modifier.size(8.dp))
-                    PlanLimitCount(count = state.devicesCount, limit = state.devicesLimit)
-                }
-            }
+            SettingsSectionHeader(
+                modifier = Modifier.fillMaxWidth(),
+                name = stringResource(MR.strings.groups_sharing_devices),
+                count = state.devicesCount.takeIf { AppBuildConfig.instance.hasPreviewFeatures },
+                limit = state.devicesLimit
+            )
 
             MainInputField(
                 text = state.deviceName,
@@ -336,6 +332,7 @@ fun SharingStartScreenCore(
                 onInputChange = { vm.onDeviceNameChange(it) }
             )
 
+            Spacer(modifier = Modifier.size(10.dp))
             SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
 
             LargeSeekbarSwitch(
@@ -429,30 +426,73 @@ fun SharingStartScreenCore(
             }
 
             Spacer(modifier = Modifier.size(10.dp))
-
-            val notifyOthersState by rememberSeekbarState(
-                key = state,
-                LargeSeekbarSwitchState.SeekbarSwitchState(
-                    seekbarState = null,
-                    switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
+            if (state.isPremiumSectionVisible) {
+                SettingsSectionHeader(
+                    modifier = Modifier.zIndex(0f),
+                    backgroundColor = Color.Transparent,
+                    name = stringResource(MR.strings.setting_location_premium_banner_title),
+                    end = {
+                        Icon(
+                            painter = CoreAppIcons.StarFamily.asPainterResource(),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.primary,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable { openSubscriptions() }
+                                .background(
+                                    color = AppColors.highlightGold,
+                                    shape = CircleShape
+                                )
+                                .padding(4.dp)
+                        )
+                    }
                 )
-            )
-            LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth(),
-                icon = CoreAppIcons.NotificationsActive.asPainterResource(),
-                title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
-                description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
-                state = notifyOthersState,
-                onStateChange = {
-                    vm.toggleNotifyOthers(it)
-                }
-            )
+                Spacer(modifier = Modifier.size(4.dp))
+            }
 
-            NoticeInfoChip(
-                modifier = Modifier
-                    .padding(top = 40.dp),
-                text = stringResource(MR.strings.groups_sharing_encryption_info)
-            )
+            if (state.showNotifyOthers) {
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+                    title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
+                    description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
+                    elevation = if (!state.isPremiumSectionVisible) 8.dp else 0.dp,
+                    state = rememberSeekbarState(
+                        key = state,
+                        LargeSeekbarSwitchState.SeekbarSwitchState(
+                            seekbarState = null,
+                            switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
+                        )
+                    ).value,
+                    onStateChange = {
+                        vm.toggleNotifyOthers(it)
+                    }
+                )
+            }
+
+            if (state.isPremiumSectionVisible) {
+                Spacer(modifier = Modifier.size(10.dp))
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp).clickable { openSubscriptions() },
+                    icon = CoreAppIcons.AccessTime.asPainterResource(),
+                    title = stringResource(MR.strings.groups_sharing_section_title_duration),
+                    description = getTime(state.demoSharingTimeMillis),
+                    focusDescription = true,
+                    state = rememberSeekbarState(
+                        key = state,
+                        LargeSeekbarSwitchState.SeekbarSwitchState(
+                            seekbarState = LargeSeekbarSwitchState.Seekbar(
+                                seekbarProgress = state.demoSharingTimeIndex + 1,
+                                seekbarRange = IntRange(1, state.demoSharingPresetsMillis.size)
+                            ),
+                            switchState = null
+                        )
+                    ).value,
+                    onProgressChange = {
+                        vm.demoSharingDurationChanged(it - 1)
+                    }
+                )
+            }
         }
     }
 

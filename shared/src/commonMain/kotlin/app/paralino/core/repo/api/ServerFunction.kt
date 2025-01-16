@@ -12,6 +12,8 @@ enum class ServerFunction constructor(
     GROUP_DELETE(method = "DELETE", path = "/groups"),
     GROUP_UPDATE(method = "PATCH", path = "/groups"),
     GROUP_BLOCK(method = "PUT", path = "/groups/block"),
+    SETTINGS_NOTIFICATIONS_BATTERY_UPDATE(method = "PATCH", path = "/groups/notifications/battery"),
+    SETTINGS_NOTIFICATIONS_PLACES_UPDATE(method = "PATCH", path = "/groups/notifications/places"),
 
     MEMBER_CREATE(method = "PUT", path = "/members"),
     MEMBER_DELETE(method = "DELETE", path = "/members"),
@@ -20,13 +22,14 @@ enum class ServerFunction constructor(
 
     LOCATION_CREATE(method = "POST", path = "/location"),
     LOCATION_DELETE(method = "DELETE", path = "/location"),
-    LOCATION_REQUEST(method = "POST", path = "/location/request", functionId = "ping"),
-    LOCATION_FOCUS(method = "POST", path = "/location/focus", functionId = "ping"),
+
+    LOCATION_FOCUS_MEMBER(method = "POST", path = "/focus/member", functionId = "ping"),
+    LOCATION_FOCUS_GROUP(method = "POST", path = "/focus/group", functionId = "ping"),
+    LOCATION_REQUEST_MEMBER(method = "POST", path = "/refresh/member", functionId = "ping"),
 
     PLACE_CREATE(method = "PUT", path = "/places"),
     PLACE_DELETE(method = "DELETE", path = "/places"),
     PLACE_UPDATE(method = "PATCH", path = "/places"),
-    PLACE_NOTIFY(method = "PATCH", path = "/places/notify"),
 
     KEYS_UPDATE_GROUP(method = "POST", path = "/keys/group"),
     KEYS_UPDATE_MEMBERS(method = "POST", path = "/keys/member"),
@@ -35,6 +38,10 @@ enum class ServerFunction constructor(
     KEYS_UPDATE_USER(method = "POST", path = "/keys/user"),
 
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
+    BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
+
+    EVENT_PLACES(method = "POST", path = "/events/places"),
+    EVENT_BATTERY(method = "POST", path = "/events/battery"),
 
     PERSONAL_CODE_CREATE(method = "POST", path = "/personal_code"),
     PERSONAL_CODE_READ(method = "GET", path = "/personal_code"),

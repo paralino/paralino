@@ -21,6 +21,7 @@ import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 
 class MemberMapperCore constructor(
@@ -89,7 +90,11 @@ class MemberMapperCore constructor(
                                 .e(
                                     message = "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "location group key: ${location.groupKeyVersion} - main group key: ${groupKey.version} - used group key: ${deviceGroupKey.version}",
-                                    t = e
+                                    t = DecryptionException(
+                                        type = "deviceData",
+                                        message = "Error decrypting device data: ${e::class}: ${e.message}",
+                                        cause = e
+                                    )
                                 )
                             CryptoResource.WrongKeyOrData
                         }
@@ -138,7 +143,11 @@ class MemberMapperCore constructor(
                                 .e(
                                     message = "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
-                                    t = e
+                                    t = DecryptionException(
+                                        type = "locationData",
+                                        message = "Error decrypting device location data: ${e::class}: ${e.message}",
+                                        cause = e
+                                    )
                                 )
                             CryptoResource.WrongKeyOrData
                         }
@@ -177,7 +186,11 @@ class MemberMapperCore constructor(
                                 .e(
                                     message = "Error decrypting device status data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
-                                    t = e
+                                    t = DecryptionException(
+                                        type = "status",
+                                        message = "Error decrypting device status data: ${e::class}: ${e.message}",
+                                        cause = e
+                                    )
                                 )
                             CryptoResource.WrongKeyOrData
                         }
@@ -269,7 +282,14 @@ class MemberMapperCore constructor(
                     memberIntegrity = it.memberIntegrity,
                     groupIntegrity = it.groupIntegrity,
                     memberIntegrityUserKeyVersion = it.memberIntegrityUserKeyVersion,
-                    groupIntegrityUserKeyVersion = it.groupIntegrityUserKeyVersion
+                    groupIntegrityUserKeyVersion = it.groupIntegrityUserKeyVersion,
+                    batteryAlertSettings = it.batteryAlertSettings?.let {
+                        try {
+                            BaseRemoteModule.formatter.decodeFromString(it)
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
                 )
             },
             memberData = memberData,

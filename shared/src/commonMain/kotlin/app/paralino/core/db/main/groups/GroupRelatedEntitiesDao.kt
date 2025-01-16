@@ -165,6 +165,9 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT COUNT(id) FROM placeEntity WHERE groupId = :groupId")
     suspend fun getPlacesCountForGroupOnce(groupId: String): Int?
 
+    @Query("SELECT COUNT(id) FROM placeEntity WHERE groupId = :groupId")
+    fun getPlacesCountForGroup(groupId: String): Flow<Int?>
+
     @Query("SELECT * FROM placeEntity")
     suspend fun getAllPlacesOnce(): List<PlaceEntity>
 
@@ -231,6 +234,9 @@ interface GroupRelatedEntitiesDao {
     @Update(entity = MemberLocationEntity::class)
     suspend fun updateMemberLocation(dataUpdate: MemberLocationEntityDataUpdate)
 
+    @Update(entity = MemberEntity::class)
+    suspend fun updateMemberBatterySettings(dataUpdate: MemberEntityBatterySettingsUpdate)
+
     @Query("DELETE FROM memberLocationEntity WHERE groupId = :groupId")
     suspend fun clearLocationsForGroup(groupId: String)
 
@@ -272,6 +278,24 @@ interface GroupRelatedEntitiesDao {
 
     @Query("DELETE FROM pendingPlaceEventsEntity")
     suspend fun clearAllPendingEvents()
+
+
+
+    // Battery Alert Events Entity operations
+    @Query("SELECT * FROM batteryAlertEvent")
+    suspend fun getAllBatteryAlertsOnce(): List<BatteryAlertEventEntity>
+
+    @Query("SELECT * FROM batteryAlertEvent WHERE groupId = :groupId")
+    suspend fun getBatteryAlertEventOnce(groupId: String): BatteryAlertEventEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createBatteryAlertEvent(event: BatteryAlertEventEntity)
+
+    @Query("DELETE FROM batteryAlertEvent WHERE groupId = :groupId")
+    suspend fun deleteBatteryAlertEvent(groupId: String)
+
+    @Query("DELETE FROM batteryAlertEvent")
+    suspend fun clearAllBatteryAlertEvents()
 
 
 
@@ -326,6 +350,7 @@ interface GroupRelatedEntitiesDao {
         clearAllPlaceSettings()
         clearAllMemberLocations()
         clearAllPendingEvents()
+        clearAllBatteryAlertEvents()
     }
 
     @Transaction
@@ -336,6 +361,7 @@ interface GroupRelatedEntitiesDao {
         deleteSettingsForGroup(groupId = groupId)
         clearLocationsForGroup(groupId = groupId)
         deletePendingEventsForGroup(groupId = groupId)
+        deleteBatteryAlertEvent(groupId = groupId)
     }
 
     @Transaction

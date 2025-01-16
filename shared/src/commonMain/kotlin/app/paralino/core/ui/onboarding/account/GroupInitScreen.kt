@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
-import app.paralino.core.presentation.groups.GroupInitScreenEvent
-import app.paralino.core.presentation.groups.GroupInitScreenState
-import app.paralino.core.presentation.groups.GroupInitScreenUiEvent
-import app.paralino.core.presentation.groups.GroupInitViewModel
+import app.paralino.core.presentation.groups.edit.GroupInitScreenEvent
+import app.paralino.core.presentation.groups.edit.GroupInitScreenState
+import app.paralino.core.presentation.groups.edit.GroupInitScreenUiEvent
+import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem

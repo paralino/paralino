@@ -14,6 +14,8 @@ data class PlaceDetailScreenState constructor(
     val radiusMeters: Int,
     val canEdit: Boolean,
     val fullLoading: Boolean,
+    val isPlaceAlertsSwitchLoading: Boolean,
+    val arePlaceAlertsActive: Boolean,
     val settings: List<PlaceSettingsState>
 )
 
@@ -21,6 +23,7 @@ data class PlaceSettingsState constructor(
     val groupId: String,
     val placeId: String,
     val memberUserId: String,
+    val isCurrentUser: Boolean,
     val name: String,
     val image: ImageModel,
     val notifyEnter: Boolean,

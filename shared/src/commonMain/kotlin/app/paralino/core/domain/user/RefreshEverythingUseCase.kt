@@ -6,13 +6,13 @@ import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
-import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
@@ -30,6 +30,7 @@ class RefreshEverythingUseCase(
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val placeActivityUploadEngine: PlaceActivityUploadEngine,
     private val pushProviderManager: IPushProviderManager,
+    private val premiumStatusManager: PremiumStatusManager,
     private val parentManager: LimitedExecutionParentManager
 ) : LimitedExecutionRepository() {
 
@@ -68,12 +69,13 @@ class RefreshEverythingUseCase(
                     configRepo.refreshConfig()
                     userConfigRepo.refreshAndGetConfig()
                     scheduleRefreshAllGroupsWithPlaces(
-                        time = if (forceGroupRefresh) 0 else 60_000
+                        cacheTimeMillis = if (forceGroupRefresh) 0 else 60_000
                     )
                     pushProviderManager.syncPushNotifications()
                     personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
                     deviceStatusProcessor.revokeActiveStatus()
                     deviceStatusProcessor.deleteOldLocations()
+                    premiumStatusManager.adjustDeviceSettingsForPlan()
                 }
             )
         } catch (e: Exception) {
@@ -85,7 +87,7 @@ class RefreshEverythingUseCase(
     }
 
     suspend fun scheduleRefreshAllGroupsWithPlaces(
-        time: Long = 15_000
+        cacheTimeMillis: Long = 15_000
     ) {
         try {
             startProcessing(groupRefreshExecutionKey)
@@ -96,7 +98,7 @@ class RefreshEverythingUseCase(
 
         try {
             triggerRemoteMaybe(
-                remotePreference = RemotePreference.CACHE(key = groupRefreshExecutionKey, timeMillis = time),
+                remotePreference = RemotePreference.CACHE(key = groupRefreshExecutionKey, timeMillis = cacheTimeMillis),
                 remote = { refreshAllGroupsWithPlaces() }
             )
         } catch (e: Exception) {

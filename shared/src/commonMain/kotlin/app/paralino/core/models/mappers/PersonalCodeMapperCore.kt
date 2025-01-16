@@ -43,13 +43,13 @@ class PersonalCodeMapperCore(
             BaseRemoteModule.formatter.decodeFromString<PersonalCodeKeyData>(it)
         }
 
-        if (userId != userData.ownerUserId) throw DecryptionException("User personal code can not be verified")
-        if (code != keyData.code) throw DecryptionException("User personal code can not be verified")
+        if (userId != userData.ownerUserId) throw DecryptionException("personal_code", "User personal code can not be verified")
+        if (code != keyData.code) throw DecryptionException("personal_code", "User personal code can not be verified")
 
         cryptoCore.verifySignature(
             data = keyData.signedOwnerKxPublicKey,
             publicKey = userData.ownerIdentityKey
-        ) ?: throw DecryptionException("User personal code can not be verified")
+        ) ?: throw DecryptionException("personal_code", "User personal code can not be verified")
 
         return UserPersonalCodeData(
             codeKeyId = derivedCode.loginPassword,

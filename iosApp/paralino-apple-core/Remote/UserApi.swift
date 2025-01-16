@@ -26,7 +26,7 @@ class UserApi: IUserApiIOS {
     
     func confirmEmail(userId: String, secret: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let result = try await module.account.updateVerification(userId: userId, secret: secret)
+            let _ = try await module.account.updateVerification(userId: userId, secret: secret)
             return KotlinUnit()
         }
     }
@@ -34,7 +34,7 @@ class UserApi: IUserApiIOS {
     
     func deleteAccount() async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let result = try await module.account.updateStatus()
+            let _ = try await module.account.updateStatus()
             return KotlinUnit()
         }
     }
@@ -59,14 +59,14 @@ class UserApi: IUserApiIOS {
     
     func doInitEmailVerification() async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let result = try await module.account.createVerification(url: module.appBuildConfig.resourceIds.emailConfirmationUrl)
+            let _ = try await module.account.createVerification(url: module.appBuildConfig.resourceIds.emailConfirmationUrl)
             return KotlinUnit()
         }
     }
     
     func doInitResetPassword(email: String) async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let result = try await module.account.createRecovery(email: email, url: module.appBuildConfig.resourceIds.passwordResetUrl)
+            let _ = try await module.account.createRecovery(email: email, url: module.appBuildConfig.resourceIds.passwordResetUrl)
             return KotlinUnit()
         }
     }
@@ -79,14 +79,14 @@ class UserApi: IUserApiIOS {
     
     func logout() async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let result = try await module.account.deleteSession(sessionId: "current")
+            let _ = try await module.account.deleteSession(sessionId: "current")
             return KotlinUnit()
         }
     }
     
     func resetPassword(userId: String, secret: String, password: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let result = try await module.account.updateRecovery(userId: userId, secret: secret, password: password)
+            let _ = try await module.account.updateRecovery(userId: userId, secret: secret, password: password)
             return KotlinUnit()
         }
     }

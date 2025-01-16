@@ -31,6 +31,9 @@ struct PlaceDetailScreen: View {
                     openPlaceRawDataScreen: {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupPlacePresentation(placeId: appState.vm.placeId))))
                     },
+                    openPlaceAlertsScreen: {
+                        path.append(.home(.placeAlertsSettings(groupId: appState.groupId, placeId: appState.placeId)))
+                    },
                     openPlaceEditScreen: {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, lat: nil, lng: nil)))
                     },

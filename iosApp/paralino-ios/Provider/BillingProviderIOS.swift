@@ -58,7 +58,7 @@ class BillingProviderIOS: IBillingProvider {
     
     private func loadPlatformHighestUserPlan() async throws {
         let customerInfo = try await Purchases.shared.customerInfo(fetchPolicy: .fetchCurrent)
-        let planConfigs = remoteConfigRepo.getConfigOnce().plans
+        let planConfigs = try await remoteConfigRepo.getConfigOnce().plans
         let activeEntitlements = customerInfo.entitlements.active.values
 
         let matchingPlans = activeEntitlements.compactMap { entitlementInfo -> CurrentPlanConfig? in
@@ -132,7 +132,7 @@ class BillingProviderIOS: IBillingProvider {
                         trialDurationDays: trialDurationDays
                     )
 
-                    let planConfig = remoteConfigRepo.getConfigOnce().plans.first { config in
+                    let planConfig = try await remoteConfigRepo.getConfigOnce().plans.first { config in
                         config.productPlanIds.contains(product.productIdentifier)
                     }
 

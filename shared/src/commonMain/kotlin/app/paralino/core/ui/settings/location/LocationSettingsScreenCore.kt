@@ -1,7 +1,7 @@
 package app.paralino.core.ui.settings.location
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,10 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -63,6 +62,7 @@ import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LocationSettingsScreenCore(
     coreUiState: CoreUiState,
@@ -97,105 +97,153 @@ fun LocationSettingsScreenCore(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .animateContentSize()
-            .padding(paddingValues)
-            .padding(
-                start = 20.dp,
-                end = 20.dp,
-                bottom = 40.dp
-            )
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = paddingValues
     ) {
-        SettingsSectionHeader(name = stringResource(MR.strings.setting_location_highPerformance_section_title))
-
-        NoticeInfoChip(
-            modifier = Modifier,
-            icon = CoreAppIcons.LocationOn.asPainterResource(),
-            text = stringResource(MR.strings.setting_location_highPerformance_section_info)
-        )
-
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                modifier = Modifier.padding(bottom = 10.dp, top = 20.dp),
-                text = stringResource(MR.strings.setting_location_highPerformance_duration_info).annotatedBold(),
-                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                textAlign = TextAlign.Start
+        this.stickyHeader(key = "when_in_use") {
+            SettingsSectionHeader(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                name = stringResource(MR.strings.setting_location_highPerformance_section_title)
             )
         }
 
-        LocationPerformanceSettingsOptions(
-            modifier = Modifier.fillMaxWidth(),
-            items = uiState.highPerformanceSettings.items,
-            onOptionSelected = { vm.onEvent(LocationSettingsScreenUiEvent.ChangePerformance(it)) }
-        )
+        this.item(key = "in_use_items") {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+                NoticeInfoChip(
+                    modifier = Modifier,
+                    icon = CoreAppIcons.LocationOn.asPainterResource(),
+                    text = stringResource(MR.strings.setting_location_highPerformance_section_info)
+                )
 
-        SettingsSectionHeader(
-            modifier = Modifier.padding(top = 20.dp),
-            name = stringResource(MR.strings.setting_location_balanced_section_title)
-        )
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 10.dp, top = 20.dp),
+                        text = stringResource(MR.strings.setting_location_highPerformance_duration_info).annotatedBold(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
 
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                modifier = Modifier.padding(bottom = 20.dp),
-                text = stringResource(MR.strings.setting_location_balanced_section_info).annotatedBold(),
-                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                textAlign = TextAlign.Start
-            )
-        }
-
-        val highAccuracyState by rememberSeekbarState(
-            key = uiState,
-            LargeSeekbarSwitchState.SeekbarSwitchState(
-                seekbarState = null,
-                switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.useHighPerformanceLocation)
-            )
-        )
-
-        LargeSeekbarSwitch(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
-            icon = CoreAppIcons.ShareLocation.asPainterResource(),
-            title = stringResource(MR.strings.setting_location_balanced_highAccuracy_title),
-            description = stringResource(MR.strings.setting_location_balanced_highAccuracy_description),
-            state = highAccuracyState,
-            onStateChange = {
-                vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance)
+                LocationPerformanceSettingsOptions(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = uiState.highPerformanceSettings.items,
+                    onOptionSelected = {
+                        vm.onEvent(
+                            LocationSettingsScreenUiEvent.ChangePerformance(it)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.size(20.dp))
             }
-        )
+        }
 
-        LocationPerformanceSettingsOptions(
-            modifier = Modifier.fillMaxWidth(),
-            items = uiState.balancedSettings.items,
-            onOptionSelected = { vm.onEvent(LocationSettingsScreenUiEvent.ChangePerformance(it)) }
-        )
-
-        SettingsSectionHeader(
-            modifier = Modifier.padding(top = 20.dp),
-            name = stringResource(MR.strings.setting_location_batterySaver_section_title)
-        )
-
-        NoticeInfoChip(
-            modifier = Modifier.padding(bottom = 20.dp),
-            icon = CoreAppIcons.BatteryFull.asPainterResource(),
-            text = stringResource(MR.strings.setting_location_batterySaver_batteryLow_info)
-        )
-
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                modifier = Modifier,
-                text = stringResource(MR.strings.setting_location_batterySaver_section_info).annotatedBold(),
-                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                textAlign = TextAlign.Start
+        this.stickyHeader(key = "when_in_background") {
+            SettingsSectionHeader(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                name = stringResource(MR.strings.setting_location_balanced_section_title)
             )
         }
 
-        LocationPerformanceSettingsOptions(
-            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
-            items = uiState.batterySaverSettings.items,
-            onOptionSelected = { vm.onEvent(LocationSettingsScreenUiEvent.ChangePerformance(it)) }
-        )
+        this.item(key = "in_background_items") {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        text = stringResource(MR.strings.setting_location_balanced_section_info).annotatedBold(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                val highAccuracyState by rememberSeekbarState(
+                    key = uiState,
+                    LargeSeekbarSwitchState.SeekbarSwitchState(
+                        seekbarState = null,
+                        switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.useHighPerformanceLocation)
+                    )
+                )
+
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                    icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                    title = stringResource(MR.strings.setting_location_balanced_highAccuracy_title),
+                    description = stringResource(MR.strings.setting_location_balanced_highAccuracy_description),
+                    state = highAccuracyState,
+                    onStateChange = {
+                        vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance)
+                    }
+                )
+
+                LocationPerformanceSettingsOptions(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = uiState.balancedSettings.items,
+                    onOptionSelected = {
+                        vm.onEvent(
+                            LocationSettingsScreenUiEvent.ChangePerformance(it)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.size(20.dp))
+            }
+        }
+
+        this.stickyHeader(key = "battery_saving") {
+            SettingsSectionHeader(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                name = stringResource(MR.strings.setting_location_batterySaver_section_title)
+            )
+        }
+
+        this.item(key = "battery_saving_items") {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+                NoticeInfoChip(
+                    modifier = Modifier.padding(bottom = 20.dp),
+                    icon = CoreAppIcons.BatteryFull.asPainterResource(),
+                    text = stringResource(MR.strings.setting_location_batterySaver_batteryLow_info)
+                )
+
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 20.dp),
+                        text = stringResource(MR.strings.setting_location_batterySaver_section_info).annotatedBold(),
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                LargeSeekbarSwitch(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                    icon = CoreAppIcons.Settings.asPainterResource(),
+                    title = stringResource(MR.strings.setting_location_batterySaver_lowPowerMode_title),
+                    description = stringResource(MR.strings.setting_location_batterySaver_lowPowerMode_description),
+                    state = rememberSeekbarState(
+                        key = uiState,
+                        LargeSeekbarSwitchState.SeekbarSwitchState(
+                            seekbarState = null,
+                            switchState = LargeSeekbarSwitchState.Switch(uiState.batterySaverSettings.activeOnLowPowerMode)
+                        )
+                    ).value,
+                    onStateChange = {
+                        vm.onEvent(LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode)
+                    }
+                )
+
+                LocationPerformanceSettingsOptions(
+                    modifier = Modifier.fillMaxWidth(),
+                    items = uiState.batterySaverSettings.items,
+                    onOptionSelected = {
+                        vm.onEvent(
+                            LocationSettingsScreenUiEvent.ChangePerformance(it)
+                        )
+                    }
+                )
+            }
+        }
+
+        this.item(key = "extra_space") {
+            Spacer(modifier = Modifier.size(40.dp))
+        }
     }
 }
 

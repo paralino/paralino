@@ -125,23 +125,25 @@ fun BaseOnboardingScreen(
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            ScaffoldBottomBarButtons(
-                paddingValues = PaddingValues(
-                    start = 20.dp,
-                    end = 20.dp,
-                    top = 8.dp,
-                    bottom = animateDpAsState(if (skipButton != null) 6.dp else 20.dp).value
-                )
-            ) {
-                AnimatedVisibility(
-                    visible = nextButton != null
+            if (nextButton != null || skipButton != null) {
+                ScaffoldBottomBarButtons(
+                    paddingValues = PaddingValues(
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = 8.dp,
+                        bottom = animateDpAsState(if (skipButton != null) 6.dp else 20.dp).value
+                    )
                 ) {
-                    nextButton?.invoke()
-                }
-                AnimatedVisibility(
-                    visible = skipButton != null
-                ) {
-                    skipButton?.invoke()
+                    AnimatedVisibility(
+                        visible = nextButton != null
+                    ) {
+                        nextButton?.invoke()
+                    }
+                    AnimatedVisibility(
+                        visible = skipButton != null
+                    ) {
+                        skipButton?.invoke()
+                    }
                 }
             }
         },

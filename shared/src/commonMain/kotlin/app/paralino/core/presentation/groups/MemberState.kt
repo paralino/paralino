@@ -171,6 +171,7 @@ data class LocationRequestItemState(
     val hasDeviceUnreachableError: Boolean = false,
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
+    val isPremiumFeatureEnabled: Boolean,
     val lastLocationRequest: Instant? = null
 ) {
     val canInteract: Boolean = !isLoading && !isWaitingForUser

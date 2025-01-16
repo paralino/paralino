@@ -14,7 +14,9 @@ data class PaywallScreenState(
     val isLoading: Boolean,
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,
-    val faq: FaqSectionState?
+    val faq: FaqSectionState?,
+    val isPromoCodeSectionVisible: Boolean,
+    val promoCode: String
 ) {
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod
@@ -79,6 +81,9 @@ sealed class PaywallScreenUiEvent() {
     data object RefreshPlans : PaywallScreenUiEvent()
     data object StartPurchase : PaywallScreenUiEvent()
     data object RestorePurchase : PaywallScreenUiEvent()
+    data object RequestPromoCode : PaywallScreenUiEvent()
+    data object ApplyPromoCode : PaywallScreenUiEvent()
+    data class OnChangePromoCode(val code: String) : PaywallScreenUiEvent()
     data class OnPurchaseError(val error: PurchaseErrorException) : PaywallScreenUiEvent()
     data class SelectBillingPeriod(val planType: PlanType, val period: PlanBillingPeriod) : PaywallScreenUiEvent()
     data class SelectPlanType(val planType: PlanType) : PaywallScreenUiEvent()

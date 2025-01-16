@@ -38,6 +38,8 @@ sealed class PlanType {
 
     data class UNKNOWN(override val key: String, override val order: Int = -1) : PlanType()
 
+    val isMoreThanFree: Boolean get() = order > FREE.order
+    val isSilverOrMore: Boolean get() = order >= SILVER.order
     val isPremium: Boolean get() = order >= PRO.order
     val isOtherThanSilver get() = this != SILVER
 
@@ -180,12 +182,12 @@ data class PlanConfig(
             planType = PlanType.FREE.key,
             planName = PlanType.FREE.name,
             groupsLimit = 1,
-            membersLimit = 3,
+            membersLimit = 2,
             devicesLimit = 1,
             placesLimit = 2,
             historyDaysLimit = 2,
             paralinoIdsLimit = 1,
-            personalDevicesLimit = 2,
+            personalDevicesLimit = 1,
             isActive = true,
             productIds = listOf("free"),
             productPlanIds = listOf("free")

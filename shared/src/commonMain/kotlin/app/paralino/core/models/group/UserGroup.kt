@@ -6,6 +6,8 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
@@ -50,6 +52,14 @@ data class UserGroup constructor(
         ?.let { it < nowUTC() }
         ?: false
 
+    fun hasPremiumSharingFeatures(config: ConfigData): Boolean {
+        if (isPlanExpired) {
+            return false
+        } else {
+            return config.planConfigForPlanTypeOrDefault(planType).planTypeEnum.isSilverOrMore
+        }
+    }
+
     fun isGroupPremium(config: ConfigData): Boolean {
         if (isPlanExpired) {
             return false
@@ -85,6 +95,14 @@ data class UserGroup constructor(
         }
     }
 
+    fun planConfig(config: ConfigData): PlanConfig {
+        if (isPlanExpired) {
+            return config.planConfigForPlanTypeOrDefault(fallbackPlanType)
+        } else {
+            return config.planConfigForPlanTypeOrDefault(planType)
+        }
+    }
+
     companion object {
         const val groupPublicSharingId = "publicSharing"
         const val groupPrivateGroupId = "privateGroup"
@@ -103,6 +121,18 @@ data class UserGroupWithMetadata constructor(
     val name: String get() = nameOrNull ?: "---"
     val nameOrNull: String? get() = group.nameOrNull
     val image: ImageModel get() = group.image
+}
+
+@Serializable
+data class UserGroupWithLimits constructor(
+    val group: UserGroup,
+    val memberCount: Int,
+    val placesCount: Int,
+    val devicesCount: Int
+) {
+    fun isGroupOverLimits(config: ConfigData): Boolean {
+        return memberCount > group.membersLimit(config) || placesCount > group.placesLimit(config) || devicesCount > group.devicesLimit(config)
+    }
 }
 
 @Serializable

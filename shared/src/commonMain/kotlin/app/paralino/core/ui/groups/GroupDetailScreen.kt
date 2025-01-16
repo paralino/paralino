@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.Icon
@@ -44,10 +43,10 @@ import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.BlocklistType
-import app.paralino.core.presentation.groups.GroupDetailScreenEvent
-import app.paralino.core.presentation.groups.GroupDetailViewModel
+import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
+import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.LocationSharingState
+import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
@@ -72,7 +71,7 @@ import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GroupDetailScreenCore(
     appState: CoreUiState,
@@ -335,7 +334,7 @@ fun GroupDetailScreenCore(
                                     icon = CoreAppIcons.Add.asPainterResource(),
                                     text = {
                                         Text(
-                                            modifier = Modifier.padding(end = 4.dp),
+                                            modifier = Modifier.padding(end = 2.dp),
                                             text = stringResource(MR.strings.group_details_add_member_button)
                                         )
                                     },

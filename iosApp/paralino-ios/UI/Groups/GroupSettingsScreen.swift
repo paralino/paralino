@@ -27,6 +27,9 @@ struct GroupSettingsScreen: View {
                     },
                     openRawDataScreen: {
                         path.append(.settings(.rawData(type: RawPresentationDataType.GroupPresentation(groupId: appState.vm.groupId))))
+                    },
+                    openBatteryNotificationsSettings: {
+                        path.append(.home(.batteryNotificationsSettings(groupId: appState.vm.groupId)))
                     }
                 )
             }

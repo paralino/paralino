@@ -8,11 +8,17 @@ data class GroupPlaceSettings constructor(
     val groupId: String,
     val placeId: String,
     val ownerUserId: String,
-    val alertData: List<GroupPlaceSettingsData>,
+    val alertData: GroupPlaceSettingsData?
 )
 
 @Serializable
 data class GroupPlaceSettingsData constructor(
+    val isActive: Boolean = true,
+    val settings: List<GroupPlaceSettingsEntry> = emptyList()
+)
+
+@Serializable
+data class GroupPlaceSettingsEntry constructor(
     val memberUserId: String,
     val events: Map<String, Boolean> = emptyMap()
 )

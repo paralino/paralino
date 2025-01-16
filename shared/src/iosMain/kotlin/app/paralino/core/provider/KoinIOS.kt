@@ -23,10 +23,11 @@ import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresente
 import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
-import app.paralino.core.presentation.groups.CreateGroupViewModel
-import app.paralino.core.presentation.groups.GroupDetailViewModel
-import app.paralino.core.presentation.groups.GroupInitViewModel
-import app.paralino.core.presentation.groups.GroupSettingsViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
+import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
+import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
+import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
@@ -76,10 +77,10 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.NetworkQualityMonitor
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.module.Module
-import org.koin.core.module.factory
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -102,7 +103,7 @@ object KoinIOS {
             locationStatusProvider: ILocationStatusProvider,
             locationCacheRepo: LocationCacheRepository
         ) -> IOneTimeLocationProvider,
-        remoteModule: (sessionMonitor: UserSessionMonitor) -> IRemoteModule,
+        remoteModule: (sessionMonitor: UserSessionMonitor, networkQualityMonitor: NetworkQualityMonitor) -> IRemoteModule,
         documentsApi: (IRemoteModule, AppBuildConfig) -> IDocumentApiIOS,
         userApi: (IRemoteModule, AppBuildConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
@@ -128,7 +129,7 @@ object KoinIOS {
                     factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
                     single { billingProvider() } bind IBillingProvider::class
                     single { geofenceManager() }
-                    single { remoteModule(get()) }
+                    single { remoteModule(get(), get()) }
                     single { appBuildConfig }
                     single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                     single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
@@ -164,7 +165,7 @@ object KoinIOS {
             factory { (startScreenType: LoginScreenUiType) ->
                 LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs)
             }
-            factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get()) }
+            factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { (groupID: String?, isOnboarding: Boolean) ->
                 SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
@@ -181,12 +182,12 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
             }
-            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
             factory { ChangePasswordViewModel(get()) }
             factory { ConvertAccountViewModel(get()) }
@@ -205,6 +206,7 @@ object KoinIOS {
                     groupId = groupID,
                     placeId = placeId,
                     placesRepo = get(),
+                    updatePlaceAlerts = get(),
                     groupRepo = get(),
                     cryptoCore = get(),
                     appPrefs = get()
@@ -239,6 +241,7 @@ object KoinIOS {
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
+            factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
         }
     }
 
@@ -286,6 +289,7 @@ object KoinIOS {
         fun groupCreateVM(groupId: String?) = get<CreateGroupViewModel> { parametersOf(groupId) }
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
         fun groupSettingsVM(groupId: String) = get<GroupSettingsViewModel> { parametersOf(groupId) }
+        fun groupBatterySettingsVM(groupId: String) = get<BatteryNotificationsViewModel> { parametersOf(groupId) }
         fun memberInviteVM(groupId: String?, code: String?) =
             get<MemberInviteViewModel> { parametersOf(groupId, code) }
 

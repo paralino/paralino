@@ -278,3 +278,30 @@ data class LocationFocusPayload constructor(
     val userId: String?,
     val locationId: String?
 )
+
+@Serializable
+data class PromoCodeRedeemPayload(
+    val code: String
+)
+
+@Serializable
+data class BatteryNotificationsUpdatePayload(
+    val groupId: String,
+    val memberId: String,
+    val alertData: String
+)
+
+@Serializable
+data class PlaceNotificationsUpdatePayload(
+    val groupId: String,
+    val placeId: String,
+    val placeSettingsId: String?,
+    val alertData: String
+)
+
+@Serializable
+data class BatteryAlertPayload constructor(
+    val groupId: String,
+    val memberId: String,
+    val locationId: String
+)

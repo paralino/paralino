@@ -235,7 +235,8 @@ class LocationPerformanceManager constructor(
             lastMediumBoostDiff = lastMediumBoostDiff,
             lastHighBoostDiff = lastHighBoostDiff,
             lastVeryHighBoostDiff = lastVeryHighBoostDiff,
-            batteryLevel = deviceStatus.batteryLevel
+            batteryLevel = deviceStatus.batteryLevel,
+            lowPowerMode = deviceStatus.isLowPowerMode
         )
 
         logg.tag("location_performance")
@@ -261,6 +262,7 @@ class LocationPerformanceManager constructor(
         lastHighBoostDiff: Duration,
         lastVeryHighBoostDiff: Duration,
         batteryLevel: Int?,
+        lowPowerMode: Boolean
     ): LocationPerformanceType {
 
         // allow only certain amount of boost per hour
@@ -279,7 +281,7 @@ class LocationPerformanceManager constructor(
         val batteryLevelAdjusted = batteryLevel ?: 30
         val batteryVeryLow = batteryLevelAdjusted < 10
         val batteryLow = batteryLevelAdjusted < 30
-        val batteryMedium = batteryLevelAdjusted < 40
+        val shouldUseLowPowerMode = batteryLow || (lowPowerMode && appPrefs.locationBatterySaverRespectsDeviceLowPower)
 
         return when (type) {
             LocationPerformanceType.MANUAL_BOOST -> {
@@ -295,7 +297,8 @@ class LocationPerformanceManager constructor(
                         lastMediumBoostDiff = lastMediumBoostDiff,
                         lastHighBoostDiff = lastHighBoostDiff,
                         lastVeryHighBoostDiff = lastVeryHighBoostDiff,
-                        batteryLevel = batteryLevel
+                        batteryLevel = batteryLevel,
+                        lowPowerMode = lowPowerMode
                     )
                 } else {
                     LocationPerformanceType.VERY_HIGH
@@ -305,11 +308,11 @@ class LocationPerformanceManager constructor(
             LocationPerformanceType.HIGH -> {
                 if (batteryVeryLow) {
                     LocationPerformanceType.BATTERY_SAVER
-                } else if (batteryMedium) {
+                } else if (shouldUseLowPowerMode) {
                     if (timeCriteriaLow || timeCriteriaHigh) {
-                        // when battery is less than 20% and we spent all medium and high allowance
+                        // when battery is less than 30% and we spent all medium and high allowance
                         // revert to BALANCED to conserve battery
-                        LocationPerformanceType.BALANCED
+                        LocationPerformanceType.BATTERY_SAVER
                     } else {
                         // otherwise go for medium performance to preserve more battery
                         LocationPerformanceType.MEDIUM_HIGH
@@ -320,18 +323,20 @@ class LocationPerformanceManager constructor(
                 } else if (timeCriteriaHigh) {
                     // user consumed only high performance allowance but there is still some time left in medium
                     LocationPerformanceType.MEDIUM_HIGH
-                } else LocationPerformanceType.HIGH
+                } else {
+                    LocationPerformanceType.HIGH
+                }
             }
 
             LocationPerformanceType.MEDIUM_HIGH -> {
-                if (batteryVeryLow) LocationPerformanceType.HIGH_BATTERY_SAVER
-                else if (batteryLow) LocationPerformanceType.BALANCED
+                if (batteryVeryLow) LocationPerformanceType.BATTERY_SAVER
+                else if (shouldUseLowPowerMode) LocationPerformanceType.BALANCED
                 else if (timeCriteriaLow) LocationPerformanceType.BALANCED
                 else LocationPerformanceType.MEDIUM_HIGH
             }
 
             LocationPerformanceType.BALANCED -> {
-                if (batteryLow) LocationPerformanceType.BATTERY_SAVER
+                if (shouldUseLowPowerMode) LocationPerformanceType.BATTERY_SAVER
                 else LocationPerformanceType.BALANCED
             }
 

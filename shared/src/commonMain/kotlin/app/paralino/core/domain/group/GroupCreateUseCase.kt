@@ -13,6 +13,7 @@ import app.paralino.core.models.group.UserGroupData
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.raw.CreateGroupPayload
+import app.paralino.core.provider.isSocketTimeout
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
@@ -134,14 +135,21 @@ class GroupCreateUseCase(
 
         val paralinoId = personalCodesRepo.activePersonalCodeState.value?.code
 
+        val encryptedGroupData = cryptoCore.encryptDataWithKey(
+            data = BaseRemoteModule.formatter.encodeToString(groupData),
+            key = groupKey
+        )
+
+        val encryptedMemberData = cryptoCore.encryptDataWithKey(
+            data = BaseRemoteModule.formatter.encodeToString(myData),
+            key = groupKey
+        )
+
         val payload = CreateGroupPayload(
             encryptedGroupKey = encryptedGroupKey,
             signedPublicKey = signedPublicKey,
             ownerIdentityKey = myIdentityKeys.publicKey,
-            groupData = cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(groupData),
-                key = groupKey
-            ),
+            groupData = encryptedGroupData,
             groupMemberIntegrity = groupIntegrity,
             userKeyVersion = userKey.version,
             serverIntegrity = cryptoCore.hashProvider.computeHash(
@@ -157,10 +165,7 @@ class GroupCreateUseCase(
                 key = userKey.key
             ),
             memberVerification = memberVerification,
-            memberData = cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(myData),
-                key = groupKey
-            ),
+            memberData = encryptedMemberData,
             paralinoId = paralinoId?.let {
                 cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
@@ -176,10 +181,30 @@ class GroupCreateUseCase(
             }
         )
 
-        val response = functionsApi.runAndWait(
-            function = ServerFunction.GROUP_CREATE,
-            data = payload
-        )
+        val response = try {
+            functionsApi.runAndWait(
+                function = ServerFunction.GROUP_CREATE,
+                data = payload
+            )
+        } catch (e: Exception) {
+            if (e.isSocketTimeout()) {
+                val allGroups = remote.getAllGroups()
+                val match = allGroups.firstOrNull {
+                    val memberMe = it.group.members.first { it.member.ownerUserId == user.id }
+                    it.group.group.ownerUserId == user.id &&
+                    it.group.group.data == encryptedGroupData &&
+                            memberMe.member.data == encryptedMemberData &&
+                            memberMe.member.settingsRaw!!.groupIntegrity == groupIntegrity
+                }
+                if (match != null) {
+                    return match.group.group.id
+                } else {
+                    throw e
+                }
+            } else {
+                throw e
+            }
+        }
 
         if (response.isSuccess) {
             return response.responseDataMap!!.get("groupId") as String

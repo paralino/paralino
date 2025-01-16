@@ -7,8 +7,8 @@ import app.paralino.core.repo.api.BaseFunctionsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import io.appwrite.enums.ExecutionMethod
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import kotlinx.coroutines.delay
+import java.net.UnknownHostException
 
 class FunctionsApi constructor(
     private val remoteModule: AppWriteRemoteModule,
@@ -34,7 +34,16 @@ class FunctionsApi constructor(
         logg.d("server_function", "Call: ${function.functionId}${function.path} - (sync: false, sdk: ${function.useSdk})")
 
         if (!function.useSdk) {
-            return executeFunction(function, data)
+            try {
+                return executeFunction(function, data)
+            } catch (e: Exception) {
+                if (e is UnknownHostException) {
+                    delay(200)
+                    return executeFunction(function, data)
+                } else {
+                    throw e
+                }
+            }
         }
 
         return remoteModule.execute {

@@ -1,7 +1,8 @@
-package app.paralino.core.presentation.groups
+package app.paralino.core.presentation.groups.edit
 
 import app.paralino.core.MR
 import app.paralino.core.domain.group.GroupCreateUseCase
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -35,7 +36,8 @@ class CreateGroupViewModel(
     private val groupRepo: UserGroupLocalDataSource,
     private val userRepo: UserRepository,
     private val remoteConfig: RemoteConfigRepository,
-    private val createGroup: GroupCreateUseCase
+    private val createGroup: GroupCreateUseCase,
+    private val refreshEverythingUseCase: RefreshEverythingUseCase
 ) : CoreViewModel() {
 
     private val groupFlow = MutableStateFlow<Payload<UserGroup>>(Payload.Loading)
@@ -143,14 +145,14 @@ class CreateGroupViewModel(
         this
             .mapToPayload { it }
             .onEach { data ->
-                _uiState.update {
-                    it.mapSuccess { it.copy(isLoading = data is Payload.Loading, hasNameError = false) }
-                }
                 when (data) {
                     is Payload.Error -> {
                         if (data.exception.asRemoteException()?.code == 402) {
                             if (checkGroupCreateLimits()) {
-                                // if limits are still somehow ok, show generic error
+                                // if limits are still somehow ok, refresh all groups and show error
+                                // this can happen in rare cases if request reaches the backed but response fails
+                                // i.e. device gets disconnected in that exact moment
+                                refreshEverythingUseCase.scheduleRefreshAllGroupsWithPlaces()
                                 showSnackbar(data.exception.errorString())
                             }
                         } else {
@@ -162,6 +164,10 @@ class CreateGroupViewModel(
                     is Payload.Success -> {
                         _eventChannel.send(CreateGroupScreenEvent.GroupUpdated(data.data))
                     }
+                }
+
+                _uiState.update {
+                    it.mapSuccess { it.copy(isLoading = data is Payload.Loading, hasNameError = false) }
                 }
             }
             .launchIn(coroutineScope)

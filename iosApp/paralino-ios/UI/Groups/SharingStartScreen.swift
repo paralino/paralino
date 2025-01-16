@@ -29,6 +29,9 @@ struct SharingStartScreen: View {
                     onSharingStarted: {
                         finishWithSharingScreen(isOnboarding: appState.isOnboarding)
                     },
+                    onSkipOnboarding: {
+                        finishWithSharingScreen(isOnboarding: appState.isOnboarding)
+                    },
                     openSubscriptions: {
                         path.append(.settings(.subscriptions))
                     },
@@ -55,19 +58,6 @@ struct SharingStartScreen: View {
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
-        }
-        .toolbar {
-            if appState.isOnboarding {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    SmallActionButtonView(
-                        text: MR.shared.strings.button_skip.localizedString(),
-                        action: {
-                            finishWithSharingScreen(isOnboarding: appState.isOnboarding)
-                        },
-                        hasEndArrow: true
-                    )
-                }
-            }
         }
         .toolbarTitleDisplayMode(.inline)
         .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())

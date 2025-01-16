@@ -4,6 +4,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.data
+import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
@@ -11,6 +12,8 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 class ActiveSharingEngine(
     private val deviceApiProvider: IDeviceApiProvider,
@@ -87,15 +91,30 @@ class ActiveSharingEngine(
         logg.v("location_service", "Start periodic location status update")
         activePingJob?.cancel()
         activePingJob = scopeProvider.userSessionIOScope.launch {
-            while (isActive) {
-                delay(2.hours)
-                if (locationCache.lastLocation?.isOlderThan(3.hours) != false) {
-                    logg.v("location_service", "Sending location status after inactivity")
-                    updateStatus()
-                } else {
-                    logg.v("location_service", "Skip sending location status after inactivity")
+            val batteryCheck = async {
+                while (isActive) {
+                    delay(20.minutes)
+                    if (deviceApiProvider.batteryLevel?.takeIf { it < BatteryNotificationsSettingsData.LOW_BATTERY_LEVEL } != null) {
+                        logg.v("location_service", "Sending location status for low battery")
+                        updateStatus()
+                    } else {
+                        logg.v("location_service", "Skip sending location status for low battery")
+                    }
                 }
             }
+            val locationCheck = async {
+                while (isActive) {
+                    delay(2.hours)
+                    if (locationCache.lastLocation?.isOlderThan(3.hours) != false) {
+                        logg.v("location_service", "Sending location status after inactivity")
+                        updateStatus()
+                    } else {
+                        logg.v("location_service", "Skip sending location status after inactivity")
+                    }
+                }
+            }
+
+            awaitAll(batteryCheck, locationCheck)
         }
     }
 

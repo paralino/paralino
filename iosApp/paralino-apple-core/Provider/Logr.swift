@@ -21,7 +21,7 @@ class DebbugLogr: SystemLogr {
         self.canLogToConsole = canLogToConsole
     }
     
-    override func systemLog(priority: LogPriority, tag: String?, message: String, t: KotlinThrowable?) {
+    override func systemLog(priority: LogPriority, tag: String?, message: String, fullOutput: String, t: KotlinThrowable?) {
         
         guard canLogToConsole else { return }
         
@@ -48,11 +48,6 @@ class DebbugLogr: SystemLogr {
     }
 }
 
-class KotlinError: Swift.Error, Decodable {
-    let message: String
-    let stackTrace: String
-    init(message: String, stackTrace: String) {
-        self.message = message
-        self.stackTrace = stackTrace
-    }
+enum KotlinError: Swift.Error, Decodable {
+    case generic(message: String, stackTrace: String)
 }

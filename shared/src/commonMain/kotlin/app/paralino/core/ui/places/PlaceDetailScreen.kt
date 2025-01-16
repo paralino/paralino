@@ -1,12 +1,9 @@
 package app.paralino.core.ui.places
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,12 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -60,12 +53,13 @@ fun PlaceDetailScreenCore(
     contentPadding: PaddingValues,
     onNavigateBack: () -> Unit,
     openPlaceRawDataScreen: () -> Unit,
+    openPlaceAlertsScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState(initial = Payload.Loading)
+    val state by vm.uiState.collectAsState()
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
 
     LaunchedEffect(key1 = Unit) {
@@ -123,14 +117,9 @@ fun PlaceDetailScreenCore(
                 userScrollEnabled = userScrollEnabled,
                 openPlaceEditScreen = openPlaceEditScreen,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
+                openPlaceAlertsScreen = openPlaceAlertsScreen,
                 onPlaceDelete = {
                     showDialog = MainAlertDialog.DeletePlace
-                },
-                onEnterChange = {
-                    vm.toggleEnterSettings(it)
-                },
-                onExitChange = {
-                    vm.toggleExitSettings(it)
                 },
                 mapContent = mapContent
             )
@@ -145,7 +134,6 @@ fun PlaceDetailScreenCore(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlaceDetailScreen(
     modifier: Modifier = Modifier,
@@ -154,10 +142,9 @@ private fun PlaceDetailScreen(
     canEditPlace: Boolean,
     userScrollEnabled: Boolean,
     openPlaceRawDataScreen: () -> Unit,
+    openPlaceAlertsScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     onPlaceDelete: () -> Unit,
-    onEnterChange: (String) -> Unit,
-    onExitChange: (String) -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
 ) {
     LazyColumn(
@@ -165,14 +152,12 @@ private fun PlaceDetailScreen(
         contentPadding = PaddingValues(
             top = paddingValues.calculateTopPadding(),
             bottom = paddingValues.calculateBottomPadding() + 40.dp,
-            start = 20.dp,
-            end = 20.dp
         ),
         userScrollEnabled = userScrollEnabled
     ) {
         this.item(key = "main_header") {
             PlaceListItem(
-                modifier = Modifier.padding(top = 26.dp),
+                modifier = Modifier.padding(top = 26.dp).padding(horizontal = 20.dp),
                 state = PlaceListItemData(
                     id = state.placeId,
                     groupId = state.groupId,
@@ -194,7 +179,8 @@ private fun PlaceDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
-                    .padding(top = 26.dp),
+                    .padding(top = 26.dp)
+                    .padding(horizontal = 20.dp),
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colors.background,
                 border = BorderStroke(6.dp, MaterialTheme.colors.surface),
@@ -213,58 +199,36 @@ private fun PlaceDetailScreen(
         }
 
         this.item(key = "settings") {
-            Spacer(modifier = Modifier.size(20.dp))
-            SettingsActionItem(
-                name = stringResource(MR.strings.raw_data_screen_title),
-                icon = CoreAppIcons.Security.asPainterResource(),
-            ) {
-                openPlaceRawDataScreen()
-            }
-            if (canEditPlace) {
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                Spacer(modifier = Modifier.size(20.dp))
                 SettingsActionItem(
-                    name = stringResource(MR.strings.places_edit_screen_title),
-                    icon = CoreAppIcons.Edit.asPainterResource(),
+                    name = stringResource(MR.strings.raw_data_screen_title),
+                    icon = CoreAppIcons.Security.asPainterResource(),
                 ) {
-                    openPlaceEditScreen()
+                    openPlaceRawDataScreen()
                 }
                 SettingsActionItem(
-                    name = stringResource(MR.strings.place_list_menu_delete),
-                    icon = CoreAppIcons.Delete.asPainterResource(),
-                    iconTint = AppColors.errorBackground
+                    name = stringResource(MR.strings.place_detail_notification_settings_title),
+                    icon = CoreAppIcons.NotificationsActive.asPainterResource(),
                 ) {
-                    onPlaceDelete()
+                    openPlaceAlertsScreen()
                 }
-            }
-            Spacer(modifier = Modifier.size(20.dp))
-        }
-
-        if (state.settings.isNotEmpty()) {
-            this.stickyHeader(key = "notification_header") {
-                Row(
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .background(MaterialTheme.colors.background)
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(MR.strings.place_detail_notification_settings_title),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.alpha(ContentAlpha.medium)
-                    )
+                if (canEditPlace) {
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.places_edit_screen_title),
+                        icon = CoreAppIcons.Edit.asPainterResource(),
+                    ) {
+                        openPlaceEditScreen()
+                    }
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.place_list_menu_delete),
+                        icon = CoreAppIcons.Delete.asPainterResource(),
+                        iconTint = AppColors.errorBackground
+                    ) {
+                        onPlaceDelete()
+                    }
                 }
-                Spacer(modifier = Modifier.size(4.dp))
-            }
-            this.itemsIndexed(
-                items = state.settings,
-                key = { index, item -> item.memberUserId }
-            ) { index, item ->
-                PlaceDetailUserListItem(
-                    modifier = Modifier.animateItem(),
-                    state = item,
-                    onEnterChange = onEnterChange,
-                    onExitChange = onExitChange,
-                )
+                Spacer(modifier = Modifier.size(20.dp))
             }
         }
     }

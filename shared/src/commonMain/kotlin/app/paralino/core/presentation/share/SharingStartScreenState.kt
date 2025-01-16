@@ -12,8 +12,8 @@ import app.paralino.core.utils.SharingDurationPreset
 data class SharingStartScreenState constructor(
     val groupState: Payload<GroupItemState?> = Payload.Loading,
     val deviceName: String = "",
-    val sharingTimeMillis: Long = SharingDurationPreset.infinite,
-    val sharingPresetsMillis: List<Long> = SharingDurationPreset.presets,
+    val sharingTimeMillis: Long = SharingDurationPreset.premiumPresets.last(),
+    val sharingPresetsMillis: List<Long> = SharingDurationPreset.premiumPresets,
     val approximateLocationMeters: Int = 200,
     val approximateLocationPresetsMeters: List<Int> = listOf(
         100, 200, 300, 500, 1000, 2000, 5000, 10000
@@ -24,8 +24,12 @@ data class SharingStartScreenState constructor(
     val shareElevation: Boolean = true,
     val shareNetwork: Boolean = true,
     val notifyOthers: Boolean = true,
+    val showNotifyOthers: Boolean = false,
+    val isPremiumSectionVisible: Boolean = false,
     val devicesLimit: Int = 0,
     val devicesCount: Int = 0,
+    val demoSharingTimeMillis: Long = SharingDurationPreset.premiumPresets.last(),
+    val demoSharingPresetsMillis: List<Long> = SharingDurationPreset.premiumPresets,
     val errors: List<ConditionErrorType> = emptyList(),
     val warnings: List<ConditionErrorType> = emptyList(),
     val loadingAction: Boolean = false,
@@ -36,6 +40,13 @@ data class SharingStartScreenState constructor(
             return sharingPresetsMillis.indexOfFirst { it == sharingTimeMillis }.takeIf { it >= 0 }
                 ?: sharingPresetsMillis.indexOfFirst { sharingTimeMillis < it }.takeIf { it >= 0 }
                 ?: sharingPresetsMillis.lastIndex
+        }
+
+    val demoSharingTimeIndex: Int
+        get() {
+            return demoSharingPresetsMillis.indexOfFirst { it == demoSharingTimeMillis }.takeIf { it >= 0 }
+                ?: demoSharingPresetsMillis.indexOfFirst { demoSharingTimeMillis < it }.takeIf { it >= 0 }
+                ?: demoSharingPresetsMillis.lastIndex
         }
 
     val approximateLocationIndex: Int
@@ -55,7 +66,7 @@ data class SharingStartScreenState constructor(
 
 sealed class SharingStartScreenEvent() {
     object Started : SharingStartScreenEvent()
-    data class DevicesLimitReached(val limit: Int) : SharingStartScreenEvent()
+    object OpenPaywall : SharingStartScreenEvent()
     object AdjustScrollPosition : SharingStartScreenEvent()
     data class AskForPermission(val error: ConditionErrorType) : SharingStartScreenEvent()
 }

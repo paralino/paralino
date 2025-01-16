@@ -110,6 +110,11 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="shortService"
+            tools:node="merge" />
+
         <receiver
             android:name=".tracking.LocationStartBroadcastReceiver"
             android:enabled="true"
@@ -126,11 +131,6 @@
             android:name=".tracking.geofence.GeofenceBroadcastReceiver"
             android:enabled="true"
             android:exported="true" />
-
-        <service
-            android:name="androidx.work.impl.foreground.SystemForegroundService"
-            android:foregroundServiceType="shortService"
-            tools:node="merge" />
     </application>
 
 </manifest>

@@ -1,11 +1,13 @@
 package app.paralino.core.repo.location
 
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.groups.MemberEntityBatterySettingsUpdate
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
+import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +36,16 @@ class LocationLocalDataSource(
                 deviceKeyVersion = data.deviceKeyVersion,
                 locationData = data.locationData,
                 status = data.status
+            )
+        )
+    }
+
+    suspend fun updateMemberBatterySettings(data: GroupSettingsRaw) {
+        logg.v("Save new member battery settings to database (${data.id})")
+        database.groupRelatedDao.updateMemberBatterySettings(
+            MemberEntityBatterySettingsUpdate(
+                id = data.id,
+                settingsBatteryAlertSettings = data.batteryAlertSettings
             )
         )
     }

@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import app.paralino.android.ui.groups.BatteryNotificationsScreen
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.groups.GroupSettingsScreen
@@ -22,6 +23,7 @@ import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
 import app.paralino.android.ui.onboarding.WelcomeOnboardingScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
+import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
@@ -87,6 +89,10 @@ fun NavGraphBuilder.homeGraph(
             val groupId = it.arguments!!.getString(AppScreen.MainHome.GroupSettings.argumentGroupId)
             GroupSettingsScreen(appState = appState, groupId = groupId)
         }
+        composable(AppScreen.MainHome.BatteryNotificationSettings.routeSignature) {
+            val groupId = it.arguments!!.getString(AppScreen.MainHome.BatteryNotificationSettings.argumentGroupId)!!
+            BatteryNotificationsScreen(appState = appState, groupId = groupId)
+        }
         composable(AppScreen.MainHome.GroupCreate.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.GroupCreate.argumentGroupId)
@@ -121,6 +127,13 @@ fun NavGraphBuilder.homeGraph(
             val placeId =
                 it.arguments?.getString(AppScreen.MainHome.PlaceDetail.argumentPlaceId)!!
             PlaceDetailScreen(appState = appState, groupId = groupId, placeId = placeId)
+        }
+        composable(AppScreen.MainHome.PlaceAlerts.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.PlaceAlerts.argumentGroupId)!!
+            val placeId =
+                it.arguments?.getString(AppScreen.MainHome.PlaceAlerts.argumentPlaceId)!!
+            PlaceAlertsSettingsScreen(appState = appState, groupId = groupId, placeId = placeId)
         }
         composable(AppScreen.MainHome.PlaceCreate.routeSignature) {
             val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceCreate.argumentGroupId)!!

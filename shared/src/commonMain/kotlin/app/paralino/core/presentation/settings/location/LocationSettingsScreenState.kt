@@ -20,6 +20,7 @@ data class LocationSettingsHighPerformance(
 }
 
 data class LocationSettingsBatterySaver(
+    val activeOnLowPowerMode: Boolean,
     val items: List<LocationSettingsItemState>,
 ) {
     val selectedItem: LocationSettingsItemState = items.firstOrNull { it.isSelected }
@@ -52,6 +53,7 @@ sealed interface LocationSettingsScreenEvent {
 
 sealed interface LocationSettingsScreenUiEvent {
     data object ToggleBalancedHighPerformance : LocationSettingsScreenUiEvent
+    data object ToggleFollowDeviceLowPowerMode : LocationSettingsScreenUiEvent
 
     data class ChangePerformance(val type: LocationPerformanceSettingsType) :
         LocationSettingsScreenUiEvent

@@ -65,6 +65,7 @@ class AppPrefs(
         const val keyErrorReporting = "prefs.user.errorReporting"
         const val keyHighPerformanceDuration = "prefs.location.highPerformance.duration"
         const val keyBatterySaverPerformance = "prefs.location.batterySaver.performance"
+        const val keyBatterySaverDeviceLowPower = "prefs.location.batterySaver.deviceLowPowerMode"
         const val keyBalancedPerformance = "prefs.location.balanced.performance"
         const val keyBalancedHighAccuracy = "prefs.location.balanced.highAccuracy"
         const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
@@ -237,6 +238,12 @@ class AppPrefs(
         get() = provider.userSettings.getStringOrNull(keyBatterySaverPerformance).takeIf { !it.isNullOrBlank() }
         set(value) {
             provider.userSettings.putString(keyBatterySaverPerformance, value ?: "")
+        }
+
+    var locationBatterySaverRespectsDeviceLowPower: Boolean
+        get() = provider.userSettings.getBoolean(keyBatterySaverDeviceLowPower, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyBatterySaverDeviceLowPower, value)
         }
 
     var locationSettingsBalancedHighAccuracy: Boolean

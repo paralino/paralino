@@ -77,6 +77,7 @@ enum class PushNotificationImportance constructor(val key: String) {
 }
 
 enum class PushNotificationType constructor(val key: String) {
+    LOW_BATTERY_ALERT("low_battery_alert"),
     PLACE_ALERT("place_activity"),
     PLACE_CREATED("place_created"),
     PLACE_UPDATED("place_updated"),

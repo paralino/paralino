@@ -35,6 +35,9 @@ struct PlacesScreen: View {
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
+                    onSkipOnboarding: {
+                        path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
+                    },
                     openPlaceDetailScreen: { place in
                         path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
                     },
@@ -52,29 +55,6 @@ struct PlacesScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-        }
-        .toolbar {
-            if appState.isOnboarding {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if appState.markers.isEmpty {
-                        SmallActionButtonView(
-                            text: MR.shared.strings.button_skip.localizedString(),
-                            action: {
-                                path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
-                            },
-                            hasEndArrow: true
-                        )
-                    } else {
-                        SmallActionButtonView(
-                            text: MR.shared.strings.button_next.localizedString(),
-                            action: {
-                                path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
-                            },
-                            hasEndArrow: true
-                        )
-                    }
-                }
-            }
         }
         .toolbarTitleDisplayMode(.inline)
         .navigationTitle(MR.shared.strings.places_list_screen_title.localizedString())

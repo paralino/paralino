@@ -6,6 +6,7 @@ import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
 import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.LoginDetailsRaw
+import app.paralino.core.models.raw.PromoCodeRedeemPayload
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.raw.UserPlanRaw
@@ -106,6 +107,17 @@ class UserRemoteSource constructor(
             databaseType = BackendDatabaseType.PRODUCT,
             collectionId = appBuildConfig.resourceIds.collectionUserPlansID
         ).map { UserPlanRaw.from(it) }
+    }
+
+    suspend fun redeemPromoCode(code: String) {
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.BILLING_REDEEM_CODE,
+            data = PromoCodeRedeemPayload(code = code)
+        )
+
+        if (!response.isSuccess) {
+            throw response.remoteException
+        }
     }
 
     suspend fun deleteAccount() {

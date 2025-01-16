@@ -27,6 +27,7 @@
     <string name="alert_sessionExpired_message">Your session expired, please login again.</string>
     <string name="alert_comingSoon_title">Coming soon 🤞</string>
     <string name="alert_comingSoon_message">This feature is already in development and is coming soon.</string>
+    <string name="error_unstable_connection">Your **internet connection** is very unstable and some requests are failing.\nPlease check your settings.</string>
     <string name="error_load_data_generic">Unable to complete the request.</string>
     <string name="error_no_connection_snackbar">Unable to connect\n**Check your internet connection.**</string>
     <string name="error_server_unavailable">Unable to connect at the moment, please try again shortly.</string>
@@ -154,6 +155,8 @@
     <string name="setting_location_balanced_section_info">Choose your preferred location update frequency when your battery is at least 30% charged and the app is inactive.\nThe app will switch to **high performance** mode if you or one of your group members are looking at the map.</string>
     <string name="setting_location_balanced_highAccuracy_title">High Accuracy Location</string>
     <string name="setting_location_balanced_highAccuracy_description">Use precise, high-accuracy location sensor (GPS) when idle in the background. This will use more battery power.</string>
+    <string name="setting_location_batterySaver_lowPowerMode_title">Use system battery saver</string>
+    <string name="setting_location_batterySaver_lowPowerMode_description">If enabled, battery saver mode will automatically activate whenever the system\'s battery saver (low power mode) is turned on, regardless of your device\'s current battery level.</string>
     <string name="setting_location_batterySaver_section_title">Battery Saver</string>
     <string name="setting_location_batterySaver_section_info">Choose your preferred location update frequency when your battery is low and the app is inactive.\nThe app will switch to **limited high performance** mode if you or one of your group members are looking at the map.</string>
     <string name="setting_location_batterySaver_battery_title">Battery</string>
@@ -210,8 +213,11 @@
     <string name="plan_period_monthly_name">Monthly</string>
     <string name="plan_period_annually_name">Annually</string>
     <string name="plan_period_onetime_name">Lifetime</string>
+    <string name="plan_limit_locationRequest_groupOwner_message">**Premium feature**\n\nTo enable high-priority location requests for **faster updates**, please upgrade your plan.</string>
+    <string name="plan_limit_locationRequest_groupMember_message">**Premium feature**\n\nContact your group admin to enable high-priority location requests for faster updates.</string>
     <string name="paywall_onboarding_skip_button">Use free version</string>
-    <string name="paywall_screen_title">Select the plan that is right for you</string>
+    <string name="paywall_screen_header">Select the plan that is right for you</string>
+    <string name="paywall_screen_title">Premium</string>
     <string name="paywall_current_plan_label">Current plan</string>
     <string name="paywall_special_offer_label">Special offer</string>
     <string name="paywall_special_offer_title">Forever discount</string>
@@ -225,7 +231,7 @@
     <string name="paywall_privacy_policy_label">Privacy</string>
     <string name="paywall_terms_of_use_label">Terms</string>
     <string name="paywall_faq_section_title">Learn more</string>
-    <string name="paywall_select_plan_label">Premium</string>
+    <string name="paywall_select_plan_label">Select your plan</string>
     <string name="paywall_free_plan_name">Basic</string>
     <string name="paywall_silver_plan_name">Starter</string>
     <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
@@ -387,6 +393,11 @@
     <string name="group_settings_verification_description_off">Group members can be added by other users now and there is no extra verification from group owner.</string>
     <string name="group_settings_verification_dialog_message_on">Enabling verification will trigger re-verification process for all current members.\n\nMembers will be cryptographically verified and no one else will be able to add new members to this group.</string>
     <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
+    <string name="group_settings_battery_notifications_title">Battery Notifications</string>
+    <string name="group_settings_battery_notifications_info">Decide if you want to be notified when a group member's battery level is low.</string>
+    <string name="group_settings_battery_notifications_notice">Notifications will only be sent if members choose to share their battery data and their device detects a battery level below 15%.</string>
+    <string name="group_settings_battery_toggle_active">Active</string>
+    <string name="group_settings_battery_toggle_inactive">Inactive</string>
     <string name="group_create_start_title">Connect</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
@@ -433,7 +444,8 @@
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
-    <string name="place_detail_notification_settings_title">Notification settings</string>
+    <string name="place_detail_notification_settings_title">Place alerts</string>
+    <string name="place_detail_notification_settings_info">Choose whether to receive notifications when each group member enters or exits this place.</string>
     <string name="place_notification_enter">%s arrived at %s</string>
     <string name="place_notification_exit">%s left %s</string>
     <string name="place_notification_default">Your place have activity</string>
@@ -446,6 +458,8 @@
     <string name="group_member_sharing_started_notification_default">Your friend started sharing their location</string>
     <string name="group_member_sharing_started_notification">%s started location sharing</string>
     <string name="group_member_current_sharing_started_notification">Your device started location sharing</string>
+    <string name="group_low_battery_notification_default">Group member has low battery</string>
+    <string name="group_low_battery_notification">%1$s\'s battery is low</string>
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>
@@ -486,6 +500,9 @@
     <string name="plan_limit_places_alert_info">group places</string>
     <string name="plan_limit_devices_alert_info">devices</string>
     <string name="plan_limit_groups_alert_info">groups</string>
+    <string name="plan_limit_overLimit_groupOwner_banner_title">**Your group has exceeded the plan limits!**\n\nLocation sharing may not function correctly.\n\nPlease remove some resources or consider upgrading your plan to restore full functionality.</string>
+    <string name="plan_limit_overLimit_groupMember_banner_title">**This group has exceeded the plan limits!**\n\nLocation sharing may not function correctly.\n\nPlease contact the group administrator to resolve the issue and continue location sharing.</string>
+    <string name="plan_limit_overLimit_user_message">Location sharing in some groups will stop because they have exceeded the plan limits.\n\nAdjust your groups or upgrade your plan to resume location sharing!</string>
     <string name="app_version_alert_title">New app update</string>
     <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>
     <string name="app_version_alert_title_mandatory">Please update</string>

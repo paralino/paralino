@@ -13,7 +13,11 @@ class PlaceSettingsMapperCore {
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            alertData = BaseRemoteModule.formatter.decodeFromString(model.alertData)
+            alertData = try {
+                BaseRemoteModule.formatter.decodeFromString(model.alertData)
+            } catch (e: Exception) {
+                null
+            }
         )
     }
 
@@ -23,8 +27,7 @@ class PlaceSettingsMapperCore {
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
-            alertData = BaseRemoteModule.formatter.encodeToString(model.alertData)
+            alertData = model.alertData?.let { BaseRemoteModule.formatter.encodeToString(it) } ?: ""
         )
     }
-
 }

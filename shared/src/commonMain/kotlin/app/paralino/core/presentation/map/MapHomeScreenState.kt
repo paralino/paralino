@@ -2,11 +2,11 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.list.PlaceListItemData
-import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -38,6 +38,7 @@ sealed class MapHomeScreenState {
         val sharingStatus: LocationSharingContract?,
         val sharingEndTime: String?,
         val verified: Boolean,
+        val groupPlanConfig: PlanConfig,
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
@@ -73,7 +74,7 @@ fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeSc
 sealed class MapHomeScreenEvent {
     data object AddGroup : MapHomeScreenEvent()
     data object ShowFreePlanInfo : MapHomeScreenEvent()
-    data object GroupsPlanLimitReached : MapHomeScreenEvent()
+    data object OpenPaywall : MapHomeScreenEvent()
 }
 
 sealed interface MapHomeScreenUiEvent {

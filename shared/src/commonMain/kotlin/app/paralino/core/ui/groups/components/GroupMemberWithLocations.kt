@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
@@ -529,7 +530,9 @@ private fun GroupMemberActions(
         }
         if (state.actions.locationRequest != null) {
             LocationRequestItem(
-                modifier = Modifier.align(Alignment.CenterVertically),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .weight(weight = 1f, fill = true),
                 state = state.actions.locationRequest!!
             ) {
                 onEvent(GroupMemberItemEvent.onLocationRequest(state))
@@ -770,38 +773,40 @@ fun LocationRequestItem(
 ) {
     Row(
         modifier = modifier
-            .padding(vertical = 2.dp)
+            .fillMaxWidth()
             .clickable(enabled = state.canInteract) {
                 logg.v("location_request", "Location request clicked")
                 onClick()
             }
             .alpha(if (state.isEnabled) 1f else 0.4f)
-            .clip(RoundedCornerShape(12.dp))
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.surface)
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Box {
             if (state.isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp
                 )
             } else {
                 Icon(
                     painter = if (state.hasError) {
                         CoreAppIcons.Warning.asPainterResource()
+                    } else if (!state.isEnabled) {
+                        CoreAppIcons.AccessTime.asPainterResource()
                     } else {
                         CoreAppIcons.ShareLocation.asPainterResource()
                     },
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(20.dp),
                     contentDescription = null
                 )
             }
         }
 
         Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(horizontal = 8.dp).weight(1f),
             text = when {
                 state.isWaitingForUser -> stringResource(MR.strings.group_member_device_waiting)
                 state.isLoading -> stringResource(MR.strings.group_member_device_requesting)
@@ -811,7 +816,32 @@ fun LocationRequestItem(
                 else -> stringResource(MR.strings.group_members_item_request_location_button)
             },
             style = MaterialTheme.typography.caption,
+            fontWeight = FontWeight.Medium,
         )
+
+        if (state.isLoading) {
+            // nothing
+        } else if (!state.isPremiumFeatureEnabled) {
+            Icon(
+                painter = CoreAppIcons.StarFamily.asPainterResource(),
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary,
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(
+                        color = AppColors.highlightGold,
+                        shape = CircleShape
+                    )
+                    .padding(4.dp)
+            )
+        } else {
+            Icon(
+                modifier = Modifier.width(20.dp),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                contentDescription = null
+            )
+        }
     }
 }
 

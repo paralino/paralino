@@ -27,7 +27,7 @@ class FunctionsApi: IFunctionsApiIOS {
                 async: true,
                 path: function.path,
                 method: AppwriteEnums.ExecutionMethod(rawValue: function.method),
-                headers: [clientHeader.first : clientHeader.second]
+                headers: [self.clientHeader.first : self.clientHeader.second]
             ).id
             return NSString(string: result)
         }
@@ -41,7 +41,7 @@ class FunctionsApi: IFunctionsApiIOS {
                 async: false,
                 path: function.path,
                 method: AppwriteEnums.ExecutionMethod(rawValue: function.method),
-                headers: [clientHeader.first : clientHeader.second]
+                headers: [self.clientHeader.first : self.clientHeader.second]
             )
             return FunctionExecutionRaw(
                 id: result.id,

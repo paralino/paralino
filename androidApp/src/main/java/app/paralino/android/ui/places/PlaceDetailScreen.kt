@@ -68,6 +68,14 @@ fun PlaceDetailScreen(
                     )
                 )
             },
+            openPlaceAlertsScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceAlerts.route(
+                        groupId = groupId,
+                        placeId = placeId
+                    )
+                )
+            },
             openPlaceEditScreen = {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(
@@ -96,6 +104,7 @@ private fun PlaceDetailUserItemPreview() {
                 groupId = "",
                 placeId = "",
                 memberUserId = "",
+                isCurrentUser = false,
                 name = "Some user",
                 image = ImageModel.emoji(Emojis.lightBulb),
                 notifyEnter = false,
@@ -119,7 +128,7 @@ private fun PlaceDetailUserItemPreview() {
                 onExitChange = {}
             )
             PlaceDetailUserListItem(
-                state = item.copy(loadingExit = true),
+                state = item.copy(loadingExit = true, isCurrentUser = true),
                 onEnterChange = {},
                 onExitChange = {}
             )

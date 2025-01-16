@@ -6,6 +6,7 @@ import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.domain.crypto.VerificationResultError
 import app.paralino.core.models.Resource
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithLimits
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.MemberModel
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -157,6 +159,32 @@ class UserGroupLocalDataSource constructor(
                 ).member.verificationResult
             )
         }
+    }
+
+    fun getGroupWithLimits(groupId: String): Flow<UserGroupWithLimits> {
+        return combine(
+            database.groupRelatedDao.getGroup(groupId = groupId)
+                .filterNotNull(),
+            memberLocal.getMemberCountInGroup(groupId),
+            database.groupRelatedDao.getLocationCountForUserInGroup(groupId = groupId, userId = appPrefs.userId)
+                .filterNotNull()
+                .distinctUntilChanged(),
+            database.groupRelatedDao.getPlacesCountForGroup(groupId)
+                .filterNotNull()
+                .distinctUntilChanged()
+        ) { groupEntity, memberCount, devicesCount, placesCount ->
+            val group = mapper.local2Core(groupEntity)
+            UserGroupWithLimits(
+                group = group,
+                memberCount = memberCount,
+                placesCount = placesCount,
+                devicesCount = devicesCount
+            )
+        }
+    }
+
+    suspend fun getGroupWithLimitsOnce(groupId: String): UserGroupWithLimits? {
+        return getGroupWithLimits(groupId = groupId).firstOrNull()
     }
 
     fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers?> {

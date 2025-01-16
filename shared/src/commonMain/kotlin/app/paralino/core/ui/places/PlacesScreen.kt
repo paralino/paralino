@@ -54,6 +54,7 @@ import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -162,7 +163,9 @@ private fun PlacesScreen(
     mapContent: @Composable (PlacesListScreenState) -> Unit
 ) {
     BaseOnboardingScreen(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().conditional(isOnboarding || state.places.isEmpty()) {
+            padding(contentPadding)
+        },
         nextButton = if (isOnboarding || state.places.isEmpty()) {
             @Composable {
                 FilledButton(
@@ -211,7 +214,7 @@ private fun PlacesScreen(
     ) {
         if (state.places.isEmpty()) {
             PlacesEmptyState(
-                modifier = Modifier.padding(contentPadding).padding(it),
+                modifier = Modifier.padding(it),
                 permissionError = state.error,
                 onErrorItemClick = onErrorItemClick,
                 onPostSampleNotification = onPostSampleNotification
@@ -311,7 +314,7 @@ private fun PlacesScreen(
                                 icon = CoreAppIcons.Add.asPainterResource(),
                                 text = {
                                     Text(
-                                        modifier = Modifier.padding(end = 4.dp),
+                                        modifier = Modifier.padding(end = 2.dp),
                                         text = stringResource(MR.strings.group_details_add_member_button)
                                     )
                                 },

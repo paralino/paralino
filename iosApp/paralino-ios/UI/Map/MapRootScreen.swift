@@ -50,6 +50,7 @@ struct MapRootScreen: View {
                             case .groupCreate(let groupId): GroupCreateScreen(path: $mainAppState.userReadyGraph, appState: GroupCreateScreen.createState(groupId: groupId))
                             case .groupDetail(let groupId): GroupDetailScreen(path: $mainAppState.userReadyGraph, appState: GroupDetailScreen.createState(groupId: groupId))
                             case .groupSettings(let groupId): GroupSettingsScreen(path: $mainAppState.userReadyGraph, appState: GroupSettingsScreen.createState(groupId: groupId))
+                            case .batteryNotificationsSettings(let groupId): BatteryNotificationsSettingsScreen(path: $mainAppState.userReadyGraph, appState: BatteryNotificationsSettingsScreen.createState(groupId: groupId))
                             case .sharingStart(let groupId, let isOnboarding):
                                 SharingStartScreen(
                                     path: $mainAppState.userReadyGraph,
@@ -69,6 +70,8 @@ struct MapRootScreen: View {
                                 )
                             case .placeDetail(groupId: let groupId, placeId: let placeId):
                                 PlaceDetailScreen(path: $mainAppState.userReadyGraph, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
+                            case .placeAlertsSettings(groupId: let groupId, placeId: let placeId):
+                                PlaceAlertsSettingsScreen(path: $mainAppState.userReadyGraph, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
                             case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
                                 PlaceCreateScreen(path: $mainAppState.userReadyGraph, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
                             case .freePlanInfo: FreePlanInfoScreen(path: $mainAppState.userReadyGraph)

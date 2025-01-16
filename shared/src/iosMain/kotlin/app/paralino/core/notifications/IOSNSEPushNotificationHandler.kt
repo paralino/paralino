@@ -6,6 +6,7 @@ import app.paralino.core.domain.notifications.PushNotificationDeleteUseCase
 import app.paralino.core.domain.notifications.processors.GroupMemberAddedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.INotificationProcessor
 import app.paralino.core.domain.notifications.processors.LocationSharingStartedNotificationsProcessor
+import app.paralino.core.domain.notifications.processors.LowBatteryNotificationProcessor
 import app.paralino.core.domain.notifications.processors.NotificationPreCheckProcessor
 import app.paralino.core.domain.notifications.processors.PlaceActivityNotificationProcessor
 import app.paralino.core.logg
@@ -33,6 +34,7 @@ class IOSNSEPushNotificationHandler constructor(
     private val memberAddedNotification: GroupMemberAddedNotificationProcessor by lazy { get() }
     private val placeCreatedNotification: IOSNSEPlaceCreatedNotificationProcessor by lazy { get() }
     private val placeActivityNotification: PlaceActivityNotificationProcessor by lazy { get() }
+    private val lowBatteryNotification: LowBatteryNotificationProcessor by lazy { get() }
 
     suspend fun retrievePushPresenterPayload(
         notificationId: String,
@@ -126,6 +128,7 @@ class IOSNSEPushNotificationHandler constructor(
 
     private fun PushNotificationType.processor(): INotificationProcessor<*>? {
         return when (this) {
+            PushNotificationType.LOW_BATTERY_ALERT -> lowBatteryNotification
             PushNotificationType.PLACE_ALERT -> placeActivityNotification
             PushNotificationType.PLACE_CREATED -> placeCreatedNotification
             PushNotificationType.GROUP_MEMBER_ADDED -> memberAddedNotification

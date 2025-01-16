@@ -26,6 +26,7 @@
     <string name="alert_sessionExpired_message">Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.</string>
     <string name="alert_comingSoon_title">Kommt bald 🤞</string>
     <string name="alert_comingSoon_message">Diese Funktion ist bereits in Entwicklung und kommt bald.</string>
+    <string name="error_unstable_connection">Ihre **Internetverbindung** ist sehr instabil und einige Anfragen schlagen fehl.\nBitte überprüfen Sie Ihre Einstellungen.</string>
     <string name="error_load_data_generic">Anfrage konnte nicht abgeschlossen werden.</string>
     <string name="error_no_connection_snackbar">Verbindung nicht möglich\n**Überprüfen Sie Ihre Internetverbindung.**</string>
     <string name="error_server_unavailable">Derzeit keine Verbindung möglich, bitte versuchen Sie es in Kürze erneut.</string>
@@ -153,6 +154,8 @@
     <string name="setting_location_balanced_section_info">Wählen Sie Ihre bevorzugte Standortaktualisierungsfrequenz, wenn Ihr Akku mindestens zu 30% geladen ist und die App inaktiv ist.\nDie App wechselt in den Modus **Hohe Leistung**, wenn Sie oder eines Ihrer Gruppenmitglieder die Karte ansehen.</string>
     <string name="setting_location_balanced_highAccuracy_title">Hohe Standortgenauigkeit</string>
     <string name="setting_location_balanced_highAccuracy_description">Verwenden Sie den präzisen, hochgenauen Standortsensor (GPS), wenn das Gerät im Hintergrund im Leerlauf ist. Verbraucht mehr Batterieleistung.</string>
+    <string name="setting_location_batterySaver_lowPowerMode_title">System-Energiesparmodus verwenden</string>
+    <string name="setting_location_batterySaver_lowPowerMode_description">Wenn aktiviert, wird der Energiesparmodus automatisch aktiviert, sobald der systemeigene Energiesparmodus (Niedrigstrommodus) eingeschaltet wird, unabhängig vom aktuellen Batteriestand Ihres Geräts.</string>
     <string name="setting_location_batterySaver_section_title">Energiesparmodus</string>
     <string name="setting_location_batterySaver_section_info">Wählen Sie Ihre bevorzugte Standortaktualisierungsfrequenz, wenn Ihr Akku schwach ist und die App inaktiv ist.\nDie App wechselt in den Modus **Begrenzte hohe Leistung**, wenn Sie oder eines Ihrer Gruppenmitglieder die Karte ansehen.</string>
     <string name="setting_location_batterySaver_battery_title">Akku</string>
@@ -209,8 +212,11 @@
     <string name="plan_period_monthly_name">Monatlich</string>
     <string name="plan_period_annually_name">Jährlich</string>
     <string name="plan_period_onetime_name">Lebenslang</string>
+    <string name="plan_limit_locationRequest_groupOwner_message">**Premium-Funktion**\n\nUm Standortanfragen mit hoher Priorität für **schnellere Updates** zu aktivieren, aktualisieren Sie bitte Ihren Plan.</string>
+    <string name="plan_limit_locationRequest_groupMember_message">**Premium-Funktion**\n\nKontaktieren Sie Ihren Gruppenadministrator, um Standortanfragen mit hoher Priorität für schnellere Updates zu aktivieren.</string>
     <string name="paywall_onboarding_skip_button">Kostenlose Version nutzen</string>
-    <string name="paywall_screen_title">Wählen Sie den Plan, der zu Ihnen passt</string>
+    <string name="paywall_screen_header">Wählen Sie den Plan, der zu Ihnen passt</string>
+    <string name="paywall_screen_title">Premium</string>
     <string name="paywall_current_plan_label">Aktueller Plan</string>
     <string name="paywall_special_offer_label">Sonderangebot</string>
     <string name="paywall_special_offer_title">Dauerhafter Rabatt</string>
@@ -224,7 +230,7 @@
     <string name="paywall_privacy_policy_label">Datenschutz</string>
     <string name="paywall_terms_of_use_label">Bedingungen</string>
     <string name="paywall_faq_section_title">Mehr erfahren</string>
-    <string name="paywall_select_plan_label">Premium</string>
+    <string name="paywall_select_plan_label">Wählen Sie Ihren Plan</string>
     <string name="paywall_free_plan_name">Basic</string>
     <string name="paywall_silver_plan_name">Starter</string>
     <string name="paywall_billing_loading_error_alert_message">Abrechnungsverwaltung konnte nicht initialisiert werden, bitte versuchen Sie es erneut.</string>
@@ -386,6 +392,11 @@
     <string name="group_settings_verification_description_off">Gruppenmitglieder können jetzt von anderen Benutzern hinzugefügt werden, und es gibt keine zusätzliche Überprüfung durch den Gruppeninhaber.</string>
     <string name="group_settings_verification_dialog_message_on">Die Aktivierung der Überprüfung löst den erneuten Verifizierungsprozess für alle aktuellen Mitglieder aus.\n\nMitglieder werden kryptografisch verifiziert und niemand sonst kann neue Mitglieder zu dieser Gruppe hinzufügen.</string>
     <string name="group_settings_verification_dialog_message_off">Die Deaktivierung der Mitgliederüberprüfung ermöglicht es anderen, neue Mitglieder zu Ihrer Gruppe hinzuzufügen.</string>
+    <string name="group_settings_battery_notifications_title">Batteriebenachrichtigungen</string>
+    <string name="group_settings_battery_notifications_info">Entscheiden Sie, ob Sie benachrichtigt werden möchten, wenn der Batteriestand eines Gruppenmitglieds niedrig ist.</string>
+    <string name="group_settings_battery_notifications_notice">Benachrichtigungen werden nur gesendet, wenn Mitglieder ihre Batteriedaten teilen und ihr Gerät einen Batteriestand unter 15% erkennt.</string>
+    <string name="group_settings_battery_toggle_active">Aktiv</string>
+    <string name="group_settings_battery_toggle_inactive">Inaktiv</string>
     <string name="group_create_start_title">Verbinden</string>
     <string name="group_load_error">Ihre Gruppe konnte nicht geladen werden</string>
     <string name="group_create_name_placeholder">Gruppenname</string>
@@ -433,6 +444,7 @@
     <string name="place_detail_setting_button_notify_enter">Betreten</string>
     <string name="place_detail_setting_button_notify_exit">Verlassen</string>
     <string name="place_detail_notification_settings_title">Benachrichtigungseinstellungen</string>
+    <string name="place_detail_notification_settings_info">Wählen Sie, ob Sie Benachrichtigungen erhalten möchten, wenn jedes Gruppenmitglied diesen Ort betritt oder verlässt.</string>
     <string name="place_notification_enter">%s ist bei %s angekommen</string>
     <string name="place_notification_exit">%s hat %s verlassen</string>
     <string name="place_notification_default">Ihr Ort hat Aktivität</string>
@@ -445,6 +457,8 @@
     <string name="group_member_sharing_started_notification_default">Ihr Freund hat begonnen, seinen Standort freizugeben</string>
     <string name="group_member_sharing_started_notification">%s hat die Standortfreigabe gestartet</string>
     <string name="group_member_current_sharing_started_notification">Ihr Gerät hat die Standortfreigabe gestartet</string>
+    <string name="group_low_battery_notification_default">Ein Gruppenmitglied hat einen niedrigen Batteriestand</string>
+    <string name="group_low_battery_notification">%1$s hat einen niedrigen Batteriestand</string>
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>
@@ -485,6 +499,9 @@
     <string name="plan_limit_places_alert_info">Gruppenorte</string>
     <string name="plan_limit_devices_alert_info">Geräte</string>
     <string name="plan_limit_groups_alert_info">Gruppen</string>
+    <string name="plan_limit_overLimit_groupOwner_banner_title">**Ihre Gruppe hat die Planlimits überschritten!**\n\nDie Standortfreigabe funktioniert möglicherweise nicht richtig.\n\nBitte entfernen Sie einige Ressourcen oder aktualisieren Sie Ihren Plan, um die volle Funktionalität wiederherzustellen.</string>
+    <string name="plan_limit_overLimit_groupMember_banner_title">**Diese Gruppe hat die Planlimits überschritten!**\n\nDie Standortfreigabe funktioniert möglicherweise nicht richtig.\n\nBitte kontaktieren Sie den Gruppenadministrator, um das Problem zu lösen und die Standortfreigabe fortzusetzen.</string>
+    <string name="plan_limit_overLimit_user_message">Die Standortfreigabe in einigen Gruppen wird gestoppt, da diese die Planlimits überschritten haben.\n\nPassen Sie Ihre Gruppen an oder aktualisieren Sie Ihren Plan, um die Standortfreigabe fortzusetzen!</string>
     <string name="app_version_alert_title">Neues App-Update</string>
     <string name="app_version_alert_message">Eine neue Version von Paralino ist verfügbar, bitte aktualisieren Sie für ein besseres Erlebnis!</string>
     <string name="app_version_alert_title_mandatory">Bitte aktualisieren</string>

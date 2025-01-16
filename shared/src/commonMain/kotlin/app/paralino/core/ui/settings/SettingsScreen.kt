@@ -1,8 +1,10 @@
 package app.paralino.core.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -220,6 +222,7 @@ fun SettingSectionInfo(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SettingsActionItem(
     modifier: Modifier = Modifier,
@@ -229,14 +232,15 @@ fun SettingsActionItem(
     description: String? = null,
     iconTint: Color = MaterialTheme.colors.surface,
     type: SettingsActionItemType = SettingsActionItemType.Navigation,
-    onClick: () -> Unit
+    onLongClick: (() -> Unit)? = null,
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = modifier
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick() }
+            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
             .padding(vertical = 12.dp),
     ) {
         Row(

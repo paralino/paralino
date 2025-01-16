@@ -47,6 +47,7 @@ class LocationSettingsViewModel(
                 }
             ),
             batterySaverSettings = LocationSettingsBatterySaver(
+                activeOnLowPowerMode = appPrefs.locationBatterySaverRespectsDeviceLowPower,
                 items = listOf(
                     LocationPerformanceSettingsType.BatterySaver.Level1,
                     LocationPerformanceSettingsType.BatterySaver.Level2,
@@ -111,6 +112,17 @@ class LocationSettingsViewModel(
                     balancedPerformanceSettings = newSettings.selectedItem.performance,
                     batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
                 )
+            }
+
+            is LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode -> {
+                val newValue = !appPrefs.locationBatterySaverRespectsDeviceLowPower
+                appPrefs.locationBatterySaverRespectsDeviceLowPower = newValue
+                val newSettings = uiState.value.batterySaverSettings.copy(
+                    activeOnLowPowerMode = newValue
+                )
+                _uiState.update {
+                    it.copy(batterySaverSettings = newSettings)
+                }
             }
 
             is LocationSettingsScreenUiEvent.ChangePerformance -> {
