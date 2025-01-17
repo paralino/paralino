@@ -359,7 +359,7 @@
     <string name="invite_connect_already_member_message">Ovaj korisnik je već član Vaše grupe!</string>
     <string name="group_members_item_remove_button">Uklonite</string>
     <string name="group_members_item_clear_location_button">Uklonite lokaciju</string>
-    <string name="group_members_item_request_location_button">Osvježite</string>
+    <string name="group_members_item_request_location_button">Pokušajte locirati</string>
     <string name="group_members_item_old_location_button">Prikažite posljednju lokaciju</string>
     <string name="group_members_marker_circle_info">%s je negdje unutar ovog kruga</string>
     <string name="group_member_title">Korisnik</string>

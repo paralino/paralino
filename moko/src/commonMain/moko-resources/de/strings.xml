@@ -359,7 +359,7 @@
     <string name="invite_connect_already_member_message">Dieser Benutzer ist bereits Mitglied Ihrer Gruppe!</string>
     <string name="group_members_item_remove_button">Entfernen</string>
     <string name="group_members_item_clear_location_button">Standort löschen</string>
-    <string name="group_members_item_request_location_button">Aktualisieren</string>
+    <string name="group_members_item_request_location_button">Standortsuche starten</string>
     <string name="group_members_item_old_location_button">Letzten Standort anzeigen</string>
     <string name="group_members_marker_circle_info">%s befindet sich irgendwo innerhalb dieses Kreises</string>
     <string name="group_member_title">Mitglied</string>
