@@ -64,7 +64,11 @@ sealed class DeeplinkType() {
 
             deeplink ?: return null
 
-            val data = Url(deeplink)
+            val data = try {
+                Url(deeplink)
+            } catch (e: Exception) {
+                return null
+            }
             val isValidDeeplink =
                 data.host.endsWith(host) || (data.protocol.name == "paralino" && data.host == "app")
 
