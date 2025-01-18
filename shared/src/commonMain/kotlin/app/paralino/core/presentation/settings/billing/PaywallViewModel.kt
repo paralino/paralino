@@ -351,6 +351,8 @@ class PaywallViewModel(
                         trialDurationDays = lowestPrice.trialDurationDays,
                     )
                 }
+                .sortedByDescending { it.billingPeriod }
+
             PlanInfoState(
                 productId = product.productId,
                 name = planConfig.planName,
@@ -499,7 +501,7 @@ class PaywallViewModel(
                 ?.plan?.billingPeriod
                 ?.let { it == period }
             // then take default
-            ?: (period == PlanBillingPeriod.MONTHLY)
+            ?: (period == PlanBillingPeriod.ANNUALLY)
     }
 
     private fun isPlanSelected(
