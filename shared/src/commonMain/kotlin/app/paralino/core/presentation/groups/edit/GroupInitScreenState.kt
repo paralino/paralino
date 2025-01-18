@@ -20,6 +20,7 @@ sealed interface GroupInitScreenEvent {
     data object AskNotificationPermission: GroupInitScreenEvent
     data object OpenPersonalCodes: GroupInitScreenEvent
     data object OpenGroupCreate: GroupInitScreenEvent
+    data object OpenPaywall: GroupInitScreenEvent
     data class SharePersonalCode(val code: String): GroupInitScreenEvent
 }
 

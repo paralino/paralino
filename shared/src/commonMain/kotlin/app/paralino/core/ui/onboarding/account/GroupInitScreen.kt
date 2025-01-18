@@ -57,6 +57,7 @@ fun GroupInitScreenCore(
     onCreateGroup: () -> Unit,
     openFreePlanInfo: () -> Unit,
     openPersonalCodes: () -> Unit,
+    openPaywall: () -> Unit,
     onSharePersonalCode: (String) -> Unit,
     askNotificationPermission: () -> Unit
 ) {
@@ -71,6 +72,7 @@ fun GroupInitScreenCore(
                 is GroupInitScreenEvent.SharePersonalCode -> onSharePersonalCode(event.code)
                 GroupInitScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                 GroupInitScreenEvent.OpenGroupCreate -> onCreateGroup()
+                GroupInitScreenEvent.OpenPaywall -> openPaywall()
 
                 null -> {
                     /* do nothing */
