@@ -43,7 +43,6 @@ sealed class PlanType {
 
     data class UNKNOWN(override val key: String, override val order: Int = -1) : PlanType()
 
-    val isMoreThanFree: Boolean get() = order > FREE.order
     val isSilverOrMore: Boolean get() = order >= SILVER.order
     val isPremium: Boolean get() = order >= STANDARD.order
     val isOtherThanSilver get() = this != SILVER
