@@ -36,7 +36,7 @@ fun BatteryNotificationsScreen(
                 appState.navController.navigate(
                     AppScreen.MainHome.BillingPaywall.route(
                         groupId = groupId,
-                        type = BillingScreenSourceType.NORMAL
+                        type = BillingScreenSourceType.UPGRADE
                     )
                 )
             }
