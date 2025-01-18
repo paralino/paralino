@@ -226,6 +226,7 @@
     <string name="paywall_start_button_free">**Kostenlose Testversion** starten</string>
     <string name="paywall_start_button_continue">Mit **%s** fortfahren</string>
     <string name="paywall_cancellation_notice">Sie können jederzeit kündigen</string>
+    <string name="paywall_cancellation_notice_trial">Derzeit keine Zahlung fällig, jederzeit kündbar</string>
     <string name="paywall_button_restore">Käufe wiederherstellen</string>
     <string name="paywall_privacy_policy_label">Datenschutz</string>
     <string name="paywall_terms_of_use_label">Bedingungen</string>
@@ -259,7 +260,7 @@
     <string name="plans_gift_screen_box_message">Sie erhalten einen speziellen lebenslangen **Starter**-Plan, komplett KOSTENLOS!</string>
     <string name="plans_gift_screen_benefits_title">Was Sie erhalten</string>
     <string name="plans_gift_screen_separator_text">Brauchen Sie mehr?</string>
-    <string name="plans_benefit_place_alerts">Unbegrenzte Ortsbenachrichtigungen</string>
+    <string name="plans_benefit_location_requests">Mitgliederstandort bei Bedarf abrufen</string>
     <string name="plans_benefit_sharing">Unbegrenzte Standortfreigabe</string>
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">E-Mail*</string>

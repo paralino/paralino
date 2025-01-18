@@ -159,19 +159,24 @@ data class PlanConfig(
                         planConfig.placesLimit,
                         planConfig.placesLimit
                     ),
-                    isHighlighted = true
+                    isHighlighted = true,
+                    separateLine = true
                 )
             )
-            add(
-                PlanBenefit(
-                    content = MR.strings.plans_benefit_place_alerts.localizedString(),
-                    isHighlighted = false
+            if (planTypeEnum.isPremium) {
+                add(
+                    PlanBenefit(
+                        content = "**${MR.strings.plans_benefit_location_requests.localizedString()}**",
+                        isHighlighted = true,
+                        separateLine = true
+                    )
                 )
-            )
+            }
             add(
                 PlanBenefit(
                     content = MR.strings.plans_benefit_sharing.localizedString(),
-                    isHighlighted = false
+                    isHighlighted = true,
+                    separateLine = true
                 )
             )
         }
@@ -196,6 +201,7 @@ data class PlanConfig(
 
     data class PlanBenefit(
         val content: String,
-        val isHighlighted: Boolean
+        val isHighlighted: Boolean,
+        val separateLine: Boolean = false
     )
 }

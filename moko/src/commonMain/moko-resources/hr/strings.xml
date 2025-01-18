@@ -226,6 +226,7 @@
     <string name="paywall_start_button_free">Započni **besplatni period**</string>
     <string name="paywall_start_button_continue">Odaberite **%s**</string>
     <string name="paywall_cancellation_notice">Možete otkazati plan bilo kada</string>
+    <string name="paywall_cancellation_notice_trial">Ne plaćate sada, možete otkazati u bilo kojem trenutku</string>
     <string name="paywall_button_restore">Vratite pretplatu</string>
     <string name="paywall_privacy_policy_label">Privatnost</string>
     <string name="paywall_terms_of_use_label">Uvjeti</string>
@@ -259,7 +260,7 @@
     <string name="plans_gift_screen_box_message">Kao jedan od prvih korisnika dobivate specijalan plan, potpuno besplatno!</string>
     <string name="plans_gift_screen_benefits_title">Što je uključeno</string>
     <string name="plans_gift_screen_separator_text">Trebate još?</string>
-    <string name="plans_benefit_place_alerts">Neograničene obavijesti</string>
+    <string name="plans_benefit_location_requests">Locirajte članove na zahtjev</string>
     <string name="plans_benefit_sharing">Neograničeno dijeljenje lokacije</string>
     <string name="login_placeholder_user_name">Ime*</string>
     <string name="login_placeholder_email">E-mail*</string>
