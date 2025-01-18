@@ -351,6 +351,8 @@ class PaywallViewModel(
                         trialDurationDays = lowestPrice.trialDurationDays,
                     )
                 }
+                .sortedByDescending { it.billingPeriod }
+
             PlanInfoState(
                 productId = product.productId,
                 name = planConfig.planName,
@@ -358,7 +360,7 @@ class PaywallViewModel(
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
                 hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
-                isExpanded = sourceType != BillingScreenSourceType.ONBOARDING,
+                isExpanded = !sourceType.shouldPreselectPlan,
                 billingPeriods = billingPeriods,
                 includedMembersPerGroup = planConfig.membersLimit,
                 benefits = planConfig.planBenefits()
@@ -499,7 +501,7 @@ class PaywallViewModel(
                 ?.plan?.billingPeriod
                 ?.let { it == period }
             // then take default
-            ?: (period == PlanBillingPeriod.MONTHLY)
+            ?: (period == PlanBillingPeriod.ANNUALLY)
     }
 
     private fun isPlanSelected(
@@ -511,7 +513,7 @@ class PaywallViewModel(
         val currentlySelected = currentState?.plans?.firstOrNull { it.type == planType }
         if (currentlySelected != null) {
             return currentlySelected.isSelected
-        } else if (sourceType == BillingScreenSourceType.ONBOARDING) {
+        } else if (sourceType.shouldPreselectPlan) {
             if (plans.highestValidPlanConfig.planTypeEnum.isPremium) {
                 return false
             } else {

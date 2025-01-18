@@ -201,7 +201,7 @@ class LocationSettingsViewModel(
     }
 
     private fun isUserOnFreePlan(): Boolean {
-        return userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum == PlanType.FREE
+        return !userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isSilverOrMore
 //        return !userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
     }
 

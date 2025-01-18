@@ -56,7 +56,8 @@ fun PaywallScreen(
                 }
             }
 
-            BillingScreenSourceType.NORMAL -> {
+            BillingScreenSourceType.NORMAL,
+            BillingScreenSourceType.UPGRADE -> {
                 appState.navController.popBackStack()
             }
         }

@@ -11,7 +11,6 @@ import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroupWithLimits
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
@@ -41,6 +40,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -187,19 +188,19 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
 
         groupLocal.getGroupWithLimits(groupId)
+            .filter { it.isGroupOverLimits(remoteConfigRepo.getConfigOnce()) }
+            .distinctUntilChanged()
             .onEach {
-                if (it.isGroupOverLimits(remoteConfigRepo.getConfigOnce())) {
-                    if (it.group.isCurrentUserOwner) {
-                        showSnackbar(
-                            text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
-                            duration = SnackbarDuration.Forever
-                        )
-                    } else {
-                        showSnackbar(
-                            text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
-                            duration = SnackbarDuration.Forever
-                        )
-                    }
+                if (it.group.isCurrentUserOwner) {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                } else {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
                 }
             }
             .flowOn(Dispatchers.IO)

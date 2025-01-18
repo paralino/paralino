@@ -54,7 +54,7 @@ fun SharingStartScreen(
                     groupId = groupId,
                     type = when (isOnboarding) {
                         true -> BillingScreenSourceType.ONBOARDING
-                        false -> BillingScreenSourceType.NORMAL
+                        false -> BillingScreenSourceType.UPGRADE
                     }
                 )
             ) {

@@ -41,8 +41,9 @@
         <item quantity="other">**%d članova**</item>
     </plurals>
     <plurals name="plan_benefit_places">
-        <item quantity="one">**%d mjesto**</item>
-        <item quantity="few">**%d mjesta**</item>
-        <item quantity="other">**%d mjesta**</item>
+        <item quantity="one">**%d mjesto** s neograničenim obavijestima</item>
+        <item quantity="few">**%d mjesta** s neograničenim obavijestima</item>
+        <item quantity="other">**%d mjesta** s neograničenim obavijestima</item>
     </plurals>
+
 </resources>

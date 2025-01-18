@@ -17,6 +17,7 @@ object SharingDurationPreset {
         4 * hour,
         8 * hour,
         day,
+        2 * day,
         3 * day,
         5 * day,
         7 * day,

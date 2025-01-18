@@ -17,6 +17,7 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.SettingSectionInfo
 import app.paralino.core.ui.settings.SettingsScreenCore
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.getViewModel
@@ -72,7 +73,7 @@ fun SettingsScreen(
                 appState.navController.navigate(AppScreen.Settings.Subscriptions.route())
             },
             openPaywall = {
-                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route())
+                appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.NORMAL))
             },
             openLocationSettings = {
                 appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)

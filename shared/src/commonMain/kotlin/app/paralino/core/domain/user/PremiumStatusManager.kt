@@ -52,7 +52,7 @@ class PremiumStatusManager(
                 val contract = locationSharingManager.currentSharingContractForGroup(id = it.group.id)
                 val newContract = contract?.asValidContract(
                     if (it.group.isGroupPremium(remoteConfigRepo.getConfigOnce())) {
-                        3.days
+                        5.days
                     } else {
                         SharingDurationPreset.freePresets.last().milliseconds
                     }

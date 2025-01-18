@@ -77,6 +77,7 @@ object HomeScreens {
         onCreateGroup: () -> Unit,
         openFreePlanInfo: () -> Unit,
         openPersonalCodes: () -> Unit,
+        openPaywall: () -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
@@ -89,6 +90,7 @@ object HomeScreens {
                 onCreateGroup = onCreateGroup,
                 openFreePlanInfo = openFreePlanInfo,
                 openPersonalCodes = openPersonalCodes,
+                openPaywall = openPaywall,
                 onSharePersonalCode = onSharePersonalCode,
                 askNotificationPermission = askNotificationPermission,
             )

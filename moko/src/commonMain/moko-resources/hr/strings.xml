@@ -226,12 +226,13 @@
     <string name="paywall_start_button_free">Započni **besplatni period**</string>
     <string name="paywall_start_button_continue">Odaberite **%s**</string>
     <string name="paywall_cancellation_notice">Možete otkazati plan bilo kada</string>
+    <string name="paywall_cancellation_notice_trial">Ne plaćate sada, možete otkazati u bilo kojem trenutku</string>
     <string name="paywall_button_restore">Vratite pretplatu</string>
     <string name="paywall_privacy_policy_label">Privatnost</string>
     <string name="paywall_terms_of_use_label">Uvjeti</string>
     <string name="paywall_faq_section_title">Saznajte više</string>
     <string name="paywall_select_plan_label">Odaberite svoj plan</string>
-    <string name="paywall_free_plan_name">Osnovni</string>
+    <string name="paywall_free_plan_name">Free</string>
     <string name="paywall_silver_plan_name">Početni</string>
     <string name="paywall_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>
     <string name="paywall_purchase_error_alert_message">Nije moguće izvršiti zahtjev, pokušajte ponovno.</string>
@@ -259,7 +260,7 @@
     <string name="plans_gift_screen_box_message">Kao jedan od prvih korisnika dobivate specijalan plan, potpuno besplatno!</string>
     <string name="plans_gift_screen_benefits_title">Što je uključeno</string>
     <string name="plans_gift_screen_separator_text">Trebate još?</string>
-    <string name="plans_benefit_place_alerts">Neograničene obavijesti</string>
+    <string name="plans_benefit_location_requests">Locirajte članove na zahtjev</string>
     <string name="plans_benefit_sharing">Neograničeno dijeljenje lokacije</string>
     <string name="login_placeholder_user_name">Ime*</string>
     <string name="login_placeholder_email">E-mail*</string>
@@ -359,7 +360,7 @@
     <string name="invite_connect_already_member_message">Ovaj korisnik je već član Vaše grupe!</string>
     <string name="group_members_item_remove_button">Uklonite</string>
     <string name="group_members_item_clear_location_button">Uklonite lokaciju</string>
-    <string name="group_members_item_request_location_button">Osvježite</string>
+    <string name="group_members_item_request_location_button">Pokušajte locirati</string>
     <string name="group_members_item_old_location_button">Prikažite posljednju lokaciju</string>
     <string name="group_members_marker_circle_info">%s je negdje unutar ovog kruga</string>
     <string name="group_member_title">Korisnik</string>

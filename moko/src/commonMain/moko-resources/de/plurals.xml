@@ -33,7 +33,8 @@
         <item quantity="other">**%d Mitglieder**</item>
     </plurals>
     <plurals name="plan_benefit_places">
-        <item quantity="one">**%d Ort**</item>
-        <item quantity="other">**%d Orte**</item>
+        <item quantity="one">**%d Ort** mit unbegrenzten Benachrichtigungen</item>
+        <item quantity="other">**%d Orte** mit unbegrenzten Benachrichtigungen</item>
     </plurals>
+
 </resources>
