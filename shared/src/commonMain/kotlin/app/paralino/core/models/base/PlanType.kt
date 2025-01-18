@@ -26,21 +26,26 @@ sealed class PlanType {
         override val order: Int = 1
     }
 
+    data object STANDARD : PlanType() {
+        override val key: String = "standard"
+        override val order: Int = 100
+    }
+
     data object PRO : PlanType() {
         override val key: String = "pro"
-        override val order: Int = 100
+        override val order: Int = 200
     }
 
     data object MAX : PlanType() {
         override val key: String = "max"
-        override val order: Int = 200
+        override val order: Int = 300
     }
 
     data class UNKNOWN(override val key: String, override val order: Int = -1) : PlanType()
 
     val isMoreThanFree: Boolean get() = order > FREE.order
     val isSilverOrMore: Boolean get() = order >= SILVER.order
-    val isPremium: Boolean get() = order >= PRO.order
+    val isPremium: Boolean get() = order >= STANDARD.order
     val isOtherThanSilver get() = this != SILVER
 
     override fun hashCode(): Int {
@@ -65,6 +70,7 @@ sealed class PlanType {
             return when (key) {
                 FREE.key -> FREE
                 SILVER.key -> SILVER
+                STANDARD.key -> STANDARD
                 PRO.key -> PRO
                 MAX.key -> MAX
                 else -> UNKNOWN(key)
