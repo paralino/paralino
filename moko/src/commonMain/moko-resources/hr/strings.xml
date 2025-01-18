@@ -232,7 +232,7 @@
     <string name="paywall_terms_of_use_label">Uvjeti</string>
     <string name="paywall_faq_section_title">Saznajte više</string>
     <string name="paywall_select_plan_label">Odaberite svoj plan</string>
-    <string name="paywall_free_plan_name">Osnovni</string>
+    <string name="paywall_free_plan_name">Free</string>
     <string name="paywall_silver_plan_name">Početni</string>
     <string name="paywall_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>
     <string name="paywall_purchase_error_alert_message">Nije moguće izvršiti zahtjev, pokušajte ponovno.</string>

@@ -233,7 +233,7 @@
     <string name="paywall_terms_of_use_label">Terms</string>
     <string name="paywall_faq_section_title">Learn more</string>
     <string name="paywall_select_plan_label">Select your plan</string>
-    <string name="paywall_free_plan_name">Basic</string>
+    <string name="paywall_free_plan_name">Free</string>
     <string name="paywall_silver_plan_name">Starter</string>
     <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
     <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
