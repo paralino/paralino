@@ -753,24 +753,27 @@ private fun BillingPeriodOptions(
 //                shape = MaterialTheme.shapes.medium
             )
     ) {
-        Column(
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .padding(horizontal = 8.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = "🎁 ${stringResource(MR.strings.paywall_special_offer_title)}",
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold
-            )
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Text(
-//                text = stringResource(MR.strings.paywall_special_offer_info).annotatedBold(),
-//                style = MaterialTheme.typography.subtitle2,
-//                lineHeight = 18.sp
-//            )
+        if (selectedPlan.hasSpecialOffer) {
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .padding(horizontal = 8.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "🎁 ${stringResource(MR.strings.paywall_special_offer_title)}",
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.Bold
+                )
+        //            Spacer(modifier = Modifier.height(8.dp))
+        //            Text(
+        //                text = stringResource(MR.strings.paywall_special_offer_info).annotatedBold(),
+        //                style = MaterialTheme.typography.subtitle2,
+        //                lineHeight = 18.sp
+        //            )
+            }
         }
+
         selectedPlan.billingPeriods.forEachIndexed { index, state ->
             if (index > 0) {
                 Divider(color = Color.Gray.copy(alpha = 0.3f))
@@ -865,7 +868,7 @@ private fun SubscriptionOptionItem(
                     modifier = Modifier
                         .background(
                             color = AppColors.redMain,
-                            shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                            shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp, bottomStart = 8.dp)
                         )
                         .padding(horizontal = 8.dp)
                         .padding(vertical = 2.dp),

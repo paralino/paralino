@@ -108,9 +108,9 @@ sealed class AccountOnboardingContent(
             MR.strings.onboarding_step_paralinoID_button_next
         },
         skipButtonText = if (didShareCode) {
-            MR.strings.onboarding_step_paralinoID_button_next
+            null
         } else {
-            MR.strings.button_notNow
+            MR.strings.button_skip
         },
         contentSizeRatio = 0.2f
     ) {
