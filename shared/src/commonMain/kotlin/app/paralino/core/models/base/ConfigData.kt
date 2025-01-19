@@ -16,6 +16,7 @@ data class ConfigData(
     val newVersionIOS: Long = 0,
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
+    val defaultPremiumPlan: PlanType = PlanType.PRO,
     val plans: List<PlanConfig> = emptyList()
 ) {
 
@@ -33,6 +34,11 @@ data class ConfigData(
                 newVersionIOS = map.get("newVersionIOS")?.toLongOrNull() ?: 0,
                 androidAppUrl = map.get("androidAppUrl")?.takeIf { it.isNotBlank() },
                 emailEnabled = map.get("emailEnabled")?.toBooleanStrictOrNull() ?: false,
+                defaultPremiumPlan = map.get("defaultPremiumPlan")
+                    ?.let {
+                        PlanType.fromKey(key = it).takeIf { it !is PlanType.UNKNOWN }
+                    }
+                    ?: PlanType.PRO,
                 plans = map.get("plans")?.let {
                     try {
                         BaseRemoteModule.formatter.decodeFromString(it)

@@ -263,6 +263,7 @@ class PaywallViewModel(
             ?: config.defaultFreePlanConfig()
 
         val availableProducts = products
+            ?.filter { it.planConfig.isActive }
             ?.sortedBy { it.periods.minBy { it.price }.price }
             ?: emptyList()
 
@@ -518,9 +519,20 @@ class PaywallViewModel(
                 return false
             } else {
                 // if user does not have a premium plan, pre-select lowest premium tier
-                return config.listedPlanConfigs()
+                val premiumPlans = config.listedPlanConfigs()
+                    .filter { it.isActive }
                     .filter { it.planTypeEnum.isPremium }
-                    .minByOrNull { it.planTypeEnum.order }?.planTypeEnum == planType
+
+                val defaultPlan = premiumPlans
+                    .firstOrNull { it.planTypeEnum == config.defaultPremiumPlan }
+
+                if (defaultPlan != null) {
+                    return defaultPlan.planTypeEnum == planType
+                } else {
+                    return premiumPlans
+                        .maxByOrNull { it.planTypeEnum.order }
+                        ?.planTypeEnum == planType
+                }
             }
         } else {
             return false
