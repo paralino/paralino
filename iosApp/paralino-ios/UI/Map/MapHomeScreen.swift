@@ -68,7 +68,7 @@ struct MapHomeScreen: View {
                             path.append(.home(.freePlanInfo))
                         },
                         openPaywall: {
-                            path.append(.settings(.paywall(type: BillingScreenSourceType.freePlanNotice)))
+                            path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
                         },
                         mapUIView: { () -> UIViewController in
                             let controller = MapComponentVC()
@@ -152,7 +152,7 @@ struct MapHomeScreen: View {
             },
             onOpenSubscription: {
                 groupPicker = nil
-                path.append(.settings(.paywall(groupId: nil, type: .normal)))
+                path.append(.settings(.paywall(groupId: nil, type: .upgrade)))
             }
         )
         .navigationBarBackButtonHidden(true)

@@ -33,6 +33,9 @@ struct GroupInitScreen: View {
                     onCreateGroup: { path.append(.home(.groupCreate(groupId: nil))) },
                     openFreePlanInfo: { path.append(.home(.freePlanInfo)) },
                     openPersonalCodes: { path.append(.settings(.personalCodes)) },
+                    openPaywall: {
+                        path.append(.settings(.paywall(groupId: nil, type: .upgrade)))
+                    },
                     onSharePersonalCode: { data in
                         shareText = ShareText(text: data)
                     },
