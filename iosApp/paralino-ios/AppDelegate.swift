@@ -55,6 +55,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     
     func appInForeground() {
         coreAppManager.onAppActive()
+        let user = User()
+        user.userId = AppPrefs.Companion.shared.instance.errorReportingID
+        SentrySDK.setUser(user)
         Logr.w(tag: "delegate", message: "Usage (\(DeviceUtil.getMemoryPrintString()))")
     }
     

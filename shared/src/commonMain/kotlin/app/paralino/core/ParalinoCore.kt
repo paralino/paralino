@@ -163,6 +163,11 @@ object ParalinoCore {
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
+        if (appPrefs.errorReportingID.isBlank()) {
+            val cryptoCore = koinApp.koin.get<CryptoCore>()
+            appPrefs.errorReportingID = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+        }
+
         if (appPrefs.currentAppVersionNumber != deviceApiProvider.appVersionCode) {
             appPrefs.previousAppVersionNumber = appPrefs.currentAppVersionNumber
             appPrefs.currentAppVersionNumber = deviceApiProvider.appVersionCode
