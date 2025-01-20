@@ -56,7 +56,10 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logg.v(this.hashCode().toString(), "Location service created")
+        logg.v(
+            tag = "location_service_${this.hashCode()}",
+            message = "Location service created"
+        )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -65,8 +68,8 @@ class LocationService : Service() {
         launchedInForeground = intent?.getBooleanExtra(startedInForeground, false) ?: false
 
         logg.v(
-            this.hashCode().toString(),
-            "Location service started - action: ${intent?.action} - launched in foreground: $launchedInForeground"
+            tag = "location_service_${this.hashCode()}",
+            message = "Location service starting - action: ${intent?.action} - launched in foreground: $launchedInForeground"
         )
 
         if (!isServiceActive || deviceApiProvider.appLifecycleState.value.current == AppLifecycleType.ACTIVE) {
@@ -77,6 +80,10 @@ class LocationService : Service() {
                     notificationHandler.notify(this, groupCount = 0, errors = emptyList()),
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
                 )
+                logg.v(
+                    tag = "location_service_${this.hashCode()}",
+                    message = "Location service started in foreground - action: ${intent?.action}"
+                )
             } catch (e: Exception) {
                 val wrappedError = LocationServiceCanNotStartException(
                     cause = e,
@@ -86,7 +93,7 @@ class LocationService : Service() {
                 )
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException) {
                     logg.e(
-                        tag = "location_service",
+                        tag = "location_service_${this.hashCode()}",
                         message = "Unable to start as foreground service due to ForegroundServiceStartNotAllowedException",
                         t = wrappedError
                     )
@@ -115,7 +122,10 @@ class LocationService : Service() {
     }
 
     private fun initTracking() {
-        logg.v(this.hashCode().toString(), "Subscribe to location and sharing status")
+        logg.v(
+            tag = "location_service_${this.hashCode()}",
+            message = "Subscribe to location and sharing status"
+        )
 
         deviceApiProvider.locationStatusProvider.status
             .onEach {
@@ -132,7 +142,10 @@ class LocationService : Service() {
             .map { it.data.isNotEmpty() }
             .distinctUntilChanged()
             .onEach {
-                logg.v(this.hashCode().toString(), "Location sharing status: $it")
+                logg.v(
+                    tag = "location_service_${this.hashCode()}",
+                    message = "Location sharing status: $it"
+                )
                 if (it) {
                     startTracking()
                 } else {
@@ -140,7 +153,11 @@ class LocationService : Service() {
                 }
             }
             .catch {
-                logg.e("Error start/stop tracking", it)
+                logg.e(
+                    tag = "location_service_${this.hashCode()}",
+                    message = "Error start/stop tracking",
+                    t = it
+                )
                 stopAll()
             }
             .launchIn(serviceDefaultScope)
@@ -164,14 +181,20 @@ class LocationService : Service() {
     private fun startTracking() {
         updateNotification()
 
-        logg.v(this.hashCode().toString(), "Subscribing to location updates")
+        logg.v(
+            tag = "location_service_${this.hashCode()}",
+            message = "Subscribing to location updates"
+        )
         FullRefreshSyncWorker.createRequest(applicationContext)
 
         locationInitHandler.currentLocation
             .onEach {
                 when (val location = it.data) {
                     null -> {
-                        logg.v(this.hashCode().toString(), "Got null location")
+                        logg.v(
+                            tag = "location_service_${this.hashCode()}",
+                            message = "Got null location"
+                        )
                     }
 
                     else -> {
@@ -185,7 +208,7 @@ class LocationService : Service() {
 
         deviceApiProvider.deviceStatus
             .onEach {
-                logg.v("device_status", "Status changed: $it")
+                logg.v(tag = "device_status", message = "Status changed: $it")
                 updateNotification()
             }
             .launchIn(serviceDefaultScope)
@@ -196,17 +219,27 @@ class LocationService : Service() {
             try {
                 locationUploadEngine.registerNewLocation(data)
             } catch (e: NoValidContractsException) {
-                logg.w("Error saving saving location - sharing expired")
+                logg.w(
+                    tag = "location_service_${this.hashCode()}",
+                    message = "Error saving saving location - sharing expired"
+                )
                 // We can stop service since all sharing contracts are expired
                 stopAll()
             } catch (e: Exception) {
-                logg.w("Error saving saving location", e)
+                logg.w(
+                    tag = "location_service_${this.hashCode()}",
+                    message = "Error saving saving location",
+                    t = e
+                )
             }
         }
     }
 
     private fun stopAll() {
-        logg.v(this.hashCode().toString(), "Stop all - location service")
+        logg.v(
+            tag = "location_service_${this.hashCode()}",
+            message = "Stop all - location service"
+        )
         FullRefreshSyncWorker.cancelWork(applicationContext)
         stopForeground(STOP_FOREGROUND_REMOVE)
         isServiceActive = false
@@ -214,7 +247,10 @@ class LocationService : Service() {
     }
 
     override fun onDestroy() {
-        logg.v(this.hashCode().toString(), "onDestroy - Killing location service")
+        logg.v(
+            tag = "location_service_${this.hashCode()}",
+            message = "onDestroy - Killing location service"
+        )
         isServiceActive = false
         serviceDefaultScope.cancel()
         locationInitHandler.stopLocationUpdates()
