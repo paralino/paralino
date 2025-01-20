@@ -69,15 +69,6 @@ class LocationService : Service() {
             "Location service started - action: ${intent?.action} - launched in foreground: $launchedInForeground"
         )
 
-        if (!isServiceActive) {
-            serviceDefaultScope.coroutineContext.cancelChildren()
-            initTracking()
-        } else if (LocationServiceLauncher.isPackageBootAction(intent?.action)) {
-            serviceDefaultScope.coroutineContext.cancelChildren()
-            initTracking()
-        } else {
-        }
-
         if (!isServiceActive || deviceApiProvider.appLifecycleState.value.current == AppLifecycleType.ACTIVE) {
             try {
                 ServiceCompat.startForeground(
@@ -104,6 +95,19 @@ class LocationService : Service() {
                 }
             }
         }
+
+        if (!isServiceActive) {
+            serviceDefaultScope.coroutineContext.cancelChildren()
+            initTracking()
+        } else if (LocationServiceLauncher.isPackageBootAction(intent?.action)) {
+            serviceDefaultScope.coroutineContext.cancelChildren()
+            initTracking()
+        }
+
+        logg.v(
+            tag = "location_service_${this.hashCode()}",
+            message = "Location service started - action: ${intent?.action} - launched in foreground: $launchedInForeground"
+        )
 
         isServiceActive = true
 
@@ -205,6 +209,7 @@ class LocationService : Service() {
         logg.v(this.hashCode().toString(), "Stop all - location service")
         FullRefreshSyncWorker.cancelWork(applicationContext)
         stopForeground(STOP_FOREGROUND_REMOVE)
+        isServiceActive = false
         stopSelf()
     }
 
