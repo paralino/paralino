@@ -11,7 +11,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
 class PlaceActivityUploadEngine(
@@ -38,9 +37,7 @@ class PlaceActivityUploadEngine(
                 .i("Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${place.id}) at ${Instant.fromEpochMilliseconds(timeMillis)}")
 
             // sync pending events, but on different thread so we do not block current flow
-            scopeProvider.userSessionIOScope.launch {
-                syncPendingEvents()
-            }
+            syncPendingEventsInBackground()
         } catch (e: Exception) {
             logg.tag(executionKey)
                 .w("Error sending place activity ${if (isEnter) "enter" else "exit"} event for place (${place.id}), create pending event - ${e.message}")
@@ -56,7 +53,13 @@ class PlaceActivityUploadEngine(
         }
     }
 
-    suspend fun syncPendingEvents(): Result<Unit> {
+    fun syncPendingEventsInBackground() {
+        scopeProvider.userSessionIOScope.launch {
+            syncPendingEventsNow()
+        }
+    }
+
+    suspend fun syncPendingEventsNow(): Result<Unit> {
         try {
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(

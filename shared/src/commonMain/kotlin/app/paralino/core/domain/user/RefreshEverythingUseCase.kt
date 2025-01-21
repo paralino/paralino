@@ -6,7 +6,6 @@ import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
-import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -101,6 +100,7 @@ class RefreshEverythingUseCase(
                 remotePreference = RemotePreference.CACHE(key = groupRefreshExecutionKey, timeMillis = cacheTimeMillis),
                 remote = { refreshAllGroupsWithPlaces() }
             )
+            placeActivityUploadEngine.syncPendingEventsNow()
         } catch (e: Exception) {
             logg.tag("full_refresh").w("Error refreshing all groups - ${e.message}")
         } finally {
@@ -118,9 +118,6 @@ class RefreshEverythingUseCase(
             .also {
                 logg.tag("full_refresh").d("group and keys ready, updating groups")
                 local.recreateGroups(it)
-            }
-            .also {
-                placeActivityUploadEngine.syncPendingEvents()
             }
     }
 }
