@@ -7,9 +7,12 @@
 
 import Foundation
 import shared
+import UIKit
 
 class AppUpdateManager: IAppUpdateManager {
     override func startUpdateProcess(data: ConfigData) {
-        // TODO open app store
+        if let url = URL(string: BackendResourceIDs.shared.storeUrlDeeplinkAppStore) {
+            UIApplication.shared.open(url)
+        }
     }
 }
