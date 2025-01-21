@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -69,7 +70,7 @@ fun PaywallScreen(
     PaywallScreenCore(
         appState = appState,
         vm = vm,
-        paddingValues = remember { PaddingValues() },
+        paddingValues = remember { PaddingValues(bottom = 8.dp) },
         onNavigateBack = { isSuccess -> goBack(isSuccess) },
         onStartPurchase = {
             val billingProvider = vm.billingProvider as BillingProviderAndroid
