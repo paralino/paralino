@@ -76,7 +76,7 @@ abstract class IDeviceApiProvider(
     abstract val isCharging: Boolean
     abstract val isLowPowerMode: Boolean
     val deviceType: DeviceType get() = DeviceType.current
-    abstract val deviceOSVersion: Int
+    abstract val deviceOSVersion: String
     abstract val appVersionCode: Long
     abstract val appVersion: String
     abstract val defaultDeviceName: String

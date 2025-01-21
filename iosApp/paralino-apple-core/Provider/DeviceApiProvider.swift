@@ -43,9 +43,8 @@ class DeviceApiProvider: IDeviceApiProvider {
         return Bundle.main.bundleIdentifier ?? "app.paralino.ios.undefined"
     }
     
-    override var deviceOSVersion: Int32 {
-        // TODO use correct value
-        return 0
+    override var deviceOSVersion: String {
+        return UIDevice.current.systemVersion
     }
     
     override var _batteryLevel: Int32 {
