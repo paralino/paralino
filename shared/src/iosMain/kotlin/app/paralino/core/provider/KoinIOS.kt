@@ -73,6 +73,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepositoryWrapper
+import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
@@ -262,6 +263,7 @@ object KoinIOS {
         val remoteConfigRepo: RemoteConfigRepository get() = get()
         val userConfigRepo: UserConfigRepository get() = get()
         val nseNotificationHandler: IOSNSEPushNotificationHandler get() = get()
+        val placeActivityUploadEngine: PlaceActivityUploadEngine get() = get()
     }
 
     object ViewModels : KoinComponent {
