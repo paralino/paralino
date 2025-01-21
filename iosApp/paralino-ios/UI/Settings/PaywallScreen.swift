@@ -58,10 +58,11 @@ struct PaywallScreen: View {
                 path.removeLast()
             }
 
-        case .normal:
+        case .normal, .upgrade:
             path.removeLast()
             
-        default: break
+        default:
+            path.removeLast()
         }
     }
 
