@@ -419,8 +419,12 @@ class SharingStartViewModel(
 
     fun toggleNotifyOthers(state: Boolean) {
         if (_uiState.value.showNotifyOthers) {
-            _uiState.update {
-                it.copy(notifyOthers = state)
+            if (_uiState.value.isPremiumSectionVisible) {
+                _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
+            } else {
+                _uiState.update {
+                    it.copy(notifyOthers = state)
+                }
             }
         } else {
             _eventChannel.trySend(SharingStartScreenEvent.OpenPaywall)
