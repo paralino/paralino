@@ -78,8 +78,10 @@ struct MainApp: App {
         }
     }
     
-    // TODO remove
     private func notifyScene(id: String = "scene", message: String) {
+        
+        guard AppBuildConfig.Companion.shared.instance.isDevMode else { return }
+        
         let content = UNMutableNotificationContent()
         content.title = "Paralino scene switch"
         content.body = message
