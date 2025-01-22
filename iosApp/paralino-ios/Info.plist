@@ -12,6 +12,7 @@
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
+		<string>de</string>
 		<string>hr</string>
 	</array>
 	<key>TEAM_ID</key>
@@ -33,7 +34,7 @@
 	<string>$(serverKey)</string>
 	<key>paralinoServerUrl</key>
 	<string>$(serverUrl)</string>
-    <key>revenueCatApiKey</key>
-    <string>$(revenueCatApiKey)</string>
+	<key>revenueCatApiKey</key>
+	<string>$(revenueCatApiKey)</string>
 </dict>
 </plist>

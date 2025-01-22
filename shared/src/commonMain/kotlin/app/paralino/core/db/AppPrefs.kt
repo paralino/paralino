@@ -63,6 +63,7 @@ class AppPrefs(
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
         const val keyDidStartedGroupOnboarding = "prefs.group.onboardingStarted"
         const val keyErrorReporting = "prefs.user.errorReporting"
+        const val keyErrorReportingID = "prefs.user.errorReporting.ID"
         const val keyHighPerformanceDuration = "prefs.location.highPerformance.duration"
         const val keyBatterySaverPerformance = "prefs.location.batterySaver.performance"
         const val keyBatterySaverDeviceLowPower = "prefs.location.batterySaver.deviceLowPowerMode"
@@ -222,6 +223,12 @@ class AppPrefs(
             provider.userSettings.putBoolean(keyErrorReporting, value)
         }
 
+    var errorReportingID: String
+        get() = provider.userSettings.getString(keyErrorReportingID, "")
+        set(value) {
+            provider.userSettings.putString(keyErrorReportingID, value)
+        }
+
     var didStartedGroupOnboarding: Boolean
         get() = provider.userSettings.getBoolean(keyDidStartedGroupOnboarding, false)
         set(value) {
@@ -265,9 +272,9 @@ class AppPrefs(
         }
 
     var didHaveAccountWelcomeOnboarding: Boolean
-        get() = provider.appSettings.getBoolean(keyAccountWelcomeOnboarding, false)
+        get() = provider.userSettings.getBoolean(keyAccountWelcomeOnboarding, false)
         set(value) {
-            provider.appSettings.putBoolean(keyAccountWelcomeOnboarding, value)
+            provider.userSettings.putBoolean(keyAccountWelcomeOnboarding, value)
         }
 
     var lastShowedAppRatingDialogUTC: Instant

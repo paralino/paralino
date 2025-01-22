@@ -33,7 +33,7 @@ struct PlacesScreen: View {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: nil, lat: nil, lng: nil)))
                     },
                     openPaywall: {
-                        path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
                     },
                     onSkipOnboarding: {
                         path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))

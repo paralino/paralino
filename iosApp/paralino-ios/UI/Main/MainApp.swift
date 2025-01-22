@@ -75,11 +75,14 @@ struct MainApp: App {
                     }
                 }
             }
+            
         }
     }
     
-    // TODO remove
     private func notifyScene(id: String = "scene", message: String) {
+        
+        guard AppBuildConfig.Companion.shared.instance.isDevMode else { return }
+        
         let content = UNMutableNotificationContent()
         content.title = "Paralino scene switch"
         content.body = message
@@ -97,7 +100,7 @@ struct AppReadyScreen: View {
         } else if userState is AppAccountState.NO_PROFILE {
             ProfileSetupScreen()
         } else if userState is AppAccountState.NO_USER {
-            NavigationView {
+            NavigationStack {
                 WelcomeScreen()
             }
         } else if userState is AppAccountState.NO_USER_DATA || userState is AppAccountState.DATA_REFRESH {

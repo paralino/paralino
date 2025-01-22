@@ -122,13 +122,15 @@ class PlacesRepository constructor(
     suspend fun processLocation(data: LocationDataModel) {
         // TODO filter out frequent calls and calculations of distance between points
         logg.v("place_activity", "Process new location in places")
-        val places = getAllActivePlaces()
 
+        placeActivityUploadEngine.syncPendingEventsInBackground()
+
+        val places = getAllActivePlaces()
         places.forEach { place ->
             place.data.data?.let { placeData ->
                 val distance = geofenceManager.distanceBetweenPoints(
-                    data,
-                    GroupPlaceGeofenceData(
+                    data = data,
+                    geofence = GroupPlaceGeofenceData(
                         groupId = place.groupId,
                         placeId = place.id,
                         lat = placeData.lat,

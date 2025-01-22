@@ -287,12 +287,7 @@ fun GroupMemberWithLocations(
                     modifier = Modifier
                 )
 
-                val status = when {
-                    !state.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
-                    !expanded || state.locations.isEmpty() || !state.allowShowingDevices -> state.statusTag?.toStatusTagType()
-                    else -> null
-                }
-                GroupStatusTag(status)
+                GroupStatusTag(state.toStatusTagType(expanded = expanded))
 
                 if (state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

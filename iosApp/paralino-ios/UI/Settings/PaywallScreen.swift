@@ -13,12 +13,15 @@ struct PaywallScreen: View {
     @Binding var path: [NavigationGraph]
     @StateObject var state: PaywallScreenState
     
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
+    
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.settings.PaywallScreenVC(
                     vm: state.vm,
+                    paddingValues: safeAreaInsets,
                     onNavigateBack: { isSuccess in
                         goBack(isSuccess: isSuccess.boolValue)
                     },
@@ -58,10 +61,11 @@ struct PaywallScreen: View {
                 path.removeLast()
             }
 
-        case .normal:
+        case .normal, .upgrade:
             path.removeLast()
             
-        default: break
+        default:
+            path.removeLast()
         }
     }
 

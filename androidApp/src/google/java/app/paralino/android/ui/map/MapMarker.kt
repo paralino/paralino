@@ -4,15 +4,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -27,32 +23,28 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.applyCanvas
-import app.paralino.android.R
 import app.paralino.core.MR
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.Emojis
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
+import dev.icerock.moko.resources.compose.stringResource
 
 
 @Composable
@@ -115,7 +107,7 @@ fun MapMarkerInfoWindowContent(
                 .padding(horizontal = 40.dp)
                 .background(
                     color = MaterialTheme.colors.surface.copy(alpha = 0.95f),
-                    shape = RoundedCornerShape(percent = 25)
+                    shape = RoundedCornerShape(percent = 12)
                 )
                 .padding(horizontal = 12.dp, vertical = 12.dp),
         ) {
@@ -132,9 +124,32 @@ fun MapMarkerInfoWindowContent(
                             .size(18.dp)
                     )
                     Text(
-                        text = MR.strings.group_members_marker_circle_info.localizedString(
-                            state.title ?: MR.strings.group_member_device_title.localizedString()
-                        )
+                        text = if (state.accuracy > 300) {
+                            MR.strings.group_members_marker_circle_info_inaccurate.localizedString(
+                                state.title ?: MR.strings.group_member_device_title.localizedString()
+                            )
+                        } else {
+                            MR.strings.group_members_marker_circle_info.localizedString(
+                                state.title ?: MR.strings.group_member_device_title.localizedString()
+                            )
+                        }
+                    )
+                }
+
+                if (state.accuracy > 300) {
+                    SmallActionButton(
+                        modifier = Modifier.padding(top = 4.dp),
+                        backgroundColor = AppColors.highlightGold,
+                        contentColor = AppColors.darkBackground.copy(alpha = 0.8f),
+                        icon = CoreAppIcons.NotListedLocation.asPainterResource(),
+                        text = {
+                            Text(
+                                text = stringResource(resource = MR.strings.group_members_status_location_inaccurate),
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        onClick = null
                     )
                 }
             }

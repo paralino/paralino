@@ -17,7 +17,10 @@ struct GroupPickerSheet: ViewModifier {
     var joinedGroups: [GroupItemState] {
         return bottomSheet?.joinedGroups ?? []
     }
-    var groupsCount: Int { createdGroups.count + joinedGroups.count }
+    var allGroups: [GroupItemState] {
+        return createdGroups + joinedGroups
+    }
+    var groupsCount: Int { allGroups.count }
     
     var onSelectGroup: ((GroupItemState) -> Void)?
     var onEditGroup: ((GroupItemState) -> Void)?
@@ -44,12 +47,8 @@ struct GroupPickerSheet: ViewModifier {
                             
                             Spacer().frame(height: 8)
                             
-                            ForEach(createdGroups.indices, id: \.self) { index in
-                                GroupListItem(data: createdGroups[index], onClick: { onSelectGroup?(createdGroups[index]) }, onEdit: { onEditGroup?(createdGroups[index]) })
-                            }
-                            
-                            ForEach(joinedGroups.indices, id: \.self) { index in
-                                GroupListItem(data: joinedGroups[index], onClick: { onSelectGroup?(joinedGroups[index]) }, onEdit: { onEditGroup?(joinedGroups[index]) })
+                            ForEach(allGroups.indices, id: \.self) { index in
+                                GroupListItem(data: allGroups[index], onClick: { onSelectGroup?(allGroups[index]) }, onEdit: { onEditGroup?(allGroups[index]) })
                             }
                             
                             if bottomSheet?.onlyShowGroups == false {

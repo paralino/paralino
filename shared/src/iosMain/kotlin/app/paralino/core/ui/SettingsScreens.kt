@@ -205,6 +205,7 @@ object SettingsScreens {
 
     fun PaywallScreenVC(
         vm: PaywallViewModel,
+        paddingValues: AppleScreenPaddingValues,
         onNavigateBack: (Boolean) -> Unit,
         onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
         onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit
@@ -213,7 +214,7 @@ object SettingsScreens {
             PaywallScreenCore(
                 appState = it,
                 vm = vm,
-                paddingValues = PaddingValues(bottom = 20.dp),
+                paddingValues = paddingValues.toComposePaddingValues(),
                 onNavigateBack = onNavigateBack,
                 onStartPurchase = onStartPurchase,
                 onRestorePurchase = onRestorePurchase

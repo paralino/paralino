@@ -7,6 +7,7 @@
 
 import Foundation
 import shared
+import UIKit
 
 public class PushSetupProvider: IPushProviderManager {
     
@@ -15,7 +16,7 @@ public class PushSetupProvider: IPushProviderManager {
     
     
     public func logout() async throws {
-        // TODO delete push token
+        await UIApplication.shared.unregisterForRemoteNotifications()
     }
     
     public func syncPushNotifications() {

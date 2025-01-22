@@ -163,6 +163,11 @@ object ParalinoCore {
             appPrefs.deviceIdSeed = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
         }
 
+        if (appPrefs.errorReportingID.isBlank()) {
+            val cryptoCore = koinApp.koin.get<CryptoCore>()
+            appPrefs.errorReportingID = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+        }
+
         if (appPrefs.currentAppVersionNumber != deviceApiProvider.appVersionCode) {
             appPrefs.previousAppVersionNumber = appPrefs.currentAppVersionNumber
             appPrefs.currentAppVersionNumber = deviceApiProvider.appVersionCode
@@ -273,7 +278,7 @@ val coreModule = module {
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get()) }
-    single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
+    single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { CryptoCore(get()) }
     single { CryptoKEKLocalRepository(get(), get(), get(), appPrefs) }

@@ -9,6 +9,7 @@ import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
+import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -20,6 +21,7 @@ class MemberDeviceStatusProcessor(
     private val sharingManager: LocationSharingManager,
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
     private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
+    private val placeActivityUploadEngine: PlaceActivityUploadEngine,
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
@@ -38,8 +40,13 @@ class MemberDeviceStatusProcessor(
 
             if (payload != null) {
                 logg.v("device_status","Update device status in group $groupId with location (${payload.locationData != null})")
-                batteryAlertUploadEngine.sendBatteryAlert(payloads = listOf(payload))
-                remote.saveCurrentLocation(payload)
+                try {
+                    remote.saveCurrentLocation(payload)
+                } finally {
+                    // trigger sync for pending data regardless of error
+                    batteryAlertUploadEngine.sendBatteryAlert(payloads = listOf(payload))
+                    placeActivityUploadEngine.syncPendingEventsInBackground()
+                }
             }
         }
     }

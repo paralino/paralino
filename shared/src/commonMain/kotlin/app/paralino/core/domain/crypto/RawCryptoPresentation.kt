@@ -233,6 +233,7 @@ class RawCryptoPresentation constructor(
                         add(ContentIdItem(text = "UserID:\n**${appPrefs.userId}**", separateWithPadding = true, canCopy = true))
                         add(ContentIdItem(text = "Billing UserID:\n**${userConfigRepo.configState.value.billingCustomerId}**", separateWithPadding = true, canCopy = true))
                         add(ContentIdItem(text = "DeviceID:\n**${appPrefs.deviceId}**", separateWithPadding = true, canCopy = true))
+                        add(ContentIdItem(text = "Diagnostics ID:\n**${appPrefs.errorReportingID}**", separateWithPadding = true, canCopy = true))
                     },
                     rawData = it?.first?.data?.let {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)

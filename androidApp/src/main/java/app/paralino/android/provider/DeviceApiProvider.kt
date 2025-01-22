@@ -45,8 +45,8 @@ class DeviceApiProvider constructor(
     override val defaultDeviceName: String
         get() = Build.MANUFACTURER
 
-    override val deviceOSVersion: Int
-        get() = Build.VERSION.SDK_INT
+    override val deviceOSVersion: String
+        get() = Build.VERSION.SDK_INT.toString()
 
     override val packageName: String
         get() = BuildConfig.APPLICATION_ID

@@ -33,7 +33,7 @@ struct SharingStartScreen: View {
                         finishWithSharingScreen(isOnboarding: appState.isOnboarding)
                     },
                     openSubscriptions: {
-                        path.append(.settings(.subscriptions))
+                        path.append(.settings(.paywall(groupId: appState.groupId, type: .upgrade)))
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(
@@ -82,7 +82,7 @@ struct SharingStartScreen: View {
             }
             path.append(
                 .settings(
-                    .paywall(groupId: appState.groupId, type: isOnboarding ? BillingScreenSourceType.onboarding : BillingScreenSourceType.normal)
+                    .paywall(groupId: appState.groupId, type: isOnboarding ? BillingScreenSourceType.onboarding : BillingScreenSourceType.upgrade)
                 )
             )
         } else if isOnboarding {
