@@ -15,7 +15,7 @@ class MainAppObject: ObservableObject {
     
     @Published var uiState: MainActivityState = MainActivityState.companion.doNewInstance() {
         didSet {
-            accountState = ResourceSwift(uiState.userState)
+            accountState = ResourceSwift(data: uiState.userState)
             let isSessionExpired = uiState.isSessionExpiredShown
             sessionExpiredDialog = isSessionExpired ? AlertDialogData(coreData: MainAlertDialogSessionExpired.shared) : nil
         }

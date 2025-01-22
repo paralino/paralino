@@ -205,7 +205,7 @@ private fun PaywallScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(paddingValues)
+                .padding(bottom = paddingValues.calculateBottomPadding())
                 .padding(top = 12.dp)
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.Top
@@ -318,7 +318,7 @@ private fun PaywallScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .height(with(density) { bottomCardHeight.toDp() + paddingValues.calculateBottomPadding() + paddingValues.calculateTopPadding() })
+                    .height(with(density) { bottomCardHeight.toDp() })
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
@@ -332,6 +332,7 @@ private fun PaywallScreen(
 
             PaywallBottomCard(
                 state = state,
+                paddingValues = paddingValues,
                 onStartPurchase = { onEvent(PaywallScreenUiEvent.StartPurchase) },
                 onPeriodSelected = { period ->
                     state.selectedPlan?.let { plan ->
@@ -339,7 +340,6 @@ private fun PaywallScreen(
                     }
                 },
                 modifier = Modifier
-                    .padding(paddingValues)
                     .onGloballyPositioned { coordinates ->
                         bottomCardHeight = coordinates.size.height
                     }
@@ -506,6 +506,7 @@ private fun PlanInfoBadge(
 private fun PaywallBottomCard(
     modifier: Modifier = Modifier,
     state: PaywallScreenState,
+    paddingValues: PaddingValues,
     onStartPurchase: () -> Unit,
     onPeriodSelected: (PlanBillingPeriod) -> Unit,
 ) {
@@ -524,8 +525,9 @@ private fun PaywallBottomCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 16.dp)
+                .padding(horizontal = 20.dp)
+                .padding(top = 8.dp, bottom = 12.dp)
+                .padding(bottom = paddingValues.calculateBottomPadding())
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -579,7 +581,7 @@ private fun PaywallBottomCard(
                 contentColor = AppColors.accent,
                 icon = CoreAppIcons.CheckCircle.asPainterResource(),
                 compactMode = true,
-                iconSize = 14.dp,
+                iconSize = 16.dp,
                 text = {
                     Text(
                         text = if (billingPeriodState?.trialDurationDays != null) {
@@ -588,7 +590,7 @@ private fun PaywallBottomCard(
                             stringResource(MR.strings.paywall_cancellation_notice)
                         },
                         textAlign = TextAlign.Center,
-                        fontSize = 12.sp
+                        fontSize = 14.sp
                     )
                 },
                 onClick = null
@@ -836,15 +838,14 @@ private fun SubscriptionOptionItem(
                 ) {
                     AnimatedVisibility(discountedPrice != null) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                                Text(
-                                    text = discountedPrice ?: "",
-                                    fontSize = 16.sp,
-                                    lineHeight = 16.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    textDecoration = TextDecoration.LineThrough
-                                )
-                            }
+                            Text(
+                                text = discountedPrice ?: "",
+                                fontSize = 16.sp,
+                                lineHeight = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                textDecoration = TextDecoration.LineThrough,
+                                color = MaterialTheme.colors.onPrimary.copy(alpha = ContentAlpha.disabled)
+                            )
                             Spacer(modifier = Modifier.width(4.dp))
                         }
                     }

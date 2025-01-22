@@ -66,7 +66,10 @@ fun GeneralInfoScreenCore(
         }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_onboarding),
-            icon = CoreAppIcons.Replay.asPainterResource()
+            icon = CoreAppIcons.Replay.asPainterResource(),
+            onLongClick = {
+                vm.onEvent(GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding)
+            }
         ) {
             onShowOnboarding()
         }

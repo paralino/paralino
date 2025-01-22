@@ -94,7 +94,7 @@ data class MemberLocation constructor(
         get() { return hasLocation && isOlderThan(7.days) && status.data?.statusType?.isInBlockedState != false }
 
     val isLocationAvailableButOld: Boolean
-        get() { return hasLocation && isOlderThan(12.hours) }
+        get() { return hasLocation && (isEnded || isOlderThan(12.hours)) }
 
     // even if device status is not active (battery saving is on)
     // consider status as active if location is fairly fresh

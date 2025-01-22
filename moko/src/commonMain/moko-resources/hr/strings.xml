@@ -363,6 +363,7 @@
     <string name="group_members_item_request_location_button">Pokušajte locirati</string>
     <string name="group_members_item_old_location_button">Prikažite posljednju lokaciju</string>
     <string name="group_members_marker_circle_info">%s je negdje unutar ovog kruga</string>
+    <string name="group_members_marker_circle_info_inaccurate">%s se možda nalazi unutar ovog kruga</string>
     <string name="group_member_title">Korisnik</string>
     <string name="group_member_device_title">Uređaj</string>
     <string name="group_members_block_user">Blokirajte korisnika</string>
@@ -426,6 +427,7 @@
     <string name="group_members_status_throttle">Bez promjene</string>
     <string name="group_members_status_too_many_requests">Previše zahtjeva</string>
     <string name="group_members_status_missing_permissions">Nedostaju dozvole</string>
+    <string name="group_members_status_location_inaccurate">Lokacija nije precizna</string>
     <string name="places_list_add_button">Novo mjesto</string>
     <string name="places_list_screen_title">Mjesta</string>
     <string name="places_edit_screen_title">Uredite mjesto</string>

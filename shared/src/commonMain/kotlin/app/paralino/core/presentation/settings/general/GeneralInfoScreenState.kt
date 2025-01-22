@@ -7,4 +7,5 @@ data class GeneralInfoScreenState(
 
 sealed interface GeneralInfoScreenStateUiEvent {
     data object ToggleCrashReporting: GeneralInfoScreenStateUiEvent
+    data object ResetAccountWelcomeOnboarding: GeneralInfoScreenStateUiEvent
 }

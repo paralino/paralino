@@ -311,8 +311,8 @@ class GroupInitViewModel(
     private fun openGroupCreate() {
         _eventChannel.trySend(GroupInitScreenEvent.OpenGroupCreate)
         coroutineScope.launch {
-            delay(1000)
-            skipOnboarding()
+            delay(600)
+            finishOnboarding()
         }
     }
 

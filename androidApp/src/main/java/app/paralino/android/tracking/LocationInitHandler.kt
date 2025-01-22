@@ -173,13 +173,29 @@ class LocationInitHandler constructor(
         return LocationDataModel(
             lat = this.latitude,
             lng = this.longitude,
-            accuracy = this.accuracy,
+            accuracy = this.accuracy.adaptAccuracy(),
             timeUTC = this.time.millisToDateTimeUTC().toLocalString(),
             speed = if (this.hasSpeed()) this.speed else null,
             altitude = if (this.hasAltitude()) this.altitude.toFloat() else null,
             isMasked = false
         )
     }
+
+    private fun Float.adaptAccuracy(): Float {
+        // Accuracy is in meters at 68% confidence
+        // for more inaccurate location we want to have better confidence
+        // this will improve perceived accuracy on the map and in further calculations
+        return when {
+            this > 500 -> this * 1.47f // Scale to 85% confidence
+            this > 300 -> {
+                // Linear interpolation between 75% (1.15) and 85% (1.47)
+                val scale = 1.15f + (1.47f - 1.15f) * (this - 300) / (500 - 300)
+                this * scale.coerceIn(1.15f, 1.47f)
+            }
+            else -> this
+        }
+    }
+
 }
 
 class LocationStoppedException() : Exception("Location tracking/sharing stopped")

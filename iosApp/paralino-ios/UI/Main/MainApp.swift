@@ -75,6 +75,7 @@ struct MainApp: App {
                     }
                 }
             }
+            
         }
     }
     
@@ -99,7 +100,7 @@ struct AppReadyScreen: View {
         } else if userState is AppAccountState.NO_PROFILE {
             ProfileSetupScreen()
         } else if userState is AppAccountState.NO_USER {
-            NavigationView {
+            NavigationStack {
                 WelcomeScreen()
             }
         } else if userState is AppAccountState.NO_USER_DATA || userState is AppAccountState.DATA_REFRESH {

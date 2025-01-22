@@ -272,9 +272,9 @@ class AppPrefs(
         }
 
     var didHaveAccountWelcomeOnboarding: Boolean
-        get() = provider.appSettings.getBoolean(keyAccountWelcomeOnboarding, false)
+        get() = provider.userSettings.getBoolean(keyAccountWelcomeOnboarding, false)
         set(value) {
-            provider.appSettings.putBoolean(keyAccountWelcomeOnboarding, value)
+            provider.userSettings.putBoolean(keyAccountWelcomeOnboarding, value)
         }
 
     var lastShowedAppRatingDialogUTC: Instant

@@ -26,7 +26,6 @@ class CryptoFrameworkProvider: ICryptoServiceProviderIOS {
             }
             return PayloadSuccess(data: result)
         } catch let error {
-            Logr.i(message: "Error with crypto: \(error.localizedDescription)")
             return PayloadError(exception: KotlinException(message: error.localizedDescription))
         }
     }

@@ -30,6 +30,10 @@ class GeneralInfoViewModel(
                     it.copy(isErrorReportingEnabled = newValue)
                 }
             }
+
+            GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding -> {
+                appPrefs.didHaveAccountWelcomeOnboarding = false
+            }
         }
     }
 }

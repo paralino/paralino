@@ -363,6 +363,7 @@
     <string name="group_members_item_request_location_button">Standortsuche starten</string>
     <string name="group_members_item_old_location_button">Letzten Standort anzeigen</string>
     <string name="group_members_marker_circle_info">%s befindet sich irgendwo innerhalb dieses Kreises</string>
+    <string name="group_members_marker_circle_info_inaccurate">%s befindet sich möglicherweise irgendwo innerhalb dieses Kreises</string>
     <string name="group_member_title">Mitglied</string>
     <string name="group_member_device_title">Gerät</string>
     <string name="group_members_block_user">Benutzer blockieren</string>
@@ -426,6 +427,7 @@
     <string name="group_members_status_throttle">Inaktiv</string>
     <string name="group_members_status_too_many_requests">Zu viele Anfragen</string>
     <string name="group_members_status_missing_permissions">Fehlende Berechtigungen</string>
+    <string name="group_members_status_location_inaccurate">Standort nicht sehr genau</string>
     <string name="places_list_add_button">Neuer Ort</string>
     <string name="places_list_screen_title">Orte</string>
     <string name="places_list_screen_empty_info">Erstellen Sie einen Ort und erhalten Sie eine **Benachrichtigung**, wenn jemand einen vordefinierten Bereich wie Zuhause, Arbeit oder Schule betritt oder verlässt.</string>

@@ -364,6 +364,7 @@
     <string name="group_members_item_request_location_button">Try to locate</string>
     <string name="group_members_item_old_location_button">Show last location</string>
     <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
+    <string name="group_members_marker_circle_info_inaccurate">%s might be somewhere inside this circle</string>
     <string name="group_member_title">Member</string>
     <string name="group_member_device_title">Device</string>
     <string name="group_members_block_user">Block user</string>
@@ -422,11 +423,12 @@
     <string name="group_members_status_not_sharing">Not sharing</string>
     <string name="group_members_status_offline">Device is offline</string>
     <string name="group_members_status_gps_off">GPS is off</string>
-    <string name="group_members_status_battery_saver">Battery saving is on</string>
+    <string name="group_members_status_battery_saver">Battery saving</string>
     <string name="group_members_status_active">Active</string>
     <string name="group_members_status_throttle">Idle</string>
     <string name="group_members_status_too_many_requests">Too many requests</string>
     <string name="group_members_status_missing_permissions">Missing permissions</string>
+    <string name="group_members_status_location_inaccurate">Location not accurate</string>
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>
     <string name="places_list_screen_empty_info">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
