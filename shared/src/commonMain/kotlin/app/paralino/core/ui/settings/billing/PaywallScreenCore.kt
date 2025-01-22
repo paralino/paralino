@@ -838,15 +838,14 @@ private fun SubscriptionOptionItem(
                 ) {
                     AnimatedVisibility(discountedPrice != null) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                                Text(
-                                    text = discountedPrice ?: "",
-                                    fontSize = 16.sp,
-                                    lineHeight = 16.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    textDecoration = TextDecoration.LineThrough
-                                )
-                            }
+                            Text(
+                                text = discountedPrice ?: "",
+                                fontSize = 16.sp,
+                                lineHeight = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                textDecoration = TextDecoration.LineThrough,
+                                color = MaterialTheme.colors.onPrimary.copy(alpha = ContentAlpha.disabled)
+                            )
                             Spacer(modifier = Modifier.width(4.dp))
                         }
                     }
