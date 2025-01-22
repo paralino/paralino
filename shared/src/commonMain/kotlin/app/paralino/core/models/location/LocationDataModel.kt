@@ -24,7 +24,7 @@ data class LocationDataModel constructor(
     val isMasked: Boolean = false
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
-    val isAccurate get() = accuracy < 20f
+    val isAccurate get() = accuracy < 50f
     val timeUTCInstant: Instant? = timeUTC?.fromUTCtoInstant()
 
     fun isOlderThan(duration: Duration): Boolean {
