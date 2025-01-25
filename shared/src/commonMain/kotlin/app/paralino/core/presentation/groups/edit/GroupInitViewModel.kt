@@ -73,11 +73,6 @@ class GroupInitViewModel(
     val shouldShowFreePlanNoticeScreen: Boolean
         get() = userRepo.shouldShowFreePlanNoticeScreen
 
-    private val shouldProceedToPaywall: Boolean
-        get() {
-            return !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
-        }
-
     init {
         combine(
             userRepo.localUser,
@@ -246,15 +241,7 @@ class GroupInitViewModel(
     private fun skipOnboarding() {
         when (val step = uiState.value.data?.onboardingStep) {
             AccountOnboardingContent.GroupCreate -> {
-                if (shouldProceedToPaywall) {
-                    _eventChannel.trySend(GroupInitScreenEvent.OpenPaywall)
-                    coroutineScope.launch {
-                        delay(1000)
-                        finishOnboarding()
-                    }
-                } else {
-                    finishOnboarding()
-                }
+                finishOnboarding()
             }
 
             is AccountOnboardingContent.ParalinoID -> {
