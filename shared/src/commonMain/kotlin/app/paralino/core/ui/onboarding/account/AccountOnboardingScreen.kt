@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
@@ -44,6 +46,7 @@ fun AccountOnboardingScreen(
             title = stringResource(step.title),
             info = step.infoText(),
             contentSizeRatio = step.contentSizeRatio,
+            minHeaderSize = step.minHeaderSize,
             paddingValues = it,
             headerContent = {
                 BaseOnboardingHeaderContent(
@@ -89,7 +92,8 @@ sealed class AccountOnboardingContent(
     val title: StringResource,
     val buttonText: StringResource,
     val skipButtonText: StringResource?,
-    val contentSizeRatio: Float = 0.3f
+    val contentSizeRatio: Float = 0.3f,
+    val minHeaderSize: Dp = 300.dp
 ) {
     @Composable
     abstract fun infoText(): String?
@@ -112,7 +116,7 @@ sealed class AccountOnboardingContent(
         } else {
             MR.strings.button_skip
         },
-        contentSizeRatio = 0.2f
+        minHeaderSize = Dp.Unspecified
     ) {
         @Composable
         override fun infoText(): String {
