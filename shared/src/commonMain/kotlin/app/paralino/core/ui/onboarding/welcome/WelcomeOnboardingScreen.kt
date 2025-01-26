@@ -32,7 +32,8 @@ fun WelcomeOnboardingScreenCore(
         info = step.value.info?.let { stringResource(it) },
         buttonText = stringResource(step.value.buttonText),
         skipButtonText = null,
-        contentSizeRatio = 0.25f,
+        contentSizeRatio = 0.3f,
+        minHeaderSize = 400.dp,
         onSkip = null,
         onNext = {
             val next = step.value.next()

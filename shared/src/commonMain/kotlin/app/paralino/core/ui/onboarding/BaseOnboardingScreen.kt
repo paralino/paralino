@@ -16,18 +16,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -38,6 +40,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
@@ -49,6 +52,7 @@ import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.ScaffoldBottomBarButtons
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -60,6 +64,7 @@ fun BaseOnboardingScreen(
     buttonText: String,
     skipButtonText: String?,
     contentSizeRatio: Float,
+    minHeaderSize: Dp,
     onNext: () -> Unit,
     onSkip: (() -> Unit)?,
     headerContent: @Composable () -> Unit
@@ -76,6 +81,7 @@ fun BaseOnboardingScreen(
             title = title,
             info = info,
             contentSizeRatio = contentSizeRatio,
+            minHeaderSize = minHeaderSize,
             paddingValues = it,
             headerContent = headerContent
         )
@@ -158,59 +164,73 @@ fun BaseOnboardingContent(
     title: String,
     info: String?,
     contentSizeRatio: Float,
+    minHeaderSize: Dp,
     paddingValues: PaddingValues,
     headerContent: @Composable () -> Unit
 ) {
-    Column(
-        modifier
+    BoxWithConstraints(
+        modifier = modifier
             .fillMaxSize()
-            .padding(paddingValues),
-        verticalArrangement = Arrangement.Top
+            .padding(paddingValues)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            headerContent()
-        }
-
         Column(
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxHeight(contentSizeRatio),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Top
         ) {
-            AnimatedContent(
-                targetState = order,
-                label = "animated title",
-                transitionSpec = onboardingContentTransitionSpec()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .conditional(minHeaderSize != Dp.Unspecified) {
+                        defaultMinSize(minHeight = minHeaderSize)
+                            .height(this@BoxWithConstraints.minHeight * (1f - contentSizeRatio))
+                    }
             ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = title,
-                    style = MaterialTheme.typography.h5,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
+                headerContent()
             }
 
-            if (info != null) {
-                Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier.weight(1f))
+
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
                 AnimatedContent(
                     targetState = order,
-                    label = "animated info",
+                    label = "animated title",
                     transitionSpec = onboardingContentTransitionSpec()
                 ) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = info.annotatedBold(),
-                        style = MaterialTheme.typography.subtitle1,
+                        text = title,
+                        style = MaterialTheme.typography.h5,
+                        fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
                 }
+
+                if (info != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AnimatedContent(
+                        targetState = order,
+                        label = "animated info",
+                        transitionSpec = onboardingContentTransitionSpec()
+                    ) {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = info.annotatedBold(),
+                            style = MaterialTheme.typography.subtitle1,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
+
+            Spacer(modifier.weight(1f))
         }
     }
 }
