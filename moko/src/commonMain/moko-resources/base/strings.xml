@@ -276,7 +276,8 @@
     <string name="login_button_login">LOG IN</string>
     <string name="login_button_reset_password">RESET PASSWORD</string>
     <string name="login_signup_guest_alert_title">Create guest account</string>
-    <string name="login_signup_guest_alert_message">Credentials for guest account are generated and stored securely on device.\n\n**WARNING:**\nYou will not be able to recover your account or login on another device!</string>
+    <string name="login_signup_guest_alert_message">Credentials for guest account are generated and stored securely on your device.\n\n**WARNING:**\nYou will not be able to recover your account or login on another device!</string>
+    <string name="login_signup_guest_notice_message">Credentials for guest account are generated and stored securely on your device.</string>
     <string name="login_signup_guest_recover_alert_title">Recover guest account</string>
     <string name="login_signup_guest_recover_alert_message">Guest account was found on this device.\nDo you want to try and recover it?</string>
     <string name="login_signup_guest_recover_alert_confirm">Try recovering</string>

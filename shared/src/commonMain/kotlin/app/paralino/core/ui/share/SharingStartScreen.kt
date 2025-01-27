@@ -100,7 +100,7 @@ fun SharingStartScreenCore(
 
     val approxLocationSwitchState by rememberSeekbarState(
         key = state,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
+        state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = LargeSeekbarSwitchState.Seekbar(
                 seekbarProgress = state.approximateLocationIndex + 1,
                 seekbarRange = IntRange(1, state.approximateLocationPresetsMeters.size)
@@ -111,7 +111,7 @@ fun SharingStartScreenCore(
 
     val seekbarState by rememberSeekbarState(
         key = state,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
+        state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = LargeSeekbarSwitchState.Seekbar(
                 seekbarProgress = state.sharingTimeIndex + 1,
                 seekbarRange = IntRange(1, state.sharingPresetsMillis.size)
@@ -122,7 +122,7 @@ fun SharingStartScreenCore(
 
     val shareBatteryState by rememberSeekbarState(
         key = state,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
+        state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = null,
             switchState = LargeSeekbarSwitchState.Switch(state.shareBattery)
         )
@@ -130,7 +130,7 @@ fun SharingStartScreenCore(
 
     val shareSpeedState by rememberSeekbarState(
         key = state,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
+        state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = null,
             switchState = LargeSeekbarSwitchState.Switch(state.shareSpeed)
         )
@@ -138,7 +138,7 @@ fun SharingStartScreenCore(
 
     val shareElevationState by rememberSeekbarState(
         key = state,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
+        state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = null,
             switchState = LargeSeekbarSwitchState.Switch(state.shareElevation)
         )
@@ -146,7 +146,7 @@ fun SharingStartScreenCore(
 
     val shareNetworkState by rememberSeekbarState(
         key = state,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
+        state = LargeSeekbarSwitchState.SeekbarSwitchState(
             seekbarState = null,
             switchState = LargeSeekbarSwitchState.Switch(state.shareNetwork)
         )
@@ -459,7 +459,7 @@ fun SharingStartScreenCore(
                     elevation = if (!state.isPremiumSectionVisible) 8.dp else 0.dp,
                     state = rememberSeekbarState(
                         key = state,
-                        LargeSeekbarSwitchState.SeekbarSwitchState(
+                        state = LargeSeekbarSwitchState.SeekbarSwitchState(
                             seekbarState = null,
                             switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
                         )
@@ -480,7 +480,7 @@ fun SharingStartScreenCore(
                     focusDescription = true,
                     state = rememberSeekbarState(
                         key = state,
-                        LargeSeekbarSwitchState.SeekbarSwitchState(
+                        state = LargeSeekbarSwitchState.SeekbarSwitchState(
                             seekbarState = LargeSeekbarSwitchState.Seekbar(
                                 seekbarProgress = state.demoSharingTimeIndex + 1,
                                 seekbarRange = IntRange(1, state.demoSharingPresetsMillis.size)

@@ -276,6 +276,7 @@
     <string name="login_button_reset_password">RESETIRAJTE LOZINKU</string>
     <string name="login_signup_guest_alert_title">Kreirajte gostujući račun</string>
     <string name="login_signup_guest_alert_message">Podaci za gostujući račun generirani su i sigurno pohranjeni na uređaju.\n\n**UPOZORENJE:**\nNećete moći spasiti račun ili se prijaviti na drugom uređaju!</string>
+    <string name="login_signup_guest_notice_message">Podaci za gostujući račun generirani su i sigurno pohranjeni na uređaju.</string>
     <string name="login_signup_guest_recover_alert_title">Spasite gostujući račun</string>
     <string name="login_signup_guest_recover_alert_message">Gostujući račun pronađen je na ovom uređaju.\nŽelite li pokušati ga spasiti?</string>
     <string name="login_signup_guest_recover_alert_confirm">Pokušaj spašavanja</string>

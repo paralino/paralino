@@ -63,6 +63,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -74,12 +75,10 @@ import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import paralino.shared.generated.resources.Res
 import paralino.shared.generated.resources.ic_launcher_foreground
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LoginScreenCore(
     appState: CoreUiState,
@@ -91,22 +90,6 @@ fun LoginScreenCore(
 
     val uiState by vm.uiState.collectAsState(initial = LoginScreenState(uiType = vm.initialUiType))
     val focusManager = LocalFocusManager.current
-
-    val signUpRegularSwitchState by rememberSeekbarState(
-        key = uiState.uiType,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
-            seekbarState = null,
-            switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP)
-        )
-    )
-
-    val signUpGuestSwitchState by rememberSeekbarState(
-        key = uiState.uiType,
-        LargeSeekbarSwitchState.SeekbarSwitchState(
-            seekbarState = null,
-            switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP_GUEST)
-        )
-    )
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -178,33 +161,64 @@ fun LoginScreenCore(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    LargeSeekbarSwitch(
-                        modifier = Modifier
-                            .alpha(if (uiState.canUseEmail) 1f else 0.4f)
-                            .padding(end = 10.dp)
-                            .fillMaxWidth(0.5f),
-                        icon = CoreAppIcons.Person.asPainterResource(),
-                        title = stringResource(resource = MR.strings.login_signup_account_type_regular),
-                        description = stringResource(resource = MR.strings.login_signup_account_type_regular_info),
-                        focusDescription = false,
-                        state = signUpRegularSwitchState,
-                        elevation = if (uiState.canUseEmail) 16.dp else 0.dp,
-                        onStateChange = {
-                            vm.setScreenUiType(LoginScreenUiType.SIGNUP)
-                        }
-                    )
+                    if (uiState.canUseEmail) {
+                        LargeSeekbarSwitch(
+                            modifier = Modifier
+                                .alpha(if (uiState.canUseEmail) 1f else 0.4f)
+                                .padding(end = 10.dp)
+                                .fillMaxWidth(0.5f),
+                            icon = CoreAppIcons.Person.asPainterResource(),
+                            title = stringResource(resource = MR.strings.login_signup_account_type_regular),
+                            description = stringResource(resource = MR.strings.login_signup_account_type_regular_info),
+                            focusDescription = false,
+                            state = rememberSeekbarState(
+                                key = uiState.uiType,
+                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                    seekbarState = null,
+                                    switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP)
+                                )
+                            ).value,
+                            elevation = if (uiState.canUseEmail) 16.dp else 0.dp,
+                            onStateChange = {
+                                vm.setScreenUiType(LoginScreenUiType.SIGNUP)
+                            }
+                        )
+                    }
                     LargeSeekbarSwitch(
                         modifier = Modifier.fillMaxWidth(),
                         icon = CoreAppIcons.Incognito.asPainterResource(),
                         title = stringResource(resource = MR.strings.login_signup_account_type_guest),
                         description = stringResource(resource = MR.strings.login_signup_account_type_guest_info),
                         focusDescription = false,
-                        state = signUpGuestSwitchState,
+                        state = rememberSeekbarState(
+                            key = uiState.uiType,
+                            key2 = uiState.canUseEmail,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = if (uiState.canUseEmail) {
+                                    LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP_GUEST)
+                                } else {
+                                    null
+                                }
+                            )
+                        ).value,
+                        elevation = if (uiState.canUseEmail) 16.dp else 0.dp,
                         onStateChange = {
                             vm.setScreenUiType(LoginScreenUiType.SIGNUP_GUEST)
                         }
                     )
                 }
+            }
+
+            AnimatedVisibility(
+                visible = uiState.uiType == LoginScreenUiType.SIGNUP_GUEST,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                NoticeInfoChip(
+                    modifier = Modifier
+                        .padding(top = 30.dp),
+                    text = stringResource(MR.strings.login_signup_guest_notice_message)
+                )
             }
 
             Spacer(modifier = Modifier.size(30.dp))

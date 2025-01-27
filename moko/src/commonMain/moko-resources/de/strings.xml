@@ -276,6 +276,7 @@
     <string name="login_button_reset_password">PASSWORT ZURÜCKSETZEN</string>
     <string name="login_signup_guest_alert_title">Gastkonto erstellen</string>
     <string name="login_signup_guest_alert_message">Anmeldedaten für das Gastkonto werden generiert und sicher auf dem Gerät gespeichert.\n\n**WARNUNG:**\nSie werden nicht in der Lage sein, Ihr Konto wiederherzustellen oder sich auf einem anderen Gerät anzumelden!</string>
+    <string name="login_signup_guest_notice_message">Anmeldedaten für das Gastkonto werden generiert und sicher auf dem Gerät gespeichert.</string>
     <string name="login_signup_guest_recover_alert_title">Gastkonto wiederherstellen</string>
     <string name="login_signup_guest_recover_alert_message">Gastkonto wurde auf diesem Gerät gefunden.\nMöchten Sie versuchen, es wiederherzustellen?</string>
     <string name="login_signup_guest_recover_alert_confirm">Wiederherstellen versuchen</string>

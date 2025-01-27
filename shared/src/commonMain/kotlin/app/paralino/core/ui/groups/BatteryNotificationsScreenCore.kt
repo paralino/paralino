@@ -102,7 +102,7 @@ fun BatteryNotificationsScreenCore(
 
                         val notificationState by rememberSeekbarState(
                             key = finalState,
-                            LargeSeekbarSwitchState.SeekbarSwitchState(
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
                                 seekbarState = null,
                                 switchState = LargeSeekbarSwitchState.Switch(
                                     checkState = finalState.data.isActive,

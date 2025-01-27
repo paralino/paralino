@@ -345,8 +345,9 @@ fun rememberSeekbarState(
 @Composable
 fun rememberSeekbarState(
     key: Any? = null,
+    key2: Any? = null,
     state: LargeSeekbarSwitchState.SeekbarSwitchState,
-) = remember(key) {
+) = remember(key, key2) {
     mutableStateOf(state)
 }
 
