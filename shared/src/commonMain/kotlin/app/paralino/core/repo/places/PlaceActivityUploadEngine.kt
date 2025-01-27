@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class PlaceActivityUploadEngine(
     private val remote: PlacesRemoteSource,
@@ -64,7 +65,7 @@ class PlaceActivityUploadEngine(
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(
                     key = executionKey,
-                    timeMillis = 10.minutes.inWholeMilliseconds,
+                    timeMillis = 10.seconds.inWholeMilliseconds,
                     failOnError = false
                 ),
                 remote = { syncPendingEventsImpl() }
