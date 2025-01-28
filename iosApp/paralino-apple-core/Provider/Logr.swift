@@ -27,7 +27,7 @@ class DebbugLogr: SystemLogr {
         
         let time = Date.now.ISO8601Format(.iso8601(timeZone: TimeZone.current, includingFractionalSeconds: true))
         let tagElement = tag != nil && !tag!.isEmpty ? "[\(tag!)] - " : ""
-        let output = "\(time) | \(tagElement)\(message)"
+        let output = "\(time) | \(tagElement)\(fullOutput)"
         
         // using public as privacy option will enable logs in service extensions
         // we are controling when to log to console through canLogToConsole flags so public is not a problem here
