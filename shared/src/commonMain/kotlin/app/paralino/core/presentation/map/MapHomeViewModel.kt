@@ -877,7 +877,11 @@ class MapHomeViewModel constructor(
                     // only show snackbar for other type of errors
                     // these are displayed on member item on map
                     if (!hasDeviceUnreachableError && !hasDeviceSetupWrongError) {
-                        messageDispatcher.showSnackbar(error.errorString())
+                        if (error.asRemoteException()?.code == 429) {
+                            messageDispatcher.showSnackbar(MR.strings.group_member_device_request_disabled.localizedString())
+                        } else {
+                            messageDispatcher.showSnackbar(error.errorString())
+                        }
                     }
                 } else {
                     scheduleDeviceResponseCheck()
