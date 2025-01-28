@@ -32,7 +32,7 @@ struct BatteryNotificationsSettingsScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.title_settings.localizedString())
+            .navigationTitle(MR.shared.strings.group_settings_battery_notifications_title.localizedString())
         }
     }
     
