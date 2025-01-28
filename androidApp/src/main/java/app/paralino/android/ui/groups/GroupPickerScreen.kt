@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -35,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -44,14 +41,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.FullWidthActionButton
+import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.groups.GroupListItem
@@ -279,43 +276,19 @@ private fun LazyListScope.groupCreateSection(
                     }
                 }
             }
-            Row(
+            FullWidthActionButton(
                 modifier = Modifier
                     .zIndex(0f)
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .padding(top = 8.dp)
-                    .clickable { onClick(GroupPickerAction.JoinGroup) }
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colors.surface)
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = CoreAppIcons.AddLink.asPainterResource(),
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colors.onSurface,
-                    contentDescription = null
-                )
-
-                Text(
-                    text = stringResource(MR.strings.dashboard_groups_join_button),
-                    color = MaterialTheme.colors.onSurface,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 12.sp,
-                    lineHeight = 14.sp,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .weight(1f)
-                )
-
-                Icon(
-                    modifier = Modifier.width(20.dp),
-                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                    contentDescription = null
-                )
-            }
+                    .padding(top = 8.dp),
+                startIcon = CoreAppIcons.AddLink.asPainterResource(),
+                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                text = stringResource(MR.strings.dashboard_groups_join_button),
+                onClick = {
+                    onClick(GroupPickerAction.JoinGroup)
+                }
+            )
         }
     }
 }

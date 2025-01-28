@@ -16,15 +16,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -63,6 +60,7 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.FullWidthActionButton
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MainInputField
@@ -391,45 +389,20 @@ fun LoginScreenCore(
                     )
                     Divider(modifier = Modifier.weight(1f))
                 }
-                Row(
+
+                FullWidthActionButton(
                     modifier = Modifier
                         .zIndex(0f)
                         .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                        .clickable {
-                            focusManager.clearFocus()
-                            vm.onEvent(LoginScreenUiEvent.CreateGuestAccount)
-                        }
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colors.surface)
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = CoreAppIcons.Incognito.asPainterResource(),
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colors.onSurface,
-                        contentDescription = null
-                    )
-
-                    Text(
-                        text = stringResource(MR.strings.login_button_create_guest_account),
-                        color = MaterialTheme.colors.onSurface,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 12.sp,
-                        lineHeight = 14.sp,
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .weight(1f)
-                    )
-
-                    Icon(
-                        modifier = Modifier.width(20.dp),
-                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                        contentDescription = null
-                    )
-                }
+                        .padding(bottom = 10.dp),
+                    startIcon = CoreAppIcons.Incognito.asPainterResource(),
+                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                    text = stringResource(MR.strings.login_button_create_guest_account),
+                    onClick = {
+                        focusManager.clearFocus()
+                        vm.onEvent(LoginScreenUiEvent.CreateGuestAccount)
+                    }
+                )
             }
         }
 
