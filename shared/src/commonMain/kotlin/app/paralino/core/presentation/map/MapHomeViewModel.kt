@@ -287,16 +287,20 @@ class MapHomeViewModel constructor(
                                                     LocationRequestItemState(
                                                         isEnabled = canRequestLocationAgain,
                                                         lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
+                                                        lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant(),
                                                         isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
                                                     )
                                                 } else if (isRequestExpired && !isRequestInProgress) {
                                                     LocationRequestItemState(
                                                         isEnabled = canRequestLocationAgain,
                                                         lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
+                                                        lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant(),
                                                         isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
                                                     )
                                                 } else {
-                                                    previousState?.actions?.locationRequest
+                                                    previousState?.actions?.locationRequest?.copy(
+                                                        lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant()
+                                                    )
                                                 }
                                             }
                                         ),
