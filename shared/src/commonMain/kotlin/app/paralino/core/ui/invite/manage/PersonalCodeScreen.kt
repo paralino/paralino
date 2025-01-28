@@ -119,7 +119,7 @@ fun PersonalCodeScreenCore(
                     )
                 }
             }
-        } else {
+        } else if (uiState.inactiveCodes.isNotEmpty()) {
             this.item(key = "inactiveCode") {
                 DefaultEmptyState(
                     modifier = Modifier.animateItem(),
