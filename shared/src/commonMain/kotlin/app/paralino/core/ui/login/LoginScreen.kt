@@ -16,11 +16,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
@@ -44,6 +47,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.common.FormValidation
@@ -71,7 +75,6 @@ import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -153,78 +156,87 @@ fun LoginScreenCore(
 
             Spacer(modifier = Modifier.size(8.dp))
 
-            AnimatedVisibility(
-                visible = uiState.uiType.isCreatingAccount,
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    if (uiState.canUseEmail) {
-                        LargeSeekbarSwitch(
-                            modifier = Modifier
-                                .alpha(if (uiState.canUseEmail) 1f else 0.4f)
-                                .padding(end = 10.dp)
-                                .fillMaxWidth(0.5f),
-                            icon = CoreAppIcons.Person.asPainterResource(),
-                            title = stringResource(resource = MR.strings.login_signup_account_type_regular),
-                            description = stringResource(resource = MR.strings.login_signup_account_type_regular_info),
-                            focusDescription = false,
-                            state = rememberSeekbarState(
-                                key = uiState.uiType,
-                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                                    seekbarState = null,
-                                    switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP)
-                                )
-                            ).value,
-                            elevation = if (uiState.canUseEmail) 16.dp else 0.dp,
-                            onStateChange = {
-                                vm.setScreenUiType(LoginScreenUiType.SIGNUP)
-                            }
-                        )
-                    }
+                if (uiState.canUseEmail) {
                     LargeSeekbarSwitch(
-                        modifier = Modifier.fillMaxWidth(),
-                        icon = CoreAppIcons.Incognito.asPainterResource(),
-                        title = stringResource(resource = MR.strings.login_signup_account_type_guest),
-                        description = stringResource(resource = MR.strings.login_signup_account_type_guest_info),
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                            .fillMaxWidth(0.5f),
+                        icon = CoreAppIcons.PersonAdd.asPainterResource(),
+                        title = stringResource(resource = MR.strings.login_signup_selection_signup_title),
+                        description = stringResource(resource = MR.strings.login_signup_selection_signup_info),
                         focusDescription = false,
                         state = rememberSeekbarState(
                             key = uiState.uiType,
-                            key2 = uiState.canUseEmail,
                             state = LargeSeekbarSwitchState.SeekbarSwitchState(
                                 seekbarState = null,
-                                switchState = if (uiState.canUseEmail) {
-                                    LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP_GUEST)
-                                } else {
-                                    null
-                                }
+                                switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.SIGNUP)
                             )
                         ).value,
-                        elevation = if (uiState.canUseEmail) 16.dp else 0.dp,
                         onStateChange = {
-                            vm.setScreenUiType(LoginScreenUiType.SIGNUP_GUEST)
+                            vm.setScreenUiType(LoginScreenUiType.SIGNUP)
+                        }
+                    )
+
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = CoreAppIcons.Login.asPainterResource(),
+                        title = stringResource(resource = MR.strings.login_signup_selection_login_title),
+                        description = stringResource(resource = MR.strings.login_signup_selection_login_info),
+                        focusDescription = false,
+                        state = rememberSeekbarState(
+                            key = uiState.uiType,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(uiState.uiType == LoginScreenUiType.LOGIN)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.setScreenUiType(LoginScreenUiType.LOGIN)
+                        }
+                    )
+                } else {
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = CoreAppIcons.Incognito.asPainterResource(),
+                        title = stringResource(resource = MR.strings.login_signup_selection_guest_title),
+                        description = stringResource(resource = MR.strings.login_signup_selection_guest_info),
+                        focusDescription = false,
+                        state = rememberSeekbarState(
+                            key = uiState.uiType,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = null
+                            )
+                        ).value,
+                        elevation = 0.dp,
+                        onStateChange = {
+                            vm.setScreenUiType(LoginScreenUiType.SIGNUP)
                         }
                     )
                 }
             }
 
             AnimatedVisibility(
-                visible = uiState.uiType == LoginScreenUiType.SIGNUP_GUEST,
+                visible = !uiState.canUseEmail,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 NoticeInfoChip(
                     modifier = Modifier
-                        .padding(top = 30.dp),
+                        .padding(top = 20.dp),
                     text = stringResource(MR.strings.login_signup_guest_notice_message)
                 )
             }
 
-            Spacer(modifier = Modifier.size(30.dp))
+            if (uiState.canUseEmail) {
+                Spacer(modifier = Modifier.size(40.dp))
+            }
 
             AnimatedVisibility(
-                visible = uiState.uiType != LoginScreenUiType.SIGNUP_GUEST,
+                visible = uiState.canUseEmail,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -301,6 +313,17 @@ fun LoginScreenCore(
                 }
             }
 
+            AnimatedVisibility(
+                visible = uiState.uiType == LoginScreenUiType.FORGOT_PASSWORD,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                NoticeInfoChip(
+                    modifier = Modifier
+                        .padding(top = 12.dp),
+                    text = stringResource(MR.strings.login_reset_password_info)
+                )
+            }
+
             Spacer(modifier = Modifier.size(12.dp))
 
             val stepText = getStepText(uiState.stepInfo)
@@ -326,7 +349,7 @@ fun LoginScreenCore(
                 )
             }
 
-            Spacer(modifier = Modifier.size(40.dp))
+            Spacer(modifier = Modifier.size(20.dp))
 
             FilledButton(
                 style = ButtonStyle.BIG,
@@ -338,38 +361,81 @@ fun LoginScreenCore(
             ) {
                 val text = when (uiState.uiType) {
                     LoginScreenUiType.LOGIN -> stringResource(resource = MR.strings.login_button_login)
-                    LoginScreenUiType.SIGNUP -> stringResource(resource = MR.strings.login_button_create_account)
-                    LoginScreenUiType.SIGNUP_GUEST -> stringResource(resource = MR.strings.login_button_create_guest_account)
+                    LoginScreenUiType.SIGNUP -> {
+                        if (uiState.canUseEmail) {
+                            stringResource(resource = MR.strings.login_button_create_account)
+                        } else {
+                            stringResource(resource = MR.strings.login_button_create_guest_account)
+                        }
+                    }
                     LoginScreenUiType.FORGOT_PASSWORD -> stringResource(resource = MR.strings.login_button_reset_password)
                 }
                 Text(text = text)
             }
         }
 
+        AnimatedVisibility(
+            visible = uiState.uiType == LoginScreenUiType.SIGNUP && uiState.canUseEmail,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.padding(horizontal = 40.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Divider(modifier = Modifier.weight(1f))
+                    Text(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        text = stringResource(MR.strings.login_button_create_account_separator_text),
+                        style = MaterialTheme.typography.caption
+                    )
+                    Divider(modifier = Modifier.weight(1f))
+                }
+                Row(
+                    modifier = Modifier
+                        .zIndex(0f)
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                        .clickable {
+                            focusManager.clearFocus()
+                            vm.onEvent(LoginScreenUiEvent.CreateGuestAccount)
+                        }
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colors.surface)
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = CoreAppIcons.Incognito.asPainterResource(),
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colors.onSurface,
+                        contentDescription = null
+                    )
+
+                    Text(
+                        text = stringResource(MR.strings.login_button_create_guest_account),
+                        color = MaterialTheme.colors.onSurface,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 12.sp,
+                        lineHeight = 14.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .weight(1f)
+                    )
+
+                    Icon(
+                        modifier = Modifier.width(20.dp),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+
         TermsAndPrivacyElement(uiType = uiState.uiType)
 
         Spacer(modifier = Modifier.weight(1f))
-
-        if (uiState.canUseEmail) {
-            val switchText = when (uiState.uiType) {
-                LoginScreenUiType.LOGIN -> stringResource(resource = MR.strings.login_signup_switch_button_signup)
-                LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> stringResource(resource = MR.strings.login_signup_switch_button_login)
-                LoginScreenUiType.FORGOT_PASSWORD -> stringResource(resource = MR.strings.login_signup_switch_button_login)
-            }
-
-            Text(
-                text = switchText.annotatedBold(),
-                style = MaterialTheme.typography.button,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable {
-                        vm.toggleLoginSignup()
-                    }
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-            )
-            Spacer(modifier = Modifier.size(20.dp))
-        }
     }
 }
 
@@ -385,7 +451,7 @@ fun ColumnScope.TermsAndPrivacyElement(uiType: LoginScreenUiType) {
 
     val uriHandler = LocalUriHandler.current
     AnimatedVisibility(
-        visible = uiType == LoginScreenUiType.SIGNUP || uiType == LoginScreenUiType.SIGNUP_GUEST,
+        visible = uiType == LoginScreenUiType.SIGNUP,
         modifier = Modifier.fillMaxWidth()
     ) {
         ClickableText(

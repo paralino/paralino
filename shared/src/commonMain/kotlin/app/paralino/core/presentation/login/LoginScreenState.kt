@@ -21,7 +21,7 @@ data class LoginScreenState constructor(
         FormValidation.PasswordConfirm.validate(password, passwordConfirm)
 
     companion object {
-        val defaultStartScreen = LoginScreenUiType.SIGNUP_GUEST
+        val defaultStartScreen = LoginScreenUiType.SIGNUP
     }
 }
 
@@ -30,9 +30,9 @@ data class LoggedOutScreenState(
 )
 
 enum class LoginScreenUiType {
-    LOGIN, SIGNUP, SIGNUP_GUEST, FORGOT_PASSWORD;
+    LOGIN, SIGNUP, FORGOT_PASSWORD;
 
-    val isCreatingAccount: Boolean get() = this == SIGNUP || this == SIGNUP_GUEST
+    val isCreatingAccount: Boolean get() = this == SIGNUP || this == LOGIN
 }
 
 sealed class LoginScreenEvent {
@@ -42,6 +42,7 @@ sealed class LoginScreenEvent {
 
 sealed class LoginScreenUiEvent {
     data object LoginOrSignup : LoginScreenUiEvent()
+    data object CreateGuestAccount : LoginScreenUiEvent()
     data class DialogAction(val action: AlertDialogAction) : LoginScreenUiEvent()
 }
 
