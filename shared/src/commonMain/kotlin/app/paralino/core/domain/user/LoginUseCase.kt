@@ -2,6 +2,7 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
+import app.paralino.core.crypto.user.CryptoAccountOperationV1
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
@@ -25,6 +26,7 @@ import kotlinx.serialization.encodeToString
 class LoginUseCase constructor(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
+    private val cryptoAccountOperationV1: CryptoAccountOperationV1,
     private val userKeyRepository: CryptoUserKeysLocalSource,
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val keyMapper: UserKeyMapperCore,
@@ -39,7 +41,7 @@ class LoginUseCase constructor(
             emit(SignUpStep.STARTING)
 
             val loginDetails = userRepo.getLoginDetails(key = email)
-            val authKey = cryptoCore.deriveUserAuthKey(
+            val authKey = cryptoAccountOperationV1.deriveUserAuthKey(
                 salt = loginDetails.loginSalt,
                 password = password,
                 alg = loginDetails.loginAlg
@@ -92,7 +94,7 @@ class LoginUseCase constructor(
                 val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
                     try {
                         // try getting correct keys from encrypted data that matches password
-                        val personalKeyData = cryptoCore.decryptUserPersonalKey(
+                        val personalKeyData = cryptoAccountOperationV1.decryptUserPersonalKey(
                             masterAuthKey = authKey.masterAuthKey,
                             userId = user.id,
                             encryptedMasterKey = it.encryptedSymmetricKey,

@@ -3,7 +3,8 @@ package app.paralino.core.domain.user
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
-import app.paralino.core.crypto.UserAuthDerivedKey
+import app.paralino.core.crypto.UserAuthDerivedKeyV1
+import app.paralino.core.crypto.user.CryptoAccountOperationV1
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
@@ -31,6 +32,7 @@ import kotlinx.serialization.encodeToString
 class CreateAccountUseCase constructor(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
+    private val cryptoAccountOperationV1: CryptoAccountOperationV1,
     private val userKeyRepository: CryptoUserKeysLocalSource,
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val logoutUseCase: LogoutUseCase,
@@ -63,7 +65,7 @@ class CreateAccountUseCase constructor(
 
             emit(SignUpStep.STARTING)
             val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
-            val authKey = cryptoCore.deriveUserAuthKey(
+            val authKey = cryptoAccountOperationV1.deriveUserAuthKey(
                 salt = cryptoCore.randomId(
                     length = 32,
                     alphabet = AlphabetType.EXTENDED
@@ -76,7 +78,7 @@ class CreateAccountUseCase constructor(
 
             try {
                 // test encryption before proceeding
-                createNewKey(userId = email, authKey = authKey)
+                cryptoAccountOperationV1.generateNewKeysForUser(userId = email, authKey = authKey)
 
                 emit(SignUpStep.CREATING_ACCOUNT)
                 user = userRepo.remoteSignUp(email = email, password = authKey.loginKey)
@@ -108,7 +110,7 @@ class CreateAccountUseCase constructor(
             emit(SignUpStep.GENERATING_KEYS)
 
             val keys = try {
-                createNewKey(userId = user.id, authKey = authKey)
+                cryptoAccountOperationV1.generateNewKeysForUser(userId = user.id, authKey = authKey)
             } catch (e: Exception) {
                 throw userKeySetupFailed(user, session, authKey, e)
             }
@@ -154,7 +156,7 @@ class CreateAccountUseCase constructor(
     private suspend fun userKeySetupFailed(
         user: UserMeRaw,
         session: UserSession,
-        authKey: UserAuthDerivedKey,
+        authKey: UserAuthDerivedKeyV1,
         e: Throwable
     ): SignUpStepException {
         userKeyRepository.clearAllKeys()
@@ -164,15 +166,5 @@ class CreateAccountUseCase constructor(
         userRepo.initLocallyAfterSignUp(user, session)
 
         return SignUpStepException(SignUpStep.GENERATING_KEYS, e)
-    }
-
-    private suspend fun createNewKey(
-        userId: String,
-        authKey: UserAuthDerivedKey
-    ): GeneratedUserKeys {
-        return cryptoCore.generateNewKeysForUser(
-            authKey = authKey,
-            userId = userId
-        )
     }
 }

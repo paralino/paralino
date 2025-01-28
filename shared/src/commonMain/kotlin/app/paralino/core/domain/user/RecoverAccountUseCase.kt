@@ -2,7 +2,8 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
-import app.paralino.core.crypto.UserAuthDerivedKey
+import app.paralino.core.crypto.UserAuthDerivedKeyV1
+import app.paralino.core.crypto.user.CryptoAccountOperationV1
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.onEach
 class RecoverAccountUseCase(
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val cryptoCore: CryptoCore,
+    private val cryptoAccountOperationV1: CryptoAccountOperationV1,
     private val keyMapper: UserKeyMapperCore,
     private val logoutUseCase: LogoutUseCase,
     private val changeCredential: ChangeCredentialsUseCase,
@@ -46,13 +48,13 @@ class RecoverAccountUseCase(
         val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
             try {
                 val authKey =
-                    cryptoCore.deriveUserAuthKey(
+                    cryptoAccountOperationV1.deriveUserAuthKey(
                         salt = it.loginSalt,
                         password = password,
                         alg = BaseRemoteModule.formatter.decodeFromString(it.loginAlg)
                     )
                 // try getting correct keys from encrypted data that matches password
-                val personalKeyData = cryptoCore.decryptUserPersonalKey(
+                val personalKeyData = cryptoAccountOperationV1.decryptUserPersonalKey(
                     masterAuthKey = authKey.masterAuthKey,
                     userId = userId,
                     encryptedMasterKey = it.encryptedSymmetricKey,
@@ -81,7 +83,7 @@ class RecoverAccountUseCase(
 
     fun resetUserAccount(masterAuthKey: String): Flow<Unit> {
         return flow {
-            val newKey = cryptoCore.generateNewKeysForUser(
+            val newKey = cryptoAccountOperationV1.generateNewKeysForUser(
                 authKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey),
                 userId = appPrefs.userId
             )
@@ -98,7 +100,7 @@ class RecoverAccountUseCase(
     fun recoverUserAccount(masterAuthKey: String, key: GeneratedUserKeys): Flow<Unit> {
         return flow {
             // private asymmetric key is encrypted with symmetric key and keys don't change here
-            val authKey: UserAuthDerivedKey = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
+            val authKey: UserAuthDerivedKeyV1 = BaseRemoteModule.formatter.decodeFromString(masterAuthKey)
 
             changeCredential.changeCredentials(
                 userId = appPrefs.userId,

@@ -10,7 +10,15 @@ class SimpleKeyPairData(
 )
 
 @Serializable
-data class UserAuthDerivedKey(
+data class UserAuthDerivedKeyV1(
+    val masterAuthKey: String,
+    val loginKey: String,
+    val loginSalt: String,
+    val kdfAlg: KDFAlg
+)
+
+@Serializable
+data class UserAuthDerivedKeyV2(
     val masterAuthKey: String,
     val loginKey: String,
     val loginSalt: String,

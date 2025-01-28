@@ -3,7 +3,8 @@ package app.paralino.core.domain.user
 import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
-import app.paralino.core.crypto.UserAuthDerivedKey
+import app.paralino.core.crypto.UserAuthDerivedKeyV1
+import app.paralino.core.crypto.user.CryptoAccountOperationV1
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.flowOn
 class ChangeCredentialsUseCase(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
+    private val cryptoAccountOperationV1: CryptoAccountOperationV1,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val appPrefs: AppPrefs
@@ -74,7 +76,7 @@ class ChangeCredentialsUseCase(
             val oldKey = userKeyRepo.getLocalRawKey()
                 ?: throw MissingUserKeyException(localCache = false)
 
-            val oldMasterAuthKey = cryptoCore.deriveUserAuthKey(
+            val oldMasterAuthKey = cryptoAccountOperationV1.deriveUserAuthKey(
                 salt = oldKey.loginSalt,
                 password = oldPassword,
                 alg = BaseRemoteModule.formatter.decodeFromString(oldKey.loginAlg)
@@ -83,7 +85,7 @@ class ChangeCredentialsUseCase(
             val newMasterAuthKey = if (newPassword.isNullOrBlank()) {
                 oldMasterAuthKey
             } else {
-                cryptoCore.deriveUserAuthKey(
+                cryptoAccountOperationV1.deriveUserAuthKey(
                     salt = cryptoCore.randomId(
                         length = 32,
                         alphabet = AlphabetType.EXTENDED
@@ -115,8 +117,8 @@ class ChangeCredentialsUseCase(
     fun changeCredentials(
         userId: String,
         oldKey: GeneratedUserKeys,
-        oldMasterAuthKey: UserAuthDerivedKey?,
-        newMasterAuthKey: UserAuthDerivedKey,
+        oldMasterAuthKey: UserAuthDerivedKeyV1?,
+        newMasterAuthKey: UserAuthDerivedKeyV1,
         action: suspend (String?, String) -> Unit
     ): Flow<ChangeCredentialsStep> {
         return flow {
@@ -125,7 +127,7 @@ class ChangeCredentialsUseCase(
 
             // re-encrypt current key with new password
 
-            val newUserKeys = cryptoCore.changeUserMasterKey(
+            val newUserKeys = cryptoAccountOperationV1.changeUserMasterKey(
                 userId = userId,
                 signatureKeyPair = oldKey.signatureKeyPair,
                 authKey = newMasterAuthKey
@@ -178,7 +180,7 @@ class ChangeCredentialsUseCase(
             // verify everything is correctly done and matches
             if (oldMasterAuthKey != null) {
                 try {
-                    cryptoCore.verifyUserKeysChange(
+                    cryptoAccountOperationV1.verifyUserKeysChange(
                         oldKey = oldKey.encryptedKeyData,
                         newKey = newKey,
                         oldMasterAuthKey = oldMasterAuthKey.masterAuthKey,

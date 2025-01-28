@@ -7,6 +7,7 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
+import app.paralino.core.crypto.user.CryptoAccountOperationV1
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
@@ -229,11 +230,11 @@ val coreModule = module {
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    factory { LoginUseCase(get(), get(), get(), get(), get(), get(), appPrefs) }
-    factory { CreateAccountUseCase(get(), get(), get(), get(), get(), appPrefs) }
-    factory { ResetPasswordUseCase(get(), get(), get()) }
-    factory { ChangeCredentialsUseCase(get(), get(), get(), get(), appPrefs) }
-    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), appPrefs) }
+    factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { CreateAccountUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    factory { ResetPasswordUseCase(get(), get()) }
+    factory { ChangeCredentialsUseCase(get(), get(), get(), get(), get(), get()) }
+    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get(), appPrefs) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestUseCase(get(), get()) }
@@ -281,6 +282,7 @@ val coreModule = module {
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { CryptoCore(get()) }
+    single { CryptoAccountOperationV1(get()) }
     single { CryptoKEKLocalRepository(get(), get(), get(), appPrefs) }
     single { CryptoUserKeysLocalSource(get(), get(), appPrefs) }
     single { CryptoKEKRefreshUseCase(get(), get(), get()) }
