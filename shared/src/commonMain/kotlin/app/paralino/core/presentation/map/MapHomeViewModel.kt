@@ -115,7 +115,7 @@ class MapHomeViewModel constructor(
     private var realtimeSubscriptionJob: Job? = null
     private var groupSubscriptionJob: Job = SupervisorJob()
     private val locationRequestDuration = 20.seconds
-    private val locationRequestDelay = 2.minutes
+    private val locationRequestDelay = 1.minutes
 
 
     val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> =
