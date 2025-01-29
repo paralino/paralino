@@ -469,30 +469,6 @@ fun SharingStartScreenCore(
                     }
                 )
             }
-
-            if (state.isPremiumSectionVisible) {
-                Spacer(modifier = Modifier.size(10.dp))
-                LargeSeekbarSwitch(
-                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp).clickable { openSubscriptions() },
-                    icon = CoreAppIcons.AccessTime.asPainterResource(),
-                    title = stringResource(MR.strings.groups_sharing_section_title_duration),
-                    description = getTime(state.demoSharingTimeMillis),
-                    focusDescription = true,
-                    state = rememberSeekbarState(
-                        key = state,
-                        state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                            seekbarState = LargeSeekbarSwitchState.Seekbar(
-                                seekbarProgress = state.demoSharingTimeIndex + 1,
-                                seekbarRange = IntRange(1, state.demoSharingPresetsMillis.size)
-                            ),
-                            switchState = null
-                        )
-                    ).value,
-                    onProgressChange = {
-                        vm.demoSharingDurationChanged(it - 1)
-                    }
-                )
-            }
         }
     }
 

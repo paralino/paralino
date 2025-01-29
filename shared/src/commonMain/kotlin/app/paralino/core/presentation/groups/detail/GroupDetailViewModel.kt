@@ -185,9 +185,10 @@ class GroupDetailViewModel(
                         _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
                 }
             }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
-        groupLocal.getGroupWithLimits(groupId)
+        groupLocal.getGroupWithMetadata(groupId)
             .filter { it.isGroupOverLimits(remoteConfigRepo.getConfigOnce()) }
             .distinctUntilChanged()
             .onEach {
