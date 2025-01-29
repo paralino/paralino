@@ -2,19 +2,27 @@ package app.paralino.core.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,8 +32,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.ButtonStyle
 import kotlinx.coroutines.delay
@@ -130,6 +141,50 @@ fun FilledButton(
             }
         }
     )
+}
+
+@Composable
+fun FullWidthActionButton(
+    modifier: Modifier = Modifier,
+    startIcon: Painter,
+    text: String,
+    endIcon: Painter = CoreAppIcons.ChevronRight.asPainterResource(),
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.surface)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = startIcon,
+            modifier = Modifier.size(18.dp),
+            tint = MaterialTheme.colors.onSurface,
+            contentDescription = null
+        )
+
+        Text(
+            text = text,
+            color = MaterialTheme.colors.onSurface,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            lineHeight = 14.sp,
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .weight(1f)
+        )
+
+        Icon(
+            modifier = Modifier.width(20.dp),
+            painter = endIcon,
+            tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+            contentDescription = null
+        )
+    }
 }
 
 enum class AppButtonState {

@@ -11,7 +11,9 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.isOlderThan
 import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.minutes
 
 sealed interface GroupMemberItemState {
     val memberState: GroupMemberState
@@ -174,10 +176,12 @@ data class LocationRequestItemState(
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
     val isPremiumFeatureEnabled: Boolean,
-    val lastLocationRequest: Instant? = null
+    val lastLocationRequest: Instant? = null,
+    val lastDeviceUpdate: Instant? = null
 ) {
     val canInteract: Boolean = !isLoading && !isWaitingForUser
     val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError
+    val isStatusRecent: Boolean = lastDeviceUpdate?.isOlderThan(10.minutes) == false
 }
 
 enum class MemberActionType {

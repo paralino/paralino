@@ -28,8 +28,6 @@ data class SharingStartScreenState constructor(
     val isPremiumSectionVisible: Boolean = false,
     val devicesLimit: Int = 0,
     val devicesCount: Int = 0,
-    val demoSharingTimeMillis: Long = SharingDurationPreset.premiumPresets.last(),
-    val demoSharingPresetsMillis: List<Long> = SharingDurationPreset.premiumPresets,
     val errors: List<ConditionErrorType> = emptyList(),
     val warnings: List<ConditionErrorType> = emptyList(),
     val loadingAction: Boolean = false,
@@ -40,13 +38,6 @@ data class SharingStartScreenState constructor(
             return sharingPresetsMillis.indexOfFirst { it == sharingTimeMillis }.takeIf { it >= 0 }
                 ?: sharingPresetsMillis.indexOfFirst { sharingTimeMillis < it }.takeIf { it >= 0 }
                 ?: sharingPresetsMillis.lastIndex
-        }
-
-    val demoSharingTimeIndex: Int
-        get() {
-            return demoSharingPresetsMillis.indexOfFirst { it == demoSharingTimeMillis }.takeIf { it >= 0 }
-                ?: demoSharingPresetsMillis.indexOfFirst { demoSharingTimeMillis < it }.takeIf { it >= 0 }
-                ?: demoSharingPresetsMillis.lastIndex
         }
 
     val approximateLocationIndex: Int

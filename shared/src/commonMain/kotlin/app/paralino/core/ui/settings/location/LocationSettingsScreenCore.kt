@@ -158,7 +158,7 @@ fun LocationSettingsScreenCore(
 
                 val highAccuracyState by rememberSeekbarState(
                     key = uiState,
-                    LargeSeekbarSwitchState.SeekbarSwitchState(
+                    state = LargeSeekbarSwitchState.SeekbarSwitchState(
                         seekbarState = null,
                         switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.useHighPerformanceLocation)
                     )
@@ -219,7 +219,7 @@ fun LocationSettingsScreenCore(
                     description = stringResource(MR.strings.setting_location_batterySaver_lowPowerMode_description),
                     state = rememberSeekbarState(
                         key = uiState,
-                        LargeSeekbarSwitchState.SeekbarSwitchState(
+                        state = LargeSeekbarSwitchState.SeekbarSwitchState(
                             seekbarState = null,
                             switchState = LargeSeekbarSwitchState.Switch(uiState.batterySaverSettings.activeOnLowPowerMode)
                         )

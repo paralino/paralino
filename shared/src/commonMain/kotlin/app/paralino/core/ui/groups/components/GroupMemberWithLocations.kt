@@ -808,6 +808,7 @@ fun LocationRequestItem(
                 state.hasDeviceSetupWrongError -> stringResource(MR.strings.group_member_device_setup_invalid)
                 state.hasDeviceUnreachableError -> stringResource(MR.strings.group_member_device_unreachable)
                 state.hasRequestError -> stringResource(MR.strings.group_member_device_request_failed)
+                state.isStatusRecent -> stringResource(MR.strings.group_members_item_refresh_location_button)
                 else -> stringResource(MR.strings.group_members_item_request_location_button)
             },
             style = MaterialTheme.typography.caption,

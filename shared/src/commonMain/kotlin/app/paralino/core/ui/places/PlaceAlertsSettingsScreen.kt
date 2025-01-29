@@ -122,7 +122,7 @@ private fun PlaceAlertsScreen(
 
                 val notificationState by rememberSeekbarState(
                     key = state,
-                    LargeSeekbarSwitchState.SeekbarSwitchState(
+                    state = LargeSeekbarSwitchState.SeekbarSwitchState(
                         seekbarState = null,
                         switchState = LargeSeekbarSwitchState.Switch(
                             checkState = state.arePlaceAlertsActive,

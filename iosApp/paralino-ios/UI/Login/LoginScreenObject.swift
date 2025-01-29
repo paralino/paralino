@@ -14,7 +14,7 @@ class LoginScreenObject: ObservableObject {
     var uiState: ResourceSwift<LoginScreenState> = .notInitialized
     
     init() {
-        vm = KoinIOS.ViewModels.shared.loginVM(screenUiType: .login)
+        vm = KoinIOS.ViewModels.shared.loginVM(screenUiType: .signup)
         vm.observe(flow: vm.uiState) { [weak self] state in
             self?.uiState = ResourceSwift(data: state)
         }

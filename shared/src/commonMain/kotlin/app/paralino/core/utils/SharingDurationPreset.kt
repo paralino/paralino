@@ -37,7 +37,7 @@ object SharingDurationPreset {
         day
     )
 
-    fun presets(isPremium: Boolean): List<Long> {
-        return if (isPremium) premiumPresets else freePresets
+    fun presets(isWithLimits: Boolean): List<Long> {
+        return if (isWithLimits) freePresets else premiumPresets
     }
 }

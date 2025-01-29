@@ -61,9 +61,11 @@ class SharingStartViewModel(
     private val _uiState =
         MutableStateFlow(
             SharingStartScreenState(
-                groupState = if (groupId.isNullOrBlank())
+                groupState = if (groupId.isNullOrBlank()) {
                     Payload.Success(null)
-                else Payload.Loading
+                } else {
+                    Payload.Loading
+                }
             )
         )
     val uiState: StateFlow<SharingStartScreenState> = _uiState
@@ -121,23 +123,20 @@ class SharingStartViewModel(
 
         currentGroup
             .filterNotNull()
-            .flatMapMerge {
-                groupRepo.getGroupWithLimits(it.group.id)
-                    .onEach {
-                        if (it.isGroupOverLimits(remoteConfigRepo.getConfigOnce())) {
-                            if (it.group.isCurrentUserOwner) {
-                                showSnackbar(
-                                    text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
-                                    duration = SnackbarDuration.Forever
-                                )
-                            } else {
-                                showSnackbar(
-                                    text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
-                                    duration = SnackbarDuration.Forever
-                                )
-                            }
-                        }
+            .onEach {
+                if (it.isGroupOverLimits(remoteConfigRepo.getConfigOnce())) {
+                    if (it.group.isCurrentUserOwner) {
+                        showSnackbar(
+                            text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                            duration = SnackbarDuration.Forever
+                        )
+                    } else {
+                        showSnackbar(
+                            text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                            duration = SnackbarDuration.Forever
+                        )
                     }
+                }
             }
             .launchIn(coroutineScope)
     }
@@ -207,9 +206,11 @@ class SharingStartViewModel(
 
     private suspend fun setSelectedGroup(group: UserGroupWithMetadata?) {
         currentGroup.update { group }
-        val isGroupPremium =
-            group?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce()) ?: false
-        val presets = SharingDurationPreset.presets(isPremium = isGroupPremium)
+        val isGroupPremium = group?.group
+            ?.hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce())
+            ?: false
+        val isGroupOverLimits = group?.isGroupOverLimits(remoteConfigRepo.getConfigOnce()) ?: false
+        val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
         _uiState.update {
             it.copy(
                 groupState = Payload.Success(group?.let { GroupItemState(it) }),
@@ -219,7 +220,7 @@ class SharingStartViewModel(
                 notifyOthers = if (isGroupPremium) it.notifyOthers else false,
                 sharingPresetsMillis = presets,
                 sharingTimeMillis = it.sharingTimeMillis.let {
-                    if (isGroupPremium) it
+                    if (!isGroupOverLimits) it
                     else it.coerceIn(presets.first(), presets.last())
                 }
             )
@@ -369,12 +370,12 @@ class SharingStartViewModel(
 
     fun sharingDurationChanged(index: Int) {
         _uiState.update {
-            val isGroupPremium =
-                currentGroup.value?.group?.hasPremiumSharingFeatures(remoteConfigRepo.getCachedConfigOnce())
-                    ?: true
-            val time = SharingDurationPreset.presets(isPremium = isGroupPremium).getOrNull(index)
+            val isGroupOverLimits = currentGroup.value
+                ?.isGroupOverLimits(remoteConfigRepo.getCachedConfigOnce())
+                ?: false
+            val time = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits).getOrNull(index)
                 ?.let {
-                    if (isGroupPremium) {
+                    if (!isGroupOverLimits) {
                         it
                     } else {
                         it.coerceIn(
@@ -388,14 +389,6 @@ class SharingStartViewModel(
                 sharingTimeMillis = time,
                 errors = getErrors(LocationSharingContract.isLongTerm(time))
             )
-        }
-    }
-
-    fun demoSharingDurationChanged(index: Int) {
-        _uiState.update {
-            val time = SharingDurationPreset.presets(isPremium = true).getOrNull(index)
-                ?: SharingDurationPreset.hour
-            it.copy(demoSharingTimeMillis = time)
         }
     }
 

@@ -63,7 +63,7 @@ class LoginViewModel constructor(
                 _uiState.update {
                     it.copy(
                         canUseEmail = config.isEmailEnabled,
-                        uiType = if (!config.isEmailEnabled) LoginScreenUiType.SIGNUP_GUEST else it.uiType
+                        uiType = if (!config.isEmailEnabled) LoginScreenUiType.SIGNUP else it.uiType
                     )
                 }
             }
@@ -71,24 +71,35 @@ class LoginViewModel constructor(
     }
 
     private fun defaultUiType(preferred: LoginScreenUiType): LoginScreenUiType {
-        return if (remoteConfigRepository.getCachedConfigOnce().isEmailEnabled) preferred else LoginScreenUiType.SIGNUP_GUEST
+        return if (remoteConfigRepository.getCachedConfigOnce().isEmailEnabled) preferred else LoginScreenUiType.SIGNUP
+    }
+
+    private fun canCompleteAccountAction(): Boolean {
+        if (_uiState.value.uiType != LoginScreenUiType.SIGNUP && !_uiState.value.canUseEmail) {
+            _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP) }
+            return false
+        }
+
+        if (createAccountUseCase.isProcessingAny() || loginUseCase.isProcessingAny()) {
+            return false
+        }
+
+        if (_uiState.value.actionLoading) {
+            return false
+        }
+
+        return true
     }
 
     private fun proceed() {
 
-        if (_uiState.value.uiType != LoginScreenUiType.SIGNUP_GUEST && !_uiState.value.canUseEmail) {
-            _uiState.update { it.copy(uiType = LoginScreenUiType.SIGNUP_GUEST) }
-            return
-        }
-
-        if (createAccountUseCase.isProcessingAny() || loginUseCase.isProcessingAny()) {
+        if (!canCompleteAccountAction()) {
             return
         }
 
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> login()
             LoginScreenUiType.SIGNUP -> signUp()
-            LoginScreenUiType.SIGNUP_GUEST -> signUpAsGuest()
             LoginScreenUiType.FORGOT_PASSWORD -> resetPassword()
         }
     }
@@ -121,7 +132,7 @@ class LoginViewModel constructor(
                 } else {
                     _uiState.update {
                         it.copy(
-                            uiType = LoginScreenUiType.SIGNUP_GUEST,
+                            uiType = LoginScreenUiType.SIGNUP,
                             email = "",
                             password = "",
                             alertDialog = MainAlertDialog.GuestAccountRecover
@@ -200,6 +211,11 @@ class LoginViewModel constructor(
     }
 
     private fun signUpAsGuest() {
+
+        if (!canCompleteAccountAction()) {
+            return
+        }
+
         _uiState.update {
             it.copy(
                 email = "",
@@ -252,7 +268,7 @@ class LoginViewModel constructor(
                     SignUpStep.CREATING_ACCOUNT,
                     SignUpStep.LOG_USER_IN -> when (it.uiType) {
                         LoginScreenUiType.LOGIN -> SignUpStepInfo.Info.START_LOGIN
-                        LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Info.START_SIGNUP
+                        LoginScreenUiType.SIGNUP -> SignUpStepInfo.Info.START_SIGNUP
                         LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Info.START_PASSWORD_RESET
                     }
 
@@ -285,7 +301,7 @@ class LoginViewModel constructor(
                     else SignUpStepInfo.Error.LOGIN
                 }
 
-                LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> SignUpStepInfo.Error.SIGN_UP
+                LoginScreenUiType.SIGNUP -> SignUpStepInfo.Error.SIGN_UP
                 LoginScreenUiType.FORGOT_PASSWORD -> SignUpStepInfo.Error.PASSWORD_RESET
             }
 
@@ -310,7 +326,7 @@ class LoginViewModel constructor(
                 when (step) {
                     SignUpStep.GENERATING_KEYS,
                     SignUpStep.INIT_USER_DATA,
-                    -> {
+                        -> {
                         when (uiType) {
                             LoginScreenUiType.LOGIN -> SignUpErrorType.LOGIN_CRYPTO
                             LoginScreenUiType.SIGNUP -> SignUpErrorType.SIGNUP_CRYPTO
@@ -365,7 +381,7 @@ class LoginViewModel constructor(
         if (type == _uiState.value.uiType)
             return
 
-        if (type != LoginScreenUiType.SIGNUP_GUEST && !_uiState.value.canUseEmail) {
+        if (type != LoginScreenUiType.SIGNUP && !_uiState.value.canUseEmail) {
             if (!appPrefs.hasGuestAccount()) {
                 _uiState.update {
                     it.copy(alertDialog = MainAlertDialog.ComingSoon)
@@ -391,7 +407,7 @@ class LoginViewModel constructor(
                 it.copy(uiType = defaultUiType(LoginScreenUiType.SIGNUP), stepInfo = null)
             }
 
-            LoginScreenUiType.SIGNUP, LoginScreenUiType.SIGNUP_GUEST -> _uiState.update {
+            LoginScreenUiType.SIGNUP -> _uiState.update {
                 it.copy(uiType = LoginScreenUiType.LOGIN, stepInfo = null)
             }
 
@@ -456,19 +472,22 @@ class LoginViewModel constructor(
     fun onEvent(event: LoginScreenUiEvent) {
         when (event) {
             LoginScreenUiEvent.LoginOrSignup -> {
+                if (_uiState.value.canUseEmail) {
+                    proceed()
+                } else {
+                    signUpAsGuest()
+                }
+            }
 
-                if (createAccountUseCase.isProcessingAny() || loginUseCase.isProcessingAny()) {
+            LoginScreenUiEvent.CreateGuestAccount -> {
+                if (!canCompleteAccountAction()) {
                     return
                 }
 
-                if (_uiState.value.uiType == LoginScreenUiType.SIGNUP_GUEST) {
-                    if (_uiState.value.canUseEmail) {
-                        _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }
-                    } else {
-                        proceed()
-                    }
+                if (_uiState.value.canUseEmail) {
+                    _uiState.update { it.copy(alertDialog = MainAlertDialog.GuestAccountCreating) }
                 } else {
-                    proceed()
+                    signUpAsGuest()
                 }
             }
 
@@ -477,10 +496,11 @@ class LoginViewModel constructor(
                     is MainAlertDialog.ComingSoon -> {
                         hideDialog()
                     }
+
                     is MainAlertDialog.GuestAccountCreating -> {
                         hideDialog()
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
-                            proceed()
+                            signUpAsGuest()
                         }
                     }
 
@@ -507,7 +527,8 @@ class LoginViewModel constructor(
                             }
                         }
                     }
-                     else -> {}
+
+                    else -> {}
                 }
             }
         }

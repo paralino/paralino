@@ -23,7 +23,7 @@ struct WelcomeScreen: View {
                 ScreensIOS.shared.login.WelcomeScreenVC(
                     vm: appState.vm,
                     paddingValues: safeAreaInsets,
-                    onLoginClick: { mainAppState.appStartGraph.append(.login) },
+                    onLoginClick: { mainAppState.appStartGraph.append(.signup) },
                     onStartClick: { mainAppState.appStartGraph.append(.onboarding) }
                 )
             }

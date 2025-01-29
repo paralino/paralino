@@ -63,7 +63,7 @@ fun WelcomeScreen(
         ActionScaffold(
             modifier = Modifier,
             additionalButtonBottomPadding = paddingValues.calculateBottomPadding(),
-            buttonIcon = Res.drawable.ic_login.asPainterResource(),
+            buttonIcon = null,
             buttonText = stringResource(MR.strings.welcome_screen_button_join),
             buttonBackground = Color.Transparent,
             onConfirm = onStartClick

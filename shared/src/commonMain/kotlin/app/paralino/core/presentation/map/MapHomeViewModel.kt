@@ -115,7 +115,7 @@ class MapHomeViewModel constructor(
     private var realtimeSubscriptionJob: Job? = null
     private var groupSubscriptionJob: Job = SupervisorJob()
     private val locationRequestDuration = 20.seconds
-    private val locationRequestDelay = 2.minutes
+    private val locationRequestDelay = 1.minutes
 
 
     val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>> =
@@ -287,16 +287,20 @@ class MapHomeViewModel constructor(
                                                     LocationRequestItemState(
                                                         isEnabled = canRequestLocationAgain,
                                                         lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
+                                                        lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant(),
                                                         isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
                                                     )
                                                 } else if (isRequestExpired && !isRequestInProgress) {
                                                     LocationRequestItemState(
                                                         isEnabled = canRequestLocationAgain,
                                                         lastLocationRequest = previousState?.actions?.locationRequest?.lastLocationRequest,
+                                                        lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant(),
                                                         isPremiumFeatureEnabled = groupPlanConfig.planTypeEnum.isPremium
                                                     )
                                                 } else {
-                                                    previousState?.actions?.locationRequest
+                                                    previousState?.actions?.locationRequest?.copy(
+                                                        lastDeviceUpdate = location.status.data?.timeUTC?.fromUTCtoInstant()
+                                                    )
                                                 }
                                             }
                                         ),
@@ -873,7 +877,11 @@ class MapHomeViewModel constructor(
                     // only show snackbar for other type of errors
                     // these are displayed on member item on map
                     if (!hasDeviceUnreachableError && !hasDeviceSetupWrongError) {
-                        messageDispatcher.showSnackbar(error.errorString())
+                        if (error.asRemoteException()?.code == 429) {
+                            messageDispatcher.showSnackbar(MR.strings.group_member_device_request_disabled.localizedString())
+                        } else {
+                            messageDispatcher.showSnackbar(error.errorString())
+                        }
                     }
                 } else {
                     scheduleDeviceResponseCheck()

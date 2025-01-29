@@ -47,6 +47,7 @@ import paralino.shared.generated.resources.ic_location_off
 import paralino.shared.generated.resources.ic_location_on
 import paralino.shared.generated.resources.ic_lock
 import paralino.shared.generated.resources.ic_lock_open
+import paralino.shared.generated.resources.ic_login
 import paralino.shared.generated.resources.ic_logout
 import paralino.shared.generated.resources.ic_mail
 import paralino.shared.generated.resources.ic_map
@@ -121,6 +122,7 @@ object CoreAppIcons {
     val Share get() = Res.drawable.ic_share
     val AutoFixHigh get() = Res.drawable.ic_auto_fix_high
     val Logout get() = Res.drawable.ic_logout
+    val Login get() = Res.drawable.ic_login
     val PrivacyTip get() = Res.drawable.ic_privacy_tip
     val Code get() = Res.drawable.ic_code
     val AccountCircle get() = Res.drawable.ic_account_circle

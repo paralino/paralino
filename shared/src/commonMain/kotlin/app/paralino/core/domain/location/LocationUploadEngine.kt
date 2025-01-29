@@ -2,6 +2,8 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.MR
 import app.paralino.core.domain.LimitedExecutionRepository
+import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -10,8 +12,6 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
-import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.provider.localizedString
@@ -25,7 +25,6 @@ import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlacesRepository
-import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -235,28 +234,7 @@ class LocationUploadEngine constructor(
             contract = contract
         )
         return when (payload) {
-            is LocationPayloadStatus.Success -> {
-                val group = groupLocal.getGroupOnce(groupId = groupId)
-
-                if (group?.hasPremiumSharingFeatures(remoteConfig.getConfigOnce()) == false) {
-                    val newContract = contract.asValidContract(
-                        sharingLimitDuration = SharingDurationPreset.freePresets.last().milliseconds
-                    )
-
-                    if (newContract != null) {
-                        // update contract if time is reduced
-                        if (contract.endTimeUTC != newContract.endTimeUTC) {
-                            locationSharingManager.startSharing(newContract)
-                        }
-                    } else {
-                        locationSharingManager.stopSharing(groupId = groupId)
-                        placeActivityRepo.clearForGroup(groupId = groupId)
-                        return null
-                    }
-                }
-
-                payload.payload
-            }
+            is LocationPayloadStatus.Success -> payload.payload
 
             LocationPayloadStatus.MissingLocationDocument -> {
                 tryRegisterDeviceAgain(

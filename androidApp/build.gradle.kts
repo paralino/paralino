@@ -126,8 +126,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 47
-            versionName = "0.16.2"
+            versionCode = 48
+            versionName = "0.16.3"
 
             val fcmConfigFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
             if (!fcmConfigFile.exists()) {
@@ -143,8 +143,8 @@ android {
         }
         create("dev") {
             dimension = "version"
-            versionCode = 48
-            versionName = "0.16.3"
+            versionCode = 49
+            versionName = "0.16.4"
             versionNameSuffix = "-dev"
             applicationIdSuffix = ".dev"
         }
