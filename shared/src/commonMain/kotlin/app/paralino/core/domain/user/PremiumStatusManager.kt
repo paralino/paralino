@@ -8,11 +8,9 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.utils.SharingDurationPreset
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
 class PremiumStatusManager(
     private val userRepo: UserRepository,
@@ -47,15 +45,10 @@ class PremiumStatusManager(
         val groupLimit = userRepo.userPlans.value.groupsLimit.takeIf { config.plans.isNotEmpty() } ?: Int.MAX_VALUE
 
         val overLimits = groupsDataForOwner.map {
-            val groupWithLimits = groupLocalDataSource.getGroupWithLimitsOnce(groupId = it.group.id)
-            if (groupWithLimits?.isGroupOverLimits(config) == true || groupsDataForOwner.size > groupLimit) {
+            if (it.isGroupOverLimits(config) || groupsDataForOwner.size > groupLimit) {
                 val contract = locationSharingManager.currentSharingContractForGroup(id = it.group.id)
                 val newContract = contract?.asValidContract(
-                    if (it.group.isGroupPremium(remoteConfigRepo.getConfigOnce())) {
-                        5.days
-                    } else {
-                        SharingDurationPreset.freePresets.last().milliseconds
-                    }
+                    sharingLimitDuration = 5.days
                 )
                 if (newContract != null) {
                     locationSharingManager.startSharing(newContract)

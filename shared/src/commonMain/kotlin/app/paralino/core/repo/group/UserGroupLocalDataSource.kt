@@ -6,7 +6,6 @@ import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.domain.crypto.VerificationResultError
 import app.paralino.core.models.Resource
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithLimits
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.MemberModel
@@ -22,9 +21,6 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.utils.extensions.distinctFlowOfList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +28,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -144,14 +139,25 @@ class UserGroupLocalDataSource constructor(
 
     fun getGroupWithMetadata(groupId: String): Flow<UserGroupWithMetadata> {
         return combine(
-            database.groupRelatedDao.getGroup(groupId = groupId).filterNotNull(),
-            memberLocal.getMemberCountInGroup(groupId),
-            database.groupRelatedDao.getMember(groupId = groupId, userId = appPrefs.userId).filterNotNull()
-        ) { groupEntity, memberCount, currentUserMember ->
+            database.groupRelatedDao.getGroup(groupId = groupId)
+                .filterNotNull(),
+            database.groupRelatedDao.getMember(groupId = groupId, userId = appPrefs.userId)
+                .filterNotNull(),
+            memberLocal.getMemberCountInGroup(groupId)
+                .distinctUntilChanged(),
+            database.groupRelatedDao.getLocationCountForUserInGroup(groupId = groupId, userId = appPrefs.userId)
+                .filterNotNull()
+                .distinctUntilChanged(),
+            database.groupRelatedDao.getPlacesCountForGroup(groupId)
+                .filterNotNull()
+                .distinctUntilChanged()
+        ) { groupEntity, currentUserMember, memberCount, devicesCount, placesCount ->
             val group = mapper.local2Core(groupEntity)
             UserGroupWithMetadata(
                 group = group,
                 memberCount = memberCount,
+                placesCount = placesCount,
+                devicesCount = devicesCount,
                 verification = memberMapper.local2Core(
                     member = currentUserMember,
                     memberLocations = emptyList(),
@@ -159,32 +165,6 @@ class UserGroupLocalDataSource constructor(
                 ).member.verificationResult
             )
         }
-    }
-
-    fun getGroupWithLimits(groupId: String): Flow<UserGroupWithLimits> {
-        return combine(
-            database.groupRelatedDao.getGroup(groupId = groupId)
-                .filterNotNull(),
-            memberLocal.getMemberCountInGroup(groupId),
-            database.groupRelatedDao.getLocationCountForUserInGroup(groupId = groupId, userId = appPrefs.userId)
-                .filterNotNull()
-                .distinctUntilChanged(),
-            database.groupRelatedDao.getPlacesCountForGroup(groupId)
-                .filterNotNull()
-                .distinctUntilChanged()
-        ) { groupEntity, memberCount, devicesCount, placesCount ->
-            val group = mapper.local2Core(groupEntity)
-            UserGroupWithLimits(
-                group = group,
-                memberCount = memberCount,
-                placesCount = placesCount,
-                devicesCount = devicesCount
-            )
-        }
-    }
-
-    suspend fun getGroupWithLimitsOnce(groupId: String): UserGroupWithLimits? {
-        return getGroupWithLimits(groupId = groupId).firstOrNull()
     }
 
     fun getGroupWithMembers(groupId: String): Flow<UserGroupWithMembers?> {
@@ -217,21 +197,35 @@ class UserGroupLocalDataSource constructor(
                 if(groups.isEmpty()) {
                     flowOf(emptyList())
                 } else {
-                    val flows = groups.map { group ->
-                        memberLocal.getMemberCountInGroup(group.id)
-                            .map { group to it }
-                    }
-                    combine(flows) {
-                        it.map {
-                            val group = mapper.local2Core(it.first)
-                            val verificationResult = memberLocal.getMemberOnce(group, appPrefs.userId)?.verificationResult
-                                ?: VerificationResult.Unverified(errors = listOf(VerificationResultError.MEMBER_VERIFICATION_MISSING))
+                    val flows = groups.map {
+                        val group = mapper.local2Core(it)
+                        combine(
+                            database.groupRelatedDao.getMember(groupId = group.id, userId = appPrefs.userId)
+                                .filterNotNull(),
+                            memberLocal.getMemberCountInGroup(group.id)
+                                .distinctUntilChanged(),
+                            database.groupRelatedDao.getLocationCountForUserInGroup(groupId = group.id, userId = appPrefs.userId)
+                                .filterNotNull()
+                                .distinctUntilChanged(),
+                            database.groupRelatedDao.getPlacesCountForGroup(group.id)
+                                .filterNotNull()
+                                .distinctUntilChanged()
+                        ) { currentUserMember, memberCount, devicesCount, placesCount ->
                             UserGroupWithMetadata(
                                 group = group,
-                                memberCount = it.second,
-                                verification = verificationResult
+                                memberCount = memberCount,
+                                placesCount = placesCount,
+                                devicesCount = devicesCount,
+                                verification = memberMapper.local2Core(
+                                    member = currentUserMember,
+                                    memberLocations = emptyList(),
+                                    group = group
+                                ).member.verificationResult
                             )
                         }
+                    }
+                    combine(flows) {
+                        it.toList()
                     }
                 }
             }
