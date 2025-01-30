@@ -19,8 +19,13 @@ class AppPrefs(
     companion object {
         lateinit var instance: AppPrefs
 
-        const val supportedEncryptionScheme: String = "1.0"
-        fun shouldUpgradeEncryptionScheme(schemeVersion: String): Boolean {
+        const val supportedGroupEncryptionScheme: String = "1.0"
+        const val supportedAccountEncryptionScheme: String = "2.0"
+
+        fun shouldUpgradeEncryptionScheme(
+            schemeVersion: String,
+            supportedEncryptionScheme: String
+        ): Boolean {
             try {
                 val supportedVersions = supportedEncryptionScheme.split(".")
                 val versions = schemeVersion.split(".")
@@ -29,7 +34,10 @@ class AppPrefs(
                 return false
             }
         }
-        fun isEncryptionSchemeSupported(schemeVersion: String): Boolean {
+        fun isEncryptionSchemeSupported(
+            schemeVersion: String,
+            supportedEncryptionScheme: String
+        ): Boolean {
             try {
                 val supportedVersions = supportedEncryptionScheme.split(".")
                 val versions = schemeVersion.split(".")

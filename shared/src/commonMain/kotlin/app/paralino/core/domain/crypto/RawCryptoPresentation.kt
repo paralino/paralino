@@ -41,7 +41,7 @@ class RawCryptoPresentation constructor(
                             add("GroupID: **$groupId**")
                         }
                         add("Group encryption scheme: **${it.first.schemeVersion}**")
-                        add("Supported encryption scheme: **${AppPrefs.supportedEncryptionScheme}**")
+                        add("Supported encryption scheme: **${AppPrefs.supportedGroupEncryptionScheme}**")
                     }.map { ContentIdItem(it) },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {
