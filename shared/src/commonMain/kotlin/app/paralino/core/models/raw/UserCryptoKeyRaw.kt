@@ -14,8 +14,10 @@ data class UserCryptoKeyRaw constructor(
     val publicKey: String,
     val oldMasterKeys: String?,
     val loginSalt: String,
+    val dataSalt: String?,
     val loginAlg: String,
     val dataAlg: String,
+    val schemeVersion: String?,
     val userKeyVersion: Long
 ) {
     companion object {
@@ -30,8 +32,10 @@ data class UserCryptoKeyRaw constructor(
                 publicKey = map["publicKey"] as String,
                 oldMasterKeys = map["oldMasterKeys"] as? String?,
                 loginSalt = map["loginSalt"] as String,
+                dataSalt = map["dataSalt"] as? String?,
                 loginAlg = map["loginAlg"] as String,
                 dataAlg = map["dataAlg"] as String,
+                schemeVersion = map["schemeVersion"] as? String?,
                 userKeyVersion = (map["userKeyVersion"] as Number).toLong()
             )
         }

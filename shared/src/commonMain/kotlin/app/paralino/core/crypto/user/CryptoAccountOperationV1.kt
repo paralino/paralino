@@ -63,6 +63,8 @@ class CryptoAccountOperationV1(
             publicKey = signatureKeyPair.publicKey,
             oldMasterKeys = null,
             loginSalt = authKey.loginSalt,
+            dataSalt = null,
+            schemeVersion = "1.0",
             loginAlg = BaseRemoteModule.formatter.encodeToString(authKey.kdfAlg),
             dataAlg = BaseRemoteModule.formatter.encodeToString(dataKDF),
         )

@@ -143,7 +143,9 @@ class UserRemoteSource constructor(
                     publicKey = it.publicKey,
                     loginSalt = it.loginSalt,
                     loginAlg = it.loginAlg,
-                    dataAlg = it.dataAlg
+                    dataAlg = it.dataAlg,
+                    dataSalt = it.dataSalt,
+                    schemeVersion = it.schemeVersion
                 )
             }
 
