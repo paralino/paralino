@@ -126,7 +126,7 @@ class GroupMapperCore constructor(
     suspend fun remote2CoreWithMembersAndPlaces(model: GroupWithMembersAndPlacesRaw): UserGroupWithMembersAndPlaces {
         val places = model.places.map {
             GroupPlaceWithSettings(
-                place = placesMapper.remote2Core(model = it.place),
+                place = placesMapper.remote2Core(model = it.place, groupOwnerId = model.group.group.ownerUserId),
                 settings = it.settings?.let { placesMapper.settingsMapper.remote2Core(it) }
             )
         }
