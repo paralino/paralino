@@ -62,8 +62,7 @@ class ExpiredSessionRecovery(
                                     tag = "account_state",
                                     message = "Guest user is no longer authorized, logout locally and clear user"
                                 )
-                                appPrefs.guestEmail = ""
-                                appPrefs.guestPassword = ""
+                                appPrefs.invalidateGuestAccount()
                             } else {
                                 logg.w(
                                     tag = "account_state",

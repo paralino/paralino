@@ -57,6 +57,8 @@ class AppPrefs(
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
         const val keyEmailGuest = "prefs.profile.guest.email"
         const val keyPasswordGuest = "prefs.profile.guest.password"
+        const val keyEmailGuestV2 = "prefs.profile.guest.email.v2"
+        const val keyPasswordGuestV2 = "prefs.profile.guest.password.v2"
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
         const val keyPushTokenSynced = "prefs.device.pushToken.synced"
         const val keyLocationPushTokenUnsynced = "prefs.device.locationPushToken.unsynced"
@@ -137,16 +139,28 @@ class AppPrefs(
             provider.userSettings.putString(keyTempPassword, value)
         }
 
-    var guestEmail: String
+    var guestEmailV1: String
         get() = provider.appSettings.getString(keyEmailGuest, "")
         set(value) {
             provider.appSettings.putString(keyEmailGuest, value)
         }
 
-    var guestPassword: String
+    var guestPasswordV1: String
         get() = provider.appSettings.getString(keyPasswordGuest, "")
         set(value) {
             provider.appSettings.putString(keyPasswordGuest, value)
+        }
+
+    var guestEmailV2: String
+        get() = provider.appSettings.getString(keyEmailGuestV2, "")
+        set(value) {
+            provider.appSettings.putString(keyEmailGuestV2, value)
+        }
+
+    var guestPasswordV2: String
+        get() = provider.appSettings.getString(keyPasswordGuestV2, "")
+        set(value) {
+            provider.appSettings.putString(keyPasswordGuestV2, value)
         }
 
     var encryptedUserMasterKey: String
@@ -324,11 +338,32 @@ class AppPrefs(
         }
 
 
-
     fun hasGuestAccount(): Boolean {
-        val emailValidation = FormValidation.Email.validate(appPrefs.guestEmail)
-        val passwordValidation = FormValidation.Password.validate(appPrefs.guestPassword)
+        return hasV1GuestAccount() || hasV2GuestAccount()
+    }
+
+    fun hasV1GuestAccount(): Boolean {
+        return hasGuestAccount(email = guestEmailV1, password = guestPasswordV1)
+    }
+
+    fun hasV2GuestAccount(): Boolean {
+        return hasGuestAccount(email = guestEmailV2, password = guestPasswordV2)
+    }
+
+    private fun hasGuestAccount(
+        email: String,
+        password: String
+    ): Boolean {
+        val emailValidation = FormValidation.Email.validate(email)
+        val passwordValidation = FormValidation.Password.validate(password)
         return emailValidation.result && passwordValidation.result
+    }
+
+    fun invalidateGuestAccount() {
+        appPrefs.guestEmailV1 = ""
+        appPrefs.guestPasswordV1 = ""
+        appPrefs.guestEmailV2 = ""
+        appPrefs.guestPasswordV2 = ""
     }
 
     fun clearPushTokens() {

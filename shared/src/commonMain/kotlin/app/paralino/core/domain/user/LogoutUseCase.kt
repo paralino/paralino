@@ -52,8 +52,7 @@ class LogoutUseCase(
     suspend fun deleteAccount(logoutLocallyOnError: Boolean) {
         accountAction(logoutLocallyOnError = logoutLocallyOnError) {
             userRepo.deleteAccount()
-            appPrefs.guestEmail = ""
-            appPrefs.guestPassword = ""
+            appPrefs.invalidateGuestAccount()
         }
     }
 

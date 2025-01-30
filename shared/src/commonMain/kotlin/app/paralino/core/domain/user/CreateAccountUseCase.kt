@@ -51,8 +51,8 @@ class CreateAccountUseCase constructor(
             .startProcessing("create_account")
             .onEach {
                 if (it >= SignUpStep.CREATING_ACCOUNT) {
-                    appPrefs.guestEmail = email
-                    appPrefs.guestPassword = password
+                    appPrefs.guestEmailV2 = email
+                    appPrefs.guestPasswordV2 = password
                 }
             }
     }

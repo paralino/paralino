@@ -464,8 +464,7 @@ class LoginViewModel constructor(
     }
 
     private fun dismissGuestAccount() {
-        appPrefs.guestEmail = ""
-        appPrefs.guestPassword = ""
+        appPrefs.invalidateGuestAccount()
         _uiState.update { it.copy(alertDialog = null) }
     }
 
