@@ -120,7 +120,7 @@ fun AccountScreenCore(
                     onClick = null
                 )
 
-                Spacer(modifier = Modifier.size(40.dp))
+                Spacer(modifier = Modifier.size(20.dp))
 
                 SettingsActionItem(
                     name = stringResource(MR.strings.settings_account_edit_profile),
@@ -290,10 +290,10 @@ fun AccountInfoHeader(
                                 text = stringResource(MR.strings.settings_account_guest_badge),
                                 onClick = onGuestAccountClick
                             )
+                            Spacer(modifier = Modifier.size(8.dp))
                         }
 
                         if (userPlan.planTypeEnum.isOtherThanSilver) {
-                            Spacer(modifier = Modifier.size(8.dp))
                             AccountHeaderChip(
                                 backgroundColor = AppColors.accentDark,
                                 contentColor = MaterialTheme.colors.onPrimary,
