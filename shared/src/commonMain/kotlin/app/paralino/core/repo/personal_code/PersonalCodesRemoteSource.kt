@@ -13,6 +13,7 @@ import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.raw.PersonalCodeCreateData
 import app.paralino.core.models.raw.PersonalCodePreKeyData
 import app.paralino.core.models.raw.PersonalCodeRaw
+import app.paralino.core.models.raw.PersonalCodeReadPayload
 import app.paralino.core.models.raw.PersonalCodeResponse
 import app.paralino.core.models.raw.PersonalCodeUpdateData
 import app.paralino.core.models.raw.PersonalPreKeyRaw
@@ -257,10 +258,10 @@ class PersonalCodesRemoteSource constructor(
     }
 
     suspend fun getUserInfoFromCode(code: String): UserPersonalCodeData {
-        val authKey = cryptoCore.deriveParalinoIdAuthKey(code = code)
+        val keyId = cryptoCore.deriveParalinoIdAuthKey(code = code)
         val response = functionsApi.runAndWait(
-            function = ServerFunction.PERSONAL_CODE_READ,
-            data = authKey
+            function = ServerFunction.PERSONAL_CODE_READ_V2,
+            data = PersonalCodeReadPayload(keyId = keyId)
         )
 
         if (!response.isSuccess) {
