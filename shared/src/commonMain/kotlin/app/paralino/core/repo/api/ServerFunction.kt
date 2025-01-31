@@ -44,7 +44,7 @@ enum class ServerFunction constructor(
     EVENT_BATTERY(method = "POST", path = "/events/battery"),
 
     PERSONAL_CODE_CREATE(method = "POST", path = "/personal_code"),
-    PERSONAL_CODE_READ(method = "GET", path = "/personal_code"),
+    PERSONAL_CODE_READ_V2(method = "POST", path = "/personal_code/read"),
     PERSONAL_CODE_UPDATE(method = "PATCH", path = "/personal_code"),
     PERSONAL_CODE_DELETE(method = "DELETE", path = "/personal_code"),
 

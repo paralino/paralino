@@ -305,3 +305,8 @@ data class BatteryAlertPayload constructor(
     val memberId: String,
     val locationId: String
 )
+
+@Serializable
+data class PersonalCodeReadPayload(
+    val keyId: String
+)
