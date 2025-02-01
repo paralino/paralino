@@ -494,6 +494,8 @@
     <string name="reset_password_screen_title">Passwort zurücksetzen</string>
     <string name="reset_password_success_message">Bitte melden Sie sich erneut an!</string>
     <string name="reset_password_error_token_message">Ihr Link zum Zurücksetzen des Passworts ist abgelaufen, bitte fordern Sie einen neuen an.</string>
+    <string name="reset_password_caption_reset">**Durch das Zurücksetzen Ihres Passwort werden alle Ihre Daten gelöscht!**</string>
+    <string name="reset_password_reset_button">Passwort zurücksetzen</string>
     <string name="raw_data_screen_info">Hier können Sie Ihre Daten so anzeigen, wie sie auf dem Server gespeichert sind.\nNur Ihr Gerät kann diese Informationen entsperren (entschlüsseln) und sehen.</string>
     <string name="raw_data_screen_title">Verschlüsselung</string>
     <string name="raw_data_section_encrypted">Verschlüsselte Daten auf dem Server</string>

@@ -492,6 +492,8 @@
     <string name="reset_password_screen_title">Ponovno postavljanje lozinke</string>
     <string name="reset_password_success_message">Molimo prijavite se ponovno!</string>
     <string name="reset_password_error_token_message">Vaša veza za ponovno postavljanje lozinke je istekla, zatražite novu.</string>
+    <string name="reset_password_caption_reset">**Poništenje lozinke će izbrisati sve Vaše podatke!**</string>
+    <string name="reset_password_reset_button">Promjena lozinke</string>
     <string name="raw_data_screen_info">Ovdje možete pregledati Vaše podatke onako kako su pohranjeni na web poslužitelju.\nSamo Vaš uređaj može otključati (dekriptirati) i vidjeti ove informacije.</string>
     <string name="raw_data_screen_title">Enkripcija</string>
     <string name="raw_data_section_encrypted">Kriptirani podaci na web poslužitelju</string>

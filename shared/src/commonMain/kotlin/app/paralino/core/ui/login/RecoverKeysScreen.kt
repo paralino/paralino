@@ -202,7 +202,7 @@ fun RecoverKeysScreen(
                         Spacer(modifier = Modifier.size(10.dp))
                         PasswordInputField(
                             password = state.uiStep.currentPassword,
-                            hint = stringResource(MR.strings.login_placeholder_password_confirm),
+                            hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),
                             hasError = state.uiStep.hasCurrentPasswordError,
                             imeAction = ImeAction.Next,
                             focusManager = focusManager,
@@ -222,7 +222,7 @@ fun RecoverKeysScreen(
                     Spacer(modifier = Modifier.size(10.dp))
                     PasswordInputField(
                         password = state.uiStep.currentPassword,
-                        hint = stringResource(MR.strings.login_placeholder_password_confirm),
+                        hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),
                         hasError = state.uiStep.hasCurrentPasswordError,
                         imeAction = ImeAction.Next,
                         focusManager = focusManager,
@@ -324,7 +324,7 @@ fun RecoverKeysScreen(
                     Spacer(modifier = Modifier.size(10.dp))
                     PasswordInputField(
                         password = state.uiStep.currentPassword,
-                        hint = stringResource(MR.strings.login_placeholder_password_confirm),
+                        hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),
                         hasError = state.uiStep.hasCurrentPasswordError,
                         imeAction = ImeAction.Next,
                         focusManager = focusManager,

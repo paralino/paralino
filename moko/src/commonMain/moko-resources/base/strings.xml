@@ -494,6 +494,8 @@
     <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
     <string name="reset_password_screen_title">Reset password</string>
     <string name="reset_password_success_message">Please login again!</string>
+    <string name="reset_password_caption_reset">**Resetting your password will delete all your data!**</string>
+    <string name="reset_password_reset_button">Reset password</string>
     <string name="reset_password_error_token_message">Your password reset link expired, please request a new one.</string>
     <string name="raw_data_screen_info">Here you can preview your data as it is stored on the server.\nOnly your device can unlock (decrypt) and see this information.</string>
     <string name="raw_data_screen_title">Encryption</string>

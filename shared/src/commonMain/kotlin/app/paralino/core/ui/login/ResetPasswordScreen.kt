@@ -91,7 +91,7 @@ fun ResetPasswordScreenCore(
     ActionScaffold(
         modifier = Modifier.fillMaxSize(),
         buttonState = AppButtonState.loadingStateWithCheck(uiState.actionLoading),
-        buttonText = stringResource(MR.strings.settings_account_edit_password_button),
+        buttonText = stringResource(MR.strings.reset_password_reset_button),
         buttonIcon = null,
         onConfirm = {
             focusManager.clearFocus()
@@ -152,7 +152,7 @@ fun ResetPasswordScreenCore(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
+            Text(text = stringResource(MR.strings.reset_password_caption_reset).annotatedBold())
         }
     }
 }
