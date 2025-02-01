@@ -113,10 +113,13 @@ class MainViewModel constructor(
         if (!userId.isNullOrBlank() && !secret.isNullOrBlank()) {
             coroutineScope.launch {
                 try {
+                    _uiState.update { it.copy(dataRefreshBlockingLoadingShown = true) }
                     userRepo.confirmEmail(userId, secret)
                     userRepo.refreshUserIfAvailable()
+                    _uiState.update { it.copy(dataRefreshBlockingLoadingShown = expiredSessionHandler.isProcessingAny()) }
                     _eventChannel.send(MainScreenEvent.EmailVerified)
                 } catch (e: Exception) {
+                    _uiState.update { it.copy(dataRefreshBlockingLoadingShown = expiredSessionHandler.isProcessingAny()) }
                     _eventChannel.send(MainScreenEvent.Error(e))
                 }
             }
