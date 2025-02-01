@@ -4,7 +4,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
 
 class ConvertAccountUseCase constructor(
     private val userRepo: UserRepository,
@@ -15,29 +14,45 @@ class ConvertAccountUseCase constructor(
         email: String,
         password: String,
     ): Flow<ChangeCredentialsStep> {
+
+        val (oldEmail, oldPassword) = if (appPrefs.hasV1GuestAccount()) {
+            appPrefs.guestEmailV1 to appPrefs.guestPasswordV1
+        } else if (appPrefs.hasV2GuestAccount()) {
+            appPrefs.guestEmailV2 to appPrefs.guestPasswordV2
+        } else {
+            throw IllegalStateException("Missing guest account")
+        }
+
         return changeCredentials.changeCredentials(
             userId = appPrefs.userId,
-            oldPassword = appPrefs.guestPassword,
+            oldEmail = oldEmail,
+            newEmail = email,
+            oldPassword = oldPassword,
             newPassword = password,
+            replaceKey = true,
             action = { oldLoginKey, newLoginKey ->
-                userRepo.changePassword(
-                    oldPassword = oldLoginKey!!,
-                    newPassword = newLoginKey
-                )
 
-                appPrefs.guestPassword = password
+                val currentUser = userRepo.refreshUserIfAvailable()
+                val lastPasswordUpdate = currentUser.passwordUpdateTime
 
-                userRepo.updateUserEmail(
-                    newEmail = email,
-                    password = newLoginKey
-                )
+                try {
+                    userRepo.updateUserEmailAndPassword(
+                        newEmail = email,
+                        oldPassword = oldLoginKey,
+                        newPassword = newLoginKey
+                    )
+                } catch (e: Exception) {
+                    val updatedUser = userRepo.refreshUserIfAvailable()
+                    if (updatedUser.email == email && updatedUser.passwordUpdateTime != lastPasswordUpdate) {
+                        // we can assume that data is updated
+                    } else {
+                        throw e
+                    }
+                }
+
+                appPrefs.invalidateGuestAccount()
             }
-        ).onEach {
-            if (it == ChangeCredentialsStep.DONE) {
-                appPrefs.guestEmail = ""
-                appPrefs.guestPassword = ""
-            }
-        }
+        )
             .startProcessing("convert_account")
     }
 }

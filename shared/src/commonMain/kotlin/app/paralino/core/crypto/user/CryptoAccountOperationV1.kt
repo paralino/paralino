@@ -5,6 +5,7 @@ import app.paralino.core.crypto.GeneratedUserKeys
 import app.paralino.core.crypto.KDFAlg
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserAuthDerivedKeyV1
+import app.paralino.core.models.raw.SchemeVersion
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.encodeToString
@@ -64,7 +65,7 @@ class CryptoAccountOperationV1(
             oldMasterKeys = null,
             loginSalt = authKey.loginSalt,
             dataSalt = null,
-            schemeVersion = "1.0",
+            schemeVersion = SchemeVersion.V1_0.key,
             loginAlg = BaseRemoteModule.formatter.encodeToString(authKey.kdfAlg),
             dataAlg = BaseRemoteModule.formatter.encodeToString(dataKDF),
         )
@@ -160,11 +161,8 @@ class CryptoAccountOperationV1(
 
     suspend fun verifyUserKeysChange(
         oldKey: UserCryptoKeyRaw,
-        newKey: UserCryptoKeyRaw,
         oldMasterAuthKey: String,
-        newMasterAuthKey: String,
         oldMasterKey: String,
-        newMasterKey: String
     ) {
         check(
             decryptUserPersonalKey(
@@ -174,42 +172,5 @@ class CryptoAccountOperationV1(
                 alg = BaseRemoteModule.formatter.decodeFromString(oldKey.dataAlg)
             ).contentEquals(oldMasterKey)
         ) { "Old key does not match" }
-
-        check(
-            decryptUserPersonalKey(
-                masterAuthKey = newMasterAuthKey,
-                userId = newKey.ownerUserId,
-                encryptedMasterKey = newKey.encryptedSymmetricKey,
-                alg = BaseRemoteModule.formatter.decodeFromString(newKey.dataAlg)
-            ).contentEquals(newMasterKey)
-        ) { "New key does not match" }
-
-        check(
-            cryptoCore.decryptDataWithKey(
-                data = oldKey.encryptedPrivateKey,
-                key = oldMasterKey
-            ).contentEquals(
-                cryptoCore.decryptDataWithKey(
-                    data = newKey.encryptedPrivateKey,
-                    key = newMasterKey
-                )
-            )
-        ) { "Private key does not match" }
-
-        check(
-            cryptoCore.decryptDataWithKey(
-                data = oldKey.encryptedPublicKey,
-                key = oldMasterKey
-            ).contentEquals(
-                cryptoCore.decryptDataWithKey(
-                    data = newKey.encryptedPublicKey,
-                    key = newMasterKey
-                )
-            )
-        ) { "Public key does not match" }
-
-        check(oldKey.publicKey == newKey.publicKey) {
-            "Public key does not match"
-        }
     }
 }

@@ -1,5 +1,6 @@
 package app.paralino.core.repo.personal_code
 
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
@@ -19,6 +20,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration
@@ -29,15 +33,23 @@ class PersonalCodesRepository constructor(
     private val remote: PersonalCodesRemoteSource,
     private val local: PersonalCodeLocalDataSource,
     private val userRepo: UserRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val scopeProvider: ICoroutineScopeProvider,
     private val sessionMonitor: UserSessionMonitor,
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
-    val personalCodeLocalState: StateFlow<List<UserPersonalCode>> = local.getPersonalCodes()
-        .catch {
-            logg.w("Personal codes state error: ${it.message}")
-            emit(emptyList())
+    val personalCodeLocalState: StateFlow<List<UserPersonalCode>> = userKeyRepo.userKeyState()
+        .flatMapLatest {
+            if (it) {
+                local.getPersonalCodes()
+                    .catch {
+                        logg.w("Personal codes state error: ${it.message}")
+                        emit(emptyList())
+                    }
+            } else {
+                flowOf(emptyList())
+            }
         }
         .stateIn(
             scope = scopeProvider.defaultIOScope,

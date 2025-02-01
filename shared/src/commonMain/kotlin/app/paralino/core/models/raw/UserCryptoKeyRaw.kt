@@ -20,6 +20,14 @@ data class UserCryptoKeyRaw constructor(
     val schemeVersion: String?,
     val userKeyVersion: Long
 ) {
+
+    val schemeVersionType: SchemeVersion get() = when(schemeVersion) {
+        null,
+        SchemeVersion.V1_0.key -> SchemeVersion.V1_0
+        SchemeVersion.V2_0.key -> SchemeVersion.V2_0
+        else -> SchemeVersion.UNKNOWN(key = schemeVersion)
+    }
+
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): UserCryptoKeyRaw {
@@ -40,4 +48,15 @@ data class UserCryptoKeyRaw constructor(
             )
         }
     }
+}
+
+sealed interface SchemeVersion {
+    val key: String
+    data object V1_0: SchemeVersion {
+        override val key: String = "1.0"
+    }
+    data object V2_0: SchemeVersion {
+        override val key: String = "2.0"
+    }
+    data class UNKNOWN(override val key: String): SchemeVersion
 }

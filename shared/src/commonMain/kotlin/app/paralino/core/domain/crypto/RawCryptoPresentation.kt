@@ -229,7 +229,7 @@ class RawCryptoPresentation constructor(
                     title = it?.second?.name?.let { "**$it**" } ?: "---",
                     subtitle = null,
                     contentIdInfo = buildList {
-                        add(ContentIdItem(text = "Current encryption scheme: **${userKeyLocal.getLocalRawKey()?.schemeVersion ?: "1.0"}**"))
+                        add(ContentIdItem(text = "Current encryption scheme: **${userKeyLocal.getLocalRawKey()?.schemeVersionType?.key ?: "Unknown"}**"))
                         add(ContentIdItem(text = "Supported encryption scheme: **${AppPrefs.supportedAccountEncryptionScheme}**"))
                         if (it?.second?.isGuestUser == false) {
                             add(ContentIdItem(text = "Email:\n**${it.second.email}**", separateWithPadding = true))

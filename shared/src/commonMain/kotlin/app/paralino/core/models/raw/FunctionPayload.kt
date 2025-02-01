@@ -314,3 +314,10 @@ data class BatteryAlertPayload constructor(
 data class PersonalCodeReadPayload(
     val keyId: String
 )
+
+@Serializable
+data class UserEmailChangePayload(
+    val email: String,
+    val oldPassword: String,
+    val newPassword: String
+)

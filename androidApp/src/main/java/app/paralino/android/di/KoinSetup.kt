@@ -191,7 +191,7 @@ object KoinSetup {
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get()) }
         viewModel { ChangePasswordViewModel(get()) }
-        viewModel { ConvertAccountViewModel(get()) }
+        viewModel { ConvertAccountViewModel(get(), get()) }
         viewModel { EditProfileViewModel(get(), get()) }
         viewModel { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }

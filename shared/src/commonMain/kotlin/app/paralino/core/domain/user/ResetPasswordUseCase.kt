@@ -1,6 +1,6 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.crypto.user.CryptoAccountOperationV1
+import app.paralino.core.crypto.user.CryptoAccountOperationV2
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.presentation.login.SignUpStep
 import app.paralino.core.repo.user.UserRepository
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flow
 
 class ResetPasswordUseCase(
     private val userRepository: UserRepository,
-    private val cryptoAccountOperationV1: CryptoAccountOperationV1,
+    private val cryptoAccountOperationV2: CryptoAccountOperationV2,
 ): LimitedExecution() {
 
     fun initResetPassword(email: String): Flow<SignUpStep> {
@@ -32,12 +32,17 @@ class ResetPasswordUseCase(
             .startProcessing("reset_password_init")
     }
 
-    fun resetPassword(userId: String, secret: String, password: String): Flow<SignUpStep> {
+    fun resetPassword(
+        email: String,
+        userId: String,
+        secret: String,
+        password: String
+    ): Flow<SignUpStep> {
         return flow {
             emit(SignUpStep.STARTING)
             val loginDetails = userRepository.getLoginDetails(key = userId)
-            val authKey = cryptoAccountOperationV1.deriveUserAuthKey(
-                salt = loginDetails.loginSalt,
+            val authKey = cryptoAccountOperationV2.deriveUserAuthKey(
+                email = email,
                 password = password,
                 alg = loginDetails.loginAlg
             )

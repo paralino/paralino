@@ -19,9 +19,7 @@ data class UserAuthDerivedKeyV1(
 
 @Serializable
 data class UserAuthDerivedKeyV2(
-    val masterAuthKey: String,
     val loginKey: String,
-    val loginSalt: String,
     val kdfAlg: KDFAlg
 )
 

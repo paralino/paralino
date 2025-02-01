@@ -113,7 +113,7 @@ class LoginViewModel constructor(
                 password = "***"
             )
         }
-        loginUseCase.login(email = appPrefs.guestEmail, password = appPrefs.guestPassword)
+        loginUseCase.loginAsGuest()
             .onEach { processStep(it) }
             .catch {
 

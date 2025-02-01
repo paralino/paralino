@@ -68,7 +68,7 @@ class AppAccountStateMonitor constructor(
                         }
 
                         userKeyRepo.userKeyState().firstOrNull() != true -> {
-                            if (appPrefs.temporaryMasterAuthKey.isNotBlank()) {
+                            if (appPrefs.accountRecoveryFlag) {
                                 logg.tag("account_state")
                                     .v("Key is not valid but backup password is active")
                                 Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
@@ -92,7 +92,7 @@ class AppAccountStateMonitor constructor(
                                 }
                             } catch (e: Exception) {
                                 logg.e("Error decrypting user", e)
-                                if (appPrefs.temporaryMasterAuthKey.isNotBlank()) {
+                                if (appPrefs.accountRecoveryFlag) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {

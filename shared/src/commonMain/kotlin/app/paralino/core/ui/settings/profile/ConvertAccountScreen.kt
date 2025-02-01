@@ -47,7 +47,7 @@ fun ConvertAccountScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val uiState by vm.uiState.collectAsState(initial = ConvertAccountScreenState())
+    val uiState by vm.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = Unit) {

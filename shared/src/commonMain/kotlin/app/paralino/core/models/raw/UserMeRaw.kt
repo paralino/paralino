@@ -1,5 +1,6 @@
 package app.paralino.core.models.raw
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,8 +10,17 @@ data class UserMeRaw constructor(
     val email: String = "",
     val registration: String = "",
     val emailVerification: Boolean = false,
+    val passwordUpdate: String? = null,
     val data: UserMeDataRaw? = null,
-)
+) {
+    val passwordUpdateTime: Instant? get() {
+        return try {
+            passwordUpdate?.let { Instant.parse(it) }
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
 
 @Serializable
 data class UserMeDataRaw constructor(

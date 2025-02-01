@@ -52,6 +52,7 @@ enum class ServerFunction constructor(
 
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
+    ACCOUNT_CHANGE_EMAIL(method = "PATCH", path = "/user/email"),
 
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
     LOGIN(method = "POST", path = "/login", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false)

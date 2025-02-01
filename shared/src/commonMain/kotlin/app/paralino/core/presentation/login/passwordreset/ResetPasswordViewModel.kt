@@ -25,22 +25,26 @@ class ResetPasswordViewModel constructor(
 
 
     fun proceed() {
+        val email = _uiState.value.email
+
         val passwordNew = _uiState.value.newPassword
         val passwordConfirm = _uiState.value.confirmPassword
 
+        val emailValidation = FormValidation.Email.validate(email)
         val newPasswordValidation = FormValidation.Password.validate(passwordNew)
         val confirmPasswordValidation =
             FormValidation.PasswordConfirm.validate(passwordNew, passwordConfirm)
 
         _uiState.update {
             it.copy(
+                hasEmailError = !emailValidation.result,
                 hasNewPasswordError = !newPasswordValidation.result,
                 hasConfirmPasswordError = !confirmPasswordValidation.result
             )
         }
 
         val firstValidation =
-            arrayOf(newPasswordValidation, confirmPasswordValidation)
+            arrayOf(emailValidation, newPasswordValidation, confirmPasswordValidation)
                 .firstOrNull { !it.result }
 
         if (firstValidation != null) {
@@ -48,7 +52,12 @@ class ResetPasswordViewModel constructor(
                 _eventChannel.send(ResetPasswordScreenEvent.ValidationError(firstValidation))
             }
         } else if (!resetPassword.isProcessingAny()) {
-            resetPassword.resetPassword(userId = userId, secret = secret, password = passwordNew)
+            resetPassword.resetPassword(
+                email = email,
+                userId = userId,
+                secret = secret,
+                password = passwordNew
+            )
                 .mapToPayload { it }
                 .onEach { result ->
                     when (result) {
@@ -82,6 +91,11 @@ class ResetPasswordViewModel constructor(
                 }
                 .launchIn(coroutineScope)
         }
+    }
+
+    fun onEmailChange(email: String) {
+        if (_uiState.value.actionLoading == true) return
+        _uiState.update { it.copy(email = email, hasEmailError = false) }
     }
 
     fun onNewPasswordChange(password: String) {

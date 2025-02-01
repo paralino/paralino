@@ -1,5 +1,8 @@
 package app.paralino.core.domain.user
 
+import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
@@ -18,6 +21,7 @@ class ExpiredSessionRecovery(
     private val parentManager: LimitedExecutionParentManager,
     private val sessionMonitor: UserSessionMonitor,
     private val userRepo: UserRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecution(scope = parentManager) {
 
@@ -45,10 +49,14 @@ class ExpiredSessionRecovery(
             blocking {
                 // clearing user here will disable any further potential actions until session is refreshed
                 userRepo.clearLocally()
+
+                // TODO remove
+                userKeyRepo.clearAllKeys()
+
                 // also clearing push tokens, so those will be synced again after new login
                 appPrefs.clearPushTokens()
 
-                loginUseCase.login(email = appPrefs.guestEmail, password = appPrefs.guestPassword)
+                loginUseCase.loginAsGuest()
                     .catch {
                         logg.w(
                             tag = "account_state",

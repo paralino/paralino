@@ -1,6 +1,7 @@
 package app.paralino.core.models.user
 
 import app.paralino.core.models.base.ImageModel
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,6 +11,7 @@ data class UserMe constructor(
     val email: String = "",
     val registration: String = "",
     val emailVerification: Boolean = false,
+    val passwordUpdate: Instant? = null,
 
     val data: UserMeData? = null
 ) {

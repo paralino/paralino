@@ -8,6 +8,7 @@ import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.crypto.group.CryptoKeyLocalDataSource
 import app.paralino.core.crypto.group.CryptoKeyRemoteDataSource
 import app.paralino.core.crypto.user.CryptoAccountOperationV1
+import app.paralino.core.crypto.user.CryptoAccountOperationV2
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
@@ -230,19 +231,19 @@ val coreModule = module {
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get(), get(), get(), get()) }
     factory { ResetPasswordUseCase(get(), get()) }
-    factory { ChangeCredentialsUseCase(get(), get(), get(), get(), get(), get()) }
-    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    factory { ChangeCredentialsUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get(), appPrefs) }
-    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), appPrefs) }
+    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get(), appPrefs) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), appPrefs) }
+    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get()) }
     factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
@@ -262,7 +263,7 @@ val coreModule = module {
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    single { PersonalCodesRepository(get(), get(), get(), get(), get(), appPrefs) }
+    single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { BatteryAlertUploadEngine(get(), get(), get(), get()) }
@@ -283,6 +284,7 @@ val coreModule = module {
 
     single { CryptoCore(get()) }
     single { CryptoAccountOperationV1(get()) }
+    single { CryptoAccountOperationV2(get()) }
     single { CryptoKEKLocalRepository(get(), get(), get(), appPrefs) }
     single { CryptoUserKeysLocalSource(get(), get(), appPrefs) }
     single { CryptoKEKRefreshUseCase(get(), get(), get()) }

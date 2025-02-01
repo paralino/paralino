@@ -6,6 +6,7 @@ import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.DecryptionException
@@ -19,18 +20,24 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 
 class ConvertAccountViewModel(
     private val convertAccount: ConvertAccountUseCase,
+    private val scopeProvider: ICoroutineScopeProvider
 ): CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ConvertAccountScreenState())
-    val uiState: Flow<ConvertAccountScreenState> = _uiState
+    val uiState: StateFlow<ConvertAccountScreenState> = _uiState
+    val canNavigateBack: Flow<Boolean> = _uiState.map {
+        it.actionLoading != true
+    }
 
     private val _eventChannel = Channel<ConvertAccountScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -94,7 +101,7 @@ class ConvertAccountViewModel(
                         }
                     }
                 }
-                .launchIn(coroutineScope)
+                .launchIn(scopeProvider.userSessionIOScope)
         }
     }
 

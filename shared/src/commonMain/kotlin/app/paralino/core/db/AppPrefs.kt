@@ -133,10 +133,14 @@ class AppPrefs(
             provider.userSettings.putBoolean(keyEmailConfirmed, value)
         }
 
-    var temporaryMasterAuthKey: String
-        get() = provider.userSettings.getString(keyTempPassword, "")
+    var accountRecoveryFlag: Boolean
+        get() = provider.userSettings.getString(keyTempPassword, "").isNotBlank()
         set(value) {
-            provider.userSettings.putString(keyTempPassword, value)
+            if (value) {
+                provider.userSettings.putString(keyTempPassword, "recovery_needed")
+            } else {
+                provider.userSettings.putString(keyTempPassword, "")
+            }
         }
 
     var guestEmailV1: String
