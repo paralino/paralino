@@ -36,7 +36,7 @@ class ChangePasswordViewModel(
 
 
     fun proceed() {
-        if (_uiState.value.actionLoading == true) return
+        if (_uiState.value.actionLoading == true || changePassword.isProcessingAny()) return
 
         val passwordOld = _uiState.value.oldPassword
         val passwordNew = _uiState.value.newPassword

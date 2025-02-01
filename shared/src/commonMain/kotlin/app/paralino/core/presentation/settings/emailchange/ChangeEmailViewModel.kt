@@ -36,7 +36,7 @@ class ChangeEmailViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     fun proceed() {
-        if (_uiState.value.actionLoading == true) return
+        if (_uiState.value.actionLoading == true || changeCredentials.isProcessingAny()) return
 
         val email = _uiState.value.email
         val password = _uiState.value.password
