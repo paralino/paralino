@@ -16,8 +16,10 @@ import app.paralino.core.models.user.OldMasterKeys
 import app.paralino.core.models.user.SymmetricCryptoKeyData
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.exceptions.MissingUserKeyException
+import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -151,11 +153,19 @@ class ChangeCredentialsUseCase(
                     oldMasterAuthKey.loginKey
                 }
                 SchemeVersion.V2_0 -> {
-                    cryptoAccountOperationV2.verifyUserKeysChange(
-                        oldKey = oldKey,
-                        oldPassword = oldPassword,
-                        oldMasterKey = oldKeys.userPersonalKey,
-                    )
+                    try {
+                        cryptoAccountOperationV2.verifyUserKeysChange(
+                            oldKey = oldKey,
+                            oldPassword = oldPassword,
+                            oldMasterKey = oldKeys.userPersonalKey,
+                        )
+                    } catch (e: Exception) {
+                        if (e is DecryptionException) {
+                            throw UnauthorizedException(code = null, type = null, message = e.message, cause = e)
+                        } else {
+                            throw e
+                        }
+                    }
                     val oldMasterAuthKey = cryptoAccountOperationV2.deriveUserAuthKey(
                         email = oldEmail,
                         password = oldPassword,
