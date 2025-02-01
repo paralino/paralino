@@ -117,6 +117,10 @@
     <string name="settings_account_guest_badge">Gostujući račun</string>
     <string name="settings_account_edit_guest_account_button">Pretvorite račun</string>
     <string name="settings_account_edit_guest_account_info">Kada dodate e-mail i lozinku Vašem računu, moći ćete se prijaviti na drugom uređaju ili povratiti Vaš račun ako izbrišete aplikaciju ili izgubite uređaj.</string>
+    <string name="settings_account_credentialsChange_step_prepare">Priprema</string>
+    <string name="settings_account_credentialsChange_step_change">Mijenjanje podataka za prijavu</string>
+    <string name="settings_account_credentialsChange_step_verify">Provjera ključeva</string>
+    <string name="settings_account_credentialsChange_step_done">Gotovo</string>
     <string name="settings_account_logout_alert_title">Odjava</string>
     <string name="settings_account_logout_alert_message">Jeste li sigurni da se želite odjaviti?</string>
     <string name="settings_account_delete_alert_title">Brisanje računa</string>

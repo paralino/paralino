@@ -118,6 +118,10 @@
     <string name="settings_account_guest_badge">Guest account</string>
     <string name="settings_account_edit_guest_account_button">Convert account</string>
     <string name="settings_account_edit_guest_account_info">When you add email and password to your account, you will be able to login on another device or recover your account, if your delete the app or lose your device.</string>
+    <string name="settings_account_credentialsChange_step_prepare">Preparing</string>
+    <string name="settings_account_credentialsChange_step_change">Changing credentials</string>
+    <string name="settings_account_credentialsChange_step_verify">Verifying keys</string>
+    <string name="settings_account_credentialsChange_step_done">Done</string>
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
     <string name="settings_account_delete_alert_title">Delete account</string>

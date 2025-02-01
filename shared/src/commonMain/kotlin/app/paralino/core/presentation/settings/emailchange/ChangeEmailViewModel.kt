@@ -18,6 +18,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -30,7 +31,7 @@ class ChangeEmailViewModel(
 
     private val _uiState =
         MutableStateFlow(ChangeEmailScreenState(userRepository.cachedUser?.email ?: ""))
-    val uiState: Flow<ChangeEmailScreenState> = _uiState
+    val uiState: StateFlow<ChangeEmailScreenState> = _uiState
 
     private val _eventChannel = Channel<ChangeEmailScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -65,7 +66,7 @@ class ChangeEmailViewModel(
                         }
 
                         is Payload.Error -> {
-                            _uiState.update { it.copy(actionLoading = null) }
+                            _uiState.update { it.copy(actionLoading = null, credentialsStep = null) }
                             if (result.exception.asRemoteException() is ConflictException) {
                                 showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
                             } else if (result.exception.asRemoteException() is UnauthorizedException) {
@@ -76,7 +77,12 @@ class ChangeEmailViewModel(
                         }
 
                         is Payload.Success -> {
-                            _uiState.update { it.copy(actionLoading = result.data != ChangeCredentialsStep.DONE) }
+                            _uiState.update {
+                                it.copy(
+                                    actionLoading = result.data != ChangeCredentialsStep.DONE,
+                                    credentialsStep = result.data
+                                )
+                            }
                             if (result.data == ChangeCredentialsStep.DONE) {
                                 delay(400)
                                 _eventChannel.send(ChangeEmailScreenEvent.EmailChanged)

@@ -310,6 +310,8 @@ class ChangeCredentialsUseCase(
                 // action
                 action?.invoke()
 
+                emit(ChangeCredentialsStep.KEY_APPLY)
+
                 // if password is changed successfully we can save the new key and delete old ones
                 val newRemoteKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
 
@@ -334,5 +336,6 @@ enum class ChangeCredentialsStep {
     PREPARING,
     KEY_SETUP,
     CHANGING_CREDENTIALS,
+    KEY_APPLY,
     DONE
 }

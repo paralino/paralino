@@ -117,6 +117,10 @@
     <string name="settings_account_guest_badge">Gastkonto</string>
     <string name="settings_account_edit_guest_account_button">Konto umwandeln</string>
     <string name="settings_account_edit_guest_account_info">Wenn Sie Ihrem Konto eine E-Mail und ein Passwort hinzufügen, können Sie sich auf einem anderen Gerät anmelden oder Ihr Konto wiederherstellen, falls Sie die App löschen oder Ihr Gerät verlieren.</string>
+    <string name="settings_account_credentialsChange_step_prepare">Vorbereiten</string>
+    <string name="settings_account_credentialsChange_step_change">Anmeldeinformationen ändern</string>
+    <string name="settings_account_credentialsChange_step_verify">Schlüssel verifizieren</string>
+    <string name="settings_account_credentialsChange_step_done">Fertig</string>
     <string name="settings_account_logout_alert_title">Abmelden</string>
     <string name="settings_account_logout_alert_message">Möchten Sie sich wirklich abmelden?</string>
     <string name="settings_account_delete_alert_title">Konto löschen</string>

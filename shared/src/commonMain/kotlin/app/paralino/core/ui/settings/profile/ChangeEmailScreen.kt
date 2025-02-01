@@ -1,5 +1,8 @@
 package app.paralino.core.ui.settings.profile
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -9,20 +12,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.domain.user.ChangeCredentialsStep
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenEvent
-import app.paralino.core.presentation.settings.emailchange.ChangeEmailScreenState
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
@@ -30,6 +38,7 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -41,7 +50,7 @@ fun ChangeEmailScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val uiState by vm.uiState.collectAsState(initial = ChangeEmailScreenState(currentEmail = ""))
+    val uiState by vm.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = Unit) {
@@ -100,7 +109,36 @@ fun ChangeEmailScreenCore(
                 focusManager = focusManager,
                 onInputChange = { vm.onPasswordChange(it) }
             )
+
+            val stepText = getStepText(uiState.credentialsStep)
+
+            AnimatedVisibility(
+                visible = stepText.isNotBlank(),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = stepText,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .animateContentSize()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(AppColors.accent.copy(alpha = 0.1f))
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun getStepText(step: ChangeCredentialsStep?): String {
+    return when (step) {
+        ChangeCredentialsStep.PREPARING, ChangeCredentialsStep.KEY_SETUP -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_prepare)
+        ChangeCredentialsStep.CHANGING_CREDENTIALS -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_change)
+        ChangeCredentialsStep.KEY_APPLY -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_verify)
+        ChangeCredentialsStep.DONE -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_done)
+        null -> ""
     }
 }
 

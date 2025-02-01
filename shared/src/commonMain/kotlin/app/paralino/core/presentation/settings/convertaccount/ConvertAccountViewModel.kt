@@ -21,7 +21,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -79,7 +78,7 @@ class ConvertAccountViewModel(
                             _uiState.update { it.copy(actionLoading = true) }
                         }
                         is Payload.Error -> {
-                            _uiState.update { it.copy(actionLoading = null) }
+                            _uiState.update { it.copy(actionLoading = null, credentialsStep = null) }
                             if (result.exception.asRemoteException() is InvalidRequestException) {
                                 showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else if (result.exception.asRemoteException() is ConflictException) {
@@ -93,7 +92,12 @@ class ConvertAccountViewModel(
                             }
                         }
                         is Payload.Success -> {
-                            _uiState.update { it.copy(actionLoading = result.data != ChangeCredentialsStep.DONE) }
+                            _uiState.update {
+                                it.copy(
+                                    actionLoading = result.data != ChangeCredentialsStep.DONE,
+                                    credentialsStep = result.data
+                                )
+                            }
                             if (result.data == ChangeCredentialsStep.DONE) {
                                 delay(400)
                                 _eventChannel.send(ConvertAccountScreenEvent.AccountUpdated)

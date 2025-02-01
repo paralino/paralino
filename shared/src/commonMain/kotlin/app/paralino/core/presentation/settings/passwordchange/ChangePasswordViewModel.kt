@@ -73,7 +73,7 @@ class ChangePasswordViewModel(
                             _uiState.update { it.copy(actionLoading = true) }
                         }
                         is Payload.Error -> {
-                            _uiState.update { it.copy(actionLoading = null) }
+                            _uiState.update { it.copy(actionLoading = null, credentialsStep = null) }
                             if (result.exception.asRemoteException() is InvalidRequestException) {
                                 showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
                             } else if (result.exception.asRemoteException() is UnauthorizedException) {
@@ -85,7 +85,12 @@ class ChangePasswordViewModel(
                             }
                         }
                         is Payload.Success -> {
-                            _uiState.update { it.copy(actionLoading = result.data != ChangeCredentialsStep.DONE) }
+                            _uiState.update {
+                                it.copy(
+                                    actionLoading = result.data != ChangeCredentialsStep.DONE,
+                                    credentialsStep = result.data
+                                )
+                            }
                             if (result.data == ChangeCredentialsStep.DONE) {
                                 delay(400)
                                 _eventChannel.send(ChangePasswordScreenEvent.PasswordChanged)
