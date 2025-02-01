@@ -358,7 +358,13 @@ class CryptoKEKLocalRepository(
         // always return own identity key from secure storage but ensure no one tampered with key from server
         val identityKey = if (keyRaw.ownerUserId == currentUserId) {
             keyRaw.ownerIdentityKey
-                .takeIf { it == userKeyRepository.signatureKeyPair().publicKey }
+                .takeIf {
+                    try {
+                        it == userKeyRepository.signatureKeyPair().publicKey
+                    } catch (e: Exception) {
+                        return GroupMemberIdentityKey.Error.MissingOwnerSignatureKeys
+                    }
+                }
                 .also {
                     if (it == null) logg.tag("tag_crypto_key_group_member")
                         .w("User ${keyRaw.ownerUserId} own identity key do not match in group ${keyRaw.groupId}")

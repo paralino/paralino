@@ -231,6 +231,7 @@ sealed class GroupMemberIdentityKey {
     open val key: String? = null
 
     sealed class Error : GroupMemberIdentityKey() {
+        object MissingOwnerSignatureKeys : Error()
         object Missing : Error()
         object Invalid : Error()
     }
