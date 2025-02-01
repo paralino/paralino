@@ -2,7 +2,7 @@ package app.paralino.core.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import app.paralino.core.presentation.ICoreMessageDispatcher
+import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.flow.collectLatest
 

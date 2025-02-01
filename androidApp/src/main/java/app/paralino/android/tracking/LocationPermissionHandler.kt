@@ -17,10 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.provider.isLocationOn
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
-import app.paralino.core.presentation.ICoreMessageDispatcher
+import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LocationConditionStatus
-import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.onAction

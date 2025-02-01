@@ -1,5 +1,4 @@
-// TODO change package
-package app.paralino.core.presentation
+package app.paralino.core.presentation.common
 
 import app.paralino.core.logg
 import app.paralino.core.ui.components.AppSnackbarData
