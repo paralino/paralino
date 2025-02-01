@@ -229,10 +229,10 @@ class RecoverAccountUseCase(
                 replaceKey = true,
                 oldKeys = key,
                 action = { oldLoginKey, newLoginKey ->
-                    // TODO check password change!
-                    // in case of v2 only it is not needed?
+                    // using same password here to confirm recovery
+                    // login credentials should not change, only key is pulled with old password
                     userRepo.changePassword(
-                        oldPassword = oldLoginKey,
+                        oldPassword = newLoginKey,
                         newPassword = newLoginKey
                     )
                 }
