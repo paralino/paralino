@@ -35,10 +35,14 @@ import app.paralino.core.presentation.settings.passwordchange.ChangePasswordView
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
+import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -91,6 +95,19 @@ fun ChangePasswordScreenCore(
                 .padding(20.dp),
             verticalArrangement = Arrangement.Top
         ) {
+            if (uiState.lastPasswordUpdateTime != null) {
+                SmallActionButton(
+                    backgroundColor = MaterialTheme.colors.surface,
+                    contentColor = MaterialTheme.colors.onSurface,
+                    icon = CoreAppIcons.AccessTime.asPainterResource(),
+                    text = {
+                        Text(text = uiState.lastPasswordUpdateTime ?: "".annotatedBold())
+                    },
+                    onClick = null
+                )
+                Spacer(modifier = Modifier.size(20.dp))
+            }
+
             PasswordInputField(
                 password = uiState.oldPassword,
                 hint = stringResource(MR.strings.settings_account_edit_email_placeholder_password),

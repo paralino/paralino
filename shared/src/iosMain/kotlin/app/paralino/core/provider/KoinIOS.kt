@@ -190,8 +190,8 @@ object KoinIOS {
             }
             factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get()) }
-            factory { ChangePasswordViewModel(get()) }
-            factory { ConvertAccountViewModel(get()) }
+            factory { ChangePasswordViewModel(get(), get(), get()) }
+            factory { ConvertAccountViewModel(get(), get()) }
             factory { EditProfileViewModel(get(), get()) }
             factory { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
             factory { (userId: String, secret: String) ->

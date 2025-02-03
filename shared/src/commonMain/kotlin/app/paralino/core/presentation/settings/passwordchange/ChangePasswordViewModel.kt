@@ -6,34 +6,51 @@ import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class ChangePasswordViewModel(
     private val changePassword: ChangeCredentialsUseCase,
+    private val valueFormatter: IValueFormatter,
+    private val userRepo: UserRepository
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(ChangePasswordScreenState())
+    private val _uiState = MutableStateFlow(
+        ChangePasswordScreenState(
+            lastPasswordUpdateTime = userRepo.cachedUser?.passwordUpdate?.let {
+                valueFormatter.formatSimpleDateTime(
+                    timeUTC = it.toLocalDateTime(TimeZone.currentSystemDefault()),
+                    optionalYear = false,
+                    showTodayInfo = true
+                )?.let { time ->
+                    MR.strings.group_members_last_status_update.localizedString() + " $time"
+                }?.annotatedBold()
+            }
+        )
+    )
     val uiState: StateFlow<ChangePasswordScreenState> = _uiState
 
     private val _eventChannel = Channel<ChangePasswordScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
-
 
     fun proceed() {
         if (_uiState.value.actionLoading == true || changePassword.isProcessingAny()) return

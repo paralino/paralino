@@ -31,6 +31,7 @@ class UserMapperLocal constructor(
             email = model.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
+            passwordUpdate = model.passwordUpdate,
             data = UserMeDataRaw(
                 userImage = model.userImage,
                 userName = model.userName,
