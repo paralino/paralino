@@ -35,9 +35,12 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
+import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -91,6 +94,16 @@ fun ChangeEmailScreenCore(
                 .padding(20.dp),
             verticalArrangement = Arrangement.Top
         ) {
+            SmallActionButton(
+                backgroundColor = MaterialTheme.colors.surface,
+                contentColor = MaterialTheme.colors.onSurface,
+                icon = CoreAppIcons.Email.asPainterResource(),
+                text = { Text(uiState.currentEmail) },
+                onClick = null
+            )
+
+            Spacer(modifier = Modifier.size(20.dp))
+
             MainInputField(
                 text = uiState.email,
                 hint = stringResource(MR.strings.settings_account_edit_email_placeholder_email),

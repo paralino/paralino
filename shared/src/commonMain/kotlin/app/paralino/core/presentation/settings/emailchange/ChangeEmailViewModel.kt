@@ -16,7 +16,6 @@ import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -29,8 +28,11 @@ class ChangeEmailViewModel(
     private val changeCredentials: ChangeCredentialsUseCase,
 ) : CoreViewModel() {
 
-    private val _uiState =
-        MutableStateFlow(ChangeEmailScreenState(userRepository.cachedUser?.email ?: ""))
+    private val _uiState = MutableStateFlow(
+        ChangeEmailScreenState(
+            currentEmail = userRepository.cachedUser?.email ?: ""
+        )
+    )
     val uiState: StateFlow<ChangeEmailScreenState> = _uiState
 
     private val _eventChannel = Channel<ChangeEmailScreenEvent?>()
