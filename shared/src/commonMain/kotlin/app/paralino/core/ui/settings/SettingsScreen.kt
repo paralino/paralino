@@ -3,7 +3,6 @@ package app.paralino.core.ui.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -204,13 +203,11 @@ fun SettingSectionInfo(
             }
         }
 
-        if (AppBuildConfig.instance.hasPreviewFeatures) {
-            SettingsActionItem(
-                name = stringResource(MR.strings.setting_title_share),
-                icon = CoreAppIcons.Share.asPainterResource()
-            ) {
-                onShareApp(BackendResourceIDs.homeUrl)
-            }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_share),
+            icon = CoreAppIcons.Share.asPainterResource()
+        ) {
+            onShareApp(BackendResourceIDs.downloadUrl)
         }
 
         SettingsActionItem(
