@@ -2,6 +2,7 @@ package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,18 +37,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.BlocklistType
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
+import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.detail.LocationSharingState
-import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
@@ -281,7 +281,7 @@ fun GroupDetailScreenCore(
                                 )
                             }
                         }
-                        this.item { Spacer(modifier = Modifier.size(30.dp)) }
+                        this.item { Spacer(modifier = Modifier.size(20.dp)) }
                     }
 
                     this.item(key = "main_header") {
@@ -443,19 +443,28 @@ fun GroupDetailsHeader(
         modifier = modifier.fillMaxWidth()
     ) {
 
-        ImageModelImage(
-            modifier = Modifier.size(140.dp),
-            imageModel = groupImage
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ImageModelImage(
+                imageModel = groupImage,
+                modifier = Modifier
+                    .size(56.dp)
+                    .border(
+                        0.5.dp,
+                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                        RoundedCornerShape(10.dp)
+                    )
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(
+                text = groupName,
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.weight(1f)
+            )
+        }
 
-        Spacer(modifier = Modifier.size(10.dp))
-
-        Text(
-            text = groupName,
-            style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold)
-        )
-
-        Spacer(modifier = Modifier.size(40.dp))
+        Spacer(modifier = Modifier.size(30.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
