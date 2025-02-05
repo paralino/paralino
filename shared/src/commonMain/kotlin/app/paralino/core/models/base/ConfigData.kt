@@ -20,7 +20,7 @@ data class ConfigData(
     val plans: List<PlanConfig> = emptyList()
 ) {
 
-    val isEmailEnabled: Boolean get() = AppBuildConfig.instance.isDevMode || (AppBuildConfig.instance.hasPreviewFeatures && emailEnabled)
+    val isEmailEnabled: Boolean get() = AppBuildConfig.instance.isDevMode || emailEnabled
 
     companion object {
         fun init(nodes: List<RemoteConfigEntity>): ConfigData {
