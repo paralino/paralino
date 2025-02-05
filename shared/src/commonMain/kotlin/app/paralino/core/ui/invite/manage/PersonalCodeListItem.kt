@@ -277,7 +277,7 @@ fun PersonalCodeItemWithHints(
     ) {
         Text(
             text = stringResource(MR.strings.dashboard_paralino_id_title).annotatedBold(),
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
             modifier = Modifier
                 .padding(horizontal = 20.dp)
         )

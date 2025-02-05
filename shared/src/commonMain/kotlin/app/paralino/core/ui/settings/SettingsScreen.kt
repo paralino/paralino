@@ -263,7 +263,7 @@ fun SettingsActionItem(
                 Text(
                     modifier = Modifier,
                     text = name,
-                    style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
+                    style = MaterialTheme.typography.subtitle1.copy(fontSize = 18.sp),
                     textAlign = TextAlign.Start
                 )
                 if (tag != null) {

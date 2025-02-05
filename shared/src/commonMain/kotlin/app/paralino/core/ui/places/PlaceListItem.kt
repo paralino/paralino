@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.components.CoreAppIcons
@@ -60,7 +61,7 @@ fun PlaceListItem(
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = state.name,
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
             modifier = Modifier.weight(1f)
         )
         if (hasEndArrow) {
