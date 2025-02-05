@@ -116,7 +116,7 @@ extension AppwriteModels.User {
     func parseUser() -> UserMeRaw {
         let prefsData = try? self.prefs.data.toJson()
         let prefs = prefsData != nil ? UserMeDataRaw.companion.parseData(prefs: SerializationExtKt.fromJsonObjectToMapOfPrimitives(prefsData!)) : nil
-        return UserMeRaw(id: self.id, email: self.email, registration: self.registration, emailVerification: self.emailVerification, data: prefs)
+        return UserMeRaw(id: self.id, email: self.email, registration: self.registration, emailVerification: self.emailVerification, passwordUpdate: self.passwordUpdate, data: prefs)
     }
 }
 
