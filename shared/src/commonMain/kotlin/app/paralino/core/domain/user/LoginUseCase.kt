@@ -20,12 +20,10 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import app.paralino.core.utils.exceptions.UnauthorizedException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.encodeToString
 
 class LoginUseCase constructor(
     private val userRepo: UserRepository,
@@ -129,7 +127,6 @@ class LoginUseCase constructor(
 
             try {
                 logg.d("login", "Start login to remote")
-                delay(500)
 
                 emit(SignUpStep.LOG_USER_IN)
                 session = try {
@@ -164,7 +161,6 @@ class LoginUseCase constructor(
             val keyData: GeneratedUserKeys
             try {
                 logg.d("login", "Fetch keys from remote")
-                delay(500)
                 val keys = userKeysRemoteSource.getAllMyKeys()
 
                 logg.d("login", "Found ${keys.size} key(s) on remote")
@@ -231,7 +227,6 @@ class LoginUseCase constructor(
             logg.d("login", "Start initializing user locally")
             emit(SignUpStep.INIT_USER_DATA)
             try {
-                delay(500)
                 logg.d("login", "Save user keys locally")
                 userKeyRepository.saveUserKey(
                     keyData.encryptedKeyData,
