@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
-    groupId: String?,
+    val initialGroupId: String?,
     val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
@@ -61,7 +61,7 @@ class SharingStartViewModel(
     private val _uiState =
         MutableStateFlow(
             SharingStartScreenState(
-                groupState = if (groupId.isNullOrBlank()) {
+                groupState = if (initialGroupId.isNullOrBlank()) {
                     Payload.Success(null)
                 } else {
                     Payload.Loading
@@ -71,6 +71,7 @@ class SharingStartViewModel(
     val uiState: StateFlow<SharingStartScreenState> = _uiState
 
     private val currentGroup = MutableStateFlow<UserGroupWithMetadata?>(null)
+    val currentGroupId: String? get() = currentGroup.value?.id
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -84,7 +85,7 @@ class SharingStartViewModel(
 
     init {
 
-        groupId?.let { setSelectedGroup(it) }
+        initialGroupId?.let { setSelectedGroup(it) }
 
         combine(
             deviceApiProvider.deviceStatus,
@@ -101,7 +102,7 @@ class SharingStartViewModel(
         ) { deviceStatus, locationCount ->
             _uiState.update {
                 it.copy(
-                    deviceName = userMemberIdUseCase.getDefaultDeviceName(groupId),
+                    deviceName = userMemberIdUseCase.getDefaultDeviceName(currentGroup.value?.id),
                     devicesCount = locationCount,
                     errors = buildList {
                         addAll(deviceStatus.locationStatus.getPossibleErrors(it.isLongTerm))

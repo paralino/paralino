@@ -80,7 +80,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun SharingStartScreenCore(
     appState: CoreUiState,
-    groupId: String?,
     vm: SharingStartViewModel,
     onSharingStarted: () -> Unit,
     onSkipOnboarding: () -> Unit,
@@ -279,7 +278,7 @@ fun SharingStartScreenCore(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                if (groupId.isNullOrBlank()) {
+                                if (vm.initialGroupId.isNullOrBlank()) {
                                     appState.uiScope.launch {
                                         val groupPickerState = vm.getGroupPickerState()
                                         onPickGroup(groupPickerState)

@@ -24,7 +24,6 @@ struct SharingStartScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.home.StartSharingScreenVC(
                     vm: appState.vm,
-                    groupId: nil,
                     onPickGroup: { sheet in groupPicker = sheet },
                     onSharingStarted: {
                         finishWithSharingScreen(isOnboarding: appState.isOnboarding)
@@ -33,7 +32,7 @@ struct SharingStartScreen: View {
                         finishWithSharingScreen(isOnboarding: appState.isOnboarding)
                     },
                     openSubscriptions: {
-                        path.append(.settings(.paywall(groupId: appState.groupId, type: .upgrade)))
+                        path.append(.settings(.paywall(groupId: appState.currentGroupId, type: .upgrade)))
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(
@@ -82,14 +81,14 @@ struct SharingStartScreen: View {
             }
             path.append(
                 .settings(
-                    .paywall(groupId: appState.groupId, type: isOnboarding ? BillingScreenSourceType.onboarding : BillingScreenSourceType.upgrade)
+                    .paywall(groupId: appState.currentGroupId, type: isOnboarding ? BillingScreenSourceType.onboarding : BillingScreenSourceType.upgrade)
                 )
             )
         } else if isOnboarding {
             if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                 path.removeSubrange(index+1..<path.count)
             }
-            if let groupId = appState.groupId {
+            if let groupId = appState.currentGroupId {
                 path.append(.home(.groupDetail(groupId: groupId)))
             }
         } else {
@@ -99,20 +98,24 @@ struct SharingStartScreen: View {
 
     
     static func createState(groupId: String?, isOnboarding: Bool) -> SharingStartState {
-        SharingStartState(groupId: groupId, isOnboarding: isOnboarding)
+        SharingStartState(initialGroupId: groupId, isOnboarding: isOnboarding)
     }
 }
 
 class SharingStartState: ObservableObject {
     
-    let groupId: String?
+    let initialGroupId: String?
     let isOnboarding: Bool
     let vm: SharingStartViewModel
     
-    init (groupId: String?, isOnboarding: Bool) {
-        self.groupId = groupId
+    var currentGroupId: String? {
+        return vm.currentGroupId
+    }
+    
+    init (initialGroupId: String?, isOnboarding: Bool) {
+        self.initialGroupId = initialGroupId
         self.isOnboarding = isOnboarding
-        self.vm = KoinIOS.ViewModels.shared.sharingStartVM(groupId: groupId, isOnboarding: isOnboarding)
+        self.vm = KoinIOS.ViewModels.shared.sharingStartVM(groupId: initialGroupId, isOnboarding: isOnboarding)
     }
     
     deinit {

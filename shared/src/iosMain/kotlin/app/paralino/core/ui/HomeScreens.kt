@@ -207,7 +207,6 @@ object HomeScreens {
 
     fun StartSharingScreenVC(
         vm: SharingStartViewModel,
-        groupId: String?,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
         onSharingStarted: () -> Unit,
         onSkipOnboarding: () -> Unit,
@@ -221,7 +220,6 @@ object HomeScreens {
             SharingStartScreenCore(
                 appState = it,
                 vm = vm,
-                groupId = groupId,
                 onPickGroup = onPickGroup,
                 onSharingStarted = onSharingStarted,
                 onSkipOnboarding = onSkipOnboarding,
