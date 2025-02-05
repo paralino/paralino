@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.share.SharingStartScreenEvent
@@ -316,7 +315,7 @@ fun SharingStartScreenCore(
             SettingsSectionHeader(
                 modifier = Modifier.fillMaxWidth(),
                 name = stringResource(MR.strings.groups_sharing_devices),
-                count = state.devicesCount.takeIf { AppBuildConfig.instance.hasPreviewFeatures },
+                count = state.devicesCount,
                 limit = state.devicesLimit
             )
 
