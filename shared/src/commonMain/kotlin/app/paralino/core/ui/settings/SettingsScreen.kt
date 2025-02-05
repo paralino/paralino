@@ -233,14 +233,14 @@ fun SettingsActionItem(
     iconTint: Color = MaterialTheme.colors.surface,
     type: SettingsActionItemType = SettingsActionItemType.Navigation,
     onLongClick: (() -> Unit)? = null,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
+            .combinedClickable(enabled = onClick != null || onLongClick != null, onLongClick = onLongClick, onClick = { onClick?.invoke() })
             .padding(vertical = 12.dp),
     ) {
         Row(

@@ -115,8 +115,14 @@
     <string name="settings_account_edit_password_placeholder_password_confirm">Passwort bestätigen*</string>
     <string name="settings_account_guest_convert">Konto umwandeln</string>
     <string name="settings_account_guest_badge">Gastkonto</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices">Mehrere Geräte</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Teilen Sie Ihren Standort von mehreren Geräten und verknüpfen Sie sie mit demselben Konto.</string>
+    <string name="settings_account_guest_convert_intro_account_recovery">Kontowiederherstellung</string>
+    <string name="settings_account_guest_convert_intro_account_recovery_tag">Behalten Sie den Zugriff auf Ihre Daten, selbst wenn Sie die App löschen oder auf ein neues Telefon wechseln.</string>
+    <string name="settings_account_guest_convert_intro_personal_device_tracking">Persönliches Gerätemanagement</string>
+    <string name="settings_account_guest_convert_intro_personal_device_tracking_tag">Verfolgen und verwalten Sie alle Ihre Geräte unter einem Konto.</string>
     <string name="settings_account_edit_guest_account_button">Konto umwandeln</string>
-    <string name="settings_account_edit_guest_account_info">Wenn Sie Ihrem Konto eine E-Mail und ein Passwort hinzufügen, können Sie sich auf einem anderen Gerät anmelden oder Ihr Konto wiederherstellen, falls Sie die App löschen oder Ihr Gerät verlieren.</string>
+    <string name="settings_account_edit_guest_account_info">Ihre Daten sind Ende-zu-Ende verschlüsselt, also stellen Sie sicher, dass Sie Ihr Passwort nicht verlieren. Ohne es können Sie keine Ihrer Daten wiederherstellen.</string>
     <string name="settings_account_credentialsChange_step_prepare">Vorbereiten</string>
     <string name="settings_account_credentialsChange_step_change">Anmeldeinformationen ändern</string>
     <string name="settings_account_credentialsChange_step_verify">Schlüssel verifizieren</string>

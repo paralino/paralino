@@ -44,6 +44,16 @@ class ConvertAccountViewModel(
     fun proceed() {
         if (_uiState.value.actionLoading == true || convertAccount.isProcessingAny()) return
 
+        when (uiState.value.screenStep) {
+            ConvertAccountScreenStep.ONBOARDING -> {
+                _uiState.update { it.copy(screenStep = ConvertAccountScreenStep.INPUT) }
+                return
+            }
+            ConvertAccountScreenStep.INPUT -> {
+                // nothing
+            }
+        }
+
         val email = _uiState.value.email
         val password = _uiState.value.password
         val passwordConfirm = _uiState.value.passwordConfirm

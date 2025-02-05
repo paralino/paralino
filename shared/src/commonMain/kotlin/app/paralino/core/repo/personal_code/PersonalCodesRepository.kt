@@ -193,7 +193,7 @@ class PersonalCodesRepository constructor(
             } else if (canCreateNewCode() && personalCodeLocalState.value.isEmpty()) {
                 // even if user can create new code, we should only create one if user has no codes at all
                 // this would be the case when account is created
-                createPersonalCode(userMeData = userMeData)
+//                createPersonalCode(userMeData = userMeData)
             }
             refreshPersonalCodes()
         }

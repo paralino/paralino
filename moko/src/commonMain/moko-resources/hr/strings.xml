@@ -115,8 +115,14 @@
     <string name="settings_account_edit_password_placeholder_password_confirm">Potvrdite lozinku*</string>
     <string name="settings_account_guest_convert">Pretvorite račun</string>
     <string name="settings_account_guest_badge">Gostujući račun</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices">Više uređaja</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Dijelite svoju lokaciju s više uređaja i povežite ih s istim računom.</string>
+    <string name="settings_account_guest_convert_intro_account_recovery">Oporavak računa</string>
+    <string name="settings_account_guest_convert_intro_account_recovery_tag">Zadržite pristup svojim podacima čak i ako izbrišete aplikaciju ili promijenite telefon.</string>
+    <string name="settings_account_guest_convert_intro_personal_device_tracking">Praćenje osobnih uređaja</string>
+    <string name="settings_account_guest_convert_intro_personal_device_tracking_tag">Pratite i upravljajte svim svojim uređajima pod jednim računom.</string>
     <string name="settings_account_edit_guest_account_button">Pretvorite račun</string>
-    <string name="settings_account_edit_guest_account_info">Kada dodate e-mail i lozinku Vašem računu, moći ćete se prijaviti na drugom uređaju ili povratiti Vaš račun ako izbrišete aplikaciju ili izgubite uređaj.</string>
+    <string name="settings_account_edit_guest_account_info">Vaši su podaci end-to-end šifrirani, stoga pazite da ne izgubite lozinku. Bez nje nećete moći oporaviti svoje podatke.</string>
     <string name="settings_account_credentialsChange_step_prepare">Priprema</string>
     <string name="settings_account_credentialsChange_step_change">Mijenjanje podataka za prijavu</string>
     <string name="settings_account_credentialsChange_step_verify">Provjera ključeva</string>

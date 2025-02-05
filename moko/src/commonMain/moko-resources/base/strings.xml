@@ -116,8 +116,14 @@
     <string name="settings_account_edit_password_placeholder_password_confirm">Confirm password*</string>
     <string name="settings_account_guest_convert">Convert account</string>
     <string name="settings_account_guest_badge">Guest account</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices">Multiple devices</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Share your location from multiple devices and link them to the same account.</string>
+    <string name="settings_account_guest_convert_intro_account_recovery">Account recovery</string>
+    <string name="settings_account_guest_convert_intro_account_recovery_tag">Keep access to your data even if you delete the app or switch to a new phone.</string>
+    <string name="settings_account_guest_convert_intro_personal_device_tracking">Personal device tracking</string>
+    <string name="settings_account_guest_convert_intro_personal_device_tracking_tag">Track and manage all your devices under one account.</string>
     <string name="settings_account_edit_guest_account_button">Convert account</string>
-    <string name="settings_account_edit_guest_account_info">When you add email and password to your account, you will be able to login on another device or recover your account, if your delete the app or lose your device.</string>
+    <string name="settings_account_edit_guest_account_info">Your data is end-to-end encrypted, so make sure you don't lose your password. Without it, you won’t be able to recover any of your data.</string>
     <string name="settings_account_credentialsChange_step_prepare">Preparing</string>
     <string name="settings_account_credentialsChange_step_change">Changing credentials</string>
     <string name="settings_account_credentialsChange_step_verify">Verifying keys</string>
