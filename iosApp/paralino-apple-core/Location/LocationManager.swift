@@ -80,9 +80,9 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                 let settings = model.balancedPerformanceSettings
                 self?.manager.pausesLocationUpdatesAutomatically = true
                 if settings.useHighPerformanceLocation {
-                    self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
-                } else {
                     self?.manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+                } else {
+                    self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
                 }
                 self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
             case .mediumHigh:
