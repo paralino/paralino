@@ -23,6 +23,7 @@ import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -294,16 +295,7 @@ class ChangeCredentialsUseCase(
                 val backedUpKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = false)
 
                 // check once more everything is properly uploaded
-                check(newKey.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
-                check(newKey.encryptedPrivateKey == backedUpKey.encryptedPrivateKey)
-                check(newKey.encryptedPublicKey == backedUpKey.encryptedPublicKey)
-                check(newKey.publicKey == backedUpKey.publicKey)
-                check(newKey.oldMasterKeys == backedUpKey.oldMasterKeys)
-                check(newKey.loginSalt == backedUpKey.loginSalt)
-                check(newKey.loginAlg == backedUpKey.loginAlg)
-                check(newKey.dataAlg == backedUpKey.dataAlg)
-                check(newKey.dataSalt == backedUpKey.dataSalt)
-                check(newKey.schemeVersion == backedUpKey.schemeVersion)
+                checkKeysAreValid(newKey = newKey, backedUpKey = backedUpKey)
 
                 emit(ChangeCredentialsStep.CHANGING_CREDENTIALS)
 
@@ -313,7 +305,32 @@ class ChangeCredentialsUseCase(
                 emit(ChangeCredentialsStep.KEY_APPLY)
 
                 // if password is changed successfully we can save the new key and delete old ones
-                val newRemoteKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                val newRemoteKey = try {
+                    userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                } catch (e: Exception) {
+                    delay(300)
+                    try {
+                        // try once again
+                        userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                    } catch (e: Exception) {
+                        delay(300)
+                        // get keys to see if already uploaded
+                        try {
+                            userKeysRemoteSource.getAllMyKeys().firstOrNull { newKey ->
+                                try {
+                                    checkKeysAreValid(newKey = newKey, backedUpKey = backedUpKey)
+                                    true
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }!!
+                        } catch (e: Exception) {
+                            // fallback to already uploaded key
+                            // on next login or credentials change it will be sorted out
+                            backedUpKey
+                        }
+                    }
+                }
 
                 // at this point both login password and encryption key are updated safely
                 // we can save the key locally
@@ -329,6 +346,22 @@ class ChangeCredentialsUseCase(
 
             emit(ChangeCredentialsStep.DONE)
         }.flowOn(Dispatchers.IO)
+    }
+
+    private fun checkKeysAreValid(
+        newKey: UserCryptoKeyRaw,
+        backedUpKey: UserCryptoKeyRaw
+    ) {
+        check(newKey.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
+        check(newKey.encryptedPrivateKey == backedUpKey.encryptedPrivateKey)
+        check(newKey.encryptedPublicKey == backedUpKey.encryptedPublicKey)
+        check(newKey.publicKey == backedUpKey.publicKey)
+        check(newKey.oldMasterKeys == backedUpKey.oldMasterKeys)
+        check(newKey.loginSalt == backedUpKey.loginSalt)
+        check(newKey.loginAlg == backedUpKey.loginAlg)
+        check(newKey.dataAlg == backedUpKey.dataAlg)
+        check(newKey.dataSalt == backedUpKey.dataSalt)
+        check(newKey.schemeVersion == backedUpKey.schemeVersion)
     }
 }
 
