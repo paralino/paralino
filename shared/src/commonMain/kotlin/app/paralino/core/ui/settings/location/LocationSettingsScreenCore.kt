@@ -156,20 +156,56 @@ fun LocationSettingsScreenCore(
                     )
                 }
 
-                val highAccuracyState by rememberSeekbarState(
-                    key = uiState,
-                    state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                        seekbarState = null,
-                        switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.useHighPerformanceLocation)
+                if (uiState.balancedSettings.showLocationIndicator != null) {
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                        icon = CoreAppIcons.LocationOn.asPainterResource(),
+                        title = stringResource(MR.strings.setting_location_balanced_locationIndicator_title),
+                        description = stringResource(MR.strings.setting_location_balanced_locationIndicator_description),
+                        state = rememberSeekbarState(
+                            key = uiState,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.showLocationIndicator ?: false)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedShowIndicator)
+                        }
                     )
-                )
+                }
+
+                if (uiState.balancedSettings.pausesLocationAutomatically != null) {
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                        icon = CoreAppIcons.StopCircle.asPainterResource(),
+                        title = stringResource(MR.strings.setting_location_balanced_autoPause_title),
+                        description = stringResource(MR.strings.setting_location_balanced_autoPause_description),
+                        state = rememberSeekbarState(
+                            key = uiState,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.pausesLocationAutomatically ?: true)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedAutoPause)
+                        }
+                    )
+                }
 
                 LargeSeekbarSwitch(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
                     icon = CoreAppIcons.ShareLocation.asPainterResource(),
                     title = stringResource(MR.strings.setting_location_balanced_highAccuracy_title),
                     description = stringResource(MR.strings.setting_location_balanced_highAccuracy_description),
-                    state = highAccuracyState,
+                    state = rememberSeekbarState(
+                        key = uiState,
+                        state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                            seekbarState = null,
+                            switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.useHighPerformanceLocation)
+                        )
+                    ).value,
                     onStateChange = {
                         vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance)
                     }

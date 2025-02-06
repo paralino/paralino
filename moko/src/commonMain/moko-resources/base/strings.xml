@@ -165,6 +165,10 @@
     <string name="setting_location_balanced_section_info">Choose your preferred location update frequency when your battery is at least 30% charged and the app is inactive.\nThe app will switch to **high performance** mode if you or one of your group members are looking at the map.</string>
     <string name="setting_location_balanced_highAccuracy_title">High Accuracy Location</string>
     <string name="setting_location_balanced_highAccuracy_description">Use precise, high-accuracy location sensor (GPS) when idle in the background. This will use more battery power.</string>
+    <string name="setting_location_balanced_autoPause_title">Auto-pause location updates</string>
+    <string name="setting_location_balanced_autoPause_description">Allow the system to automatically pause location updates and put the app to sleep to save battery. The system will wake the app when a significant location update is needed.</string>
+    <string name="setting_location_balanced_locationIndicator_title">Show location indicator</string>
+    <string name="setting_location_balanced_locationIndicator_description">Display a location indicator whenever the app has access to location data. The indicator will remain visible even if no location updates are occurring, as a notice that the app is still active and may access location data.</string>
     <string name="setting_location_batterySaver_lowPowerMode_title">Use system battery saver</string>
     <string name="setting_location_batterySaver_lowPowerMode_description">If enabled, battery saver mode will automatically activate whenever the system\'s battery saver (low power mode) is turned on, regardless of your device\'s current battery level.</string>
     <string name="setting_location_batterySaver_section_title">Battery Saver</string>

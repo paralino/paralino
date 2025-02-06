@@ -164,6 +164,10 @@
     <string name="setting_location_balanced_section_info">Odaberite željenu frekvenciju ažuriranja lokacije kada je baterija najmanje 30% napunjena i aplikacija je neaktivna.\nAplikacija će se prebaciti u način **Visoke performanse** ako vi ili netko iz vaše grupe gleda kartu.</string>
     <string name="setting_location_balanced_highAccuracy_title">Lokacija visoke preciznosti</string>
     <string name="setting_location_balanced_highAccuracy_description">Koristite precizni, visokoprecizni senzor lokacije (GPS) kada je uređaj u pozadini u stanju mirovanja. Koristit će više energije baterije.</string>
+    <string name="setting_location_balanced_autoPause_title">Automatska pauza ažuriranja lokacije</string>
+    <string name="setting_location_balanced_autoPause_description">Dopustite sustavu da automatski pauzira ažuriranja lokacije i uspava aplikaciju kako bi se uštedjela baterija. Sustav će probuditi aplikaciju kada bude potrebna značajna promjena lokacije.</string>
+    <string name="setting_location_balanced_locationIndicator_title">Prikaz pokazatelja lokacije</string>
+    <string name="setting_location_balanced_locationIndicator_description">Prikazuje indikator lokacije kad god aplikacija ima pristup podacima o lokaciji. Indikator će ostati vidljiv čak i ako nema ažuriranja lokacije, kao obavijest da je aplikacija i dalje aktivna i može pristupiti lokaciji.</string>
     <string name="setting_location_batterySaver_lowPowerMode_title">Sistemski način uštede baterije</string>
     <string name="setting_location_batterySaver_lowPowerMode_description">Ako je omogućeno, način uštede baterije će se automatski aktivirati kad god se uključi sistemski način uštede baterije (low power mode), bez obzira na trenutnu razinu baterije uređaja.</string>
     <string name="setting_location_batterySaver_section_title">Štednja baterije</string>

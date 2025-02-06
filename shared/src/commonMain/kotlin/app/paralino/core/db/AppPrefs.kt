@@ -79,6 +79,8 @@ class AppPrefs(
         const val keyBatterySaverDeviceLowPower = "prefs.location.batterySaver.deviceLowPowerMode"
         const val keyBalancedPerformance = "prefs.location.balanced.performance"
         const val keyBalancedHighAccuracy = "prefs.location.balanced.highAccuracy"
+        const val keyBalancedAutomaticPauseIOS = "prefs.location.ios.autoPause"
+        const val keyLocationShowIndicatorIOS = "prefs.location.ios.indicator"
         const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
         const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
         const val keyLoggedInAppLaunchCount = "prefs.device.appLaunchCount.account"
@@ -283,6 +285,18 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyBalancedHighAccuracy, true)
         set(value) {
             provider.userSettings.putBoolean(keyBalancedHighAccuracy, value)
+        }
+
+    var locationSettingsAutoPauseIOS: Boolean
+        get() = provider.userSettings.getBoolean(keyBalancedAutomaticPauseIOS, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyBalancedAutomaticPauseIOS, value)
+        }
+
+    var locationSettingsShowIndicatorIOS: Boolean
+        get() = provider.userSettings.getBoolean(keyLocationShowIndicatorIOS, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyLocationShowIndicatorIOS, value)
         }
 
     var locationSettingsBalancedPerformanceType: String?

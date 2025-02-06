@@ -30,6 +30,8 @@ data class LocationSettingsBatterySaver(
 
 data class LocationSettingsBalanced(
     val useHighPerformanceLocation: Boolean,
+    val showLocationIndicator: Boolean?,
+    val pausesLocationAutomatically: Boolean?,
     val items: List<LocationSettingsItemState>
 ) {
     val selectedItem: LocationSettingsItemState = items.firstOrNull { it.isSelected }
@@ -52,6 +54,8 @@ sealed interface LocationSettingsScreenEvent {
 }
 
 sealed interface LocationSettingsScreenUiEvent {
+    data object ToggleBalancedAutoPause : LocationSettingsScreenUiEvent
+    data object ToggleBalancedShowIndicator : LocationSettingsScreenUiEvent
     data object ToggleBalancedHighPerformance : LocationSettingsScreenUiEvent
     data object ToggleFollowDeviceLowPowerMode : LocationSettingsScreenUiEvent
 

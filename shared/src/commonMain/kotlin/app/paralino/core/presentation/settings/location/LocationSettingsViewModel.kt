@@ -3,8 +3,9 @@ package app.paralino.core.presentation.settings.location
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.base.PlanType
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
@@ -67,6 +68,14 @@ class LocationSettingsViewModel(
             ),
             balancedSettings = LocationSettingsBalanced(
                 useHighPerformanceLocation = appPrefs.locationSettingsBalancedHighAccuracy,
+                showLocationIndicator = when (DeviceType.current) {
+                    DeviceType.Android -> null
+                    DeviceType.iOS -> appPrefs.locationSettingsShowIndicatorIOS
+                },
+                pausesLocationAutomatically = when (DeviceType.current) {
+                    DeviceType.Android -> null
+                    DeviceType.iOS -> appPrefs.locationSettingsAutoPauseIOS
+                },
                 items = listOf(
                     LocationPerformanceSettingsType.Balanced.Level1,
                     LocationPerformanceSettingsType.Balanced.Level2,
@@ -98,90 +107,11 @@ class LocationSettingsViewModel(
 
     fun onEvent(event: LocationSettingsScreenUiEvent) {
         when (event) {
-            is LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance -> {
-                val newValue = !appPrefs.locationSettingsBalancedHighAccuracy
-                appPrefs.locationSettingsBalancedHighAccuracy = newValue
-                val newSettings = uiState.value.balancedSettings.copy(
-                    useHighPerformanceLocation = newValue
-                )
-                _uiState.update {
-                    it.copy(balancedSettings = newSettings)
-                }
-                locationPerformanceManager.updateLocationSettings(
-                    useHighPerformanceLocation = newSettings.useHighPerformanceLocation,
-                    balancedPerformanceSettings = newSettings.selectedItem.performance,
-                    batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
-                )
-            }
-
-            is LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode -> {
-                val newValue = !appPrefs.locationBatterySaverRespectsDeviceLowPower
-                appPrefs.locationBatterySaverRespectsDeviceLowPower = newValue
-                val newSettings = uiState.value.batterySaverSettings.copy(
-                    activeOnLowPowerMode = newValue
-                )
-                _uiState.update {
-                    it.copy(batterySaverSettings = newSettings)
-                }
-            }
-
-            is LocationSettingsScreenUiEvent.ChangePerformance -> {
-
-                if (event.type.isPremiumFeature && isUserOnFreePlan()) {
-                    _uiState.update {
-                        it.copy(alertDialog = MainAlertDialog.LocationPerformancePremiumInfo)
-                    }
-                    return
-                }
-
-                when (event.type) {
-                    is LocationPerformanceSettingsType.HighPerformance -> {
-                        appPrefs.locationSettingsHighPerformanceDurationType = event.type.key
-                        val newSettings = uiState.value.highPerformanceSettings.copy(
-                            items = uiState.value.highPerformanceSettings.items.map {
-                                it.copy(isSelected = event.type.key == it.performance.key)
-                            }
-                        )
-                        _uiState.update {
-                            it.copy(highPerformanceSettings = newSettings)
-                        }
-                    }
-
-                    is LocationPerformanceSettingsType.Balanced -> {
-                        appPrefs.locationSettingsBalancedPerformanceType = event.type.key
-                        val newSettings = uiState.value.balancedSettings.copy(
-                            items = uiState.value.balancedSettings.items.map {
-                                it.copy(isSelected = event.type.key == it.performance.key)
-                            }
-                        )
-                        _uiState.update {
-                            it.copy(balancedSettings = newSettings)
-                        }
-                        locationPerformanceManager.updateLocationSettings(
-                            useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
-                            balancedPerformanceSettings = newSettings.selectedItem.performance,
-                            batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
-                        )
-                    }
-
-                    is LocationPerformanceSettingsType.BatterySaver -> {
-                        appPrefs.locationSettingsBatterySaverPerformanceType = event.type.key
-                        val newSettings = uiState.value.batterySaverSettings.copy(
-                            items = uiState.value.batterySaverSettings.items.map {
-                                it.copy(isSelected = event.type.key == it.performance.key)
-                            }
-                        )
-                        _uiState.update {
-                            it.copy(batterySaverSettings = newSettings)
-                        }
-                        locationPerformanceManager.updateLocationSettings(
-                            useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
-                            balancedPerformanceSettings = uiState.value.balancedSettings.selectedItem.performance,
-                            batterySaverPerformanceSettings = newSettings.selectedItem.performance
-                        )
-                    }
-                }
-            }
+            is LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance -> toggleBalancedHighPerformance()
+            is LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode -> toggleFollowLowPowerMode()
+            is LocationSettingsScreenUiEvent.ChangePerformance -> changeLocationPerformance(event)
+            LocationSettingsScreenUiEvent.ToggleBalancedAutoPause -> toggleIOSAutoPause()
+            LocationSettingsScreenUiEvent.ToggleBalancedShowIndicator -> toggleIOSLocationIndicator()
 
             is LocationSettingsScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
@@ -196,6 +126,118 @@ class LocationSettingsViewModel(
 
                     else -> {}
                 }
+            }
+        }
+    }
+
+    private fun toggleIOSLocationIndicator() {
+        val newValue = !appPrefs.locationSettingsShowIndicatorIOS
+        appPrefs.locationSettingsShowIndicatorIOS = newValue
+        val newSettings = uiState.value.balancedSettings.copy(
+            showLocationIndicator = newValue
+        )
+        _uiState.update {
+            it.copy(balancedSettings = newSettings)
+        }
+        locationPerformanceManager.updateLocationSettings {
+            it.copy(showLocationIndicator = newValue)
+        }
+    }
+
+    private fun toggleIOSAutoPause() {
+        val newValue = !appPrefs.locationSettingsAutoPauseIOS
+        appPrefs.locationSettingsAutoPauseIOS = newValue
+        val newSettings = uiState.value.balancedSettings.copy(
+            pausesLocationAutomatically = newValue
+        )
+        _uiState.update {
+            it.copy(balancedSettings = newSettings)
+        }
+        locationPerformanceManager.updateLocationSettings {
+            it.copy(pausesLocationAutomatically = newValue)
+        }
+    }
+
+    private fun toggleBalancedHighPerformance() {
+        val newValue = !appPrefs.locationSettingsBalancedHighAccuracy
+        appPrefs.locationSettingsBalancedHighAccuracy = newValue
+        val newSettings = uiState.value.balancedSettings.copy(
+            useHighPerformanceLocation = newValue
+        )
+        _uiState.update {
+            it.copy(balancedSettings = newSettings)
+        }
+        locationPerformanceManager.updateLocationSettings(
+            useHighPerformanceLocation = newSettings.useHighPerformanceLocation,
+            balancedPerformanceSettings = newSettings.selectedItem.performance,
+            batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
+        )
+    }
+
+    private fun toggleFollowLowPowerMode() {
+        val newValue = !appPrefs.locationBatterySaverRespectsDeviceLowPower
+        appPrefs.locationBatterySaverRespectsDeviceLowPower = newValue
+        val newSettings = uiState.value.batterySaverSettings.copy(
+            activeOnLowPowerMode = newValue
+        )
+        _uiState.update {
+            it.copy(batterySaverSettings = newSettings)
+        }
+    }
+
+    private fun changeLocationPerformance(event: LocationSettingsScreenUiEvent.ChangePerformance) {
+        if (event.type.isPremiumFeature && isUserOnFreePlan()) {
+            _uiState.update {
+                it.copy(alertDialog = MainAlertDialog.LocationPerformancePremiumInfo)
+            }
+            return
+        }
+
+        when (event.type) {
+            is LocationPerformanceSettingsType.HighPerformance -> {
+                appPrefs.locationSettingsHighPerformanceDurationType = event.type.key
+                val newSettings = uiState.value.highPerformanceSettings.copy(
+                    items = uiState.value.highPerformanceSettings.items.map {
+                        it.copy(isSelected = event.type.key == it.performance.key)
+                    }
+                )
+                _uiState.update {
+                    it.copy(highPerformanceSettings = newSettings)
+                }
+            }
+
+            is LocationPerformanceSettingsType.Balanced -> {
+                appPrefs.locationSettingsBalancedPerformanceType = event.type.key
+                val newSettings = uiState.value.balancedSettings.copy(
+                    items = uiState.value.balancedSettings.items.map {
+                        it.copy(isSelected = event.type.key == it.performance.key)
+                    }
+                )
+                _uiState.update {
+                    it.copy(balancedSettings = newSettings)
+                }
+                locationPerformanceManager.updateLocationSettings(
+                    useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
+                    balancedPerformanceSettings = newSettings.selectedItem.performance,
+                    batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
+                )
+            }
+
+            is LocationPerformanceSettingsType.BatterySaver -> {
+                appPrefs.locationSettingsBatterySaverPerformanceType = event.type.key
+                val newSettings = uiState.value.batterySaverSettings.copy(
+                    items = uiState.value.batterySaverSettings.items.map {
+                        it.copy(isSelected = event.type.key == it.performance.key)
+                    }
+                )
+                _uiState.update {
+                    it.copy(batterySaverSettings = newSettings)
+                }
+                locationPerformanceManager.updateLocationSettings(
+                    useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
+                    balancedPerformanceSettings = uiState.value.balancedSettings.selectedItem.performance,
+                    batterySaverPerformanceSettings = newSettings.selectedItem.performance
+                )
             }
         }
     }

@@ -164,6 +164,10 @@
     <string name="setting_location_balanced_section_info">Wählen Sie Ihre bevorzugte Standortaktualisierungsfrequenz, wenn Ihr Akku mindestens zu 30% geladen ist und die App inaktiv ist.\nDie App wechselt in den Modus **Hohe Leistung**, wenn Sie oder eines Ihrer Gruppenmitglieder die Karte ansehen.</string>
     <string name="setting_location_balanced_highAccuracy_title">Hohe Standortgenauigkeit</string>
     <string name="setting_location_balanced_highAccuracy_description">Verwenden Sie den präzisen, hochgenauen Standortsensor (GPS), wenn das Gerät im Hintergrund im Leerlauf ist. Verbraucht mehr Batterieleistung.</string>
+    <string name="setting_location_balanced_autoPause_title">Standortaktualisierungen automatisch pausieren</string>
+    <string name="setting_location_balanced_autoPause_description">Erlauben Sie dem System, Standortaktualisierungen automatisch zu pausieren und die App in den Ruhezustand zu versetzen, um Batterie zu sparen. Das System weckt die App, wenn eine wichtige Standortaktualisierung erforderlich ist.</string>
+    <string name="setting_location_balanced_locationIndicator_title">Standortanzeige anzeigen</string>
+    <string name="setting_location_balanced_locationIndicator_description">Zeigt eine Standortanzeige an, wenn die App auf Standortdaten zugreifen kann. Die Anzeige bleibt sichtbar, auch wenn keine Standortaktualisierungen erfolgen, als Hinweis darauf, dass die App weiterhin aktiv ist und möglicherweise auf Standortdaten zugreift.</string>
     <string name="setting_location_batterySaver_lowPowerMode_title">System-Energiesparmodus verwenden</string>
     <string name="setting_location_batterySaver_lowPowerMode_description">Wenn aktiviert, wird der Energiesparmodus automatisch aktiviert, sobald der systemeigene Energiesparmodus (Niedrigstrommodus) eingeschaltet wird, unabhängig vom aktuellen Batteriestand Ihres Geräts.</string>
     <string name="setting_location_batterySaver_section_title">Energiesparmodus</string>
