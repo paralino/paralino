@@ -23,6 +23,7 @@ import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
@@ -55,6 +56,7 @@ class ChangeCredentialsUseCase(
             action = { oldLoginKey, newLoginKey ->
                 val currentUser = userRepo.refreshUserIfAvailable()
                 val lastPasswordUpdate = currentUser.passwordUpdateTime
+                val requestTime = nowUTC()
 
                 try {
                     userRepo.updateUserEmailAndPassword(
@@ -64,7 +66,10 @@ class ChangeCredentialsUseCase(
                     )
                 } catch (e: Exception) {
                     val updatedUser = userRepo.refreshUserIfAvailable()
-                    if (updatedUser.email == email && updatedUser.passwordUpdateTime != lastPasswordUpdate) {
+                    val isPasswordUpdated = updatedUser.passwordUpdateTime?.let {
+                        it > (lastPasswordUpdate ?: requestTime)
+                    } ?: false
+                    if (updatedUser.email == email && isPasswordUpdated) {
                         // we can assume that data is updated
                     } else {
                         throw e

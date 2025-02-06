@@ -3,6 +3,7 @@ package app.paralino.core.domain.user
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.Flow
 
 class ConvertAccountUseCase constructor(
@@ -34,6 +35,7 @@ class ConvertAccountUseCase constructor(
 
                 val currentUser = userRepo.refreshUserIfAvailable()
                 val lastPasswordUpdate = currentUser.passwordUpdateTime
+                val requestTime = nowUTC()
 
                 try {
                     userRepo.updateUserEmailAndPassword(
@@ -43,7 +45,10 @@ class ConvertAccountUseCase constructor(
                     )
                 } catch (e: Exception) {
                     val updatedUser = userRepo.refreshUserIfAvailable()
-                    if (updatedUser.email == email && updatedUser.passwordUpdateTime != lastPasswordUpdate) {
+                    val isPasswordUpdated = updatedUser.passwordUpdateTime?.let {
+                        it > (lastPasswordUpdate ?: requestTime)
+                    } ?: false
+                    if (updatedUser.email == email && isPasswordUpdated) {
                         // we can assume that data is updated
                     } else {
                         throw e
