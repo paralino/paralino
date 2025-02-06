@@ -70,7 +70,9 @@ class ChangeEmailViewModel(
         val password = _uiState.value.password
 
         val emailValidation = FormValidation.Email.validate(email)
-        val passwordValidation = FormValidation.Password.validate(password)
+
+        // only validating input, password does not change
+        val passwordValidation = FormValidation.TextNotEmpty.validate(password)
 
         _uiState.update {
             it.copy(

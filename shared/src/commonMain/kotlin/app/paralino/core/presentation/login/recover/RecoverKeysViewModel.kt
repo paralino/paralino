@@ -282,7 +282,7 @@ class RecoverKeysViewModel(
         if (validState !is RecoverKeysUiStep.Recover.RecoverClassicAccount) return false
 
         val password = validState.oldPassword
-        val passwordValidation = FormValidation.Password.validate(password)
+        val passwordValidation = FormValidation.TextNotEmpty.validate(password)
 
         _uiState.update {
             it.mapSuccess {
@@ -310,7 +310,7 @@ class RecoverKeysViewModel(
             (validState as? RecoverKeysUiStep.Recover.RecoverClassicAccount)?.currentPassword
                 ?: (validState as? RecoverKeysUiStep.Reset.ResetClassicAccount)?.currentPassword
                 ?: return false
-        val passwordValidation = FormValidation.Password.validate(password)
+        val passwordValidation = FormValidation.TextNotEmpty.validate(password)
 
         _uiState.update {
             it.mapSuccess {
