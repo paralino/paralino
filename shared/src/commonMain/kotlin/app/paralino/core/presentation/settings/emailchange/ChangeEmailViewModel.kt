@@ -19,9 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -40,6 +42,9 @@ class ChangeEmailViewModel(
         )
     )
     val uiState: StateFlow<ChangeEmailScreenState> = _uiState
+    val canNavigateBack: Flow<Boolean> = _uiState.map {
+        it.actionLoading != true
+    }
 
     private val _eventChannel = Channel<ChangeEmailScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()

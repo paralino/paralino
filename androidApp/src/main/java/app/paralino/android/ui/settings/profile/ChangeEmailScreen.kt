@@ -1,8 +1,11 @@
 package app.paralino.android.ui.settings.profile
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -18,6 +21,7 @@ fun ChangeEmailScreen(
     appState: MainAppState,
     vm: ChangeEmailViewModel = getViewModel(),
 ) {
+    val canNavigateBack by vm.canNavigateBack.collectAsState(initial = true)
     Scaffold(
         topBar = {
             DefaultToolbar(
@@ -29,8 +33,18 @@ fun ChangeEmailScreen(
         ChangeEmailScreenCore(
             appState = appState,
             vm = vm,
-            onNavigateBack = { appState.navController.popBackStack() }
+            onNavigateBack = {
+                if (canNavigateBack) {
+                    appState.navController.popBackStack()
+                }
+            }
         )
+    }
+
+    BackHandler(
+        enabled = !canNavigateBack
+    ) {
+        // block
     }
 }
 
