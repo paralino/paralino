@@ -1,5 +1,6 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -14,11 +15,7 @@ data class UserMeRaw constructor(
     val data: UserMeDataRaw? = null,
 ) {
     val passwordUpdateTime: Instant? get() {
-        return try {
-            passwordUpdate?.let { Instant.parse(it) }
-        } catch (e: Exception) {
-            null
-        }
+        return passwordUpdate?.isoWithOffsetToInstant()
     }
 }
 

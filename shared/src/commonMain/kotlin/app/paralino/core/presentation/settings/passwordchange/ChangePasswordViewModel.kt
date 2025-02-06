@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.settings.passwordchange
 
+import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
 import app.paralino.core.domain.user.ChangeCredentialsStep
 import app.paralino.core.domain.user.ChangeCredentialsUseCase
@@ -44,15 +45,7 @@ class ChangePasswordViewModel(
 
     private val _uiState = MutableStateFlow(
         ChangePasswordScreenState(
-            lastPasswordUpdateTime = userRepo.cachedUser?.passwordUpdate?.let {
-                valueFormatter.formatSimpleDateTime(
-                    timeUTC = it.toLocalDateTime(TimeZone.currentSystemDefault()),
-                    optionalYear = false,
-                    showTodayInfo = true
-                )?.let { time ->
-                    MR.strings.group_members_last_status_update.localizedString() + " $time"
-                }?.annotatedBold()
-            }
+            lastPasswordUpdateTime = getLastPasswordUpdateDate()
         )
     )
     val uiState: StateFlow<ChangePasswordScreenState> = _uiState
@@ -66,8 +59,11 @@ class ChangePasswordViewModel(
     init {
         coroutineScope.launch(Dispatchers.IO) {
             try {
-                withTimeout(10.seconds) {
+                withTimeout(5.seconds) {
                     userRepo.refreshUserIfAvailable()
+                }
+                _uiState.update {
+                    it.copy(lastPasswordUpdateTime = getLastPasswordUpdateDate())
                 }
             } catch (e: Exception) {
                 showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
@@ -155,5 +151,17 @@ class ChangePasswordViewModel(
     fun onConfirmPasswordChange(password: String) {
         if (_uiState.value.actionLoading == true) return
         _uiState.update { it.copy(confirmPassword = password, hasConfirmPasswordError = false) }
+    }
+
+    private fun getLastPasswordUpdateDate(): AnnotatedString? {
+        return userRepo.cachedUser?.passwordUpdate?.let {
+            valueFormatter.formatSimpleDateTime(
+                timeUTC = it.toLocalDateTime(TimeZone.UTC),
+                optionalYear = false,
+                showTodayInfo = true
+            )?.let { time ->
+                MR.strings.group_members_last_status_update.localizedString() + " $time"
+            }?.annotatedBold()
+        }
     }
 }
