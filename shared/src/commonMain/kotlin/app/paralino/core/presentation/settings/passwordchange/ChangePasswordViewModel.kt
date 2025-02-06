@@ -11,12 +11,15 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.InvalidRequestException
+import app.paralino.core.utils.exceptions.RemoteConnectionException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +28,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.seconds
 
 class ChangePasswordViewModel(
     private val changePassword: ChangeCredentialsUseCase,
@@ -51,6 +57,18 @@ class ChangePasswordViewModel(
 
     private val _eventChannel = Channel<ChangePasswordScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
+
+    init {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                withTimeout(10.seconds) {
+                    userRepo.refreshUserIfAvailable()
+                }
+            } catch (e: Exception) {
+                showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
+            }
+        }
+    }
 
     fun proceed() {
         if (_uiState.value.actionLoading == true || changePassword.isProcessingAny()) return

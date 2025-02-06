@@ -9,11 +9,14 @@ import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.ConflictException
+import app.paralino.core.utils.exceptions.RemoteConnectionException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,21 +25,36 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration.Companion.seconds
 
 class ChangeEmailViewModel(
-    private val userRepository: UserRepository,
+    private val userRepo: UserRepository,
     private val changeCredentials: ChangeCredentialsUseCase,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
         ChangeEmailScreenState(
-            currentEmail = userRepository.cachedUser?.email ?: ""
+            currentEmail = userRepo.cachedUser?.email ?: ""
         )
     )
     val uiState: StateFlow<ChangeEmailScreenState> = _uiState
 
     private val _eventChannel = Channel<ChangeEmailScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
+
+    init {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                withTimeout(10.seconds) {
+                    userRepo.refreshUserIfAvailable()
+                }
+            } catch (e: Exception) {
+                showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
+            }
+        }
+    }
 
     fun proceed() {
         if (_uiState.value.actionLoading == true || changeCredentials.isProcessingAny()) return

@@ -8,14 +8,18 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.ConflictException
 import app.paralino.core.utils.exceptions.DecryptionException
 import app.paralino.core.utils.exceptions.InvalidRequestException
+import app.paralino.core.utils.exceptions.RemoteConnectionException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -26,10 +30,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration.Companion.seconds
 
 class ConvertAccountViewModel(
     private val convertAccount: ConvertAccountUseCase,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val userRepo: UserRepository
 ): CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ConvertAccountScreenState())
@@ -40,6 +48,18 @@ class ConvertAccountViewModel(
 
     private val _eventChannel = Channel<ConvertAccountScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
+
+    init {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                withTimeout(10.seconds) {
+                    userRepo.refreshUserIfAvailable()
+                }
+            } catch (e: Exception) {
+                showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
+            }
+        }
+    }
 
     fun proceed() {
         if (_uiState.value.actionLoading == true || convertAccount.isProcessingAny()) return
