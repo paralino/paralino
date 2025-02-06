@@ -189,8 +189,8 @@ object KoinIOS {
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
             }
             factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            factory { ChangeEmailViewModel(get(), get()) }
-            factory { ChangePasswordViewModel(get(), get(), get()) }
+            factory { ChangeEmailViewModel(get(), get(), get()) }
+            factory { ChangePasswordViewModel(get(), get(), get(), get()) }
             factory { ConvertAccountViewModel(get(), get(), get()) }
             factory { EditProfileViewModel(get(), get()) }
             factory { RecoverKeysViewModel(get(), get(), get(), appPrefs) }

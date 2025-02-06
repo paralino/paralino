@@ -7,6 +7,7 @@ import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
@@ -40,7 +41,8 @@ import kotlin.time.Duration.Companion.seconds
 class ChangePasswordViewModel(
     private val changePassword: ChangeCredentialsUseCase,
     private val valueFormatter: IValueFormatter,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val scopeProvider: ICoroutineScopeProvider
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -134,7 +136,7 @@ class ChangePasswordViewModel(
                         }
                     }
                 }
-                .launchIn(coroutineScope)
+                .launchIn(scopeProvider.userSessionIOScope)
         }
     }
 

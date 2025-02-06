@@ -6,6 +6,7 @@ import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.ConflictException
@@ -34,6 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 class ChangeEmailViewModel(
     private val userRepo: UserRepository,
     private val changeCredentials: ChangeCredentialsUseCase,
+    private val scopeProvider: ICoroutineScopeProvider
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -115,7 +117,7 @@ class ChangeEmailViewModel(
                         }
                     }
                 }
-                .launchIn(coroutineScope)
+                .launchIn(scopeProvider.userSessionIOScope)
         }
     }
 
