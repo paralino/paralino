@@ -312,6 +312,7 @@
     <string name="login_step_error_user_setup_signUp">Nemoguće postaviti korisničke podatke, pokušajte se prijaviti s trenutačnim podacima za prijavu!</string>
     <string name="login_step_error_logIn">Pogreška prilikom prijave</string>
     <string name="login_step_error_recoverGuest">Nemoguće spasiti gostujući račun</string>
+    <string name="login_step_error_blockedAccount">**Vaš račun je trenutno blokiran.**\n\nPokušajte ponovno kasnije ili kontaktirajte podršku kako biste riješili problem.</string>
     <string name="login_step_error_encryption_logIn">Vaši ključevi za enkripciju čine se oštećeni ili nepostojeći, pokušajte ponovno ili resetirajte lozinku (To će izbrisati sve Vaše prethodne podatke)</string>
     <string name="form_invalid_email_description">Vaša e-mail adresa nije valjana.</string>
     <string name="form_invalid_credentials_description">Molimo provjerite svoje podatke i pokušajte ponovno.</string>

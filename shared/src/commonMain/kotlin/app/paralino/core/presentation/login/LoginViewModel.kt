@@ -315,10 +315,11 @@ class LoginViewModel constructor(
         _uiState.update { it.copy(stepInfo = stepInfo, actionLoading = false) }
 
         // extra error handling
-        val errorType = when (error.cause) {
+        val errorType = when (val cause = error.cause) {
             is ConflictException -> SignUpErrorType.ACCOUNT_CONFLICT
             is UnauthorizedException -> {
-                if (onRecoverGuest) SignUpErrorType.CREDENTIALS_GUEST
+                if (cause.isUserBlocked) SignUpErrorType.USER_BLOCKED
+                else if (onRecoverGuest) SignUpErrorType.CREDENTIALS_GUEST
                 else SignUpErrorType.CREDENTIALS
             }
 
@@ -544,6 +545,7 @@ class LoginViewModel constructor(
             SignUpErrorType.ACCOUNT_CONFLICT -> MR.strings.form_invalid_email_conflict_description.localizedString()
             SignUpErrorType.CREDENTIALS -> MR.strings.form_invalid_credentials_description.localizedString()
             SignUpErrorType.CREDENTIALS_GUEST -> MR.strings.login_step_error_recoverGuest.localizedString()
+            SignUpErrorType.USER_BLOCKED -> MR.strings.login_step_error_blockedAccount.localizedString()
             SignUpErrorType.LOGIN_CRYPTO -> MR.strings.login_step_error_encryption_logIn.localizedString()
             SignUpErrorType.SIGNUP_CRYPTO -> MR.strings.login_step_error_encryption_signUp.localizedString()
             SignUpErrorType.SIGNUP_DATA -> MR.strings.login_step_error_user_setup_signUp.localizedString()

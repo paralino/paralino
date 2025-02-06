@@ -60,6 +60,7 @@ sealed class SignUpErrorType {
     object ACCOUNT_CONFLICT : SignUpErrorType()
     object CREDENTIALS : SignUpErrorType()
     object CREDENTIALS_GUEST : SignUpErrorType()
+    object USER_BLOCKED : SignUpErrorType()
     object LOGIN_CRYPTO : SignUpErrorType()
     object SIGNUP_CRYPTO : SignUpErrorType()
     object SIGNUP_DATA : SignUpErrorType()

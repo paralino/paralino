@@ -315,6 +315,7 @@
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
     <string name="login_step_error_recoverGuest">Unable to recover guest account</string>
+    <string name="login_step_error_blockedAccount">**Your account is currently blocked.**\n\nPlease try again later or contact support to resolve the issue.</string>
     <string name="login_step_error_encryption_logIn">Your encryption keys seems to be corrupted or non existent, please try again or reset your password (This will delete all your previous data)</string>
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>

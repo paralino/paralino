@@ -314,6 +314,7 @@
     <string name="login_step_error_user_setup_signUp">Benutzerdaten können nicht eingerichtet werden, versuchen Sie sich mit den aktuellen Anmeldedaten anzumelden!</string>
     <string name="login_step_error_logIn">Fehler bei der Anmeldung</string>
     <string name="login_step_error_recoverGuest">Gastkonto konnte nicht wiederhergestellt werden</string>
+    <string name="login_step_error_blockedAccount">**Ihr Konto ist derzeit gesperrt.**\n\nBitte versuchen Sie es später erneut oder kontaktieren Sie den Support, um das Problem zu lösen.</string>
     <string name="login_step_error_encryption_logIn">Ihre Verschlüsselungsschlüssel scheinen beschädigt oder nicht vorhanden zu sein, bitte versuchen Sie es erneut oder setzen Sie Ihr Passwort zurück (Dadurch werden alle Ihre vorherigen Daten gelöscht)</string>
     <string name="form_invalid_email_description">Ihre E-Mail-Adresse ist ungültig.</string>
     <string name="form_invalid_credentials_description">Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.</string>
