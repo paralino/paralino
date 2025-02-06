@@ -14,9 +14,11 @@ import app.paralino.core.models.raw.SchemeVersion
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.OldMasterKeys
 import app.paralino.core.models.user.SymmetricCryptoKeyData
+import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.DecryptionException
+import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.exceptions.MissingUserKeyException
 import app.paralino.core.utils.exceptions.UnauthorizedException
@@ -38,6 +40,7 @@ class ChangeCredentialsUseCase(
     private val cryptoAccountOperationV2: CryptoAccountOperationV2,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
+    private val connectionStatus: IConnectionStatusProvider,
     private val appPrefs: AppPrefs
 ) : LimitedExecution() {
 
@@ -298,6 +301,12 @@ class ChangeCredentialsUseCase(
                 checkKeysAreValid(newKey = newKey, backedUpKey = backedUpKey)
 
                 emit(ChangeCredentialsStep.CHANGING_CREDENTIALS)
+
+                // ensure proper network connection before change action
+                val networkStatus = connectionStatus.initAndGetStatus(forceCheck = true)
+                if (!networkStatus.isOnline) {
+                    throw InternalConnectionException(status = networkStatus)
+                }
 
                 // action
                 action?.invoke()
