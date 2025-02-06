@@ -319,6 +319,14 @@ class ChangeCredentialsUseCase(
                 emit(ChangeCredentialsStep.KEY_APPLY)
 
                 // if password is changed successfully we can save the new key and delete old ones
+
+                // save key right away
+                userKeyRepo.saveUserKey(
+                    key = backedUpKey,
+                    decryptedMainKey = newUserKeys.userPersonalKey
+                )
+
+                // apply to remote
                 val newRemoteKey = try {
                     userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
                 } catch (e: Exception) {
@@ -347,7 +355,7 @@ class ChangeCredentialsUseCase(
                 }
 
                 // at this point both login password and encryption key are updated safely
-                // we can save the key locally
+                // we can save the key locally again
                 userKeyRepo.saveUserKey(
                     key = newRemoteKey,
                     decryptedMainKey = newUserKeys.userPersonalKey
