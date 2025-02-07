@@ -127,7 +127,7 @@ fun MapHomeSheetContent(
         Divider(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp, bottom = 12.dp)
+                .padding(top = 8.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(percent = 50))
                 .width(30.dp),
             thickness = 6.dp
@@ -193,7 +193,7 @@ fun MapHomeSheetContent(
             contentPadding = PaddingValues(
                 start = 20.dp,
                 end = 20.dp,
-                top = 8.dp,
+                top = 0.dp,
                 bottom = swipeableState.contentBottomPadding
             )
         ) {
