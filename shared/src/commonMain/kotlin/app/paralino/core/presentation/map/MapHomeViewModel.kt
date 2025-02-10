@@ -140,12 +140,15 @@ class MapHomeViewModel constructor(
         ) { appLifecycleState, uiFocused ->
             keepUiRefreshPing()
             if (appLifecycleState.comingFromBackground && uiFocused) {
-                delay(2000)
                 if (groupIdData.value.isNotBlank()) {
+                    delay(2000)
                     logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
                     coroutineScope.launch(Dispatchers.IO) {
                         groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
                     }
+                } else {
+                    logg.v("home_screen", "App in foreground but no selected group - try to select default group")
+                    switchGroup(groupId = "")
                 }
             }
         }
