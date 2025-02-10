@@ -3,20 +3,24 @@ package app.paralino.core.repo.places
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.logg
+import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PlaceActivityUploadEngine(
     private val remote: PlacesRemoteSource,
     private val local: PlacesLocalDataSource,
+    private val groupLocal: UserGroupLocalDataSource,
+    private val remoteConfig: RemoteConfigRepository,
     private val database: MainDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider
 ) : BaseRepository() {
@@ -35,7 +39,11 @@ class PlaceActivityUploadEngine(
                 timeMillis = timeMillis
             )
             logg.tag(executionKey)
-                .i("Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${place.id}) at ${Instant.fromEpochMilliseconds(timeMillis)}")
+                .i(
+                    "Sent place activity ${if (isEnter) "enter" else "exit"} event for place (${place.id}) at ${
+                        Instant.fromEpochMilliseconds(timeMillis)
+                    }"
+                )
 
             // sync pending events, but on different thread so we do not block current flow
             syncPendingEventsInBackground()
@@ -125,6 +133,17 @@ class PlaceActivityUploadEngine(
         isEnter: Boolean,
         timeMillis: Long
     ) {
+        try {
+            val group = groupLocal.allGroupsState.value.data?.firstOrNull {
+                it.group.id == place.groupId
+            }
+            if (group?.arePlacesOverLimits(config = remoteConfig.getConfigOnce()) == true) {
+                logg.tag(executionKey).v("Group places are over limit, skip alert")
+                return
+            }
+        } catch (e: Exception) {
+        }
+
         if (isEnter) {
             remote.notifyPlaceEnter(
                 place = place,

@@ -244,7 +244,7 @@ val coreModule = module {
     factory { UserMemberIdUseCase(get(), get(), get(), get(), appPrefs) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get()) }
-    factory { PlaceActivityUploadEngine(get(), get(), get(), get()) }
+    factory { PlaceActivityUploadEngine(get(), get(), get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
 
