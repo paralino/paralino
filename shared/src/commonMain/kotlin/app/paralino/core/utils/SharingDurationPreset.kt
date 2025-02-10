@@ -33,8 +33,7 @@ object SharingDurationPreset {
         15 * minute,
         hour,
         4 * hour,
-        8 * hour,
-        day
+        8 * hour
     )
 
     fun presets(isWithLimits: Boolean): List<Long> {
