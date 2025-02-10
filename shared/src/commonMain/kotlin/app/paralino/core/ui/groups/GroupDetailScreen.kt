@@ -125,7 +125,7 @@ fun GroupDetailScreenCore(
                     openMemberAdd()
                 }
 
-                is GroupDetailScreenEvent.GroupMembersLimitReached -> {
+                is GroupDetailScreenEvent.OpenPaywall -> {
                     openPaywall()
                 }
 
@@ -256,7 +256,7 @@ fun GroupDetailScreenCore(
                     if (state.data.arePlacesOverLimit == true) {
                         this.item(key = "over_limit_notice") {
                             NoticeInfoChip(
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                                 text = stringResource(MR.strings.plan_limit_overLimit_places_banner_title),
                                 icon = CoreAppIcons.Warning.asPainterResource(),
                                 backgroundColor = MaterialTheme.colors.error,

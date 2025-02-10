@@ -452,13 +452,30 @@ class MapHomeViewModel constructor(
                 ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
                 ?: emptyList()
 
-            val newGroupId = allGroups.firstOrNull { it.id == groupId }?.id
-                ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }?.id
-                ?: allGroups.firstOrNull()?.id
-                ?: ""
+            val newGroup = allGroups.firstOrNull { it.id == groupId }
+                ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }
+                ?: allGroups.firstOrNull()
+
+            val newGroupId = newGroup?.id ?: ""
 
             appPrefs.selectedGroupId = newGroupId
             groupIdData.update { newGroupId }
+
+            if (newGroup != null && newGroup.isGroupOverLimits(remoteConfig.getConfigOnce())) {
+                if (newGroup.group.isCurrentUserOwner) {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                    delay(1000)
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                } else {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                }
+            }
         }
     }
 

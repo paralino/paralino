@@ -38,6 +38,7 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -212,6 +213,9 @@ class GroupDetailViewModel(
                         text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
                         duration = SnackbarDuration.Forever
                     )
+
+                    delay(1000)
+                    _eventChannel.trySend(GroupDetailScreenEvent.OpenPaywall)
                 } else {
                     showSnackbar(
                         text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
@@ -307,7 +311,7 @@ class GroupDetailViewModel(
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
             if (state.members.size >= state.membersLimit)
-                _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.membersLimit))
+                _eventChannel.send(GroupDetailScreenEvent.OpenPaywall)
             else
                 _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
         }
