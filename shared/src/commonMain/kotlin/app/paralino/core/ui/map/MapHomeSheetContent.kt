@@ -2,6 +2,7 @@ package app.paralino.core.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -127,7 +128,7 @@ fun MapHomeSheetContent(
         Divider(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp, bottom = 8.dp)
+                .padding(top = 8.dp, bottom = animateDpAsState(4.plus((1f - contentAlpha) * 8).dp).value)
                 .clip(RoundedCornerShape(percent = 50))
                 .width(30.dp),
             thickness = 6.dp
@@ -135,7 +136,7 @@ fun MapHomeSheetContent(
 
         if (readyState != null) {
             MapGroupNameAndMemberInfo(
-                modifier = Modifier.padding(horizontal = 20.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 20.dp),
                 groupName = readyState.groupName,
                 groupImage = readyState.groupImage,
                 userCount = readyState.userCount,
@@ -154,7 +155,7 @@ fun MapHomeSheetContent(
                 }
             )
 
-            Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.size(8.dp))
 
             Row(
                 modifier = Modifier
@@ -201,7 +202,7 @@ fun MapHomeSheetContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(12.dp)
+                        .height(10.dp)
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(
