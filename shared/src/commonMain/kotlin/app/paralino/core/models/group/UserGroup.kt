@@ -125,8 +125,12 @@ data class UserGroupWithMetadata constructor(
     val nameOrNull: String? get() = group.nameOrNull
     val image: ImageModel get() = group.image
 
+    fun arePlacesOverLimits(config: ConfigData): Boolean {
+        return placesCount > group.placesLimit(config)
+    }
+
     fun isGroupOverLimits(config: ConfigData): Boolean {
-        return memberCount > group.membersLimit(config) || placesCount > group.placesLimit(config) || devicesCount > group.devicesLimit(config)
+        return memberCount > group.membersLimit(config) || arePlacesOverLimits(config) || devicesCount > group.devicesLimit(config)
     }
 }
 

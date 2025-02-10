@@ -199,9 +199,9 @@ class SharingStartViewModel(
             onlyShowGroups = true,
             userPlan = null,
             createdGroups = allGroups.filter { it.group.isCurrentUserOwner }
-                .map { GroupItemState(it) },
+                .map { GroupItemState(it, remoteConfigRepo.getConfigOnce()) },
             joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }
-                .map { GroupItemState(it) },
+                .map { GroupItemState(it, remoteConfigRepo.getConfigOnce()) },
         )
     }
 
@@ -222,7 +222,7 @@ class SharingStartViewModel(
         val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
         _uiState.update {
             it.copy(
-                groupState = Payload.Success(group?.let { GroupItemState(it) }),
+                groupState = Payload.Success(group?.let { GroupItemState(it, remoteConfigRepo.getConfigOnce()) }),
                 devicesLimit = group?.group?.devicesLimit(remoteConfigRepo.getConfigOnce()) ?: 0,
                 showNotifyOthers = isGroupPremium || group?.group?.isCurrentUserOwner == true,
                 isPremiumSectionVisible = !isGroupPremium && group?.group?.isCurrentUserOwner == true,

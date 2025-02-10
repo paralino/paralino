@@ -107,6 +107,7 @@ fun GroupListItem(
             }
 
             val status = when (data.uiType) {
+                GroupItemState.GroupUiType.OVER_LIMITS -> GroupStatusTagType.OVER_LIMITS
                 GroupItemState.GroupUiType.UNVERIFIED -> GroupStatusTagType.UNVERIFIED
                 GroupItemState.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
                 GroupItemState.GroupUiType.INACTIVE -> null

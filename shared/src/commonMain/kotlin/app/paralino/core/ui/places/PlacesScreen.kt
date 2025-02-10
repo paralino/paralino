@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -45,6 +46,7 @@ import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
@@ -239,6 +241,19 @@ private fun PlacesScreen(
                         )
                     }
 
+                    if (state.isOverLimit) {
+                        this.item(key = "over_limit_notice") {
+                            NoticeInfoChip(
+                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                                text = stringResource(MR.strings.plan_limit_overLimit_places_banner_title),
+                                icon = CoreAppIcons.Warning.asPainterResource(),
+                                backgroundColor = MaterialTheme.colors.error,
+                                textColor = MaterialTheme.colors.onError,
+                                iconTint = MaterialTheme.colors.onError
+                            )
+                        }
+                    }
+
                     if (state.error != null) {
                         this.item(key = state.error.toString()) {
                             ConditionErrorItem(
@@ -254,6 +269,7 @@ private fun PlacesScreen(
                         // map
                         Surface(
                             modifier = Modifier
+                                .zIndex(10f)
                                 .fillMaxWidth()
                                 .height(200.dp)
                                 .padding(top = 8.dp),
@@ -272,22 +288,24 @@ private fun PlacesScreen(
                                 mapContent(state)
                             }
                         }
-                        Spacer(modifier = Modifier.size(40.dp))
+                        Spacer(modifier = Modifier.size(30.dp))
                     }
 
                     if (state.shouldShowPlanBanner) {
                         this.item(key = "plan_upgrade_banner") {
                             PremiumPlanBannerSmall(
+                                modifier = Modifier.zIndex(5f),
                                 description = stringResource(MR.strings.plans_banner_inline_places),
                                 onClick = onPlanBannerClick
                             )
-                            Spacer(modifier = Modifier.size(40.dp))
+                            Spacer(modifier = Modifier.size(30.dp))
                         }
                     }
 
                     this.stickyHeader(key = "count_header") {
                         Row(
                             modifier = Modifier
+                                .zIndex(0f)
                                 .fillParentMaxWidth()
                                 .background(MaterialTheme.colors.background)
                                 .padding(vertical = 8.dp),

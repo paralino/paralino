@@ -40,6 +40,7 @@ enum class GroupStatusTagType {
     IDLE_NO_LOCATION,
     IDLE_NOT_ACCURATE,
     TOO_MANY_REQUESTS,
+    OVER_LIMITS,
     MISSING_PERMISSION;
 }
 
@@ -102,6 +103,7 @@ fun GroupStatusTag(
 
             GroupStatusTagType.UNVERIFIED,
             GroupStatusTagType.GPS_OFF,
+            GroupStatusTagType.OVER_LIMITS,
             GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.error
 
             GroupStatusTagType.TOO_MANY_REQUESTS,
@@ -124,6 +126,7 @@ fun GroupStatusTag(
             GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> ""
             GroupStatusTagType.IDLE_NOT_ACCURATE -> ""
 
+            GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title)
             GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
             GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
             GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_not_sharing)
@@ -157,7 +160,9 @@ fun GroupStatusTag(
             GroupStatusTagType.MISSING_PERMISSION,
             GroupStatusTagType.TOO_MANY_REQUESTS -> CoreAppIcons.LocationOff.asPainterResource()
 
+            GroupStatusTagType.OVER_LIMITS,
             GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
+
             GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()
 
             GroupStatusTagType.INACTIVE,

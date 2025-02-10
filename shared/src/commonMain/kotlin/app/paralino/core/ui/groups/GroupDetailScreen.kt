@@ -60,6 +60,7 @@ import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
@@ -101,7 +102,7 @@ fun GroupDetailScreenCore(
         return
     }
 
-    val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
+    val uiState by vm.uiState.collectAsState()
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     val onShowDialog: (MainAlertDialog?) -> Unit = { showDialog = it }
 
@@ -252,6 +253,18 @@ fun GroupDetailScreenCore(
                         bottom = contentPadding.calculateBottomPadding() + 100.dp
                     )
                 ) {
+                    if (state.data.arePlacesOverLimit == true) {
+                        this.item(key = "over_limit_notice") {
+                            NoticeInfoChip(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                text = stringResource(MR.strings.plan_limit_overLimit_places_banner_title),
+                                icon = CoreAppIcons.Warning.asPainterResource(),
+                                backgroundColor = MaterialTheme.colors.error,
+                                textColor = MaterialTheme.colors.onError,
+                                iconTint = MaterialTheme.colors.onError
+                            )
+                        }
+                    }
 
                     this.items(items = state.data.errors, key = { "error_$it" }) {
                         ConditionErrorItem(data = it) {

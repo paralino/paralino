@@ -26,6 +26,7 @@ import app.paralino.core.MR
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -53,18 +54,18 @@ fun ConditionErrorItem(
 fun ConditionErrorItem(
     modifier: Modifier = Modifier,
     backgroundColor: Color = AppColors.errorBackground,
-    contentColor: Color = contentColorFor(backgroundColor = backgroundColor),
+    contentColor: Color = AppColors.redMain,
     icon: Painter?,
     text: String,
     endAction: String?,
-    endActionLoading: Boolean,
-    onClick: () -> Unit,
+    endActionLoading: Boolean = false,
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp)
-            .clickable { onClick() }
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
             .padding(horizontal = 12.dp, vertical = 8.dp),
@@ -86,7 +87,7 @@ fun ConditionErrorItem(
         }
 
         Text(
-            text = text,
+            text = text.annotatedBold(),
             color = contentColor,
             modifier = Modifier
                 .padding(horizontal = 8.dp)

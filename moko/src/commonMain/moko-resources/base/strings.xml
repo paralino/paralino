@@ -527,6 +527,7 @@
     <string name="plan_limit_overLimit_groupOwner_banner_title">**Your group has exceeded the plan limits!**\n\nLocation sharing is limited and may not function correctly.\n\nPlease **remove some resources** or consider upgrading your plan to restore full functionality.</string>
     <string name="plan_limit_overLimit_groupMember_banner_title">**This group has exceeded the plan limits!**\n\nLocation sharing is limited and may not function correctly.\n\nPlease **contact the group administrator** to resolve the issue and continue location sharing.</string>
     <string name="plan_limit_overLimit_user_message">Location sharing in some groups will stop because they have exceeded the plan limits.\n\nAdjust your groups or upgrade your plan to resume location sharing!</string>
+    <string name="plan_limit_overLimit_places_banner_title">**Place alerts are disabled!**\nThis group has exceeded the allowed number of places.</string>
     <string name="app_version_alert_title">New app update</string>
     <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>
     <string name="app_version_alert_title_mandatory">Please update</string>

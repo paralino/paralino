@@ -627,16 +627,18 @@ class MapHomeViewModel constructor(
         return allGroups.value.data?.map { group ->
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
+                group.isGroupOverLimits(remoteConfig.getCachedConfigOnce()) -> GroupItemState.GroupUiType.OVER_LIMITS
                 sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
             val isSelected = group.id == groupIdData.value
             GroupItemState(
-                group,
-                uiType,
+                group = group,
+                config = remoteConfig.getCachedConfigOnce(),
+                uiType = uiType,
                 canEdit = true,
                 isSelected = isSelected,
-                isLarge = isSelected
+                isLarge = isSelected,
             )
         } ?: emptyList()
     }
