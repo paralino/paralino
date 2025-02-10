@@ -37,8 +37,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
@@ -298,16 +300,18 @@ fun GroupDetailScreenCore(
                     if (state.data.shouldShowPlanBanner) {
                         this.item(key = "plan_upgrade_banner") {
                             PremiumPlanBannerSmall(
+                                modifier = Modifier.zIndex(1f),
                                 description = stringResource(MR.strings.plans_banner_inline_group_detail),
                                 onClick = openPaywall
                             )
-                            Spacer(modifier = Modifier.size(40.dp))
+                            Spacer(modifier = Modifier.size(30.dp))
                         }
                     }
 
                     this.stickyHeader(key = "member_list_header") {
                         Row(
                             modifier = Modifier
+                                .zIndex(0f)
                                 .fillParentMaxWidth()
                                 .background(MaterialTheme.colors.background)
                                 .padding(vertical = 8.dp),
@@ -459,7 +463,7 @@ fun GroupDetailsHeader(
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = groupName,
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -548,7 +552,7 @@ fun GroupDetailsHeader(
             )
         }
 
-        Spacer(modifier = Modifier.size(40.dp))
+        Spacer(modifier = Modifier.size(20.dp))
     }
 }
 
