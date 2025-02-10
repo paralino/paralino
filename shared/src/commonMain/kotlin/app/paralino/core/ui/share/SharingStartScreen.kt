@@ -467,7 +467,6 @@ fun SharingStartScreenCore(
                             icon = CoreAppIcons.NotificationsActive.asPainterResource(),
                             title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
                             description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
-                            elevation = if (!state.isPremiumSectionVisible) 8.dp else 0.dp,
                             state = rememberSeekbarState(
                                 key = state,
                                 state = LargeSeekbarSwitchState.SeekbarSwitchState(

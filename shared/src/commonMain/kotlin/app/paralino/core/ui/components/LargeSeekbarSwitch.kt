@@ -2,6 +2,7 @@ package app.paralino.core.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -75,7 +76,7 @@ fun LargeSeekbarSwitch(
     description: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
-    elevation: Dp = 16.dp,
+    elevation: Dp = animateDpAsState(if (state.switchState?.checkState == true) 16.dp else 0.dp).value,
     size: LargeSwitchSize = LargeSwitchSize(),
     onLongClick: (() -> Unit)? = null,
     onProgressChange: ((Int) -> Unit)? = null,
