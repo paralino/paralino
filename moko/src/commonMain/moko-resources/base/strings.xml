@@ -317,6 +317,7 @@
     <string name="login_step_error_user_setup">Unable to prepare user data</string>
     <string name="login_info_password_reset_done">Check your email for password reset instructions</string>
     <string name="login_step_error_user_setup_signUp">Unable to setup user data, try logging in with current credentials!</string>
+    <string name="login_step_error_signUp_loginFailed">Your account is created, but failed to initialize!\n\nPlease sign in again to continue.</string>
     <string name="login_step_error_logIn">Error while logging you in</string>
     <string name="login_step_error_recoverGuest">Unable to recover guest account</string>
     <string name="login_step_error_blockedAccount">**Your account is currently blocked.**\n\nPlease try again later or contact support to resolve the issue.</string>
@@ -508,7 +509,7 @@
     <string name="recover_account_caption_recover_not_possible">If you can not recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
     <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
     <string name="reset_password_screen_title">Reset password</string>
-    <string name="reset_password_success_message">Please login again!</string>
+    <string name="reset_password_success_message">Please sign in again!</string>
     <string name="reset_password_caption_reset">**Resetting your password will delete all your data!**</string>
     <string name="reset_password_reset_button">Reset password</string>
     <string name="reset_password_error_token_message">Your password reset link expired, please request a new one.</string>

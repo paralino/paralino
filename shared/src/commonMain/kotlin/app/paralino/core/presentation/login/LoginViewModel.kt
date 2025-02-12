@@ -323,7 +323,29 @@ class LoginViewModel constructor(
             else -> null
         }
 
-        _uiState.update { it.copy(stepInfo = stepInfo, actionLoading = false) }
+        if (uiType == LoginScreenUiType.SIGNUP && step == SignUpStep.LOG_USER_IN) {
+
+        } else {
+
+        }
+
+        val alertDialog = when (step) {
+            SignUpStep.LOG_USER_IN -> {
+                when (uiType) {
+                    LoginScreenUiType.SIGNUP -> {
+                        if (appPrefs.hasGuestAccount()) {
+                            MainAlertDialog.GuestAccountRecover
+                        } else {
+                            MainAlertDialog.CreateAccountLoginFailed
+                        }
+                    }
+                    else -> _uiState.value.alertDialog
+                }
+            }
+            else -> _uiState.value.alertDialog
+        }
+
+        _uiState.update { it.copy(stepInfo = stepInfo, actionLoading = false, alertDialog = alertDialog) }
 
         // extra error handling
         val errorType = when (val cause = error.cause) {
@@ -504,6 +526,11 @@ class LoginViewModel constructor(
 
             is LoginScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
+                    is MainAlertDialog.CreateAccountLoginFailed -> {
+                        hideDialog()
+                        setScreenUiType(LoginScreenUiType.LOGIN)
+                    }
+
                     is MainAlertDialog.ComingSoon -> {
                         hideDialog()
                     }
@@ -546,9 +573,13 @@ class LoginViewModel constructor(
     }
 
     private fun hideDialog() {
-        if (!appPrefs.hasGuestAccount()) {
-            _uiState.update { it.copy(alertDialog = null) }
+        if (appPrefs.hasGuestAccount()) {
+            if (_uiState.value.alertDialog is MainAlertDialog.GuestAccountRecover || _uiState.value.alertDialog is MainAlertDialog.GuestAccountDismissConfirmation) {
+                return
+            }
         }
+
+        _uiState.update { it.copy(alertDialog = null) }
     }
 
     private fun getLoginErrorText(error: SignUpErrorType): String {

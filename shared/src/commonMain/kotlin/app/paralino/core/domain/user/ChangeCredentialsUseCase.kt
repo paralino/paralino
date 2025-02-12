@@ -309,7 +309,7 @@ class ChangeCredentialsUseCase(
                 val backedUpKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = false)
 
                 // check once more everything is properly uploaded
-                checkKeysAreValid(newKey = newKey, backedUpKey = backedUpKey)
+                newKey.checkKeysAreValid(backedUpKey = backedUpKey)
 
                 emit(ChangeCredentialsStep.CHANGING_CREDENTIALS)
 
@@ -346,7 +346,7 @@ class ChangeCredentialsUseCase(
                         try {
                             userKeysRemoteSource.getAllMyKeys().firstOrNull { newKey ->
                                 try {
-                                    checkKeysAreValid(newKey = newKey, backedUpKey = backedUpKey)
+                                    newKey.checkKeysAreValid(backedUpKey = backedUpKey)
                                     true
                                 } catch (e: Exception) {
                                     false
@@ -374,22 +374,6 @@ class ChangeCredentialsUseCase(
 
             emit(ChangeCredentialsStep.DONE)
         }.flowOn(Dispatchers.IO)
-    }
-
-    private fun checkKeysAreValid(
-        newKey: UserCryptoKeyRaw,
-        backedUpKey: UserCryptoKeyRaw
-    ) {
-        check(newKey.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
-        check(newKey.encryptedPrivateKey == backedUpKey.encryptedPrivateKey)
-        check(newKey.encryptedPublicKey == backedUpKey.encryptedPublicKey)
-        check(newKey.publicKey == backedUpKey.publicKey)
-        check(newKey.oldMasterKeys == backedUpKey.oldMasterKeys)
-        check(newKey.loginSalt == backedUpKey.loginSalt)
-        check(newKey.loginAlg == backedUpKey.loginAlg)
-        check(newKey.dataAlg == backedUpKey.dataAlg)
-        check(newKey.dataSalt == backedUpKey.dataSalt)
-        check(newKey.schemeVersion == backedUpKey.schemeVersion)
     }
 }
 

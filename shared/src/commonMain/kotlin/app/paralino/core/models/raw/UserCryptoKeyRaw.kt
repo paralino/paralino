@@ -28,6 +28,21 @@ data class UserCryptoKeyRaw constructor(
         else -> SchemeVersion.UNKNOWN(key = schemeVersion)
     }
 
+    fun checkKeysAreValid(
+        backedUpKey: UserCryptoKeyRaw
+    ) {
+        check(this.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
+        check(this.encryptedPrivateKey == backedUpKey.encryptedPrivateKey)
+        check(this.encryptedPublicKey == backedUpKey.encryptedPublicKey)
+        check(this.publicKey == backedUpKey.publicKey)
+        check(this.oldMasterKeys == backedUpKey.oldMasterKeys)
+        check(this.loginSalt == backedUpKey.loginSalt)
+        check(this.loginAlg == backedUpKey.loginAlg)
+        check(this.dataAlg == backedUpKey.dataAlg)
+        check(this.dataSalt == backedUpKey.dataSalt)
+        check(this.schemeVersion == backedUpKey.schemeVersion)
+    }
+
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun from(map: Map<String, Any>): UserCryptoKeyRaw {

@@ -314,6 +314,7 @@
     <string name="login_step_error_user_setup">Nemoguće pripremiti korisničke podatke</string>
     <string name="login_info_password_reset_done">Provjerite Vaš e-mail za upute o resetiranju lozinke</string>
     <string name="login_step_error_user_setup_signUp">Nemoguće postaviti korisničke podatke, pokušajte se prijaviti s trenutačnim podacima za prijavu!</string>
+    <string name="login_step_error_signUp_loginFailed">Vaš račun je kreiran, ali inicijalizacija nije uspjela!\n\nMolimo prijavite se ponovno za nastavak.</string>
     <string name="login_step_error_logIn">Pogreška prilikom prijave</string>
     <string name="login_step_error_recoverGuest">Nemoguće spasiti gostujući račun</string>
     <string name="login_step_error_blockedAccount">**Vaš račun je trenutno blokiran.**\n\nPokušajte ponovno kasnije ili kontaktirajte podršku kako biste riješili problem.</string>
