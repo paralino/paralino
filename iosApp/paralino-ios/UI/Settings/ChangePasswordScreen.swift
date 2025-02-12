@@ -9,7 +9,7 @@ import SwiftUI
 import shared
 
 struct ChangePasswordScreen: View {
-    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.changePasswordVM)
+    @StateObject var appState = ChangePasswordState()
     @Binding var path: [NavigationGraph]
     
     var body: some View {
@@ -23,13 +23,26 @@ struct ChangePasswordScreen: View {
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_account_edit_password.localizedString())
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(!appState.canNavigateBack)
         }
     }
 }
 
-struct ChangePasswordScreen_Previews: PreviewProvider {
-    @State static var path: [NavigationGraph] = [.settings(.changePassword)]
-    static var previews: some View {
-        ChangePasswordScreen(path: $path)
+class ChangePasswordState: ObservableObject {
+    
+    let vm: ChangePasswordViewModel
+    @Published var canNavigateBack: Bool = true
+    
+    init () {
+        self.vm = KoinIOS.ViewModels.shared.changePasswordVM
+        
+        vm.observe(flow: vm.canNavigateBack) { [weak self] value in
+            self?.canNavigateBack = (value as? KotlinBoolean)?.boolValue == true
+        }
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }
