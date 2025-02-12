@@ -11,6 +11,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -449,6 +450,22 @@ private fun PlanCardDetails(
                     )
                 }
 
+                AnimatedVisibility(!state.isExpanded && !state.isSelected) {
+                    Spacer(Modifier.size(8.dp))
+                }
+
+                AnimatedVisibility(state.type.isPremium && state.isSelected) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(bottom = 4.dp)
+                            .padding(horizontal = 16.dp),
+                        text = stringResource(
+                            MR.strings.paywall_all_members_features_notice,
+                            state.includedMembersPerGroup.let { "$it" }),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+
                 AnimatedVisibility(state.isSelected && state.billingPeriods.isNotEmpty()) {
                     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onPrimary) {
                         BillingPeriodOptions(
@@ -471,8 +488,6 @@ private fun PlanCardDetails(
                         )
                     }
                 }
-
-
             }
         }
     }
@@ -532,18 +547,6 @@ private fun PaywallBottomCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            AnimatedVisibility(selectedPlan?.type?.isPremium == true) {
-                Text(
-                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
-                    text = stringResource(
-                        MR.strings.paywall_all_members_features_notice,
-                        selectedPlan?.includedMembersPerGroup?.let { "$it" } ?: " "),
-                    style = MaterialTheme.typography.caption,
-                    textAlign = TextAlign.Center,
-                    color = contentColor
-                )
-            }
-
 //            AnimatedVisibility(!selectedPlan?.billingPeriods.isNullOrEmpty()) {
 //                CompositionLocalProvider(LocalContentColor provides contentColor) {
 //                    if (selectedPlan != null) {
@@ -575,31 +578,46 @@ private fun PaywallBottomCard(
 //                }
 //            }
 
-            SmallActionButton(
-                modifier = Modifier.padding(bottom = 8.dp),
-                backgroundColor = Color.Transparent,
-                contentColor = AppColors.accent,
-                icon = CoreAppIcons.CheckCircle.asPainterResource(),
-                compactMode = true,
-                iconSize = 16.dp,
-                text = {
-                    Text(
-                        text = if (billingPeriodState?.trialDurationDays != null) {
-                            stringResource(MR.strings.paywall_cancellation_notice_trial)
-                        } else {
-                            stringResource(MR.strings.paywall_cancellation_notice)
-                        },
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp
-                    )
-                },
-                onClick = null
-            )
+            AnimatedVisibility(billingPeriodState?.trialDurationDays != null) {
+                Text(
+                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
+                    text = stringResource(
+                        MR.strings.paywall_free_trial_notice,
+                        "${billingPeriodState?.trialDurationDays ?: " "}"
+                    ).annotatedBold(),
+                    style = MaterialTheme.typography.body2.copy(fontSize = 18.sp),
+                    textAlign = TextAlign.Center,
+                    color = contentColor
+                )
+            }
+
+            AnimatedVisibility(selectedPlan != null) {
+                SmallActionButton(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    backgroundColor = Color.Transparent,
+                    contentColor = animateColorAsState(if (isSystemInDarkTheme()) AppColors.accent else AppColors.accentDark).value,
+                    icon = CoreAppIcons.CheckCircle.asPainterResource(),
+                    compactMode = true,
+                    iconSize = 16.dp,
+                    text = {
+                        Text(
+                            text = if (billingPeriodState?.trialDurationDays != null) {
+                                stringResource(MR.strings.paywall_cancellation_notice_trial)
+                            } else {
+                                stringResource(MR.strings.paywall_cancellation_notice)
+                            },
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp
+                        )
+                    },
+                    onClick = null
+                )
+            }
 
             AnimatedVisibility(selectedPlan != null) {
                 Column {
                     FilledButton(
-                        modifier = Modifier.padding(bottom = 8.dp),
+                        modifier = Modifier,
                         style = ButtonStyle.BIG,
                         state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
                         onClick = onStartPurchase
@@ -613,19 +631,6 @@ private fun PaywallBottomCard(
                         )
                     }
                 }
-            }
-
-            AnimatedVisibility(billingPeriodState?.trialDurationDays != null) {
-                Text(
-                    modifier = Modifier,
-                    text = stringResource(
-                        MR.strings.paywall_free_trial_notice,
-                        "${billingPeriodState?.trialDurationDays ?: " "}"
-                    ).annotatedBold(),
-                    style = MaterialTheme.typography.body2.copy(fontSize = 18.sp),
-                    textAlign = TextAlign.Center,
-                    color = contentColor
-                )
             }
 
             AnimatedVisibility(selectedPlan == null) {
