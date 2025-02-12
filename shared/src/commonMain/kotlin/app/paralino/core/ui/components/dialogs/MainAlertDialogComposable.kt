@@ -42,6 +42,7 @@ fun MainAlertDialog(
     onAction: (buttonId: String?) -> Unit,
 ) {
     MainAlertDialog(
+        dialogId = data.id,
         title = data.title,
         message = data.message,
         buttons = data.buttons,
@@ -52,6 +53,7 @@ fun MainAlertDialog(
 
 @Composable
 fun MainAlertDialog(
+    dialogId: String,
     title: String,
     message: String,
     canDismiss: Boolean = true,
@@ -86,80 +88,93 @@ fun MainAlertDialog(
                         .padding(bottom = 10.dp)
                 ) {
                     buttons.forEach { buttonData ->
-
-                        val interactionSource = remember { MutableInteractionSource() }
-                        var clickAnimation by remember { mutableStateOf(false) }
-
-                        if (buttonData.needsLongConfirmation) {
-                            val isPressed by interactionSource.collectIsPressedAsState()
-                            var wasPressed by remember { mutableStateOf(false) }
-
-                            LaunchedEffect(isPressed) {
-                                if (isPressed && !wasPressed) {
-                                    // start timer
-                                    wasPressed = true
-                                    clickAnimation = true
-                                    delay(1050)
-                                    onAction(buttonData.id)
-                                    clickAnimation = false
-                                } else if (wasPressed && !isPressed) {
-                                    // check timer, reset
-                                    wasPressed = false
-                                    clickAnimation = false
-                                }
-                            }
-                        }
-
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(52.dp)
-                                .padding(vertical = 1.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                        ) {
-                            Box(
-                                Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(
-                                        animateFloatAsState(
-                                            targetValue = if (clickAnimation) 1f else 0f,
-                                            animationSpec = tween(
-                                                durationMillis = 1000,
-                                                easing = { fraction ->
-                                                    fraction.pow(0.8f)
-                                                }
-                                            )
-                                        ).value
-                                    )
-                                    .background(
-                                        color = AppColors.redMain.copy(alpha = 0.5f),
-                                        shape = RoundedCornerShape(12.dp)
-                                    )
-                            )
-                            TextButton(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(),
-                                interactionSource = interactionSource,
-                                onClick = {
-                                    if (!buttonData.needsLongConfirmation) {
-                                        onAction(buttonData.id)
-                                    }
-                                },
-                                colors = ButtonDefaults.textButtonColors(
-                                    contentColor = contentColorFor(backgroundColor = buttonData.color),
-                                    backgroundColor = buttonData.color
-                                ),
-                                shape = RoundedCornerShape(12.dp),
-                                contentPadding = PaddingValues(16.dp)
-                            ) {
-                                Text(buttonData.text)
-                            }
-                        }
+                        MainAlertDialogActionButton(
+                            dialogId = dialogId,
+                            buttonData = buttonData,
+                            onAction = onAction
+                        )
                     }
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun MainAlertDialogActionButton(
+    modifier: Modifier = Modifier,
+    dialogId: String,
+    buttonData: AlertDialogButtonData,
+    onAction: (buttonId: String?) -> Unit
+) {
+    val interactionSource = remember(dialogId) { MutableInteractionSource() }
+    var clickAnimation by remember(dialogId) { mutableStateOf(false) }
+
+    if (buttonData.needsLongConfirmation) {
+        val isPressed by interactionSource.collectIsPressedAsState()
+        var wasPressed by remember(dialogId) { mutableStateOf(false) }
+
+        LaunchedEffect(isPressed) {
+            if (isPressed && !wasPressed) {
+                // start timer
+                wasPressed = true
+                clickAnimation = true
+                delay(1050)
+                onAction(buttonData.id)
+                clickAnimation = false
+            } else if (wasPressed && !isPressed) {
+                // check timer, reset
+                wasPressed = false
+                clickAnimation = false
+            }
+        }
+    }
+
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .padding(vertical = 1.dp)
+            .clip(RoundedCornerShape(12.dp))
+    ) {
+        Box(
+            Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(
+                    animateFloatAsState(
+                        targetValue = if (clickAnimation) 1f else 0f,
+                        animationSpec = tween(
+                            durationMillis = 1000,
+                            easing = { fraction ->
+                                fraction.pow(0.8f)
+                            }
+                        )
+                    ).value
+                )
+                .background(
+                    color = AppColors.redMain.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(12.dp)
+                )
+        )
+        TextButton(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(),
+            interactionSource = interactionSource,
+            onClick = {
+                if (!buttonData.needsLongConfirmation) {
+                    onAction(buttonData.id)
+                }
+            },
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = contentColorFor(backgroundColor = buttonData.color),
+                backgroundColor = buttonData.color
+            ),
+            shape = RoundedCornerShape(12.dp),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            Text(buttonData.text)
+        }
     }
 }
 
