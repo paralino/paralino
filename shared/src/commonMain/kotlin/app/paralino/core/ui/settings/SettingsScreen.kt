@@ -46,8 +46,11 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 import dev.icerock.moko.resources.compose.stringResource
@@ -73,6 +76,13 @@ fun SettingsScreenCore(
     MessageDispatcherEffect(viewModel, appState)
     val accountState by viewModel.accountState.collectAsState()
 
+    val dialog = accountState.data?.alertDialog
+    dialog?.let { dialog ->
+        dialog.Show {
+            viewModel.onEvent(AccountScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+        }
+    }
+
     Column(
         modifier = Modifier
             .verticalScroll(state = rememberScrollState())
@@ -87,23 +97,30 @@ fun SettingsScreenCore(
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
                 userPlan = readyState.userPlan,
-                errorItem = null,
+                errorItem = readyState.userState.errorItem,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
                         openConvertAccount()
                     }
                 },
-                onErrorItemClick = { },
+                onErrorItemClick = {
+                    when (it) {
+                        is ConditionErrorType.EmailVerification -> {
+                            viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
+                        }
+
+                        else -> {}
+                    }
+                },
                 onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
                 onShareCode = onShareCode,
                 onClick = openPersonalCodes
             )
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
-
         AnimatedVisibility(visible = readyState?.userPlan?.planTypeEnum?.isPremium == false) {
             PremiumPlanBanner(
+                modifier = Modifier.padding(top = 20.dp),
                 onClick = openPaywall
             )
         }

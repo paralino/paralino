@@ -56,8 +56,8 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.SettingsActionItem
@@ -83,7 +83,10 @@ fun AccountScreenCore(
     var showDangerZoneContent by remember { mutableStateOf(false) }
     val accountState by viewModel.accountState.collectAsState()
 
-    AccountScreenDialogs(dialog = accountState.data?.alertDialog, onEvent = viewModel::onEvent)
+    val dialog = accountState.data?.alertDialog
+    dialog?.Show {
+        viewModel.onEvent(AccountScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+    }
 
     Column(
         modifier = Modifier
@@ -194,53 +197,6 @@ fun AccountScreenCore(
 
     if (accountState.data?.loadingAction == true) {
         LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
-    }
-}
-
-@Composable
-private fun AccountScreenDialogs(
-    dialog: MainAlertDialog?,
-    onEvent: (AccountScreenUiEvent) -> Unit
-) {
-
-    when (val dialog = dialog) {
-        is MainAlertDialog.Logout -> {
-            MainAlertDialog.Logout.Show {
-                onEvent(AccountScreenUiEvent.HideDialog)
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    onEvent(AccountScreenUiEvent.LogoutConfirm)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteAccount -> {
-            MainAlertDialog.DeleteAccount.Show {
-                when (it) {
-                    MainAlertDialog.Buttons.buttonOk -> onEvent(AccountScreenUiEvent.DeleteAccountConfirm)
-                    else -> onEvent(AccountScreenUiEvent.HideDialog)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteAccountConfirm -> {
-            MainAlertDialog.DeleteAccountConfirm.Show {
-                onEvent(AccountScreenUiEvent.HideDialog)
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    onEvent(AccountScreenUiEvent.DeleteAccountSecondConfirm)
-                }
-            }
-        }
-
-        is MainAlertDialog.VerifyEmail -> {
-            dialog.Show {
-                onEvent(AccountScreenUiEvent.HideDialog)
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    onEvent(AccountScreenUiEvent.ConfirmSendEmailVerification)
-                }
-            }
-        }
-
-        else -> {}
     }
 }
 
@@ -378,13 +334,12 @@ fun AccountInfoHeader(
         }
 
         if (errorItem != null) {
-            Spacer(modifier = Modifier.size(10.dp))
+            Spacer(modifier = Modifier.size(20.dp))
             ConditionErrorItem(
                 data = errorItem
             ) {
                 onErrorItemClick(errorItem)
             }
-            Spacer(modifier = Modifier.size(10.dp))
         }
     }
 }
