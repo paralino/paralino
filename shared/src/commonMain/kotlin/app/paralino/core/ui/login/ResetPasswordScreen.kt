@@ -33,7 +33,7 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import dev.icerock.moko.resources.compose.stringResource
@@ -150,7 +150,7 @@ fun ResetPasswordScreenCore(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(text = stringResource(MR.strings.reset_password_caption_reset).annotatedBold())
+            Text(text = stringResource(MR.strings.reset_password_caption_reset).annotatedBoldCompose())
         }
     }
 }

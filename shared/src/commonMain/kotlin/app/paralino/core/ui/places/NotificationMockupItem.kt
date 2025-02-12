@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -67,7 +67,7 @@ fun NotificationMockupItem(
                 )
                 Text(
                     modifier = Modifier,
-                    text = description.annotatedBold(),
+                    text = description.annotatedBoldCompose(),
                     style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
                     textAlign = TextAlign.Start
                 )

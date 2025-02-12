@@ -95,7 +95,7 @@ import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -434,7 +434,7 @@ private fun PlanCardDetails(
 //                        )
 ////                        Spacer(modifier = Modifier.height(8.dp))
 ////                        Text(
-////                            text = stringResource(MR.strings.paywall_special_offer_info).annotatedBold(),
+////                            text = stringResource(MR.strings.paywall_special_offer_info).annotatedBoldCompose(),
 ////                            style = MaterialTheme.typography.subtitle2,
 ////                            lineHeight = 18.sp
 ////                        )
@@ -445,7 +445,7 @@ private fun PlanCardDetails(
                     Text(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp)
                             .padding(horizontal = 16.dp),
-                        text = state.oneLineBenefits,
+                        text = state.oneLineBenefits.annotatedBoldCompose(),
                         style = MaterialTheme.typography.body2
                     )
                 }
@@ -483,7 +483,7 @@ private fun PlanCardDetails(
                             .padding(horizontal = 16.dp)
                     ) {
                         Text(
-                            text = state.expandedBenefits,
+                            text = state.expandedBenefits.annotatedBoldCompose(),
                             style = MaterialTheme.typography.body1
                         )
                     }
@@ -571,7 +571,7 @@ private fun PaywallBottomCard(
 //                        .padding(vertical = 8.dp, horizontal = 12.dp)
 //                ) {
 //                    Text(
-//                        text = selectedPlan?.oneLineBenefits ?: "".annotatedBold(),
+//                        text = selectedPlan?.oneLineBenefits ?: "".annotatedBoldCompose(),
 //                        style = MaterialTheme.typography.body2,
 //                        color = MaterialTheme.colors.onPrimary
 //                    )
@@ -584,7 +584,7 @@ private fun PaywallBottomCard(
                     text = stringResource(
                         MR.strings.paywall_free_trial_notice,
                         "${billingPeriodState?.trialDurationDays ?: " "}"
-                    ).annotatedBold(),
+                    ).annotatedBoldCompose(),
                     style = MaterialTheme.typography.body2.copy(fontSize = 18.sp),
                     textAlign = TextAlign.Center,
                     color = contentColor
@@ -627,7 +627,7 @@ private fun PaywallBottomCard(
                                 stringResource(MR.strings.paywall_start_button_free)
                             } else {
                                 stringResource(MR.strings.button_continue)
-                            }.annotatedBold()
+                            }.annotatedBoldCompose()
                         )
                     }
                 }
@@ -774,7 +774,7 @@ private fun BillingPeriodOptions(
                 )
         //            Spacer(modifier = Modifier.height(8.dp))
         //            Text(
-        //                text = stringResource(MR.strings.paywall_special_offer_info).annotatedBold(),
+        //                text = stringResource(MR.strings.paywall_special_offer_info).annotatedBoldCompose(),
         //                style = MaterialTheme.typography.subtitle2,
         //                lineHeight = 18.sp
         //            )

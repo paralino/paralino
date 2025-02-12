@@ -34,7 +34,7 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -113,7 +113,7 @@ fun SubscriptionScreenCore(
                         text = stringResource(
                             MR.strings.plans_management_info_plan,
                             uiState.subscriptionState?.name ?: "---"
-                        ).annotatedBold(),
+                        ).annotatedBoldCompose(),
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.fillMaxWidth()
                     )

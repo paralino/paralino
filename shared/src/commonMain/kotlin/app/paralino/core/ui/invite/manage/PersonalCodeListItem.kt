@@ -57,7 +57,7 @@ import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 
@@ -249,7 +249,7 @@ fun PersonalCodeItem(
                         .background(MaterialTheme.colors.surface)
                         .padding(top = 12.dp, bottom = 8.dp)
                         .padding(horizontal = 8.dp),
-                    text = stringResource(MR.strings.invite_manage_description).annotatedBold(),
+                    text = stringResource(MR.strings.invite_manage_description).annotatedBoldCompose(),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.SemiBold)
                 )
@@ -276,7 +276,7 @@ fun PersonalCodeItemWithHints(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = stringResource(MR.strings.dashboard_paralino_id_title).annotatedBold(),
+            text = stringResource(MR.strings.dashboard_paralino_id_title).annotatedBoldCompose(),
             style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
             modifier = Modifier
                 .padding(horizontal = 20.dp)

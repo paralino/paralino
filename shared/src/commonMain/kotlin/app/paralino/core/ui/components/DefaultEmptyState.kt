@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 
 @Composable
 fun DefaultEmptyState(
@@ -77,7 +78,7 @@ fun DefaultEmptyState(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
-                text = content.annotatedBold(),
+                text = content.annotatedBoldCompose(),
                 textAlign = TextAlign.Center
             )
         }

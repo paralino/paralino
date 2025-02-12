@@ -70,6 +70,7 @@ import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -601,7 +602,7 @@ fun GroupDetailSharingStatusElement(
             )
             Spacer(modifier = Modifier.size(4.dp))
             Text(
-                text = sharingTime.annotatedBold(),
+                text = sharingTime.annotatedBoldCompose(),
                 style = MaterialTheme.typography.caption.copy(color = contentColor)
             )
         }

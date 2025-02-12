@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,15 +45,15 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
-import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 
@@ -316,9 +315,9 @@ fun RecoverKeysScreen(
                 Spacer(modifier = Modifier.size(20.dp))
 
                 if (state.uiStep is RecoverKeysUiStep.Recover)
-                    Text(text = stringResource(MR.strings.recover_account_caption_recover_not_possible).annotatedBold())
+                    Text(text = stringResource(MR.strings.recover_account_caption_recover_not_possible).annotatedBoldCompose())
                 else
-                    Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
+                    Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBoldCompose())
 
                 if (state.uiStep is RecoverKeysUiStep.Recover.RecoverClassicAccount && rememberRecoverState is Resource.Ready && rememberRecoverState.data == null) {
                     Spacer(modifier = Modifier.size(10.dp))

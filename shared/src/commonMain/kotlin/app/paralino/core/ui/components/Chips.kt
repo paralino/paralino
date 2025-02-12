@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
 
 
@@ -68,7 +68,7 @@ fun NoticeInfoChip(
         },
         text = {
             Text(
-                text = text.annotatedBold(),
+                text = text.annotatedBoldCompose(),
                 style = MaterialTheme.typography.body2,
                 color = textColor
             )

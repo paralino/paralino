@@ -60,7 +60,7 @@ import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -97,7 +97,7 @@ fun PlacesEmptyState(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 modifier = Modifier.padding(20.dp),
-                text = stringResource(MR.strings.places_list_screen_empty_info).annotatedBold(),
+                text = stringResource(MR.strings.places_list_screen_empty_info).annotatedBoldCompose(),
                 style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
                 textAlign = TextAlign.Center
             )

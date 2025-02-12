@@ -51,7 +51,7 @@ import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.ScaffoldBottomBarButtons
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -222,7 +222,7 @@ fun BaseOnboardingContent(
                     ) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = info.annotatedBold(),
+                            text = info.annotatedBoldCompose(),
                             style = MaterialTheme.typography.subtitle1,
                             textAlign = TextAlign.Center
                         )

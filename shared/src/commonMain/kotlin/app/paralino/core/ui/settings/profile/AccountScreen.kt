@@ -65,7 +65,7 @@ import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -374,7 +374,7 @@ fun AccountHeaderChip(
             Spacer(modifier = Modifier.size(4.dp))
         }
         Text(
-            text = text.annotatedBold(),
+            text = text.annotatedBoldCompose(),
             style = MaterialTheme.typography.caption.copy(color = contentColor)
         )
     }

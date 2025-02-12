@@ -42,7 +42,7 @@ import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -101,7 +101,7 @@ fun ChangePasswordScreenCore(
                     contentColor = MaterialTheme.colors.onSurface,
                     icon = CoreAppIcons.AccessTime.asPainterResource(),
                     text = {
-                        Text(text = uiState.lastPasswordUpdateTime ?: "".annotatedBold())
+                        Text(text = uiState.lastPasswordUpdateTime ?: "".annotatedBoldCompose())
                     },
                     onClick = null
                 )

@@ -60,7 +60,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
@@ -81,12 +80,11 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.GroupStatusTag
-import app.paralino.core.ui.groups.GroupStatusTagType
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.StringResource
@@ -300,7 +298,7 @@ fun GroupMemberWithLocations(
                                 .size(14.dp)
                         )
                         Text(
-                            text = state.filteredLastPing.annotatedBold(),
+                            text = state.filteredLastPing.annotatedBoldCompose(),
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                         )
@@ -475,12 +473,12 @@ fun GroupMemberWithLocations(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(MR.strings.group_members_last_status_update).annotatedBold(),
+                    text = stringResource(MR.strings.group_members_last_status_update).annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                 )
                 Text(
-                    text = " ${state.lastStatusPing}".annotatedBold(),
+                    text = " ${state.lastStatusPing}".annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                 )
@@ -679,7 +677,7 @@ fun GroupMemberLocationChild(
                             .size(14.dp)
                     )
                     Text(
-                        text = state.lastLocationPing.annotatedBold(),
+                        text = state.lastLocationPing.annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption,
                         color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                     )

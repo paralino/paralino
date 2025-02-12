@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 
 @Composable
 fun SettingsBigHeader(
@@ -26,7 +26,7 @@ fun SettingsBigHeader(
     name: String
 ) {
     Text(
-        text = name.annotatedBold(),
+        text = name.annotatedBoldCompose(),
         style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold),
         modifier = modifier
             .padding(

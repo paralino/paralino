@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import kotlinx.coroutines.delay
 import kotlin.math.pow
 
@@ -76,7 +76,7 @@ fun MainAlertDialog(
             },
             text = {
                 Text(
-                    text = message.annotatedBold(),
+                    text = message.annotatedBoldCompose(),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )

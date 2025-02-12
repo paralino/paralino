@@ -52,7 +52,7 @@ import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -287,7 +287,7 @@ fun SettingsActionItem(
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         Text(
                             modifier = Modifier,
-                            text = tag.annotatedBold(),
+                            text = tag.annotatedBoldCompose(),
                             style = MaterialTheme.typography.caption,
                             textAlign = TextAlign.Start
                         )
@@ -351,7 +351,7 @@ fun SettingsActionItem(
                     modifier = Modifier
                         .padding(top = 4.dp)
                         .padding(horizontal = 4.dp),
-                    text = description.annotatedBold(),
+                    text = description.annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
                     textAlign = TextAlign.Start
                 )
