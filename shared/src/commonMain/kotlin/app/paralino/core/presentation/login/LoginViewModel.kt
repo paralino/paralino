@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LoginViewModel constructor(
     private val loginUseCase: LoginUseCase,
@@ -99,7 +100,12 @@ class LoginViewModel constructor(
 
         when (_uiState.value.uiType) {
             LoginScreenUiType.LOGIN -> login()
-            LoginScreenUiType.SIGNUP -> signUp()
+            LoginScreenUiType.SIGNUP -> {
+                coroutineScope.launch {
+                    signUp()
+                }
+            }
+
             LoginScreenUiType.FORGOT_PASSWORD -> resetPassword()
         }
     }
@@ -175,15 +181,20 @@ class LoginViewModel constructor(
         }
     }
 
-    private fun signUp() {
+    private suspend fun signUp() {
         val email = _uiState.value.email
         val password = _uiState.value.password
         val passwordConfirm = _uiState.value.passwordConfirm
 
         val emailValidation = FormValidation.Email.validate(email)
-        val passwordValidation = FormValidation.Password.validate(password)
-        val passwordConfirmValidation =
-            FormValidation.PasswordConfirm.validate(password, passwordConfirm)
+        val passwordValidation = FormValidation.Password.validateWithDictionary(
+            password = password,
+            dictionary = FormValidation.Password.defaultPasswordDictionary()
+        )
+        val passwordConfirmValidation = FormValidation.PasswordConfirm.validate(
+            password = password,
+            confirmPassword = passwordConfirm
+        )
 
         _uiState.update {
             it.copy(

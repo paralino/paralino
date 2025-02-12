@@ -373,7 +373,7 @@ class AppPrefs(
         password: String
     ): Boolean {
         val emailValidation = FormValidation.Email.validate(email)
-        val passwordValidation = FormValidation.Password.validate(password)
+        val passwordValidation = FormValidation.TextNotEmpty.validate(password)
         return emailValidation.result && passwordValidation.result
     }
 

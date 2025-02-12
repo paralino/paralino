@@ -68,76 +68,106 @@ class ChangePasswordViewModel(
                     it.copy(lastPasswordUpdateTime = getLastPasswordUpdateDate())
                 }
             } catch (e: Exception) {
-                showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
+                showSnackbar(
+                    RemoteConnectionException(
+                        "Connection error",
+                        code = null
+                    ).errorString()
+                )
             }
         }
     }
 
     fun proceed() {
         if (_uiState.value.actionLoading == true || changePassword.isProcessingAny()) return
+        coroutineScope.launch {
+            val passwordOld = _uiState.value.oldPassword
+            val passwordNew = _uiState.value.newPassword
+            val passwordConfirm = _uiState.value.confirmPassword
 
-        val passwordOld = _uiState.value.oldPassword
-        val passwordNew = _uiState.value.newPassword
-        val passwordConfirm = _uiState.value.confirmPassword
-
-        val oldPasswordValidation = FormValidation.TextNotEmpty.validate(passwordOld)
-        val newPasswordValidation = FormValidation.Password.validate(passwordNew)
-        val confirmPasswordValidation =
-            FormValidation.PasswordConfirm.validate(passwordNew, passwordConfirm)
-
-        _uiState.update {
-            it.copy(
-                hasOldPasswordError = !oldPasswordValidation.result,
-                hasNewPasswordError = !newPasswordValidation.result,
-                hasConfirmPasswordError = !confirmPasswordValidation.result
+            val oldPasswordValidation = FormValidation.TextNotEmpty.validate(passwordOld)
+            val newPasswordValidation = FormValidation.Password.validateWithDictionary(
+                password = passwordNew,
+                dictionary = FormValidation.Password.defaultPasswordDictionary()
             )
+            val confirmPasswordValidation = FormValidation.PasswordConfirm.validate(
+                password = passwordNew,
+                confirmPassword = passwordConfirm
+            )
+
+            _uiState.update {
+                it.copy(
+                    hasOldPasswordError = !oldPasswordValidation.result,
+                    hasNewPasswordError = !newPasswordValidation.result,
+                    hasConfirmPasswordError = !confirmPasswordValidation.result
+                )
+            }
+
+            val firstValidation = arrayOf(
+                oldPasswordValidation,
+                newPasswordValidation,
+                confirmPasswordValidation
+            )
+                .firstOrNull { !it.result }
+
+            if (firstValidation != null) {
+                showSnackbar(getFormValidationErrorText(validation = firstValidation.type))
+            } else {
+                changePasswordAction(passwordOld = passwordOld, passwordNew = passwordNew)
+            }
+        }
+    }
+
+    private fun changePasswordAction(
+        passwordOld: String,
+        passwordNew: String
+    ){
+
+        if (changePassword.isProcessingAny() || uiState.value.actionLoading == true) {
+            return
         }
 
-        val firstValidation = arrayOf(
-            oldPasswordValidation,
-            newPasswordValidation,
-            confirmPasswordValidation
-        )
-            .firstOrNull { !it.result }
+        changePassword.changePassword(oldPassword = passwordOld, newPassword = passwordNew)
+            .mapToPayload { it }
+            .onEach { result ->
+                when (result) {
+                    Payload.Loading -> {
+                        _uiState.update { it.copy(actionLoading = true) }
+                    }
 
-        if (firstValidation != null) {
-            showSnackbar(getFormValidationErrorText(validation = firstValidation.type))
-        } else if (!changePassword.isProcessingAny()){
-            changePassword.changePassword(oldPassword = passwordOld, newPassword = passwordNew)
-                .mapToPayload { it }
-                .onEach { result ->
-                    when (result) {
-                        Payload.Loading -> {
-                            _uiState.update { it.copy(actionLoading = true) }
+                    is Payload.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                actionLoading = null,
+                                credentialsStep = null
+                            )
                         }
-                        is Payload.Error -> {
-                            _uiState.update { it.copy(actionLoading = null, credentialsStep = null) }
-                            if (result.exception.asRemoteException() is InvalidRequestException) {
-                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
-                            } else if (result.exception.asRemoteException() is UnauthorizedException) {
-                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
-                            } else if (result.exception is DecryptionException) {
-                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
-                            } else {
-                                showSnackbar(result.exception.errorString())
-                            }
+                        if (result.exception.asRemoteException() is InvalidRequestException) {
+                            showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                        } else if (result.exception.asRemoteException() is UnauthorizedException) {
+                            showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                        } else if (result.exception is DecryptionException) {
+                            showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                        } else {
+                            showSnackbar(result.exception.errorString())
                         }
-                        is Payload.Success -> {
-                            _uiState.update {
-                                it.copy(
-                                    actionLoading = result.data != ChangeCredentialsStep.DONE,
-                                    credentialsStep = result.data
-                                )
-                            }
-                            if (result.data == ChangeCredentialsStep.DONE) {
-                                delay(400)
-                                _eventChannel.send(ChangePasswordScreenEvent.PasswordChanged)
-                            }
+                    }
+
+                    is Payload.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                actionLoading = result.data != ChangeCredentialsStep.DONE,
+                                credentialsStep = result.data
+                            )
+                        }
+                        if (result.data == ChangeCredentialsStep.DONE) {
+                            delay(400)
+                            _eventChannel.send(ChangePasswordScreenEvent.PasswordChanged)
                         }
                     }
                 }
-                .launchIn(scopeProvider.userSessionIOScope)
-        }
+            }
+            .launchIn(scopeProvider.userSessionIOScope)
     }
 
     fun onOldPasswordChange(password: String) {

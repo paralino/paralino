@@ -38,7 +38,7 @@ class ConvertAccountViewModel(
     private val convertAccount: ConvertAccountUseCase,
     private val scopeProvider: ICoroutineScopeProvider,
     private val userRepo: UserRepository
-): CoreViewModel() {
+) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ConvertAccountScreenState())
     val uiState: StateFlow<ConvertAccountScreenState> = _uiState
@@ -56,7 +56,12 @@ class ConvertAccountViewModel(
                     userRepo.refreshUserIfAvailable()
                 }
             } catch (e: Exception) {
-                showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
+                showSnackbar(
+                    RemoteConnectionException(
+                        "Connection error",
+                        code = null
+                    ).errorString()
+                )
             }
         }
     }
@@ -69,74 +74,101 @@ class ConvertAccountViewModel(
                 _uiState.update { it.copy(screenStep = ConvertAccountScreenStep.INPUT) }
                 return
             }
+
             ConvertAccountScreenStep.INPUT -> {
                 // nothing
             }
         }
 
-        val email = _uiState.value.email
-        val password = _uiState.value.password
-        val passwordConfirm = _uiState.value.passwordConfirm
+        coroutineScope.launch {
+            val email = _uiState.value.email
+            val password = _uiState.value.password
+            val passwordConfirm = _uiState.value.passwordConfirm
 
-        val emailValidation = FormValidation.Email.validate(email)
-        val passwordValidation = FormValidation.Password.validate(password)
-        val passwordConfirmValidation = FormValidation.PasswordConfirm.validate(password, passwordConfirm)
-
-        _uiState.update {
-            it.copy(
-                hasPasswordError = !passwordValidation.result,
-                hasPasswordConfirmError = !passwordConfirmValidation.result,
-                hasEmailError = !emailValidation.result
+            val emailValidation = FormValidation.Email.validate(email)
+            val passwordValidation = FormValidation.Password.validateWithDictionary(
+                password = password,
+                dictionary = FormValidation.Password.defaultPasswordDictionary()
             )
+            val passwordConfirmValidation = FormValidation.PasswordConfirm.validate(
+                password = password,
+                confirmPassword = passwordConfirm
+            )
+
+            _uiState.update {
+                it.copy(
+                    hasPasswordError = !passwordValidation.result,
+                    hasPasswordConfirmError = !passwordConfirmValidation.result,
+                    hasEmailError = !emailValidation.result
+                )
+            }
+
+            if (!emailValidation.result) {
+                showSnackbar(getFormValidationErrorText(validation = emailValidation.type))
+            } else if (!passwordValidation.result) {
+                showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
+            } else if (!passwordConfirmValidation.result) {
+                showSnackbar(getFormValidationErrorText(validation = passwordConfirmValidation.type))
+            } else {
+                convertAccountAction(email = email, password = password)
+            }
+        }
+    }
+
+    private fun convertAccountAction(
+        email: String,
+        password: String
+    ) {
+        if (_uiState.value.actionLoading == true || convertAccount.isProcessingAny()) {
+            return
         }
 
-        if (!emailValidation.result) {
-            showSnackbar(getFormValidationErrorText(validation = emailValidation.type))
-        } else if (!passwordValidation.result) {
-            showSnackbar(getFormValidationErrorText(validation = passwordValidation.type))
-        } else if (!passwordConfirmValidation.result) {
-            showSnackbar(getFormValidationErrorText(validation = passwordConfirmValidation.type))
-        } else if (!convertAccount.isProcessingAny()){
-            convertAccount.convertAccount(
-                email = email,
-                password = password
-            )
-                .mapToPayload { it }
-                .onEach { result ->
-                    when (result) {
-                        Payload.Loading -> {
-                            _uiState.update { it.copy(actionLoading = true) }
+        convertAccount.convertAccount(
+            email = email,
+            password = password
+        )
+            .mapToPayload { it }
+            .onEach { result ->
+                when (result) {
+                    Payload.Loading -> {
+                        _uiState.update { it.copy(actionLoading = true) }
+                    }
+
+                    is Payload.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                actionLoading = null,
+                                credentialsStep = null
+                            )
                         }
-                        is Payload.Error -> {
-                            _uiState.update { it.copy(actionLoading = null, credentialsStep = null) }
-                            if (result.exception.asRemoteException() is InvalidRequestException) {
-                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
-                            } else if (result.exception.asRemoteException() is ConflictException) {
-                                showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
-                            } else if (result.exception.asRemoteException() is UnauthorizedException) {
-                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
-                            } else if (result.exception is DecryptionException) {
-                                showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
-                            } else {
-                                showSnackbar(result.exception.errorString())
-                            }
+                        if (result.exception.asRemoteException() is InvalidRequestException) {
+                            showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                        } else if (result.exception.asRemoteException() is ConflictException) {
+                            showSnackbar(MR.strings.form_invalid_email_conflict_description.localizedString())
+                        } else if (result.exception.asRemoteException() is UnauthorizedException) {
+                            showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                        } else if (result.exception is DecryptionException) {
+                            showSnackbar(MR.strings.form_invalid_credentials_description.localizedString())
+                        } else {
+                            showSnackbar(result.exception.errorString())
                         }
-                        is Payload.Success -> {
-                            _uiState.update {
-                                it.copy(
-                                    actionLoading = result.data != ChangeCredentialsStep.DONE,
-                                    credentialsStep = result.data
-                                )
-                            }
-                            if (result.data == ChangeCredentialsStep.DONE) {
-                                delay(400)
-                                _eventChannel.send(ConvertAccountScreenEvent.AccountUpdated)
-                            }
+                    }
+
+                    is Payload.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                actionLoading = result.data != ChangeCredentialsStep.DONE,
+                                credentialsStep = result.data
+                            )
+                        }
+                        if (result.data == ChangeCredentialsStep.DONE) {
+                            delay(400)
+                            _eventChannel.send(ConvertAccountScreenEvent.AccountUpdated)
                         }
                     }
                 }
-                .launchIn(scopeProvider.userSessionIOScope)
-        }
+            }
+            .launchIn(scopeProvider.userSessionIOScope)
     }
 
     fun onEmailChange(email: String) {
@@ -153,5 +185,4 @@ class ConvertAccountViewModel(
         if (_uiState.value.actionLoading == true) return
         _uiState.update { it.copy(passwordConfirm = password, hasPasswordConfirmError = false) }
     }
-
 }

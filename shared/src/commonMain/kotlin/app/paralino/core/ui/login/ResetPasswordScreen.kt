@@ -23,9 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.common.FormValidation
-import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenEvent
-import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenState
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
@@ -50,7 +48,7 @@ fun ResetPasswordScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val uiState by vm.uiState.collectAsState(initial = ResetPasswordScreenState())
+    val uiState by vm.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = Unit) {
