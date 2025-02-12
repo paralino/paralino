@@ -9,6 +9,7 @@ import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
+import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.logg
 import app.paralino.core.models.raw.SchemeVersion
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -42,8 +43,13 @@ class ChangeCredentialsUseCase(
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
     private val connectionStatus: IConnectionStatusProvider,
-    private val appPrefs: AppPrefs
-) : LimitedExecution() {
+    private val appPrefs: AppPrefs,
+    private val parentManager: LimitedExecutionParentManager,
+) : LimitedExecution(scope = parentManager) {
+
+    override fun isProcessing(key: String): Boolean {
+        return isProcessingAny()
+    }
 
     fun changeEmail(email: String, password: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
