@@ -18,7 +18,11 @@ struct ChangePasswordScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.ChangePasswordScreenVC(
                     vm: appState.vm,
-                    onNavigateBack: { path.removeLast() }
+                    onNavigateBack: {
+                        if (appState.canNavigateBack) {
+                            path.removeLast()
+                        }
+                    }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)

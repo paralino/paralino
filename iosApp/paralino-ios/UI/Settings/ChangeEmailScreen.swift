@@ -18,7 +18,11 @@ struct ChangeEmailScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.ChangeEmailScreenVC(
                     vm: appState.vm,
-                    onNavigateBack: { onFinish() }
+                    onNavigateBack: {
+                        if (appState.canNavigateBack) {
+                            onFinish()
+                        }
+                    }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)

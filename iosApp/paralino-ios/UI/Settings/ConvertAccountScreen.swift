@@ -19,7 +19,11 @@ struct ConvertAccountScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.ConvertAccountScreenVC(
                     vm: appState.vm,
-                    onNavigateBack: { path.removeLast() }
+                    onNavigateBack: {
+                        if (appState.canNavigateBack) {
+                            path.removeLast()
+                        }
+                    }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
