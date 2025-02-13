@@ -18,10 +18,12 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -39,26 +41,27 @@ class LoginViewModel constructor(
     val initialUiType: LoginScreenUiType
         get() = defaultUiType(startScreenUiType)
 
-    private val _uiState: MutableStateFlow<LoginScreenState>
-    val uiState: StateFlow<LoginScreenState>
+    private val _uiState = MutableStateFlow(
+        LoginScreenState(
+            canUseEmail = remoteConfigRepository.getCachedConfigOnce().isEmailEnabled,
+            uiType = initialUiType,
+            alertDialog = if (appPrefs.hasGuestAccount()) {
+                MainAlertDialog.GuestAccountRecover
+            } else {
+                null
+            }
+        )
+    )
+    val uiState: StateFlow<LoginScreenState> = _uiState
+
+    val canNavigateBack: Flow<Boolean> = _uiState.map {
+        !it.actionLoading
+    }
 
     private val _eventChannel = Channel<LoginScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        _uiState = MutableStateFlow(
-            LoginScreenState(
-                canUseEmail = remoteConfigRepository.getCachedConfigOnce().isEmailEnabled,
-                uiType = initialUiType,
-                alertDialog = if (appPrefs.hasGuestAccount()) {
-                    MainAlertDialog.GuestAccountRecover
-                } else {
-                    null
-                }
-            )
-        )
-        uiState = _uiState
-
         remoteConfigRepository.getConfigLocally()
             .onEach { config ->
                 _uiState.update {

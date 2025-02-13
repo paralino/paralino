@@ -165,7 +165,7 @@ object KoinIOS {
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
             factory { (startScreenType: LoginScreenUiType) ->
-                LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs)
+                LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get())
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { (groupID: String?, isOnboarding: Boolean) ->

@@ -10,7 +10,7 @@ import shared
 
 struct LoginScreen: View {
     
-    @StateObject var appState: ViewModelFactoryIOS<LoginViewModel>
+    @StateObject var appState: LoginState
     @EnvironmentObject var mainAppState: MainAppObject
     
     var body: some View {
@@ -19,7 +19,11 @@ struct LoginScreen: View {
                 ComposeRepresentable {
                     ScreensIOS.shared.login.LoginScreenVC(
                         vm: appState.vm,
-                        onExit: { mainAppState.appStartGraph.removeLast() }
+                        onExit: {
+                            if (appState.canNavigateBack) {
+                                mainAppState.appStartGraph.removeLast()
+                            }
+                        }
                     )
                 }
                 .ignoresSafeArea(.all, edges: .bottom)
@@ -27,9 +31,25 @@ struct LoginScreen: View {
             }
         }
     
-    static func createState(screenUiType: LoginScreenUiType) -> ViewModelFactoryIOS<LoginViewModel> {
-        ViewModelFactoryIOS(
-            vm: KoinIOS.ViewModels.shared.loginVM(screenUiType: screenUiType)
-        )
+    static func createState(screenUiType: LoginScreenUiType) -> LoginState {
+        LoginState(screenUiType: screenUiType)
+    }
+}
+
+class LoginState: ObservableObject {
+    
+    let vm: LoginViewModel
+    @Published var canNavigateBack: Bool = true
+    
+    init (screenUiType: LoginScreenUiType) {
+        self.vm = KoinIOS.ViewModels.shared.loginVM(screenUiType: screenUiType)
+        
+        vm.observe(flow: vm.canNavigateBack) { [weak self] value in
+            self?.canNavigateBack = (value as? KotlinBoolean)?.boolValue == true
+        }
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }
