@@ -39,7 +39,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.drawBlurredCircles
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -89,7 +89,7 @@ fun AccountOnboardingSilverPlan(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(MR.strings.plans_gift_screen_box_message).annotatedBold(),
+                    text = stringResource(MR.strings.plans_gift_screen_box_message).annotatedBoldCompose(),
                     style = MaterialTheme.typography.subtitle1,
                     textAlign = TextAlign.Center
                 )

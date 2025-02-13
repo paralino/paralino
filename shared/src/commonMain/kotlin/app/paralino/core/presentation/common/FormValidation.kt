@@ -1,5 +1,8 @@
 package app.paralino.core.presentation.common
 
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import paralino.shared.generated.resources.Res
+
 sealed class FormValidation {
 
     object Email : FormValidation() {
@@ -34,8 +37,35 @@ sealed class FormValidation {
         fun validate(password: String): PasswordValidationResult {
             return PasswordValidationResult(
                 minPasswordLength = password.length >= PasswordStrength.minPasswordLength,
-                passwordStrength = evaluatePasswordStrength(password) ?: PasswordStrength.VERY_WEAK
+                passwordStrength = evaluatePasswordStrength(
+                    password = password,
+                    dictionary = emptyList()
+                ) ?: PasswordStrength.VERY_WEAK
             )
+        }
+
+        fun validateWithDictionary(
+            password: String,
+            dictionary: List<String>
+        ): PasswordValidationResult {
+            return PasswordValidationResult(
+                minPasswordLength = password.length >= PasswordStrength.minPasswordLength,
+                passwordStrength = evaluatePasswordStrength(
+                    password = password,
+                    dictionary = dictionary
+                ) ?: PasswordStrength.VERY_WEAK
+            )
+        }
+
+        @OptIn(ExperimentalResourceApi::class)
+        suspend fun defaultPasswordDictionary(): List<String> {
+            return try {
+                Res.readBytes("files/password_list_top_10000.txt")
+                    .decodeToString()
+                    .lines()
+            } catch (e: Exception) {
+                emptyList()
+            }
         }
 
         enum class PasswordStrength {
@@ -49,7 +79,10 @@ sealed class FormValidation {
             val isOK: Boolean get() = this >= minPasswordQuality
         }
 
-        private fun evaluatePasswordStrength(password: String): Password.PasswordStrength? {
+        private fun evaluatePasswordStrength(
+            password: String,
+            dictionary: List<String>
+        ): Password.PasswordStrength? {
 
             if (password.isBlank()) {
                 return null
@@ -91,6 +124,10 @@ sealed class FormValidation {
             }
 
             if (typeVariety <= 1) {
+                return Password.PasswordStrength.VERY_WEAK
+            }
+
+            if (dictionary.contains(password)) {
                 return Password.PasswordStrength.VERY_WEAK
             }
 

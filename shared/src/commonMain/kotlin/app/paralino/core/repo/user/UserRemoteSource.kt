@@ -8,6 +8,7 @@ import app.paralino.core.models.raw.BlocklistRaw
 import app.paralino.core.models.raw.LoginDetailsRaw
 import app.paralino.core.models.raw.PromoCodeRedeemPayload
 import app.paralino.core.models.raw.UserCryptoKeyRaw
+import app.paralino.core.models.raw.UserEmailChangePayload
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.raw.UserPlanRaw
 import app.paralino.core.models.user.UserMeData
@@ -29,15 +30,6 @@ class UserRemoteSource constructor(
 
     suspend fun signUp(email: String, password: String): UserMeRaw {
         return api.signUp(userName = null, email, password)
-    }
-
-    suspend fun signUpAndCreateSession(
-        email: String,
-        password: String
-    ): Pair<UserMeRaw, UserSession> {
-        return signUp(email, password).let {
-            it to login(email, password)
-        }
     }
 
     suspend fun login(email: String, password: String): UserSession {
@@ -83,6 +75,21 @@ class UserRemoteSource constructor(
 
     suspend fun updateEmail(email: String, password: String): UserMeRaw {
         return api.updateEmail(email, password)
+    }
+
+    suspend fun updateEmailAndPassword(email: String, oldPassword: String, newPassword: String) {
+        val response = functionsApi.runAndWait(
+            function = ServerFunction.ACCOUNT_CHANGE_EMAIL,
+            data = UserEmailChangePayload(
+                email = email,
+                oldPassword = oldPassword,
+                newPassword = newPassword
+            )
+        )
+
+        if (!response.isSuccess) {
+            throw response.remoteException
+        }
     }
 
     suspend fun getBlocklist(): List<BlocklistRaw> {
@@ -143,7 +150,9 @@ class UserRemoteSource constructor(
                     publicKey = it.publicKey,
                     loginSalt = it.loginSalt,
                     loginAlg = it.loginAlg,
-                    dataAlg = it.dataAlg
+                    dataAlg = it.dataAlg,
+                    dataSalt = it.dataSalt,
+                    schemeVersion = it.schemeVersion
                 )
             }
 

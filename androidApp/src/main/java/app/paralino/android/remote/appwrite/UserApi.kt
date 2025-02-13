@@ -93,6 +93,7 @@ class UserApi constructor(
             email = this.email,
             registration = this.registration,
             emailVerification = this.emailVerification,
+            passwordUpdate = this.passwordUpdate,
             data = UserMeDataRaw.parseData(this.prefs.data)
         )
     }

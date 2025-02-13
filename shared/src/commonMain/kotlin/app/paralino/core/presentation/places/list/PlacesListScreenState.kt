@@ -25,6 +25,7 @@ data class PlacesListScreenState constructor(
         .map { MapPinData(groupId, it) }
 
     val placesLimitReached: Boolean = placesLimit <= places.size
+    val isOverLimit: Boolean = places.size > placesLimit
 }
 
 data class PlaceListItemData constructor(

@@ -546,6 +546,25 @@ sealed interface MainAlertDialog {
         )
     }
 
+    object CreateAccountLoginFailed : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.error_something_wrong),
+            message = stringResource(resource = MR.strings.login_step_error_signUp_loginFailed),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_continue),
+                    color = AlertDialogButtonData.positiveColor,
+                    needsLongConfirmation = false
+                )
+            ),
+            canDismiss = false
+        )
+    }
+
     data class VerifyEmail(
         val email: String
     ) : MainAlertDialog {

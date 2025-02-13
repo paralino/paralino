@@ -230,13 +230,8 @@ class SettingsViewModel(
 
     fun onEvent(event: AccountScreenUiEvent) {
         when (event) {
-            AccountScreenUiEvent.ConfirmSendEmailVerification -> sendEmailVerification()
             AccountScreenUiEvent.DeleteAccount -> onShowDialog(MainAlertDialog.DeleteAccount)
-            AccountScreenUiEvent.DeleteAccountConfirm -> onShowDialog(MainAlertDialog.DeleteAccountConfirm)
-            AccountScreenUiEvent.DeleteAccountSecondConfirm -> deleteAccount()
-            AccountScreenUiEvent.HideDialog -> onShowDialog(null)
             AccountScreenUiEvent.Logout -> onShowDialog(MainAlertDialog.Logout)
-            AccountScreenUiEvent.LogoutConfirm -> logout()
             AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
             AccountScreenUiEvent.TogglePlaceActivityThrottle -> togglePlaceActivityThrottle()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
@@ -245,6 +240,46 @@ class SettingsViewModel(
                     it.mapSuccess {
                         it.copy(alertDialog = MainAlertDialog.VerifyEmail(it.userState.email))
                     }
+                }
+            }
+
+            is AccountScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.Logout -> {
+                        onShowDialog(null)
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            logout()
+                        }
+                    }
+
+                    is MainAlertDialog.DeleteAccount -> {
+                        when (event.action.action) {
+                            MainAlertDialog.Buttons.buttonOk -> {
+                                coroutineScope.launch {
+                                    onShowDialog(null)
+                                    delay(200)
+                                    onShowDialog(MainAlertDialog.DeleteAccountConfirm)
+                                }
+                            }
+                            else -> onShowDialog(null)
+                        }
+                    }
+
+                    is MainAlertDialog.DeleteAccountConfirm -> {
+                        onShowDialog(null)
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            deleteAccount()
+                        }
+                    }
+
+                    is MainAlertDialog.VerifyEmail -> {
+                        onShowDialog(null)
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            sendEmailVerification()
+                        }
+                    }
+
+                    else -> {}
                 }
             }
         }

@@ -45,7 +45,9 @@ class LocationPerformanceManager constructor(
                     settingsType = it,
                     useHighPerformanceLocation = false
                 )
-            }
+            },
+            showLocationIndicator = appPrefs.locationSettingsShowIndicatorIOS,
+            pausesLocationAutomatically = appPrefs.locationSettingsAutoPauseIOS
         )
     )
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
@@ -88,6 +90,12 @@ class LocationPerformanceManager constructor(
     fun disableManualBoost() {
         setPerformance(type = LocationPerformanceType.HIGH, allowDowngrade = true)
         schedulePerformanceReset(type = LocationPerformanceType.BALANCED, resetDelayMillis = 30_000)
+    }
+
+    fun updateLocationSettings(
+        action: (LocationPerformanceModel) -> LocationPerformanceModel
+    ) {
+        _locationPerformanceType.update(action)
     }
 
     fun updateLocationSettings(
@@ -356,6 +364,8 @@ class LocationPerformanceManager constructor(
         val old: LocationPerformanceType = LocationPerformanceType.BALANCED,
         val requested: LocationPerformanceType = LocationPerformanceType.BALANCED,
         val current: LocationPerformanceType = LocationPerformanceType.BALANCED,
+        val showLocationIndicator: Boolean = false,
+        val pausesLocationAutomatically: Boolean = true,
         val balancedPerformanceSettings: LocationPerformanceSettings,
         val batterySaverPerformanceSettings: LocationPerformanceSettings
     ) {
@@ -363,11 +373,15 @@ class LocationPerformanceManager constructor(
         constructor(
             isBoostedManually: Boolean,
             balancedPerformanceSettings: LocationPerformanceSettings,
-            batterySaverPerformanceSettings: LocationPerformanceSettings
+            batterySaverPerformanceSettings: LocationPerformanceSettings,
+            showLocationIndicator: Boolean,
+            pausesLocationAutomatically: Boolean,
         ) : this(
             old = LocationPerformanceType.BALANCED,
             requested = if (isBoostedManually) LocationPerformanceType.MANUAL_BOOST else LocationPerformanceType.BALANCED,
             current = if (isBoostedManually) LocationPerformanceType.MANUAL_BOOST else LocationPerformanceType.BALANCED,
+            showLocationIndicator = showLocationIndicator,
+            pausesLocationAutomatically = pausesLocationAutomatically,
             balancedPerformanceSettings = balancedPerformanceSettings,
             batterySaverPerformanceSettings = batterySaverPerformanceSettings
         )

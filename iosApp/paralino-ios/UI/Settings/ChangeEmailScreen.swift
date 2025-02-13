@@ -9,8 +9,8 @@ import SwiftUI
 import shared
 
 struct ChangeEmailScreen: View {
-    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.changeEmailVM)
-    @Binding var path: [NavigationGraph]
+    @StateObject var appState = ChangeEmailState()
+    let onFinish: () -> Void
     
     var body: some View {
         ZStack {
@@ -18,18 +18,35 @@ struct ChangeEmailScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.ChangeEmailScreenVC(
                     vm: appState.vm,
-                    onNavigateBack: { path.removeLast() }
+                    onNavigateBack: {
+                        if (appState.canNavigateBack) {
+                            onFinish()
+                        }
+                    }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_account_edit_email.localizedString())
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(!appState.canNavigateBack)
         }
     }
 }
 
-struct ChangeEmailScreen_Previews: PreviewProvider {
-    @State static var path: [NavigationGraph] = [.settings(.changeEmail)]
-    static var previews: some View {
-        ChangeEmailScreen(path: $path)
+class ChangeEmailState: ObservableObject {
+    
+    let vm: ChangeEmailViewModel
+    @Published var canNavigateBack: Bool = true
+    
+    init () {
+        self.vm = KoinIOS.ViewModels.shared.changeEmailVM
+        
+        vm.observe(flow: vm.canNavigateBack) { [weak self] value in
+            self?.canNavigateBack = (value as? KotlinBoolean)?.boolValue == true
+        }
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }

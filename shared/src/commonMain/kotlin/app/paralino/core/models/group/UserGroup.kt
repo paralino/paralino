@@ -20,6 +20,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Serializable
 data class UserGroup constructor(
@@ -48,7 +49,7 @@ data class UserGroup constructor(
     // allow for some manual grace period
     // it might take few minutes until correct subscription data is synced and reflected on backend
     private val isPlanExpired: Boolean get() = planExpiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 1.hours)
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 5.minutes)
         ?.let { it < nowUTC() }
         ?: false
 
@@ -124,8 +125,12 @@ data class UserGroupWithMetadata constructor(
     val nameOrNull: String? get() = group.nameOrNull
     val image: ImageModel get() = group.image
 
+    fun arePlacesOverLimits(config: ConfigData): Boolean {
+        return placesCount > group.placesLimit(config)
+    }
+
     fun isGroupOverLimits(config: ConfigData): Boolean {
-        return memberCount > group.membersLimit(config) || placesCount > group.placesLimit(config) || devicesCount > group.devicesLimit(config)
+        return memberCount > group.membersLimit(config) || arePlacesOverLimits(config) || devicesCount > group.devicesLimit(config)
     }
 }
 

@@ -50,6 +50,24 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userKeysEntity ADD COLUMN dataSalt TEXT DEFAULT NULL")
+        }
+    }
+
+    private val MIGRATION_8_9 = object : Migration(8, 9) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userKeysEntity ADD COLUMN schemeVersion TEXT DEFAULT NULL")
+        }
+    }
+
+    private val MIGRATION_9_10 = object : Migration(9, 10) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userEntity ADD COLUMN passwordUpdate TEXT DEFAULT NULL")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -57,6 +75,9 @@ object MainDatabaseMigrations {
         MIGRATION_3_4,
         MIGRATION_4_5,
         MIGRATION_5_6,
-        MIGRATION_6_7
+        MIGRATION_6_7,
+        MIGRATION_7_8,
+        MIGRATION_8_9,
+        MIGRATION_9_10,
     )
 }

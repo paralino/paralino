@@ -40,11 +40,11 @@ enum class ServerFunction constructor(
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
 
-    EVENT_PLACES(method = "POST", path = "/events/places"),
-    EVENT_BATTERY(method = "POST", path = "/events/battery"),
+    EVENT_PLACES(method = "POST", path = "/events/places", functionId = "ping"),
+    EVENT_BATTERY(method = "POST", path = "/events/battery", functionId = "ping"),
 
     PERSONAL_CODE_CREATE(method = "POST", path = "/personal_code"),
-    PERSONAL_CODE_READ(method = "GET", path = "/personal_code"),
+    PERSONAL_CODE_READ_V2(method = "POST", path = "/personal_code/read"),
     PERSONAL_CODE_UPDATE(method = "PATCH", path = "/personal_code"),
     PERSONAL_CODE_DELETE(method = "DELETE", path = "/personal_code"),
 
@@ -52,6 +52,7 @@ enum class ServerFunction constructor(
 
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
+    ACCOUNT_CHANGE_EMAIL(method = "PATCH", path = "/user/email"),
 
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
     LOGIN(method = "POST", path = "/login", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false)

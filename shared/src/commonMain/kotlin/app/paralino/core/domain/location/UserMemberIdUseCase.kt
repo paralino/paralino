@@ -38,7 +38,10 @@ class UserMemberIdUseCase constructor(
     }
 
     suspend fun getCurrentLocationForGroup(groupId: String): MemberLocation? {
-        return getCurrentUserMemberWithLocationsForGroup(groupId)?.currentDeviceLocation
+        return groupLocal.getMemberWithLocationsOnce(
+            groupId = groupId,
+            userId = appPrefs.userId
+        )?.currentDeviceLocation
     }
 
     suspend fun getCurrentLocationIdForGroup(groupId: String): String? {
@@ -58,13 +61,6 @@ class UserMemberIdUseCase constructor(
 
     suspend fun getCurrentUserMemberForGroup(groupId: String): MemberModel? {
         return groupLocal.getMemberOnce(
-            groupId = groupId,
-            userId = appPrefs.userId
-        )
-    }
-
-    suspend fun getCurrentUserMemberWithLocationsForGroup(groupId: String): MemberModelWithLocations? {
-        return groupLocal.getMemberWithLocationsOnce(
             groupId = groupId,
             userId = appPrefs.userId
         )

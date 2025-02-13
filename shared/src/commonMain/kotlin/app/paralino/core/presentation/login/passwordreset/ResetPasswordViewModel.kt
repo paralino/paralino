@@ -5,10 +5,19 @@ import app.paralino.core.models.Payload
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.login.SignUpStep
-import app.paralino.core.utils.exceptions.*
+import app.paralino.core.utils.exceptions.BaseRemoteException
+import app.paralino.core.utils.exceptions.DecryptionException
+import app.paralino.core.utils.exceptions.InvalidRequestException
+import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ResetPasswordViewModel constructor(
@@ -18,70 +27,104 @@ class ResetPasswordViewModel constructor(
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(ResetPasswordScreenState())
-    val uiState: Flow<ResetPasswordScreenState> = _uiState
+    val uiState: StateFlow<ResetPasswordScreenState> = _uiState
 
     private val _eventChannel = Channel<ResetPasswordScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
 
     fun proceed() {
-        val passwordNew = _uiState.value.newPassword
-        val passwordConfirm = _uiState.value.confirmPassword
+        coroutineScope.launch {
+            val email = _uiState.value.email
 
-        val newPasswordValidation = FormValidation.Password.validate(passwordNew)
-        val confirmPasswordValidation =
-            FormValidation.PasswordConfirm.validate(passwordNew, passwordConfirm)
+            val passwordNew = _uiState.value.newPassword
+            val passwordConfirm = _uiState.value.confirmPassword
 
-        _uiState.update {
-            it.copy(
-                hasNewPasswordError = !newPasswordValidation.result,
-                hasConfirmPasswordError = !confirmPasswordValidation.result
+            val emailValidation = FormValidation.Email.validate(email)
+            val newPasswordValidation = FormValidation.Password.validateWithDictionary(
+                password = passwordNew,
+                dictionary = FormValidation.Password.defaultPasswordDictionary()
             )
+            val confirmPasswordValidation = FormValidation.PasswordConfirm.validate(
+                password = passwordNew,
+                confirmPassword = passwordConfirm
+            )
+
+            _uiState.update {
+                it.copy(
+                    hasEmailError = !emailValidation.result,
+                    hasNewPasswordError = !newPasswordValidation.result,
+                    hasConfirmPasswordError = !confirmPasswordValidation.result
+                )
+            }
+
+            val firstValidation =
+                arrayOf(emailValidation, newPasswordValidation, confirmPasswordValidation)
+                    .firstOrNull { !it.result }
+
+            if (firstValidation != null) {
+                coroutineScope.launch {
+                    _eventChannel.send(ResetPasswordScreenEvent.ValidationError(firstValidation))
+                }
+            } else {
+                resetPasswordAction(email = email, password = passwordNew)
+            }
+        }
+    }
+
+    private fun resetPasswordAction(
+        email: String,
+        password: String
+    ) {
+        if (resetPassword.isProcessingAny() || uiState.value.actionLoading == true) {
+            return
         }
 
-        val firstValidation =
-            arrayOf(newPasswordValidation, confirmPasswordValidation)
-                .firstOrNull { !it.result }
+        resetPassword.resetPassword(
+            email = email,
+            userId = userId,
+            secret = secret,
+            password = password
+        )
+            .mapToPayload { it }
+            .onEach { result ->
+                when (result) {
+                    Payload.Loading -> {
+                        _uiState.update { it.copy(actionLoading = true) }
+                    }
 
-        if (firstValidation != null) {
-            coroutineScope.launch {
-                _eventChannel.send(ResetPasswordScreenEvent.ValidationError(firstValidation))
-            }
-        } else if (!resetPassword.isProcessingAny()) {
-            resetPassword.resetPassword(userId = userId, secret = secret, password = passwordNew)
-                .mapToPayload { it }
-                .onEach { result ->
-                    when (result) {
-                        Payload.Loading -> {
-                            _uiState.update { it.copy(actionLoading = true) }
-                        }
-                        is Payload.Error -> {
-                            _uiState.update { it.copy(actionLoading = null) }
-                            val remoteError = result.exception.asRemoteException()
-                            if (remoteError is InvalidRequestException) {
-                                _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
-                            } else if (remoteError is UnauthorizedException) {
-                                if(remoteError.type == BaseRemoteException.typeUserInvalidToken) {
-                                    _eventChannel.send(ResetPasswordScreenEvent.InvalidToken)
-                                } else {
-                                    _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
-                                }
-                            } else if (result.exception is DecryptionException) {
-                                _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
+                    is Payload.Error -> {
+                        _uiState.update { it.copy(actionLoading = null) }
+                        val remoteError = result.exception.asRemoteException()
+                        if (remoteError is InvalidRequestException) {
+                            _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
+                        } else if (remoteError is UnauthorizedException) {
+                            if (remoteError.type == BaseRemoteException.typeUserInvalidToken) {
+                                _eventChannel.send(ResetPasswordScreenEvent.InvalidToken)
                             } else {
-                                _eventChannel.send(ResetPasswordScreenEvent.Error(result.exception))
+                                _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
                             }
+                        } else if (result.exception is DecryptionException) {
+                            _eventChannel.send(ResetPasswordScreenEvent.CredentialsError)
+                        } else {
+                            _eventChannel.send(ResetPasswordScreenEvent.Error(result.exception))
                         }
-                        is Payload.Success -> {
-                            if(result.data == SignUpStep.ALL_DONE) {
-                                _uiState.update { it.copy(actionLoading = false) }
-                                _eventChannel.send(ResetPasswordScreenEvent.PasswordChanged)
-                            }
+                    }
+
+                    is Payload.Success -> {
+                        if (result.data == SignUpStep.ALL_DONE) {
+                            _uiState.update { it.copy(actionLoading = false) }
+                            _eventChannel.send(ResetPasswordScreenEvent.PasswordChanged)
                         }
                     }
                 }
-                .launchIn(coroutineScope)
-        }
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun onEmailChange(email: String) {
+        if (_uiState.value.actionLoading == true) return
+        _uiState.update { it.copy(email = email, hasEmailError = false) }
     }
 
     fun onNewPasswordChange(password: String) {

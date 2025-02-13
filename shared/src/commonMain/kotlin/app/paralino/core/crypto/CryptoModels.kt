@@ -10,10 +10,16 @@ class SimpleKeyPairData(
 )
 
 @Serializable
-data class UserAuthDerivedKey(
+data class UserAuthDerivedKeyV1(
     val masterAuthKey: String,
     val loginKey: String,
     val loginSalt: String,
+    val kdfAlg: KDFAlg
+)
+
+@Serializable
+data class UserAuthDerivedKeyV2(
+    val loginKey: String,
     val kdfAlg: KDFAlg
 )
 
@@ -223,6 +229,7 @@ sealed class GroupMemberIdentityKey {
     open val key: String? = null
 
     sealed class Error : GroupMemberIdentityKey() {
+        object MissingOwnerSignatureKeys : Error()
         object Missing : Error()
         object Invalid : Error()
     }

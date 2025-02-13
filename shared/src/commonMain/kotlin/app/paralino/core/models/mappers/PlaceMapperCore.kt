@@ -16,12 +16,20 @@ class PlaceMapperCore constructor(
     private val cryptoCore: CryptoCore,
     val settingsMapper: PlaceSettingsMapperCore
 ) {
-    suspend fun remote2Core(model: GroupPlaceRaw): GroupPlace {
+    suspend fun remote2Core(model: GroupPlaceRaw, groupOwnerId: String? = null): GroupPlace {
 
-        val groupKey = cryptoKEKRepo.getGroupKey(
-            groupId = model.groupId,
-            keyVersion = model.groupKeyVersion
-        )
+        val groupKey = if (groupOwnerId.isNullOrBlank()) {
+            cryptoKEKRepo.getGroupKey(
+                groupId = model.groupId,
+                keyVersion = model.groupKeyVersion
+            )
+        } else {
+            cryptoKEKRepo.getGroupKey(
+                groupId = model.groupId,
+                groupOwnerId = groupOwnerId,
+                keyVersion = model.groupKeyVersion
+            )
+        }
 
         if(groupKey !is GroupMasterKey.Valid)
             logg.e(MissingGroupKeyException(model.groupId, model.groupKeyVersion))

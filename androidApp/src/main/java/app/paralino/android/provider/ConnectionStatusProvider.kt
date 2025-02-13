@@ -25,8 +25,12 @@ class ConnectionStatusProvider constructor(
 
     override suspend fun isInternetAvailable(url: String): Boolean {
         return withContext(Dispatchers.IO) {
-            val uri = Uri.parse(url)
-            !InetAddress.getByName(uri.host).equals("")
+            try {
+                val uri = Uri.parse(url)
+                !InetAddress.getByName(uri.host).equals("")
+            } catch (e: Exception) {
+                false
+            }
         }
     }
 

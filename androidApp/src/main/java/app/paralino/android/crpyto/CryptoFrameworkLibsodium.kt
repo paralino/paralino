@@ -9,10 +9,12 @@ import app.paralino.core.crypto.ICryptoServiceProvider
 import app.paralino.core.crypto.KDFAlg
 import app.paralino.core.crypto.KDFType
 import app.paralino.core.crypto.SimpleKeyPairData
+import app.paralino.core.utils.exceptions.CryptoException
+import app.paralino.core.utils.exceptions.DecryptionException
+import app.paralino.core.utils.exceptions.EncryptionException
 import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
 import com.goterl.lazysodium.LazySodiumAndroid
 import com.goterl.lazysodium.SodiumAndroid
-import com.goterl.lazysodium.exceptions.SodiumException
 import com.goterl.lazysodium.interfaces.AEAD
 import com.goterl.lazysodium.interfaces.Box
 import com.goterl.lazysodium.interfaces.KeyDerivation
@@ -149,7 +151,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
         )
 
         if (!result) {
-            throw SodiumException("Could not encrypt message.")
+            throw EncryptionException(message = "Could not encrypt message.")
         }
 
         return nonce.plus(cipherBytes)
@@ -216,7 +218,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             key
         )
         if (!result) {
-            throw SodiumException("Could not decrypt message")
+            throw DecryptionException(type = "symmetric", message = "Could not decrypt message.")
         }
 
         return lazySodium.str(messageBytes)
@@ -261,7 +263,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                         saltInput.size.toLong()
                     )
                 ) {
-                    throw SodiumException("Error creating password context hash")
+                    throw CryptoException("Error creating password context hash")
                 }
 
                 val passwordBytes: ByteArray = lazySodium.bytes(password)
@@ -284,10 +286,8 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 )
 
                 if (!result) {
-                    throw SodiumException(
-                        "Could not hash your string. This may be due to insufficient " +
-                                "memory or your CPU does not support Argon2's instruction set."
-                    )
+                    throw CryptoException(message = "Could not hash your string. This may be due to insufficient " +
+                            "memory or your CPU does not support Argon2's instruction set.")
                 }
 
                 return when (alg.encodingType) {
@@ -330,7 +330,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 )
 
                 if (!result) {
-                    throw SodiumException("Could not encrypt your message.")
+                    throw EncryptionException(message = "Could not encrypt your message.")
                 }
 
                 return nonce.plus(cipherBytes).encodeWithCipherAlg()
@@ -375,7 +375,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 )
 
                 if (!res) {
-                    throw SodiumException("Could not decrypt your message.")
+                    throw DecryptionException(type = "keyPair", message = "Could not decrypt your message.")
                 }
 
                 return lazySodium.str(message)
@@ -399,7 +399,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
                 )
 
                 if (!result) {
-                    throw SodiumException("Could not sign your message.")
+                    throw CryptoException("Could not sign your message.")
                 }
 
                 return signedMessage.encodeWithCipherAlg()
@@ -450,7 +450,7 @@ class CryptoFrameworkLibsodium : ICryptoServiceProvider {
             lazySodium.cryptoGenericHash(hash, hash.size, message, message.size.toLong())
 
         if (!res) {
-            throw SodiumException("Could not hash the message.")
+            throw CryptoException("Could not hash the message.")
         }
 
         return when (encodingType) {

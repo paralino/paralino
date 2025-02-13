@@ -3,7 +3,7 @@ package app.paralino.core.presentation.settings
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
-import app.paralino.core.models.user.UserPlan
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 
@@ -35,15 +35,11 @@ sealed class AccountScreenEvent() {
 }
 
 sealed class AccountScreenUiEvent() {
-    data object HideDialog: AccountScreenUiEvent()
     data object Logout: AccountScreenUiEvent()
-    data object LogoutConfirm: AccountScreenUiEvent()
     data object DeleteAccount: AccountScreenUiEvent()
-    data object DeleteAccountConfirm: AccountScreenUiEvent()
-    data object DeleteAccountSecondConfirm: AccountScreenUiEvent()
     data object SendEmailVerification: AccountScreenUiEvent()
-    data object ConfirmSendEmailVerification: AccountScreenUiEvent()
     data object ToggleLocationBoost: AccountScreenUiEvent()
     data object TogglePlaceActivityThrottle: AccountScreenUiEvent()
     data class Copy(val content: String): AccountScreenUiEvent()
+    data class DialogAction(val action: AlertDialogAction) : AccountScreenUiEvent()
 }

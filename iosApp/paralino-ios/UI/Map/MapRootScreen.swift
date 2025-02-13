@@ -25,7 +25,7 @@ struct MapRootScreen: View {
                             case .account: AccountScreen(path: $mainAppState.userReadyGraph)
                             case .personalCodes: PersonalCodeScreen()
                             case .settings: SettingsScreen(path: $mainAppState.userReadyGraph)
-                            case .changeEmail: ChangeEmailScreen(path: $mainAppState.userReadyGraph)
+                            case .changeEmail: ChangeEmailScreen(onFinish: {})
                             case .changePassword: ChangePasswordScreen(path: $mainAppState.userReadyGraph)
                             case .convertAccount: ConvertAccountScreen(path: $mainAppState.userReadyGraph)
                             case .blocklist: BlockListScreen(path: $mainAppState.userReadyGraph)

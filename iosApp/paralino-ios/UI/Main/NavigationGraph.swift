@@ -13,6 +13,11 @@ enum NavigationGraph: Hashable {
     case home(HomeGraph)
 }
 
+enum EmailVerificationGraph: Hashable {
+    case verifyEmail
+    case changeEmail
+}
+
 enum WelcomeGraph: Hashable {
     case welcome
     case onboarding

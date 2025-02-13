@@ -70,7 +70,7 @@ fun GroupListItem(
         ) {
             Text(
                 text = data.name,
-                style = MaterialTheme.typography.h6.copy(fontSize = if (data.isLarge) 20.sp else 16.sp),
+                style = MaterialTheme.typography.h5.copy(fontSize = if (data.isLarge) 20.sp else 16.sp),
                 modifier = Modifier
             )
 
@@ -107,6 +107,7 @@ fun GroupListItem(
             }
 
             val status = when (data.uiType) {
+                GroupItemState.GroupUiType.OVER_LIMITS -> GroupStatusTagType.OVER_LIMITS
                 GroupItemState.GroupUiType.UNVERIFIED -> GroupStatusTagType.UNVERIFIED
                 GroupItemState.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
                 GroupItemState.GroupUiType.INACTIVE -> null

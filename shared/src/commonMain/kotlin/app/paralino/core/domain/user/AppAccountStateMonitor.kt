@@ -68,7 +68,7 @@ class AppAccountStateMonitor constructor(
                         }
 
                         userKeyRepo.userKeyState().firstOrNull() != true -> {
-                            if (appPrefs.temporaryMasterAuthKey.isNotBlank()) {
+                            if (appPrefs.accountRecoveryFlag) {
                                 logg.tag("account_state")
                                     .v("Key is not valid but backup password is active")
                                 Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
@@ -82,17 +82,20 @@ class AppAccountStateMonitor constructor(
                         else -> {
                             try {
                                 val decryptedUser = userMapper.remote2Core(user)
-                                if (decryptedUser.hasValidData) {
-                                    logg.tag("account_state").v("User is ready")
-                                    Resource.Ready(data = AppAccountState.USER_READY(decryptedUser))
-                                } else {
+                                if (decryptedUser.needsEmailVerification) {
+                                    logg.tag("account_state").v("User is ready but needs email verification")
+                                    Resource.Ready(data = AppAccountState.EMAIL_VERIFICATION(decryptedUser))
+                                } else if (!decryptedUser.hasValidData) {
                                     logg.tag("account_state")
                                         .v("User is ready but profile is missing")
                                     Resource.Ready(data = AppAccountState.NO_PROFILE(decryptedUser))
+                                } else {
+                                    logg.tag("account_state").v("User is ready")
+                                    Resource.Ready(data = AppAccountState.USER_READY(decryptedUser))
                                 }
                             } catch (e: Exception) {
                                 logg.e("Error decrypting user", e)
-                                if (appPrefs.temporaryMasterAuthKey.isNotBlank()) {
+                                if (appPrefs.accountRecoveryFlag) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
                                 } else {
@@ -148,7 +151,7 @@ class AppAccountStateMonitor constructor(
                         refreshEverything.refreshEverything(forceGroupRefresh = true)
                         appPrefs.didEverFullyRefreshData = true
                     }
-                } else if (it.data is AppAccountState.NO_PROFILE) {
+                } else if (it.data is AppAccountState.NO_PROFILE || it.data is AppAccountState.EMAIL_VERIFICATION) {
                     logg.tag("account_state").v("${it.data} - Refresh user and profile")
                     userRepo.refreshUserMaybe()
                 } else if (!everHadUser && it.data is AppAccountState.NO_USER) {
@@ -194,7 +197,8 @@ sealed class AppAccountState {
     data class NO_USER(val canRecoverGuest: Boolean) : AppAccountState()
     object NO_USER_DATA : AppAccountState()
     object DATA_REFRESH : AppAccountState()
-    data class NO_PROFILE(val user: UserMe) : AppAccountState()
     data class ACCOUNT_RESET(val userRaw: UserMeRaw) : AppAccountState()
+    data class NO_PROFILE(val user: UserMe) : AppAccountState()
+    data class EMAIL_VERIFICATION(val user: UserMe) : AppAccountState()
     data class USER_READY(val user: UserMe) : AppAccountState()
 }

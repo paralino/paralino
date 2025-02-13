@@ -56,8 +56,8 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.SettingsActionItem
@@ -65,7 +65,7 @@ import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -83,7 +83,10 @@ fun AccountScreenCore(
     var showDangerZoneContent by remember { mutableStateOf(false) }
     val accountState by viewModel.accountState.collectAsState()
 
-    AccountScreenDialogs(dialog = accountState.data?.alertDialog, onEvent = viewModel::onEvent)
+    val dialog = accountState.data?.alertDialog
+    dialog?.Show {
+        viewModel.onEvent(AccountScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+    }
 
     Column(
         modifier = Modifier
@@ -120,7 +123,7 @@ fun AccountScreenCore(
                     onClick = null
                 )
 
-                Spacer(modifier = Modifier.size(40.dp))
+                Spacer(modifier = Modifier.size(20.dp))
 
                 SettingsActionItem(
                     name = stringResource(MR.strings.settings_account_edit_profile),
@@ -197,53 +200,6 @@ fun AccountScreenCore(
     }
 }
 
-@Composable
-private fun AccountScreenDialogs(
-    dialog: MainAlertDialog?,
-    onEvent: (AccountScreenUiEvent) -> Unit
-) {
-
-    when (val dialog = dialog) {
-        is MainAlertDialog.Logout -> {
-            MainAlertDialog.Logout.Show {
-                onEvent(AccountScreenUiEvent.HideDialog)
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    onEvent(AccountScreenUiEvent.LogoutConfirm)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteAccount -> {
-            MainAlertDialog.DeleteAccount.Show {
-                when (it) {
-                    MainAlertDialog.Buttons.buttonOk -> onEvent(AccountScreenUiEvent.DeleteAccountConfirm)
-                    else -> onEvent(AccountScreenUiEvent.HideDialog)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteAccountConfirm -> {
-            MainAlertDialog.DeleteAccountConfirm.Show {
-                onEvent(AccountScreenUiEvent.HideDialog)
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    onEvent(AccountScreenUiEvent.DeleteAccountSecondConfirm)
-                }
-            }
-        }
-
-        is MainAlertDialog.VerifyEmail -> {
-            dialog.Show {
-                onEvent(AccountScreenUiEvent.HideDialog)
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    onEvent(AccountScreenUiEvent.ConfirmSendEmailVerification)
-                }
-            }
-        }
-
-        else -> {}
-    }
-}
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AccountInfoHeader(
@@ -290,10 +246,10 @@ fun AccountInfoHeader(
                                 text = stringResource(MR.strings.settings_account_guest_badge),
                                 onClick = onGuestAccountClick
                             )
+                            Spacer(modifier = Modifier.size(8.dp))
                         }
 
                         if (userPlan.planTypeEnum.isOtherThanSilver) {
-                            Spacer(modifier = Modifier.size(8.dp))
                             AccountHeaderChip(
                                 backgroundColor = AppColors.accentDark,
                                 contentColor = MaterialTheme.colors.onPrimary,
@@ -378,13 +334,12 @@ fun AccountInfoHeader(
         }
 
         if (errorItem != null) {
-            Spacer(modifier = Modifier.size(10.dp))
+            Spacer(modifier = Modifier.size(20.dp))
             ConditionErrorItem(
                 data = errorItem
             ) {
                 onErrorItemClick(errorItem)
             }
-            Spacer(modifier = Modifier.size(10.dp))
         }
     }
 }
@@ -419,7 +374,7 @@ fun AccountHeaderChip(
             Spacer(modifier = Modifier.size(4.dp))
         }
         Text(
-            text = text.annotatedBold(),
+            text = text.annotatedBoldCompose(),
             style = MaterialTheme.typography.caption.copy(color = contentColor)
         )
     }

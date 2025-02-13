@@ -51,7 +51,7 @@ fun SharingStartScreen(
         if (vm.shouldProceedToPaywall) {
             appState.navController.navigate(
                 AppScreen.MainHome.BillingPaywall.route(
-                    groupId = groupId,
+                    groupId = vm.currentGroupId,
                     type = when (isOnboarding) {
                         true -> BillingScreenSourceType.ONBOARDING
                         false -> BillingScreenSourceType.UPGRADE
@@ -64,7 +64,7 @@ fun SharingStartScreen(
             }
         } else if(isOnboarding) {
             appState.navController.navigate(
-                AppScreen.MainHome.GroupDetails.route(groupId = groupId!!)
+                AppScreen.MainHome.GroupDetails.route(groupId = vm.currentGroupId!!)
             ) {
                 this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
                     this.inclusive = false
@@ -89,7 +89,6 @@ fun SharingStartScreen(
     ) {
         SharingStartScreenCore(
             appState = appState,
-            groupId = groupId,
             vm = vm,
             onSharingStarted = {
                 finishWithSharingScreen(isOnboarding = isOnboarding)

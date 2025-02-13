@@ -25,6 +25,7 @@ class MainAppObject: ObservableObject {
     @Published var sessionExpiredDialog: AlertDialogData? = nil
     
     @Published var appStartGraph: [WelcomeGraph] = []
+    @Published var emailVerificationGraph: [EmailVerificationGraph] = []
     @Published var userReadyGraph: [NavigationGraph] = []
     
     @State private var deeplinkTask: Task<Void, Never>?
@@ -65,7 +66,12 @@ class MainAppObject: ObservableObject {
         // reset graph if state is out of graph
         if accountState.data is AppAccountState.USER_READY {
             appStartGraph = []
+            emailVerificationGraph = []
         } else if accountState.data is AppAccountState.NO_USER {
+            userReadyGraph = []
+            emailVerificationGraph = []
+        } else if accountState.data is AppAccountState.EMAIL_VERIFICATION {
+            appStartGraph = []
             userReadyGraph = []
         }
     }

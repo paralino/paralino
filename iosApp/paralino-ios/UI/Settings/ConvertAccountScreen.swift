@@ -11,7 +11,7 @@ import shared
 struct ConvertAccountScreen: View {
     
     @Binding var path: [NavigationGraph]
-    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.convertAccountVM)
+    @StateObject var appState = ConvertAccountState()
     
     var body: some View {
         ZStack {
@@ -19,18 +19,35 @@ struct ConvertAccountScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.ConvertAccountScreenVC(
                     vm: appState.vm,
-                    onNavigateBack: { path.removeLast() }
+                    onNavigateBack: {
+                        if (appState.canNavigateBack) {
+                            path.removeLast()
+                        }
+                    }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_account_guest_convert.localizedString())
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(!appState.canNavigateBack)
         }
     }
 }
 
-struct ConvertAccountScreen_Previews: PreviewProvider {
-    @State static var path: [NavigationGraph] = [.settings(.convertAccount)]
-    static var previews: some View {
-        ConvertAccountScreen(path: $path)
+class ConvertAccountState: ObservableObject {
+    
+    let vm: ConvertAccountViewModel
+    @Published var canNavigateBack: Bool = true
+    
+    init () {
+        self.vm = KoinIOS.ViewModels.shared.convertAccountVM
+        
+        vm.observe(flow: vm.canNavigateBack) { [weak self] value in
+            self?.canNavigateBack = (value as? KotlinBoolean)?.boolValue == true
+        }
+    }
+    
+    deinit {
+        vm.cleanup()
     }
 }

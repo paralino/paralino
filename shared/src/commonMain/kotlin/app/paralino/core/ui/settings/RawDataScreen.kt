@@ -44,7 +44,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -135,7 +135,7 @@ private fun RawDataScreenSection(
     ) {
         if (section.title != null) {
             Text(
-                text = section.title.annotatedBold(),
+                text = section.title.annotatedBoldCompose(),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,7 +145,7 @@ private fun RawDataScreenSection(
 
         if (section.subtitle != null) {
             Text(
-                text = section.subtitle.annotatedBold(),
+                text = section.subtitle.annotatedBoldCompose(),
                 style = MaterialTheme.typography.subtitle2,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -173,7 +173,7 @@ private fun RawDataScreenSection(
                     }
                     Text(
                         modifier = Modifier,
-                        text = item.text.annotatedBold(),
+                        text = item.text.annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
                     )
                 }
@@ -252,7 +252,7 @@ private fun RawDataChip(
         )
         Spacer(modifier = Modifier.size(4.dp))
         Text(
-            text = text.annotatedBold(),
+            text = text.annotatedBoldCompose(),
             style = MaterialTheme.typography.caption
         )
     }

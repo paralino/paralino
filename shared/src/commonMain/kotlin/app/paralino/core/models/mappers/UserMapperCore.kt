@@ -13,6 +13,7 @@ import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 
 class UserMapperCore(
     private val cryptoCore: CryptoCore,
@@ -48,6 +49,7 @@ class UserMapperCore(
             email = model.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
+            passwordUpdate = model.passwordUpdate?.isoWithOffsetToInstant(),
             data = model.data?.let { remote2Core(it) }
         )
     }

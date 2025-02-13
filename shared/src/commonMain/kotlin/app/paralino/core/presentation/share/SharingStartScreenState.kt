@@ -11,7 +11,8 @@ import app.paralino.core.utils.SharingDurationPreset
 
 data class SharingStartScreenState constructor(
     val groupState: Payload<GroupItemState?> = Payload.Loading,
-    val deviceName: String = "",
+    val canChangeGroup: Boolean,
+    val deviceName: String? = null,
     val sharingTimeMillis: Long = SharingDurationPreset.premiumPresets.last(),
     val sharingPresetsMillis: List<Long> = SharingDurationPreset.premiumPresets,
     val approximateLocationMeters: Int = 200,
@@ -27,12 +28,13 @@ data class SharingStartScreenState constructor(
     val showNotifyOthers: Boolean = false,
     val isPremiumSectionVisible: Boolean = false,
     val devicesLimit: Int = 0,
-    val devicesCount: Int = 0,
+    val devicesCount: Int? = null,
     val errors: List<ConditionErrorType> = emptyList(),
     val warnings: List<ConditionErrorType> = emptyList(),
     val loadingAction: Boolean = false,
     val alertDialog: MainAlertDialog? = null
 ) {
+    val canShowContent: Boolean = groupState is Payload.Loading || groupState.data != null
     val sharingTimeIndex: Int
         get() {
             return sharingPresetsMillis.indexOfFirst { it == sharingTimeMillis }.takeIf { it >= 0 }

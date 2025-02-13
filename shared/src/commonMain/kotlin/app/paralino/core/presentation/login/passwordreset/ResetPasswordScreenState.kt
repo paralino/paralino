@@ -4,6 +4,8 @@ import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.common.IFormValidationResult
 
 data class ResetPasswordScreenState constructor(
+    val email: String = "",
+    val hasEmailError: Boolean = false,
     val newPassword: String = "",
     val confirmPassword: String = "",
     val hasNewPasswordError: Boolean = false,

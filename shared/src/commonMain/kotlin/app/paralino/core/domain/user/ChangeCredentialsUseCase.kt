@@ -1,47 +1,86 @@
 package app.paralino.core.domain.user
 
-import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GeneratedUserKeys
-import app.paralino.core.crypto.UserAuthDerivedKey
+import app.paralino.core.crypto.KDFAlg
+import app.paralino.core.crypto.user.CryptoAccountOperationV1
+import app.paralino.core.crypto.user.CryptoAccountOperationV2
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.crypto.user.CryptoUserKeysRemoteSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
+import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.logg
+import app.paralino.core.models.raw.SchemeVersion
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.OldMasterKeys
 import app.paralino.core.models.user.SymmetricCryptoKeyData
+import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.DecryptionException
+import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.exceptions.MissingUserKeyException
+import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.exceptions.UnsupportedEncryptionSchemeException
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 
 class ChangeCredentialsUseCase(
     private val userRepo: UserRepository,
     private val cryptoCore: CryptoCore,
+    private val cryptoAccountOperationV1: CryptoAccountOperationV1,
+    private val cryptoAccountOperationV2: CryptoAccountOperationV2,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val userKeysRemoteSource: CryptoUserKeysRemoteSource,
-    private val appPrefs: AppPrefs
-): LimitedExecution() {
+    private val connectionStatus: IConnectionStatusProvider,
+    private val appPrefs: AppPrefs,
+    private val parentManager: LimitedExecutionParentManager,
+) : LimitedExecution(scope = parentManager) {
+
+    override fun isProcessing(key: String): Boolean {
+        return isProcessingAny()
+    }
 
     fun changeEmail(email: String, password: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
             userId = appPrefs.userId,
+            oldEmail = appPrefs.email,
+            newEmail = email,
             oldPassword = password,
-            newPassword = null,
+            newPassword = password,
+            replaceKey = false,
             action = { oldLoginKey, newLoginKey ->
-                userRepo.updateUserEmail(
-                    newEmail = email,
-                    password = oldLoginKey!!
-                )
+                val currentUser = userRepo.refreshUserIfAvailable()
+                val lastPasswordUpdate = currentUser.passwordUpdateTime
+                val requestTime = nowUTC()
+
+                try {
+                    userRepo.updateUserEmailAndPassword(
+                        newEmail = email,
+                        oldPassword = oldLoginKey,
+                        newPassword = newLoginKey
+                    )
+                } catch (e: Exception) {
+                    val updatedUser = userRepo.refreshUserIfAvailable()
+                    val isPasswordUpdated = updatedUser.passwordUpdateTime?.let {
+                        it > (lastPasswordUpdate ?: requestTime)
+                    } ?: false
+                    if (updatedUser.email == email && isPasswordUpdated) {
+                        // we can assume that data is updated
+                    } else {
+                        throw e
+                    }
+                }
             }
         )
             .startProcessing("change_email")
@@ -50,11 +89,14 @@ class ChangeCredentialsUseCase(
     fun changePassword(oldPassword: String, newPassword: String): Flow<ChangeCredentialsStep> {
         return changeCredentials(
             userId = appPrefs.userId,
+            oldEmail = appPrefs.email,
+            newEmail = appPrefs.email,
             oldPassword = oldPassword,
             newPassword = newPassword,
+            replaceKey = true,
             action = { oldLoginKey, newLoginKey ->
                 userRepo.changePassword(
-                    oldPassword = oldLoginKey!!,
+                    oldPassword = oldLoginKey,
                     newPassword = newLoginKey
                 )
             }
@@ -64,60 +106,131 @@ class ChangeCredentialsUseCase(
 
     fun changeCredentials(
         userId: String,
+        oldEmail: String,
+        newEmail: String,
         oldPassword: String,
-        newPassword: String?,
-        action: suspend (String?, String) -> Unit
+        newPassword: String,
+        replaceKey: Boolean,
+        action: suspend (String, String) -> Unit
     ): Flow<ChangeCredentialsStep> {
         return flow {
-            emit(ChangeCredentialsStep.PREPARING)
 
             val oldKey = userKeyRepo.getLocalRawKey()
                 ?: throw MissingUserKeyException(localCache = false)
 
-            val oldMasterAuthKey = cryptoCore.deriveUserAuthKey(
-                salt = oldKey.loginSalt,
-                password = oldPassword,
-                alg = BaseRemoteModule.formatter.decodeFromString(oldKey.loginAlg)
+            val oldKeys = GeneratedUserKeys(
+                userPersonalKey = userKeyRepo.activePersonalKeyWithVersion().key,
+                signatureKeyPair = userKeyRepo.signatureKeyPair(),
+                encryptedKeyData = oldKey
             )
-
-            val newMasterAuthKey = if (newPassword.isNullOrBlank()) {
-                oldMasterAuthKey
-            } else {
-                cryptoCore.deriveUserAuthKey(
-                    salt = cryptoCore.randomId(
-                        length = 32,
-                        alphabet = AlphabetType.EXTENDED
-                    ),
-                    password = newPassword,
-                    alg = cryptoCore.getDefaultLoginKDFAlg()
-                )
-            }
 
             emitAll(
                 changeCredentials(
                     userId = userId,
-                    oldKey = GeneratedUserKeys(
-                        userPersonalKey = userKeyRepo.activePersonalKeyWithVersion().key,
-                        signatureKeyPair = userKeyRepo.signatureKeyPair(),
-                        encryptedKeyData = oldKey
-                    ),
-                    oldMasterAuthKey = oldMasterAuthKey,
-                    newMasterAuthKey = newMasterAuthKey,
+                    oldEmail = oldEmail,
+                    newEmail = newEmail,
+                    oldPassword = oldPassword,
+                    newPassword = newPassword,
+                    replaceKey = replaceKey,
+                    oldKeys = oldKeys,
                     action = action
                 )
             )
-        }.catch {
-            logg.e(it)
-            throw it
-        }.flowOn(Dispatchers.IO)
+        }
     }
 
     fun changeCredentials(
         userId: String,
+        oldEmail: String,
+        newEmail: String,
+        oldPassword: String,
+        newPassword: String,
+        replaceKey: Boolean,
+        oldKeys: GeneratedUserKeys,
+        action: (suspend (String, String) -> Unit)?
+    ): Flow<ChangeCredentialsStep> {
+        return flow {
+
+            val oldKey = oldKeys.encryptedKeyData
+            val oldLoginKey = when (oldKey.schemeVersionType) {
+                SchemeVersion.V1_0 -> {
+                    val oldMasterAuthKey = cryptoAccountOperationV1.deriveUserAuthKey(
+                        salt = oldKey.loginSalt,
+                        password = oldPassword,
+                        alg = BaseRemoteModule.formatter.decodeFromString(oldKey.loginAlg)
+                    )
+
+                    cryptoAccountOperationV1.verifyUserKeysChange(
+                        oldKey = oldKey,
+                        oldMasterAuthKey = oldMasterAuthKey.masterAuthKey,
+                        oldMasterKey = oldKeys.userPersonalKey,
+                    )
+                    oldMasterAuthKey.loginKey
+                }
+                SchemeVersion.V2_0 -> {
+                    try {
+                        cryptoAccountOperationV2.verifyUserKeysChange(
+                            oldKey = oldKey,
+                            oldPassword = oldPassword,
+                            oldMasterKey = oldKeys.userPersonalKey,
+                        )
+                    } catch (e: Exception) {
+                        if (e is DecryptionException) {
+                            throw UnauthorizedException(code = null, type = null, message = e.message, cause = e)
+                        } else {
+                            throw e
+                        }
+                    }
+                    val oldMasterAuthKey = cryptoAccountOperationV2.deriveUserAuthKey(
+                        email = oldEmail,
+                        password = oldPassword,
+                        alg = cryptoCore.getDefaultLoginKDFAlg()
+                    )
+                    oldMasterAuthKey.loginKey
+                }
+                is SchemeVersion.UNKNOWN -> {
+                    throw UnsupportedEncryptionSchemeException(scheme = oldKey.schemeVersionType.key)
+                }
+            }
+
+            val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
+
+            emitAll(
+                changeCredentials(
+                    userId = userId,
+                    oldKey = oldKeys,
+                    loginKDFAlg = loginAlg,
+                    newPassword = newPassword,
+                    replaceKey = replaceKey,
+                    action = if (action != null) {
+                        {
+                            val newMasterAuthKey = cryptoAccountOperationV2.deriveUserAuthKey(
+                                email = newEmail,
+                                password = newPassword,
+                                alg = loginAlg
+                            )
+                            action(oldLoginKey, newMasterAuthKey.loginKey)
+                        }
+                    } else {
+                        null
+                    }
+                )
+            )
+        }
+            .onStart { emit(ChangeCredentialsStep.PREPARING) }
+            .catch {
+                logg.e(it)
+                throw it
+            }.flowOn(Dispatchers.IO)
+    }
+
+    private fun changeCredentials(
+        userId: String,
         oldKey: GeneratedUserKeys,
-        oldMasterAuthKey: UserAuthDerivedKey?,
-        newMasterAuthKey: UserAuthDerivedKey,
-        action: suspend (String?, String) -> Unit
+        loginKDFAlg: KDFAlg,
+        newPassword: String,
+        replaceKey: Boolean,
+        action: (suspend () -> Unit)?
     ): Flow<ChangeCredentialsStep> {
         return flow {
 
@@ -125,10 +238,11 @@ class ChangeCredentialsUseCase(
 
             // re-encrypt current key with new password
 
-            val newUserKeys = cryptoCore.changeUserMasterKey(
+            val newUserKeys = cryptoAccountOperationV2.changeUserMasterKey(
                 userId = userId,
                 signatureKeyPair = oldKey.signatureKeyPair,
-                authKey = newMasterAuthKey
+                password = newPassword,
+                loginAlg = loginKDFAlg
             )
 
             val oldMasterKeys = oldKey.encryptedKeyData.oldMasterKeys
@@ -172,57 +286,93 @@ class ChangeCredentialsUseCase(
                 oldMasterKeys = updatedOldMasterKeys,
                 loginSalt = newUserKeys.encryptedKeyData.loginSalt,
                 loginAlg = newUserKeys.encryptedKeyData.loginAlg,
-                dataAlg = newUserKeys.encryptedKeyData.dataAlg
+                dataAlg = newUserKeys.encryptedKeyData.dataAlg,
+                dataSalt = newUserKeys.encryptedKeyData.dataSalt,
+                schemeVersion = SchemeVersion.V2_0.key
             )
 
             // verify everything is correctly done and matches
-            if (oldMasterAuthKey != null) {
-                try {
-                    cryptoCore.verifyUserKeysChange(
-                        oldKey = oldKey.encryptedKeyData,
-                        newKey = newKey,
-                        oldMasterAuthKey = oldMasterAuthKey.masterAuthKey,
-                        newMasterAuthKey = newMasterAuthKey.masterAuthKey,
-                        oldMasterKey = oldKey.userPersonalKey,
-                        newMasterKey = newUserKeys.userPersonalKey
-                    )
-                } catch (e: Exception) {
-                    throw InvalidRequestException(message = e.message, e)
-                }
+            try {
+                cryptoAccountOperationV2.verifyUserKeysChange(
+                    oldKey = oldKey.encryptedKeyData,
+                    newKey = newKey,
+                    newPassword = newPassword,
+                    oldMasterKey = oldKey.userPersonalKey,
+                    newMasterKey = newUserKeys.userPersonalKey
+                )
+            } catch (e: Exception) {
+                throw InvalidRequestException(message = e.message, e)
             }
 
-            // first upload new key to server as backup, without deleting old keys
-            val backedUpKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = false)
+            if (replaceKey) {
+                // first upload new key to server as backup, without deleting old keys
+                val backedUpKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = false)
 
-            // check once more everything is properly uploaded
-            check(newKey.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
-            check(newKey.encryptedPrivateKey == backedUpKey.encryptedPrivateKey)
-            check(newKey.encryptedPublicKey == backedUpKey.encryptedPublicKey)
-            check(newKey.publicKey == backedUpKey.publicKey)
-            check(newKey.oldMasterKeys == backedUpKey.oldMasterKeys)
-            check(newKey.loginSalt == backedUpKey.loginSalt)
-            check(newKey.loginAlg == backedUpKey.loginAlg)
-            check(newKey.dataAlg == backedUpKey.dataAlg)
+                // check once more everything is properly uploaded
+                newKey.checkKeysAreValid(backedUpKey = backedUpKey)
 
-            emit(ChangeCredentialsStep.CHANGING_CREDENTIALS)
+                emit(ChangeCredentialsStep.CHANGING_CREDENTIALS)
 
-            // action
-            action(oldMasterAuthKey?.loginKey, newMasterAuthKey.loginKey)
+                // ensure proper network connection before change action
+                val networkStatus = connectionStatus.initAndGetStatus(forceCheck = true)
+                if (!networkStatus.isOnline) {
+                    throw InternalConnectionException(status = networkStatus)
+                }
 
-            // if password is changed successfully we can save the new key and delete old ones
-            val newRemoteKey = userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                // action
+                action?.invoke()
 
-            // at this point both login password and encryption key are updated safely
-            // we can save the key locally
-            userKeyRepo.saveUserKey(
-                key = newRemoteKey,
-                decryptedMainKey = newUserKeys.userPersonalKey
-            )
+                emit(ChangeCredentialsStep.KEY_APPLY)
+
+                // if password is changed successfully we can save the new key and delete old ones
+
+                // save key right away
+                userKeyRepo.saveUserKey(
+                    key = backedUpKey,
+                    decryptedMainKey = newUserKeys.userPersonalKey
+                )
+
+                // apply to remote
+                val newRemoteKey = try {
+                    userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                } catch (e: Exception) {
+                    delay(300)
+                    try {
+                        // try once again
+                        userKeysRemoteSource.createPersonalKey(newKey, removeOldKeys = true)
+                    } catch (e: Exception) {
+                        delay(300)
+                        // get keys to see if already uploaded
+                        try {
+                            userKeysRemoteSource.getAllMyKeys().firstOrNull { newKey ->
+                                try {
+                                    newKey.checkKeysAreValid(backedUpKey = backedUpKey)
+                                    true
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }!!
+                        } catch (e: Exception) {
+                            // fallback to already uploaded key
+                            // on next login or credentials change it will be sorted out
+                            backedUpKey
+                        }
+                    }
+                }
+
+                // at this point both login password and encryption key are updated safely
+                // we can save the key locally again
+                userKeyRepo.saveUserKey(
+                    key = newRemoteKey,
+                    decryptedMainKey = newUserKeys.userPersonalKey
+                )
+            } else {
+                emit(ChangeCredentialsStep.CHANGING_CREDENTIALS)
+                // action
+                action?.invoke()
+            }
 
             emit(ChangeCredentialsStep.DONE)
-        }.catch {
-            logg.e(it)
-            throw it
         }.flowOn(Dispatchers.IO)
     }
 }
@@ -231,5 +381,6 @@ enum class ChangeCredentialsStep {
     PREPARING,
     KEY_SETUP,
     CHANGING_CREDENTIALS,
+    KEY_APPLY,
     DONE
 }

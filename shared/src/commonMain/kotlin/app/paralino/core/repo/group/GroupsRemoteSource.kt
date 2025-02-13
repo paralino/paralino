@@ -106,7 +106,10 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             if (memberUserId == groupOwnerId)
-                throw PermissionDeniedException(code = 403, message = "Owner can not be removed from the group")
+                throw PermissionDeniedException(
+                    code = 403,
+                    message = "Owner can not be removed from the group"
+                )
 
             val payload = DeleteGroupMemberPayload(
                 groupId = groupId,
@@ -165,7 +168,12 @@ class GroupsRemoteSource constructor(
             val places = placesAsync.await()
 
             groups
-                .filter { AppPrefs.isEncryptionSchemeSupported(it.schemeVersion) }
+                .filter {
+                    AppPrefs.isEncryptionSchemeSupported(
+                        schemeVersion = it.schemeVersion,
+                        supportedEncryptionScheme = AppPrefs.supportedGroupEncryptionScheme
+                    )
+                }
                 .map { group ->
                     GroupWithMembersAndPlacesRaw(
                         group = GroupWithMembersRaw(
@@ -209,7 +217,12 @@ class GroupsRemoteSource constructor(
                 }
             }
 
-            if (!AppPrefs.isEncryptionSchemeSupported(group.schemeVersion)) {
+            val isEncryptionSchemeSupported =  AppPrefs.isEncryptionSchemeSupported(
+                schemeVersion = group.schemeVersion,
+                supportedEncryptionScheme = AppPrefs.supportedGroupEncryptionScheme
+            )
+
+            if (!isEncryptionSchemeSupported) {
                 throw UnsupportedGroupEncryptionSchemeException(
                     groupId = group.id,
                     schemeVersion = group.schemeVersion
@@ -285,7 +298,10 @@ class GroupsRemoteSource constructor(
         return blocking {
 
             if (appPrefs.userId == group.ownerUserId)
-                throw PermissionDeniedException(code = 403, message = "Owner can not block the group")
+                throw PermissionDeniedException(
+                    code = 403,
+                    message = "Owner can not block the group"
+                )
 
             val userKey = cryptoUserKeyRepo.activePersonalKeyWithVersion()
             val groupData = group.data.data?.let {

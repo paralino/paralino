@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.theme.ButtonStyle
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
@@ -171,7 +171,7 @@ fun AppSnackbar(
                     Text(
                         modifier = Modifier
                             .padding(4.dp),
-                        text = snackbarData.message.annotatedBold(),
+                        text = snackbarData.message.annotatedBoldCompose(),
                         textAlign = TextAlign.Start,
                     )
                     actionComposable?.let {

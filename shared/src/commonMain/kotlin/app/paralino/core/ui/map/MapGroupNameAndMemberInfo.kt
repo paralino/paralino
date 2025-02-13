@@ -77,7 +77,7 @@ fun MapGroupNameAndMemberInfo(
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 2.dp)
-                .padding(start = 16.dp, end = 8.dp),
+                .padding(start = 12.dp, end = 8.dp),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
@@ -149,8 +149,7 @@ fun MapGroupNameAndMemberInfo(
 
         Box(
             modifier = Modifier
-                .size(56.dp)
-                .padding(4.dp)
+                .size(52.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = if (interactionVisibilityFraction == 1f) LocalIndication.current else null
@@ -160,8 +159,7 @@ fun MapGroupNameAndMemberInfo(
                     0.5.dp,
                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled * interactionVisibilityFraction),
                     RoundedCornerShape(percent = 100)
-                )
-                .padding(4.dp),
+                ),
             contentAlignment = Alignment.Center
         ) {
             if (verified) {

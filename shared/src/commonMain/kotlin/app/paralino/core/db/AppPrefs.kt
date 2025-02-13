@@ -19,8 +19,13 @@ class AppPrefs(
     companion object {
         lateinit var instance: AppPrefs
 
-        const val supportedEncryptionScheme: String = "1.0"
-        fun shouldUpgradeEncryptionScheme(schemeVersion: String): Boolean {
+        const val supportedGroupEncryptionScheme: String = "1.0"
+        const val supportedAccountEncryptionScheme: String = "2.0"
+
+        fun shouldUpgradeEncryptionScheme(
+            schemeVersion: String,
+            supportedEncryptionScheme: String
+        ): Boolean {
             try {
                 val supportedVersions = supportedEncryptionScheme.split(".")
                 val versions = schemeVersion.split(".")
@@ -29,7 +34,10 @@ class AppPrefs(
                 return false
             }
         }
-        fun isEncryptionSchemeSupported(schemeVersion: String): Boolean {
+        fun isEncryptionSchemeSupported(
+            schemeVersion: String,
+            supportedEncryptionScheme: String
+        ): Boolean {
             try {
                 val supportedVersions = supportedEncryptionScheme.split(".")
                 val versions = schemeVersion.split(".")
@@ -49,6 +57,8 @@ class AppPrefs(
         const val keyEmailConfirmed = "prefs.profile.email.confirmed"
         const val keyEmailGuest = "prefs.profile.guest.email"
         const val keyPasswordGuest = "prefs.profile.guest.password"
+        const val keyEmailGuestV2 = "prefs.profile.guest.email.v2"
+        const val keyPasswordGuestV2 = "prefs.profile.guest.password.v2"
         const val keyPushTokenUnsynced = "prefs.device.pushToken.unsynced"
         const val keyPushTokenSynced = "prefs.device.pushToken.synced"
         const val keyLocationPushTokenUnsynced = "prefs.device.locationPushToken.unsynced"
@@ -69,6 +79,8 @@ class AppPrefs(
         const val keyBatterySaverDeviceLowPower = "prefs.location.batterySaver.deviceLowPowerMode"
         const val keyBalancedPerformance = "prefs.location.balanced.performance"
         const val keyBalancedHighAccuracy = "prefs.location.balanced.highAccuracy"
+        const val keyBalancedAutomaticPauseIOS = "prefs.location.ios.autoPause"
+        const val keyLocationShowIndicatorIOS = "prefs.location.ios.indicator"
         const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
         const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
         const val keyLoggedInAppLaunchCount = "prefs.device.appLaunchCount.account"
@@ -123,22 +135,38 @@ class AppPrefs(
             provider.userSettings.putBoolean(keyEmailConfirmed, value)
         }
 
-    var temporaryMasterAuthKey: String
-        get() = provider.userSettings.getString(keyTempPassword, "")
+    var accountRecoveryFlag: Boolean
+        get() = provider.userSettings.getString(keyTempPassword, "").isNotBlank()
         set(value) {
-            provider.userSettings.putString(keyTempPassword, value)
+            if (value) {
+                provider.userSettings.putString(keyTempPassword, "recovery_needed")
+            } else {
+                provider.userSettings.putString(keyTempPassword, "")
+            }
         }
 
-    var guestEmail: String
+    var guestEmailV1: String
         get() = provider.appSettings.getString(keyEmailGuest, "")
         set(value) {
             provider.appSettings.putString(keyEmailGuest, value)
         }
 
-    var guestPassword: String
+    var guestPasswordV1: String
         get() = provider.appSettings.getString(keyPasswordGuest, "")
         set(value) {
             provider.appSettings.putString(keyPasswordGuest, value)
+        }
+
+    var guestEmailV2: String
+        get() = provider.appSettings.getString(keyEmailGuestV2, "")
+        set(value) {
+            provider.appSettings.putString(keyEmailGuestV2, value)
+        }
+
+    var guestPasswordV2: String
+        get() = provider.appSettings.getString(keyPasswordGuestV2, "")
+        set(value) {
+            provider.appSettings.putString(keyPasswordGuestV2, value)
         }
 
     var encryptedUserMasterKey: String
@@ -259,6 +287,18 @@ class AppPrefs(
             provider.userSettings.putBoolean(keyBalancedHighAccuracy, value)
         }
 
+    var locationSettingsAutoPauseIOS: Boolean
+        get() = provider.userSettings.getBoolean(keyBalancedAutomaticPauseIOS, true)
+        set(value) {
+            provider.userSettings.putBoolean(keyBalancedAutomaticPauseIOS, value)
+        }
+
+    var locationSettingsShowIndicatorIOS: Boolean
+        get() = provider.userSettings.getBoolean(keyLocationShowIndicatorIOS, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyLocationShowIndicatorIOS, value)
+        }
+
     var locationSettingsBalancedPerformanceType: String?
         get() = provider.userSettings.getStringOrNull(keyBalancedPerformance).takeIf { !it.isNullOrBlank() }
         set(value) {
@@ -316,11 +356,32 @@ class AppPrefs(
         }
 
 
-
     fun hasGuestAccount(): Boolean {
-        val emailValidation = FormValidation.Email.validate(appPrefs.guestEmail)
-        val passwordValidation = FormValidation.Password.validate(appPrefs.guestPassword)
+        return hasV1GuestAccount() || hasV2GuestAccount()
+    }
+
+    fun hasV1GuestAccount(): Boolean {
+        return hasGuestAccount(email = guestEmailV1, password = guestPasswordV1)
+    }
+
+    fun hasV2GuestAccount(): Boolean {
+        return hasGuestAccount(email = guestEmailV2, password = guestPasswordV2)
+    }
+
+    private fun hasGuestAccount(
+        email: String,
+        password: String
+    ): Boolean {
+        val emailValidation = FormValidation.Email.validate(email)
+        val passwordValidation = FormValidation.TextNotEmpty.validate(password)
         return emailValidation.result && passwordValidation.result
+    }
+
+    fun invalidateGuestAccount() {
+        appPrefs.guestEmailV1 = ""
+        appPrefs.guestPasswordV1 = ""
+        appPrefs.guestEmailV2 = ""
+        appPrefs.guestPasswordV2 = ""
     }
 
     fun clearPushTokens() {

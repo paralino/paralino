@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.presentation.share.SharingStartScreenEvent
@@ -52,6 +51,7 @@ import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
@@ -80,7 +80,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun SharingStartScreenCore(
     appState: CoreUiState,
-    groupId: String?,
     vm: SharingStartViewModel,
     onSharingStarted: () -> Unit,
     onSkipOnboarding: () -> Unit,
@@ -241,6 +240,14 @@ fun SharingStartScreenCore(
                 ),
         ) {
 
+            AnimatedVisibility(visible = state.groupState.data != null && !state.canChangeGroup) {
+                DataInfoChip(
+                    modifier = Modifier.padding(top = 20.dp),
+                    image = state.groupState.data?.image,
+                    text = state.groupState.data?.name ?: ""
+                )
+            }
+
             AnimatedVisibility(visible = state.errorsAndWarnings.isNotEmpty()) {
                 Column(modifier = Modifier.animateContentSize()) {
                     Spacer(modifier = Modifier
@@ -267,19 +274,18 @@ fun SharingStartScreenCore(
             }
 
             NoticeInfoChip(
-                modifier = Modifier
-                    .padding(top = 20.dp),
+                modifier = Modifier.padding(top = 20.dp),
                 text = stringResource(MR.strings.groups_sharing_encryption_info)
             )
 
-            AnimatedVisibility(visible = state.groupState.data != null) {
+            AnimatedVisibility(visible = state.groupState.data != null && state.canChangeGroup) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     SettingsSectionHeader(name = stringResource(MR.strings.groups_sharing_section_title_group))
                     GroupListItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                if (groupId.isNullOrBlank()) {
+                                if (state.canChangeGroup) {
                                     appState.uiScope.launch {
                                         val groupPickerState = vm.getGroupPickerState()
                                         onPickGroup(groupPickerState)
@@ -312,99 +318,104 @@ fun SharingStartScreenCore(
                 }
             }
 
-            Spacer(modifier = Modifier.size(10.dp))
+            AnimatedVisibility(visible = state.canShowContent) {
+                Column {
+                    AnimatedVisibility(visible = state.deviceName != null) {
+                        Column {
+                            Spacer(modifier = Modifier.size(10.dp))
+                            SettingsSectionHeader(
+                                modifier = Modifier.fillMaxWidth(),
+                                name = stringResource(MR.strings.groups_sharing_devices),
+                                count = state.devicesCount,
+                                limit = state.devicesLimit
+                            )
 
-            SettingsSectionHeader(
-                modifier = Modifier.fillMaxWidth(),
-                name = stringResource(MR.strings.groups_sharing_devices),
-                count = state.devicesCount.takeIf { AppBuildConfig.instance.hasPreviewFeatures },
-                limit = state.devicesLimit
-            )
-
-            MainInputField(
-                text = state.deviceName,
-                hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
-                hasError = false,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done,
-                capitalization = KeyboardCapitalization.Words,
-                focusManager = focusManager,
-                onInputChange = { vm.onDeviceNameChange(it) }
-            )
-
-            Spacer(modifier = Modifier.size(10.dp))
-            SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
-
-            LargeSeekbarSwitch(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                icon = CoreAppIcons.AccessTime.asPainterResource(),
-                title = stringResource(MR.strings.groups_sharing_section_title_duration),
-                description = getTime(state.sharingTimeMillis),
-                focusDescription = true,
-                state = seekbarState,
-                onProgressChange = {
-                    vm.sharingDurationChanged(it - 1)
-                }
-            )
-
-            Spacer(modifier = Modifier.size(10.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LargeSeekbarSwitch(
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .fillMaxWidth(0.5f),
-                    icon = CoreAppIcons.Speed.asPainterResource(),
-                    title = stringResource(MR.strings.groups_sharing_setting_speed_share),
-                    description = null,
-                    state = shareSpeedState,
-                    onStateChange = {
-                        vm.turnOnSpeedSharing(it)
+                            MainInputField(
+                                text = state.deviceName ?: "",
+                                hint = stringResource(MR.strings.groups_sharing_device_name_placeholder),
+                                hasError = false,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done,
+                                capitalization = KeyboardCapitalization.Words,
+                                focusManager = focusManager,
+                                onInputChange = { vm.onDeviceNameChange(it) }
+                            )
+                        }
                     }
-                )
-                LargeSeekbarSwitch(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = CoreAppIcons.StackedLineChart.asPainterResource(),
-                    title = stringResource(MR.strings.groups_sharing_setting_elevation_share),
-                    description = null,
-                    state = shareElevationState,
-                    onStateChange = {
-                        vm.turnOnElevationSharing(it)
-                    }
-                )
-            }
 
-            Spacer(modifier = Modifier.size(10.dp))
+                    Spacer(modifier = Modifier.size(10.dp))
+                    SettingsSectionHeader(name = stringResource(MR.strings.title_settings))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LargeSeekbarSwitch(
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .fillMaxWidth(0.5f),
-                    icon = CoreAppIcons.BatteryChargingFull.asPainterResource(),
-                    title = stringResource(MR.strings.groups_sharing_setting_battery_share),
-                    description = null,
-                    state = shareBatteryState,
-                    onStateChange = {
-                        vm.turnOnBatterySharing(it)
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                        icon = CoreAppIcons.AccessTime.asPainterResource(),
+                        title = stringResource(MR.strings.groups_sharing_section_title_duration),
+                        description = getTime(state.sharingTimeMillis),
+                        focusDescription = true,
+                        state = seekbarState,
+                        onProgressChange = {
+                            vm.sharingDurationChanged(it - 1)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        LargeSeekbarSwitch(
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                                .fillMaxWidth(0.5f),
+                            icon = CoreAppIcons.Speed.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_speed_share),
+                            description = null,
+                            state = shareSpeedState,
+                            onStateChange = {
+                                vm.turnOnSpeedSharing(it)
+                            }
+                        )
+                        LargeSeekbarSwitch(
+                            modifier = Modifier.fillMaxWidth(),
+                            icon = CoreAppIcons.StackedLineChart.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_elevation_share),
+                            description = null,
+                            state = shareElevationState,
+                            onStateChange = {
+                                vm.turnOnElevationSharing(it)
+                            }
+                        )
                     }
-                )
-                LargeSeekbarSwitch(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = CoreAppIcons.SignalCell3.asPainterResource(),
-                    title = stringResource(MR.strings.groups_sharing_setting_network_share),
-                    description = null,
-                    state = shareNetworkState,
-                    onStateChange = {
-                        vm.turnOnNetworkSharing(it)
-                    }
-                )
+
+                    Spacer(modifier = Modifier.size(10.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        LargeSeekbarSwitch(
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                                .fillMaxWidth(0.5f),
+                            icon = CoreAppIcons.BatteryChargingFull.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_battery_share),
+                            description = null,
+                            state = shareBatteryState,
+                            onStateChange = {
+                                vm.turnOnBatterySharing(it)
+                            }
+                        )
+                        LargeSeekbarSwitch(
+                            modifier = Modifier.fillMaxWidth(),
+                            icon = CoreAppIcons.SignalCell3.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_network_share),
+                            description = null,
+                            state = shareNetworkState,
+                            onStateChange = {
+                                vm.turnOnNetworkSharing(it)
+                            }
+                        )
 //                LargeSeekbarSwitch(
 //                    modifier = Modifier.fillMaxWidth(),
 //                    icon = AppIcons.ShareLocation,
@@ -423,51 +434,52 @@ fun SharingStartScreenCore(
 //                        vm.turnOnApproximateLocationSharing(it)
 //                    }
 //                )
-            }
+                    }
 
-            Spacer(modifier = Modifier.size(10.dp))
-            if (state.isPremiumSectionVisible) {
-                SettingsSectionHeader(
-                    modifier = Modifier.zIndex(0f),
-                    backgroundColor = Color.Transparent,
-                    name = stringResource(MR.strings.setting_location_premium_banner_title),
-                    end = {
-                        Icon(
-                            painter = CoreAppIcons.StarFamily.asPainterResource(),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.primary,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { openSubscriptions() }
-                                .background(
-                                    color = AppColors.highlightGold,
-                                    shape = CircleShape
+                    Spacer(modifier = Modifier.size(10.dp))
+                    if (state.isPremiumSectionVisible) {
+                        SettingsSectionHeader(
+                            modifier = Modifier.zIndex(0f),
+                            backgroundColor = Color.Transparent,
+                            name = stringResource(MR.strings.setting_location_premium_banner_title),
+                            end = {
+                                Icon(
+                                    painter = CoreAppIcons.StarFamily.asPainterResource(),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.primary,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable { openSubscriptions() }
+                                        .background(
+                                            color = AppColors.highlightGold,
+                                            shape = CircleShape
+                                        )
+                                        .padding(4.dp)
                                 )
-                                .padding(4.dp)
+                            }
                         )
+                        Spacer(modifier = Modifier.size(4.dp))
                     }
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-            }
 
-            if (state.showNotifyOthers) {
-                LargeSeekbarSwitch(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = CoreAppIcons.NotificationsActive.asPainterResource(),
-                    title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
-                    description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
-                    elevation = if (!state.isPremiumSectionVisible) 8.dp else 0.dp,
-                    state = rememberSeekbarState(
-                        key = state,
-                        state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                            seekbarState = null,
-                            switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
+                    if (state.showNotifyOthers) {
+                        LargeSeekbarSwitch(
+                            modifier = Modifier.fillMaxWidth(),
+                            icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_notifyOthers_title),
+                            description = stringResource(MR.strings.groups_sharing_setting_notifyOthers_description),
+                            state = rememberSeekbarState(
+                                key = state,
+                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                    seekbarState = null,
+                                    switchState = LargeSeekbarSwitchState.Switch(state.notifyOthers)
+                                )
+                            ).value,
+                            onStateChange = {
+                                vm.toggleNotifyOthers(it)
+                            }
                         )
-                    ).value,
-                    onStateChange = {
-                        vm.toggleNotifyOthers(it)
                     }
-                )
+                }
             }
         }
     }

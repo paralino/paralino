@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
-    groupId: String?,
+    val initialGroupId: String?,
     val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
@@ -61,16 +61,18 @@ class SharingStartViewModel(
     private val _uiState =
         MutableStateFlow(
             SharingStartScreenState(
-                groupState = if (groupId.isNullOrBlank()) {
+                groupState = if (initialGroupId.isNullOrBlank()) {
                     Payload.Success(null)
                 } else {
                     Payload.Loading
-                }
+                },
+                canChangeGroup = initialGroupId.isNullOrBlank()
             )
         )
     val uiState: StateFlow<SharingStartScreenState> = _uiState
 
     private val currentGroup = MutableStateFlow<UserGroupWithMetadata?>(null)
+    val currentGroupId: String? get() = currentGroup.value?.id
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -84,13 +86,21 @@ class SharingStartViewModel(
 
     init {
 
-        groupId?.let { setSelectedGroup(it) }
+        initialGroupId?.let { setSelectedGroup(it) }
+
+        coroutineScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(
+                    deviceName = userMemberIdUseCase.getDefaultDeviceName(currentGroup.value?.id)
+                )
+            }
+        }
 
         combine(
             deviceApiProvider.deviceStatus,
             currentGroup.flatMapMerge {
                 if (it == null) {
-                    flowOf(0)
+                    flowOf(null)
                 } else {
                     locationRepo.getLocationCountForMember(
                         groupId = it.id,
@@ -101,7 +111,6 @@ class SharingStartViewModel(
         ) { deviceStatus, locationCount ->
             _uiState.update {
                 it.copy(
-                    deviceName = userMemberIdUseCase.getDefaultDeviceName(groupId),
                     devicesCount = locationCount,
                     errors = buildList {
                         addAll(deviceStatus.locationStatus.getPossibleErrors(it.isLongTerm))
@@ -190,14 +199,14 @@ class SharingStartViewModel(
             onlyShowGroups = true,
             userPlan = null,
             createdGroups = allGroups.filter { it.group.isCurrentUserOwner }
-                .map { GroupItemState(it) },
+                .map { GroupItemState(it, remoteConfigRepo.getConfigOnce()) },
             joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }
-                .map { GroupItemState(it) },
+                .map { GroupItemState(it, remoteConfigRepo.getConfigOnce()) },
         )
     }
 
     fun setSelectedGroup(groupId: String) {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.IO) {
             groupRepo.getGroupWithMetadata(groupId = groupId).firstOrNull().let { group ->
                 setSelectedGroup(group)
             }
@@ -213,7 +222,7 @@ class SharingStartViewModel(
         val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
         _uiState.update {
             it.copy(
-                groupState = Payload.Success(group?.let { GroupItemState(it) }),
+                groupState = Payload.Success(group?.let { GroupItemState(it, remoteConfigRepo.getConfigOnce()) }),
                 devicesLimit = group?.group?.devicesLimit(remoteConfigRepo.getConfigOnce()) ?: 0,
                 showNotifyOthers = isGroupPremium || group?.group?.isCurrentUserOwner == true,
                 isPremiumSectionVisible = !isGroupPremium && group?.group?.isCurrentUserOwner == true,
@@ -250,6 +259,11 @@ class SharingStartViewModel(
     }
 
     private fun proceedWithSharing() {
+
+        if (registerDevice.isProcessingAny()) {
+            return
+        }
+
         val group = _uiState.value.groupState.data ?: let {
             showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
             return
@@ -259,7 +273,7 @@ class SharingStartViewModel(
             _uiState.update { it.copy(loadingAction = true) }
 
             val limit = _uiState.value.devicesLimit
-            val devicesCount = _uiState.value.devicesCount
+            val devicesCount = _uiState.value.devicesCount ?: 0
             val maxDeviceLimit =
                 remoteConfigRepo.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.devicesLimit
             val isDeviceRegistered = registerDevice.isDeviceAlreadyRegistered(groupId = group.id)

@@ -52,6 +52,7 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
+import app.paralino.core.presentation.login.emailverify.VerifyEmailViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
@@ -169,10 +170,10 @@ object KoinSetup {
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
-        viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs) }
+        viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get()) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { (groupId: String?, isOnboarding: Boolean) ->
-            SharingStartViewModel(groupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
+            SharingStartViewModel(initialGroupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get(), get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
@@ -189,9 +190,10 @@ object KoinSetup {
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { ChangeEmailViewModel(get(), get()) }
-        viewModel { ChangePasswordViewModel(get()) }
-        viewModel { ConvertAccountViewModel(get()) }
+        viewModel { VerifyEmailViewModel(get(), get()) }
+        viewModel { ChangeEmailViewModel(get(), get(), get()) }
+        viewModel { ChangePasswordViewModel(get(), get(), get(), get()) }
+        viewModel { ConvertAccountViewModel(get(), get(), get()) }
         viewModel { EditProfileViewModel(get(), get()) }
         viewModel { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }

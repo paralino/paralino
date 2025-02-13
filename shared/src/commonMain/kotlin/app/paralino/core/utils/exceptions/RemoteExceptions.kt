@@ -1,6 +1,7 @@
 package app.paralino.core.utils.exceptions
 
 import app.paralino.core.appPrefs
+import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.raw.FunctionErrorBody
 import app.paralino.core.provider.NetworkConnectionInfo
 
@@ -66,7 +67,9 @@ open class UnauthorizedException(code: Int?, type: String?, message: String?, ca
     message = message,
     cause = cause,
     type = type
-)
+) {
+    val isUserBlocked: Boolean = type == UserSessionMonitor.userBlocked
+}
 
 class InvalidRequestException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
 

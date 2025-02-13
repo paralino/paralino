@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.DialogProperties
 import app.paralino.core.ui.theme.AppTheme
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 
 @Composable
 fun LoadingDialog(
@@ -23,7 +23,7 @@ fun LoadingDialog(
     val title: (@Composable () -> Unit)? = if (text != null) {
         @Composable {
             Text(
-                text = text.annotatedBold(),
+                text = text.annotatedBoldCompose(),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )

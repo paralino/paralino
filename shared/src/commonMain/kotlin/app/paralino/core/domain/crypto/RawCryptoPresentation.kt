@@ -1,6 +1,7 @@
 package app.paralino.core.domain.crypto
 
 import app.paralino.core.MR
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.UserGroup
@@ -24,6 +25,7 @@ class RawCryptoPresentation constructor(
     private val groupLocal: UserGroupLocalDataSource,
     private val memberLocal: LocationLocalDataSource,
     private val userLocal: UserLocalDataSource,
+    private val userKeyLocal: CryptoUserKeysLocalSource,
     private val userConfigRepo: UserConfigRepository,
     private val appPrefs: AppPrefs
 ) {
@@ -38,10 +40,10 @@ class RawCryptoPresentation constructor(
                     contentIdInfo = buildList {
                         // only allow group owner to see group id
                         if (it.first.ownerUserId == appPrefs.userId) {
-                            add("GroupID: **$groupId**")
+                            add("Group ID: **$groupId**")
                         }
                         add("Group encryption scheme: **${it.first.schemeVersion}**")
-                        add("Supported encryption scheme: **${AppPrefs.supportedEncryptionScheme}**")
+                        add("Supported encryption scheme: **${AppPrefs.supportedGroupEncryptionScheme}**")
                     }.map { ContentIdItem(it) },
                     rawData = it.first.data,
                     decryptedData = it.second.data.mapSuccess {
@@ -72,7 +74,7 @@ class RawCryptoPresentation constructor(
                     contentIdInfo = buildList {
                         if (it.first.ownerUserId == appPrefs.userId) {
                             // only allow place owner to see place id
-                            add("PlaceID: **$placeId**")
+                            add("Place ID: **$placeId**")
                         }
                     }.map { ContentIdItem(it) },
                     rawData = it.first.data,
@@ -151,7 +153,7 @@ class RawCryptoPresentation constructor(
                             },
                             contentIdInfo = buildList {
                                 if (rawPair.first.member.ownerUserId == appPrefs.userId) {
-                                    add("DeviceID: **${location.deviceId}**")
+                                    add("Device ID: **${location.deviceId}**")
                                 }
                             }.map { ContentIdItem(it) },
                             rawData = locationDataPrint(
@@ -173,8 +175,8 @@ class RawCryptoPresentation constructor(
                             subtitle = null,
                             contentIdInfo = buildList {
                                 if (rawPair.first.member.ownerUserId == appPrefs.userId) {
-                                    add("UserID: **${appPrefs.userId}**")
-                                    add("MemberID: **${rawPair.first.member.id}**")
+                                    add("User ID: **${appPrefs.userId}**")
+                                    add("Member ID: **${rawPair.first.member.id}**")
                                 }
                                 add("Devices: **${rawPair.first.locations.size}**")
                                 add("Verification: **${rawPair.second.member.verificationResult}**")
@@ -227,12 +229,14 @@ class RawCryptoPresentation constructor(
                     title = it?.second?.name?.let { "**$it**" } ?: "---",
                     subtitle = null,
                     contentIdInfo = buildList {
+                        add(ContentIdItem(text = "Current encryption scheme: **${userKeyLocal.getLocalRawKey()?.schemeVersionType?.key ?: "Unknown"}**"))
+                        add(ContentIdItem(text = "Supported encryption scheme: **${AppPrefs.supportedAccountEncryptionScheme}**"))
                         if (it?.second?.isGuestUser == false) {
                             add(ContentIdItem(text = "Email:\n**${it.second.email}**", separateWithPadding = true))
                         }
-                        add(ContentIdItem(text = "UserID:\n**${appPrefs.userId}**", separateWithPadding = true, canCopy = true))
-                        add(ContentIdItem(text = "Billing UserID:\n**${userConfigRepo.configState.value.billingCustomerId}**", separateWithPadding = true, canCopy = true))
-                        add(ContentIdItem(text = "DeviceID:\n**${appPrefs.deviceId}**", separateWithPadding = true, canCopy = true))
+                        add(ContentIdItem(text = "User ID:\n**${appPrefs.userId}**", separateWithPadding = true, canCopy = true))
+                        add(ContentIdItem(text = "Billing User ID:\n**${userConfigRepo.configState.value.billingCustomerId}**", separateWithPadding = true, canCopy = true))
+                        add(ContentIdItem(text = "Device ID:\n**${appPrefs.deviceId}**", separateWithPadding = true, canCopy = true))
                         add(ContentIdItem(text = "Diagnostics ID:\n**${appPrefs.errorReportingID}**", separateWithPadding = true, canCopy = true))
                     },
                     rawData = it?.first?.data?.let {

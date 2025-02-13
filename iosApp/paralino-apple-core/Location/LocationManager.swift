@@ -65,6 +65,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
         }
         
         locationPerformanceManager.locationPerformanceStatus { [weak self] model in
+            self?.manager.showsBackgroundLocationIndicator = model.showLocationIndicator
             switch model.current {
             case .highBatterySaver:
                 let settings = LocationPerformanceSettingsTypeBatterySaverLevel1.shared
@@ -78,11 +79,11 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
                 self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
             case .balanced:
                 let settings = model.balancedPerformanceSettings
-                self?.manager.pausesLocationUpdatesAutomatically = true
+                self?.manager.pausesLocationUpdatesAutomatically = model.pausesLocationAutomatically
                 if settings.useHighPerformanceLocation {
-                    self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
-                } else {
                     self?.manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+                } else {
+                    self?.manager.desiredAccuracy = kCLLocationAccuracyKilometer
                 }
                 self?.manager.distanceFilter = CLLocationDistance(settings.minUpdateDistanceMeters)
             case .mediumHigh:

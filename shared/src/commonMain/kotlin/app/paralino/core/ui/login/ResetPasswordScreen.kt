@@ -19,20 +19,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenEvent
-import app.paralino.core.presentation.login.passwordreset.ResetPasswordScreenState
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.PasswordInputField
 import app.paralino.core.ui.components.PasswordValidationElement
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import dev.icerock.moko.resources.compose.stringResource
@@ -47,7 +48,7 @@ fun ResetPasswordScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val uiState by vm.uiState.collectAsState(initial = ResetPasswordScreenState())
+    val uiState by vm.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = Unit) {
@@ -88,7 +89,7 @@ fun ResetPasswordScreenCore(
     ActionScaffold(
         modifier = Modifier.fillMaxSize(),
         buttonState = AppButtonState.loadingStateWithCheck(uiState.actionLoading),
-        buttonText = stringResource(MR.strings.settings_account_edit_password_button),
+        buttonText = stringResource(MR.strings.reset_password_reset_button),
         buttonIcon = null,
         onConfirm = {
             focusManager.clearFocus()
@@ -109,6 +110,16 @@ fun ResetPasswordScreenCore(
                 .padding(20.dp),
             verticalArrangement = Arrangement.Top
         ) {
+            MainInputField(
+                text = uiState.email,
+                hint = stringResource(resource = MR.strings.login_placeholder_email),
+                hasError = uiState.hasEmailError,
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+                onInputChange = { vm.onEmailChange(it) }
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
 
             PasswordInputField(
                 password = uiState.newPassword,
@@ -139,7 +150,7 @@ fun ResetPasswordScreenCore(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(text = stringResource(MR.strings.recover_account_caption_reset).annotatedBold())
+            Text(text = stringResource(MR.strings.reset_password_caption_reset).annotatedBoldCompose())
         }
     }
 }

@@ -37,8 +37,10 @@ class CryptoUserKeysRemoteSource(
                 publicKey = data.publicKey,
                 oldMasterKeys = data.oldMasterKeys,
                 loginSalt = data.loginSalt,
+                dataSalt = data.dataSalt,
                 loginAlg = data.loginAlg,
                 dataAlg = data.dataAlg,
+                schemeVersion = data.schemeVersion,
                 matchingKeyVersion = data.userKeyVersion,
                 removeOldKeys = removeOldKeys,
             )

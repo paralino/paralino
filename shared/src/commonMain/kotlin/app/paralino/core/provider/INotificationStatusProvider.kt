@@ -3,7 +3,7 @@ package app.paralino.core.provider
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.toResource
-import app.paralino.core.presentation.ICoreMessageDispatcherEvent
+import app.paralino.core.presentation.common.ICoreMessageDispatcherEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

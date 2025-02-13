@@ -12,6 +12,7 @@ object BackendResourceIDs {
     const val emailConfirmationUrl = "https://paralino.app/verify"
 
     const val homeUrl = "https://paralino.com"
+    const val downloadUrl = "https://paralino.app/download"
     const val sourceCodeUrl = "https://github.com/paralino"
     const val helpSupportUrl = "https://paralino.com/help/"
     const val privacyPolicyUrl = "https://paralino.com/privacy"

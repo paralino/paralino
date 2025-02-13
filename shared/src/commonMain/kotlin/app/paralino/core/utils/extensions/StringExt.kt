@@ -34,7 +34,12 @@ fun Throwable?.errorString(): String {
     val error = this
     return when (error) {
         is UnverifiedUserException -> MR.strings.info_email_confirm.localizedString()
-        is RemoteConnectionException -> MR.strings.error_server_unavailable.localizedString()
+        is RemoteConnectionException -> {
+            when (error.code) {
+                429 -> MR.strings.group_members_status_too_many_requests.localizedString()
+                else -> MR.strings.error_server_unavailable.localizedString()
+            }
+        }
         is InternalConnectionException -> MR.strings.error_no_connection_snackbar.localizedString()
         is BaseRemoteException -> {
             when {

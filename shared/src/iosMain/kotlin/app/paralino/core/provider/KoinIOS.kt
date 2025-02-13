@@ -33,6 +33,7 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
+import app.paralino.core.presentation.login.emailverify.VerifyEmailViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
@@ -164,7 +165,7 @@ object KoinIOS {
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
             factory { (startScreenType: LoginScreenUiType) ->
-                LoginViewModel(get(), get(), get(), get(), startScreenType, appPrefs)
+                LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get())
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { (groupID: String?, isOnboarding: Boolean) ->
@@ -189,11 +190,12 @@ object KoinIOS {
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
             }
             factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            factory { ChangeEmailViewModel(get(), get()) }
-            factory { ChangePasswordViewModel(get()) }
-            factory { ConvertAccountViewModel(get()) }
+            factory { ChangeEmailViewModel(get(), get(), get()) }
+            factory { ChangePasswordViewModel(get(), get(), get(), get()) }
+            factory { ConvertAccountViewModel(get(), get(), get()) }
             factory { EditProfileViewModel(get(), get()) }
-            factory { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
+            factory { RecoverKeysViewModel(get(), get(), get(), get()) }
+            factory { VerifyEmailViewModel(get(), get()) }
             factory { (userId: String, secret: String) ->
                 ResetPasswordViewModel(
                     userId = userId,
@@ -313,5 +315,6 @@ object KoinIOS {
         val generalInfoVM get() = get<GeneralInfoViewModel>()
         val locationSettingsVM get() = get<LocationSettingsViewModel>()
         val welcomeOnboardingVM get() = get<WelcomeOnboardingViewModel>()
+        val verifyEmailVM get() = get<VerifyEmailViewModel>()
     }
 }

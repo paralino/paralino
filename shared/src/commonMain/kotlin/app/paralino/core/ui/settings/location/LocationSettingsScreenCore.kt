@@ -58,7 +58,7 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -119,7 +119,7 @@ fun LocationSettingsScreenCore(
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         modifier = Modifier.padding(bottom = 10.dp, top = 20.dp),
-                        text = stringResource(MR.strings.setting_location_highPerformance_duration_info).annotatedBold(),
+                        text = stringResource(MR.strings.setting_location_highPerformance_duration_info).annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
                         textAlign = TextAlign.Start
                     )
@@ -150,26 +150,62 @@ fun LocationSettingsScreenCore(
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         modifier = Modifier.padding(bottom = 20.dp),
-                        text = stringResource(MR.strings.setting_location_balanced_section_info).annotatedBold(),
+                        text = stringResource(MR.strings.setting_location_balanced_section_info).annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
                         textAlign = TextAlign.Start
                     )
                 }
 
-                val highAccuracyState by rememberSeekbarState(
-                    key = uiState,
-                    state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                        seekbarState = null,
-                        switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.useHighPerformanceLocation)
+                if (uiState.balancedSettings.showLocationIndicator != null) {
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                        icon = CoreAppIcons.LocationOn.asPainterResource(),
+                        title = stringResource(MR.strings.setting_location_balanced_locationIndicator_title),
+                        description = stringResource(MR.strings.setting_location_balanced_locationIndicator_description),
+                        state = rememberSeekbarState(
+                            key = uiState,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.showLocationIndicator ?: false)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedShowIndicator)
+                        }
                     )
-                )
+                }
+
+                if (uiState.balancedSettings.pausesLocationAutomatically != null) {
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                        icon = CoreAppIcons.StopCircle.asPainterResource(),
+                        title = stringResource(MR.strings.setting_location_balanced_autoPause_title),
+                        description = stringResource(MR.strings.setting_location_balanced_autoPause_description),
+                        state = rememberSeekbarState(
+                            key = uiState,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.pausesLocationAutomatically ?: true)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedAutoPause)
+                        }
+                    )
+                }
 
                 LargeSeekbarSwitch(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
                     icon = CoreAppIcons.ShareLocation.asPainterResource(),
                     title = stringResource(MR.strings.setting_location_balanced_highAccuracy_title),
                     description = stringResource(MR.strings.setting_location_balanced_highAccuracy_description),
-                    state = highAccuracyState,
+                    state = rememberSeekbarState(
+                        key = uiState,
+                        state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                            seekbarState = null,
+                            switchState = LargeSeekbarSwitchState.Switch(uiState.balancedSettings.useHighPerformanceLocation)
+                        )
+                    ).value,
                     onStateChange = {
                         vm.onEvent(LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance)
                     }
@@ -206,7 +242,7 @@ fun LocationSettingsScreenCore(
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         modifier = Modifier.padding(bottom = 20.dp),
-                        text = stringResource(MR.strings.setting_location_batterySaver_section_info).annotatedBold(),
+                        text = stringResource(MR.strings.setting_location_batterySaver_section_info).annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
                         textAlign = TextAlign.Start
                     )
@@ -380,7 +416,7 @@ fun SubscriptionOptionItem(
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Text(
                     modifier = Modifier,
-                    text = description.annotatedBold(),
+                    text = description.annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
                     textAlign = TextAlign.Start,
                     color = contentColor

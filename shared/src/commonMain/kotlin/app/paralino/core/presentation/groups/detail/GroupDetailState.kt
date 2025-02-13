@@ -15,6 +15,7 @@ data class GroupDetailScreenState(
     val membersLimit: Int,
     val canShowMembersLimit: Boolean,
     val shouldShowPlanBanner: Boolean,
+    val arePlacesOverLimit: Boolean?,
     val errors: List<ConditionErrorType>
 )
 
@@ -31,7 +32,7 @@ sealed class GroupDetailScreenEvent() {
     object GroupDeleted : GroupDetailScreenEvent()
     object GroupNotFound : GroupDetailScreenEvent()
     object GroupMemberAdd : GroupDetailScreenEvent()
-    data class GroupMembersLimitReached(val limit: Int) : GroupDetailScreenEvent()
+    data object OpenPaywall : GroupDetailScreenEvent()
     object GroupMemberDeleted : GroupDetailScreenEvent()
     object UserBlockActionCompleted : GroupDetailScreenEvent()
     object MemberLocationDeleted : GroupDetailScreenEvent()

@@ -12,6 +12,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
@@ -37,8 +38,10 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -67,8 +70,9 @@ class GroupDetailViewModel(
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroupWithMembers?>(null)
+    private val groupWithMetadata = MutableStateFlow<UserGroupWithMetadata?>(null)
     private val _uiState = MutableStateFlow<Payload<GroupDetailScreenState>>(Payload.Loading)
-    val uiState: Flow<Payload<GroupDetailScreenState>> = _uiState
+    val uiState: StateFlow<Payload<GroupDetailScreenState>> = _uiState
 
     private val _eventChannel = Channel<GroupDetailScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
@@ -87,7 +91,8 @@ class GroupDetailViewModel(
                 .sortedBy { it.member.name }
                 .sortedBy { it.member.userId != appPrefs.userId }
                 .map { member ->
-                    val canEdit = group.isCurrentUserOwner || member.member.userId == appPrefs.userId
+                    val canEdit =
+                        group.isCurrentUserOwner || member.member.userId == appPrefs.userId
 
                     val memberState = GroupMemberState(
                         member = member.member,
@@ -171,8 +176,11 @@ class GroupDetailViewModel(
                 members = members,
                 membersLimit = membersLimit,
                 canShowMembersLimit = group.isCurrentUserOwner,
-                shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(remoteConfigRepo.getConfigOnce()),
-                errors = errors
+                shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(
+                    remoteConfigRepo.getConfigOnce()
+                ),
+                errors = errors,
+                arePlacesOverLimit = groupWithMetadata.value?.isGroupOverLimits(remoteConfigRepo.getConfigOnce())
             )
         }
             .mapToPayload { it }
@@ -189,14 +197,25 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
 
         groupLocal.getGroupWithMetadata(groupId)
+            .onEach { group -> groupWithMetadata.update { group } }
             .filter { it.isGroupOverLimits(remoteConfigRepo.getConfigOnce()) }
             .distinctUntilChanged()
-            .onEach {
-                if (it.group.isCurrentUserOwner) {
+            .onEach { group ->
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(
+                            arePlacesOverLimit = group.arePlacesOverLimits(remoteConfigRepo.getConfigOnce())
+                        )
+                    }
+                }
+                if (group.group.isCurrentUserOwner) {
                     showSnackbar(
                         text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
                         duration = SnackbarDuration.Forever
                     )
+
+                    delay(1000)
+                    _eventChannel.trySend(GroupDetailScreenEvent.OpenPaywall)
                 } else {
                     showSnackbar(
                         text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
@@ -292,7 +311,7 @@ class GroupDetailViewModel(
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
             if (state.members.size >= state.membersLimit)
-                _eventChannel.send(GroupDetailScreenEvent.GroupMembersLimitReached(state.membersLimit))
+                _eventChannel.send(GroupDetailScreenEvent.OpenPaywall)
             else
                 _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
         }

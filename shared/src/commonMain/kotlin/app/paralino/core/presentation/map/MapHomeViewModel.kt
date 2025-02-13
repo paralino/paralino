@@ -140,12 +140,15 @@ class MapHomeViewModel constructor(
         ) { appLifecycleState, uiFocused ->
             keepUiRefreshPing()
             if (appLifecycleState.comingFromBackground && uiFocused) {
-                delay(2000)
                 if (groupIdData.value.isNotBlank()) {
+                    delay(2000)
                     logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
                     coroutineScope.launch(Dispatchers.IO) {
                         groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
                     }
+                } else {
+                    logg.v("home_screen", "App in foreground but no selected group - try to select default group")
+                    switchGroup(groupId = "")
                 }
             }
         }
@@ -449,13 +452,30 @@ class MapHomeViewModel constructor(
                 ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
                 ?: emptyList()
 
-            val newGroupId = allGroups.firstOrNull { it.id == groupId }?.id
-                ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }?.id
-                ?: allGroups.firstOrNull()?.id
-                ?: ""
+            val newGroup = allGroups.firstOrNull { it.id == groupId }
+                ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }
+                ?: allGroups.firstOrNull()
+
+            val newGroupId = newGroup?.id ?: ""
 
             appPrefs.selectedGroupId = newGroupId
             groupIdData.update { newGroupId }
+
+            if (newGroup != null && newGroup.isGroupOverLimits(remoteConfig.getConfigOnce())) {
+                if (newGroup.group.isCurrentUserOwner) {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                    delay(1000)
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                } else {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                }
+            }
         }
     }
 
@@ -624,16 +644,18 @@ class MapHomeViewModel constructor(
         return allGroups.value.data?.map { group ->
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
+                group.isGroupOverLimits(remoteConfig.getCachedConfigOnce()) -> GroupItemState.GroupUiType.OVER_LIMITS
                 sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
             val isSelected = group.id == groupIdData.value
             GroupItemState(
-                group,
-                uiType,
+                group = group,
+                config = remoteConfig.getCachedConfigOnce(),
+                uiType = uiType,
                 canEdit = true,
                 isSelected = isSelected,
-                isLarge = isSelected
+                isLarge = isSelected,
             )
         } ?: emptyList()
     }

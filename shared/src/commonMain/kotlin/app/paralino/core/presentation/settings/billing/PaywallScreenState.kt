@@ -6,7 +6,6 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.utils.extensions.annotatedBold
 
 data class PaywallScreenState(
     val plans: List<PlanInfoState>,
@@ -34,14 +33,14 @@ data class PlanInfoState(
     val billingPeriods: List<PlanBillingPeriodState>,
     val benefits: List<PlanConfig.PlanBenefit>
 ) {
-    val oneLineBenefits: AnnotatedString = benefits.joinToString(separator = ", ") { it.content }.annotatedBold()
-    val expandedBenefits: AnnotatedString = benefits.joinToString(separator = "\n") {
+    val oneLineBenefits: String = benefits.joinToString(separator = ", ") { it.content }
+    val expandedBenefits: String = benefits.joinToString(separator = "\n") {
         if (it.isHighlighted) {
             "⭐️ ${it.content}"
         } else {
             it.content
         }
-    }.annotatedBold()
+    }
     val selectedBillingPeriod: PlanBillingPeriodState? = billingPeriods.firstOrNull { it.isSelected }
 }
 

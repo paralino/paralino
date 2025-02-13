@@ -12,14 +12,22 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -88,6 +96,28 @@ class PlacesViewModel(
         }
             .onEach { state -> _uiState.update { Payload.Success(state) } }
             .catch { _eventChannel.send(PlacesScreenEvent.Error(it)) }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        _uiState
+            .map { it.data }
+            .filterNotNull()
+            .filter { it.isOverLimit }
+            .distinctUntilChanged()
+            .onEach {
+                if (it.isGroupOwner) {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                } else {
+                    showSnackbar(
+                        text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever
+                    )
+                }
+            }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 

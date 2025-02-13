@@ -185,6 +185,8 @@ data class UpdateUserKeysFunctionData constructor(
     val loginSalt: String,
     val loginAlg: String,
     val dataAlg: String,
+    val dataSalt: String?,
+    val schemeVersion: String?,
     val matchingKeyVersion: Long,
     val removeOldKeys: Boolean,
 )
@@ -197,7 +199,9 @@ data class AccountResetCryptoKeyPayload constructor(
     val publicKey: String,
     val loginSalt: String,
     val loginAlg: String,
-    val dataAlg: String
+    val dataAlg: String,
+    val dataSalt: String?,
+    val schemeVersion: String?,
 )
 
 @Serializable
@@ -304,4 +308,16 @@ data class BatteryAlertPayload constructor(
     val groupId: String,
     val memberId: String,
     val locationId: String
+)
+
+@Serializable
+data class PersonalCodeReadPayload(
+    val keyId: String
+)
+
+@Serializable
+data class UserEmailChangePayload(
+    val email: String,
+    val oldPassword: String,
+    val newPassword: String
 )

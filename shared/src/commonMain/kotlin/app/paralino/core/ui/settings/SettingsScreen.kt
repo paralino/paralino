@@ -3,7 +3,6 @@ package app.paralino.core.ui.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -47,10 +46,13 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
+import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -74,6 +76,13 @@ fun SettingsScreenCore(
     MessageDispatcherEffect(viewModel, appState)
     val accountState by viewModel.accountState.collectAsState()
 
+    val dialog = accountState.data?.alertDialog
+    dialog?.let { dialog ->
+        dialog.Show {
+            viewModel.onEvent(AccountScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+        }
+    }
+
     Column(
         modifier = Modifier
             .verticalScroll(state = rememberScrollState())
@@ -88,23 +97,30 @@ fun SettingsScreenCore(
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
                 userPlan = readyState.userPlan,
-                errorItem = null,
+                errorItem = readyState.userState.errorItem,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
                         openConvertAccount()
                     }
                 },
-                onErrorItemClick = { },
+                onErrorItemClick = {
+                    when (it) {
+                        is ConditionErrorType.EmailVerification -> {
+                            viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
+                        }
+
+                        else -> {}
+                    }
+                },
                 onCopy = { viewModel.onEvent(AccountScreenUiEvent.Copy(it)) },
                 onShareCode = onShareCode,
                 onClick = openPersonalCodes
             )
         }
 
-        Spacer(modifier = Modifier.size(20.dp))
-
         AnimatedVisibility(visible = readyState?.userPlan?.planTypeEnum?.isPremium == false) {
             PremiumPlanBanner(
+                modifier = Modifier.padding(top = 20.dp),
                 onClick = openPaywall
             )
         }
@@ -204,13 +220,11 @@ fun SettingSectionInfo(
             }
         }
 
-        if (AppBuildConfig.instance.hasPreviewFeatures) {
-            SettingsActionItem(
-                name = stringResource(MR.strings.setting_title_share),
-                icon = CoreAppIcons.Share.asPainterResource()
-            ) {
-                onShareApp(BackendResourceIDs.homeUrl)
-            }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_share),
+            icon = CoreAppIcons.Share.asPainterResource()
+        ) {
+            onShareApp(BackendResourceIDs.downloadUrl)
         }
 
         SettingsActionItem(
@@ -233,14 +247,14 @@ fun SettingsActionItem(
     iconTint: Color = MaterialTheme.colors.surface,
     type: SettingsActionItemType = SettingsActionItemType.Navigation,
     onLongClick: (() -> Unit)? = null,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
             .padding(horizontal = 12.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
+            .combinedClickable(enabled = onClick != null || onLongClick != null, onLongClick = onLongClick, onClick = { onClick?.invoke() })
             .padding(vertical = 12.dp),
     ) {
         Row(
@@ -266,14 +280,14 @@ fun SettingsActionItem(
                 Text(
                     modifier = Modifier,
                     text = name,
-                    style = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
+                    style = MaterialTheme.typography.subtitle1.copy(fontSize = 18.sp),
                     textAlign = TextAlign.Start
                 )
                 if (tag != null) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         Text(
                             modifier = Modifier,
-                            text = tag.annotatedBold(),
+                            text = tag.annotatedBoldCompose(),
                             style = MaterialTheme.typography.caption,
                             textAlign = TextAlign.Start
                         )
@@ -337,7 +351,7 @@ fun SettingsActionItem(
                     modifier = Modifier
                         .padding(top = 4.dp)
                         .padding(horizontal = 4.dp),
-                    text = description.annotatedBold(),
+                    text = description.annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
                     textAlign = TextAlign.Start
                 )

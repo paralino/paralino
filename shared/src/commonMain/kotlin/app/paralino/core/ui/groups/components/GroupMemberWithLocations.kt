@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,7 +61,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
@@ -79,14 +79,14 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.FullWidthActionButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.GroupStatusTag
-import app.paralino.core.ui.groups.GroupStatusTagType
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
-import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.StringResource
@@ -245,20 +245,22 @@ fun GroupMemberWithLocations(
             ) {
                 val iconId = "deviceIcon"
                 Text(
-                    text = buildAnnotatedString {
-                        this.append(state.memberState.name)
-                        if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
-                            this.append(" • ")
-                            appendInlineContent(iconId, "[device]")
-                            this.withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    baselineShift = BaselineShift(0.1f),
-                                    color = AppColors.accent
-                                )
-                            ) {
-                                this.append(state.singleLocation?.name ?: "")
+                    text = remember(state.memberState.name, state.singleLocation?.name, expanded, state.allowShowingDevices) {
+                        buildAnnotatedString {
+                            this.append(state.memberState.name)
+                            if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
+                                this.append(" • ")
+                                appendInlineContent(iconId, "[device]")
+                                this.withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        baselineShift = BaselineShift(0.1f),
+                                        color = AppColors.accent
+                                    )
+                                ) {
+                                    this.append(state.singleLocation?.name ?: "")
+                                }
                             }
                         }
                     },
@@ -300,7 +302,7 @@ fun GroupMemberWithLocations(
                                 .size(14.dp)
                         )
                         Text(
-                            text = state.filteredLastPing.annotatedBold(),
+                            text = state.filteredLastPing.annotatedBoldCompose(),
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                         )
@@ -475,12 +477,12 @@ fun GroupMemberWithLocations(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(MR.strings.group_members_last_status_update).annotatedBold(),
+                    text = stringResource(MR.strings.group_members_last_status_update).annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                 )
                 Text(
-                    text = " ${state.lastStatusPing}".annotatedBold(),
+                    text = " ${state.lastStatusPing}".annotatedBoldCompose(),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                 )
@@ -679,7 +681,7 @@ fun GroupMemberLocationChild(
                             .size(14.dp)
                     )
                     Text(
-                        text = state.lastLocationPing.annotatedBold(),
+                        text = state.lastLocationPing.annotatedBoldCompose(),
                         style = MaterialTheme.typography.caption,
                         color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                     )
@@ -729,34 +731,13 @@ fun GroupMemberOldLocation(
     onToggleLocation: () -> Unit
 ) {
     if (state?.visibility == MemberLocationVisibilityType.HIDDEN) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            FilledButton(
-                modifier = Modifier.padding(top = 12.dp),
-                style = ButtonStyle.SMALL,
-                icon = null,
-                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
-                onClick = onToggleLocation
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(MR.strings.group_members_item_old_location_button)
-                )
-                Icon(
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .width(20.dp),
-                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                    contentDescription = null
-                )
-            }
-        }
+        FullWidthActionButton(
+            modifier = modifier.fillMaxWidth(),
+            startIcon = CoreAppIcons.LocationOn.asPainterResource(),
+            text = stringResource(MR.strings.group_members_item_old_location_button),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
+            onClick = onToggleLocation
+        )
     }
 }
 

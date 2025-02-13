@@ -47,6 +47,8 @@ class UserKeyMapperCore constructor(
             loginSalt = model.loginSalt,
             loginAlg = model.loginAlg,
             dataAlg = model.dataAlg,
+            dataSalt = model.dataSalt,
+            schemeVersion = model.schemeVersion,
             isActive = isActive
         )
     }
@@ -63,6 +65,8 @@ class UserKeyMapperCore constructor(
             loginSalt = model.loginSalt,
             loginAlg = model.loginAlg,
             dataAlg = model.dataAlg,
+            dataSalt = model.dataSalt,
+            schemeVersion = model.schemeVersion,
             ownerUserId = userId
         )
     }

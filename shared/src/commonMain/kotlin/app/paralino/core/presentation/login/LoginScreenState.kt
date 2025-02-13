@@ -31,8 +31,6 @@ data class LoggedOutScreenState(
 
 enum class LoginScreenUiType {
     LOGIN, SIGNUP, FORGOT_PASSWORD;
-
-    val isCreatingAccount: Boolean get() = this == SIGNUP || this == LOGIN
 }
 
 sealed class LoginScreenEvent {
@@ -60,6 +58,7 @@ sealed class SignUpErrorType {
     object ACCOUNT_CONFLICT : SignUpErrorType()
     object CREDENTIALS : SignUpErrorType()
     object CREDENTIALS_GUEST : SignUpErrorType()
+    object USER_BLOCKED : SignUpErrorType()
     object LOGIN_CRYPTO : SignUpErrorType()
     object SIGNUP_CRYPTO : SignUpErrorType()
     object SIGNUP_DATA : SignUpErrorType()

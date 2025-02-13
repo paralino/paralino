@@ -45,10 +45,11 @@ class ExpiredSessionRecovery(
             blocking {
                 // clearing user here will disable any further potential actions until session is refreshed
                 userRepo.clearLocally()
+
                 // also clearing push tokens, so those will be synced again after new login
                 appPrefs.clearPushTokens()
 
-                loginUseCase.login(email = appPrefs.guestEmail, password = appPrefs.guestPassword)
+                loginUseCase.loginAsGuest()
                     .catch {
                         logg.w(
                             tag = "account_state",
@@ -62,8 +63,7 @@ class ExpiredSessionRecovery(
                                     tag = "account_state",
                                     message = "Guest user is no longer authorized, logout locally and clear user"
                                 )
-                                appPrefs.guestEmail = ""
-                                appPrefs.guestPassword = ""
+                                appPrefs.invalidateGuestAccount()
                             } else {
                                 logg.w(
                                     tag = "account_state",

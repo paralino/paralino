@@ -10,6 +10,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class UserPlanRaw constructor(
     @SerialName("\$id")
@@ -28,7 +29,7 @@ class UserPlanRaw constructor(
     // most of time it is just few minutes at most
     // In production we use multiple days as grace period if there are some billing issues
     val isExpired: Boolean get() = expiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 1.minutes else 1.hours)
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 5.minutes)
         ?.let { it < nowUTC() }
         ?: false
 

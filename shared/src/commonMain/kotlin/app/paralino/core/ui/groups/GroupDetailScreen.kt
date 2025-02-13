@@ -2,6 +2,7 @@ package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,15 +40,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.user.BlocklistType
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
+import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.detail.LocationSharingState
-import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
@@ -58,6 +60,7 @@ import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
@@ -67,6 +70,7 @@ import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -99,7 +103,7 @@ fun GroupDetailScreenCore(
         return
     }
 
-    val uiState by vm.uiState.collectAsState(initial = Payload.Loading)
+    val uiState by vm.uiState.collectAsState()
     var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
     val onShowDialog: (MainAlertDialog?) -> Unit = { showDialog = it }
 
@@ -122,7 +126,7 @@ fun GroupDetailScreenCore(
                     openMemberAdd()
                 }
 
-                is GroupDetailScreenEvent.GroupMembersLimitReached -> {
+                is GroupDetailScreenEvent.OpenPaywall -> {
                     openPaywall()
                 }
 
@@ -250,6 +254,18 @@ fun GroupDetailScreenCore(
                         bottom = contentPadding.calculateBottomPadding() + 100.dp
                     )
                 ) {
+                    if (state.data.arePlacesOverLimit == true) {
+                        this.item(key = "over_limit_notice") {
+                            NoticeInfoChip(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                text = stringResource(MR.strings.plan_limit_overLimit_places_banner_title),
+                                icon = CoreAppIcons.Warning.asPainterResource(),
+                                backgroundColor = MaterialTheme.colors.error,
+                                textColor = MaterialTheme.colors.onError,
+                                iconTint = MaterialTheme.colors.onError
+                            )
+                        }
+                    }
 
                     this.items(items = state.data.errors, key = { "error_$it" }) {
                         ConditionErrorItem(data = it) {
@@ -281,7 +297,7 @@ fun GroupDetailScreenCore(
                                 )
                             }
                         }
-                        this.item { Spacer(modifier = Modifier.size(30.dp)) }
+                        this.item { Spacer(modifier = Modifier.size(20.dp)) }
                     }
 
                     this.item(key = "main_header") {
@@ -298,16 +314,18 @@ fun GroupDetailScreenCore(
                     if (state.data.shouldShowPlanBanner) {
                         this.item(key = "plan_upgrade_banner") {
                             PremiumPlanBannerSmall(
+                                modifier = Modifier.zIndex(1f),
                                 description = stringResource(MR.strings.plans_banner_inline_group_detail),
                                 onClick = openPaywall
                             )
-                            Spacer(modifier = Modifier.size(40.dp))
+                            Spacer(modifier = Modifier.size(30.dp))
                         }
                     }
 
                     this.stickyHeader(key = "member_list_header") {
                         Row(
                             modifier = Modifier
+                                .zIndex(0f)
                                 .fillParentMaxWidth()
                                 .background(MaterialTheme.colors.background)
                                 .padding(vertical = 8.dp),
@@ -443,19 +461,28 @@ fun GroupDetailsHeader(
         modifier = modifier.fillMaxWidth()
     ) {
 
-        ImageModelImage(
-            modifier = Modifier.size(140.dp),
-            imageModel = groupImage
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ImageModelImage(
+                imageModel = groupImage,
+                modifier = Modifier
+                    .size(56.dp)
+                    .border(
+                        0.5.dp,
+                        MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                        RoundedCornerShape(10.dp)
+                    )
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(
+                text = groupName,
+                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.weight(1f)
+            )
+        }
 
-        Spacer(modifier = Modifier.size(10.dp))
-
-        Text(
-            text = groupName,
-            style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold)
-        )
-
-        Spacer(modifier = Modifier.size(40.dp))
+        Spacer(modifier = Modifier.size(30.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -539,7 +566,7 @@ fun GroupDetailsHeader(
             )
         }
 
-        Spacer(modifier = Modifier.size(40.dp))
+        Spacer(modifier = Modifier.size(20.dp))
     }
 }
 
@@ -575,7 +602,7 @@ fun GroupDetailSharingStatusElement(
             )
             Spacer(modifier = Modifier.size(4.dp))
             Text(
-                text = sharingTime.annotatedBold(),
+                text = sharingTime.annotatedBoldCompose(),
                 style = MaterialTheme.typography.caption.copy(color = contentColor)
             )
         }

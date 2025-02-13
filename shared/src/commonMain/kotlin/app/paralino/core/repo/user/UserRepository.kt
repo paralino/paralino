@@ -138,6 +138,19 @@ class UserRepository constructor(
         sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
+    suspend fun updateUserEmailAndPassword(newEmail: String, oldPassword: String, newPassword: String) {
+        triggerRemoteOnly {
+            remote.updateEmailAndPassword(
+                email = newEmail,
+                oldPassword = oldPassword,
+                newPassword = newPassword
+            )
+
+        }.also {
+            refreshUserMaybe(timeDelayMillis = 0)
+        }
+    }
+
     suspend fun updateUserEmail(newEmail: String, password: String) {
         triggerRemoteOnly {
             remote.updateEmail(newEmail, password)
