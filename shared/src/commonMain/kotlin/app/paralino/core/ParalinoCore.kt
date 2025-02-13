@@ -237,7 +237,7 @@ val coreModule = module {
     factory { ChangeCredentialsUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get(), appPrefs) }
-    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get(), get()) }
+    factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { ClearUserLocationUseCase(get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
