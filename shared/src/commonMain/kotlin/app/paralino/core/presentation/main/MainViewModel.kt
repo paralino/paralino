@@ -17,6 +17,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.NetworkQualityMonitor
+import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -117,10 +118,10 @@ class MainViewModel constructor(
                     userRepo.confirmEmail(userId, secret)
                     userRepo.refreshUserIfAvailable()
                     _uiState.update { it.copy(dataRefreshBlockingLoadingShown = expiredSessionHandler.isProcessingAny()) }
-                    _eventChannel.send(MainScreenEvent.EmailVerified)
+                    showSnackbar(MR.strings.info_email_verified.localizedString())
                 } catch (e: Exception) {
                     _uiState.update { it.copy(dataRefreshBlockingLoadingShown = expiredSessionHandler.isProcessingAny()) }
-                    _eventChannel.send(MainScreenEvent.Error(e))
+                    showSnackbar(e.errorString())
                 }
             }
         }
@@ -165,6 +166,5 @@ class MainViewModel constructor(
 }
 
 sealed class MainScreenEvent {
-    data class Error(val error: Throwable) : MainScreenEvent()
-    object EmailVerified : MainScreenEvent()
+
 }

@@ -10,7 +10,7 @@ import shared
 
 struct ChangeEmailScreen: View {
     @StateObject var appState = ChangeEmailState()
-    @Binding var path: [NavigationGraph]
+    let onFinish: () -> Void
     
     var body: some View {
         ZStack {
@@ -18,7 +18,7 @@ struct ChangeEmailScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.ChangeEmailScreenVC(
                     vm: appState.vm,
-                    onNavigateBack: { path.removeLast() }
+                    onNavigateBack: { onFinish() }
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)

@@ -77,6 +77,7 @@
 		25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C9E5682CD0300E00C3C58A /* LoadingOverlay.swift */; };
 		25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D8A43429CE24A00023A0E5 /* AppDelegate.swift */; };
 		25DA00932D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DA00922D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift */; };
+		25E943462D5E4948002B91D7 /* VerifyEmailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25E943452D5E4948002B91D7 /* VerifyEmailScreen.swift */; };
 		25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */; };
 		25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */; };
 		25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EF802E2CAEABD000DFC890 /* FreePlanInfoScreen.swift */; };
@@ -212,6 +213,7 @@
 		25C9E5682CD0300E00C3C58A /* LoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingOverlay.swift; sourceTree = "<group>"; };
 		25D8A43429CE24A00023A0E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		25DA00922D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryNotificationsSettingsScreen.swift; sourceTree = "<group>"; };
+		25E943452D5E4948002B91D7 /* VerifyEmailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmailScreen.swift; sourceTree = "<group>"; };
 		25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsScreen.swift; sourceTree = "<group>"; };
 		25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
 		25EF802E2CAEABD000DFC890 /* FreePlanInfoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreePlanInfoScreen.swift; sourceTree = "<group>"; };
@@ -357,6 +359,7 @@
 				254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */,
 				259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */,
 				259AEF9F2A3E0D0A0083FF4B /* RecoverKeysScreen.swift */,
+				25E943452D5E4948002B91D7 /* VerifyEmailScreen.swift */,
 				259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */,
 			);
 			path = Login;
@@ -881,6 +884,7 @@
 				25F234CD2CE12FAA007208CD /* GroupPickerGroupCreateSection.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
 				259AEFA82A3E2F960083FF4B /* MapHomeState.swift in Sources */,
+				25E943462D5E4948002B91D7 /* VerifyEmailScreen.swift in Sources */,
 				259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */,
 				25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */,
 				25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */,

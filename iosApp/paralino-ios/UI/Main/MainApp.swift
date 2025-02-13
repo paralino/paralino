@@ -97,6 +97,10 @@ struct AppReadyScreen: View {
     var body: some View {
         if userState is AppAccountState.ACCOUNT_RESET {
             RecoverKeysScreen()
+        } else if userState is AppAccountState.EMAIL_VERIFICATION {
+            NavigationStack {
+                VerifyEmailScreen()
+            }
         } else if userState is AppAccountState.NO_PROFILE {
             ProfileSetupScreen()
         } else if userState is AppAccountState.NO_USER {

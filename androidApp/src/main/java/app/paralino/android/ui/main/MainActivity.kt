@@ -100,23 +100,6 @@ fun RootApp(
 
         val uiState by vm.uiState.collectAsState()
 
-        val context = LocalContext.current
-        LaunchedEffect(context) {
-            vm.events.collectLatest { event ->
-                when (event) {
-                    MainScreenEvent.EmailVerified -> {
-                        vm.showSnackbar(context.getString(MR.strings.info_email_verified.resourceId))
-                    }
-
-                    is MainScreenEvent.Error -> {
-                        vm.showSnackbar(event.error.errorString(context))
-                    }
-
-                    null -> {}
-                }
-            }
-        }
-
         when (val state = uiState.userState) {
             Resource.NotInitialized -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
