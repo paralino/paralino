@@ -334,6 +334,10 @@
     <string name="info_email_confirm">Bitte bestätigen Sie Ihre E-Mail-Adresse!</string>
     <string name="info_email_confirm_alert_title">E-Mail bestätigen</string>
     <string name="info_email_confirm_alert_message">Bestätigen Sie Ihre E-Mail-Adresse, um sicherzustellen, dass Sie sich erneut bei Ihrem Konto anmelden können!\n\nIhre E-Mail:\n**%s**</string>
+    <string name="info_email_confirm_notice_message">Bestätigen Sie Ihre E-Mail-Adresse, um sicherzustellen, dass Sie sich wieder in Ihr Konto einloggen können!</string>
+    <string name="info_email_confirm_verification_placeholder">Bestätigungslink</string>
+    <string name="info_email_confirm_manual_verification_button">Manuelle Verifizierung</string>
+    <string name="info_email_confirm_manual_verification_notice">Falls Sie den Bestätigungslink aus Ihrer E-Mail nicht öffnen können, kopieren Sie ihn hierher und fügen Sie ihn ein, um die Verifizierung manuell abzuschließen.</string>
     <string name="info_email_confirm_alert_button_resend">Bestätigungslink erneut senden</string>
     <string name="info_email_verified">E-Mail erfolgreich verifiziert</string>
     <string name="info_email_check_instructions">Überprüfen Sie Ihre E-Mail für Anweisungen</string>

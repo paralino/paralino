@@ -13,13 +13,14 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.profile.ChangeEmailScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ChangeEmailScreen(
     appState: MainAppState,
-    vm: ChangeEmailViewModel = getViewModel(),
+    vm: ChangeEmailViewModel = koinViewModel(),
+    onNavigateBack: () -> Unit
 ) {
     val canNavigateBack by vm.canNavigateBack.collectAsState(initial = true)
     Scaffold(
@@ -35,16 +36,19 @@ fun ChangeEmailScreen(
             vm = vm,
             onNavigateBack = {
                 if (canNavigateBack) {
-                    appState.navController.popBackStack()
+                    onNavigateBack()
                 }
             }
         )
     }
 
     BackHandler(
-        enabled = !canNavigateBack
+        enabled = true
     ) {
         // block
+        if (canNavigateBack) {
+            onNavigateBack()
+        }
     }
 }
 

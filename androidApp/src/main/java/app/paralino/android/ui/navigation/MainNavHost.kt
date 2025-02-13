@@ -18,6 +18,7 @@ import app.paralino.android.ui.login.LoginScreen
 import app.paralino.android.ui.login.ProfileSetupScreen
 import app.paralino.android.ui.login.RecoverKeysScreen
 import app.paralino.android.ui.login.ResetPasswordScreen
+import app.paralino.android.ui.login.VerifyEmailScreen
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
@@ -197,7 +198,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             EditProfileScreen(appState)
         }
         composable(AppScreen.Settings.ProfileDetails.ChangeEmail.routeSignature) {
-            ChangeEmailScreen(appState)
+            ChangeEmailScreen(
+                appState = appState,
+                onNavigateBack = {
+                    // do nothing, email verification will trigger new graph
+                }
+            )
         }
         composable(AppScreen.Settings.ProfileDetails.ChangePassword.routeSignature) {
             ChangePasswordScreen(appState)
@@ -278,6 +284,24 @@ fun NavGraphBuilder.loggedOutGraph(
         }
         composable(AppScreen.LoggedOut.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
+        }
+        composable(
+            route = AppScreen.LoggedOut.EmailVerification.routeSignature,
+            enterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
+            exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
+            popEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
+            popExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
+        ) {
+            VerifyEmailScreen(appState)
+        }
+        composable(
+            route = AppScreen.LoggedOut.ChangeEmail.routeSignature,
+            enterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
+            exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
+            popEnterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, initialOffset = { -it / 4 }) },
+            popExitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
+        ) {
+            ChangeEmailScreen(appState, onNavigateBack = { appState.navController.popBackStack() })
         }
         composable(AppScreen.LoggedOut.PasswordReset.routeSignature) {
             val userId = it.arguments?.getString(AppScreen.LoggedOut.PasswordReset.argumentUserId)

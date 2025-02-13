@@ -144,6 +144,15 @@ fun RootApp(
                         )
                     }
 
+                    is AppAccountState.EMAIL_VERIFICATION -> {
+                        AppStartScreen(
+                            appState = appState,
+                            start = AppScreen.LoggedOut.EmailVerification,
+                            pendingDeeplink = null,
+                            onDeeplinkComplete = { vm.setDeeplink(null) }
+                        )
+                    }
+
                     is AppAccountState.NO_USER -> {
                         AppStartScreen(
                             appState = appState,
@@ -246,9 +255,9 @@ fun AppStartScreen(
             snackbarHost = { AppSnackbar(it) }
         ) { innerPadding ->
             NavHost(
+                modifier = Modifier.padding(innerPadding),
                 navController = appState.navController,
-                startDestination = AppScreen.LoggedOut.routeSignature,
-                modifier = Modifier.padding(innerPadding)
+                startDestination = AppScreen.LoggedOut.routeSignature
             ) {
                 loggedOutGraph(appState, start = start)
             }

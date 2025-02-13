@@ -34,10 +34,12 @@ fun ActionScaffold(
     buttonIcon: Painter?,
     buttonText: String,
     onConfirm: () -> Unit,
+    topBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
         modifier = modifier,
+        topBar = topBar,
         bottomBar = {
             ScaffoldBottomBarButton(
                 modifier = Modifier,

@@ -1,5 +1,6 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.models.user.UserMe.Companion.guestUserEmail
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -14,6 +15,7 @@ data class UserMeRaw constructor(
     val passwordUpdate: String? = null,
     val data: UserMeDataRaw? = null,
 ) {
+    val isGuestUser: Boolean get() = email.endsWith(guestUserEmail)
     val passwordUpdateTime: Instant? get() {
         return passwordUpdate?.isoWithOffsetToInstant()
     }

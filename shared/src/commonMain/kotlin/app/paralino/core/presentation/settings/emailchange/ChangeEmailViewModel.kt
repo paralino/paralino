@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.domain.user.ChangeCredentialsStep
 import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.models.Payload
+import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -61,6 +62,14 @@ class ChangeEmailViewModel(
                 showSnackbar(RemoteConnectionException("Connection error", code = null).errorString())
             }
         }
+
+        userRepo.localUser
+            .onEach {
+                it.data?.let { user ->
+                    _uiState.update { it.copy(currentEmail = user.email) }
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     fun proceed() {

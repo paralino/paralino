@@ -105,6 +105,14 @@ class CreateAccountUseCase constructor(
                 throw SignUpStepException(currentStep, e)
             }
 
+            try {
+                if (!user.isGuestUser) {
+                    userRepo.initEmailVerification()
+                }
+            } catch (e: Exception) {
+                logg.w("create_account", "Error sending verification email", e)
+            }
+
             // user is created at server and have a valid session
 
             currentStep = SignUpStep.GENERATING_KEYS

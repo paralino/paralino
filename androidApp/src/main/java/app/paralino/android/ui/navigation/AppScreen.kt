@@ -40,6 +40,14 @@ sealed class AppScreen {
             override val routeSignature: String = "setup-profile"
         }
 
+        object EmailVerification : AppScreen() {
+            override val routeSignature: String = "email-verification"
+        }
+
+        object ChangeEmail : AppScreen() {
+            override val routeSignature: String = "setup-change-email"
+        }
+
         object AccountRecovery : AppScreen() {
             override val routeSignature: String = "recover-account"
         }
