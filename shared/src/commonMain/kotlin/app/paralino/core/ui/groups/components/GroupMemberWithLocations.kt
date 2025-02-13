@@ -243,20 +243,22 @@ fun GroupMemberWithLocations(
             ) {
                 val iconId = "deviceIcon"
                 Text(
-                    text = buildAnnotatedString {
-                        this.append(state.memberState.name)
-                        if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
-                            this.append(" • ")
-                            appendInlineContent(iconId, "[device]")
-                            this.withStyle(
-                                style = SpanStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    baselineShift = BaselineShift(0.1f),
-                                    color = AppColors.accent
-                                )
-                            ) {
-                                this.append(state.singleLocation?.name ?: "")
+                    text = remember(state.memberState.name, state.singleLocation?.name, expanded, state.allowShowingDevices) {
+                        buildAnnotatedString {
+                            this.append(state.memberState.name)
+                            if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
+                                this.append(" • ")
+                                appendInlineContent(iconId, "[device]")
+                                this.withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        baselineShift = BaselineShift(0.1f),
+                                        color = AppColors.accent
+                                    )
+                                ) {
+                                    this.append(state.singleLocation?.name ?: "")
+                                }
                             }
                         }
                     },
