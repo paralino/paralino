@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -149,6 +150,7 @@ fun FullWidthActionButton(
     startIcon: Painter,
     text: String,
     endIcon: Painter = CoreAppIcons.ChevronRight.asPainterResource(),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
     onClick: () -> Unit
 ) {
     Row(
@@ -157,7 +159,7 @@ fun FullWidthActionButton(
             .clickable(onClick = onClick)
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colors.surface)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

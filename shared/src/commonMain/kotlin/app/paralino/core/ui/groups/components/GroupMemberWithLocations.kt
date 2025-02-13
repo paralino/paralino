@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -78,6 +79,7 @@ import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.FullWidthActionButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.GroupStatusTag
 import app.paralino.core.ui.groups.toStatusTagType
@@ -729,34 +731,13 @@ fun GroupMemberOldLocation(
     onToggleLocation: () -> Unit
 ) {
     if (state?.visibility == MemberLocationVisibilityType.HIDDEN) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            FilledButton(
-                modifier = Modifier.padding(top = 12.dp),
-                style = ButtonStyle.SMALL,
-                icon = null,
-                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.surface),
-                onClick = onToggleLocation
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(MR.strings.group_members_item_old_location_button)
-                )
-                Icon(
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .width(20.dp),
-                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                    contentDescription = null
-                )
-            }
-        }
+        FullWidthActionButton(
+            modifier = modifier.fillMaxWidth(),
+            startIcon = CoreAppIcons.LocationOn.asPainterResource(),
+            text = stringResource(MR.strings.group_members_item_old_location_button),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
+            onClick = onToggleLocation
+        )
     }
 }
 
