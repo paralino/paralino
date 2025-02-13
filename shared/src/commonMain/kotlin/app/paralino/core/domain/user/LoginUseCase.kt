@@ -35,7 +35,7 @@ class LoginUseCase constructor(
     private val keyMapper: UserKeyMapperCore,
     private val logoutUseCase: LogoutUseCase,
     private val appPrefs: AppPrefs
-): LimitedExecution() {
+) : LimitedExecution() {
 
     fun loginAsGuest(): Flow<SignUpStep> {
         return if (appPrefs.hasV2GuestAccount()) {
@@ -49,7 +49,12 @@ class LoginUseCase constructor(
                 password = appPrefs.guestPasswordV1
             )
         } else {
-            flow { throw SignUpStepException(SignUpStep.STARTING, IllegalStateException("No guest account")) }
+            flow {
+                throw SignUpStepException(
+                    SignUpStep.STARTING,
+                    IllegalStateException("No guest account")
+                )
+            }
         }
     }
 
@@ -165,30 +170,32 @@ class LoginUseCase constructor(
 
                 logg.d("login", "Found ${keys.size} key(s) on remote")
 
-                val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
-                    try {
-                        // try getting correct keys from encrypted data that matches password
-                        val personalKeyData = getUserKey(it)
+                val correctPersonalKey = keys
+                    .sortedByDescending { it.userKeyVersion }
+                    .firstNotNullOfOrNull {
+                        try {
+                            // try getting correct keys from encrypted data that matches password
+                            val personalKeyData = getUserKey(it)
 
-                        // check if keypair is valid by decrypting
-                        val signatureKeyPair = keyMapper.mapKeyPair(
-                            model = it,
-                            userKey = personalKeyData
-                        )
+                            // check if keypair is valid by decrypting
+                            val signatureKeyPair = keyMapper.mapKeyPair(
+                                model = it,
+                                userKey = personalKeyData
+                            )
 
-                        // key is valid
-                        GeneratedUserKeys(
-                            userPersonalKey = personalKeyData,
-                            signatureKeyPair = signatureKeyPair,
-                            encryptedKeyData = it
-                        )
-                    } catch (e: Exception) {
-                        logg.w("login", "Error parsing key from remote", e)
-                        null
+                            // key is valid
+                            GeneratedUserKeys(
+                                userPersonalKey = personalKeyData,
+                                signatureKeyPair = signatureKeyPair,
+                                encryptedKeyData = it
+                            )
+                        } catch (e: Exception) {
+                            logg.w("login", "Error parsing key from remote", e)
+                            null
+                        }
                     }
-                }
 
-                logg.d("login", "Found correct personal key: ${correctPersonalKey != null}")
+                logg.d("login", "Found correct personal key: ${correctPersonalKey != null} of ${keys.size}")
                 if (correctPersonalKey == null) {
                     // data is corrupted, current user password does not match user key
                     // this will trigger account recovery

@@ -49,66 +49,70 @@ class RecoverAccountUseCase(
         keys: List<UserCryptoKeyRaw>,
         password: String,
     ): GeneratedUserKeys? {
-        val correctPersonalKey = keys.reversed().firstNotNullOfOrNull {
-            try {
-                when (it.schemeVersionType) {
-                    SchemeVersion.V1_0 -> {
-                        // try getting correct keys from encrypted data that matches password
-                        val authKey = loginUseCase.getV1MasterAuthKey(
-                            email = appPrefs.guestEmailV1,
-                            password = appPrefs.guestPasswordV1
-                        )
-                        val personalKeyData = cryptoAccountOperationV1.decryptUserPersonalKey(
-                            masterAuthKey = authKey.masterAuthKey,
-                            userId = appPrefs.userId,
-                            encryptedMasterKey = it.encryptedSymmetricKey,
-                            alg = BaseRemoteModule.formatter.decodeFromString(it.dataAlg)
-                        )
+        val correctPersonalKey = keys
+            .sortedByDescending { it.userKeyVersion }
+            .firstNotNullOfOrNull {
+                try {
+                    when (it.schemeVersionType) {
+                        SchemeVersion.V1_0 -> {
+                            // try getting correct keys from encrypted data that matches password
+                            val authKey = loginUseCase.getV1MasterAuthKey(
+                                email = appPrefs.guestEmailV1,
+                                password = appPrefs.guestPasswordV1
+                            )
+                            val personalKeyData = cryptoAccountOperationV1.decryptUserPersonalKey(
+                                masterAuthKey = authKey.masterAuthKey,
+                                userId = appPrefs.userId,
+                                encryptedMasterKey = it.encryptedSymmetricKey,
+                                alg = BaseRemoteModule.formatter.decodeFromString(it.dataAlg)
+                            )
 
-                        // check if keypair is valid by decrypting
-                        val signatureKeyPair = keyMapper.mapKeyPair(
-                            model = it,
-                            userKey = personalKeyData
-                        )
+                            // check if keypair is valid by decrypting
+                            val signatureKeyPair = keyMapper.mapKeyPair(
+                                model = it,
+                                userKey = personalKeyData
+                            )
 
-                        // key is valid
-                        GeneratedUserKeys(
-                            userPersonalKey = personalKeyData,
-                            signatureKeyPair = signatureKeyPair,
-                            encryptedKeyData = it
-                        )
+                            // key is valid
+                            GeneratedUserKeys(
+                                userPersonalKey = personalKeyData,
+                                signatureKeyPair = signatureKeyPair,
+                                encryptedKeyData = it
+                            )
+                        }
+
+                        SchemeVersion.V2_0 -> {
+                            // try getting correct keys from encrypted data that matches password
+                            val personalKeyData = cryptoAccountOperationV2.decryptUserPersonalKey(
+                                password = password,
+                                dataSalt = it.dataSalt!!,
+                                userId = appPrefs.userId,
+                                encryptedMasterKey = it.encryptedSymmetricKey,
+                                alg = BaseRemoteModule.formatter.decodeFromString(it.dataAlg)
+                            )
+
+                            // check if keypair is valid by decrypting
+                            val signatureKeyPair = keyMapper.mapKeyPair(
+                                model = it,
+                                userKey = personalKeyData
+                            )
+
+                            // key is valid
+                            GeneratedUserKeys(
+                                userPersonalKey = personalKeyData,
+                                signatureKeyPair = signatureKeyPair,
+                                encryptedKeyData = it
+                            )
+                        }
+
+                        is SchemeVersion.UNKNOWN -> {
+                            null
+                        }
                     }
-                    SchemeVersion.V2_0 -> {
-                        // try getting correct keys from encrypted data that matches password
-                        val personalKeyData = cryptoAccountOperationV2.decryptUserPersonalKey(
-                            password = password,
-                            dataSalt = it.dataSalt!!,
-                            userId = appPrefs.userId,
-                            encryptedMasterKey = it.encryptedSymmetricKey,
-                            alg = BaseRemoteModule.formatter.decodeFromString(it.dataAlg)
-                        )
-
-                        // check if keypair is valid by decrypting
-                        val signatureKeyPair = keyMapper.mapKeyPair(
-                            model = it,
-                            userKey = personalKeyData
-                        )
-
-                        // key is valid
-                        GeneratedUserKeys(
-                            userPersonalKey = personalKeyData,
-                            signatureKeyPair = signatureKeyPair,
-                            encryptedKeyData = it
-                        )
-                    }
-                    is SchemeVersion.UNKNOWN -> {
-                        null
-                    }
+                } catch (e: Exception) {
+                    null
                 }
-            } catch (e: Exception) {
-                null
             }
-        }
 
         return correctPersonalKey
     }
