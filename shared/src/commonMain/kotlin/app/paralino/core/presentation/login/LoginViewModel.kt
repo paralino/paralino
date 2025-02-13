@@ -8,6 +8,7 @@ import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -35,6 +36,7 @@ class LoginViewModel constructor(
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val remoteConfigRepository: RemoteConfigRepository,
     private val startScreenUiType: LoginScreenUiType,
+    private val scopeProvider: ICoroutineScopeProvider,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
@@ -152,7 +154,7 @@ class LoginViewModel constructor(
                 delay(2000)
                 _uiState.update { it.copy(stepInfo = null) }
             }
-            .launchIn(coroutineScope)
+            .launchIn(scopeProvider.defaultIOScope)
     }
 
     private fun login() {
@@ -180,7 +182,7 @@ class LoginViewModel constructor(
             loginUseCase.login(email = email, password = password)
                 .onEach { processStep(it) }
                 .catch { processSignUpError(it) }
-                .launchIn(coroutineScope)
+                .launchIn(scopeProvider.defaultIOScope)
         }
     }
 
@@ -220,7 +222,7 @@ class LoginViewModel constructor(
             )
                 .onEach { processStep(it) }
                 .catch { processSignUpError(it) }
-                .launchIn(coroutineScope)
+                .launchIn(scopeProvider.defaultIOScope)
         }
     }
 
@@ -245,7 +247,7 @@ class LoginViewModel constructor(
         createAccountUseCase.signUpAsGuest()
             .onEach { processStep(it) }
             .catch { processSignUpError(it) }
-            .launchIn(coroutineScope)
+            .launchIn(scopeProvider.defaultIOScope)
     }
 
     private fun resetPassword() {
@@ -269,7 +271,7 @@ class LoginViewModel constructor(
                 .catch {
                     processSignUpError(it)
                 }
-                .launchIn(coroutineScope)
+                .launchIn(scopeProvider.defaultIOScope)
         }
     }
 
