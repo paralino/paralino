@@ -211,7 +211,7 @@ fun SettingSectionInfo(
     onShareApp: (String) -> Unit,
 ) {
     Column {
-        if (AppBuildConfig.instance.hasPreviewFeatures) {
+        if (AppBuildConfig.instance.isDevMode) {
             SettingsActionItem(
                 name = "App status",
                 icon = CoreAppIcons.Settings.asPainterResource()
