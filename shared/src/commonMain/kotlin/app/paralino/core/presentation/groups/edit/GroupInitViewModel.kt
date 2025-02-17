@@ -158,6 +158,9 @@ class GroupInitViewModel(
                     null
                 } else if (groupCount == 0) {
                     AccountOnboardingContent.ParalinoID(personalCode = personalCode, didShareCode = false)
+                } else if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed && !appPrefs.didAskForNotificationPermissions) {
+                    appPrefs.didAskForNotificationPermissions = true
+                    AccountOnboardingContent.PushNotifications
                 } else {
                     null
                 }
@@ -253,11 +256,7 @@ class GroupInitViewModel(
             }
 
             AccountOnboardingContent.PushNotifications -> {
-                _uiState.update {
-                    it.mapReady {
-                        it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
-                    }
-                }
+                startGroupCreateOnboarding()
             }
 
             is AccountOnboardingContent.SilverPlan -> {
@@ -277,12 +276,11 @@ class GroupInitViewModel(
     }
 
     private fun skipParalinoIDOnboarding() {
-        _uiState.update {
-            if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
-                it.mapReady {
-                    it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
-                }
-            } else {
+        if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
+            startGroupCreateOnboarding()
+        } else {
+            _uiState.update {
+                appPrefs.didAskForNotificationPermissions = true
                 it.mapReady {
                     it.copy(onboardingStep = AccountOnboardingContent.PushNotifications)
                 }
@@ -293,6 +291,18 @@ class GroupInitViewModel(
     private fun finishOnboarding() {
         appPrefs.didHaveAccountWelcomeOnboarding = true
         _uiState.update { it.mapReady { it.copy(onboardingStep = null) } }
+    }
+    
+    private fun startGroupCreateOnboarding() {
+        if (uiState.value.data?.groupCount == 0) {
+            _uiState.update {
+                it.mapReady {
+                    it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
+                }
+            }
+        } else {
+            finishOnboarding()
+        }
     }
 
     private fun openGroupCreate() {
