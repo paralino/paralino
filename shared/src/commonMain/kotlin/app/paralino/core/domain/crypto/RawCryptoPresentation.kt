@@ -3,6 +3,7 @@ package app.paralino.core.domain.crypto
 import app.paralino.core.MR
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
@@ -27,7 +28,8 @@ class RawCryptoPresentation constructor(
     private val userLocal: UserLocalDataSource,
     private val userKeyLocal: CryptoUserKeysLocalSource,
     private val userConfigRepo: UserConfigRepository,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val appBuildConfig: AppBuildConfig
 ) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -238,6 +240,10 @@ class RawCryptoPresentation constructor(
                         add(ContentIdItem(text = "Billing User ID:\n**${userConfigRepo.configState.value.billingCustomerId}**", separateWithPadding = true, canCopy = true))
                         add(ContentIdItem(text = "Device ID:\n**${appPrefs.deviceId}**", separateWithPadding = true, canCopy = true))
                         add(ContentIdItem(text = "Diagnostics ID:\n**${appPrefs.errorReportingID}**", separateWithPadding = true, canCopy = true))
+
+                        if (appBuildConfig.isDevMode) {
+                            add(ContentIdItem(text = "Push token:\n**${appPrefs.pushTokenSynced}**", separateWithPadding = true, canCopy = true))
+                        }
                     },
                     rawData = it?.first?.data?.let {
                         BaseRemoteModule.prettyPrintFormatter.encodeToString(it)
