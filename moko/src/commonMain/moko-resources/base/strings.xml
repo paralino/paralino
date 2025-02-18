@@ -341,7 +341,8 @@
     <string name="info_email_confirm_manual_verification_notice">If you are unable to open the verification link from your email, copy and paste it here to manually trigger verification.</string>
     <string name="info_email_confirm_alert_button_resend">Resend verification link</string>
     <string name="info_email_verified">Email verified successfully</string>
-    <string name="info_email_check_instructions">Check your email for instructions</string>
+    <string name="info_email_check_instructions">Check your email for instructions:\n**%s**</string>
+    <string name="info_email_check_instructions_popup">**Check your email for instructions**\n\nThe email should arrive shortly, but if you don't receive it within a few minutes, try resending the verification again.</string>
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>
     <string name="groups_sharing_setting_battery_share">Battery level</string>

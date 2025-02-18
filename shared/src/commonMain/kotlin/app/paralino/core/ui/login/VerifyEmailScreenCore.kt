@@ -141,7 +141,7 @@ fun VerifyEmailScreenCore(
             NoticeInfoChip(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 0.dp),
                 icon = CoreAppIcons.PrivacyTip.asPainterResource(),
-                text = stringResource(MR.strings.info_email_check_instructions)
+                text = stringResource(MR.strings.info_email_check_instructions, uiState.currentEmail)
             )
 
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {

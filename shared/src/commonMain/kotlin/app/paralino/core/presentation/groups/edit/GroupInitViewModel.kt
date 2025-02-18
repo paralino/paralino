@@ -317,7 +317,7 @@ class GroupInitViewModel(
         coroutineScope.launch {
             try {
                 userRepo.initEmailVerification()
-                showSnackbar(MR.strings.info_email_check_instructions.localizedString())
+                showSnackbar(MR.strings.info_email_check_instructions_popup.localizedString())
             } catch (e: Exception) {
                 showSnackbar(e.errorString())
             }
