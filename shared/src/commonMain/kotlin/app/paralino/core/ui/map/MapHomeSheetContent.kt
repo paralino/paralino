@@ -377,8 +377,8 @@ fun MapBottomSheetTab(
         Text(
             modifier = Modifier,
             text = text,
-            fontSize = 14.sp,
-            color = contentColor
+            color = contentColor,
+            style = MaterialTheme.typography.button
         )
         Spacer(modifier = Modifier.size(8.dp))
         AnimatedVisibility(

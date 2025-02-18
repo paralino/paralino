@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -28,31 +29,31 @@ fun PlanLimitCount(
     contentColor: Color = if(isSystemInDarkTheme()) AppColors.accent else AppColors.accentDark
 ) {
     Text(
-        text = buildAnnotatedString {
-            this.withStyle(
-                style = SpanStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    baselineShift = BaselineShift(0.1f),
-                    color = contentColor
-                )
-            ) {
-                this.append("$count")
-            }
-            if(limit != null) {
+        text = remember(count, limit, contentColor) {
+            buildAnnotatedString {
                 this.withStyle(
                     style = SpanStyle(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp,
-                        baselineShift = BaselineShift(0.1f),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
                         color = contentColor
                     )
                 ) {
-                    this.append("/${limit}")
+                    this.append("$count")
+                }
+                if(limit != null) {
+                    this.withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp,
+                            color = contentColor
+                        )
+                    ) {
+                        this.append("/${limit}")
+                    }
                 }
             }
         },
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold),
         modifier = modifier
             .background(
                 color = if (limit != null && limit <= count) errorBackgroundColor

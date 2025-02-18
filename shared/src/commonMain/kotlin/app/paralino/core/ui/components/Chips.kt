@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
@@ -68,7 +69,7 @@ fun NoticeInfoChip(
         },
         text = {
             Text(
-                text = text.annotatedBoldCompose(),
+                text = text.annotatedBoldCompose(textColor = textColor),
                 style = MaterialTheme.typography.body2,
                 color = textColor
             )
@@ -109,7 +110,7 @@ fun DataInfoChip(
         text = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.subtitle1.copy(lineHeight = 18.sp),
                 color = contentColorFor(backgroundColor)
             )
         },
