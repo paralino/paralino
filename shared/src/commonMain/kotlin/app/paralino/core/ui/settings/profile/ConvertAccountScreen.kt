@@ -52,6 +52,7 @@ import app.paralino.core.ui.components.PasswordValidationElement
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.featureItemTitle
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -122,6 +123,7 @@ fun ConvertAccountScreenCore(
                 SettingsActionItem(
                     name = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices),
                     tag = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices_tag),
+                    nameTextStyle = MaterialTheme.typography.featureItemTitle,
                     icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
                     type = SettingsActionItemType.Action
                 )
@@ -129,6 +131,7 @@ fun ConvertAccountScreenCore(
                 SettingsActionItem(
                     name = stringResource(MR.strings.settings_account_guest_convert_intro_account_recovery),
                     tag = stringResource(MR.strings.settings_account_guest_convert_intro_account_recovery_tag),
+                    nameTextStyle = MaterialTheme.typography.featureItemTitle,
                     icon = CoreAppIcons.Replay.asPainterResource(),
                     type = SettingsActionItemType.Action
                 )
@@ -136,6 +139,7 @@ fun ConvertAccountScreenCore(
                 SettingsActionItem(
                     name = stringResource(MR.strings.settings_account_guest_convert_intro_personal_device_tracking),
                     tag = stringResource(MR.strings.settings_account_guest_convert_intro_personal_device_tracking_tag),
+                    nameTextStyle = MaterialTheme.typography.featureItemTitle,
                     icon = CoreAppIcons.ShareLocation.asPainterResource(),
                     type = SettingsActionItemType.Action
                 )
