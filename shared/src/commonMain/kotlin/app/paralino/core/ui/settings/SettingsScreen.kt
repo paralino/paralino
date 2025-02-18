@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -244,6 +245,7 @@ fun SettingsActionItem(
     icon: Painter,
     tag: String? = null,
     description: String? = null,
+    nameTextStyle: TextStyle = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
     iconTint: Color = MaterialTheme.colors.surface,
     type: SettingsActionItemType = SettingsActionItemType.Navigation,
     onLongClick: (() -> Unit)? = null,
@@ -280,7 +282,7 @@ fun SettingsActionItem(
                 Text(
                     modifier = Modifier,
                     text = name,
-                    style = MaterialTheme.typography.subtitle1.copy(fontSize = 18.sp),
+                    style = nameTextStyle,
                     textAlign = TextAlign.Start
                 )
                 if (tag != null) {
@@ -288,7 +290,7 @@ fun SettingsActionItem(
                         Text(
                             modifier = Modifier,
                             text = tag.annotatedBoldCompose(),
-                            style = MaterialTheme.typography.caption,
+                            style = MaterialTheme.typography.body2,
                             textAlign = TextAlign.Start
                         )
                     }
