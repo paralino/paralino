@@ -19,7 +19,7 @@ class CrashReportingLogr: ICrashReportingLogr {
         guard canLogToRemote else { return }
         guard priority == LogPriority.error else { return }
         guard let error = t?.description() else { return }
-        if t is InternalConnectionException { return }
+        if t is InternalConnectionException || t is MissingGroupKeyException || t is KotlinCancellationException { return }
         
         SentrySDK.capture(error: KotlinError.generic(message: message, stackTrace: error))
     }
