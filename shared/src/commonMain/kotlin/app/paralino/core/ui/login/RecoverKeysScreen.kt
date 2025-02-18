@@ -16,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -119,16 +117,20 @@ fun RecoverKeysScreenCore(
                         title = stringResource(resource = MR.strings.recover_account_screen_title),
                         navigationIcon = null,
                         actions = {
-                            IconButton(
-                                onClick = {
-                                    vm.onEvent(RecoverKeysScreenUiEvent.Logout)
-                                }
-                            ) {
-                                Icon(
-                                    painter = CoreAppIcons.Logout.asPainterResource(),
-                                    contentDescription = null
-                                )
-                            }
+                            FilledButton(
+                                modifier = Modifier.padding(end =  4.dp).size(28.dp),
+                                onClick = { vm.onEvent(RecoverKeysScreenUiEvent.Logout) },
+                                icon = CoreAppIcons.Logout.asPainterResource(),
+                                style = ButtonStyle.ICON(
+                                    iconSize = 24.dp
+                                ),
+                                elevation = 0.dp,
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.Transparent,
+                                    contentColor = MaterialTheme.colors.onBackground
+                                ),
+                                content = null
+                            )
                         }
                     )
                 },

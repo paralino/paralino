@@ -97,7 +97,7 @@ fun ScaffoldBottomBarButton(
         start = 20.dp,
         end = 20.dp
     ),
-    buttonStyle: ButtonStyle = ButtonStyle.BIG,
+    buttonStyle: ButtonStyle = ButtonStyle.BIG(iconSize = 24.dp),
     buttonState: AppButtonState = AppButtonState.CONTENT,
     buttonBackground: Color = MaterialTheme.colors.background,
     buttonIcon: Painter?,
@@ -136,7 +136,7 @@ fun OnboardingSkipButton(
             backgroundColor = Color.Transparent,
             contentColor = MaterialTheme.colors.onBackground
         ),
-        elevation = null,
+        elevation = 0.dp,
         onClick = onSkip
     ) {
         Text(text = skipButtonText)

@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -23,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -104,16 +107,20 @@ fun VerifyEmailScreenCore(
                 title = stringResource(resource = MR.strings.info_email_confirm_alert_title),
                 navigationIcon = null,
                 actions = {
-                    IconButton(
-                        onClick = {
-                            vm.onEvent(VerifyEmailScreenUiEvent.Logout)
-                        }
-                    ) {
-                        Icon(
-                            painter = CoreAppIcons.Logout.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
+                    FilledButton(
+                        modifier = Modifier.padding(end =  4.dp).size(28.dp),
+                        onClick = { vm.onEvent(VerifyEmailScreenUiEvent.Logout) },
+                        icon = CoreAppIcons.Logout.asPainterResource(),
+                        style = ButtonStyle.ICON(
+                            iconSize = 24.dp
+                        ),
+                        elevation = 0.dp,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Transparent,
+                            contentColor = MaterialTheme.colors.onBackground
+                        ),
+                        content = null
+                    )
                 }
             )
         }

@@ -562,7 +562,7 @@ private fun GroupMemberAction(
             modifier = modifier,
             style = ButtonStyle.SMALL_ACTION,
             icon = state.type.actionIcon,
-            elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+            elevation = 0.dp,
             onClick = { onClick(state) },
             state = AppButtonState.loadingStateWithCheck(isLoading = state.isLoading)
         ) {

@@ -43,8 +43,6 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
@@ -145,7 +143,7 @@ private fun GroupCreateScreen(
         } else {
             stringResource(MR.strings.button_save)
         },
-        buttonIcon = if (state.isNewGroup) null else CoreAppIcons.Save.asPainterResource(),
+        buttonIcon = null,
         onConfirm = {
             focusManager.clearFocus()
             onCreateGroupClick()
