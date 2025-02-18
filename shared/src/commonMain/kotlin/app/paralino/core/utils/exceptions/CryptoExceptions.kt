@@ -17,8 +17,9 @@ open class MissingCryptoKeyException(message: String, cause: Throwable? = null):
 
 class MissingGroupKeyException constructor(
     val groupId: String,
-    val keyVersion: Long? = null
-) : MissingCryptoKeyException("Missing group key for group ($groupId), key version $keyVersion")
+    val keyVersion: Long? = null,
+    val keyError: String? = null
+) : MissingCryptoKeyException("Missing group key${if (keyError != null) " ($keyError)" else " "} for group ($groupId), key version $keyVersion")
 
 class MissingMemberKeyException constructor(
     val groupId: String,

@@ -41,8 +41,15 @@ class MemberMapperCore constructor(
             keyVersion = model.member.groupKeyVersion
         )
 
-        if (groupKey !is GroupMasterKey.Valid)
-            logg.e(MissingGroupKeyException(model.member.groupId, model.member.groupKeyVersion))
+        if (groupKey !is GroupMasterKey.Valid) {
+            logg.e(
+                MissingGroupKeyException(
+                    groupId = model.member.groupId,
+                    keyVersion = model.member.groupKeyVersion,
+                    keyError = groupKey.toString()
+                )
+            )
+        }
 
         val verification = groupVerification.verifyGroupMember(
             member = model.member,
