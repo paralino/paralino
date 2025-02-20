@@ -69,8 +69,12 @@ class RemoteConfigRepository(
     }
 
     private suspend fun getAndUpdateConfigFromRemote(): ConfigData? {
-        val response = functionsApi.runAndWait(function = ServerFunction.CONFIG)
-        val jsonObject = response.responseData?.jsonObject
+        val response = try {
+            functionsApi.runAndWait(function = ServerFunction.CONFIG)
+        } catch (e: Exception) {
+            null
+        }
+        val jsonObject = response?.responseData?.jsonObject
 
         if (jsonObject.isNullOrEmpty()) return null
 
