@@ -11,7 +11,7 @@ import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.utils.extensions.safeLet
 
 class MemberWithLocationsMapperLocal(
-    private val coreMapper: MemberMapperCore,
+    val coreMapper: MemberMapperCore,
 ) {
 
     suspend fun local2Core(

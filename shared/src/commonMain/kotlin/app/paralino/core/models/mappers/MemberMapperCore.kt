@@ -19,6 +19,7 @@ import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.location.MemberModelParalinoIdData
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.DecryptionException
@@ -221,26 +222,11 @@ class MemberMapperCore constructor(
         }
 
         // data encrypted with group DEK
-        val memberData = if (groupKey is GroupMasterKey.Valid) {
-            try {
-                cryptoCore.decryptDataWithKey(
-                    data = model.member.data,
-                    key = groupKey.key
-                ).let {
-                    BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
-                }.let {
-                    if (verification is VerificationResult.Verified) {
-                        CryptoResource.Ready(it)
-                    } else {
-                        CryptoResource.UnverifiedKeyOrData(it)
-                    }
-                }
-            } catch (e: Exception) {
-                CryptoResource.WrongKeyOrData
-            }
-        } else {
-            CryptoResource.MissingKey
-        }
+        val memberData = getMemberData(
+            model = model.member,
+            verification = verification,
+            groupKey = groupKey
+        )
 
         // data encrypted with group DEK
         val paralinoIdData = if (groupKey is GroupMasterKey.Valid) {
@@ -309,5 +295,59 @@ class MemberMapperCore constructor(
             member = memberModel,
             locations = locations
         )
+    }
+
+    suspend fun getMemberData(
+        model: MemberDocumentRaw,
+        verification: VerificationResult,
+        groupOwnerUserId: String? = null
+    ): CryptoResource<MemberModelData> {
+        val groupKey = if (groupOwnerUserId.isNullOrBlank()) {
+            cryptoKEKRepo.getGroupKey(
+                groupId = model.groupId,
+                keyVersion = model.groupKeyVersion
+            )
+        } else {
+            cryptoKEKRepo.getGroupKey(
+                groupId = model.groupId,
+                groupOwnerId = groupOwnerUserId,
+                keyVersion = model.groupKeyVersion
+            )
+        }
+
+        return getMemberData(
+            model = model,
+            verification = verification,
+            groupKey = groupKey
+        )
+    }
+
+    suspend fun getMemberData(
+        model: MemberDocumentRaw,
+        verification: VerificationResult,
+        groupKey: GroupMasterKey
+    ): CryptoResource<MemberModelData> {
+        val memberData = if (groupKey is GroupMasterKey.Valid) {
+            try {
+                cryptoCore.decryptDataWithKey(
+                    data = model.data,
+                    key = groupKey.key
+                ).let {
+                    BaseRemoteModule.formatter.decodeFromString<MemberModelData>(it)
+                }.let {
+                    if (verification is VerificationResult.Verified) {
+                        CryptoResource.Ready(it)
+                    } else {
+                        CryptoResource.UnverifiedKeyOrData(it)
+                    }
+                }
+            } catch (e: Exception) {
+                CryptoResource.WrongKeyOrData
+            }
+        } else {
+            CryptoResource.MissingKey
+        }
+
+        return memberData
     }
 }

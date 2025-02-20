@@ -41,7 +41,7 @@ class PlaceActivityNotificationProcessor(
         try {
             val place = placeRepo.getPlaceWithoutSettingsOnce(payload.placeId)
             placeName = place?.data?.data?.name
-            userName = groupRepo.getMemberOnce(place!!.groupId, payload.memberUserId)?.name
+            userName = groupRepo.getMemberNameOnce(place!!.groupId, payload.memberUserId)
             eventSeed = place.eventSeed
         } catch (_: Exception) {
         }
