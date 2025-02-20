@@ -120,23 +120,27 @@ class BillingProviderIOS: IBillingProvider {
                     } else {
                         trialDurationDays = nil
                     }
-
-                    let periodData = IBillingProviderSubscriptionPlanPeriodData(
-                        fullProductId: product.productIdentifier,
-                        productPlanId: product.productIdentifier,
-                        billingPeriod: billingPeriod,
-                        price: price,
-                        formattedPrice: formattedPrice ?? product.localizedPriceString,
-                        referencePerYearPrice: KotlinLong(longLong: product.pricePerYear?.int64Value ?? 0),
-                        referencePerYearFormattedPrice: product.localizedPricePerYear,
-                        trialDurationDays: trialDurationDays
-                    )
-
+                    
                     let planConfig = try await remoteConfigRepo.getConfigOnce().plans.first { config in
                         config.productPlanIds.contains(product.productIdentifier)
                     }
 
                     if let planConfig = planConfig {
+                        
+                        let pricePerMember = product.formattedString(for: (product.pricePerMonth ?? 0).dividing(by: NSDecimalNumber(integerLiteral: Int(planConfig.membersLimit))))
+                        
+                        let periodData = IBillingProviderSubscriptionPlanPeriodData(
+                            fullProductId: product.productIdentifier,
+                            productPlanId: product.productIdentifier,
+                            billingPeriod: billingPeriod,
+                            price: price,
+                            formattedPricePerMemberPerMonth: pricePerMember,
+                            formattedPrice: formattedPrice ?? product.localizedPriceString,
+                            referencePerYearPrice: KotlinLong(longLong: product.pricePerYear?.int64Value ?? 0),
+                            referencePerYearFormattedPrice: product.localizedPricePerYear,
+                            trialDurationDays: trialDurationDays
+                        )
+                        
                         if let currentPlan = products[planConfig.planType] {
                             let newPlanData = IBillingProviderSubscriptionPlanData(
                                 productId: currentPlan.productId,
@@ -214,6 +218,20 @@ class BillingProviderIOS: IBillingProvider {
         let config: PlanConfig
         let entitlementInfo: EntitlementInfo
     }
+}
+
+private extension StoreProduct {
+
+    func formattedString(for price: NSDecimalNumber?) -> String? {
+        guard let formatter = self.priceFormatter,
+              let price = price
+        else {
+            return nil
+        }
+
+        return formatter.string(from: price as NSDecimalNumber)
+    }
+
 }
 
 open class PurchaseError : Swift.Error {

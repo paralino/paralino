@@ -237,6 +237,7 @@
     <string name="paywall_special_offer_info">Samo na ograničeno vrijeme! Iskoristite posebnu ponudu i **zadržite ovu cijenu zauvijek**.</string>
     <string name="paywall_all_members_features_notice">Pogodnosti grupe za svih %s članova</string>
     <string name="paywall_free_trial_notice">Prvih **%s dana** je besplatno</string>
+    <string name="paywall_free_trial_notice_main">**%1$s dana besplatno**\nNema plaćanja sada - isprobajte sve značajke potpuno besplatno prvih **%1$s dana**.</string>
     <string name="paywall_start_button_free">Započni **besplatni period**</string>
     <string name="paywall_start_button_continue">Odaberite **%s**</string>
     <string name="paywall_cancellation_notice">Možete otkazati plan bilo kada</string>
@@ -263,7 +264,7 @@
     <string name="paywall_feature_control">Potpuna kontrola dijeljenja</string>
     <string name="paywall_feature_control_description">Pristupite svim značajkama i kontrolirajte kako i što dijelite.</string>
     <string name="paywall_special_offer_description">**Poseban popust za lansiranje**\nDostupan tijekom beta razdoblja – iskoristite poseban popust i zadržite ovu cijenu zauvijek.</string>
-    <string name="paywall_price_per_member">Već od **%1$s**/član/mjesec za %2$d članova</string>
+    <string name="paywall_price_per_member">Već od **%1$s**/po članu po mjesecu za %2$d članova</string>
     <string name="paywall_divider_plan_duration">Odaberite trajanje plana</string>
     <string name="paywall_feature_table_header">Što dobivate</string>
     <string name="paywall_feature_privacy">Maksimalna privatnost</string>

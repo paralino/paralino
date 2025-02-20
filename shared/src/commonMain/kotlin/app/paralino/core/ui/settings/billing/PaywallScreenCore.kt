@@ -343,6 +343,16 @@ private fun PaywallScreen(
                 valueFormatter = valueFormatter
             )
 
+            AnimatedVisibility(visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null) {
+                NoticeInfoChip(
+                    modifier = Modifier.padding(horizontal = 20.dp).padding(top = 40.dp),
+                    text = stringResource(MR.strings.paywall_free_trial_notice_main, "${state.selectedBillingPeriod?.trialDurationDays ?: " "}"),
+                    icon = {
+                        Text(text = "🎁")
+                    }
+                )
+            }
+
             Text(
                 modifier = Modifier
                     .fillMaxWidth()

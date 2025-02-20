@@ -157,7 +157,7 @@ class BillingProviderAndroid(
                                     ?.pricePerYear(Locale.getDefault())?.amountMicros ?: 0,
                                 referencePerYearFormattedPrice = subscriptionOption.fullPricePhase
                                     ?.pricePerYear()?.formatted ?: "",
-                                formattedPricePerMember = subscriptionOption.fullPricePhase?.pricePerMonth()?.pricePerPeriod(
+                                formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase?.pricePerMonth()?.pricePerPeriod(
                                     planConfig.membersLimit.toDouble()
                                 )?.formatted,
                                 trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDays

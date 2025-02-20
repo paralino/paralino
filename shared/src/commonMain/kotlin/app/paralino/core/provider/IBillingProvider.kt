@@ -17,7 +17,7 @@ interface IBillingProvider {
         val productPlanId: String,
         val billingPeriod: PlanBillingPeriod,
         val price: Long,
-        val formattedPricePerMember: String?,
+        val formattedPricePerMemberPerMonth: String?,
         val formattedPrice: String,
         val referencePerYearPrice: Long?,
         val referencePerYearFormattedPrice: String?,

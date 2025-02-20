@@ -361,7 +361,7 @@ class PaywallViewModel(
                             ?.let { "$it%" },
                         isPromoDiscount = highestPrice != null,
                         pricePerMonth = null,
-                        pricePerMember = lowestPrice.formattedPricePerMember,
+                        pricePerMember = lowestPrice.formattedPricePerMemberPerMonth,
                         trialDurationDays = lowestPrice.trialDurationDays,
                     )
                 }

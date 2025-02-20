@@ -237,6 +237,7 @@
     <string name="paywall_special_offer_info">Nur für kurze Zeit! Sichern Sie sich ein spezielles Angebot und **behalten Sie diesen Preis für immer**.</string>
     <string name="paywall_all_members_features_notice">Alle %s Mitglieder erhalten Gruppenleistungen</string>
     <string name="paywall_free_trial_notice">Die ersten **%s Tage** sind kostenlos</string>
+    <string name="paywall_free_trial_notice_main">**%1$s Tage kostenlose Testversion**\nKeine Zahlung jetzt - testen Sie alle Funktionen völlig kostenlos für die ersten **%1$s Tage**.</string>
     <string name="paywall_start_button_free">**Kostenlose Testversion** starten</string>
     <string name="paywall_start_button_continue">Mit **%s** fortfahren</string>
     <string name="paywall_cancellation_notice">Sie können jederzeit kündigen</string>

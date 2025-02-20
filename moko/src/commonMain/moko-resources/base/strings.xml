@@ -238,6 +238,7 @@
     <string name="paywall_special_offer_info">You get to keep this price forever</string>
     <string name="paywall_all_members_features_notice">All %s members get group benefits</string>
     <string name="paywall_free_trial_notice">🎁 First **%s days** are free</string>
+    <string name="paywall_free_trial_notice_main">**%1$s days free trial**\nNo payment now - try all the features completely free for the first **%1$s days**.</string>
     <string name="paywall_start_button_free">Start **free trial**</string>
     <string name="paywall_start_button_continue">Continue with **%s**</string>
     <string name="paywall_cancellation_notice">You can easily cancel anytime</string>
