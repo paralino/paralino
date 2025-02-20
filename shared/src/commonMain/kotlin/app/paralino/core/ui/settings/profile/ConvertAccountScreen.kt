@@ -143,7 +143,6 @@ fun ConvertAccountScreenCore(
                     icon = CoreAppIcons.ShareLocation.asPainterResource(),
                     type = SettingsActionItemType.Action
                 )
-
             }
         }
 

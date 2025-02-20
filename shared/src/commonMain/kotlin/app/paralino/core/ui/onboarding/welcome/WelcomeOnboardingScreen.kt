@@ -59,7 +59,10 @@ fun WelcomeOnboardingScreenCore(
                         WelcomeOnboardingContent.STEP_OPTIONS,
                         WelcomeOnboardingContent.STEP_OPTIONS_2 -> {
                             WelcomeOnboardingPageControl(
-                                modifier = Modifier.padding(top = 12.dp),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 20.dp)
+                                    .padding(top = 12.dp),
                                 animationStarted = step.value == WelcomeOnboardingContent.STEP_OPTIONS_2
                             )
                         }

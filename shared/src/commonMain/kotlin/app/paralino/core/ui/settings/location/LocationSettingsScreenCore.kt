@@ -304,7 +304,7 @@ private fun LocationPerformanceSettingsOptions(
                 )
             }
 
-            SubscriptionOptionItem(
+            LocationSettingsOptionItem(
                 title = state.title,
                 description = state.description,
                 batteryImpact = state.batteryImpact,
@@ -318,7 +318,7 @@ private fun LocationPerformanceSettingsOptions(
 }
 
 @Composable
-fun SubscriptionOptionItem(
+fun LocationSettingsOptionItem(
     modifier: Modifier = Modifier,
     title: String,
     description: String,

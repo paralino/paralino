@@ -37,7 +37,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.rememberSeekbarState
-import app.paralino.core.ui.settings.location.SubscriptionOptionItem
+import app.paralino.core.ui.settings.location.LocationSettingsOptionItem
 import app.paralino.core.ui.share.getTime
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.SharingDurationPreset
@@ -59,8 +59,6 @@ fun WelcomeOnboardingPageControl(
 
     BoxWithConstraints(
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
             .padding(bottom = 20.dp)
             .shadow(8.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
@@ -309,7 +307,7 @@ private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationSta
             itemState = !itemState
         }
     }
-    SubscriptionOptionItem(
+    LocationSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_5),
         description = stringResource(MR.strings.setting_location_balanced_level_5_info),
@@ -324,7 +322,7 @@ private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationSta
 @Composable
 private fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
     var itemState by remember { mutableStateOf(false) }
-    SubscriptionOptionItem(
+    LocationSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_1),
         description = stringResource(MR.strings.setting_location_balanced_level_1_info),

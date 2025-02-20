@@ -10,7 +10,7 @@ enum class BillingScreenSourceType(val key: String) {
         ONBOARDING,
         UPGRADE -> true
         FREE_PLAN_NOTICE,
-        NORMAL -> false
+        NORMAL -> true
     }
 
     companion object {
