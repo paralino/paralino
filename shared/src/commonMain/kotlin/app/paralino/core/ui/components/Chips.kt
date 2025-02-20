@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
@@ -40,22 +41,16 @@ import app.paralino.core.utils.extensions.conditional
 fun NoticeInfoChip(
     modifier: Modifier = Modifier,
     backgroundColor: Color = AppColors.accentLight.copy(alpha = 0.2f),
-    iconTint: Color = AppColors.accent,
     textColor: Color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f),
-    icon: Painter = CoreAppIcons.Security.asPainterResource(),
     text: String,
+    icon: (@Composable RowScope.() -> Unit)?,
     onClick: (() -> Unit)? = null
 ) {
     DataInfoChip(
         modifier = modifier,
         backgroundColor = backgroundColor,
         imageOrIcon = {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = iconTint
-            )
+            icon?.invoke(this)
             Spacer(Modifier.size(4.dp))
             Box(
                 modifier = Modifier
@@ -68,9 +63,36 @@ fun NoticeInfoChip(
         },
         text = {
             Text(
-                text = text.annotatedBoldCompose(),
+                text = text.annotatedBoldCompose(textColor = textColor),
                 style = MaterialTheme.typography.body2,
                 color = textColor
+            )
+        },
+        onClick = onClick
+    )
+}
+
+@Composable
+fun NoticeInfoChip(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = AppColors.accentLight.copy(alpha = 0.2f),
+    iconTint: Color = AppColors.accent,
+    textColor: Color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f),
+    icon: Painter = CoreAppIcons.Security.asPainterResource(),
+    text: String,
+    onClick: (() -> Unit)? = null
+) {
+    NoticeInfoChip(
+        modifier = modifier,
+        backgroundColor = backgroundColor,
+        textColor = textColor,
+        text = text,
+        icon = {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = iconTint
             )
         },
         onClick = onClick
@@ -109,7 +131,7 @@ fun DataInfoChip(
         text = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.subtitle1.copy(lineHeight = 18.sp),
                 color = contentColorFor(backgroundColor)
             )
         },

@@ -119,7 +119,7 @@ fun CreatePlaceScreenCore(
                         } else {
                             stringResource(MR.strings.button_save)
                         },
-                        buttonIcon = if (finalState.data.isNewPlace) null else CoreAppIcons.Save.asPainterResource(),
+                        buttonIcon = null,
                         onClick = { vm.onEvent(CreatePlaceScreenUiEvent.CreatePlace) }
                     )
                 }

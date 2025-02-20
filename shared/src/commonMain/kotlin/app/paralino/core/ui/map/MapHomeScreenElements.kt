@@ -21,9 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExtendedFloatingActionButton
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.FloatingActionButtonDefaults
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -49,10 +47,12 @@ import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
 
 
@@ -108,25 +108,29 @@ fun MapHomeScreenElements(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            FloatingActionButton(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(42.dp),
+            FilledButton(
+                modifier = Modifier.padding(end = 8.dp).size(42.dp),
                 onClick = onSettingsClick,
-                backgroundColor = MaterialTheme.colors.surface
-            ) {
-                ImageModelImage(
-                    imageModel = state.currentUserImage,
-                    useBackgroundForEmoji = false,
-                    clipShape = CircleShape,
-                    modifier = Modifier
-                        .size(42.dp)
-                        .background(
-                            color = MaterialTheme.colors.surface,
-                            shape = CircleShape
-                        )
-                )
-            }
+                icon = null,
+                style = ButtonStyle.ICON,
+                elevation = 8.dp,
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colors.surface
+                ),
+                content = {
+                    ImageModelImage(
+                        imageModel = state.currentUserImage,
+                        useBackgroundForEmoji = false,
+                        clipShape = CircleShape,
+                        modifier = Modifier
+                            .size(42.dp)
+                            .background(
+                                color = MaterialTheme.colors.surface,
+                                shape = CircleShape
+                            )
+                    )
+                }
+            )
         }
 
         // map mode
@@ -204,21 +208,20 @@ fun MapHomeScreenElements(
 
                 // sharing start
                 if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {
-                    ExtendedFloatingActionButton(
+                    FilledButton(
                         modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
-                        text = {
-                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
-                        },
-                        icon = {
-                            Icon(
-                                painter = CoreAppIcons.ShareLocation.asPainterResource(),
-                                contentDescription = null
-                            )
-                        },
-                        backgroundColor = MaterialTheme.colors.primary,
-                        elevation = FloatingActionButtonDefaults.elevation(2.dp, 4.dp, 3.dp, 3.dp),
+                        style = ButtonStyle.SMALL(
+                            iconSize = 24.dp
+                        ),
+                        icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.primary,
+                            contentColor = MaterialTheme.colors.onPrimary
+                        ),
                         onClick = onSharingStartClick
-                    )
+                    ) {
+                        Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                    }
                 }
             }
 
@@ -317,16 +320,11 @@ fun CloseFocusButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    FloatingActionButton(
+    FilledButton(
         modifier = modifier.size(32.dp),
         onClick = onClick,
-        backgroundColor = MaterialTheme.colors.primary
-    ) {
-        Icon(
-            painter = CoreAppIcons.Close.asPainterResource(),
-            contentDescription = null,
-            modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colors.onPrimary
-        )
-    }
+        icon = CoreAppIcons.Close.asPainterResource(),
+        style = ButtonStyle.ICON,
+        content = null
+    )
 }

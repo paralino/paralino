@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -53,6 +54,7 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.SettingsSectionHeader
@@ -63,6 +65,7 @@ import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.SettingsActionItem
 import app.paralino.core.ui.settings.SettingsActionItemType
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -282,17 +285,18 @@ fun AccountInfoHeader(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                         ) {
-                            IconButton(
-                                onClick = {
-                                    onShareCode(DeeplinkType.ParalinoID.buildUrl(personalCode))
-                                }
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(16.dp),
-                                    painter = CoreAppIcons.Share.asPainterResource(),
-                                    contentDescription = null
-                                )
-                            }
+                            FilledButton(
+                                modifier = modifier.size(32.dp),
+                                onClick = { onShareCode(DeeplinkType.ParalinoID.buildUrl(personalCode)) },
+                                icon = CoreAppIcons.Share.asPainterResource(),
+                                style = ButtonStyle.ICON,
+                                elevation = 0.dp,
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.Transparent,
+                                    contentColor = MaterialTheme.colors.onPrimary
+                                ),
+                                content = null
+                            )
                             Column {
                                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                                     Text(

@@ -45,8 +45,7 @@ fun PlaceDetailUserListItem(
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
-            .padding(horizontal = 6.dp)
-            .padding(top = 6.dp),
+            .padding(horizontal = 6.dp, vertical = 6.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -131,7 +130,7 @@ fun PlaceSettingNotifyButton(
     FilledButton(
         modifier = modifier,
         style = ButtonStyle.SMALL_ACTION(
-            paddingValues = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
+            paddingValues = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
             minContentHeight = 16.dp,
             shape = RoundedCornerShape(8.dp),
             iconSize = 18.dp,
@@ -141,7 +140,7 @@ fun PlaceSettingNotifyButton(
             CoreAppIcons.NotificationsActive.asPainterResource()
         else
             CoreAppIcons.NotificationsOff.asPainterResource(),
-        elevation = null,
+        elevation = 0.dp,
         state = AppButtonState.loadingState(loading),
         colors = colors,
         onClick = {

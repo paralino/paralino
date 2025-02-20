@@ -13,6 +13,7 @@ import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
@@ -41,6 +42,7 @@ class PaywallViewModel(
     private val refreshUseCase: RefreshEverythingUseCase,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val deviceApiProvider: IDeviceApiProvider,
+    val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider
 ) : CoreViewModel() {
 
@@ -154,7 +156,17 @@ class PaywallViewModel(
                                     }
                                 )
                             } else {
-                                it
+                                if (it.billingPeriods.any { it.billingPeriod == event.period }) {
+                                    // other plans have same billing period, change it as well
+                                    it.copy(
+                                        billingPeriods = it.billingPeriods.map {
+                                            it.copy(isSelected = it.billingPeriod == event.period)
+                                        }
+                                    )
+                                } else {
+                                    // no matching billing period in other plan, keep as is
+                                    it
+                                }
                             }
                         }
                     )
@@ -280,7 +292,7 @@ class PaywallViewModel(
             } else {
                 MR.strings.paywall_free_plan_name.localizedString()
             },
-            type = freePlanConfig.planTypeEnum,
+            config = freePlanConfig,
             isCurrentPlan = false,
             hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
@@ -349,6 +361,7 @@ class PaywallViewModel(
                             ?.let { "$it%" },
                         isPromoDiscount = highestPrice != null,
                         pricePerMonth = null,
+                        pricePerMember = lowestPrice.formattedPricePerMemberPerMonth,
                         trialDurationDays = lowestPrice.trialDurationDays,
                     )
                 }
@@ -357,7 +370,7 @@ class PaywallViewModel(
             PlanInfoState(
                 productId = product.productId,
                 name = planConfig.planName,
-                type = planConfig.planTypeEnum,
+                config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
                 hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
@@ -370,6 +383,7 @@ class PaywallViewModel(
 
         return PaywallScreenState(
             canShowMoreInfo = AppBuildConfig.instance.isDevMode,
+            freePlanInfo = freeUiPlan,
             plans = buildList {
 //                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {
 //                    add(freeUiPlan)
@@ -392,33 +406,9 @@ class PaywallViewModel(
                     FaqSectionItem(
                         title = MR.strings.paywall_faq_question_premium_group_features.string(),
                         content = MR.strings.paywall_faq_answer_premium_group_features.string(),
-                        expanded = true
+                        expanded = false
                     )
                 )
-
-                config.listedPlanConfigs()
-                    .filter { it.isActive }
-                    .forEach {
-                        val planName = if (it.planTypeEnum.isPremium) {
-                            it.planName
-                        } else if (it.planTypeEnum == PlanType.SILVER) {
-                            MR.strings.paywall_silver_plan_name.localizedString()
-                        } else {
-                            MR.strings.paywall_free_plan_name.localizedString()
-                        }
-                        add(
-                            FaqSectionItem(
-                                title = MR.strings.paywall_faq_question_plan_features.localizedString(
-                                    planName
-                                ).annotatedBold(),
-                                content = MR.strings.paywall_faq_answer_plan_features.localizedString(
-                                    planName,
-                                    it.membersLimit,
-                                    it.placesLimit
-                                ).annotatedBold()
-                            )
-                        )
-                    }
 
                 add(
                     FaqSectionItem(
@@ -502,7 +492,7 @@ class PaywallViewModel(
                 ?.plan?.billingPeriod
                 ?.let { it == period }
             // then take default
-            ?: (period == PlanBillingPeriod.ANNUALLY)
+            ?: (period == PlanBillingPeriod.MONTHLY)
     }
 
     private fun isPlanSelected(

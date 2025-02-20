@@ -1,9 +1,11 @@
 package app.paralino.core.ui.theme
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import dev.icerock.moko.resources.compose.asFont
 
@@ -17,3 +19,5 @@ private val Montserrat @Composable get() = FontFamily(
 )
 
 val AppTypography @Composable get() = Typography(defaultFontFamily = Montserrat)
+
+val Typography.featureItemTitle @Composable get() = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp, fontWeight = FontWeight.SemiBold)

@@ -194,7 +194,7 @@ fun PersonalCodeItem(
                         style = ButtonStyle.SMALL,
                         icon = CoreAppIcons.ContentCopy.asPainterResource(),
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
-                        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                        elevation = 0.dp,
                         onClick = onCopy
                     ) {
                         Text(text = stringResource(MR.strings.invite_code_button_copy))
@@ -203,7 +203,7 @@ fun PersonalCodeItem(
                         style = ButtonStyle.SMALL,
                         icon = CoreAppIcons.Share.asPainterResource(),
                         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
-                        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp),
+                        elevation = 0.dp,
                         onClick = {
                             onShare(DeeplinkType.ParalinoID.buildUrl(code))
                         }

@@ -15,16 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ButtonElevation
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,8 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -47,11 +51,11 @@ fun FilledButton(
     modifier: Modifier = Modifier,
     style: ButtonStyle,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
-    elevation: ButtonElevation? = ButtonDefaults.elevation(),
+    elevation: Dp = 4.dp,
     icon: Painter? = null,
     state: AppButtonState = AppButtonState.CONTENT,
     onClick: () -> Unit,
-    content: @Composable RowScope.() -> Unit,
+    content: (@Composable RowScope.() -> Unit)?,
 ) {
     var buttonState by remember { mutableStateOf(AppButtonState.CONTENT) }
     val oldState = buttonState
@@ -72,7 +76,7 @@ fun FilledButton(
         else -> state
     }
 
-    LaunchedEffect(onClick) {
+    LaunchedEffect(newState) {
         if (newState == AppButtonState.CHECK_THEN_CONTENT) {
             delay(700)
             buttonState = AppButtonState.CONTENT
@@ -81,67 +85,77 @@ fun FilledButton(
         }
     }
 
-    Button(
-        modifier = style.defaultModifier.then(modifier),
-        contentPadding = style.paddingValues,
-        colors = colors,
-        elevation = elevation,
-        shape = style.shape,
-        onClick = {
-            if (buttonState == AppButtonState.CONTENT)
-                onClick()
-        },
-        content = {
-            val contentAlpha by animateFloatAsState(
-                targetValue = if (newState == AppButtonState.CONTENT) 1f else 0f,
-                animationSpec = tween(durationMillis = 300)
-            )
-            val loadingAlpha by animateFloatAsState(
-                targetValue = if (newState == AppButtonState.LOADING) 1f else 0f,
-                animationSpec = tween(durationMillis = 300)
-            )
-            val checkAlpha by animateFloatAsState(
-                targetValue = if (newState == AppButtonState.CHECK_THEN_CONTENT) 1f else 0f,
-                animationSpec = tween(durationMillis = 300)
-            )
+    Box(
+        modifier = style.defaultModifier.then(modifier)
+            .clickable(onClick = {
+                if (buttonState == AppButtonState.CONTENT) {
+                    onClick()
+                }
+            })
+            .shadow(elevation = elevation, shape = style.shape, spotColor = Color.DarkGray)
+            .clip(style.shape)
+            .background(color = colors.backgroundColor(enabled = true).value)
+            .padding(style.paddingValues),
+        contentAlignment = Alignment.Center
+    ) {
+        val contentAlpha by animateFloatAsState(
+            targetValue = if (newState == AppButtonState.CONTENT) 1f else 0f,
+            animationSpec = tween(durationMillis = 300)
+        )
+        val loadingAlpha by animateFloatAsState(
+            targetValue = if (newState == AppButtonState.LOADING) 1f else 0f,
+            animationSpec = tween(durationMillis = 300)
+        )
+        val checkAlpha by animateFloatAsState(
+            targetValue = if (newState == AppButtonState.CHECK_THEN_CONTENT) 1f else 0f,
+            animationSpec = tween(durationMillis = 300)
+        )
 
-            Box(contentAlignment = Alignment.Center) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .alpha(contentAlpha)
-                        .defaultMinSize(minHeight = style.minContentHeight)
-                ) {
-                    if (icon != null) {
-                        Icon(painter = icon, null, modifier = Modifier.size(style.iconSize))
-                        Spacer(Modifier.size(style.iconSpacing))
+        CompositionLocalProvider(LocalContentColor provides colors.contentColor(enabled = true).value) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .alpha(contentAlpha)
+                    .defaultMinSize(minHeight = style.minContentHeight)
+            ) {
+                if (icon != null) {
+                    Icon(painter = icon, null, modifier = Modifier.size(style.iconSize))
+                    Spacer(Modifier.size(style.iconSpacing))
+                }
+
+                if (content != null) {
+                    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.button) {
+                        content()
                     }
-                    content()
                 }
 
-                if (newState == AppButtonState.LOADING || loadingAlpha > 0f) {
-                    CircularProgressIndicator(
-                        color = colors.contentColor(enabled = true).value,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier
-                            .size(style.minContentHeight)
-                            .alpha(loadingAlpha)
-                    )
-                }
-
-                if (newState == AppButtonState.CHECK_THEN_CONTENT || checkAlpha > 0f) {
-                    Icon(
-                        painter = CoreAppIcons.Check.asPainterResource(),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.onPrimary,
-                        modifier = Modifier
-                            .size(style.minContentHeight)
-                            .alpha(checkAlpha)
-                    )
+                if (icon != null && content != null) {
+                    Spacer(Modifier.size(4.dp))
                 }
             }
+
+            if (newState == AppButtonState.LOADING || loadingAlpha > 0f) {
+                CircularProgressIndicator(
+                    color = colors.contentColor(enabled = true).value,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier
+                        .size(style.minContentHeight)
+                        .alpha(loadingAlpha)
+                )
+            }
+
+            if (newState == AppButtonState.CHECK_THEN_CONTENT || checkAlpha > 0f) {
+                Icon(
+                    painter = CoreAppIcons.Check.asPainterResource(),
+                    contentDescription = null,
+                    tint = colors.contentColor(enabled = true).value,
+                    modifier = Modifier
+                        .size(style.minContentHeight)
+                        .alpha(checkAlpha)
+                )
+            }
         }
-    )
+    }
 }
 
 @Composable

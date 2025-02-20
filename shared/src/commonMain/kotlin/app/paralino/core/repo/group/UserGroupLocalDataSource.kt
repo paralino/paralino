@@ -5,6 +5,7 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.domain.crypto.VerificationResultError
 import app.paralino.core.models.Resource
+import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
@@ -301,6 +302,20 @@ class UserGroupLocalDataSource constructor(
         )?.let {
             val group = getGroupOnce(it.groupId)!!
             memberMapper.local2Core(it, emptyList(), group).member
+        }
+    }
+
+    suspend fun getMemberNameOnce(groupId: String, userId: String): String? {
+        return database.groupRelatedDao.getMemberOnce(
+            groupId = groupId,
+            userId = userId
+        )?.let {
+            memberMapper.coreMapper.getMemberData(
+                model = memberMapper.local2Remote(it, emptyList()).member,
+                // Not doing verification here since we just need a name, regardless of the status
+                verification = VerificationResult.Verified,
+                groupOwnerUserId = getGroupOwnerId(groupId = groupId)
+            ).data?.name
         }
     }
 

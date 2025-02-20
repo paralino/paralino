@@ -46,7 +46,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
@@ -304,13 +303,7 @@ private fun LazyListScope.placesList(
                     modifier = Modifier.padding(top = 20.dp),
                     style = ButtonStyle.SMALL,
                     icon = null,
-                    elevation = ButtonDefaults.elevation(
-                        0.dp,
-                        0.dp,
-                        0.dp,
-                        0.dp,
-                        0.dp
-                    ),
+                    elevation = 0.dp,
                     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
                     onClick = onOpenPlaces
                 ) {
@@ -377,8 +370,8 @@ fun MapBottomSheetTab(
         Text(
             modifier = Modifier,
             text = text,
-            fontSize = 14.sp,
-            color = contentColor
+            color = contentColor,
+            style = MaterialTheme.typography.button
         )
         Spacer(modifier = Modifier.size(8.dp))
         AnimatedVisibility(

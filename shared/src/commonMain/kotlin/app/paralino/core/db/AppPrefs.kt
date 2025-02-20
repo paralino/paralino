@@ -83,6 +83,7 @@ class AppPrefs(
         const val keyLocationShowIndicatorIOS = "prefs.location.ios.indicator"
         const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
         const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
+        const val keyAccountWelcomeOnboardingNotifications = "prefs.device.onboarding.notifications"
         const val keyLoggedInAppLaunchCount = "prefs.device.appLaunchCount.account"
         const val keyShowedAppRatingTime = "prefs.user.appRating.shownTime"
         const val keyShowedAppRatingVersion = "prefs.user.appRating.appVersion"
@@ -315,6 +316,12 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyAccountWelcomeOnboarding, false)
         set(value) {
             provider.userSettings.putBoolean(keyAccountWelcomeOnboarding, value)
+        }
+
+    var didAskForNotificationPermissions: Boolean
+        get() = provider.userSettings.getBoolean(keyAccountWelcomeOnboardingNotifications, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyAccountWelcomeOnboardingNotifications, value)
         }
 
     var lastShowedAppRatingDialogUTC: Instant

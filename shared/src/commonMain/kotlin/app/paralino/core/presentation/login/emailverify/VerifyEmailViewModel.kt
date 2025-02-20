@@ -9,6 +9,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.extensions.errorString
@@ -108,7 +109,10 @@ class VerifyEmailViewModel(
                 _uiState.update { it.copy(actionLoading = true) }
                 userRepo.initEmailVerification()
                 _uiState.update { it.copy(actionLoading = false) }
-                messageDispatcher.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
+                messageDispatcher.showSnackbar(
+                    text = MR.strings.info_email_check_instructions_popup.localizedString(),
+                    duration = SnackbarDuration.Long
+                )
             } catch (e: Exception) {
                 _uiState.update { it.copy(actionLoading = false) }
                 messageDispatcher.showSnackbar(e.errorString())

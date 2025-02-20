@@ -17,10 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExtendedFloatingActionButton
-import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -56,6 +55,7 @@ import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
@@ -68,8 +68,8 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
@@ -209,38 +209,35 @@ fun GroupDetailScreenCore(
                 modifier = Modifier.fillMaxSize(),
                 floatingActionButton = {
                     if (state.data.sharingStatus != null) {
-                        ExtendedFloatingActionButton(
+                        FilledButton(
                             modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
-                            text = { Text(text = stringResource(MR.strings.location_banner_info_stop)) },
-                            icon = {
-                                Icon(
-                                    painter = CoreAppIcons.StopCircle.asPainterResource(),
-                                    contentDescription = null
-                                )
-                            },
-                            backgroundColor = MaterialTheme.colors.error,
-                            contentColor = MaterialTheme.colors.onError,
-                            elevation = FloatingActionButtonDefaults.elevation(
-                                2.dp, 4.dp, 3.dp, 3.dp
+                            style = ButtonStyle.SMALL(
+                                iconSize = 24.dp
+                            ),
+                            icon = CoreAppIcons.StopCircle.asPainterResource(),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.error,
+                                contentColor = MaterialTheme.colors.onError
                             ),
                             onClick = { vm.stopSharing() }
-                        )
+                        ) {
+                            Text(text = stringResource(MR.strings.location_banner_info_stop))
+                        }
                     } else {
-                        ExtendedFloatingActionButton(
+                        FilledButton(
                             modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
-                            text = { Text(text = stringResource(MR.strings.groups_sharing_button_start)) },
-                            icon = {
-                                Icon(
-                                    painter = CoreAppIcons.ShareLocation.asPainterResource(),
-                                    contentDescription = null
-                                )
-                            },
-                            backgroundColor = MaterialTheme.colors.primary,
-                            elevation = FloatingActionButtonDefaults.elevation(
-                                2.dp, 4.dp, 3.dp, 3.dp
+                            style = ButtonStyle.SMALL(
+                                iconSize = 24.dp
+                            ),
+                            icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = MaterialTheme.colors.onPrimary
                             ),
                             onClick = { openSharing() }
-                        )
+                        ) {
+                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                        }
                     }
                 },
                 isFloatingActionButtonDocked = true

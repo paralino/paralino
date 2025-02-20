@@ -63,7 +63,7 @@ class LoginUseCase constructor(
             logg.d("login", "Start login - derive password")
             emit(SignUpStep.STARTING)
 
-            val loginAlg = cryptoCore.getDefaultLoginKDFAlg()
+            val loginAlg = userRepo.getLoginDetails(key = email).loginAlg
             val authKey = cryptoAccountOperationV2.deriveUserAuthKey(
                 email = email,
                 password = password,

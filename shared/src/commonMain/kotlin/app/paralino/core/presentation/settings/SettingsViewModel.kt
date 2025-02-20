@@ -141,7 +141,7 @@ class SettingsViewModel(
         coroutineScope.launch {
             try {
                 userRepo.initEmailVerification()
-                messageDispatcher.showSnackbar(MR.strings.info_email_check_instructions.localizedString())
+                messageDispatcher.showSnackbar(MR.strings.info_email_check_instructions_popup.localizedString())
                 _eventChannel.send(AccountScreenEvent.EmailVerificationSent)
             } catch (e: Exception) {
                 messageDispatcher.showSnackbar(e.errorString())

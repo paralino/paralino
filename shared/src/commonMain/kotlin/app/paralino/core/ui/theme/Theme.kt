@@ -73,6 +73,7 @@ sealed interface ButtonStyle {
 	companion object {
 		val BIG = BIG()
 		val SMALL = SMALL()
+		val ICON = ICON()
 		val SMALL_ACTION = SMALL_ACTION()
 	}
 
@@ -87,16 +88,25 @@ sealed interface ButtonStyle {
 
 	data class SMALL(
 		override val defaultModifier: Modifier = Modifier,
-		override val paddingValues: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+		override val paddingValues: PaddingValues = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
 		override val shape: CornerBasedShape = RoundedCornerShape(percent = 50),
 		override val iconSize: Dp = 18.dp,
 		override val iconSpacing: Dp = 8.dp,
 		override val minContentHeight: Dp = 24.dp,
 	): ButtonStyle
 
+	data class ICON(
+		override val defaultModifier: Modifier = Modifier,
+		override val paddingValues: PaddingValues = PaddingValues(),
+		override val shape: CornerBasedShape = RoundedCornerShape(percent = 50),
+		override val iconSize: Dp = 18.dp,
+		override val iconSpacing: Dp = 0.dp,
+		override val minContentHeight: Dp = 20.dp,
+	): ButtonStyle
+
 	data class SMALL_ACTION(
 		override val defaultModifier: Modifier = Modifier,
-		override val paddingValues: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+		override val paddingValues: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
 		override val shape: CornerBasedShape = RoundedCornerShape(percent = 50),
 		override val iconSize: Dp = 12.dp,
 		override val iconSpacing: Dp = 4.dp,

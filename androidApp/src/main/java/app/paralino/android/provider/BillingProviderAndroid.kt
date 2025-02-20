@@ -27,9 +27,12 @@ import com.revenuecat.purchases.models.GoogleReplacementMode
 import com.revenuecat.purchases.models.GoogleSubscriptionOption
 import com.revenuecat.purchases.models.Period
 import com.revenuecat.purchases.models.Period.Unit
+import com.revenuecat.purchases.models.Price
 import com.revenuecat.purchases.models.googleProduct
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
 
 class BillingProviderAndroid(
@@ -116,49 +119,54 @@ class BillingProviderAndroid(
         val products = mutableMapOf<String, IBillingProvider.SubscriptionPlanData>()
         offerings.current?.let { offering ->
             offering.availablePackages.forEach { data ->
-                val period = data.product.defaultOption?.let { subscriptionOption ->
-                    val billingPeriod = when (subscriptionOption.billingPeriod?.unit) {
-                        Period.Unit.UNKNOWN -> PlanBillingPeriod.ONETIME
-                        Period.Unit.YEAR -> PlanBillingPeriod.ANNUALLY
-                        Period.Unit.MONTH -> PlanBillingPeriod.MONTHLY
-                        Period.Unit.WEEK -> PlanBillingPeriod.WEEKLY
-                        else -> null
-                    }
-                    if (billingPeriod != null) {
-                        IBillingProvider.SubscriptionPlanPeriodData(
-                            fullProductId = data.product.id,
-                            productPlanId = subscriptionOption.id,
-                            billingPeriod = billingPeriod,
-                            price = subscriptionOption.fullPricePhase?.price?.amountMicros ?: 0,
-                            formattedPrice = when (billingPeriod) {
-                                PlanBillingPeriod.WEEKLY -> subscriptionOption.fullPricePhase
-                                    ?.pricePerWeek()?.formatted ?: ""
-
-                                PlanBillingPeriod.MONTHLY -> subscriptionOption.fullPricePhase
-                                    ?.pricePerMonth()?.formatted ?: ""
-
-                                PlanBillingPeriod.ANNUALLY -> subscriptionOption.fullPricePhase
-                                    ?.pricePerYear()?.formatted ?: ""
-
-                                PlanBillingPeriod.ONETIME -> subscriptionOption.fullPricePhase
-                                    ?.price?.formatted ?: ""
-                            },
-                            referencePerYearPrice = subscriptionOption.fullPricePhase
-                                ?.pricePerYear(Locale.getDefault())?.amountMicros ?: 0,
-                            referencePerYearFormattedPrice = subscriptionOption.fullPricePhase
-                                ?.pricePerYear()?.formatted ?: "",
-                            trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDays
-                        )
-                    } else {
-                        null
-                    }
-                }
 
                 val planConfig = remoteConfigRepo.getConfigOnce().plans.firstOrNull {
                     it.productIds.any { it == data.product.googleProduct!!.productId }
                 }
 
                 if (planConfig != null) {
+
+                    val period = data.product.defaultOption?.let { subscriptionOption ->
+                        val billingPeriod = when (subscriptionOption.billingPeriod?.unit) {
+                            Period.Unit.UNKNOWN -> PlanBillingPeriod.ONETIME
+                            Period.Unit.YEAR -> PlanBillingPeriod.ANNUALLY
+                            Period.Unit.MONTH -> PlanBillingPeriod.MONTHLY
+                            Period.Unit.WEEK -> PlanBillingPeriod.WEEKLY
+                            else -> null
+                        }
+                        if (billingPeriod != null) {
+                            IBillingProvider.SubscriptionPlanPeriodData(
+                                fullProductId = data.product.id,
+                                productPlanId = subscriptionOption.id,
+                                billingPeriod = billingPeriod,
+                                price = subscriptionOption.fullPricePhase?.price?.amountMicros ?: 0,
+                                formattedPrice = when (billingPeriod) {
+                                    PlanBillingPeriod.WEEKLY -> subscriptionOption.fullPricePhase
+                                        ?.pricePerWeek()?.formatted ?: ""
+
+                                    PlanBillingPeriod.MONTHLY -> subscriptionOption.fullPricePhase
+                                        ?.pricePerMonth()?.formatted ?: ""
+
+                                    PlanBillingPeriod.ANNUALLY -> subscriptionOption.fullPricePhase
+                                        ?.pricePerYear()?.formatted ?: ""
+
+                                    PlanBillingPeriod.ONETIME -> subscriptionOption.fullPricePhase
+                                        ?.price?.formatted ?: ""
+                                },
+                                referencePerYearPrice = subscriptionOption.fullPricePhase
+                                    ?.pricePerYear(Locale.getDefault())?.amountMicros ?: 0,
+                                referencePerYearFormattedPrice = subscriptionOption.fullPricePhase
+                                    ?.pricePerYear()?.formatted ?: "",
+                                formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase?.pricePerMonth()?.pricePerPeriod(
+                                    planConfig.membersLimit.toDouble()
+                                )?.formatted,
+                                trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDays
+                            )
+                        } else {
+                            null
+                        }
+                    }
+
                     val currentPlan = products[data.product.googleProduct!!.productId]
 
                     products[data.product.googleProduct!!.productId] = currentPlan?.copy(
@@ -250,6 +258,18 @@ class BillingProviderAndroid(
             Unit.YEAR -> value * 365
             Unit.UNKNOWN -> null
         }
+
+    private val MICRO_MULTIPLIER = 1_000_000.0
+    private fun Price.pricePerPeriod(units: Double, locale: Locale = Locale.getDefault()): Price {
+        val numberFormat = NumberFormat.getCurrencyInstance(locale)
+        numberFormat.currency = Currency.getInstance(currencyCode)
+
+        val value = amountMicros / units
+        val formatted = numberFormat.format(value / MICRO_MULTIPLIER)
+
+        return Price(formatted, (value).toLong(), currencyCode)
+    }
+
 
     private data class CurrentPlanConfig(
         val config: PlanConfig,

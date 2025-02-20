@@ -28,6 +28,7 @@ import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import app.paralino.core.utils.exceptions.UnverifiedUserException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -293,6 +294,13 @@ class UserRepository constructor(
     }
 
     suspend fun getLoginDetails(key: String): LoginDetailsRaw {
-        return triggerRemoteOnly { remote.getLoginDetails(key) }
+        return triggerRemoteOnly {
+            try {
+                remote.getLoginDetails(key)
+            } catch (e: Exception) {
+                delay(500)
+                remote.getLoginDetails(key)
+            }
+        }
     }
 }

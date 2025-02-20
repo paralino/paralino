@@ -120,7 +120,7 @@ fun BatteryNotificationToggle(
             CoreAppIcons.NotificationsActive.asPainterResource()
         else
             CoreAppIcons.NotificationsOff.asPainterResource(),
-        elevation = null,
+        elevation = 0.dp,
         state = AppButtonState.loadingState(loading),
         colors = colors,
         onClick = {

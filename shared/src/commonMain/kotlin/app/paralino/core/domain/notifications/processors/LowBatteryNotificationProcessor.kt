@@ -29,10 +29,10 @@ class LowBatteryNotificationProcessor(
         try {
             val group: UserGroup? = groupRepo.getGroupOnce(payload.groupId)
             groupName = group?.nameOrNull
-            userName = groupRepo.getMemberOnce(
+            userName = groupRepo.getMemberNameOnce(
                 groupId = payload.groupId,
                 userId = payload.memberUserId
-            )?.name
+            )
         } catch (_: Exception) {
         }
 
