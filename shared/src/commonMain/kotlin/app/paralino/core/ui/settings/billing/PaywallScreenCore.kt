@@ -282,7 +282,8 @@ private fun PaywallScreen(
 
             AnimatedVisibility(visible = state.selectedPlan?.hasSpecialOffer == true) {
                 NoticeInfoChip(
-                    modifier = Modifier.padding(horizontal = 20.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                        .padding(top = 8.dp, bottom = 16.dp),
                     text = stringResource(MR.strings.paywall_special_offer_description),
                     icon = {
                         Text(text = "🎁")
@@ -346,7 +347,10 @@ private fun PaywallScreen(
             AnimatedVisibility(visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null) {
                 NoticeInfoChip(
                     modifier = Modifier.padding(horizontal = 20.dp).padding(top = 40.dp),
-                    text = stringResource(MR.strings.paywall_free_trial_notice_main, "${state.selectedBillingPeriod?.trialDurationDays ?: " "}"),
+                    text = stringResource(
+                        MR.strings.paywall_free_trial_notice_main,
+                        "${state.selectedBillingPeriod?.trialDurationDays ?: " "}"
+                    ),
                     icon = {
                         Text(text = "🎁")
                     }
@@ -382,29 +386,37 @@ private fun PaywallScreen(
 
             PaywallUserReviewsSection()
 
-            Spacer(modifier = Modifier.size(40.dp))
-
-            PlanTypePicker(
-                state = state,
-                onEvent = onEvent
-            )
-
-            if (state.selectedPlan != null) {
-                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
-                    BillingPeriodOptions(
-                        modifier = Modifier
-                            .padding(top = 8.dp, bottom = 8.dp)
-                            .padding(horizontal = 20.dp),
-                        selectedPlan = state.selectedPlan!!,
-                        onPeriodSelected = {
-                            onEvent(
-                                PaywallScreenUiEvent.SelectBillingPeriod(
-                                    planType = state.selectedPlan!!.type,
-                                    period = it
-                                )
-                            )
-                        }
+            Column(
+                modifier = Modifier
+                    .padding(top = 30.dp)
+                    .padding(bottom = 20.dp)
+                    .background(
+                        color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
                     )
+                    .padding(top = 40.dp, bottom = 40.dp)
+            ) {
+                PlanTypePicker(
+                    state = state,
+                    onEvent = onEvent
+                )
+
+                if (state.selectedPlan != null) {
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
+                        BillingPeriodOptions(
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .padding(horizontal = 20.dp),
+                            selectedPlan = state.selectedPlan!!,
+                            onPeriodSelected = {
+                                onEvent(
+                                    PaywallScreenUiEvent.SelectBillingPeriod(
+                                        planType = state.selectedPlan!!.type,
+                                        period = it
+                                    )
+                                )
+                            }
+                        )
+                    }
                 }
             }
 
@@ -1088,7 +1100,6 @@ private fun FaqSection(
     faqsList: List<FaqSectionItem>
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Spacer(modifier = Modifier.size(32.dp))
         SettingsSectionHeader(
             name = stringResource(MR.strings.paywall_faq_section_title),
             backgroundColor = Color.Transparent
