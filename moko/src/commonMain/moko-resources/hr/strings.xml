@@ -93,7 +93,7 @@
     <string name="onboarding_step_notifications_title_tag">Obavijesti</string>
     <string name="onboarding_step_notifications_title">Ostanite u tijeku</string>
     <string name="onboarding_step_notifications_info">Primajte obavijesti o svom računu, mjestima i važnim događajima u grupi.</string>
-    <string name="onboarding_step_notifications_button_next">Dopusti obavijesti</string>
+    <string name="onboarding_step_notifications_button_next">Nastavi</string>
     <string name="onboarding_step_groupCreate_title_tag">Grupe</string>
     <string name="onboarding_step_groupCreate_title">Kreirajte svoju prvu grupu</string>
     <string name="onboarding_step_groupCreate_info">Kreirajte više grupa i kontrolirajte kako i s kim dijelite svoju lokaciju.</string>

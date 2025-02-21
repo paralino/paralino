@@ -94,7 +94,7 @@
     <string name="onboarding_step_notifications_title_tag">Notifications</string>
     <string name="onboarding_step_notifications_title">Stay updated</string>
     <string name="onboarding_step_notifications_info">Receive updates about your account, places, and important group events.</string>
-    <string name="onboarding_step_notifications_button_next">Allow notifications</string>
+    <string name="onboarding_step_notifications_button_next">Continue</string>
     <string name="onboarding_step_groupCreate_title_tag">Groups</string>
     <string name="onboarding_step_groupCreate_title">Create your first group</string>
     <string name="onboarding_step_groupCreate_info">Create multiple groups and control how and with whom you share your location.</string>

@@ -93,7 +93,7 @@
     <string name="onboarding_step_notifications_title_tag">Benachrichtigungen</string>
     <string name="onboarding_step_notifications_title">Bleiben Sie informiert</string>
     <string name="onboarding_step_notifications_info">Erhalten Sie Updates zu Ihrem Konto, Ihren Orten und wichtigen Gruppenevents.</string>
-    <string name="onboarding_step_notifications_button_next">Benachrichtigungen erlauben</string>
+    <string name="onboarding_step_notifications_button_next">Fortfahren</string>
     <string name="onboarding_step_groupCreate_title_tag">Gruppen</string>
     <string name="onboarding_step_groupCreate_title">Erstellen Sie Ihre erste Gruppe</string>
     <string name="onboarding_step_groupCreate_info">Erstellen Sie mehrere Gruppen und kontrollieren Sie, wie und mit wem Sie Ihren Standort teilen.</string>
