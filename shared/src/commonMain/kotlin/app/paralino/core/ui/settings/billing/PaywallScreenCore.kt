@@ -665,10 +665,12 @@ private fun PaywallBottomCard(
                     ) {
                         Text(
                             text = if (billingPeriodState?.trialDurationDays != null) {
-                                stringResource(MR.strings.button_continue)
+                                stringResource(MR.strings.paywall_start_button_free, "${billingPeriodState.trialDurationDays}")
                             } else {
-                                stringResource(MR.strings.button_continue)
-                            }.annotatedBoldCompose()
+                                stringResource(MR.strings.paywall_start_button_continue)
+                            }.annotatedBoldCompose(),
+                            style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.Bold),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

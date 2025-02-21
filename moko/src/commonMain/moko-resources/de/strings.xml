@@ -52,7 +52,7 @@
     <string name="notifications_sharing_error_title">Freigabe pausiert!</string>
     <string name="notifications_sharing_error_message">Freigabe ist aufgrund folgender Fehler pausiert:\n%s</string>
     <string name="notifications_channel_active_location">Aktive Standortfreigabe</string>
-    <string name="notifications_channel_place_alert">Ortsbenachrichtigungen</string>
+    <string name="notifications_channel_place_alert">Ortswarnungen</string>
     <string name="notifications_channel_group_activity">Gruppenaktivität</string>
     <string name="notifications_channel_push_sync">Benachrichtigungssynchronisierung</string>
     <string name="notifications_channel_data_sync">Datensynchronisierung</string>
@@ -80,7 +80,7 @@
     <string name="onboarding_step_location_encryption_title">Mit Verschlüsselung</string>
     <string name="onboarding_step_location_encryption_title_tag">Datenschutz</string>
     <string name="onboarding_step_location_encryption_info">Ihre Daten sind immer verschlüsselt und verlassen Ihr Gerät nie ungeschützt.</string>
-    <string name="onboarding_step_places_title">Ortsbenachrichtigungen</string>
+    <string name="onboarding_step_places_title">Ortswarnungen</string>
     <string name="onboarding_step_places_title_tag">Einfachheit</string>
     <string name="onboarding_step_places_info">Erhalten Sie eine Benachrichtigung, wenn jemand einen vordefinierten Bereich betritt oder verlässt.</string>
     <string name="onboarding_step_options_title">Volle Freigabekontrolle</string>
@@ -207,8 +207,8 @@
     <string name="setting_description_locationBoost_enabled">Maximale Standortleistung wird um %s zurückgesetzt. **Verbraucht mehr Akku!!!**</string>
     <string name="setting_description_locationBoost_disabled">Nutzen Sie maximale Standortleistung für bis zu 2 Stunden. **Wird mehr Akku verbrauchen!!!**</string>
     <string name="setting_title_placeActivityThrottle">Ortsaktivität drosseln</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Ihr Gerät wird Ortsaktivitätsbenachrichtigungen erstellen, wenn Sie mehr Zeit in oder außerhalb eines bestimmten Ortes verbringen.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Ihr Gerät wird schneller auf Ortsänderungen reagieren und möglicherweise mehrere Ortsaktivitätsbenachrichtigungen in kurzer Zeit erstellen (zum Beispiel, wenn Sie kurz an einem bestimmten Ort vorbeifahren).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Ihr Gerät wird Ortswarnungen erstellen, wenn Sie mehr Zeit in oder außerhalb eines bestimmten Ortes verbringen.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Ihr Gerät wird schneller auf Ortsänderungen reagieren und möglicherweise mehrere Ortswarnungen in kurzer Zeit erstellen (zum Beispiel, wenn Sie kurz an einem bestimmten Ort vorbeifahren).</string>
     <string name="plans_banner_settings_title">Plan upgraden</string>
     <string name="plans_banner_settings_description">Holen Sie sich mehr von allem und bringen Sie Ihr Erlebnis auf die nächste Stufe!</string>
     <string name="plans_banner_settings_action">Jetzt upgraden</string>
@@ -236,10 +236,10 @@
     <string name="paywall_special_offer_title">Dauerhafter Rabatt</string>
     <string name="paywall_special_offer_info">Nur für kurze Zeit! Sichern Sie sich ein spezielles Angebot und **behalten Sie diesen Preis für immer**.</string>
     <string name="paywall_all_members_features_notice">Alle %s Mitglieder erhalten Gruppenleistungen</string>
-    <string name="paywall_free_trial_notice">Die ersten **%s Tage** sind kostenlos</string>
+    <string name="paywall_free_trial_notice">🎁 Die ersten **%s Tage** sind kostenlos</string>
     <string name="paywall_free_trial_notice_main">**%1$s Tage kostenlose Testversion**\nKeine Zahlung jetzt - testen Sie alle Funktionen völlig kostenlos für die ersten **%1$s Tage**.</string>
-    <string name="paywall_start_button_free">**Kostenlose Testversion** starten</string>
-    <string name="paywall_start_button_continue">Mit **%s** fortfahren</string>
+    <string name="paywall_start_button_free">Kostenlose Testversion starten</string>
+    <string name="paywall_start_button_continue">Fortfahren</string>
     <string name="paywall_cancellation_notice">Sie können jederzeit kündigen</string>
     <string name="paywall_cancellation_notice_trial">Derzeit keine Zahlung fällig, jederzeit kündbar</string>
     <string name="paywall_button_restore">Käufe wiederherstellen</string>
@@ -461,9 +461,9 @@
     <string name="group_settings_verification_description_off">Gruppenmitglieder können jetzt von anderen Benutzern hinzugefügt werden, und es gibt keine zusätzliche Überprüfung durch den Gruppeninhaber.</string>
     <string name="group_settings_verification_dialog_message_on">Die Aktivierung der Überprüfung löst den erneuten Verifizierungsprozess für alle aktuellen Mitglieder aus.\n\nMitglieder werden kryptografisch verifiziert und niemand sonst kann neue Mitglieder zu dieser Gruppe hinzufügen.</string>
     <string name="group_settings_verification_dialog_message_off">Die Deaktivierung der Mitgliederüberprüfung ermöglicht es anderen, neue Mitglieder zu Ihrer Gruppe hinzuzufügen.</string>
-    <string name="group_settings_battery_notifications_title">Batteriebenachrichtigungen</string>
-    <string name="group_settings_battery_notifications_info">Entscheiden Sie, ob Sie benachrichtigt werden möchten, wenn der Batteriestand eines Gruppenmitglieds niedrig ist.</string>
-    <string name="group_settings_battery_notifications_notice">Benachrichtigungen werden nur gesendet, wenn Mitglieder ihre Batteriedaten teilen und ihr Gerät einen Batteriestand unter 15% erkennt.</string>
+    <string name="group_settings_battery_notifications_title">Akkuwarnungen</string>
+    <string name="group_settings_battery_notifications_info">Entscheiden Sie, ob Sie benachrichtigt werden möchten, wenn der Akkustand eines Gruppenmitglieds niedrig ist.</string>
+    <string name="group_settings_battery_notifications_notice">Benachrichtigungen werden nur gesendet, wenn Mitglieder ihren Akkustand teilen und ihr Gerät einen Akkustand unter 15 % erkennt.</string>
     <string name="group_settings_battery_toggle_active">Aktiv</string>
     <string name="group_settings_battery_toggle_inactive">Inaktiv</string>
     <string name="group_create_start_title">Verbinden</string>
@@ -513,7 +513,7 @@
     <string name="place_list_delete_place_alert_title">Sind Sie sicher, dass Sie diesen Ort löschen möchten?</string>
     <string name="place_detail_setting_button_notify_enter">Betreten</string>
     <string name="place_detail_setting_button_notify_exit">Verlassen</string>
-    <string name="place_detail_notification_settings_title">Benachrichtigungseinstellungen</string>
+    <string name="place_detail_notification_settings_title">Ortswarnungen</string>
     <string name="place_detail_notification_settings_info">Wählen Sie, ob Sie Benachrichtigungen erhalten möchten, wenn jedes Gruppenmitglied diesen Ort betritt oder verlässt.</string>
     <string name="place_notification_enter">%s ist bei %s angekommen</string>
     <string name="place_notification_exit">%s hat %s verlassen</string>
