@@ -1,6 +1,8 @@
 package app.paralino.core.presentation.settings
 
 import app.paralino.core.MR
+import app.paralino.core.app_rating.AppRatingManager
+import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.logg
@@ -57,7 +59,8 @@ class SettingsViewModel(
     private val deviceApiProvider: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val valueFormatter: IValueFormatter,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(
@@ -76,6 +79,8 @@ class SettingsViewModel(
     private var locationBoostTimeJob: Job? = null
 
     init {
+        appRatingManager.tryShowingAppRating(source = AppRatingSource.APP_SETTINGS)
+
         coroutineScope.launch {
             userRepo.refreshUserMaybe().data?.let {
                 try {
