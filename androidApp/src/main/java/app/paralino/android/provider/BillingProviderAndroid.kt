@@ -160,7 +160,7 @@ class BillingProviderAndroid(
                                 formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase?.pricePerMonth()?.pricePerPeriod(
                                     planConfig.membersLimit.toDouble()
                                 )?.formatted,
-                                trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDays
+                                trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDaysInt
                             )
                         } else {
                             null
@@ -250,7 +250,7 @@ class BillingProviderAndroid(
         }
     }
 
-    private val Period.valueInDays: Int?
+    private val Period.valueInDaysInt: Int?
         get() = when (unit) {
             Unit.DAY -> value
             Unit.WEEK -> value * 7
