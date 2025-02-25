@@ -1,7 +1,7 @@
 package app.paralino.core.repo.base
 
-import app.paralino.core.connectionStatus
 import app.paralino.core.logg
+import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
@@ -12,11 +12,13 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 
-abstract class BaseRepository {
+abstract class BaseRepository: KoinComponent {
 
-    private val connection get() = connectionStatus
+    private val connection: IConnectionStatusProvider by inject()
     private val cachedInfo = hashMapOf<String, Long>()
 
     /**

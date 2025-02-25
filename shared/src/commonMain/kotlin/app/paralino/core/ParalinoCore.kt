@@ -148,7 +148,6 @@ object ParalinoCore {
 
         AppBuildConfig.instance = appBuildConfig
         AppPrefs.instance = appPrefs
-        connectionStatus = deviceApiProvider.connectionStatusProvider
 
         val crashReportingLogger = koinApp.koin.get<ICrashReportingLogr>()
         logr.init(
