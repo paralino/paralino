@@ -47,10 +47,8 @@ abstract class IConnectionStatusProvider(
                         checkData.lastCheckTime = nowUTC().toEpochMilliseconds()
                         checkData.checkCount = 0
                         return@withTimeoutOrNull try {
-                            logg.v("app_state", "Try to ping server")
                             isInternetAvailable(url)
                         } catch (e: Exception) {
-                            logg.w("app_state", "Error pinging server: ${e.message}")
                             false
                         }
                     }
