@@ -140,7 +140,6 @@ object ParalinoCore {
     private fun initializeApp(koinApp: KoinApplication) {
 
         val logr = Logr
-        logg = logr
 
         val appPrefs = koinApp.koin.get<AppPrefs>()
         val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
@@ -149,7 +148,6 @@ object ParalinoCore {
 
         AppBuildConfig.instance = appBuildConfig
         AppPrefs.instance = appPrefs
-        connectionStatus = deviceApiProvider.connectionStatusProvider
 
         val crashReportingLogger = koinApp.koin.get<ICrashReportingLogr>()
         logr.init(

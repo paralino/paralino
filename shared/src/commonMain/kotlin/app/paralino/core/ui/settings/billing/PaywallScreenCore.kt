@@ -280,7 +280,7 @@ private fun PaywallScreen(
                 }
             }
 
-            AnimatedVisibility(visible = state.selectedPlan?.hasSpecialOffer == true) {
+            AnimatedVisibility(visible = state.selectedBillingPeriod?.isPromoDiscount == true) {
                 NoticeInfoChip(
                     modifier = Modifier.padding(horizontal = 20.dp)
                         .padding(top = 8.dp, bottom = 16.dp),

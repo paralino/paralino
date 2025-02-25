@@ -267,14 +267,6 @@ data class PlanInfoState(
     val benefits: List<PlanConfig.PlanBenefit>
 ) {
     val type: PlanType = config.planTypeEnum
-    val oneLineBenefits: String = benefits.joinToString(separator = ", ") { it.content }
-    val expandedBenefits: String = benefits.joinToString(separator = "\n") {
-        if (it.isHighlighted) {
-            "⭐️ ${it.content}"
-        } else {
-            it.content
-        }
-    }
     val selectedBillingPeriod: PlanBillingPeriodState? =
         billingPeriods.firstOrNull { it.isSelected }
     val displayedName: String = if (hasSpecialOffer) {
