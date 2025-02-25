@@ -12,7 +12,6 @@ import app.paralino.core.utils.exceptions.MissingUserKeyException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class CryptoUserKeysLocalSource(
@@ -79,7 +78,13 @@ class CryptoUserKeysLocalSource(
     }
 
     suspend fun getLocalRawKey(): UserCryptoKeyRaw? {
-        return listenToMyKey().firstOrNull()
+        try {
+            val activeKey = database.userKeysDao.getActiveOnce() ?: return null
+            return userKeyMapper.local2Remote(model = activeKey, userId = appPrefs.userId)
+        } catch (e: Exception) {
+            logg.w("Error mapping user raw keys", e)
+            return null
+        }
     }
 
     private fun listenToMyKey(): Flow<UserCryptoKeyRaw?> {

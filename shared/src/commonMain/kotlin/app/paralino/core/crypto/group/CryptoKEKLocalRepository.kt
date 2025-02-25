@@ -422,7 +422,10 @@ class CryptoKEKLocalRepository(
                     } ?: return UserGroupPersonalKeyPair.Error.Missing
             }
         } catch (e: Exception) {
-            logg.tag("tag_crypto_key_group_member").d("Invalid pre key for group $groupId")
+            logg.tag("tag_crypto_key_group_member").d(
+                message = "Invalid pre key for group $groupId",
+                t = e
+            )
             return UserGroupPersonalKeyPair.Error.Invalid
         }
 

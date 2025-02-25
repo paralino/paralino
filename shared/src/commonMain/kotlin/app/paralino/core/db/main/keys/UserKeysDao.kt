@@ -21,6 +21,9 @@ interface UserKeysDao {
     @Query("SELECT * FROM userKeysEntity WHERE isActive = 1 LIMIT 1")
     fun getActive(): Flow<UserKeysEntity?>
 
+    @Query("SELECT * FROM userKeysEntity WHERE isActive = 1 LIMIT 1")
+    suspend fun getActiveOnce(): UserKeysEntity?
+
     @Query("DELETE FROM userKeysEntity")
     suspend fun clearAll()
 }
