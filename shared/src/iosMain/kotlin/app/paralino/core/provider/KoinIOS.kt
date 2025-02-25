@@ -163,7 +163,7 @@ object KoinIOS {
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
-            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
                 LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get())
             }

@@ -506,7 +506,7 @@ class PaywallViewModel(
             return currentlySelected.isSelected
         } else if (sourceType.shouldPreselectPlan) {
             if (plans.highestValidPlanConfig.planTypeEnum.isPremium) {
-                return false
+                return plans.highestValidPlanConfig.planTypeEnum == planType
             } else {
                 // if user does not have a premium plan, pre-select lowest premium tier
                 val premiumPlans = config.listedPlanConfigs()

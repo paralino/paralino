@@ -16,28 +16,22 @@ class AppRatingManager(
 
     fun tryShowingAppRating(source: AppRatingSource) {
         if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(180.days)) {
-            when (source) {
-                AppRatingSource.GROUP_DETAIL -> {
-                    if (appPrefs.appLaunchedCountWhenLoggedIn >= 1) {
-                        logg.v("app_rating", "Start app rating flow from $source")
-                        appPrefs.lastShowedAppRatingDialogUTC = nowUTC()
-                        appPrefs.lastShowedAppRatingDialogAppVersion = deviceApiProvider.appVersionCode
-                        appRatingPresenter.startAppRatingFlow()
-                    }
-                }
-                AppRatingSource.MAIN_MAP -> {
-                    if (appPrefs.appLaunchedCountWhenLoggedIn >= 2) {
-                        logg.v("app_rating", "Start app rating flow from $source")
-                        appPrefs.lastShowedAppRatingDialogUTC = nowUTC()
-                        appPrefs.lastShowedAppRatingDialogAppVersion = deviceApiProvider.appVersionCode
-                        appRatingPresenter.startAppRatingFlow()
-                    }
-                }
+            val canLaunch = when (source) {
+                AppRatingSource.GROUP_DETAIL -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
+                AppRatingSource.MAIN_MAP -> appPrefs.appLaunchedCountWhenLoggedIn >= 3
+                AppRatingSource.APP_SETTINGS -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
+            }
+
+            if (canLaunch) {
+                logg.v("app_rating", "Start app rating flow from $source")
+                appPrefs.lastShowedAppRatingDialogUTC = nowUTC()
+                appPrefs.lastShowedAppRatingDialogAppVersion = deviceApiProvider.appVersionCode
+                appRatingPresenter.startAppRatingFlow()
             }
         }
     }
 }
 
 enum class AppRatingSource {
-    GROUP_DETAIL, MAIN_MAP
+    GROUP_DETAIL, MAIN_MAP, APP_SETTINGS
 }

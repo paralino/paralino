@@ -15,6 +15,7 @@ import com.revenuecat.purchases.EntitlementInfo
 import com.revenuecat.purchases.LogLevel
 import com.revenuecat.purchases.Offerings
 import com.revenuecat.purchases.Package
+import com.revenuecat.purchases.PeriodType
 import com.revenuecat.purchases.PurchaseParams
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.PurchasesConfiguration
@@ -160,7 +161,7 @@ class BillingProviderAndroid(
                                 formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase?.pricePerMonth()?.pricePerPeriod(
                                     planConfig.membersLimit.toDouble()
                                 )?.formatted,
-                                trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDays
+                                trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDaysInt
                             )
                         } else {
                             null
@@ -205,15 +206,20 @@ class BillingProviderAndroid(
                             it
                         } else if (planType.order > oldPackageInfo.first.config.planTypeEnum.order) {
                             // upgrading
-                            it.oldProductId(oldPackageInfo.second.product.id)
-                                .googleReplacementMode(GoogleReplacementMode.CHARGE_FULL_PRICE)
+                            if (oldPackageInfo.first.entitlementInfo.periodType == PeriodType.TRIAL) {
+                                it.oldProductId(oldPackageInfo.second.product.id)
+                                    .googleReplacementMode(GoogleReplacementMode.WITHOUT_PRORATION)
+                            } else {
+                                it.oldProductId(oldPackageInfo.second.product.id)
+                                    .googleReplacementMode(GoogleReplacementMode.CHARGE_PRORATED_PRICE)
+                            }
                         } else if (planType.order < oldPackageInfo.first.config.planTypeEnum.order) {
                             // downgrading
                             it.oldProductId(oldPackageInfo.second.product.id)
-                                .googleReplacementMode(GoogleReplacementMode.CHARGE_FULL_PRICE)
+                                .googleReplacementMode(GoogleReplacementMode.WITH_TIME_PRORATION)
                         } else {
                             // same plan
-                            it
+                            it.oldProductId(oldPackageInfo.second.product.id)
                         }
                     }
                     .build()
@@ -250,7 +256,7 @@ class BillingProviderAndroid(
         }
     }
 
-    private val Period.valueInDays: Int?
+    private val Period.valueInDaysInt: Int?
         get() = when (unit) {
             Unit.DAY -> value
             Unit.WEEK -> value * 7

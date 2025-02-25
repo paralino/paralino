@@ -62,9 +62,7 @@ class CoreAppManager(
                         updateConnectionStatus()
                         deviceApiProvider.notificationStatusProvider.refreshNotificationsStatus()
 
-                        if (state.comingFromBackground) {
-                            updateConfig()
-                        }
+                        updateConfig()
                     }
 
                     if (state.comingFromBackground) {
