@@ -68,11 +68,8 @@ struct MainApp: App {
             .loadingOverlay(isLoading: appState.uiState.dataRefreshBlockingLoadingShown)
             .onChange(of: appDelegate.appRatingPresenter.appRatingRequested, initial: false) { oldState, newState in
                 if newState == true {
-                    Task {
-                        try await Task.sleep(for: .seconds(2))
-                        Logr.v(tag: "app_rating", message: "Trigger iOS app rating dialog")
-                        requestReview()
-                    }
+                    Logr.v(tag: "app_rating", message: "Trigger iOS app rating dialog")
+                    requestReview()
                 }
             }
             
