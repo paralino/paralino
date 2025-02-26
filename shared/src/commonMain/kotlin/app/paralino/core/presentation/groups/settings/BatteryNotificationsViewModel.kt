@@ -132,6 +132,7 @@ class BatteryNotificationsViewModel(
         if (state.fullLoading) return
         if (state.isActiveSwitchLoading) return
         if (state.settings.any { it.loading }) return
+        if (batterySettingsUpdate.isProcessingAny()) return
 
         val newSetting = !state.isActive
         batterySettingsUpdate.updateBatterySettings(
@@ -164,6 +165,7 @@ class BatteryNotificationsViewModel(
         if (state.fullLoading) return
         if (state.isActiveSwitchLoading) return
         if (state.settings.any { it.loading }) return
+        if (batterySettingsUpdate.isProcessingAny()) return
 
         if (!state.isActive) return
 
