@@ -20,7 +20,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     lazy var appRatingPresenter = AppRatingPresenter()
     
     lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
-    lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
+    lazy var pushProvider: PushSetupProvider = { KoinIOS.Instances.shared.pushProvider as! PushSetupProvider }()
     lazy var deviceApiProvider: IDeviceApiProvider = { KoinIOS.Instances.shared.deviceApiProvider }()
     
     lazy var notificationPermissionHandler = NotificationPermissionHandler(notificationStatusProvider: deviceApiProvider.notificationStatusProvider)
@@ -39,11 +39,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
         
         Logr.i(tag:"delegate", message: "App start")
         
+        UNUserNotificationCenter.current().delegate = self
+        
         locationManager.startMonitoringAppState()
         coreAppManager.onAppStart()
-        
-        UNUserNotificationCenter.current().delegate = self
-        UIApplication.shared.registerForRemoteNotifications()
         
         BackgroundRefresh.registerAppRefresh()
         BackgroundRefresh.registerNotificationsRefresh()
@@ -75,7 +74,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNoti
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let token = deviceToken.map { String(format: "%.2hhx", $0) }.joined()
+        
+        Logr.v(tag: "push_notifications", message: "Got push token from system")
+        
         shared.AppPrefs.companion.instance.pushTokenUnsynced = token
-        pushProvider.syncPushToken()
+        pushProvider.syncPushTokenImpl()
     }
 }

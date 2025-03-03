@@ -16,6 +16,7 @@ public class PushSetupProvider: IPushProviderManager {
     
     
     public func logout() async throws {
+        Logr.v(tag: "push_notifications", message: "Unregistering push notifications")
         await UIApplication.shared.unregisterForRemoteNotifications()
     }
     
@@ -32,13 +33,19 @@ public class PushSetupProvider: IPushProviderManager {
     }
     
     public func syncPushToken() {
+        DispatchQueue.main.async {
+            UIApplication.shared.registerForRemoteNotifications()
+        }
+    }
+    
+    public func syncPushTokenImpl() {
         DispatchQueue.main.async { [weak self] in
             Task {
                 do {
                     let response = try await self?.userDataUpdate.registerPushTokenIfNeeded()
                     let payload = PayloadSwift<KotlinUnit>(data: response)
                     switch payload {
-                    case .loading: break
+                    case .loading: Logr.v(tag: "push_sync", message: "Push token not synced")
                     case .success: Logr.v(tag: "push_sync", message: "Push token synced")
                     case .error(error: let error):
                         Logr.v(tag: "push_sync", message: "error syncing push token: \(error)")
