@@ -22,7 +22,8 @@ class ValueFormatter() : IValueFormatter() {
         get() {
             return try {
                 when (LocaleData.getMeasurementSystem(ULocale.getDefault())) {
-                    LocaleData.MeasurementSystem.US -> DistanceUnitType.IMPERIAL
+                    LocaleData.MeasurementSystem.US,
+                    LocaleData.MeasurementSystem.UK -> DistanceUnitType.IMPERIAL
                     else -> DistanceUnitType.METRIC
                 }
             } catch (e: Exception) {
