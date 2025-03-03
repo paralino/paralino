@@ -265,7 +265,8 @@
     <string name="paywall_feature_control">Complete sharing control</string>
     <string name="paywall_feature_control_description">Access all features and control how and what you share.</string>
     <string name="paywall_special_offer_description">**Special launch discount**\nAvailable during the beta period – claim your special discount and keep this price forever.</string>
-    <string name="paywall_price_per_member">As low as **%1$s** per member per month for %2$d members</string>
+    <string name="paywall_price_per_member">As low as **%1$s**/member/month for %2$d members</string>
+    <string name="paywall_price_per_month">**≈ %1$s** / month</string>
     <string name="paywall_divider_plan_duration">Choose your plan duration</string>
     <string name="paywall_feature_table_header">What you get</string>
     <string name="paywall_feature_groups">Groups</string>

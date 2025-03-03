@@ -21,6 +21,7 @@ interface IBillingProvider {
         val formattedPrice: String,
         val referencePerYearPrice: Long?,
         val referencePerYearFormattedPrice: String?,
+        val referencePerMonthFormattedPrice: String?,
         val trialDurationDays: Int?
     )
 }
