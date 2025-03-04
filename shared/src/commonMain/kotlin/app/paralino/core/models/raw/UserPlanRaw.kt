@@ -29,7 +29,7 @@ class UserPlanRaw constructor(
     // most of time it is just few minutes at most
     // In production we use multiple days as grace period if there are some billing issues
     val isExpired: Boolean get() = expiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 5.minutes)
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 2.minutes)
         ?.let { it < nowUTC() }
         ?: false
 

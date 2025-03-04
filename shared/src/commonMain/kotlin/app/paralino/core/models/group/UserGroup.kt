@@ -49,7 +49,7 @@ data class UserGroup constructor(
     // allow for some manual grace period
     // it might take few minutes until correct subscription data is synced and reflected on backend
     private val isPlanExpired: Boolean get() = planExpiresAt
-        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 5.minutes)
+        ?.plus(if (AppBuildConfig.instance.isDevMode) 30.seconds else 2.minutes)
         ?.let { it < nowUTC() }
         ?: false
 
