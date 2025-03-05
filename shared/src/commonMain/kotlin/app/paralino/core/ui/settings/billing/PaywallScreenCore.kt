@@ -966,7 +966,7 @@ fun FeatureTable(
                         modifier = Modifier,
                         featureItem = feature,
                         nameWidth = if (feature.values.size > 2) {
-                            maxWidth * 0.55f
+                            maxWidth * 0.5f
                         } else if (feature.values.size == 2) {
                             maxWidth * 0.6f
                         } else {
