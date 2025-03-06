@@ -340,9 +340,12 @@ class PaywallViewModel(
                             currentState = currentState
                         ),
                         price = lowestPrice.formattedPrice,
+                        pricePerMonth = lowestPrice.referencePerMonthFormattedPrice
+                            .takeIf { period.billingPeriod == PlanBillingPeriod.ANNUALLY }
+                            ?.let { MR.strings.paywall_price_per_month.localizedString(it) },
+                        pricePerMember = lowestPrice.formattedPricePerMemberPerMonth,
                         discountedPrice = listOfNotNull(
-                            fullYearlyPrice?.referencePerYearFormattedPrice,
-                            highestPrice?.formattedPrice
+                            fullYearlyPrice?.referencePerYearFormattedPrice
                         )
                             .distinct()
                             .takeIf { it.isNotEmpty() }
@@ -360,8 +363,6 @@ class PaywallViewModel(
                             ?.let { it - (it % 2) }
                             ?.let { "$it%" },
                         isPromoDiscount = highestPrice != null,
-                        pricePerMonth = null,
-                        pricePerMember = lowestPrice.formattedPricePerMemberPerMonth,
                         trialDurationDays = lowestPrice.trialDurationDays,
                     )
                 }

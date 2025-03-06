@@ -12,7 +12,7 @@ class ParalinoFcmService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        logg.v("push_notifications", "Got new push token in background: $token")
+        logg.v("push_notifications", "Got new push token from system")
         pushNotificationManager.syncPushToken()
     }
 

@@ -42,7 +42,9 @@ class GroupBatterySettingsUpdateUseCase(
             localUpdate = {
                 memberLocal.updateMemberBatterySettings(data = it)
             }
-        ).map { Unit }
+        )
+            .startProcessing("battery_settings")
+            .map { Unit }
     }
 
     fun updateBatterySettings(
@@ -82,6 +84,8 @@ class GroupBatterySettingsUpdateUseCase(
             localUpdate = {
                 memberLocal.updateMemberBatterySettings(data = it)
             }
-        ).map { Unit }
+        )
+            .startProcessing("battery_settings")
+            .map { Unit }
     }
 }

@@ -18,7 +18,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
     lazy var placeRepo: PlacesRepository = { KoinIOS.Instances.shared.placesRepo }()
     lazy var locationSharingManager: LocationSharingManager = { KoinIOS.Instances.shared.locationSharingManager }()
     lazy var locationPerformanceManager: LocationPerformanceManager = { KoinIOS.Instances.shared.locationPerformanceManager }()
-    lazy var pushProvider: IPushProviderManager = { KoinIOS.Instances.shared.pushProvider }()
+    lazy var pushProvider: PushSetupProvider = { KoinIOS.Instances.shared.pushProvider as! PushSetupProvider }()
     
     public init(setupManager: Bool) {
         super.init()
@@ -111,7 +111,7 @@ public class LocationManager: NSObject, ObservableObject, CoreLocationManagerDel
             if let data = data {
                 let token = data.map { String(format: "%.2hhx", $0) }.joined()
                 shared.AppPrefs.companion.instance.locationPushTokenUnsynced = token
-                self?.pushProvider.syncPushToken()
+                self?.pushProvider.syncPushTokenImpl()
             }
             
             if let error = error {

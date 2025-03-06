@@ -86,6 +86,7 @@ abstract class AppMainDatabase : RoomDatabase() {
                 .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
+                .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING)
                 .build()
         }
     }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Sentry
 import shared
 import paralino_apple_core
 
@@ -22,6 +23,11 @@ struct MainApp: App {
     
     init() {
         AppDelegate.sharedInstance = appDelegate
+        
+        SentrySDK.start { options in
+            options.dsn = BuildKonfig.shared.glitchTipDSN
+            options.debug = false
+        }
     }
     
     var body: some Scene {

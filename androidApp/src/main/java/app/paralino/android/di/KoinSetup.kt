@@ -207,7 +207,7 @@ object KoinSetup {
         viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), appPrefs) }
         viewModel { GeneralInfoViewModel(get(), get()) }
-        viewModel { LocationSettingsViewModel(get(), get(), get()) }
+        viewModel { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { WelcomeOnboardingViewModel(get(), get()) }
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
     }

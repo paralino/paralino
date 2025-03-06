@@ -30,7 +30,7 @@ data class PaywallScreenState(
             features = featureTable.features.map {
                 it.copy(
                     values = it.values.mapNotNull {
-                        if (it.planType == plan.type) {
+                        if (it.planType == plan.type || !it.planType.isPremium) {
                             it
                         } else {
                             null
@@ -282,11 +282,11 @@ data class PlanBillingPeriodState(
     val name: String,
     val isSelected: Boolean,
     val price: String,
+    val pricePerMonth: String?,
+    val pricePerMember: String?,
     val discountedPrice: String?,
     val discountPercent: String?,
     val isPromoDiscount: Boolean,
-    val pricePerMonth: String?,
-    val pricePerMember: String?,
     val trialDurationDays: Int?,
 )
 

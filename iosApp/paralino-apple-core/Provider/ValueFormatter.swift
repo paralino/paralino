@@ -11,7 +11,12 @@ import shared
 class ValueFormatter: IValueFormatter {
     
     override var unitType: DistanceUnitType {
-        return DistanceUnitType.metric
+        let measurementSystem = Locale.current.measurementSystem
+        if measurementSystem == .uk || measurementSystem == .us {
+            return DistanceUnitType.imperial
+        } else {
+            return DistanceUnitType.metric
+        }
     }
     
     override func formatNumber(number: Double, minFractions: Int32, maxFractions: Int32) -> String {

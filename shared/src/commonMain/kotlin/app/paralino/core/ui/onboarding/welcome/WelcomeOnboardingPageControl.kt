@@ -52,9 +52,14 @@ fun WelcomeOnboardingPageControl(
     animationStarted: Boolean
 ) {
     var animationProgress by remember { mutableFloatStateOf(0f) }
+    var animationProgress2 by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
-        delay(10)
+        delay(100)
         animationProgress = 1f
+    }
+
+    LaunchedEffect(animationStarted) {
+        animationProgress2 = if (animationStarted) 1f else 0f
     }
 
     BoxWithConstraints(
@@ -87,7 +92,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = 10.dp,
                     y = animateDpAsState(
-                        targetValue = animationProgress
+                        targetValue = animationProgress2
                             .times(-maxHeight.value)
                             .plus(maxHeight.value).dp,
                         animationSpec = tween(durationMillis = 400, delayMillis = 100)
@@ -102,7 +107,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = maxWidth.div(2),
                     y = animateDpAsState(
-                        targetValue = animationProgress
+                        targetValue = animationProgress2
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value.times(0.02)).dp,
                         animationSpec = tween(durationMillis = 300, delayMillis = 100)
@@ -110,7 +115,7 @@ fun WelcomeOnboardingPageControl(
                 )
                 .rotate(8f)
                 .scale(0.9f),
-            animationStarted = animationStarted
+            animationStarted = false
         )
 
         BatteryPerformanceSwitch(
@@ -149,7 +154,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = -20.dp,
                     y = animateDpAsState(
-                        targetValue = animationProgress
+                        targetValue = animationProgress2
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value * 0.7).dp,
                         animationSpec = tween(durationMillis = 500, delayMillis = 600)
@@ -165,7 +170,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = maxWidth.times(0.05f),
                     y = animateDpAsState(
-                        targetValue = animationProgress
+                        targetValue = animationProgress2
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value.times(0.45f)).dp,
                         animationSpec = tween(durationMillis = 600, delayMillis = 500)
@@ -173,7 +178,7 @@ fun WelcomeOnboardingPageControl(
                 )
                 .rotate(5f)
                 .scale(0.7f),
-            animationStarted = animationStarted
+            animationStarted = true
         )
 
         SharingStopButton(
@@ -182,7 +187,7 @@ fun WelcomeOnboardingPageControl(
                 .offset(
                     x = -maxWidth.times(0.02f),
                     y = animateDpAsState(
-                        targetValue = animationProgress
+                        targetValue = animationProgress2
                             .times(-maxHeight.value)
                             .plus(maxHeight.value + maxHeight.value.times(0.8f)).dp,
                         animationSpec = tween(durationMillis = 500, delayMillis = 800)
@@ -341,8 +346,8 @@ private fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: B
         if (animationStarted) {
             delay(2000)
             itemState = !itemState
-            delay(2000)
-            itemState = !itemState
+//            delay(2000)
+//            itemState = !itemState
         }
     }
     if (itemState) {

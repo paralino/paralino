@@ -2,11 +2,15 @@ package app.paralino.core.presentation.settings.location
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.repo.user.UserRepository
@@ -21,11 +25,55 @@ import kotlinx.coroutines.launch
 class LocationSettingsViewModel(
     private val appPrefs: AppPrefs,
     private val userRepository: UserRepository,
-    private val locationPerformanceManager: LocationPerformanceManager
+    private val groupLocalDataSource: UserGroupLocalDataSource,
+    private val remoteConfigRepo: RemoteConfigRepository,
+    private val locationPerformanceManager: LocationPerformanceManager,
+    private val premiumStatusManager: PremiumStatusManager
 ) : CoreViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        LocationSettingsScreenState(
+    private val _uiState = MutableStateFlow<LocationSettingsScreenState>(createInitialState())
+    val uiState: StateFlow<LocationSettingsScreenState> = _uiState
+
+    private val _eventChannel = Channel<LocationSettingsScreenEvent?>()
+    val events = _eventChannel.receiveAsFlow()
+
+    init {
+        coroutineScope.launch {
+            try {
+                premiumStatusManager.adjustDeviceSettingsForPlan()
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun onEvent(event: LocationSettingsScreenUiEvent) {
+        when (event) {
+            is LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance -> toggleBalancedHighPerformance()
+            is LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode -> toggleFollowLowPowerMode()
+            is LocationSettingsScreenUiEvent.ChangePerformance -> changeLocationPerformance(event)
+            LocationSettingsScreenUiEvent.ToggleBalancedAutoPause -> toggleIOSAutoPause()
+            LocationSettingsScreenUiEvent.ToggleBalancedShowIndicator -> toggleIOSLocationIndicator()
+
+            is LocationSettingsScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.LocationPerformancePremiumInfo -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            coroutineScope.launch {
+                                _eventChannel.send(LocationSettingsScreenEvent.OpenPaywall)
+                            }
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun createInitialState(): LocationSettingsScreenState {
+        val canHavePremiumModes = canUserHavePremiumModes()
+        return LocationSettingsScreenState(
             highPerformanceSettings = LocationSettingsHighPerformance(
                 items = listOfNotNull(
                     LocationPerformanceSettingsType.HighPerformance.Level1,
@@ -37,7 +85,7 @@ class LocationSettingsViewModel(
                 ).map { level ->
                     LocationSettingsItemState(
                         performance = level,
-                        isPremiumFeatureEnabled = !isUserOnFreePlan() || !level.isPremiumFeature,
+                        isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
                         batteryImpact = getOptionBatteryImpact(level),
@@ -56,7 +104,7 @@ class LocationSettingsViewModel(
                 ).map { level ->
                     LocationSettingsItemState(
                         performance = level,
-                        isPremiumFeatureEnabled = !isUserOnFreePlan() || !level.isPremiumFeature,
+                        isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
                         batteryImpact = getOptionBatteryImpact(level),
@@ -85,7 +133,7 @@ class LocationSettingsViewModel(
                 ).map { level ->
                     LocationSettingsItemState(
                         performance = level,
-                        isPremiumFeatureEnabled = !isUserOnFreePlan() || !level.isPremiumFeature,
+                        isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
                         batteryImpact = getOptionBatteryImpact(level),
@@ -97,37 +145,6 @@ class LocationSettingsViewModel(
             ),
             alertDialog = null
         )
-    )
-
-    val uiState: StateFlow<LocationSettingsScreenState> = _uiState
-
-    private val _eventChannel = Channel<LocationSettingsScreenEvent?>()
-    val events = _eventChannel.receiveAsFlow()
-
-
-    fun onEvent(event: LocationSettingsScreenUiEvent) {
-        when (event) {
-            is LocationSettingsScreenUiEvent.ToggleBalancedHighPerformance -> toggleBalancedHighPerformance()
-            is LocationSettingsScreenUiEvent.ToggleFollowDeviceLowPowerMode -> toggleFollowLowPowerMode()
-            is LocationSettingsScreenUiEvent.ChangePerformance -> changeLocationPerformance(event)
-            LocationSettingsScreenUiEvent.ToggleBalancedAutoPause -> toggleIOSAutoPause()
-            LocationSettingsScreenUiEvent.ToggleBalancedShowIndicator -> toggleIOSLocationIndicator()
-
-            is LocationSettingsScreenUiEvent.DialogAction -> {
-                when (event.action.dialog) {
-                    is MainAlertDialog.LocationPerformancePremiumInfo -> {
-                        _uiState.update { it.copy(alertDialog = null) }
-                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
-                            coroutineScope.launch {
-                                _eventChannel.send(LocationSettingsScreenEvent.OpenPaywall)
-                            }
-                        }
-                    }
-
-                    else -> {}
-                }
-            }
-        }
     }
 
     private fun toggleIOSLocationIndicator() {
@@ -186,7 +203,7 @@ class LocationSettingsViewModel(
     }
 
     private fun changeLocationPerformance(event: LocationSettingsScreenUiEvent.ChangePerformance) {
-        if (event.type.isPremiumFeature && isUserOnFreePlan()) {
+        if (event.type.isPremiumFeature && !canUserHavePremiumModes()) {
             _uiState.update {
                 it.copy(alertDialog = MainAlertDialog.LocationPerformancePremiumInfo)
             }
@@ -242,8 +259,11 @@ class LocationSettingsViewModel(
         }
     }
 
-    private fun isUserOnFreePlan(): Boolean {
-        return !userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isSilverOrMore
+    private fun canUserHavePremiumModes(): Boolean {
+        return userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isSilverOrMore ||
+                groupLocalDataSource.allGroupsState.value.data?.any {
+                    it.group.isGroupPremium(remoteConfigRepo.getCachedConfigOnce())
+                } ?: false
 //        return !userRepository.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
     }
 

@@ -45,7 +45,9 @@ class PlaceAlertsSettingsUpdateUseCase(
             localUpdate = {
                 local.updatePlaceSettings(it)
             }
-        ).map { Unit }
+        )
+            .startProcessing("place_settings")
+            .map { Unit }
     }
 
     fun updatePlaceAlertsSettings(
@@ -87,6 +89,8 @@ class PlaceAlertsSettingsUpdateUseCase(
             localUpdate = {
                 local.updatePlaceSettings(it)
             }
-        ).map { Unit }
+        )
+            .startProcessing("place_settings")
+            .map { Unit }
     }
 }

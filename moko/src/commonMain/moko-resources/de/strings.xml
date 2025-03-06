@@ -38,7 +38,7 @@
     <string name="error_location_precise_permission_missing_sheet_message">Bitte erteilen Sie die **genaue Standortberechtigung**, um Ihren Standort erfolgreich zu verfolgen und mit anderen zu teilen.</string>
     <string name="error_location_background_permission_missing_sheet_message">Bitte erlauben Sie **jederzeit** den Standortzugriff, um Ihren Standort **zuverlässig und dauerhaft** zu verfolgen und mit anderen zu teilen.</string>
     <string name="error_location_background_permission_missing_sheet_message_android11">Bitte ändern Sie die Standortberechtigungseinstellungen auf **%s**, um Ihren Standort **zuverlässig und dauerhaft** zu verfolgen und mit anderen zu teilen.</string>
-    <string name="error_location_service_missing_sheet_message">Bitte aktivieren Sie die **Gerätestandortfunktion**, um Ihr Gerät zu lokalisieren.</string>
+    <string name="error_location_service_missing_sheet_message">Bitte aktivieren Sie die **Standortdienste**, um den Standort Ihres Geräts zu ermitteln.</string>
     <string name="error_notification_permission_missing_sheet_message">Bitte aktivieren Sie **Benachrichtigungen**, um **wichtige** Warnungen für Ihre Gruppenevents, Orte und Ihr Konto zu erhalten.</string>
     <string name="error_location_background_permission_missing_notification_message">Die Standortfreigabe kann nicht gestartet werden, da die Berechtigung für den dauerhaften Standortzugriff fehlt!\nBitte öffnen Sie die App, um die Standortfreigabe neu zu starten!</string>
     <string name="error_location_sharing_start_notification_message">Die Standortfreigabe kann nicht gestartet werden!\nBitte öffnen Sie die App erneut!</string>
@@ -265,6 +265,7 @@
     <string name="paywall_feature_control_description">Nutzen Sie alle Funktionen und bestimmen Sie selbst, wie und was Sie teilen.</string>
     <string name="paywall_special_offer_description">**Sonderrabatt zum Start**\nVerfügbar während der Beta-Phase – sichern Sie sich den Rabatt und behalten Sie diesen Preis für immer.</string>
     <string name="paywall_price_per_member">Ab nur **%1$s**/Mitglied/Monat für %2$d Mitglieder</string>
+    <string name="paywall_price_per_month">**≈ %1$s** pro Monat</string>
     <string name="paywall_divider_plan_duration">Wählen Sie die Laufzeit Ihres Plans</string>
     <string name="paywall_feature_table_header">Ihre Vorteile</string>
     <string name="paywall_feature_privacy">Maximale Privatsphäre</string>
@@ -273,7 +274,7 @@
     <string name="paywall_feature_devices">Geräte pro Mitglied</string>
     <string name="paywall_feature_places">Orte mit **unbegrenzten Benachrichtigungen**</string>
     <string name="paywall_feature_battery">Niedriger Akkustand-Benachrichtigungen</string>
-    <string name="paywall_feature_locate">Mitglieder auf Abruf lokalisieren</string>
+    <string name="paywall_feature_locate">Standortsuche nach Bedarf</string>
     <string name="paywall_feature_performance">Beste Standortleistung und schnelle Updates</string>
     <string name="paywall_feature_multi_device">Standort von mehreren Geräten aus teilen</string>
     <string name="paywall_feature_notify">Mitglieder über Standortfreigabe informieren</string>

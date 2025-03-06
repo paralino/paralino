@@ -22,7 +22,6 @@ class RealtimeEventsMaker constructor(
                 realtimeEventsProcessor.membersChannel,
                 realtimeEventsProcessor.locationsChannel,
                 realtimeEventsProcessor.placesChannel,
-                realtimeEventsProcessor.pushNotificationsChannel,
                 realtimeEventsProcessor.locationFocusChannel,
             ),
             filters = listOf(
@@ -30,7 +29,6 @@ class RealtimeEventsMaker constructor(
                 "${realtimeEventsProcessor.locationsChannel}.*",
                 "${realtimeEventsProcessor.placesChannel}.*.create",
                 "${realtimeEventsProcessor.placesChannel}.*.update",
-                "${realtimeEventsProcessor.pushNotificationsChannel}.*.create",
                 "${realtimeEventsProcessor.locationFocusChannel}.*.create",
                 "${realtimeEventsProcessor.locationFocusChannel}.*.update",
             )

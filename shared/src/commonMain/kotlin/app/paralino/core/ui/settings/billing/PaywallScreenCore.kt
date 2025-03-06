@@ -71,8 +71,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -665,7 +665,10 @@ private fun PaywallBottomCard(
                     ) {
                         Text(
                             text = if (billingPeriodState?.trialDurationDays != null) {
-                                stringResource(MR.strings.paywall_start_button_free, "${billingPeriodState.trialDurationDays}")
+                                stringResource(
+                                    MR.strings.paywall_start_button_free,
+                                    "${billingPeriodState.trialDurationDays}"
+                                )
                             } else {
                                 stringResource(MR.strings.paywall_start_button_continue)
                             }.annotatedBoldCompose(),
@@ -800,7 +803,7 @@ private fun SubscriptionOptionItem(
     originalPrice: String,
     discountedPrice: String? = null,
     monthlyEquivalent: String? = null,
-    isPromoDiscount: Boolean = discountedPrice != null,
+    isPromoDiscount: Boolean,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -872,32 +875,14 @@ private fun SubscriptionOptionItem(
                 color = contentColor
             )
 
-            AnimatedVisibility(discountedPrice != null || monthlyEquivalent != null) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    AnimatedVisibility(discountedPrice != null) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = discountedPrice ?: "",
-                                fontSize = 14.sp,
-                                lineHeight = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                textDecoration = TextDecoration.LineThrough,
-                                color = contentColor.copy(alpha = ContentAlpha.disabled)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                        }
-                    }
-
-                    AnimatedVisibility(monthlyEquivalent != null) {
-                        Text(
-                            text = monthlyEquivalent ?: "",
-                            style = MaterialTheme.typography.body2,
-                        )
-                    }
-                }
+            AnimatedVisibility(monthlyEquivalent != null) {
+                Text(
+                    text = monthlyEquivalent?.annotatedBoldCompose() ?: "".annotatedBoldCompose(),
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = contentColor.copy(alpha = ContentAlpha.medium)
+                )
             }
         }
 
@@ -910,13 +895,9 @@ private fun SubscriptionOptionItem(
                     modifier = Modifier
                         .background(
                             color = AppColors.redMain,
-                            shape = RoundedCornerShape(
-                                topStart = 8.dp,
-                                topEnd = 8.dp,
-                                bottomStart = 8.dp
-                            )
+                            shape = RoundedCornerShape(6.dp)
                         )
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 6.dp)
                         .padding(vertical = 2.dp),
                     text = stringResource(
                         MR.strings.paywall_discount_percentage_badge_text,
@@ -928,26 +909,26 @@ private fun SubscriptionOptionItem(
                     color = AppColors.lightBackground
                 )
             }
-            Box(
+            Column(
                 modifier = Modifier
-                    .background(
-                        color = animateColorAsState(if (isSelected) AppColors.lightBackground else backgroundColor).value,
-                        shape = if (discountPercent != null) {
-                            RoundedCornerShape(
-                                topStart = 8.dp,
-                                bottomStart = 8.dp,
-                                topEnd = 0.dp,
-                                bottomEnd = 8.dp
-                            )
-                        } else {
-                            RoundedCornerShape(8.dp)
-                        }
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+//                    .background(
+//                        color = animateColorAsState(if (isSelected) AppColors.lightBackground else backgroundColor).value,
+//                        shape = if (discountPercent != null) {
+//                            RoundedCornerShape(
+//                                topStart = 8.dp,
+//                                bottomStart = 8.dp,
+//                                topEnd = 0.dp,
+//                                bottomEnd = 8.dp
+//                            )
+//                        } else {
+//                            RoundedCornerShape(8.dp)
+//                        }
+//                    )
+                    .padding(horizontal = 0.dp, vertical = 4.dp)
             ) {
                 Text(
                     text = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
-                    color = animateColorAsState(if (isSelected) AppColors.darkBackground else contentColor).value,
+                    color = contentColor,
                     style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
                 )
             }
@@ -985,7 +966,7 @@ fun FeatureTable(
                         modifier = Modifier,
                         featureItem = feature,
                         nameWidth = if (feature.values.size > 2) {
-                            maxWidth * 0.55f
+                            maxWidth * 0.5f
                         } else if (feature.values.size == 2) {
                             maxWidth * 0.6f
                         } else {
@@ -1041,7 +1022,7 @@ fun FeatureTableItem(
             style = if (featureItem.isTitle) {
                 MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
             } else {
-                MaterialTheme.typography.caption.copy(lineHeight = 14.sp)
+                MaterialTheme.typography.caption.copy(lineHeight = 14.sp, hyphens = Hyphens.Auto)
             }
         )
 

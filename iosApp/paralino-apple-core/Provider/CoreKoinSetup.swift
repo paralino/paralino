@@ -10,6 +10,8 @@ import shared
 
 public class CoreKoinSetup {
     
+    private static let initializationQueue = DispatchQueue(label: "app.paralino.ios.initialization")
+    
     public static var koinApp: Koin_coreKoin? {
         _koin
     }
@@ -26,25 +28,28 @@ public class CoreKoinSetup {
         notificationStatusProvider: @escaping () -> INotificationStatusProvider
     ) {
         
-        if (_koin != nil) {
-            return
-        }
-        
-        let koinApp = ParalinoCore.shared.doInit(
-            preLaunch: { koinApp in koinApp },
-            appModules: CoreKoinSetup.createKoinModules(
-                apphost: appHost,
-                crashReportingLogr: crashReportingLogr,
-                locationManager: locationManager,
-                appUpdateManager: appUpdateManager,
-                appRatingPresenter: appRatingPresenter,
-                billingProvider: billingProvider,
-                locationStatusProvider: locationStatusProvider,
-                connectionStatusProvider: connectionStatusProvider,
-                notificationStatusProvider: notificationStatusProvider
+        initializationQueue.sync {
+            if (_koin != nil) {
+                return
+            }
+            
+            let koinApp = ParalinoCore.shared.doInit(
+                preLaunch: { koinApp in koinApp },
+                appModules: CoreKoinSetup.createKoinModules(
+                    apphost: appHost,
+                    crashReportingLogr: crashReportingLogr,
+                    locationManager: locationManager,
+                    appUpdateManager: appUpdateManager,
+                    appRatingPresenter: appRatingPresenter,
+                    billingProvider: billingProvider,
+                    locationStatusProvider: locationStatusProvider,
+                    connectionStatusProvider: connectionStatusProvider,
+                    notificationStatusProvider: notificationStatusProvider
+                )
             )
-        )
-        _koin = koinApp.koin
+            
+            _koin = koinApp.koin
+        }
     }
     
     private static func createKoinModules(

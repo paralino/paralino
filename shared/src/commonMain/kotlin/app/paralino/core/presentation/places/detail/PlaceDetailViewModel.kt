@@ -159,6 +159,7 @@ class PlaceDetailViewModel(
         if (state.fullLoading) return
         if (state.isPlaceAlertsSwitchLoading) return
         if (state.settings.any { it.loading }) return
+        if (updatePlaceAlerts.isProcessingAny()) return
 
         val newActiveState = !state.arePlaceAlertsActive
         val newSettings = if (revokeItemState) {
@@ -227,6 +228,7 @@ class PlaceDetailViewModel(
         if (state.isPlaceAlertsSwitchLoading) return
         if (!state.arePlaceAlertsActive) return
         if (state.settings.any { it.loading }) return
+        if (updatePlaceAlerts.isProcessingAny()) return
 
         val setting = state.settings.firstOrNull { it.memberUserId == userId } ?: return
         val newSetting = updateSetting(setting)

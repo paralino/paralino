@@ -138,6 +138,7 @@ class BillingProviderIOS: IBillingProvider {
                             formattedPrice: formattedPrice ?? product.localizedPriceString,
                             referencePerYearPrice: KotlinLong(longLong: product.pricePerYear?.int64Value ?? 0),
                             referencePerYearFormattedPrice: product.localizedPricePerYear,
+                            referencePerMonthFormattedPrice: product.localizedPricePerMonth,
                             trialDurationDays: trialDurationDays
                         )
                         
