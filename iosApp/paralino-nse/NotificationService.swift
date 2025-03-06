@@ -30,6 +30,8 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
+        KoinSetup.initKoin()
+        
         Logr.w(tag: "notification", message: "Received alert notification (\(DeviceUtil.getMemoryPrintString()))")
         
         if let bestAttemptContent = bestAttemptContent {
