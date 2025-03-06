@@ -476,8 +476,8 @@
     <string name="group_member_device_not_responding_message">**Uređaj trenutno nije dostupan ili nije na mreži.**\n\nUkoliko uređaj ne odgovori u roku od par minuta, probajte osvježiti lokaciju ponovno.</string>
     <string name="group_member_device_waiting">Čekanje na uređaj...</string>
     <string name="group_member_device_requesting">Zahtjev za lokaciju u tijeku...</string>
-    <string name="group_member_device_unreachable">Uređaj nije u potpunosti podržan te je nedostupan</string>
-    <string name="group_member_device_setup_invalid">Uređaj nije dostupan!</string>
+    <string name="group_member_device_unreachable">Uređaj nije dostupan!</string>
+    <string name="group_member_device_setup_invalid">Uređaj nije u potpunosti podržan te je nedostupan</string>
     <string name="group_member_device_request_failed">Zahtjev nije uspio, pokušajte ponovno</string>
     <string name="group_member_device_request_disabled">Sačekajte nekoliko trenutaka prije nego što ponovno zatražite lokaciju 🙏</string>
     <string name="group_members_last_active_status_now">Upravo sada</string>
