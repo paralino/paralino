@@ -2,6 +2,7 @@ package app.paralino.core.db
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.driver.NativeSQLiteDriver
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.models.AppBuildConfig
@@ -16,6 +17,7 @@ actual class SqlDriverFactory(private val appBuildConfig: AppBuildConfig) {
         return Room.databaseBuilder<AppMainDatabase>(
             name = dbFile
         )
+            .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
     }
 
     actual fun createLogsDatabaseBuilder(): RoomDatabase.Builder<AppLogsDatabase> {
@@ -26,5 +28,6 @@ actual class SqlDriverFactory(private val appBuildConfig: AppBuildConfig) {
         return Room.databaseBuilder<AppLogsDatabase>(
             name = dbFile
         )
+            .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
     }
 }
