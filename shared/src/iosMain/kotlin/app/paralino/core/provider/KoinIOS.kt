@@ -242,7 +242,7 @@ object KoinIOS {
             factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), appPrefs) }
             factory { GeneralInfoViewModel(get(), get()) }
-            factory { LocationSettingsViewModel(get(), get(), get()) }
+            factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
             factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
         }

@@ -26,8 +26,11 @@ class PremiumStatusManager(
     suspend fun adjustDeviceSettingsForPlan() {
         val config = remoteConfigRepo.getConfigOnce()
         val currentPlanConfig = userRepo.userPlans.value.highestValidPlanConfig.takeIf { config.plans.isNotEmpty() }
+        val isUserPartOfPremiumGroup = groupLocalDataSource.allGroupsState.value.data?.any {
+            it.group.isGroupPremium(remoteConfigRepo.getConfigOnce())
+        } ?: false
 
-        if (currentPlanConfig?.planTypeEnum == PlanType.FREE) {
+        if (currentPlanConfig?.planTypeEnum == PlanType.FREE && !isUserPartOfPremiumGroup) {
             if (LocationPerformanceSettingsType.HighPerformance.fromKey(appPrefs.locationSettingsHighPerformanceDurationType).isPremiumFeature) {
                 appPrefs.locationSettingsHighPerformanceDurationType = LocationPerformanceSettingsType.HighPerformance.default.key
             }
