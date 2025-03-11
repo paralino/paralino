@@ -21,6 +21,11 @@ data class LocationDataModel constructor(
     val endTimeUTC: String? = null,
     val speed: Float? = null,
     val altitude: Float? = null,
+
+    /**
+     * Indicate if location data in this model is fake
+     * Used when user clears their location so we put dummy data and encrypt it
+     */
     val isMasked: Boolean = false
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f

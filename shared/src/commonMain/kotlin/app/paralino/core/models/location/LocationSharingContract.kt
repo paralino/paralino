@@ -14,7 +14,12 @@ data class LocationSharingContract constructor(
     val shareSpeed: Boolean,
     val shareElevation: Boolean,
     val shareNetwork: Boolean,
-    val approximateLocationInMeters: Int?
+    val approximateLocationInMeters: Int?,
+
+    /**
+     * Use null as not set
+     */
+    val locationHistoryDaysMax: Int? = null,
 ) {
 
     val isAlwaysOn: Boolean get() = endTimeUTC == null

@@ -313,7 +313,8 @@ class SharingStartViewModel(
                 shareSpeed = _uiState.value.shareSpeed,
                 shareElevation = _uiState.value.shareElevation,
                 shareNetwork = _uiState.value.shareNetwork,
-                approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation }
+                approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
+                locationHistoryDaysMax = null
             )
 
             try {

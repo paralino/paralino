@@ -11,6 +11,14 @@ object BaseRemoteModule {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
+
+    val locationHistoryFormatter = Json {
+        encodeDefaults = false
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        explicitNulls = false
+    }
+
     val prettyPrintFormatter = Json {
         encodeDefaults = true
         ignoreUnknownKeys = true

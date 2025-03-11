@@ -64,7 +64,7 @@ import kotlinx.coroutines.IO
         PendingPlaceEventsEntity::class,
         BatteryAlertEventEntity::class
     ],
-    version = 10
+    version = 11
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
 abstract class AppMainDatabase : RoomDatabase() {

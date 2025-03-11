@@ -112,6 +112,13 @@ class LocationRemoteSource constructor(
             )
         }
 
+        val locationHistory = data.locationHistory?.let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.locationHistoryFormatter.encodeToString(it),
+                key = memberKey.key
+            )
+        }
+
         val status = cryptoCore.encryptDataWithKey(
             data = BaseRemoteModule.formatter.encodeToString(data.deviceStatus),
             key = memberKey.key
@@ -119,6 +126,7 @@ class LocationRemoteSource constructor(
 
         val payload = mapOf(
             "locationData" to locationData,
+            "locationHistory" to locationHistory,
             "status" to status,
             "deviceKeyVersion" to memberKey.deviceKeyVersion,
         ).filter { it.value != null }
