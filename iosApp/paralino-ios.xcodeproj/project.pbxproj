@@ -291,6 +291,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		2505E6472CBD69B50088D146 /* paralino-lse */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "paralino-lse"; sourceTree = "<group>"; };
 		254EFF6C2CB5457800818618 /* paralino-nse */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (254EFF742CB5457800818618 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-nse"; sourceTree = "<group>"; };
 		257DCAD42CB4407700402562 /* paralino-apple-core */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (2520B61C2CB56A2F0004EF87 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 257DCADE2CB4407700402562 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 2580EF8D2CB6957800C9431D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "paralino-apple-core"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -505,6 +506,7 @@
 				25C03A6629CCE77100646364 /* paralino-ios */,
 				257DCAD42CB4407700402562 /* paralino-apple-core */,
 				254EFF6C2CB5457800818618 /* paralino-nse */,
+				2505E6472CBD69B50088D146 /* paralino-lse */,
 				2556B8422AC6FCED00ADEB17 /* Frameworks */,
 				25C03A6529CCE77100646364 /* Products */,
 			);
