@@ -18,13 +18,9 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.base.AccessLogDataSource
-import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
-import app.paralino.core.repo.location.LocationRemoteSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
-import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -41,17 +37,14 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
-    private val remote: LocationRemoteSource,
-    private val local: LocationLocalDataSource,
-    private val groupLocal: UserGroupLocalDataSource,
-    private val placesRepo: PlacesRepository,
-    private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
+    private val saveLocationUseCase: SaveLocationUseCase,
+    private val placesActivityProcessor: PlacesActivityProcessor,
+    private val registerDeviceForSharing: IReRegisterDeviceUseCase,
     private val payloadProvider: LocationPayloadProvider,
     private val infoNotificationPresenter: IInfoMessagesNotificationPresenter,
     private val locationCacheRepo: LocationCacheRepository,
@@ -60,7 +53,6 @@ class LocationUploadEngine constructor(
     private val placeActivityRepo: PlaceActivityDataSource,
     private val accessLogDataSource: AccessLogDataSource,
     private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
-    private val remoteConfig: RemoteConfigRepository,
     private val appBuildConfig: AppBuildConfig
 ) : LimitedExecutionRepository() {
 
@@ -85,8 +77,6 @@ class LocationUploadEngine constructor(
     private val _pendingLocation = MutableStateFlow<LocationDataModel?>(null)
     val pendingLocation = _pendingLocation.asStateFlow()
 
-    private val deviceRegisterTimeMillis = MutableStateFlow(mapOf<String, Long>())
-    private var failedRegistrationAttempts = MutableStateFlow(mapOf<String, Int>())
 
     fun startLocationUploadEngine() {
         locationStatusMonitoringJob?.cancel()
@@ -126,7 +116,10 @@ class LocationUploadEngine constructor(
                             }
                         }
 
-                        logg.d(tag = "location_service", message = "Location (${it.timeUTC}) ready for upload")
+                        logg.d(
+                            tag = "location_service",
+                            message = "Location (${it.timeUTC}) ready for upload"
+                        )
                         lastLocationPush.update { nowUTC() }
                         locationCacheRepo.updateCache(it)
                         scopeProvider.userSessionIOScope.launch {
@@ -179,7 +172,7 @@ class LocationUploadEngine constructor(
 
         if (appBuildConfig.appHost == AppHost.MAIN_APP) {
             accessLogDataSource.deleteLocationRequestAccessLog()
-        } else if(!accessLogDataSource.canProcessLocationRequest()) {
+        } else if (!accessLogDataSource.canProcessLocationRequest()) {
             logg.i("location_service", "Can not process location upload request")
             return
         }
@@ -195,7 +188,7 @@ class LocationUploadEngine constructor(
             }
 
             if (data != null) {
-                placesRepo.processLocation(data)
+                placesActivityProcessor.processLocation(data)
             }
 
             batteryAlertUploadEngine.sendBatteryAlert(payloads = mapped)
@@ -207,9 +200,7 @@ class LocationUploadEngine constructor(
 
             mapped.forEach {
                 try {
-                    remote.saveCurrentLocation(it).also {
-                        local.createOrUpdateMemberLocation(it)
-                    }
+                    saveLocationUseCase.saveCurrentLocation(it)
                 } catch (e: Exception) {
                     logg.w("location_service", "Error saving location for group ${it.groupId}", e)
                 }
@@ -237,11 +228,22 @@ class LocationUploadEngine constructor(
             is LocationPayloadStatus.Success -> payload.payload
 
             LocationPayloadStatus.MissingLocationDocument -> {
-                tryRegisterDeviceAgain(
+                val result = registerDeviceForSharing.tryRegisterDeviceAgain(
                     groupId = groupId,
                     data = data,
                     contract = contract
                 )
+
+                if (result) {
+                    // retry once again
+                    getLocationPayload(
+                        groupId = groupId,
+                        data = data,
+                        contract = contract
+                    )
+                } else {
+                    null
+                }
             }
 
             LocationPayloadStatus.MissingData -> {
@@ -276,79 +278,11 @@ class LocationUploadEngine constructor(
         }
     }
 
-    private suspend fun tryRegisterDeviceAgain(
-        groupId: String,
-        data: LocationDataModel?,
-        contract: LocationSharingContract,
-    ): MemberGroupId? {
-        try {
-            val timeBetweenRequests = nowUTC() - Instant.fromEpochMilliseconds(
-                epochMilliseconds = deviceRegisterTimeMillis.value[groupId] ?: 0
-            )
-            if (timeBetweenRequests > 10.minutes) {
-                logg.v(
-                    "location_service",
-                    "Missing user location document for new location, try registering device"
-                )
-                failedRegistrationAttempts.update {
-                    it.toMutableMap().apply { set(groupId, 0) }
-                }
-                deviceRegisterTimeMillis.update {
-                    it.toMutableMap().apply { set(groupId, nowUTC().toEpochMilliseconds()) }
-                }
-                registerDeviceForSharing.registerDevice(
-                    groupId = groupId,
-                    deviceName = null,
-                    contract = contract,
-                    notifyOthers = false
-                )
-                logg.v("location_service", "Device registered, retry payload")
-                return getLocationPayload(
-                    groupId = groupId,
-                    data = data,
-                    contract = contract
-                )
-            } else {
-                failedRegistrationAttempts.update {
-                    it.toMutableMap().apply { set(groupId, this[groupId]?.plus(1) ?: 1) }
-                }
-                if ((failedRegistrationAttempts.value[groupId] ?: 0) > 3) {
-                    failedRegistrationAttempts.update {
-                        it.toMutableMap().apply { set(groupId, 0) }
-                    }
-                    infoNotificationPresenter.notify(
-                        IPushNotificationPresenter.Payload(
-                            notificationId = 54343,
-                            title = MR.strings.error_something_wrong.localizedString(),
-                            message = MR.strings.error_device_registration_notification_message.localizedString(),
-                            timeMillis = null,
-                            timeInfo = null
-                        )
-                    )
-                }
-                return null
-            }
-        } catch (e: Exception) {
-            logg.w("location_service", "Error registering device for group sharing", e)
-            infoNotificationPresenter.notify(
-                IPushNotificationPresenter.Payload(
-                    notificationId = 54343,
-                    title = MR.strings.error_something_wrong.localizedString(),
-                    message = MR.strings.error_device_registration_notification_message.localizedString(),
-                    timeMillis = null,
-                    timeInfo = null
-                )
-            )
-            return null
-        }
-    }
-
     fun logout() {
         locationUploadMonitoringJob?.cancel()
         locationUploadMonitoringJob = null
         _pendingLocation.update { null }
         locationCacheRepo.clearCache()
-        failedRegistrationAttempts.update { emptyMap() }
-        deviceRegisterTimeMillis.update { emptyMap() }
+        registerDeviceForSharing.logout()
     }
 }

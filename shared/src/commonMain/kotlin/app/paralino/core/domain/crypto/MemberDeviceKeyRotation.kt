@@ -29,6 +29,30 @@ import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.safeLet
 import kotlinx.serialization.encodeToString
 
+abstract class IMemberDeviceKeyRotation: LimitedExecution() {
+    abstract suspend fun rotateDeviceKeys(
+        remoteGroup: UserGroupWithMembers,
+        force: Boolean = false
+    ): Boolean
+
+    abstract suspend fun getNewSenderKeys(group: UserGroupWithMembers): Pair<String, List<GroupSenderKeyPayload>>
+}
+
+class NoOpMemberDeviceKeyRotation: IMemberDeviceKeyRotation() {
+    override suspend fun rotateDeviceKeys(
+        remoteGroup: UserGroupWithMembers,
+        force: Boolean
+    ): Boolean {
+        logg.tag("tag_crypto_key_group_device_rotation")
+            .w("Group ${remoteGroup.id} NOOP operation")
+        return false
+    }
+
+    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): Pair<String, List<GroupSenderKeyPayload>> {
+        throw IllegalStateException("Device key rotation not allowed")
+    }
+}
+
 class MemberDeviceKeyRotation(
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
@@ -37,11 +61,11 @@ class MemberDeviceKeyRotation(
     private val validityVerification: GroupValidityVerification,
     private val deviceStatusProvider: MemberDeviceStatusProvider,
     private val appPrefs: AppPrefs
-) : LimitedExecution() {
+) : IMemberDeviceKeyRotation() {
 
-    suspend fun rotateDeviceKeys(
+    override suspend fun rotateDeviceKeys(
         remoteGroup: UserGroupWithMembers,
-        force: Boolean = false
+        force: Boolean
     ): Boolean {
 
         // if group is not verified (current member is not verified) skip key generation
@@ -234,7 +258,7 @@ class MemberDeviceKeyRotation(
         )
     }
 
-    suspend fun getNewSenderKeys(group: UserGroupWithMembers): Pair<String, List<GroupSenderKeyPayload>> {
+    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): Pair<String, List<GroupSenderKeyPayload>> {
 
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
 
@@ -251,8 +275,10 @@ class MemberDeviceKeyRotation(
                 return@mapNotNull null
             }
 
-            val memberPublicKey =
-                cryptoKEKRepository.getMemberPublicKey(group.id, groupMember.member.userId)
+            val memberPublicKey = cryptoKEKRepository.getMemberPublicKey(
+                    groupId = group.id,
+                    memberUserId = groupMember.member.userId
+                )
             if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                 GroupSenderKeyPayload(
                     userId = groupMember.member.userId,

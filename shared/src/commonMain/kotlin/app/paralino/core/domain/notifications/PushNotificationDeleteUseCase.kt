@@ -13,7 +13,7 @@ class PushNotificationDeleteUseCase(
 ) {
     suspend fun deletePushNotification(notificationId: String) {
         try {
-            logg.tag("push_notifications").v("Delete push notification document")
+            logg.tag("push_notifications").v("Delete push notification document $notificationId")
             docApi.deleteDocument(
                 databaseType = BackendDatabaseType.DATA,
                 collectionId = BackendResourceIDs.collectionPushNotificationID,

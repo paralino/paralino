@@ -1,7 +1,7 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
@@ -12,8 +12,8 @@ import app.paralino.core.utils.extensions.safeLet
 class LocationPayloadProvider(
     private val memberIdUseCase: UserMemberIdUseCase,
     private val memberDeviceStatusProvider: MemberDeviceStatusProvider,
-    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
-    private val deviceKeyRotation: MemberDeviceKeyRotation
+    private val memberCryptoKeyRotation: IMemberCryptoKeyRotation,
+    private val deviceKeyRotation: IMemberDeviceKeyRotation
 ) : BaseRepository() {
 
 

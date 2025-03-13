@@ -6,7 +6,7 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
@@ -31,7 +31,7 @@ class RegisterDeviceForSharingUseCase constructor(
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val cryptoCore: CryptoCore,
-    private val deviceKeyRotation: MemberDeviceKeyRotation,
+    private val deviceKeyRotation: IMemberDeviceKeyRotation,
     private val deviceStatusProvider: MemberDeviceStatusProvider,
     private val appPrefs: AppPrefs
 ) : LimitedExecutionRepository() {

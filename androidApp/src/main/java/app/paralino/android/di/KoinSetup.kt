@@ -37,6 +37,12 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.SqlDriverFactory
 import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
+import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.location.IReRegisterDeviceUseCase
+import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
@@ -142,6 +148,10 @@ object KoinSetup {
         single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
+
+        single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
+        single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
+        single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
 
         single {
             AppBuildConfig(

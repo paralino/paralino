@@ -23,6 +23,23 @@ import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.encodeToString
 
+abstract class IMemberCryptoKeyRotation: LimitedExecution() {
+    abstract suspend fun rotateMemberKeys(
+        remoteGroup: UserGroupWithMembers,
+        force: Boolean = false,
+    ): Boolean
+}
+class NoOpMemberCryptoKeyRotation(): IMemberCryptoKeyRotation() {
+    override suspend fun rotateMemberKeys(
+        remoteGroup: UserGroupWithMembers,
+        force: Boolean
+    ): Boolean {
+        logg.tag("tag_crypto_key_group_member_rotation")
+            .w("Group ${remoteGroup.id} NOOP operation")
+        return false
+    }
+}
+
 class MemberCryptoKeyRotation(
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
@@ -31,11 +48,11 @@ class MemberCryptoKeyRotation(
     private val validityVerification: GroupValidityVerification,
     private val personalCodesRepo: PersonalCodesRepository,
     private val appPrefs: AppPrefs
-) : LimitedExecution() {
+) : IMemberCryptoKeyRotation() {
 
-    suspend fun rotateMemberKeys(
+    override suspend fun rotateMemberKeys(
         remoteGroup: UserGroupWithMembers,
-        force: Boolean = false,
+        force: Boolean,
     ): Boolean {
 
         // if group is not verified (current member is not verified) skip key generation

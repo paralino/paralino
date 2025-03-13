@@ -13,7 +13,6 @@ import Sentry
 class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationManagerDelegate {
 
     var locationManager: LseLocationManager = LseLocationManager()
-    lazy var coreAppManager: CoreAppManager = { KoinIOS.Instances.shared.coreAppManager }()
     
     override init() {
         SentrySDK.start { options in
@@ -24,11 +23,17 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         KoinSetup.initKoin(locationManager: locationManager)
         
         super.init()
-        self.coreAppManager.onAppStart()
     }
 
     func didReceiveLocationPushPayload(_ payload: [String : Any], completion: @escaping () -> Void) {
-        self.locationManager.start(delegate: self, completion)
+        KoinSetup.initKoin(locationManager: locationManager)
+        
+        let notificationId = payload["notificationId"] as? String
+        
+        Logr.i(tag: "location_service", message: "Got location request payload")
+        
+        self.locationManager.manager.delegate = self
+        self.locationManager.start(notificationId: notificationId, completion)
     }
     
     func serviceExtensionWillTerminate() {

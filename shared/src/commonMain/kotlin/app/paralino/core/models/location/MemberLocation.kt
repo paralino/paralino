@@ -35,10 +35,10 @@ data class MemberLocation constructor(
 
     val canRequestLocation: Boolean get() {
         val adaptedStatus = locationAwareStatusType
-        return adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS
+        return (adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS || isOlderThan(1.minutes))
                 && adaptedStatus != MemberDeviceStatusType.ACTIVE
                 && adaptedStatus?.isDeviceSetupWrong != true
-                && (isOlderThan(2.minutes) || !hasLocation)
+                && (isOlderThan(1.minutes) || !hasLocation)
                 && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
     }
 

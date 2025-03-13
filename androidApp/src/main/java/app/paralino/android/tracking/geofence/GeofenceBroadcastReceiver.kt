@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import app.paralino.core.logg
 import app.paralino.core.repo.places.PlaceActivityTriggerType
+import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.places.PlacesRepository
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
@@ -51,7 +52,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 }
 
 class GeofenceReceiver() : KoinComponent {
-    private val geofenceProcessor: PlacesRepository by inject()
+    private val geofenceProcessor: PlacesActivityProcessor by inject()
 
     fun notifyPlaceEnter(placeIds: List<String>) {
         geofenceProcessor.placesEnter(

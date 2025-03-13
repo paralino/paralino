@@ -45,4 +45,10 @@ class KoinSetup {
             return []
         }
     }
+    
+    class NotificationStatusProvider: INotificationStatusProvider {
+        override func createCurrentStatus() -> NotificationConditionStatus {
+            return NotificationConditionStatus(isNotificationPermissionAllowed: true)
+        }
+    }
 }
