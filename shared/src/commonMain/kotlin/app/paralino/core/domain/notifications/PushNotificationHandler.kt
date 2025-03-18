@@ -22,7 +22,6 @@ import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
-import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.RemotePreference
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -43,100 +42,10 @@ class PushNotificationHandler constructor(
     private val docApi: IDocumentsApi,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
     private val notificationDelete: PushNotificationDeleteUseCase,
-    private val accessLogSource: AccessLogDataSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "notification_sync"
-
-    suspend fun tryToHandleLocationPush(): Boolean {
-        val executionKey = "${executionKey}_location"
-        try {
-            startProcessing(executionKey)
-        } catch (e: Exception) {
-            logg.tag(executionKey).v("Processing, can't fetch notification")
-            return false
-        }
-
-        try {
-            accessLogSource.saveLocationRequestAccessLog()
-
-            val deviceQuery = listOfNotNull(appPrefs.deviceId, appPrefs.sessionId)
-                .filter { it.isNotBlank() }
-                .takeIf { it.isNotEmpty() }
-                ?.let { BackendQuery.Equals(key = "deviceId", value = it) }
-            val notifications = docApi.listAllDocuments(
-                databaseType = BackendDatabaseType.DATA,
-                collectionId = BackendResourceIDs.collectionPushNotificationID,
-                queries = buildList {
-                    if (deviceQuery != null) {
-                        add(
-                            BackendQuery.OR(
-                                queries = listOf(deviceQuery, BackendQuery.IsNull(key = "deviceId"))
-                            )
-                        )
-                    } else {
-                        add(BackendQuery.IsNull(key = "deviceId"))
-                    }
-                }
-            )
-                .also {
-                    logg.tag("push_notifications").v("Got ${it.size} notifications documents")
-                }
-                .mapNotNull {
-                    try {
-                        PushNotificationRaw.from(it)
-                    } catch (e: Exception) {
-                        logg.tag("push_notifications").e("Error parsing push notification", e)
-                        null
-                    }
-                }
-
-            logg.tag("push_notifications")
-                .v("Got ${notifications.size} notifications documents")
-
-            notifications
-                .filter { notificationPreCheck.isPushForThisDevice(it) }
-                .also {
-                    logg.tag("push_notifications")
-                        .v("Got ${it.size} notifications documents for this device")
-                }
-                .let {
-                    // if push have eventId, only use one of each with same event
-                    // otherwise use all of them
-                    val withoutEvent = it.filter { it.eventId.isNullOrBlank() }
-                    val withEvent = it.filter { !it.eventId.isNullOrBlank() }
-                        .distinctBy { it.eventId }
-                    withoutEvent + withEvent
-                }
-                .filter {
-                    it.pushType == PushNotificationType.LOCATION_FOCUS || it.pushType == PushNotificationType.LOCATION_REQUEST
-                }
-                .also {
-                    logg.tag("push_notifications")
-                        .v("Processing ${it.size} location notifications for this device")
-
-                    if (it.isEmpty()) {
-                        return false
-                    }
-                }
-                .forEach {
-                    processNotification(
-                        push = it,
-                        notify = false,
-                        onDelete = { push ->
-                            notificationDelete.deletePushNotification(notificationId = push.id)
-                        }
-                    )
-                }
-            return true
-        } catch (e: Exception) {
-            logg.tag(executionKey).w("Error processing location push notification - ${e.message}")
-            return false
-        } finally {
-            startProcessing(executionKey)
-        }
-    }
 
     suspend fun checkForPushNotifications(): Result<Unit> {
         try {

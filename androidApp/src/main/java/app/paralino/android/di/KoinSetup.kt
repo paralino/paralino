@@ -96,6 +96,8 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IRealtimeApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.places.IPlacesActivityProcessor
+import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
@@ -152,6 +154,7 @@ object KoinSetup {
         single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
         single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
+        single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
 
         single {
             AppBuildConfig(

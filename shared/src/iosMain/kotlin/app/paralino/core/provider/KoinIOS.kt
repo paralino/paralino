@@ -21,20 +21,19 @@ import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.NoOpReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
-import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
+import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
+import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
+import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
+import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
-import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
-import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
-import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
-import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
-import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
@@ -84,6 +83,8 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.location.LocationRepositoryWrapper
+import app.paralino.core.repo.places.IOSLSEPlacesActivityProcessor
+import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.places.PlacesRepository
@@ -156,7 +157,7 @@ object KoinIOS {
                     single { appUpdateManager() } bind IAppUpdateManager::class
                     single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
-                    single { LocationRepositoryWrapper(get(), get(), get(), get()) }
+                    single { LocationRepositoryWrapper(get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
 
@@ -165,11 +166,13 @@ object KoinIOS {
                             single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
                             single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
+                            single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
                         }
                         else -> {
                             single { NoOpMemberCryptoKeyRotation() } bind IMemberCryptoKeyRotation::class
                             single { NoOpMemberDeviceKeyRotation() } bind IMemberDeviceKeyRotation::class
                             single { NoOpReRegisterDeviceUseCase() } bind IReRegisterDeviceUseCase::class
+                            single { IOSLSEPlacesActivityProcessor() } bind IPlacesActivityProcessor::class
                         }
                     }
                 }

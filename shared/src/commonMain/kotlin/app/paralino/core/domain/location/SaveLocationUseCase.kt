@@ -4,12 +4,15 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
+import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.raw.MemberLocationRaw
+import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.api.IDocumentsApi
-import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
@@ -18,7 +21,7 @@ import kotlinx.serialization.encodeToString
 import kotlin.coroutines.cancellation.CancellationException
 
 class SaveLocationUseCase(
-    private val local: LocationLocalDataSource,
+    private val database: MainDatabaseHelper,
     private val documentApi: IDocumentsApi,
     private val appBuildConfig: AppBuildConfig,
     private val cryptoCore: CryptoCore,
@@ -26,7 +29,7 @@ class SaveLocationUseCase(
     private val appPrefs: AppPrefs
 ) {
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    suspend fun saveCurrentLocation(data: MemberGroupId): MemberLocationRaw {
+    suspend fun uploadAndSaveCurrentLocation(data: MemberGroupId): MemberLocationRaw? {
         val memberKey = cryptoKEKRepo.getMemberSenderKey(
             groupId = data.groupId,
             memberUserId = appPrefs.userId,
@@ -42,16 +45,22 @@ class SaveLocationUseCase(
             )
         }
 
-        val status = cryptoCore.encryptDataWithKey(
-            data = BaseRemoteModule.formatter.encodeToString(data.deviceStatus),
-            key = memberKey.key
-        )
+        val status = data.deviceStatus?.let {
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.formatter.encodeToString(it),
+                key = memberKey.key
+            )
+        }
 
         val payload = mapOf(
             "locationData" to locationData,
             "status" to status,
             "deviceKeyVersion" to memberKey.deviceKeyVersion,
         ).filter { it.value != null }
+
+        if (payload.isEmpty()) {
+            return null
+        }
 
         val newData = documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
@@ -60,8 +69,23 @@ class SaveLocationUseCase(
             data = payload
         ).let { MemberLocationRaw.from(it) }
 
-        local.createOrUpdateMemberLocation(newData)
+        saveLocationLocally(newData)
 
-        return newData
+        return null
+    }
+
+    suspend fun saveLocationLocally(data: MemberLocationRaw) {
+        logg.v("Save new location to database (${data.id})")
+        database.groupRelatedDao.updateMemberLocation(
+            MemberLocationEntityDataUpdate(
+                id = data.id,
+                deviceId = data.deviceId,
+                deviceData = data.deviceData,
+                groupKeyVersion = data.groupKeyVersion,
+                deviceKeyVersion = data.deviceKeyVersion,
+                locationData = data.locationData,
+                status = data.status
+            )
+        )
     }
 }

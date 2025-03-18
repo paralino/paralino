@@ -8,6 +8,8 @@
 import Foundation
 import paralino_apple_core
 import shared
+import Network
+import CoreTelephony
 
 class KoinSetup {
     

@@ -25,21 +25,6 @@ class LocationLocalDataSource(
         )
     }
 
-    suspend fun createOrUpdateMemberLocation(data: MemberLocationRaw) {
-        logg.v("Save new location to database (${data.id})")
-        database.groupRelatedDao.updateMemberLocation(
-            MemberLocationEntityDataUpdate(
-                id = data.id,
-                deviceId = data.deviceId,
-                deviceData = data.deviceData,
-                groupKeyVersion = data.groupKeyVersion,
-                deviceKeyVersion = data.deviceKeyVersion,
-                locationData = data.locationData,
-                status = data.status
-            )
-        )
-    }
-
     suspend fun updateMemberBatterySettings(data: GroupSettingsRaw) {
         logg.v("Save new member battery settings to database (${data.id})")
         database.groupRelatedDao.updateMemberBatterySettings(

@@ -187,8 +187,7 @@ sealed class GroupMemberSenderKey {
     data class Valid(
         val key: String,
         val deviceKeyVersion: Long,
-        val memberKeyVersion: Long,
-        val kxKey: GroupMemberMainPublicKey.Valid
+        val memberKeyVersion: Long
     ) : GroupMemberSenderKey()
 }
 

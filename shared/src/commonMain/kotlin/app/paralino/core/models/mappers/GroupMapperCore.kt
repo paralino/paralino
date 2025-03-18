@@ -24,7 +24,6 @@ class GroupMapperCore constructor(
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val cryptoCore: CryptoCore,
     private val memberMapperCore: MemberMapperCore,
-    private val placesMapper: PlaceMapperCore
 ) {
     suspend fun core2Remote(model: UserGroup): GroupDocumentRaw {
 
@@ -120,19 +119,6 @@ class GroupMapperCore constructor(
         return UserGroupWithMembers(
             group = group,
             members = members
-        )
-    }
-
-    suspend fun remote2CoreWithMembersAndPlaces(model: GroupWithMembersAndPlacesRaw): UserGroupWithMembersAndPlaces {
-        val places = model.places.map {
-            GroupPlaceWithSettings(
-                place = placesMapper.remote2Core(model = it.place, groupOwnerId = model.group.group.ownerUserId),
-                settings = it.settings?.let { placesMapper.settingsMapper.remote2Core(it) }
-            )
-        }
-        return UserGroupWithMembersAndPlaces(
-            groupWithMembers = remote2CoreWithMembers(model.group),
-            places = places
         )
     }
 }

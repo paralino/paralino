@@ -24,6 +24,14 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
+abstract class IPlacesActivityProcessor {
+    abstract suspend fun processLocation(data: LocationDataModel)
+}
+
+class IOSLSEPlacesActivityProcessor: IPlacesActivityProcessor() {
+    override suspend fun processLocation(data: LocationDataModel) {}
+}
+
 class PlacesActivityProcessor(
     private val local: PlacesLocalDataSource,
     private val placeActivityRepo: PlaceActivityDataSource,
@@ -34,8 +42,9 @@ class PlacesActivityProcessor(
     private val scopeProvider: ICoroutineScopeProvider,
     private val locationSharingManager: LocationSharingManager,
     private val appPrefs: AppPrefs
-) {
-    suspend fun processLocation(data: LocationDataModel) {
+): IPlacesActivityProcessor() {
+
+    override suspend fun processLocation(data: LocationDataModel) {
         // TODO filter out frequent calls and calculations of distance between points
         logg.v("place_activity", "Process new location in places")
 

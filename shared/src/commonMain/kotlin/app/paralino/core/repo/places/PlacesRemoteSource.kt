@@ -4,7 +4,7 @@ import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
-import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
@@ -31,7 +31,7 @@ class PlacesRemoteSource(
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
-    private val userMemberId: UserMemberIdUseCase,
+    private val groupLocal: GetMemberWithLocationsUseCase,
     private val placesGet: PlacesGetRemoteSource
 ) {
 
@@ -211,7 +211,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
-                locationId = userMemberId.getCurrentLocationIdForGroup(place.groupId),
+                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupId),
                 enter = true,
                 event = enterEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
@@ -229,7 +229,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
-                locationId = userMemberId.getCurrentLocationIdForGroup(place.groupId),
+                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupId),
                 enter = false,
                 event = exitEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis

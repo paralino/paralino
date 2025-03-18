@@ -4,7 +4,6 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
-import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.PushNotificationImportance
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -12,7 +11,6 @@ import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.coroutines.launch
@@ -27,7 +25,6 @@ class LocationRequestNotificationProcessor(
     private val memberIdUseCase: UserMemberIdUseCase,
     private val coroutineScopeProvider: ICoroutineScopeProvider,
     private val accessLogSource: AccessLogDataSource,
-    private val userGroupLocal: UserGroupLocalDataSource
 ) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
@@ -102,35 +99,6 @@ class LocationRequestNotificationProcessor(
             deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
         } catch (e: Exception) {
             logg.w("Error saving location status", e)
-        }
-    }
-
-    suspend fun updateStatusAndPerformance(
-        performanceType: LocationPerformanceType
-    ) : Boolean {
-        val groups = userGroupLocal.allGroupsState.value.data
-
-        if (groups.isNullOrEmpty()) {
-            logg.v("Update location status and performance for all possible groups")
-            if (sharingManager.isSharingActive()) {
-                locationPerformanceManager.locationBoostRequested(
-                    performanceType = performanceType,
-                    groupId = null,
-                    from = "location request notification"
-                )
-                return true
-            } else {
-                logg.v("Sharing not active, abort")
-                return false
-            }
-        } else {
-            groups.forEach {
-                updateStatusAndPerformance(
-                    groupId = it.group.id,
-                    performanceType = performanceType
-                )
-            }
-            return true
         }
     }
 

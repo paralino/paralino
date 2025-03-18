@@ -22,6 +22,11 @@ class SharingContractsLocalDataSource(
             .map { it.map { mapper.local2Remote(it) } }
     }
 
+    suspend fun getAllContractsOnce(): List<LocationSharingContract> {
+        return database.sharingContractsDao.getAllContractsOnce()
+            .map { mapper.local2Remote(it) }
+    }
+
     suspend fun cancelContracts(ids: List<String>) {
         database.sharingContractsDao.deleteContract(ids)
     }

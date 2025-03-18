@@ -231,6 +231,12 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT * FROM memberLocationEntity WHERE userId = :userId")
     suspend fun getMemberLocationsForUserOnce(userId: String): List<MemberLocationEntity>
 
+    @Query("SELECT * FROM memberLocationEntity WHERE memberId = :memberId AND deviceId = :deviceId")
+    suspend fun getSingleLocationForMemberAndDeviceOnce(memberId: String, deviceId: String): MemberLocationEntity?
+
+    @Query("SELECT * FROM memberLocationEntity WHERE groupId = :groupId AND userId = :userId AND deviceId = :deviceId")
+    suspend fun getSingleLocationForMemberAndDeviceOnce(groupId: String, userId: String, deviceId: String): MemberLocationEntity?
+
     @Update(entity = MemberLocationEntity::class)
     suspend fun updateMemberLocation(dataUpdate: MemberLocationEntityDataUpdate)
 

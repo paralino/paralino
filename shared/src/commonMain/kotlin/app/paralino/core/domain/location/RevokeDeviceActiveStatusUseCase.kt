@@ -6,12 +6,11 @@ import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.minutes
 
 class RevokeDeviceActiveStatusUseCase(
-    private val local: UserGroupLocalDataSource,
+    private val local: GetMemberWithLocationsUseCase,
     private val sharingManager: LocationSharingManager,
     private val memberDeviceStatusProcessor: MemberDeviceStatusProcessor,
     private val appPrefs: AppPrefs

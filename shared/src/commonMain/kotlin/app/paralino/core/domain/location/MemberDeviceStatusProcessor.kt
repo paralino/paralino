@@ -32,7 +32,7 @@ class MemberDeviceStatusProcessor(
             if (payload != null) {
                 logg.v("device_status","Update device status in group $groupId with location (${payload.locationData != null})")
                 try {
-                    saveLocationUseCase.saveCurrentLocation(payload)
+                    saveLocationUseCase.uploadAndSaveCurrentLocation(payload)
                 } finally {
                     // trigger sync for pending data regardless of error
                     batteryAlertUploadEngine.sendBatteryAlert(payloads = listOf(payload))

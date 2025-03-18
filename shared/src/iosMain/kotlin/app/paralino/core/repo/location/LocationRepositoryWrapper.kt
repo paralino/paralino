@@ -1,41 +1,21 @@
 package app.paralino.core.repo.location
 
 import app.paralino.core.domain.location.LocationUploadEngine
-import app.paralino.core.domain.notifications.processors.LocationRequestNotificationProcessor
 import app.paralino.core.models.Payload
 import app.paralino.core.models.location.LocationDataModel
-import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.base.AccessLogDataSource
 
 class LocationRepositoryWrapper(
     private val locationRepo: LocationUploadEngine,
-    private val locationSharingManager: LocationSharingManager,
-    private val accessLogDataSource: AccessLogDataSource,
-    private val locationRequestProcessor: LocationRequestNotificationProcessor
+    private val locationSharingManager: LocationSharingManager
 ) {
 
     fun startLocationUploadEngine() {
         locationRepo.startLocationUploadEngine()
     }
 
-    suspend fun startLocationRequest(notificationId: String?): Boolean {
-        val result = locationRequestProcessor.updateStatusAndPerformance(
-            performanceType = LocationPerformanceType.VERY_HIGH
-        )
-        return result && canProcessLocationRequest()
-    }
-
     suspend fun canProcessLocationRequest(): Boolean {
-        if (!locationSharingManager.isSharingActive()) {
-            return false
-        }
-
-        if (!accessLogDataSource.canProcessLocationRequest()) {
-            return false
-        }
-
-        return true
+        return locationSharingManager.isSharingActive()
     }
 
     fun registerNewLocation(data: LocationDataModel): Payload<Unit> {
@@ -45,9 +25,5 @@ class LocationRepositoryWrapper(
         } catch (e: Exception) {
             Payload.Error(e)
         }
-    }
-
-    suspend fun deleteLocationRequestLog() {
-        accessLogDataSource.deleteLocationRequestAccessLog()
     }
 }

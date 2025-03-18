@@ -57,7 +57,10 @@ class RegisterDeviceForSharingUseCase constructor(
                 val group = groupLocal.getGroupWithMembers(groupId).firstOrNull()
                     ?: throw IllegalStateException("Group does not exist: $groupId")
 
-                val member = userMemberId.getCurrentUserMemberForGroup(groupId)
+                val member = groupLocal.getMemberOnce(
+                    groupId = groupId,
+                    userId = appPrefs.userId
+                )
                     ?: throw IllegalStateException("Missing member for a group $groupId")
 
                 val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.groupKeyVersion)

@@ -1,9 +1,6 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.MR
 import app.paralino.core.domain.LimitedExecutionRepository
-import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
-import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -14,13 +11,11 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
-import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
-import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlaceActivityDataSource
-import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -43,31 +38,35 @@ class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val saveLocationUseCase: SaveLocationUseCase,
-    private val placesActivityProcessor: PlacesActivityProcessor,
+    private val placesActivityProcessor: IPlacesActivityProcessor,
     private val registerDeviceForSharing: IReRegisterDeviceUseCase,
     private val payloadProvider: LocationPayloadProvider,
-    private val infoNotificationPresenter: IInfoMessagesNotificationPresenter,
     private val locationCacheRepo: LocationCacheRepository,
     private val scopeProvider: ICoroutineScopeProvider,
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
     private val placeActivityRepo: PlaceActivityDataSource,
-    private val accessLogDataSource: AccessLogDataSource,
     private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
-    private val appBuildConfig: AppBuildConfig
+    private val appBuildConfig: AppBuildConfig,
 ) : LimitedExecutionRepository() {
 
     private val maxUploadRate: Duration
         get() {
-            return when (locationPerformanceManager.locationPerformanceType.value.current) {
-                LocationPerformanceType.HIGH_BATTERY_SAVER -> 20.seconds
-                LocationPerformanceType.BATTERY_SAVER -> 10.seconds
+            when (appBuildConfig.appHost) {
+                AppHost.MAIN_APP,
+                AppHost.IOS_NOTIFICATION_EXTENSION -> {
+                    return when (locationPerformanceManager.locationPerformanceType.value.current) {
+                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 20.seconds
+                        LocationPerformanceType.BATTERY_SAVER -> 10.seconds
 
-                LocationPerformanceType.BALANCED,
-                LocationPerformanceType.MEDIUM_HIGH -> 4.seconds
+                        LocationPerformanceType.BALANCED,
+                        LocationPerformanceType.MEDIUM_HIGH -> 4.seconds
 
-                LocationPerformanceType.HIGH,
-                LocationPerformanceType.VERY_HIGH,
-                LocationPerformanceType.MANUAL_BOOST -> 2.seconds
+                        LocationPerformanceType.HIGH,
+                        LocationPerformanceType.VERY_HIGH,
+                        LocationPerformanceType.MANUAL_BOOST -> 2.seconds
+                    }
+                }
+                AppHost.IOS_LOCATION_EXTENSION -> return 2.seconds
             }
         }
     private var locationUploadMonitoringJob: Job? = null
@@ -169,14 +168,6 @@ class LocationUploadEngine constructor(
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {
-
-        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
-            accessLogDataSource.deleteLocationRequestAccessLog()
-        } else if (!accessLogDataSource.canProcessLocationRequest()) {
-            logg.i("location_service", "Can not process location upload request")
-            return
-        }
-
         triggerRemoteOnly {
             val contracts = locationSharingManager.allValidContracts()
             val mapped = contracts.mapNotNull { contract ->
@@ -200,9 +191,9 @@ class LocationUploadEngine constructor(
 
             mapped.forEach {
                 try {
-                    saveLocationUseCase.saveCurrentLocation(it)
+                    saveLocationUseCase.uploadAndSaveCurrentLocation(it)
                 } catch (e: Exception) {
-                    logg.w("location_service", "Error saving location for group ${it.groupId}", e)
+                    logg.w("location_service", "Error saving location for group ${it}", e)
                 }
             }
 
@@ -257,24 +248,6 @@ class LocationUploadEngine constructor(
             }
 
             LocationPayloadStatus.Processing -> null
-            LocationPayloadStatus.UnverifiedMember -> {
-                // Notify user and keep sharing contract active for cases where data is not synced yet
-                // that way sharing could continue after refresh if member becomes verified
-                logg.e(
-                    "location_service",
-                    "Current member is unverified in group ${groupId}, ignore location update"
-                )
-                infoNotificationPresenter.notify(
-                    IPushNotificationPresenter.Payload(
-                        notificationId = 6345,
-                        title = MR.strings.error_something_wrong.localizedString(),
-                        message = MR.strings.error_unverified_member_notification_message.localizedString(),
-                        timeMillis = null,
-                        timeInfo = null
-                    )
-                )
-                null
-            }
         }
     }
 

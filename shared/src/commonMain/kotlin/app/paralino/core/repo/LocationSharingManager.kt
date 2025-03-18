@@ -81,7 +81,7 @@ class LocationSharingManager(
     }
 
     suspend fun allValidContracts(): List<LocationSharingContract> {
-        val all = contractsDataSource.getAllContracts().firstOrNull() ?: return emptyList()
+        val all = contractsDataSource.getAllContractsOnce()
 
         val valid = all.mapNotNull { it.asValidContract() }
         val expired = all.subtract(valid)

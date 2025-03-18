@@ -4,12 +4,10 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
-import app.paralino.core.models.location.MemberModel
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 
 class UserMemberIdUseCase constructor(
-    private val groupLocal: UserGroupLocalDataSource,
+    private val groupLocal: GetMemberWithLocationsUseCase,
     private val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs
 ) {
@@ -34,18 +32,7 @@ class UserMemberIdUseCase constructor(
         )?.currentDeviceLocation
     }
 
-    suspend fun getCurrentLocationIdForGroup(groupId: String): String? {
-        return getCurrentLocationForGroup(groupId)?.id
-    }
-
     suspend fun hasCurrentLocationIdForGroup(groupId: String): Boolean {
-        return !getCurrentLocationForGroup(groupId)?.id.isNullOrBlank()
-    }
-
-    suspend fun getCurrentUserMemberForGroup(groupId: String): MemberModel? {
-        return groupLocal.getMemberOnce(
-            groupId = groupId,
-            userId = appPrefs.userId
-        )
+        return !groupLocal.getCurrentLocationIdForGroup(groupId = groupId).isNullOrBlank()
     }
 }

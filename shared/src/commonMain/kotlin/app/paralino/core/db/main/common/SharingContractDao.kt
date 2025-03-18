@@ -15,6 +15,9 @@ interface SharingContractDao {
     @Query("SELECT * FROM sharingContractEntity")
     fun getAllContracts(): Flow<List<SharingContractEntity>>
 
+    @Query("SELECT * FROM sharingContractEntity")
+    suspend fun getAllContractsOnce(): List<SharingContractEntity>
+
     @Query("DELETE FROM sharingContractEntity WHERE groupId IN (:groupIds)")
     suspend fun deleteContract(groupIds: List<String>)
 

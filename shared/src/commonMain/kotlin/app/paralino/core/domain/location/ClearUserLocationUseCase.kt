@@ -5,7 +5,6 @@ import app.paralino.core.logg
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
 import kotlinx.coroutines.delay
@@ -13,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration.Companion.hours
 
 class ClearUserLocationUseCase(
-    private val groupLocal: UserGroupLocalDataSource,
+    private val groupLocal: GetMemberWithLocationsUseCase,
     private val local: LocationLocalDataSource,
     private val remote: LocationRemoteSource,
     private val locationSharingManager: LocationSharingManager,

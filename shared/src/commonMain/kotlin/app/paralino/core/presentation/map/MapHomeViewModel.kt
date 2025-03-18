@@ -493,6 +493,7 @@ class MapHomeViewModel constructor(
                         memberId = memberItem.memberState.memberId,
                         memberLocationId = memberItem.singleLocation?.locationId,
                         memberKeyId = memberItem.keyId,
+                        isIdleActive = memberItem.singleLocation?.deviceStatus?.isIdlingOrActive ?: false,
                         forceZoom = false
                     )
 
@@ -539,6 +540,7 @@ class MapHomeViewModel constructor(
                                     memberId = memberStateForMarker.memberState.memberId,
                                     memberLocationId = memberStateForMarker.location?.locationId,
                                     memberKeyId = markerData.markerId,
+                                    isIdleActive = memberStateForMarker.location?.deviceStatus?.isIdlingOrActive ?: false,
                                     forceZoom = isRequestForSameVisibleMarker
                                 )
                             } else {

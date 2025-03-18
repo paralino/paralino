@@ -94,6 +94,7 @@ sealed interface MapHomeScreenFocusType {
         val memberUserId: String,
         val memberLocationId: String?,
         val memberKeyId: String,
+        val isIdleActive: Boolean,
         val forceZoom: Boolean
     ) : MapHomeScreenFocusType
 

@@ -33,9 +33,9 @@ class BatteryAlertUploadEngine(
             payloads.forEach { payload ->
                 sendBatteryAlert(
                     groupId = payload.groupId,
-                    memberId = payload.member.id,
+                    memberId = payload.memberId,
                     locationId = payload.locationId,
-                    batteryLevel = payload.deviceStatus.batteryLevel
+                    batteryLevel = payload.deviceStatus?.batteryLevel
                 )
             }
         }
@@ -77,8 +77,8 @@ class BatteryAlertUploadEngine(
             }
 
             // state is valid, we can send event
-            val currentEvent = appDatabase.groupRelatedDao
-                    .getBatteryAlertEventOnce(groupId = groupId)
+            val currentEvent = appDatabase.groupRelatedDao.getBatteryAlertEventOnce(groupId = groupId)
+
             if (currentEvent == null || currentEvent.notifyTimeMillis < nowUTC().minus(4.hours)
                     .toEpochMilliseconds()
             ) {
@@ -109,6 +109,7 @@ class BatteryAlertUploadEngine(
     ) {
         try {
             blocking {
+                logg.tag(executionKey).v("Sending battery alert event")
                 functionsApi.runAsync(
                     function = ServerFunction.EVENT_BATTERY,
                     data = BatteryAlertPayload(
