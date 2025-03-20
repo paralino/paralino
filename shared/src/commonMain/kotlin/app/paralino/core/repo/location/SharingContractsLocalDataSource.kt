@@ -16,6 +16,11 @@ class SharingContractsLocalDataSource(
         database.sharingContractsDao.createContract(mapper.remote2Local(contract))
     }
 
+    suspend fun getContractOnce(groupId: String): LocationSharingContract? {
+        return database.sharingContractsDao.getContractOnce(groupId = groupId)
+            ?.let { mapper.local2Remote(it) }
+    }
+
     fun getAllContracts(): Flow<List<LocationSharingContract>> {
         return database.sharingContractsDao.getAllContracts()
             .distinctFlowOfList()

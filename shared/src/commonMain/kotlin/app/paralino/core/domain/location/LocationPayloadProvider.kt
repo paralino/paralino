@@ -69,7 +69,7 @@ class LocationPayloadProvider(
                         isMasked = false
                     )
                 },
-                deviceStatus = memberDeviceStatusProvider.getStatus(groupId = groupId)
+                deviceStatus = memberDeviceStatusProvider.getStatus(groupId = groupId, contract  = contract)
             )
         )
     }

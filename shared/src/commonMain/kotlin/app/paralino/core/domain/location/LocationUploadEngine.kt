@@ -74,7 +74,6 @@ class LocationUploadEngine constructor(
     private var lastLocationPush = MutableStateFlow<Instant?>(null)
 
     private val _pendingLocation = MutableStateFlow<LocationDataModel?>(null)
-    val pendingLocation = _pendingLocation.asStateFlow()
 
 
     fun startLocationUploadEngine() {
@@ -97,7 +96,8 @@ class LocationUploadEngine constructor(
         locationUploadMonitoringJob = scopeProvider.userSessionIOScope.launch {
             logg.d(tag = "location_service", message = "Start location upload job")
             try {
-                pendingLocation.filterNotNull()
+                _pendingLocation.value = null
+                _pendingLocation.filterNotNull()
                     .conflate()
                     .collectLatest {
                         logg.d(tag = "location_service", message = "Processing new location")
@@ -156,14 +156,18 @@ class LocationUploadEngine constructor(
         }
     }
 
-    suspend fun updateDeviceStatusOnly() {
+    suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean = true) {
         uploadLocation(
-            data = oneTimeLocationProvider.getLastLocation(
-                requestType = IOneTimeLocationProvider.RequestType.Fetch(
-                    timeoutMillis = 3.seconds.inWholeMilliseconds,
-                    type = LocationPerformanceType.BATTERY_SAVER
+            data = if (tryToFetchCachedLocation) {
+                oneTimeLocationProvider.getLastLocation(
+                    requestType = IOneTimeLocationProvider.RequestType.Fetch(
+                        timeoutMillis = 3.seconds.inWholeMilliseconds,
+                        type = LocationPerformanceType.BATTERY_SAVER
+                    )
                 )
-            )
+            } else {
+                null
+            }
         )
     }
 

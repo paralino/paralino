@@ -10,7 +10,7 @@ interface SharingContractDao {
     suspend fun createContract(contract: SharingContractEntity)
 
     @Query("SELECT * FROM sharingContractEntity WHERE groupId = :groupId")
-    suspend fun getContract(groupId: String): SharingContractEntity?
+    suspend fun getContractOnce(groupId: String): SharingContractEntity?
 
     @Query("SELECT * FROM sharingContractEntity")
     fun getAllContracts(): Flow<List<SharingContractEntity>>

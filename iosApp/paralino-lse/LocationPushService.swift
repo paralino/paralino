@@ -24,7 +24,6 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
 //        }
     
         KoinSetup.initKoin(locationManager: LseLocationManager())
-        Logr.i(tag: "location_service", message: "Start location push service")
         
         super.init()
     }
@@ -38,10 +37,17 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         
         self.completion = completion
         self.locationManager = CLLocationManager()
-        self.locationManager?.distanceFilter = 2
+        self.locationManager?.distanceFilter = 0
         self.locationManager?.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager!.delegate = self
-        self.locationManager!.startUpdatingLocation()
+        
+        DispatchQueue.main.async {
+            Task {
+                Logr.i(tag: "location_service", message: "Start location updates after delay")
+                try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                self.locationManager!.startUpdatingLocation()
+            }
+        }
     }
     
     func serviceExtensionWillTerminate() {
@@ -54,7 +60,6 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations.last?.toLocationModel()
-        Logr.i(tag: "location_service", message: "Got location update from system \(location != nil)")
         
         if location == nil { return }
         
@@ -62,8 +67,6 @@ class LocationPushService: NSObject, CLLocationPushServiceExtension, CLLocationM
         let locationModel = LocationDataModel.companion.getBetter(first: location, second: systemLocation)
         
         locationRepo.registerNewLocation(data: locationModel!)
-        
-        Logr.i(tag: "location_service", message: "New location registered \(locations.count)")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
