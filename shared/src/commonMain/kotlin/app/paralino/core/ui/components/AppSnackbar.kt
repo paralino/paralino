@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -46,6 +47,7 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AppSnackbar(
+    drawingPaddingValues: PaddingValues,
     snackbarHostState: SnackbarHostState
 ) {
 
@@ -160,6 +162,7 @@ fun AppSnackbar(
                         .offset(x = offset)
                         .padding(horizontal = 10.dp)
                         .padding(top = 120.dp, bottom = 30.dp)
+                        .padding(drawingPaddingValues)
                         .shadow(
                             elevation = 8.dp,
                             shape = RoundedCornerShape(20.dp)

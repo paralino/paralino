@@ -1,21 +1,21 @@
 package app.paralino.android.ui.settings.profile
 
 import android.annotation.SuppressLint
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
-import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun EditProfileScreen(
@@ -24,6 +24,7 @@ fun EditProfileScreen(
 ) {
     val pickerState = rememberEmojiBottomSheetPickerState()
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_account_edit_profile),

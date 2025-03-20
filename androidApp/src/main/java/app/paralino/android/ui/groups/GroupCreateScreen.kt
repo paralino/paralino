@@ -1,8 +1,10 @@
 package app.paralino.android.ui.groups
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
@@ -26,6 +28,7 @@ fun GroupCreateScreen(
     val pickerState = rememberEmojiBottomSheetPickerState()
 
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = null,

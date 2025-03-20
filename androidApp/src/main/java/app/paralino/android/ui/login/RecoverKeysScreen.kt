@@ -1,6 +1,8 @@
 package app.paralino.android.ui.login
 
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.ui.login.RecoverKeysScreenCore
@@ -12,6 +14,7 @@ fun RecoverKeysScreen(
     vm: RecoverKeysViewModel = getViewModel(),
 ) {
     RecoverKeysScreenCore(
+        modifier = Modifier.safeDrawingPadding(),
         appState = appState,
         vm = vm
     )

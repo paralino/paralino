@@ -2,8 +2,10 @@ package app.paralino.android.ui.share
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.groups.GroupBottomSheetPicker
@@ -76,6 +78,7 @@ fun SharingStartScreen(
     }
 
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.groups_sharing_title),

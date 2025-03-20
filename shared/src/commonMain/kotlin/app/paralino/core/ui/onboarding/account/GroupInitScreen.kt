@@ -50,9 +50,9 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun GroupInitScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: GroupInitViewModel,
-    paddingValues: PaddingValues,
     openSettings: () -> Unit,
     onCreateGroup: () -> Unit,
     openFreePlanInfo: () -> Unit,
@@ -101,8 +101,8 @@ fun GroupInitScreenCore(
             when (val finalStep = finalState.data.onboardingStep) {
                 is AccountOnboardingContent -> {
                     AccountOnboardingScreen(
+                        modifier = modifier,
                         coreUiState = appState,
-                        paddingValues = paddingValues,
                         step = finalStep,
                         onEvent = {
                             vm.onEvent(GroupInitScreenUiEvent.OnboardingStep(event = it))
@@ -111,6 +111,7 @@ fun GroupInitScreenCore(
                 }
                 null -> {
                     GroupInitScreenFinal(
+                        modifier = modifier,
                         state = finalState.data,
                         vm = vm,
                         openSettings = openSettings,
@@ -128,6 +129,7 @@ fun GroupInitScreenCore(
 
 @Composable
 private fun GroupInitScreenFinal(
+    modifier: Modifier,
     state: GroupInitScreenState,
     vm: GroupInitViewModel,
     openSettings: () -> Unit,
@@ -138,7 +140,7 @@ private fun GroupInitScreenFinal(
     askNotificationPermission: () -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(MR.strings.group_create_start_title),

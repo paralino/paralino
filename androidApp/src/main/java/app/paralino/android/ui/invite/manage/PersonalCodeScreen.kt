@@ -1,8 +1,10 @@
 package app.paralino.android.ui.invite.manage
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
@@ -30,6 +32,7 @@ fun PersonalCodeScreen(
     )
 
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_section_personal_code_title),

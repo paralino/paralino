@@ -83,9 +83,9 @@ object HomeScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupInitScreenCore(
+                modifier = Modifier.padding(paddingValues.toComposePaddingValues()),
                 appState = it,
                 vm = vm,
-                paddingValues = paddingValues.toComposePaddingValues(),
                 openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
                 openFreePlanInfo = openFreePlanInfo,

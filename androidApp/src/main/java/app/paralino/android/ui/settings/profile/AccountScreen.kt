@@ -1,8 +1,10 @@
 package app.paralino.android.ui.settings.profile
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -24,6 +26,7 @@ fun AccountScreen(
     val context = LocalContext.current
 
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_section_account_title),

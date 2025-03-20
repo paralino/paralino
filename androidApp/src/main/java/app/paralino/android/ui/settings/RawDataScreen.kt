@@ -1,7 +1,9 @@
 package app.paralino.android.ui.settings
 
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
@@ -20,6 +22,7 @@ fun RawDataScreen(
     vm: RawDataPresentationViewModel = getViewModel { parametersOf(type) }
 ) {
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.raw_data_screen_title),

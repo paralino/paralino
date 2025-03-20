@@ -1,6 +1,7 @@
 package app.paralino.android.ui.settings.billing
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,7 +24,7 @@ fun SubscriptionScreen(
     vm: SubscriptionViewModel = getViewModel()
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.safeDrawingPadding().fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(MR.strings.plans_management_screen_title),

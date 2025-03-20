@@ -1,6 +1,7 @@
 package app.paralino.android.ui.settings
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +18,7 @@ fun AppStatusDebugScreen(
     vm: AppStatusDebugViewModel = getViewModel()
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.safeDrawingPadding().fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = "App status",

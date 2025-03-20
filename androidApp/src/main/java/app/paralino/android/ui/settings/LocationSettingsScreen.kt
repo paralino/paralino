@@ -1,6 +1,7 @@
 package app.paralino.android.ui.settings
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +21,7 @@ fun LocationSettingsScreen(
     vm: LocationSettingsViewModel = getViewModel()
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.safeDrawingPadding().fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.setting_location_title),

@@ -85,8 +85,7 @@ fun MapHomeScreenElements(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // group picker button
@@ -209,7 +208,7 @@ fun MapHomeScreenElements(
                 // sharing start
                 if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {
                     FilledButton(
-                        modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
+                        modifier = Modifier.padding(bottom = 12.dp, end = 8.dp),
                         style = ButtonStyle.SMALL(
                             iconSize = 24.dp
                         ),

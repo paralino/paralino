@@ -57,6 +57,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun RecoverKeysScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: RecoverKeysViewModel
 ) {
@@ -112,6 +113,7 @@ fun RecoverKeysScreenCore(
 
         is Payload.Success -> {
             Scaffold(
+                modifier = modifier,
                 topBar = {
                     DefaultToolbar(
                         title = stringResource(resource = MR.strings.recover_account_screen_title),

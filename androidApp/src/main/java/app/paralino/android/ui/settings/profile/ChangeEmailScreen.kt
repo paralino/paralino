@@ -2,10 +2,12 @@ package app.paralino.android.ui.settings.profile
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
@@ -24,6 +26,7 @@ fun ChangeEmailScreen(
 ) {
     val canNavigateBack by vm.canNavigateBack.collectAsState(initial = true)
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_account_edit_email),

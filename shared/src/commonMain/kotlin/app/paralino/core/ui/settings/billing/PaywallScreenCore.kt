@@ -116,6 +116,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun PaywallScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: PaywallViewModel,
     paddingValues: PaddingValues,
@@ -154,7 +155,7 @@ fun PaywallScreenCore(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = if (uiState.isLoading || uiState.selectedPlan == null) {

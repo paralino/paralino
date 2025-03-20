@@ -82,6 +82,7 @@ import paralino.shared.generated.resources.ic_launcher_foreground
 
 @Composable
 fun LoginScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: LoginViewModel,
     onExit: () -> Unit
@@ -117,7 +118,7 @@ fun LoginScreenCore(
     }
 
     Column(
-        Modifier
+        modifier
             .fillMaxSize()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

@@ -1,8 +1,10 @@
 package app.paralino.android.ui.invite.input
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.paralino.android.ui.groups.GroupBottomSheetPicker
 import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
@@ -28,6 +30,7 @@ fun MemberInviteScreen(
 ) {
     val pickerState = rememberGroupBottomSheetPickerState()
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.invite_connect_screen_title),

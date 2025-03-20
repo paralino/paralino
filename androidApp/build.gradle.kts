@@ -18,7 +18,7 @@ plugins {
 
 android {
     namespace = "app.paralino.android"
-    compileSdk = 34
+    compileSdk = 35
 
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
@@ -46,7 +46,7 @@ android {
     defaultConfig {
         applicationId = "app.paralino.android"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -265,7 +265,6 @@ dependencies {
     implementation(libs.jna) {
         artifact { type = "aar" }
     }
-    // implementation("net.java.dev.jna:jna:5.14.0@aar")
     implementation(libs.nanoid)
     implementation(libs.sentry.android)
 

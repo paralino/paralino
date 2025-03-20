@@ -1,9 +1,16 @@
 package app.paralino.android.ui.map
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -84,7 +91,7 @@ private fun MapHomeContent(
 
     val sheetState = rememberSwipeableSheetState(
         initialValue = BottomSheetPosition.default,
-        collapsedAnchorBottomPaddingPixels = 0f,
+        collapsedAnchorBottomPaddingPixels = WindowInsets.navigationBars.getBottom(density).toFloat(),
         confirmValueChange = {
             it != BottomSheetPosition.HIDDEN
         }
@@ -246,10 +253,10 @@ private fun MapContent(
             mapContentPadding = PaddingValues(
                 top = 68.dp,
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
-                    0.dp
+                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                 } else {
                     (this.maxHeight - bottomOffset).coerceIn(
-                        0.dp,
+                        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
                         this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
                     )
                 }
@@ -257,10 +264,18 @@ private fun MapContent(
         )
 
         MapHomeScreenElements(
+            modifier = Modifier
+                .padding(
+                    top = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                        WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding()
+                    } else {
+                        8.dp
+                    },
+                ),
             state = uiState,
             sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
-                0.dp,
-                this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                minimumValue = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
             ),
             onGroupPickerClick = onGroupPickerClick,
             onGroupDetailsClick = {

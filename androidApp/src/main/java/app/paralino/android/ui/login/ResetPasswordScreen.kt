@@ -1,8 +1,10 @@
 package app.paralino.android.ui.login
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.navOptions
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -26,6 +28,7 @@ fun ResetPasswordScreen(
     vm: ResetPasswordViewModel = getViewModel { parametersOf(userId, secret) },
 ) {
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.reset_password_screen_title),

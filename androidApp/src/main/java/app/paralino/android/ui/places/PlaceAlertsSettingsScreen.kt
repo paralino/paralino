@@ -2,9 +2,11 @@ package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -24,6 +26,7 @@ fun PlaceAlertsSettingsScreen(
     vm: PlaceDetailViewModel = getViewModel { parametersOf(groupId, placeId) },
 ) {
     Scaffold(
+        modifier = Modifier.safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(MR.strings.place_detail_notification_settings_title),
