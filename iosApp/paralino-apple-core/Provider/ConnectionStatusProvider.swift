@@ -41,6 +41,11 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
     }
     
     override func isInternetAvailable(url: String) async throws -> KotlinBoolean {
+        if super.appBuildConfig.appHost == AppHost.iosLocationExtension {
+            // assume true for LSE
+            return true
+        }
+        
         Logr.v(tag: "app_state", message: "Server ping - init")
         return try await withCheckedThrowingContinuation { cont in
             if let url = URL(string: url) {

@@ -50,8 +50,8 @@ class LocationSharingManager(
         }.distinctUntilChanged()
     }
 
-    fun currentSharingContractForGroup(id: String): LocationSharingContract? {
-        return allContractsFlow.value.data?.firstOrNull { it.groupId == id }?.asValidContract()
+    suspend fun currentSharingContractForGroup(id: String): LocationSharingContract? {
+        return contractsDataSource.getContractOnce(groupId = id)?.asValidContract()
     }
 
     fun isSharingActiveMaybe(): Boolean {
@@ -62,7 +62,11 @@ class LocationSharingManager(
         return sharingStatus.value.data ?: allValidContracts().isNotEmpty()
     }
 
-    fun isSharingActiveForGroup(id: String): Boolean {
+    fun isSharingActiveForGroupMaybe(id: String): Boolean {
+        return allContractsFlow.value.data?.firstOrNull { it.groupId == id }?.asValidContract() != null
+    }
+
+    suspend fun isSharingActiveForGroup(id: String): Boolean {
         return currentSharingContractForGroup(id = id) != null
     }
 
@@ -81,7 +85,7 @@ class LocationSharingManager(
     }
 
     suspend fun allValidContracts(): List<LocationSharingContract> {
-        val all = contractsDataSource.getAllContracts().firstOrNull() ?: return emptyList()
+        val all = contractsDataSource.getAllContractsOnce()
 
         val valid = all.mapNotNull { it.asValidContract() }
         val expired = all.subtract(valid)

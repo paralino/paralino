@@ -442,7 +442,7 @@ class MapHomeViewModel constructor(
     ): Boolean {
         return isCurrentUser
                 && hasLocation
-                && (!isCurrentDevice || !sharingManager.isSharingActiveForGroup(groupId))
+                && (!isCurrentDevice || !sharingManager.isSharingActiveForGroupMaybe(groupId))
     }
 
     fun switchGroup(groupId: String) {
@@ -493,6 +493,7 @@ class MapHomeViewModel constructor(
                         memberId = memberItem.memberState.memberId,
                         memberLocationId = memberItem.singleLocation?.locationId,
                         memberKeyId = memberItem.keyId,
+                        isIdleActive = memberItem.singleLocation?.deviceStatus?.isIdlingOrActive ?: false,
                         forceZoom = false
                     )
 
@@ -539,6 +540,7 @@ class MapHomeViewModel constructor(
                                     memberId = memberStateForMarker.memberState.memberId,
                                     memberLocationId = memberStateForMarker.location?.locationId,
                                     memberKeyId = markerData.markerId,
+                                    isIdleActive = memberStateForMarker.location?.deviceStatus?.isIdlingOrActive ?: false,
                                     forceZoom = isRequestForSameVisibleMarker
                                 )
                             } else {
@@ -645,7 +647,7 @@ class MapHomeViewModel constructor(
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
                 group.isGroupOverLimits(remoteConfig.getCachedConfigOnce()) -> GroupItemState.GroupUiType.OVER_LIMITS
-                sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
+                sharingManager.isSharingActiveForGroupMaybe(group.id) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
             val isSelected = group.id == groupIdData.value

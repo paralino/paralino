@@ -6,15 +6,19 @@ import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.raw.BatteryAlertPayload
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.repo.group.GroupsRemoteSource
+import app.paralino.core.repo.api.IFunctionsApi
+import app.paralino.core.repo.api.ServerFunction
+import app.paralino.core.repo.api.runAsync
+import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.hours
 
 class BatteryAlertUploadEngine(
-    private val remoteSource: GroupsRemoteSource,
+    private val functionsApi: IFunctionsApi,
     private val appDatabase: MainDatabaseHelper,
     private val locationSharingManager: LocationSharingManager,
     private val scopeProvider: ICoroutineScopeProvider
@@ -29,9 +33,9 @@ class BatteryAlertUploadEngine(
             payloads.forEach { payload ->
                 sendBatteryAlert(
                     groupId = payload.groupId,
-                    memberId = payload.member.id,
+                    memberId = payload.memberId,
                     locationId = payload.locationId,
-                    batteryLevel = payload.deviceStatus.batteryLevel
+                    batteryLevel = payload.deviceStatus?.batteryLevel
                 )
             }
         }
@@ -73,8 +77,8 @@ class BatteryAlertUploadEngine(
             }
 
             // state is valid, we can send event
-            val currentEvent = appDatabase.groupRelatedDao
-                    .getBatteryAlertEventOnce(groupId = groupId)
+            val currentEvent = appDatabase.groupRelatedDao.getBatteryAlertEventOnce(groupId = groupId)
+
             if (currentEvent == null || currentEvent.notifyTimeMillis < nowUTC().minus(4.hours)
                     .toEpochMilliseconds()
             ) {
@@ -104,11 +108,17 @@ class BatteryAlertUploadEngine(
         locationId: String
     ) {
         try {
-            remoteSource.notifyLowBattery(
-                groupId = groupId,
-                memberId = memberId,
-                locationId = locationId
-            )
+            blocking {
+                logg.tag(executionKey).v("Sending battery alert event")
+                functionsApi.runAsync(
+                    function = ServerFunction.EVENT_BATTERY,
+                    data = BatteryAlertPayload(
+                        groupId = groupId,
+                        memberId = memberId,
+                        locationId = locationId
+                    )
+                )
+            }
             appDatabase.groupRelatedDao.createBatteryAlertEvent(
                 BatteryAlertEventEntity(
                     groupId = groupId,

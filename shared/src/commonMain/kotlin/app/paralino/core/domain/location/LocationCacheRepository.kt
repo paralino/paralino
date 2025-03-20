@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class LocationCacheRepository(
-    private val locationLocalDataSource: LocationLocalDataSource
-) {
+class LocationCacheRepository() {
     private val _lastLocation = MutableStateFlow<LocationDataModel?>(null)
     val lastLocationFlow: StateFlow<LocationDataModel?> = _lastLocation.asStateFlow()
     val lastLocation: LocationDataModel? get() = lastLocationFlow.value

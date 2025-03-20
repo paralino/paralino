@@ -95,42 +95,6 @@ class LocationRemoteSource constructor(
         }
     }
 
-    @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    suspend fun saveCurrentLocation(data: MemberGroupId): MemberLocationRaw {
-        val memberKey = cryptoKEKRepo.getMemberSenderKey(
-            groupId = data.groupId,
-            memberUserId = appPrefs.userId,
-            locationId = data.locationId
-        )
-        if (memberKey !is GroupMemberSenderKey.Valid)
-            throw MissingMemberKeyException(data.groupId, appPrefs.userId)
-
-        val locationData = data.locationData?.let {
-            cryptoCore.encryptDataWithKey(
-                data = BaseRemoteModule.formatter.encodeToString(it),
-                key = memberKey.key
-            )
-        }
-
-        val status = cryptoCore.encryptDataWithKey(
-            data = BaseRemoteModule.formatter.encodeToString(data.deviceStatus),
-            key = memberKey.key
-        )
-
-        val payload = mapOf(
-            "locationData" to locationData,
-            "status" to status,
-            "deviceKeyVersion" to memberKey.deviceKeyVersion,
-        ).filter { it.value != null }
-
-        return documentApi.updateDocument(
-            databaseType = BackendDatabaseType.DATA,
-            collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
-            docId = data.locationId,
-            data = payload
-        ).let { MemberLocationRaw.from(it) }
-    }
-
     suspend fun getMember(memberId: String): MemberWithLocationsRaw {
         return blocking {
 

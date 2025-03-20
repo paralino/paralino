@@ -11,7 +11,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 
 abstract class IConnectionStatusProvider(
-    private val appBuildConfig: AppBuildConfig
+    protected val appBuildConfig: AppBuildConfig
 ) {
     private val _status: MutableStateFlow<NetworkConnectionInfo> = MutableStateFlow(NetworkConnectionInfo(ConnectionStatus.CONNECTED))
     val status = _status.asStateFlow()

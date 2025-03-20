@@ -16,7 +16,7 @@ class MemberDeviceStatusProvider(
     private val valueFormatter: IValueFormatter
 ) {
 
-    private fun getStatusType(groupId: String, contract: LocationSharingContract?): MemberDeviceStatusType {
+    private suspend fun getStatusType(groupId: String, contract: LocationSharingContract?): MemberDeviceStatusType {
         val locationStatus = deviceApiProvider.locationStatusProvider.currentStatus
         val isSharingActive = contract?.asValidContract()?.groupId == groupId || locationSharingManager.isSharingActiveForGroup(groupId)
 

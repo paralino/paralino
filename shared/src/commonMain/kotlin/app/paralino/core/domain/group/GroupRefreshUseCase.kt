@@ -4,7 +4,7 @@ import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.logg
-import app.paralino.core.models.mappers.GroupMapperCore
+import app.paralino.core.models.mappers.GroupWithPlacesMapperCore
 import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -17,7 +17,7 @@ class GroupRefreshUseCase constructor(
     private val local: UserGroupLocalDataSource,
     private val remote: GroupsRemoteSource,
     private val cryptoKEKRefreshUseCase: CryptoKEKRefreshUseCase,
-    private val groupMapperCore: GroupMapperCore,
+    private val groupMapperCore: GroupWithPlacesMapperCore,
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
     private val userRepository: UserRepository

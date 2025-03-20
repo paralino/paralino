@@ -9,10 +9,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
-import app.paralino.core.models.raw.BatteryAlertPayload
 import app.paralino.core.models.raw.BatteryNotificationsUpdatePayload
 import app.paralino.core.models.raw.BlockGroupFunctionData
 import app.paralino.core.models.raw.BlockGroupMemberFunctionData
@@ -31,7 +29,6 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.repo.api.runAsync
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.Emojis
@@ -363,23 +360,6 @@ class GroupsRemoteSource constructor(
             if (!response.isSuccess) {
                 throw response.remoteException
             }
-        }
-    }
-
-    suspend fun notifyLowBattery(
-        groupId: String,
-        memberId: String,
-        locationId: String
-    ) {
-        blocking {
-            functionsApi.runAsync(
-                function = ServerFunction.EVENT_BATTERY,
-                data = BatteryAlertPayload(
-                    groupId = groupId,
-                    memberId = memberId,
-                    locationId = locationId
-                )
-            )
         }
     }
 

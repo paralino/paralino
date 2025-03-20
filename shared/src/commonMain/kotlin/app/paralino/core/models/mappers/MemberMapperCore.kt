@@ -31,6 +31,22 @@ class MemberMapperCore constructor(
     private val groupVerification: GroupValidityVerification
 ) {
 
+    suspend fun getMemberVerification(
+        model: MemberDocumentRaw,
+        groupOwnerUserId: String,
+        groupKey: GroupMasterKey?
+    ): VerificationResult {
+        return groupVerification.verifyGroupMember(
+            member = model,
+            groupOwnerId = groupOwnerUserId,
+            groupKey = groupKey ?: cryptoKEKRepo.getGroupKey(
+                groupId = model.groupId,
+                groupOwnerId = groupOwnerUserId,
+                keyVersion = model.groupKeyVersion
+            )
+        )
+    }
+
     suspend fun remote2Core(
         model: MemberWithLocationsRaw,
         group: UserGroup
@@ -52,9 +68,9 @@ class MemberMapperCore constructor(
             )
         }
 
-        val verification = groupVerification.verifyGroupMember(
-            member = model.member,
-            groupOwnerId = group.ownerUserId,
+        val verification = getMemberVerification(
+            model = model.member,
+            groupOwnerUserId = group.ownerUserId,
             groupKey = groupKey
         )
 
