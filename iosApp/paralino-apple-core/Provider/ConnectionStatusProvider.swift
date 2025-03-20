@@ -37,6 +37,11 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
     }
     
     override func isNetworkAvailable() async throws -> KotlinBoolean {
+        if super.appBuildConfig.appHost == AppHost.iosLocationExtension {
+            // assume true for LSE
+            return true
+        }
+        
         return KotlinBoolean(bool: connectionActive)
     }
     
@@ -79,33 +84,45 @@ class ConnectionStatusProvider: IConnectionStatusProvider {
     }
     
     override func getNetworkType() async throws -> NetworkType? {
-        if connectionActive {
-            if mobileNetwork {
-                guard let currentRadioAccessTechnology = CTTelephonyNetworkInfo().serviceCurrentRadioAccessTechnology else { return .genericCell }
-                
-                switch currentRadioAccessTechnology.first?.value {
-                case CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyEdge, CTRadioAccessTechnologyCDMA1x: return .g2
-                case CTRadioAccessTechnologyHSDPA,
-                    CTRadioAccessTechnologyHSUPA,
-                    CTRadioAccessTechnologyHSDPA,
-                    CTRadioAccessTechnologyeHRPD,
-                    CTRadioAccessTechnologyWCDMA,
-                    CTRadioAccessTechnologyNRNSA,
-                    CTRadioAccessTechnologyCDMAEVDORev0,
-                    CTRadioAccessTechnologyCDMAEVDORevA, CTRadioAccessTechnologyCDMAEVDORevB: return .g3
-                case CTRadioAccessTechnologyLTE: return .g4
-                case CTRadioAccessTechnologyNR: return .g5
-                default:
-                    return .genericCell
-                }
-            } else {
-                return .wifi
-            }
-        } else {
+        guard connectionActive else {
             return nil
         }
+        
+        if mobileNetwork {
+            let networkInfo = CTTelephonyNetworkInfo()
+            guard let dataServiceIdentifier = networkInfo.dataServiceIdentifier,
+                  let currentRadioTechnology = networkInfo.serviceCurrentRadioAccessTechnology?[dataServiceIdentifier] else {
+                return .genericCell
+            }
+            
+            switch currentRadioTechnology {
+            case CTRadioAccessTechnologyGPRS,
+                 CTRadioAccessTechnologyEdge,
+                 CTRadioAccessTechnologyCDMA1x:
+                return .g2
+                
+            case CTRadioAccessTechnologyWCDMA,
+                 CTRadioAccessTechnologyHSDPA,
+                 CTRadioAccessTechnologyHSUPA,
+                 CTRadioAccessTechnologyCDMAEVDORev0,
+                 CTRadioAccessTechnologyCDMAEVDORevA,
+                 CTRadioAccessTechnologyCDMAEVDORevB:
+                return .g3
+                
+            case CTRadioAccessTechnologyLTE:
+                return .g4
+                
+            case CTRadioAccessTechnologyNRNSA,
+                 CTRadioAccessTechnologyNR:
+                return .g5
+                
+            default:
+                return .genericCell
+            }
+        } else {
+            return .wifi
+        }
     }
-    
     // can't have this on iOS
     override func getSignalStrength() async throws -> KotlinInt? {
         return nil
