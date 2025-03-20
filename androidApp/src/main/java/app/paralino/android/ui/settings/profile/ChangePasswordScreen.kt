@@ -15,13 +15,13 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.profile.ChangePasswordScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ChangePasswordScreen(
     appState: MainAppState,
-    vm: ChangePasswordViewModel = getViewModel(),
+    vm: ChangePasswordViewModel = koinViewModel(),
 ) {
     val canNavigateBack by vm.canNavigateBack.collectAsState(initial = true)
     Scaffold(

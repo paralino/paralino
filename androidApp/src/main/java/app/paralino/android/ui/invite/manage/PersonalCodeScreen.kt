@@ -15,13 +15,13 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.invite.manage.PersonalCodeScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PersonalCodeScreen(
     appState: MainAppState,
-    vm: PersonalCodeViewModel = getViewModel(),
+    vm: PersonalCodeViewModel = koinViewModel(),
 ) {
 
     val context = LocalContext.current

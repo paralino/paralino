@@ -15,13 +15,13 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.profile.AccountScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AccountScreen(
     appState: MainAppState,
-    viewModel: SettingsViewModel = getViewModel(),
+    viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
 

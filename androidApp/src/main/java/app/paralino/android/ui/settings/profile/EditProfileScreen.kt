@@ -14,13 +14,13 @@ import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun EditProfileScreen(
     appState: MainAppState,
-    vm: EditProfileViewModel = getViewModel()
+    vm: EditProfileViewModel = koinViewModel()
 ) {
     val pickerState = rememberEmojiBottomSheetPickerState()
     Scaffold(

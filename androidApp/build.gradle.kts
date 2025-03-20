@@ -243,8 +243,11 @@ dependencies {
     // endregion
 
     // region di
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.navigation)
     // endregion
 
     // region utils

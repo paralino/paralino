@@ -18,7 +18,7 @@ import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.groups.GroupSettingsScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.map
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -26,7 +26,7 @@ import org.koin.core.parameter.parametersOf
 fun GroupSettingsScreen(
     appState: MainAppState,
     groupId: String?,
-    vm: GroupSettingsViewModel = getViewModel { parametersOf(groupId) },
+    vm: GroupSettingsViewModel = koinViewModel { parametersOf(groupId) },
 ) {
     val groupName by vm.uiState.map { it.data?.name }.collectAsState(initial = null)
     Scaffold(

@@ -10,7 +10,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.ui.login.LoginScreenCore
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

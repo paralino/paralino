@@ -21,7 +21,7 @@ import app.paralino.core.ui.places.CreatePlaceScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -32,7 +32,7 @@ fun CreatePlaceScreen(
     placeId: String?,
     lat: Double? = null,
     lng: Double? = null,
-    vm: CreatePlaceViewModel = getViewModel { parametersOf(groupId, placeId, lat, lng) },
+    vm: CreatePlaceViewModel = koinViewModel { parametersOf(groupId, placeId, lat, lng) },
 ) {
     val isNewPlace by vm.uiState.map { it.data?.isNewPlace }.collectAsState(initial = null)
     val pickerState = rememberEmojiBottomSheetPickerState()

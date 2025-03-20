@@ -14,12 +14,12 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.profile.ConvertAccountScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ConvertAccountScreen(
     appState: MainAppState,
-    vm: ConvertAccountViewModel = getViewModel(),
+    vm: ConvertAccountViewModel = koinViewModel(),
 ) {
     val canNavigateBack by vm.canNavigateBack.collectAsState(initial = true)
     Scaffold(

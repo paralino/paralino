@@ -26,7 +26,7 @@ import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlaceDetailUserListItem
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -35,7 +35,7 @@ fun PlaceDetailScreen(
     appState: MainAppState,
     groupId: String,
     placeId: String,
-    vm: PlaceDetailViewModel = getViewModel { parametersOf(groupId, placeId) },
+    vm: PlaceDetailViewModel = koinViewModel { parametersOf(groupId, placeId) },
 ) {
 
     var userScroll by remember {

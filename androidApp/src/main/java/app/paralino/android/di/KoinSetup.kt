@@ -102,7 +102,7 @@ import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

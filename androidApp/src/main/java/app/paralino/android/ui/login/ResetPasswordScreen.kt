@@ -15,7 +15,7 @@ import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.login.ResetPasswordScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -25,7 +25,7 @@ fun ResetPasswordScreen(
     appState: MainAppState,
     userId: String,
     secret: String,
-    vm: ResetPasswordViewModel = getViewModel { parametersOf(userId, secret) },
+    vm: ResetPasswordViewModel = koinViewModel { parametersOf(userId, secret) },
 ) {
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),

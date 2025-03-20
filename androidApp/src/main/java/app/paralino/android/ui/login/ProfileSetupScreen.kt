@@ -9,12 +9,12 @@ import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import app.paralino.core.ui.login.ProfileSetupScreenCore
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileSetupScreen(
     appState: MainAppState,
-    vm: EditProfileViewModel = getViewModel(),
+    vm: EditProfileViewModel = koinViewModel(),
 ) {
     val pickerState = rememberEmojiBottomSheetPickerState()
     ProfileSetupScreenCore(

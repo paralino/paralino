@@ -10,12 +10,12 @@ import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.AppStatusDebugScreenCore
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppStatusDebugScreen(
     appState: MainAppState,
-    vm: AppStatusDebugViewModel = getViewModel()
+    vm: AppStatusDebugViewModel = koinViewModel()
 ) {
     Scaffold(
         modifier = Modifier.safeDrawingPadding().fillMaxSize(),

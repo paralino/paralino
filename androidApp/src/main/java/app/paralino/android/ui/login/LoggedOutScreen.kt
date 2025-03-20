@@ -19,12 +19,12 @@ import app.paralino.core.ui.login.WelcomeScreen
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoggedOutScreen(
     appState: MainAppState,
-    vm: LoggedOutViewModel = getViewModel()
+    vm: LoggedOutViewModel = koinViewModel()
 ) {
 
     val systemUiController = rememberSystemUiController()

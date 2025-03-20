@@ -27,7 +27,7 @@ import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -36,7 +36,7 @@ fun PlacesScreen(
     appState: MainAppState,
     groupId: String,
     isOnboarding: Boolean,
-    vm: PlacesViewModel = getViewModel { parametersOf(groupId, isOnboarding) },
+    vm: PlacesViewModel = koinViewModel { parametersOf(groupId, isOnboarding) },
 ) {
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(

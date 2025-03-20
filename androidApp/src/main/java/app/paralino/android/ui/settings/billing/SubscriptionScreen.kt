@@ -16,12 +16,12 @@ import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.settings.billing.SubscriptionScreenCore
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SubscriptionScreen(
     appState: MainAppState,
-    vm: SubscriptionViewModel = getViewModel()
+    vm: SubscriptionViewModel = koinViewModel()
 ) {
     Scaffold(
         modifier = Modifier.safeDrawingPadding().fillMaxSize(),

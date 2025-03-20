@@ -21,7 +21,7 @@ import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -30,7 +30,7 @@ fun SharingStartScreen(
     appState: MainAppState,
     groupId: String?,
     isOnboarding: Boolean,
-    vm: SharingStartViewModel = getViewModel { parametersOf(groupId, isOnboarding) },
+    vm: SharingStartViewModel = koinViewModel { parametersOf(groupId, isOnboarding) },
 ) {
 
     val permissionHandler = rememberLocationPermissionHandler(

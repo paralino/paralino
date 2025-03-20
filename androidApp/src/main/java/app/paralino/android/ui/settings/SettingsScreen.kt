@@ -22,13 +22,13 @@ import app.paralino.core.ui.settings.SettingsScreenCore
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(
     appState: MainAppState,
-    viewModel: SettingsViewModel = getViewModel(),
+    viewModel: SettingsViewModel = koinViewModel(),
 ) {
 
     val context = LocalContext.current
