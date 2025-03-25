@@ -2,6 +2,7 @@ package app.paralino.core.app_rating
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.extensions.isOlderThan
@@ -15,7 +16,7 @@ class AppRatingManager(
 ): BaseRepository() {
 
     fun tryShowingAppRating(source: AppRatingSource) {
-        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(180.days)) {
+        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(180.days) || shouldRetryAppRating()) {
             val canLaunch = when (source) {
                 AppRatingSource.GROUP_DETAIL -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
                 AppRatingSource.MAIN_MAP -> appPrefs.appLaunchedCountWhenLoggedIn >= 3
@@ -27,6 +28,17 @@ class AppRatingManager(
                 appPrefs.lastShowedAppRatingDialogUTC = nowUTC()
                 appPrefs.lastShowedAppRatingDialogAppVersion = deviceApiProvider.appVersionCode
                 appRatingPresenter.startAppRatingFlow()
+            }
+        }
+    }
+
+    private fun shouldRetryAppRating(): Boolean {
+        return when (deviceApiProvider.deviceType) {
+            DeviceType.Android -> {
+                appPrefs.lastShowedAppRatingDialogAppVersion <= 52
+            }
+            DeviceType.iOS -> {
+                appPrefs.lastShowedAppRatingDialogAppVersion <= 30
             }
         }
     }
