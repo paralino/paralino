@@ -268,7 +268,7 @@
     <string name="paywall_price_per_month">**≈ %1$s** mjesečno</string>
     <string name="paywall_divider_plan_duration">Odaberite trajanje plana</string>
     <string name="paywall_feature_table_header">Što dobivate</string>
-    <string name="paywall_feature_privacy">Maksimalna privatnost</string>
+    <string name="paywall_feature_privacy">Budi bez brige</string>
     <string name="paywall_feature_groups">Grupe</string>
     <string name="paywall_feature_members">Članovi</string>
     <string name="paywall_feature_devices">Uređaji po članu</string>

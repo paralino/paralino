@@ -268,7 +268,7 @@
     <string name="paywall_price_per_month">**≈ %1$s** pro Monat</string>
     <string name="paywall_divider_plan_duration">Wählen Sie die Laufzeit Ihres Plans</string>
     <string name="paywall_feature_table_header">Ihre Vorteile</string>
-    <string name="paywall_feature_privacy">Maximale Privatsphäre</string>
+    <string name="paywall_feature_privacy">Seelenfrieden</string>
     <string name="paywall_feature_groups">Gruppen</string>
     <string name="paywall_feature_members">Mitglieder</string>
     <string name="paywall_feature_devices">Geräte pro Mitglied</string>

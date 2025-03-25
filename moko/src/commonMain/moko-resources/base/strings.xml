@@ -258,10 +258,10 @@
     <string name="paywall_header_user_reviews">What our users say</string>
     <string name="paywall_header_unlock_premium">Unlock the full experience with Premium</string>
     <string name="paywall_header_choose_plan">Choose your plan duration</string>
-    <string name="paywall_feature_privacy">Maximum privacy</string>
+    <string name="paywall_feature_privacy">Peace of mind</string>
     <string name="paywall_feature_privacy_description">Paralino protects your privacy as well as the privacy of all your group members.</string>
     <string name="paywall_feature_premium_sharing">Premium location sharing</string>
-    <string name="paywall_feature_premium_sharing_description">Fully featured, battery-efficient, and ad-free – everything you\'ve been looking for.</string>
+    <string name="paywall_feature_premium_sharing_description">No ads, fully featured and battery-efficient – everything you\'ve been looking for.</string>
     <string name="paywall_feature_control">Complete sharing control</string>
     <string name="paywall_feature_control_description">Access all features and control how and what you share.</string>
     <string name="paywall_special_offer_description">**Special launch discount**\nAvailable during the beta period – claim your special discount and keep this price forever.</string>
