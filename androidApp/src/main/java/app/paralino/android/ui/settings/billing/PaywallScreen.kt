@@ -3,6 +3,9 @@ package app.paralino.android.ui.settings.billing
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -70,10 +73,10 @@ fun PaywallScreen(
     val scope = rememberCoroutineScope()
 
     PaywallScreenCore(
-        modifier = Modifier.safeDrawingPadding(),
+        modifier = Modifier,
         appState = appState,
         vm = vm,
-        paddingValues = remember { PaddingValues(bottom = 8.dp) },
+        paddingValues = WindowInsets.safeDrawing.asPaddingValues(),
         onNavigateBack = { isSuccess -> goBack(isSuccess) },
         onStartPurchase = {
             val billingProvider = vm.billingProvider as BillingProviderAndroid

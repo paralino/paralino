@@ -1,7 +1,5 @@
 package app.paralino.core.ui.settings.billing
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,7 +43,6 @@ import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyMemberState
 import app.paralino.core.ui.settings.location.LocationSettingsOptionItem
-import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
 import dev.icerock.moko.resources.compose.stringResource
@@ -58,40 +55,45 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun PaywallScreenFeatureElements(
     modifier: Modifier,
+    memberImageModel: ImageModel,
+    memberName: String,
+    memberDeviceName: String,
+    displayTitle: Boolean,
     valueFormatter: IValueFormatter
 ) {
     Column(
         modifier = modifier
-            .background(
-                color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
-            )
-            .padding(bottom = 40.dp, top = 20.dp)
             .padding(horizontal = 20.dp)
     ) {
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
-            text = stringResource(MR.strings.paywall_header_try_it),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-        )
+        if (displayTitle) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
+                text = stringResource(MR.strings.paywall_header_try_it),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
+            )
 
-        Icon(
-            modifier = Modifier
-                .padding(bottom = 20.dp)
-                .align(Alignment.CenterHorizontally)
-                .size(24.dp)
-                .padding(2.dp)
-                .rotate(90f),
-            painter = CoreAppIcons.ChevronRight.asPainterResource(),
-            contentDescription = null
-        )
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(24.dp)
+                    .padding(2.dp)
+                    .rotate(90f),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                contentDescription = null
+            )
+        }
 
         MemberItem(
             modifier = Modifier
+                .padding(top = 20.dp)
                 .rotate(2f),
+            memberName = memberName,
+            memberImageModel = memberImageModel,
+            memberDeviceName = memberDeviceName,
             valueFormatter = valueFormatter
         )
 
@@ -129,6 +131,9 @@ fun PaywallScreenFeatureElements(
 
 @Composable
 private fun MemberItem(
+    memberImageModel: ImageModel,
+    memberName: String,
+    memberDeviceName: String,
     modifier: Modifier = Modifier,
     valueFormatter: IValueFormatter
 ) {
@@ -138,7 +143,7 @@ private fun MemberItem(
         mutableStateOf(
             GroupMemberItemLocationState(
                 locationId = "",
-                name = "Primary",
+                name = memberDeviceName,
                 image = ImageModel.emoji(Emojis.lock),
                 actualBatteryLevel = 58,
                 adjustedBatteryLevel = 58,
@@ -180,7 +185,7 @@ private fun MemberItem(
         modifier = modifier,
         state = GroupMemberItemStateWithOneLocation(
             memberState = dummyMemberState.copy(
-                name = "Peter", image = ImageModel.emoji(Emojis.goat)
+                name = memberName, image = memberImageModel
             ),
             location = location,
             actions = memberActions
@@ -206,7 +211,7 @@ private fun MemberItem(
                             isWaitingForUser = true
                         )
                     )
-                    delay(3000)
+                    delay(2500)
                     memberActions = memberActions.copy(locationRequest = null)
                     location = location.copy(
                         accuracyMeters = 40f,
@@ -216,7 +221,7 @@ private fun MemberItem(
                         deviceStatus = MemberDeviceStatusType.ACTIVE_NO_LOCATION,
                         onlineStatus = MemberDeviceOnlineStatusType.ONLINE
                     )
-                    delay(2000)
+                    delay(1500)
                     location = location.copy(
                         accuracyMeters = 20f,
                         deviceStatus = MemberDeviceStatusType.ACTIVE,

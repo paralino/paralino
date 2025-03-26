@@ -13,14 +13,15 @@ class AppRatingManager(
     private val appPrefs: AppPrefs,
     private val appRatingPresenter: IAppRatingPresenter,
     private val deviceApiProvider: IDeviceApiProvider
-): BaseRepository() {
+) : BaseRepository() {
 
     fun tryShowingAppRating(source: AppRatingSource) {
-        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(180.days) || shouldRetryAppRating()) {
+        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(180.days) || shouldRetryAppRating(source)) {
             val canLaunch = when (source) {
                 AppRatingSource.GROUP_DETAIL -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
                 AppRatingSource.MAIN_MAP -> appPrefs.appLaunchedCountWhenLoggedIn >= 3
                 AppRatingSource.APP_SETTINGS -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
+                AppRatingSource.PAYWALL_ONBOARDING -> true
             }
 
             if (canLaunch) {
@@ -32,18 +33,27 @@ class AppRatingManager(
         }
     }
 
-    private fun shouldRetryAppRating(): Boolean {
-        return when (deviceApiProvider.deviceType) {
-            DeviceType.Android -> {
-                appPrefs.lastShowedAppRatingDialogAppVersion <= 52
+    private fun shouldRetryAppRating(source: AppRatingSource): Boolean {
+        return when (source) {
+            AppRatingSource.PAYWALL_ONBOARDING -> {
+                appPrefs.lastShowedAppRatingDialogAppVersion < deviceApiProvider.appVersionCode
             }
-            DeviceType.iOS -> {
-                appPrefs.lastShowedAppRatingDialogAppVersion <= 30
+
+            else -> {
+                when (deviceApiProvider.deviceType) {
+                    DeviceType.Android -> {
+                        appPrefs.lastShowedAppRatingDialogAppVersion <= 52
+                    }
+
+                    DeviceType.iOS -> {
+                        appPrefs.lastShowedAppRatingDialogAppVersion <= 30
+                    }
+                }
             }
         }
     }
 }
 
 enum class AppRatingSource {
-    GROUP_DETAIL, MAIN_MAP, APP_SETTINGS
+    GROUP_DETAIL, MAIN_MAP, APP_SETTINGS, PAYWALL_ONBOARDING
 }

@@ -2,6 +2,7 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
@@ -18,7 +19,11 @@ data class PaywallScreenState(
     val alertDialog: MainAlertDialog?,
     val faq: FaqSectionState?,
     val isPromoCodeSectionVisible: Boolean,
-    val promoCode: String
+    val promoCode: String,
+    val screenStep: PaywallScreenStep,
+    val memberImageModel: ImageModel,
+    val memberName: String,
+    val memberDeviceName: String,
 ) {
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod
@@ -71,7 +76,7 @@ data class PaywallScreenState(
 
             add(
                 FeatureTableItemState(
-                    name = MR.strings.paywall_feature_privacy.localizedString(),
+                    name = MR.strings.paywall_feature_max_privacy.localizedString(),
                     isTitle = false,
                     values = plans.map {
                         FeatureTableItemValue(
@@ -166,6 +171,24 @@ data class PaywallScreenState(
                     values = plans.map {
                         FeatureTableItemValue(
                             name = "✅",
+                            planType = it.type,
+                            highlightMode = if (it.isSelected) {
+                                FeatureTableItemHighlightMode.FULL
+                            } else {
+                                FeatureTableItemHighlightMode.NONE
+                            }
+                        )
+                    }
+                )
+            )
+
+            add(
+                FeatureTableItemState(
+                    name = MR.strings.paywall_feature_realtime_update.localizedString(),
+                    isTitle = false,
+                    values = plans.map {
+                        FeatureTableItemValue(
+                            name = if (it.type.isPremium) "✅" else "❌",
                             planType = it.type,
                             highlightMode = if (it.isSelected) {
                                 FeatureTableItemHighlightMode.FULL
@@ -310,6 +333,10 @@ data class FeatureTableItemValue(
 
 enum class FeatureTableItemHighlightMode {
     NONE, FULL, TOP, BOTTOM
+}
+
+enum class PaywallScreenStep {
+    ONBOARDING, TABLE, DEMO, PAYWALL
 }
 
 data class FaqSectionState(
