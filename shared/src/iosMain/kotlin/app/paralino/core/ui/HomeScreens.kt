@@ -338,8 +338,9 @@ object HomeScreens {
                         )
 
                         MapHomeScreenElements(
-                            modifier = Modifier.padding(top = paddingValues.top.dp),
+                            modifier = Modifier,
                             state = uiState,
+                            topPadding = paddingValues.top.dp,
                             sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
                                 minimumValue = if (sheetState.currentValue == BottomSheetPosition.HIDDEN) paddingValues.bottom.dp else 0.dp,
                                 maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent

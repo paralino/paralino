@@ -264,15 +264,9 @@ private fun MapContent(
         )
 
         MapHomeScreenElements(
-            modifier = Modifier
-                .padding(
-                    top = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                        WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding()
-                    } else {
-                        8.dp
-                    },
-                ),
+            modifier = Modifier,
             state = uiState,
+            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(),
             sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
                 minimumValue = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
                 maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent

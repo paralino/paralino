@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +31,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -60,6 +63,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
+    topPadding: Dp,
     sheetPeekHeight: Dp,
     onGroupPickerClick: () -> Unit,
     onGroupDetailsClick: () -> Unit,
@@ -82,6 +86,21 @@ fun MapHomeScreenElements(
 
         val isMemberOrPlaceFocused =
             readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(topPadding)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.background.copy(alpha = 0.6f),
+                            MaterialTheme.colors.background.copy(alpha = 0.3f),
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
 
         Row(
             modifier = Modifier
