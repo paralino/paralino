@@ -27,6 +27,7 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionsState
@@ -75,17 +76,17 @@ fun PaywallScreenFeatureElements(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
             )
-
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .size(24.dp)
-                    .padding(2.dp)
-                    .rotate(90f),
-                painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                contentDescription = null
-            )
         }
+
+        Icon(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .size(24.dp)
+                .padding(2.dp)
+                .rotate(90f),
+            painter = CoreAppIcons.ChevronRight.asPainterResource(),
+            contentDescription = null
+        )
 
         MemberItem(
             modifier = Modifier
@@ -125,6 +126,16 @@ fun PaywallScreenFeatureElements(
             modifier = Modifier
                 .padding(top = 8.dp)
                 .rotate(-2f),
+        )
+
+        MemberItemWithLocations(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .rotate(2f),
+            memberName = memberName,
+            memberImageModel = memberImageModel,
+            memberDeviceName = memberDeviceName,
+            valueFormatter = valueFormatter
         )
     }
 }
@@ -237,6 +248,94 @@ private fun MemberItem(
 
             else -> {}
         }
+    }
+}
+
+@Composable
+private fun MemberItemWithLocations(
+    memberImageModel: ImageModel,
+    memberName: String,
+    memberDeviceName: String,
+    modifier: Modifier = Modifier,
+    valueFormatter: IValueFormatter
+) {
+    val uiScope = rememberCoroutineScope()
+
+    val locations = remember {
+        listOf(
+            GroupMemberItemLocationState(
+                locationId = "",
+                name = memberDeviceName,
+                image = ImageModel.emoji(Emojis.lock),
+                actualBatteryLevel = 58,
+                adjustedBatteryLevel = 58,
+                isBatteryCharging = false,
+                speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
+                elevation = valueFormatter.getDistanceSmall(meters = 250.0),
+                lastLocationPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().toLocalDateTime(TimeZone.UTC)
+                ),
+                lastStatusPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().minus(30.minutes).toLocalDateTime(TimeZone.UTC)
+                ),
+                accuracyMeters = 200f,
+                deviceStatus = MemberDeviceStatusType.ACTIVE,
+                canEdit = false,
+                currentDevice = true,
+                onlineStatus = MemberDeviceOnlineStatusType.ONLINE,
+                networkType = NetworkType.G2,
+                signalStrength = NetworkSignalStrength.POOR,
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+            ),
+            GroupMemberItemLocationState(
+                locationId = "",
+                name = "$memberDeviceName #2",
+                image = ImageModel.emoji(Emojis.lock),
+                actualBatteryLevel = 75,
+                adjustedBatteryLevel = 75,
+                isBatteryCharging = true,
+                speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.3f),
+                elevation = valueFormatter.getDistanceSmall(meters = 280.0),
+                lastLocationPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().minus(20.minutes).toLocalDateTime(TimeZone.UTC)
+                ),
+                lastStatusPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().minus(20.minutes).toLocalDateTime(TimeZone.UTC)
+                ),
+                accuracyMeters = 100f,
+                deviceStatus = MemberDeviceStatusType.IDLE,
+                canEdit = false,
+                currentDevice = false,
+                onlineStatus = MemberDeviceOnlineStatusType.BUSY,
+                networkType = NetworkType.G4,
+                signalStrength = NetworkSignalStrength.GREAT,
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+            )
+        )
+    }
+
+    val memberActions: MemberActionsState = remember {
+        MemberActionsState()
+    }
+
+    GroupMember(
+        modifier = modifier,
+        state = GroupMemberItemStateWithLocations(
+            memberState = dummyMemberState.copy(
+                name = memberName, image = memberImageModel
+            ),
+            locations = locations,
+            actions = memberActions,
+            allowShowingDevices = true,
+            lastLocationPing = locations.first().lastLocationPing,
+            lastStatusPing = locations.first().lastStatusPing
+        ),
+        forceExpandAction = true,
+        collapseOnActionClick = false,
+        backgroundColor = MaterialTheme.colors.background,
+        canShowOldLocation = false
+    ) {
+
     }
 }
 

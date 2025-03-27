@@ -281,8 +281,11 @@
     <string name="paywall_feature_locate">Locate members on demand</string>
     <string name="paywall_feature_performance">Best location performance and **fast location updates**</string>
     <string name="paywall_feature_multi_device">Share location from multiple devices</string>
+    <string name="paywall_feature_notify">Location sharing alerts</string>
     <string name="paywall_feature_realtime_update">Unlimited real-time sharing</string>
-    <string name="paywall_feature_notify">Notify members about location sharing</string>
+    <string name="paywall_feature_all_premium">All premium features</string>
+    <string name="paywall_feature_support_privacy">Support independent &amp; privacy-first app development</string>
+    <string name="paywall_feature_table_expand_button">Compare all benefits</string>
     <string name="paywall_review_1_author">Diana</string>
     <string name="paywall_review_1_content">Awesome way to share location with my family. It is so sweet to see them coming home or see the progress of their trip. 😊</string>
     <string name="paywall_review_2_author">Jennifer</string>

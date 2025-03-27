@@ -252,6 +252,9 @@
     <string name="paywall_billing_loading_error_alert_message">Nije moguće učitati nadogradnje, pokušajte ponovno.</string>
     <string name="paywall_purchase_error_alert_message">Nije moguće izvršiti zahtjev, pokušajte ponovno.</string>
     <string name="paywall_discount_percentage_badge_text">%s sniženje</string>
+    <string name="paywall_header_feature_list_screen">Možeš zaštititi privatnost svih članova u svojoj grupi</string>
+    <string name="paywall_header_feature_detail_screen">I još mnogo toga...</string>
+    <string name="paywall_header_feature_demo_screen">...baš kao ovo!</string>
     <string name="paywall_header_take_control">Preuzmite kontrolu nad svojom privatnošću</string>
     <string name="paywall_header_try_it">Otključano</string>
     <string name="paywall_header_user_reviews">Što kažu naši korisnici</string>
@@ -277,7 +280,11 @@
     <string name="paywall_feature_locate">Pronađite članove na zahtjev</string>
     <string name="paywall_feature_performance">Najbolje performanse i *brza ažuriranja lokacije**</string>
     <string name="paywall_feature_multi_device">Dijelite lokaciju s više uređaja</string>
-    <string name="paywall_feature_notify">Obavijestite članove o dijeljenju lokacije</string>
+    <string name="paywall_feature_notify">Obavijesti o dijeljenju lokacije</string>
+    <string name="paywall_feature_realtime_update">Neograničeno dijeljenje u stvarnom vremenu</string>
+    <string name="paywall_feature_all_premium">Sve premium značajke</string>
+    <string name="paywall_feature_support_privacy">Podrži neovisni razvoj aplikacija s privatnošću na prvom mjestu</string>
+    <string name="paywall_feature_table_expand_button">Usporedi sve pogodnosti</string>
     <string name="paywall_review_1_author">Diana</string>
     <string name="paywall_review_1_content">Odličan način za dijeljenje lokacije s obitelji. Jako mi je drago vidjeti kada se vraćaju kući ili pratiti njihovo putovanje. 😊</string>
     <string name="paywall_review_2_author">Jennifer</string>

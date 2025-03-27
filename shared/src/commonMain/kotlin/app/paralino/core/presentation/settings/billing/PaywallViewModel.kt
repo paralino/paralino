@@ -2,7 +2,6 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
-import app.paralino.core.appPrefs
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -199,9 +198,6 @@ class PaywallViewModel(
             PaywallScreenUiEvent.StartPurchase -> {
                 when (uiState.value.screenStep) {
                     PaywallScreenStep.ONBOARDING -> {
-                        _uiState.update { it.copy(screenStep = PaywallScreenStep.TABLE) }
-                    }
-                    PaywallScreenStep.TABLE -> {
                         _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO) }
                     }
                     PaywallScreenStep.DEMO -> {
@@ -420,7 +416,8 @@ class PaywallViewModel(
             faq = currentState?.faq ?: getFaqSection(config),
             isPromoCodeSectionVisible = currentState?.isPromoCodeSectionVisible ?: false,
             promoCode = currentState?.promoCode ?: "",
-            screenStep = currentState?.screenStep ?: if (sourceType == BillingScreenSourceType.UPGRADE) PaywallScreenStep.ONBOARDING else PaywallScreenStep.PAYWALL,
+            screenStep = currentState?.screenStep ?: if (sourceType == BillingScreenSourceType.ONBOARDING) PaywallScreenStep.ONBOARDING else PaywallScreenStep.PAYWALL,
+            screenType = sourceType,
             memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
             memberImageModel = userRepo.cachedUser?.data?.userImage ?: ImageModel.emoji(Emojis.goat),
             memberDeviceName = deviceApiProvider.defaultDeviceName

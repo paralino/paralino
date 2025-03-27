@@ -2,7 +2,6 @@ package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -13,6 +12,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -36,6 +36,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -86,6 +87,7 @@ import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.presentation.settings.billing.FaqSectionItem
 import app.paralino.core.presentation.settings.billing.FeatureTableItemHighlightMode
 import app.paralino.core.presentation.settings.billing.FeatureTableItemState
+import app.paralino.core.presentation.settings.billing.FeatureTableItemVisibilityMode
 import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallScreenState
@@ -93,11 +95,9 @@ import app.paralino.core.presentation.settings.billing.PaywallScreenStep
 import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoState
-import app.paralino.core.presentation.settings.convertaccount.ConvertAccountScreenStep
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -118,7 +118,6 @@ import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.ui.theme.featureItemTitle
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
-import kotlinx.coroutines.Delay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.time.Duration
@@ -166,8 +165,7 @@ fun PaywallScreenCore(
     }
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {},
+        modifier = modifier.fillMaxSize()
     ) {
         var bottomCardHeight by remember { mutableStateOf(0) }
         val density = LocalDensity.current
@@ -178,9 +176,10 @@ fun PaywallScreenCore(
             when (uiState.screenStep) {
                 PaywallScreenStep.ONBOARDING -> {
                     buttonVisible = false
-                    delay(1000)
+                    delay(700)
                     buttonVisible = true
                 }
+
                 else -> {
                     buttonVisible = true
                 }
@@ -200,8 +199,8 @@ fun PaywallScreenCore(
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
                 visible = uiState.screenStep == PaywallScreenStep.ONBOARDING,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically()
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
             ) {
                 Column(
                     modifier = Modifier
@@ -232,47 +231,9 @@ fun PaywallScreenCore(
 
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
-                visible = uiState.screenStep == PaywallScreenStep.TABLE,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(paddingValues)
-                        .padding(bottom = 100.dp)
-                        .padding(top = 30.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Spacer(modifier.weight(1f))
-                    Text(
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .fillMaxWidth(),
-                        text = stringResource(MR.strings.paywall_header_feature_detail_screen),
-                        style = MaterialTheme.typography.h4,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier.weight(1f))
-                    FeatureTable(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 30.dp)
-                            .padding(horizontal = 20.dp),
-                        table = uiState.featureTableForSelectedPlan ?: uiState.featureTable
-                    )
-                    Spacer(modifier.weight(1f))
-                }
-            }
-
-            AnimatedVisibility(
-                modifier = Modifier.fillMaxSize(),
                 visible = uiState.screenStep == PaywallScreenStep.DEMO,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically()
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
             ) {
                 Column(
                     modifier = Modifier
@@ -282,7 +243,7 @@ fun PaywallScreenCore(
                         )
                         .verticalScroll(rememberScrollState())
                         .padding(paddingValues)
-                        .padding(bottom = 100.dp)
+                        .padding(bottom = 140.dp)
                         .padding(top = 30.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -318,8 +279,8 @@ fun PaywallScreenCore(
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
                 visible = uiState.isLoading && uiState.screenStep == PaywallScreenStep.PAYWALL,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically()
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -332,7 +293,9 @@ fun PaywallScreenCore(
 
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
-                visible = !uiState.isLoading && uiState.screenStep == PaywallScreenStep.PAYWALL
+                visible = !uiState.isLoading && uiState.screenStep == PaywallScreenStep.PAYWALL,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
             ) {
                 val uriHandler = LocalUriHandler.current
                 Column(
@@ -429,20 +392,6 @@ private fun ColumnScope.PaywallScreen(
         )
     }
 
-//    AnimatedVisibility(state.selectedPlan != null) {
-//        Text(
-//            modifier = Modifier
-//                .padding(top = 8.dp)
-//                .padding(horizontal = 20.dp)
-//                .fillMaxWidth(),
-//            text = stringResource(MR.strings.paywall_header_take_control),
-//            style = MaterialTheme.typography.h4,
-//            fontWeight = FontWeight.Bold,
-//            fontSize = 28.sp,
-//            textAlign = TextAlign.Center
-//        )
-//    }
-
     Spacer(modifier = Modifier.size(16.dp))
 
     PlanTypePicker(
@@ -469,9 +418,14 @@ private fun ColumnScope.PaywallScreen(
         }
     }
 
-    AnimatedVisibility(visible = state.selectedBillingPeriod?.isPromoDiscount == true) {
+    AnimatedVisibility(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        visible = state.selectedBillingPeriod?.isPromoDiscount == true
+    ) {
         NoticeInfoChip(
-            modifier = Modifier.padding(horizontal = 20.dp)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 20.dp)
                 .padding(top = 8.dp, bottom = 16.dp),
             text = stringResource(MR.strings.paywall_special_offer_description),
             icon = {
@@ -480,36 +434,53 @@ private fun ColumnScope.PaywallScreen(
         )
     }
 
-    state.featureTableForSelectedPlan?.let {
-        FeatureTable(
+    var arePlansExpanded by remember { mutableStateOf(false) }
+
+    FeatureTable(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+            .padding(horizontal = 20.dp),
+        table = if (arePlansExpanded) {
+            state.featureTable
+        } else {
+            state.featureTableForSelectedPlan ?: state.featureTable
+        },
+        isExpanded = arePlansExpanded,
+        onExpandPlans = {
+            arePlansExpanded = true
+        }
+    )
+
+    if (state.screenType != BillingScreenSourceType.ONBOARDING) {
+        FeaturesSection()
+
+        PaywallScreenFeatureElements(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp)
-                .padding(horizontal = 20.dp),
-            table = it
+                .padding(top = 12.dp)
+                .background(
+                    color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
+                )
+                .padding(bottom = 40.dp, top = 20.dp)
+                .fillMaxWidth(),
+            displayTitle = true,
+            memberName = state.memberName,
+            memberImageModel = state.memberImageModel,
+            memberDeviceName = state.memberDeviceName,
+            valueFormatter = valueFormatter
         )
     }
 
-    FeaturesSection()
-
-    PaywallScreenFeatureElements(
-        modifier = Modifier
-            .padding(top = 12.dp)
-            .background(
-                color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
-            )
-            .padding(bottom = 40.dp, top = 20.dp)
-            .fillMaxWidth(),
-        displayTitle = true,
-        memberName = state.memberName,
-        memberImageModel = state.memberImageModel,
-        memberDeviceName = state.memberDeviceName,
-        valueFormatter = valueFormatter
-    )
-
-    AnimatedVisibility(visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null) {
+    AnimatedVisibility(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null
+    ) {
         NoticeInfoChip(
-            modifier = Modifier.padding(horizontal = 20.dp).padding(top = 40.dp),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = if (state.screenType != BillingScreenSourceType.ONBOARDING) 0.dp else 20.dp)
+                .padding(top = 40.dp),
             text = stringResource(
                 MR.strings.paywall_free_trial_notice_main,
                 "${state.selectedBillingPeriod?.trialDurationDays ?: " "}"
@@ -520,28 +491,17 @@ private fun ColumnScope.PaywallScreen(
         )
     }
 
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 40.dp, bottom = 12.dp),
-        text = stringResource(MR.strings.paywall_header_unlock_premium),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-    )
-
-    FeatureTable(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-        table = state.featureTable
-    )
+    if (state.screenType != BillingScreenSourceType.ONBOARDING) {
+        Spacer(Modifier.size(40.dp))
+    } else {
+        Spacer(Modifier.size(30.dp))
+    }
 
     Text(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .padding(top = 40.dp, bottom = 4.dp),
+            .padding(bottom = 4.dp),
         text = stringResource(MR.strings.paywall_header_user_reviews),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
@@ -549,38 +509,42 @@ private fun ColumnScope.PaywallScreen(
 
     PaywallUserReviewsSection()
 
-    Column(
-        modifier = Modifier
-            .padding(top = 30.dp)
-            .padding(bottom = 20.dp)
-            .background(
-                color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
-            )
-            .padding(top = 40.dp, bottom = 40.dp)
-    ) {
-        PlanTypePicker(
-            state = state,
-            onEvent = onEvent
-        )
-
-        if (state.selectedPlan != null) {
-            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
-                BillingPeriodOptions(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 20.dp),
-                    selectedPlan = state.selectedPlan!!,
-                    onPeriodSelected = {
-                        onEvent(
-                            PaywallScreenUiEvent.SelectBillingPeriod(
-                                planType = state.selectedPlan!!.type,
-                                period = it
-                            )
-                        )
-                    }
+    if (state.screenType != BillingScreenSourceType.ONBOARDING) {
+        Column(
+            modifier = Modifier
+                .padding(top = 40.dp)
+                .padding(bottom = 20.dp)
+                .background(
+                    color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
                 )
+                .padding(top = 50.dp, bottom = 45.dp)
+        ) {
+            PlanTypePicker(
+                state = state,
+                onEvent = onEvent
+            )
+
+            if (state.selectedPlan != null) {
+                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
+                    BillingPeriodOptions(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .padding(horizontal = 20.dp),
+                        selectedPlan = state.selectedPlan!!,
+                        onPeriodSelected = {
+                            onEvent(
+                                PaywallScreenUiEvent.SelectBillingPeriod(
+                                    planType = state.selectedPlan!!.type,
+                                    period = it
+                                )
+                            )
+                        }
+                    )
+                }
             }
         }
+    } else {
+        Spacer(Modifier.size(30.dp))
     }
 
     if (state.faq != null) {
@@ -667,7 +631,7 @@ private fun FeaturesSection(
                 type = SettingsActionItemType.Action
             )
         }
-        FeatureInfoItem(delay = 200.milliseconds) {
+        FeatureInfoItem(delay = 150.milliseconds) {
             SettingsActionItem(
                 name = stringResource(MR.strings.paywall_feature_premium_sharing),
                 tag = stringResource(MR.strings.paywall_feature_premium_sharing_description),
@@ -676,7 +640,7 @@ private fun FeaturesSection(
                 type = SettingsActionItemType.Action
             )
         }
-        FeatureInfoItem(delay = 400.milliseconds) {
+        FeatureInfoItem(delay = 300.milliseconds) {
             SettingsActionItem(
                 name = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices),
                 tag = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices_tag),
@@ -685,7 +649,7 @@ private fun FeaturesSection(
                 type = SettingsActionItemType.Action
             )
         }
-        FeatureInfoItem(delay = 600.milliseconds) {
+        FeatureInfoItem(delay = 450.milliseconds) {
             SettingsActionItem(
                 name = stringResource(MR.strings.paywall_feature_control),
                 tag = stringResource(MR.strings.paywall_feature_control_description),
@@ -708,7 +672,12 @@ private fun ColumnScope.FeatureInfoItem(
         itemVisible = 1f
     }
     Box(
-        modifier = Modifier.alpha(animateFloatAsState(itemVisible, tween(durationMillis = 1000)).value),
+        modifier = Modifier.alpha(
+            animateFloatAsState(
+                itemVisible,
+                tween(durationMillis = 600)
+            ).value
+        ),
     ) {
         content()
     }
@@ -726,10 +695,11 @@ private fun ColumnScope.PlanTypePicker(
         modifier = modifier
             .padding(horizontal = 20.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(100))
+            .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .padding(4.dp)
-            .clip(RoundedCornerShape(100))
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.background)
             .align(Alignment.CenterHorizontally)
             .onSizeChanged { size ->
                 containerWidth = size.width.toFloat()
@@ -754,7 +724,9 @@ private fun ColumnScope.PlanTypePicker(
                     )
                     .clickable {
                         onEvent(PaywallScreenUiEvent.SelectPlanType(plan.type))
-                    },
+                    }
+                    .height(60.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 selected = plan.isSelected,
                 text = plan.displayedName
             )
@@ -872,6 +844,7 @@ private fun PaywallBottomCard(
                                     stringResource(MR.strings.paywall_start_button_continue)
                                 }
                             }
+
                             else -> {
                                 stringResource(MR.strings.button_continue)
                             }
@@ -913,21 +886,19 @@ private fun PlanName(
 
     Row(
         modifier = modifier
-            .height(60.dp)
-            .clip(RoundedCornerShape(100))
             .background(backgroundColor),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            modifier = Modifier.scale(animateFloatAsState(if (selected) 1.1f else 0.8f).value),
+            modifier = Modifier.scale(animateFloatAsState(if (selected) 1.15f else 0.8f).value),
             text = text,
             fontSize = animateFloatAsState(if (selected) 22f else 18f).value.sp,
             color = contentColor,
             fontWeight = if (selected) {
-                FontWeight.Bold
+                FontWeight.ExtraBold
             } else {
-                FontWeight.Medium
+                FontWeight.Bold
             }
         )
     }
@@ -942,18 +913,18 @@ private fun BillingPeriodOptions(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Divider(modifier = Modifier.weight(1f))
-            Text(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                text = stringResource(MR.strings.paywall_divider_plan_duration),
-                style = MaterialTheme.typography.caption
-            )
-            Divider(modifier = Modifier.weight(1f))
-        }
+//        Row(
+//            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Divider(modifier = Modifier.weight(1f))
+//            Text(
+//                modifier = Modifier.padding(horizontal = 12.dp),
+//                text = stringResource(MR.strings.paywall_divider_plan_duration),
+//                style = MaterialTheme.typography.caption
+//            )
+//            Divider(modifier = Modifier.weight(1f))
+//        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1010,9 +981,10 @@ private fun SubscriptionOptionItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val sourceColor = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+    val sourceColor = if (isSelected) MaterialTheme.colors.surface else MaterialTheme.colors.surface
     val backgroundColor by animateColorAsState(targetValue = sourceColor)
     val contentColor by animateColorAsState(targetValue = contentColorFor(backgroundColor = sourceColor))
+    val highlightColor by animateColorAsState(if (isSystemInDarkTheme()) MaterialTheme.colors.onBackground else MaterialTheme.colors.primary)
 
     Row(
         modifier = Modifier
@@ -1021,6 +993,17 @@ private fun SubscriptionOptionItem(
             .clickable(onClick = onClick)
             .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
+            .border(
+                width = if (isSystemInDarkTheme()) 3.dp else 2.dp,
+                color = animateColorAsState(
+                    if (isSelected) {
+                        if (isSystemInDarkTheme()) AppColors.accentDark else MaterialTheme.colors.primary
+                    } else {
+                        Color.Transparent
+                    }
+                ).value,
+                shape = RoundedCornerShape(10.dp)
+            )
             .padding(vertical = 12.dp, horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -1035,13 +1018,13 @@ private fun SubscriptionOptionItem(
                     modifier = Modifier
                         .size(24.dp)
                         .background(
-                            MaterialTheme.colors.onPrimary,
+                            color = highlightColor,
                             shape = CircleShape
                         )
                         .padding(1.dp),
                     painter = CoreAppIcons.CheckCircle.asPainterResource(),
                     contentDescription = null,
-                    tint = MaterialTheme.colors.primary
+                    tint = if (isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onPrimary
                 )
             }
 
@@ -1073,7 +1056,7 @@ private fun SubscriptionOptionItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
                 lineHeight = if (DeviceType.current == DeviceType.iOS) 22.sp else 24.sp,
                 color = contentColor
             )
@@ -1142,7 +1125,10 @@ private fun SubscriptionOptionItem(
 @Composable
 fun FeatureTable(
     modifier: Modifier = Modifier,
-    table: FeatureTableState
+    table: FeatureTableState,
+    canExpand: Boolean = table.canExpand,
+    isExpanded: Boolean,
+    onExpandPlans: () -> Unit
 ) {
     BoxWithConstraints(
         modifier = modifier
@@ -1156,43 +1142,86 @@ fun FeatureTable(
         val scrollState = rememberScrollState()
         var containerWidth by remember { mutableStateOf(0f) }
 
-        Column(
-            modifier = Modifier
-                .horizontalScroll(scrollState)
-                .onSizeChanged { size ->
-                    containerWidth = size.width.toFloat()
-                }
-        ) {
-            table.features.forEachIndexed { index, feature ->
-                Box {
-                    FeatureTableItem(
-                        modifier = Modifier,
-                        featureItem = feature,
-                        nameWidth = if (feature.values.size > 2) {
-                            maxWidth * 0.5f
-                        } else if (feature.values.size == 2) {
-                            maxWidth * 0.6f
-                        } else {
-                            maxWidth * 0.7f
-                        },
-                        valueWidth = if (feature.values.size > 2) {
-                            maxWidth * 0.19f
-                        } else if (feature.values.size == 2) {
-                            maxWidth * 0.2f
-                        } else {
-                            maxWidth * 0.3f
-                        }
-                    )
-
-                    if (index > 0) {
-                        Divider(
-                            modifier = Modifier
-                                .width(with(LocalDensity.current) { containerWidth.toDp() })
-                                .padding(horizontal = 8.dp),
-                            color = Color.Gray.copy(alpha = 0.2f),
-                            thickness = 0.5.dp
-                        )
+        Column() {
+            Column(
+                modifier = Modifier
+                    .horizontalScroll(scrollState)
+                    .onSizeChanged { size ->
+                        containerWidth = size.width.toFloat()
                     }
+            ) {
+                table.features.forEachIndexed { index, feature ->
+                    if (
+                        feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_ALWAYS
+                        || (isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_EXPANDED)
+                        || (!isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_COLLAPSED)
+                    ) {
+                        Box {
+                            FeatureTableItem(
+                                modifier = Modifier,
+                                featureItem = feature,
+                                nameWidth = if (feature.values.size > 2) {
+                                    maxWidth * 0.5f
+                                } else if (feature.values.size == 2) {
+                                    maxWidth * 0.6f
+                                } else {
+                                    maxWidth * 0.7f
+                                },
+                                valueWidth = if (feature.values.size > 2) {
+                                    maxWidth * 0.19f
+                                } else if (feature.values.size == 2) {
+                                    maxWidth * 0.2f
+                                } else {
+                                    maxWidth * 0.3f
+                                }
+                            )
+
+                            if (index > 0) {
+                                Divider(
+                                    modifier = Modifier
+                                        .width(with(LocalDensity.current) { containerWidth.toDp() })
+                                        .padding(horizontal = 8.dp),
+                                    color = Color.Gray.copy(alpha = 0.2f),
+                                    thickness = 0.5.dp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            AnimatedVisibility(visible = canExpand) {
+                FilledButton(
+                    modifier = Modifier
+                        .padding(bottom = 14.dp, top = 24.dp)
+                        .padding(horizontal = 14.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colors.secondary,
+                            shape = RoundedCornerShape(10.dp)
+                        ),
+                    style = remember {
+                        ButtonStyle.BIG(
+                            paddingValues = PaddingValues(horizontal = 4.dp, vertical = 12.dp),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                    },
+                    state = AppButtonState.CONTENT,
+                    icon = null,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.surface,
+                        contentColor = MaterialTheme.colors.onBackground
+                    ),
+                    elevation = 0.dp,
+                    onClick = onExpandPlans
+                ) {
+                    Text(text = stringResource(MR.strings.paywall_feature_table_expand_button))
+                    Icon(
+                        modifier = Modifier.padding(start = 4.dp).width(20.dp),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface,
+                        contentDescription = null
+                    )
                 }
             }
         }
@@ -1236,7 +1265,7 @@ fun FeatureTableItem(
                         color = when (value.highlightMode) {
                             FeatureTableItemHighlightMode.TOP,
                             FeatureTableItemHighlightMode.BOTTOM,
-                            FeatureTableItemHighlightMode.FULL -> AppColors.accentDark.copy(alpha = 0.3f)
+                            FeatureTableItemHighlightMode.FULL -> AppColors.accentDark.copy(alpha = 0.2f)
 
                             else -> Color.Transparent
                         },

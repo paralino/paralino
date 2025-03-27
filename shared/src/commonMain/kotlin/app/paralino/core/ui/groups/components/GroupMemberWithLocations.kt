@@ -589,7 +589,7 @@ fun GroupMemberLocationChild(
             .padding(vertical = 4.dp)
             .padding(start = 8.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.surface)
+//            .background(MaterialTheme.colors.surface)
             .combinedClickable(
                 onClick = { onClick(state) },
                 onLongClick = { if (state.canEdit) onDelete(state) }

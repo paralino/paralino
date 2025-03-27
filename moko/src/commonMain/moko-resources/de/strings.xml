@@ -252,6 +252,9 @@
     <string name="paywall_billing_loading_error_alert_message">Abrechnungsverwaltung konnte nicht initialisiert werden, bitte versuchen Sie es erneut.</string>
     <string name="paywall_purchase_error_alert_message">Abrechnungsanfrage konnte nicht durchgeführt werden, bitte versuchen Sie es erneut.</string>
     <string name="paywall_discount_percentage_badge_text">%s RABATT</string>
+    <string name="paywall_header_feature_list_screen">Du kannst die Privatsphäre aller Mitglieder in deiner Gruppe schützen</string>
+    <string name="paywall_header_feature_detail_screen">Und noch viel mehr...</string>
+    <string name="paywall_header_feature_demo_screen">...genau so!</string>
     <string name="paywall_header_take_control">Übernehmen Sie die Kontrolle über Ihre Privatsphäre</string>
     <string name="paywall_header_try_it">Freigeschaltet</string>
     <string name="paywall_header_user_reviews">Das sagen unsere Nutzer</string>
@@ -273,11 +276,15 @@
     <string name="paywall_feature_members">Mitglieder</string>
     <string name="paywall_feature_devices">Geräte pro Mitglied</string>
     <string name="paywall_feature_places">Orte mit **unbegrenzten Benachrichtigungen**</string>
-    <string name="paywall_feature_battery">Niedriger Akkustand-Benachrichtigungen</string>
+    <string name="paywall_feature_battery">Akkuwarnungen</string>
     <string name="paywall_feature_locate">Standortsuche nach Bedarf</string>
     <string name="paywall_feature_performance">Beste Standortleistung und **schnelle Standort Updates**</string>
     <string name="paywall_feature_multi_device">Standort von mehreren Geräten aus teilen</string>
-    <string name="paywall_feature_notify">Mitglieder über Standortfreigabe informieren</string>
+    <string name="paywall_feature_notify">Standortfreigabe-Benachrichtigungen</string>
+    <string name="paywall_feature_realtime_update">Unbegrenztes Echtzeit-Teilen</string>
+    <string name="paywall_feature_support_privacy">Unterstütze unabhängige &amp; datenschutzfreundliche App-Entwicklung</string>
+    <string name="paywall_feature_all_premium">Alle Premium-Funktionen</string>
+    <string name="paywall_feature_table_expand_button">Alle Vorteile vergleichen</string>
     <string name="paywall_review_1_author">Diana</string>
     <string name="paywall_review_1_content">Tolle Möglichkeit, den Standort mit meiner Familie zu teilen. Es ist so schön zu sehen, wie sie nach Hause kommen oder den Fortschritt ihrer Reise zu verfolgen. 😊</string>
     <string name="paywall_review_2_author">Jennifer</string>
@@ -575,7 +582,7 @@
     <string name="plan_limit_overLimit_groupOwner_banner_title">**Ihre Gruppe hat die Planlimits überschritten!**\n\nDie Standortfreigabe ist eingeschränkt und funktioniert möglicherweise nicht korrekt.\n\nBitte **entfernen Sie einige Ressourcen** oder aktualisieren Sie Ihren Plan, um die volle Funktionalität wiederherzustellen.</string>
     <string name="plan_limit_overLimit_groupMember_banner_title">**Diese Gruppe hat die Planlimits überschritten!**\n\nDie Standortfreigabe ist eingeschränkt und funktioniert möglicherweise nicht korrekt.\n\nBitte **kontaktieren Sie den Gruppenadministrator**, um das Problem zu lösen und die Standortfreigabe fortzusetzen.</string>
     <string name="plan_limit_overLimit_user_message">Die Standortfreigabe in einigen Gruppen wird gestoppt, da diese die Planlimits überschritten haben.\n\nPassen Sie Ihre Gruppen an oder aktualisieren Sie Ihren Plan, um die Standortfreigabe fortzusetzen!</string>
-    <string name="plan_limit_overLimit_places_banner_title">**Ortsbenachrichtigungen sind deaktiviert!**\nDiese Gruppe hat die zulässige Anzahl an Orten überschritten.</string>
+    <string name="plan_limit_overLimit_places_banner_title">**Ortswarnungen sind deaktiviert!**\nDiese Gruppe hat die zulässige Anzahl an Orten überschritten.</string>
     <string name="app_version_alert_title">Neues App-Update</string>
     <string name="app_version_alert_message">Eine neue Version von Paralino ist verfügbar, bitte aktualisieren Sie für ein besseres Erlebnis!</string>
     <string name="app_version_alert_title_mandatory">Bitte aktualisieren</string>

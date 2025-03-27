@@ -9,6 +9,7 @@ import app.paralino.core.models.base.PlanType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 data class PaywallScreenState(
     val freePlanInfo: PlanInfoState,
@@ -21,6 +22,7 @@ data class PaywallScreenState(
     val isPromoCodeSectionVisible: Boolean,
     val promoCode: String,
     val screenStep: PaywallScreenStep,
+    val screenType: BillingScreenSourceType,
     val memberImageModel: ImageModel,
     val memberName: String,
     val memberDeviceName: String,
@@ -32,10 +34,11 @@ data class PaywallScreenState(
         constructFeaturesTable(freeUiPlan = freePlanInfo, uiPlans = plans)
     val featureTableForSelectedPlan: FeatureTableState? = selectedPlan?.let { plan ->
         FeatureTableState(
+            canExpand = true,
             features = featureTable.features.map {
                 it.copy(
                     values = it.values.mapNotNull {
-                        if (it.planType == plan.type || !it.planType.isPremium) {
+                        if (it.planType == plan.type) {
                             it
                         } else {
                             null
@@ -60,6 +63,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_table_header.localizedString(),
                     isTitle = true,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_ALWAYS,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = it.name,
@@ -78,6 +82,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_max_privacy.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = "✅",
@@ -96,6 +101,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_groups.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_ALWAYS,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = it.config.groupsLimit.toString(),
@@ -114,6 +120,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_members.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_ALWAYS,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = it.config.membersLimit.toString(),
@@ -132,6 +139,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_devices.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_ALWAYS,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = it.config.devicesLimit.toString(),
@@ -150,6 +158,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_places.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_ALWAYS,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = it.config.placesLimit.toString(),
@@ -168,6 +177,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_battery.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = "✅",
@@ -186,6 +196,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_realtime_update.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = if (it.type.isPremium) "✅" else "❌",
@@ -204,6 +215,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_locate.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = if (it.type.isPremium) "✅" else "❌",
@@ -222,6 +234,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_performance.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = if (it.type.isSilverOrMore) "✅" else "❌",
@@ -240,6 +253,7 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_multi_device.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = if (it.config.devicesLimit > 1) "✅" else "❌",
@@ -258,9 +272,48 @@ data class PaywallScreenState(
                 FeatureTableItemState(
                     name = MR.strings.paywall_feature_notify.localizedString(),
                     isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
                     values = plans.map {
                         FeatureTableItemValue(
                             name = if (it.type.isSilverOrMore) "✅" else "❌",
+                            planType = it.type,
+                            highlightMode = if (it.isSelected) {
+                                FeatureTableItemHighlightMode.FULL
+                            } else {
+                                FeatureTableItemHighlightMode.NONE
+                            }
+                        )
+                    }
+                )
+            )
+
+            add(
+                FeatureTableItemState(
+                    name = MR.strings.paywall_feature_all_premium.localizedString(),
+                    isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_COLLAPSED,
+                    values = plans.map {
+                        FeatureTableItemValue(
+                            name = if (it.type.isPremium) "✅" else "❌",
+                            planType = it.type,
+                            highlightMode = if (it.isSelected) {
+                                FeatureTableItemHighlightMode.FULL
+                            } else {
+                                FeatureTableItemHighlightMode.NONE
+                            }
+                        )
+                    }
+                )
+            )
+
+            add(
+                FeatureTableItemState(
+                    name = MR.strings.paywall_feature_support_privacy.localizedString(),
+                    isTitle = false,
+                    visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_ALWAYS,
+                    values = plans.map {
+                        FeatureTableItemValue(
+                            name = if (it.type.isPremium) "✅" else "❌",
                             planType = it.type,
                             highlightMode = if (it.isSelected) {
                                 FeatureTableItemHighlightMode.BOTTOM
@@ -273,7 +326,7 @@ data class PaywallScreenState(
             )
         }
 
-        return FeatureTableState(features = values)
+        return FeatureTableState(canExpand = false, features = values)
     }
 }
 
@@ -314,12 +367,14 @@ data class PlanBillingPeriodState(
 )
 
 data class FeatureTableState(
+    val canExpand: Boolean,
     val features: List<FeatureTableItemState>
 )
 
 data class FeatureTableItemState(
     val name: String,
     val isTitle: Boolean,
+    val visibilityMode: FeatureTableItemVisibilityMode,
     val values: List<FeatureTableItemValue>
 )
 
@@ -335,8 +390,12 @@ enum class FeatureTableItemHighlightMode {
     NONE, FULL, TOP, BOTTOM
 }
 
+enum class FeatureTableItemVisibilityMode {
+    VISIBLE_ALWAYS, VISIBLE_EXPANDED, VISIBLE_COLLAPSED
+}
+
 enum class PaywallScreenStep {
-    ONBOARDING, TABLE, DEMO, PAYWALL
+    ONBOARDING, DEMO, PAYWALL
 }
 
 data class FaqSectionState(
