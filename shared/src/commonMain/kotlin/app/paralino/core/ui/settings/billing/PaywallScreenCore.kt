@@ -2,6 +2,7 @@ package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -1145,6 +1146,7 @@ fun FeatureTable(
         Column() {
             Column(
                 modifier = Modifier
+                    .animateContentSize()
                     .horizontalScroll(scrollState)
                     .onSizeChanged { size ->
                         containerWidth = size.width.toFloat()
