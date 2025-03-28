@@ -114,6 +114,7 @@ fun PlaceDetailScreenCore(
                 state = finalState.data,
                 paddingValues = contentPadding,
                 canEditPlace = finalState.data.canEdit,
+                canHaveAlerts = finalState.data.canHaveAlerts,
                 userScrollEnabled = userScrollEnabled,
                 openPlaceEditScreen = openPlaceEditScreen,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
@@ -140,6 +141,7 @@ private fun PlaceDetailScreen(
     paddingValues: PaddingValues,
     state: PlaceDetailScreenState,
     canEditPlace: Boolean,
+    canHaveAlerts: Boolean,
     userScrollEnabled: Boolean,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
@@ -207,12 +209,16 @@ private fun PlaceDetailScreen(
                 ) {
                     openPlaceRawDataScreen()
                 }
-                SettingsActionItem(
-                    name = stringResource(MR.strings.place_detail_notification_settings_title),
-                    icon = CoreAppIcons.NotificationsActive.asPainterResource(),
-                ) {
-                    openPlaceAlertsScreen()
+
+                if (canHaveAlerts) {
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.place_detail_notification_settings_title),
+                        icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+                    ) {
+                        openPlaceAlertsScreen()
+                    }
                 }
+
                 if (canEditPlace) {
                     SettingsActionItem(
                         name = stringResource(MR.strings.places_edit_screen_title),
