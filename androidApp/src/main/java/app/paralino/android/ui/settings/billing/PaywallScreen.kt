@@ -2,17 +2,13 @@ package app.paralino.android.ui.settings.billing
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -36,7 +32,7 @@ fun PaywallScreen(
 ) {
     fun goBack(isSuccess: Boolean) {
         when (type) {
-            BillingScreenSourceType.ONBOARDING -> {
+            BillingScreenSourceType.GROUP_ONBOARDING -> {
                 if (groupId.isNullOrBlank()) {
                     appState.navController.navigate(AppScreen.MainHome.MainMap.routeSignature)
                 } else {
@@ -63,6 +59,7 @@ fun PaywallScreen(
             }
 
             BillingScreenSourceType.NORMAL,
+            BillingScreenSourceType.SKIPPED_ONBOARDING,
             BillingScreenSourceType.UPGRADE -> {
                 appState.navController.popBackStack()
             }
@@ -126,7 +123,7 @@ fun PaywallScreen(
         }
     )
 
-    BackHandler (enabled = type == BillingScreenSourceType.ONBOARDING) {
+    BackHandler (enabled = type.isOnboarding) {
         // block back for onboarding
     }
 }

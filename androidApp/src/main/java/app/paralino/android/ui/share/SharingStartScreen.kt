@@ -55,7 +55,7 @@ fun SharingStartScreen(
                 AppScreen.MainHome.BillingPaywall.route(
                     groupId = vm.currentGroupId,
                     type = when (isOnboarding) {
-                        true -> BillingScreenSourceType.ONBOARDING
+                        true -> BillingScreenSourceType.GROUP_ONBOARDING
                         false -> BillingScreenSourceType.UPGRADE
                     }
                 )

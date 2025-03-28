@@ -253,8 +253,7 @@
     <string name="paywall_purchase_error_alert_message">Abrechnungsanfrage konnte nicht durchgeführt werden, bitte versuchen Sie es erneut.</string>
     <string name="paywall_discount_percentage_badge_text">%s RABATT</string>
     <string name="paywall_header_feature_list_screen">Du kannst die Privatsphäre aller Mitglieder in deiner Gruppe schützen</string>
-    <string name="paywall_header_feature_detail_screen">Und noch viel mehr...</string>
-    <string name="paywall_header_feature_demo_screen">...genau so!</string>
+    <string name="paywall_header_feature_demo_screen">Und noch viel mehr...</string>
     <string name="paywall_header_take_control">Übernehmen Sie die Kontrolle über Ihre Privatsphäre</string>
     <string name="paywall_header_try_it">Freigeschaltet</string>
     <string name="paywall_header_user_reviews">Das sagen unsere Nutzer</string>

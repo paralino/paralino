@@ -10,7 +10,6 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 
 @Composable
@@ -40,7 +39,7 @@ fun GroupInitScreen(
         },
         openPaywall = {
             appState.navController.navigate(
-                AppScreen.MainHome.BillingPaywall.route(groupId = null, type = BillingScreenSourceType.UPGRADE)
+                AppScreen.MainHome.BillingPaywall.route(groupId = null, type = it)
             )
         },
         openPersonalCodes = { appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature) },

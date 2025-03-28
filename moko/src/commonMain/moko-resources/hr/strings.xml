@@ -253,8 +253,7 @@
     <string name="paywall_purchase_error_alert_message">Nije moguće izvršiti zahtjev, pokušajte ponovno.</string>
     <string name="paywall_discount_percentage_badge_text">%s sniženje</string>
     <string name="paywall_header_feature_list_screen">Možeš zaštititi privatnost svih članova u svojoj grupi</string>
-    <string name="paywall_header_feature_detail_screen">I još mnogo toga...</string>
-    <string name="paywall_header_feature_demo_screen">...baš kao ovo!</string>
+    <string name="paywall_header_feature_demo_screen">I još mnogo toga...</string>
     <string name="paywall_header_take_control">Preuzmite kontrolu nad svojom privatnošću</string>
     <string name="paywall_header_try_it">Otključano</string>
     <string name="paywall_header_user_reviews">Što kažu naši korisnici</string>

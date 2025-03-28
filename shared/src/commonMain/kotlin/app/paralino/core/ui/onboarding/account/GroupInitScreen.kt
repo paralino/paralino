@@ -43,6 +43,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
 import app.paralino.core.ui.invite.manage.PersonalCodeItemWithHints
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -57,7 +58,7 @@ fun GroupInitScreenCore(
     onCreateGroup: () -> Unit,
     openFreePlanInfo: () -> Unit,
     openPersonalCodes: () -> Unit,
-    openPaywall: () -> Unit,
+    openPaywall: (BillingScreenSourceType) -> Unit,
     onSharePersonalCode: (String) -> Unit,
     askNotificationPermission: () -> Unit
 ) {
@@ -72,7 +73,7 @@ fun GroupInitScreenCore(
                 is GroupInitScreenEvent.SharePersonalCode -> onSharePersonalCode(event.code)
                 GroupInitScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                 GroupInitScreenEvent.OpenGroupCreate -> onCreateGroup()
-                GroupInitScreenEvent.OpenPaywall -> openPaywall()
+                is GroupInitScreenEvent.OpenPaywall -> openPaywall(event.type)
 
                 null -> {
                     /* do nothing */

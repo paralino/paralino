@@ -41,7 +41,7 @@ struct PaywallScreen: View {
     
     private func goBack(isSuccess: Bool) {
         switch state.type {
-        case .onboarding:
+        case .groupOnboarding:
             if let groupId = state.groupId, !groupId.isEmpty {
                 if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                     path.removeSubrange(index+1..<path.count)
@@ -61,7 +61,7 @@ struct PaywallScreen: View {
                 path.removeLast()
             }
 
-        case .normal, .upgrade:
+        case .skippedOnboarding, .normal, .upgrade:
             path.removeLast()
             
         default:

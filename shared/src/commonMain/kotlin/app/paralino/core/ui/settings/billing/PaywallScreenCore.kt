@@ -452,7 +452,7 @@ private fun ColumnScope.PaywallScreen(
         }
     )
 
-    if (state.screenType != BillingScreenSourceType.ONBOARDING) {
+    if (!state.screenType.isOnboarding) {
         FeaturesSection()
 
         PaywallScreenFeatureElements(
@@ -479,7 +479,7 @@ private fun ColumnScope.PaywallScreen(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 20.dp)
-                .padding(bottom = if (state.screenType != BillingScreenSourceType.ONBOARDING) 0.dp else 20.dp)
+                .padding(bottom = if (!state.screenType.isOnboarding) 0.dp else 20.dp)
                 .padding(top = 40.dp),
             text = stringResource(
                 MR.strings.paywall_free_trial_notice_main,
@@ -491,7 +491,7 @@ private fun ColumnScope.PaywallScreen(
         )
     }
 
-    if (state.screenType != BillingScreenSourceType.ONBOARDING) {
+    if (!state.screenType.isOnboarding) {
         Spacer(Modifier.size(40.dp))
     } else {
         Spacer(Modifier.size(30.dp))
@@ -509,7 +509,7 @@ private fun ColumnScope.PaywallScreen(
 
     PaywallUserReviewsSection()
 
-    if (state.screenType != BillingScreenSourceType.ONBOARDING) {
+    if (!state.screenType.isOnboarding) {
         Column(
             modifier = Modifier
                 .padding(top = 40.dp)
@@ -1197,7 +1197,7 @@ fun FeatureTable(
                         .padding(horizontal = 14.dp)
                         .border(
                             width = 1.dp,
-                            color = MaterialTheme.colors.secondary,
+                            color = Color.Gray.copy(alpha = 0.2f),
                             shape = RoundedCornerShape(10.dp)
                         ),
                     style = remember {

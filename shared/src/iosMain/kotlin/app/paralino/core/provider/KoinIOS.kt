@@ -266,7 +266,7 @@ object KoinIOS {
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get()) }
-            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get()) }
+            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), appPrefs) }
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }

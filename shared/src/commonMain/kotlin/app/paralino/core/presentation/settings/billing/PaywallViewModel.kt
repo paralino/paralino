@@ -65,7 +65,7 @@ class PaywallViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        if (sourceType == BillingScreenSourceType.ONBOARDING) {
+        if (sourceType.isOnboarding) {
             appRatingManager.tryShowingAppRating(source = AppRatingSource.PAYWALL_ONBOARDING)
         }
 
@@ -416,7 +416,11 @@ class PaywallViewModel(
             faq = currentState?.faq ?: getFaqSection(config),
             isPromoCodeSectionVisible = currentState?.isPromoCodeSectionVisible ?: false,
             promoCode = currentState?.promoCode ?: "",
-            screenStep = currentState?.screenStep ?: if (sourceType == BillingScreenSourceType.ONBOARDING) PaywallScreenStep.ONBOARDING else PaywallScreenStep.PAYWALL,
+            screenStep = currentState?.screenStep ?: if (sourceType.isOnboarding) {
+                PaywallScreenStep.ONBOARDING
+            } else {
+                PaywallScreenStep.PAYWALL
+            },
             screenType = sourceType,
             memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
             memberImageModel = userRepo.cachedUser?.data?.userImage ?: ImageModel.emoji(Emojis.goat),

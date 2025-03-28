@@ -63,6 +63,7 @@ import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.collectLatest
@@ -77,7 +78,7 @@ object HomeScreens {
         onCreateGroup: () -> Unit,
         openFreePlanInfo: () -> Unit,
         openPersonalCodes: () -> Unit,
-        openPaywall: () -> Unit,
+        openPaywall: (BillingScreenSourceType) -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
