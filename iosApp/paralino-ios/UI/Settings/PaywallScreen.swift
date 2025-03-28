@@ -35,7 +35,7 @@ struct PaywallScreen: View {
             }
             .navigationTitle(MR.shared.strings.plan_limit_alert_title.localizedString())
             .toolbar(.hidden, for: .navigationBar)
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.all, edges: .vertical)
         }
     }
     
