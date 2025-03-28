@@ -477,6 +477,15 @@
     <string name="group_load_error">Ihre Gruppe konnte nicht geladen werden</string>
     <string name="group_create_name_placeholder">Gruppenname</string>
     <string name="group_create_button_text">Gruppe erstellen</string>
+    <string name="group_create_suggestions_header">Vorschläge</string>
+    <string name="group_create_suggestion_family">Familie</string>
+    <string name="group_create_suggestion_friends">Freunde</string>
+    <string name="group_create_suggestion_couple">Nur wir zwei</string>
+    <string name="group_create_suggestion_bestGroup">Beste Gruppe aller Zeiten</string>
+    <string name="group_create_suggestion_coffee">Kaffeeliebhaber</string>
+    <string name="group_create_suggestion_travel">Reisen</string>
+    <string name="group_create_suggestion_work">Geschäftsreise</string>
+    <string name="group_create_suggestion_school">Klassenfahrt</string>
     <string name="group_picker_button_create">Erstellen</string>
     <string name="group_picker_button_join">Beitreten</string>
     <string name="group_member_no_location_info_message">Dieses Gerät hat noch keinen Standort.</string>

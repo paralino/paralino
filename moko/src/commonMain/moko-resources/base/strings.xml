@@ -478,6 +478,15 @@
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
     <string name="group_create_button_text">Create group</string>
+    <string name="group_create_suggestions_header">Suggestions</string>
+    <string name="group_create_suggestion_family">Family</string>
+    <string name="group_create_suggestion_friends">Friends</string>
+    <string name="group_create_suggestion_couple">Two of us</string>
+    <string name="group_create_suggestion_bestGroup">Best group ever</string>
+    <string name="group_create_suggestion_coffee">Coffee lovers</string>
+    <string name="group_create_suggestion_travel">Travels</string>
+    <string name="group_create_suggestion_work">Work trip</string>
+    <string name="group_create_suggestion_school">School trip</string>
     <string name="group_picker_button_create">Create</string>
     <string name="group_picker_button_join">Join</string>
     <string name="group_member_no_location_info_message">This device does not have a location yet.</string>

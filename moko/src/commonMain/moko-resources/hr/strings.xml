@@ -475,6 +475,15 @@
     <string name="group_load_error">Nemoguće učitati Vašu grupu</string>
     <string name="group_create_name_placeholder">Ime grupe</string>
     <string name="group_create_button_text">Kreirajte grupu</string>
+    <string name="group_create_suggestions_header">Prijedlozi</string>
+    <string name="group_create_suggestion_family">Obitelj</string>
+    <string name="group_create_suggestion_friends">Prijatelji</string>
+    <string name="group_create_suggestion_couple">Nas dvoje</string>
+    <string name="group_create_suggestion_bestGroup">Najbolja grupa ikad</string>
+    <string name="group_create_suggestion_coffee">Ljubitelji kave</string>
+    <string name="group_create_suggestion_travel">Putovanja</string>
+    <string name="group_create_suggestion_work">Poslovno putovanje</string>
+    <string name="group_create_suggestion_school">Školski izlet</string>
     <string name="group_picker_button_create">Kreirajte</string>
     <string name="group_picker_button_join">Pridružite se</string>
     <string name="group_member_no_location_info_message">Lokacija trenutno nije dostupna za ovaj uređaj.</string>
