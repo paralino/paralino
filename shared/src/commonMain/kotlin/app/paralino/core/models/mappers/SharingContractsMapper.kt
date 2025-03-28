@@ -12,7 +12,8 @@ object SharingContractsMapper {
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
             shareNetwork = model.shareNetwork,
-            approximateLocationInMeters = model.approximateLocationInMeters
+            approximateLocationInMeters = model.approximateLocationInMeters,
+            shareDeviceStatus = model.shareDeviceStatus
         )
     }
 
@@ -24,7 +25,8 @@ object SharingContractsMapper {
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
             shareNetwork = model.shareNetwork,
-            approximateLocationInMeters = model.approximateLocationInMeters
+            approximateLocationInMeters = model.approximateLocationInMeters,
+            shareDeviceStatus = model.shareDeviceStatus
         )
     }
 }

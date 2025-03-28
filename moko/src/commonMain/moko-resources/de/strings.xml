@@ -397,6 +397,8 @@
     <string name="groups_sharing_setting_speed_share">Geschwindigkeit</string>
     <string name="groups_sharing_setting_elevation_share">Höhe</string>
     <string name="groups_sharing_setting_network_share">Netzwerkstatus</string>
+    <string name="groups_sharing_setting_deviceStatus_title">Gerätestatus</string>
+    <string name="groups_sharing_setting_deviceStatus_description">Wenn aktiviert, wird dein Status anzeigen, ob dein Standort deaktiviert ist, du keine Standortberechtigungen hast oder du das Teilen deines Standorts beendet hast. Wenn deaktiviert, wird dein Status in diesen Fällen als **%s** angezeigt.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Mitglieder benachrichtigen</string>
     <string name="groups_sharing_setting_notifyOthers_description">Wenn aktiviert, erhalten Gruppenmitglieder eine Benachrichtigung, dass Sie begonnen haben, Ihren Standort freizugeben.</string>
     <string name="groups_sharing_button_start">Freigabe starten</string>

@@ -437,6 +437,24 @@ fun SharingStartScreenCore(
                     }
 
                     Spacer(modifier = Modifier.size(10.dp))
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                        title = stringResource(MR.strings.groups_sharing_setting_deviceStatus_title),
+                        description = stringResource(MR.strings.groups_sharing_setting_deviceStatus_description, stringResource(MR.strings.group_members_status_inactive)),
+                        state = rememberSeekbarState(
+                            key = state,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(state.shareDeviceStatus)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.turnOnDeviceStatusSharing(it)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp))
                     if (state.isPremiumSectionVisible) {
                         SettingsSectionHeader(
                             modifier = Modifier.zIndex(0f),

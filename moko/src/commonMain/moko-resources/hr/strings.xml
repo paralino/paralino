@@ -395,6 +395,8 @@
     <string name="groups_sharing_setting_speed_share">Brzina</string>
     <string name="groups_sharing_setting_elevation_share">Visina</string>
     <string name="groups_sharing_setting_network_share">Stanje mreže</string>
+    <string name="groups_sharing_setting_deviceStatus_title">Status uređaja</string>
+    <string name="groups_sharing_setting_deviceStatus_description">Ako je omogućeno, vaš status će prikazivati je li vaša lokacija isključena, nedostaju li dozvole za lokaciju ili ste prestali dijeliti lokaciju. Ako je onemogućeno, vaš status će u tim slučajevima biti prikazan kao **%s**.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Obavijestite članove</string>
     <string name="groups_sharing_setting_notifyOthers_description">Ukoliko je opcija uključena, članovi grupe će biti obaviješteni da dijelite Vašu lokaciju.</string>
     <string name="groups_sharing_button_start">Započnite dijeljenje</string>

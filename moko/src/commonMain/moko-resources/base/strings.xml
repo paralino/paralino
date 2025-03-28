@@ -398,6 +398,8 @@
     <string name="groups_sharing_setting_speed_share">Speed</string>
     <string name="groups_sharing_setting_elevation_share">Elevation</string>
     <string name="groups_sharing_setting_network_share">Network state</string>
+    <string name="groups_sharing_setting_deviceStatus_title">Device status</string>
+    <string name="groups_sharing_setting_deviceStatus_description">If enabled, your status will show if your location is off, you are missing location permissions, or you stop sharing your location. If disabled, your status will show **%s** in those cases.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notify members</string>
     <string name="groups_sharing_setting_notifyOthers_description">If enabled, group members will receive notification that you started sharing your location.</string>
     <string name="groups_sharing_button_start">Start sharing</string>
