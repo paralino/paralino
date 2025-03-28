@@ -218,7 +218,7 @@
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
     <string name="plans_management_screen_title">Subscription</string>
-    <string name="plans_management_info_not_subscribed">You are currently not subscribed to Premium plan!</string>
+    <string name="plans_management_info_not_subscribed">You are currently not subscribed to a Premium plan!</string>
     <string name="plans_management_info_wrong_platform">You can not manage this plan on this device!\n\nUse the device you originally used for purchasing.</string>
     <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>

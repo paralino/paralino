@@ -21,8 +21,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.SubscriptionScreenEvent
 import app.paralino.core.presentation.settings.billing.SubscriptionScreenUiEvent
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
@@ -143,6 +146,24 @@ fun SubscriptionScreenCore(
             } else {
                 NotSubscribedSection(openPaywall = openPaywall)
             }
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 4.dp, top = 40.dp),
+                text = stringResource(MR.strings.paywall_current_plan_label),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
+            )
+
+            FeatureTable(
+                modifier = Modifier,
+                table = uiState.featureTableState,
+                canExpand = false,
+                isExpanded = true,
+                onExpandPlans = {}
+            )
         }
     }
 }
@@ -156,6 +177,6 @@ private fun ColumnScope.NotSubscribedSection(
         style = MaterialTheme.typography.h6,
         modifier = Modifier.fillMaxWidth()
     )
-    Spacer(Modifier.size(40.dp))
+    Spacer(Modifier.size(30.dp))
     PremiumPlanBanner(onClick = openPaywall)
 }

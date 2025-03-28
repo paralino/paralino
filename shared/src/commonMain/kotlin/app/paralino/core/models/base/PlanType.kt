@@ -137,6 +137,12 @@ data class PlanConfig(
 
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
 
+    val adjustedPlanName: String = when (planTypeEnum) {
+        PlanType.SILVER -> MR.strings.paywall_silver_plan_name.localizedString()
+        PlanType.FREE -> MR.strings.paywall_free_plan_name.localizedString()
+        else -> planName
+    }
+
     fun planBenefits(): List<PlanBenefit> {
         val planConfig = this
         return buildList {

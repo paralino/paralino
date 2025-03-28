@@ -306,19 +306,13 @@ class PaywallViewModel(
         )
         val freeUiPlan = PlanInfoState(
             productId = "free",
-            name = if (freePlanConfig.planTypeEnum == PlanType.SILVER) {
-                MR.strings.paywall_silver_plan_name.localizedString()
-            } else {
-                MR.strings.paywall_free_plan_name.localizedString()
-            },
+            name = freePlanConfig.adjustedPlanName,
             config = freePlanConfig,
             isCurrentPlan = false,
             hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
-            billingPeriods = emptyList(),
-            includedMembersPerGroup = freePlanConfig.membersLimit,
-            benefits = freePlanConfig.planBenefits()
+            billingPeriods = emptyList()
         )
 
         val uiPlans = availableProducts.map { product ->
@@ -389,15 +383,13 @@ class PaywallViewModel(
 
             PlanInfoState(
                 productId = product.productId,
-                name = planConfig.planName,
+                name = planConfig.adjustedPlanName,
                 config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
                 hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
                 isExpanded = !sourceType.shouldPreselectPlan,
-                billingPeriods = billingPeriods,
-                includedMembersPerGroup = planConfig.membersLimit,
-                benefits = planConfig.planBenefits()
+                billingPeriods = billingPeriods
             )
         }
 
