@@ -377,6 +377,7 @@ class PaywallViewModel(
                             ?.let { "$it%" },
                         isPromoDiscount = highestPrice != null,
                         trialDurationDays = lowestPrice.trialDurationDays,
+                        isCurrentBillingPeriod = plans.highestValidPlan?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }?.plan?.billingPeriod == period.billingPeriod
                     )
                 }
                 .sortedByDescending { it.billingPeriod }

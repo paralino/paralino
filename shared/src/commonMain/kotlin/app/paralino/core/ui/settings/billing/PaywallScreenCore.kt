@@ -735,7 +735,7 @@ private fun ColumnScope.PlanTypePicker(
     }
 
     AnimatedVisibility(
-        state.selectedPlan?.isCurrentPlan == true
+        state.selectedPlan?.shouldDisplayCurrentPlanIndicator == true
     ) {
         SmallActionButton(
             modifier = Modifier
@@ -949,12 +949,15 @@ private fun BillingPeriodOptions(
                     monthlyEquivalent = state.pricePerMonth,
                     isPromoDiscount = state.isPromoDiscount,
                     isSelected = state.isSelected,
+                    isCurrentPeriod = state.isCurrentBillingPeriod,
                     onClick = { onPeriodSelected(state.billingPeriod) }
                 )
             }
         }
 
-        AnimatedVisibility(visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null) {
+        AnimatedVisibility(
+            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null
+        ) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -979,6 +982,7 @@ private fun SubscriptionOptionItem(
     discountedPrice: String? = null,
     monthlyEquivalent: String? = null,
     isPromoDiscount: Boolean,
+    isCurrentPeriod: Boolean,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -1062,6 +1066,16 @@ private fun SubscriptionOptionItem(
                 color = contentColor
             )
 
+            AnimatedVisibility(isCurrentPeriod) {
+                Text(
+                    text = "*" + stringResource(MR.strings.paywall_current_plan_label),
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = contentColor.copy(alpha = ContentAlpha.medium)
+                )
+            }
+
             AnimatedVisibility(monthlyEquivalent != null) {
                 Text(
                     text = monthlyEquivalent?.annotatedBoldCompose() ?: "".annotatedBoldCompose(),
@@ -1096,29 +1110,13 @@ private fun SubscriptionOptionItem(
                     color = AppColors.lightBackground
                 )
             }
-            Column(
-                modifier = Modifier
-//                    .background(
-//                        color = animateColorAsState(if (isSelected) AppColors.lightBackground else backgroundColor).value,
-//                        shape = if (discountPercent != null) {
-//                            RoundedCornerShape(
-//                                topStart = 8.dp,
-//                                bottomStart = 8.dp,
-//                                topEnd = 0.dp,
-//                                bottomEnd = 8.dp
-//                            )
-//                        } else {
-//                            RoundedCornerShape(8.dp)
-//                        }
-//                    )
-                    .padding(horizontal = 0.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
-                    color = contentColor,
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-                )
-            }
+
+            Text(
+                modifier = Modifier.padding(vertical = 4.dp),
+                text = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
+                color = contentColor,
+                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
+            )
         }
     }
 }

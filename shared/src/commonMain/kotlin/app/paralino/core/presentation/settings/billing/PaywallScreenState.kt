@@ -63,6 +63,9 @@ data class PlanInfoState(
     val type: PlanType = config.planTypeEnum
     val selectedBillingPeriod: PlanBillingPeriodState? =
         billingPeriods.firstOrNull { it.isSelected }
+
+    val shouldDisplayCurrentPlanIndicator: Boolean = isCurrentPlan && isSelected && billingPeriods.none { it.isCurrentBillingPeriod }
+
     val displayedName: String = if (hasSpecialOffer) {
         "🎁$name"
     } else {
@@ -82,6 +85,7 @@ data class PlanBillingPeriodState(
     val discountPercent: String?,
     val isPromoDiscount: Boolean,
     val trialDurationDays: Int?,
+    val isCurrentBillingPeriod: Boolean
 )
 
 enum class PaywallScreenStep {
