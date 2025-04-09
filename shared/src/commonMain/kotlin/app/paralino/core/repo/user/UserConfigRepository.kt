@@ -93,4 +93,8 @@ class UserConfigRepository(
             UserConfigModel.fromRemote(documents)
         }
     }
+
+    suspend fun logout() {
+        return database.userConfigDao.clearAll()
+    }
 }
