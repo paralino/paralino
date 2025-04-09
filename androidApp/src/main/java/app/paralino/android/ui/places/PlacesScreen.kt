@@ -2,8 +2,10 @@ package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,7 +52,7 @@ fun PlacesScreen(
     }
 
     Scaffold(
-        modifier = Modifier.safeDrawingPadding(),
+        modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(MR.strings.places_list_screen_title),

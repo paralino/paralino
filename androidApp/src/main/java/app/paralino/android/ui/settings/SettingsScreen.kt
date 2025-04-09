@@ -2,7 +2,9 @@ package app.paralino.android.ui.settings
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -33,7 +35,9 @@ fun SettingsScreen(
 
     val context = LocalContext.current
     Scaffold(
-        modifier = Modifier.safeDrawingPadding(),
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
+            .safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.title_settings),

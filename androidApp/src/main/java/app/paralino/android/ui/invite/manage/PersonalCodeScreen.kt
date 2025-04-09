@@ -1,7 +1,9 @@
 package app.paralino.android.ui.invite.manage
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,7 +34,7 @@ fun PersonalCodeScreen(
     )
 
     Scaffold(
-        modifier = Modifier.safeDrawingPadding(),
+        modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_section_personal_code_title),
