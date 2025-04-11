@@ -27,7 +27,7 @@ fun ConvertAccountScreen(
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_account_guest_convert),
-                navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
+                navigationIcon = { ToolbarButtons.Back { if (canNavigateBack) appState.navController.popBackStack() } }
             )
         }
     ) {

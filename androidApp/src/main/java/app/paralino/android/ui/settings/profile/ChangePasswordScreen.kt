@@ -29,7 +29,7 @@ fun ChangePasswordScreen(
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_account_edit_password),
-                navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
+                navigationIcon = { ToolbarButtons.Back { if (canNavigateBack) appState.navController.popBackStack() } }
             )
         }
     ) {

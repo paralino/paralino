@@ -30,7 +30,7 @@ fun ChangeEmailScreen(
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.settings_account_edit_email),
-                navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
+                navigationIcon = { ToolbarButtons.Back { if (canNavigateBack) appState.navController.popBackStack() } }
             )
         }
     ) {
@@ -50,7 +50,7 @@ fun ChangeEmailScreen(
     ) {
         // block
         if (canNavigateBack) {
-            onNavigateBack()
+            appState.navController.popBackStack()
         }
     }
 }
