@@ -424,6 +424,7 @@ fun GroupDetailScreenCore(
                                         expanded = !expanded
                                     }
 
+                                    is GroupMemberItemEvent.onDirectionsRequest -> {}
                                     is GroupMemberItemEvent.onShowLocation -> {}
                                     is GroupMemberItemEvent.onLocationRequest -> {}
                                     is GroupMemberItemEvent.onCopyCode -> { vm.copyToClipboard(event.code) }

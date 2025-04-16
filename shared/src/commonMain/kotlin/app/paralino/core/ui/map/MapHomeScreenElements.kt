@@ -38,16 +38,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.logg
 import app.paralino.core.models.base.DeviceType
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
+import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.asReady
-import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
@@ -65,17 +60,7 @@ fun MapHomeScreenElements(
     state: MapHomeScreenState,
     topPadding: Dp,
     sheetPeekHeight: Dp,
-    onGroupPickerClick: () -> Unit,
-    onGroupDetailsClick: () -> Unit,
-    onSharingStartClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onMemberClick: (GroupMemberItemState) -> Unit,
-    onPlaceClick: (PlaceListItemData) -> Unit,
-    onMemberActionClick: (MemberActionType, GroupMemberItemState) -> Unit,
-    onToggleLocation: (GroupMemberItemStateWithLocations) -> Unit,
-    onRequestLocation: (GroupMemberItemState) -> Unit,
-    onMapModeSwitch: () -> Unit,
-    onCloseFocusedItem: () -> Unit,
+    onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -119,7 +104,7 @@ fun MapHomeScreenElements(
                     MapGroupPicker(
                         modifier = Modifier,
                         groupImage = readyState.groupImage,
-                        onExpandClick = onGroupPickerClick
+                        onExpandClick = { onEvent(MapHomeScreenUiEvent.OnGroupPickerClick) }
                     )
                 }
             }
@@ -128,7 +113,7 @@ fun MapHomeScreenElements(
 
             FilledButton(
                 modifier = Modifier.padding(end = 8.dp).size(42.dp),
-                onClick = onSettingsClick,
+                onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
                 icon = null,
                 style = ButtonStyle.ICON,
                 elevation = 8.dp,
@@ -170,7 +155,7 @@ fun MapHomeScreenElements(
                 )
                 .padding(top = 16.dp, end = 8.dp, start = 8.dp)
                 .size(40.dp)
-                .clickable { onMapModeSwitch() }
+                .clickable { onEvent(MapHomeScreenUiEvent.OnMapModeSwitch) }
                 .background(
                     color = AppColors.accentDark,
                     shape = RoundedCornerShape(12.dp)
@@ -198,7 +183,7 @@ fun MapHomeScreenElements(
                 ) {
                     Row(
                         modifier = Modifier
-                            .clickable { onGroupDetailsClick() }
+                            .clickable { onEvent(MapHomeScreenUiEvent.OnGroupDetailsClick) }
                             .background(
                                 MaterialTheme.colors.surface,
                                 MaterialTheme.shapes.medium
@@ -236,7 +221,9 @@ fun MapHomeScreenElements(
                             backgroundColor = MaterialTheme.colors.primary,
                             contentColor = MaterialTheme.colors.onPrimary
                         ),
-                        onClick = onSharingStartClick
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
+                        }
                     ) {
                         Text(text = stringResource(MR.strings.groups_sharing_button_start))
                     }
@@ -264,13 +251,15 @@ fun MapHomeScreenElements(
                                 modifier = Modifier.padding(top = 20.dp),
                                 state = placeState,
                                 hasEndArrow = true,
-                                onClick = { onPlaceClick(placeState) }
+                                onClick = { onEvent(MapHomeScreenUiEvent.OnPlaceClick(placeState)) }
                             )
                             CloseFocusButton(
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
                                     .padding(end = 8.dp),
-                                onClick = onCloseFocusedItem
+                                onClick = {
+                                    onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
+                                }
                             )
                         }
                     }
@@ -292,38 +281,21 @@ fun MapHomeScreenElements(
                                 modifier = Modifier.padding(top = 20.dp),
                                 state = memberState,
                                 backgroundColor = MaterialTheme.colors.background,
+                                shape = RoundedCornerShape(16.dp),
                                 collapseOnActionClick = false,
                                 forceExpandAction = true,
                                 canShowOldLocation = true,
                                 onEvent = { event ->
-                                    when (event) {
-                                        is GroupMemberItemEvent.onActionClick -> {
-                                            onMemberActionClick(event.action.type, memberState)
-                                        }
-
-                                        is GroupMemberItemEvent.onItemClick -> {
-                                            onMemberClick(event.item)
-                                        }
-
-                                        is GroupMemberItemEvent.onShowLocation -> {
-                                            onToggleLocation(event.item)
-                                        }
-
-                                        is GroupMemberItemEvent.onDeleteDeviceClick -> {}
-                                        is GroupMemberItemEvent.onOpenRawData -> {}
-                                        is GroupMemberItemEvent.onCopyCode -> {}
-                                        is GroupMemberItemEvent.onLocationRequest -> {
-                                            logg.v("location_request", "pass request click")
-                                            onRequestLocation(memberState)
-                                        }
-                                    }
+                                    onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(event = event))
                                 }
                             )
                             CloseFocusButton(
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
-                                    .padding(end = 8.dp),
-                                onClick = onCloseFocusedItem
+                                    .padding(end = 12.dp),
+                                onClick = {
+                                    onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
+                                }
                             )
                         }
                     }

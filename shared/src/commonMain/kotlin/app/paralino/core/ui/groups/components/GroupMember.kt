@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -34,6 +35,7 @@ fun GroupMember(
     state: GroupMemberItemState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.surface,
+    shape: CornerBasedShape = RoundedCornerShape(12.dp),
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
@@ -43,7 +45,7 @@ fun GroupMember(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onEvent(GroupMemberItemEvent.onItemClick(state)) }
-            .clip(RoundedCornerShape(12.dp))
+            .clip(shape)
             .background(backgroundColor)
             .animateContentSize(
                 animationSpec = spring(
@@ -100,6 +102,8 @@ val dummyLocations = listOf(
         locationId = "",
         name = "Device 1",
         image = ImageModel.emoji(Emojis.lock),
+        lat = null,
+        lng = null,
         actualBatteryLevel = 20,
         adjustedBatteryLevel = 20,
         isBatteryCharging = false,
@@ -120,6 +124,8 @@ val dummyLocations = listOf(
         locationId = "",
         name = "Primary",
         image = ImageModel.emoji(Emojis.lock),
+        lat = null,
+        lng = null,
         actualBatteryLevel = 34,
         adjustedBatteryLevel = 20,
         isBatteryCharging = false,
@@ -140,6 +146,8 @@ val dummyLocations = listOf(
         locationId = "",
         name = "Device 3",
         image = ImageModel.emoji(Emojis.lock),
+        lat = null,
+        lng = null,
         actualBatteryLevel = 20,
         adjustedBatteryLevel = 20,
         isBatteryCharging = true,

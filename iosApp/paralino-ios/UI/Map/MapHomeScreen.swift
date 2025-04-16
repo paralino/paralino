@@ -26,18 +26,11 @@ struct MapHomeScreen: View {
                         vm: mapState.vm,
                         paddingValues: safeAreaInsets,
                         initialUiState: mapState.uiState,
-                        trackMarker: { data in
-                            mapState.vm.trackMarker(markerData: data)
+                        onOpenPlacesScreen: { groupId in
+                            path.append(.home(.places(groupId: groupId, isOnboarding: false)))
                         },
-                        onOpenPlacesScreen: {
-                            if let groupId = mapState.uiState.asReady()?.groupId {
-                                path.append(.home(.places(groupId: groupId, isOnboarding: false)))
-                            }
-                        },
-                        onOpenCreatePlaceScreen: {
-                            if let readyState = mapState.uiState.asReady() {
-                                path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: nil, lng: nil)))
-                            }
+                        onOpenCreatePlaceScreen: { groupId in
+                            path.append(.home(.placeCreate(groupId: groupId, placeId: nil, lat: nil, lng: nil)))
                         },
                         onSheetOffsetChange: { offset in
                             mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)
@@ -45,21 +38,24 @@ struct MapHomeScreen: View {
                         onGroupPickerClick: {
                             groupPicker = mapState.vm.getGroupPickerState()
                         },
-                        onGroupDetailsClick: {
-                            if let groupId = mapState.uiState.asReady()?.groupId {
-                                path.append(.home(.groupDetail(groupId: groupId)))
-                            }
+                        onGroupDetailsClick: { groupId in
+                            path.append(.home(.groupDetail(groupId: groupId)))
                         },
-                        onSharingStartClick: {
-                            if let groupId = mapState.uiState.asReady()?.groupId {
-                                path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
-                            }
+                        onSharingStartClick: { groupId in
+                            path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
                         },
                         onSettingsClick: {
                             path.append(.settings(.settings))
                         },
-                        onPlaceClick: { place in
-                            path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
+                        onPlaceClick: { event in
+                            path.append(.home(.placeDetail(groupId: event.groupId, placeId: event.placeId)))
+                        },
+                        onDirectionsRequest: { event in
+                            let coordinate = CLLocationCoordinate2DMake(event.lat, event.lng)
+                            let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: coordinate))
+                            mapItem.name = event.name ?? ""
+                            let launchOptions = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDefault]
+                            mapItem.openInMaps(launchOptions: launchOptions)
                         },
                         onCreateGroup: {
                             path.append(.home(.groupCreate(groupId: nil)))
@@ -75,7 +71,7 @@ struct MapHomeScreen: View {
                             controller.additionalSafeAreaInsets = .init(top: 60, left: 0, bottom: 0, right: 0)
                             controller.mapState = mapState
                             controller.onMapPan = {
-                                mapState.vm.onMapTouch()
+                                mapState.vm.onEvent(event: MapHomeScreenUiEventOnMapTouch())
                             }
                             controller.onMapLongPress = { point in
                                 if let readyState = mapState.uiState.asReady() {

@@ -438,6 +438,7 @@
     <string name="group_members_item_request_location_button">Standortsuche starten</string>
     <string name="group_members_item_refresh_location_button">Aktualisieren</string>
     <string name="group_members_item_old_location_button">Letzten Standort anzeigen</string>
+    <string name="group_members_item_directions_button">Route</string>
     <string name="group_members_marker_circle_info">%s befindet sich irgendwo innerhalb dieses Kreises</string>
     <string name="group_members_marker_circle_info_inaccurate">%s befindet sich möglicherweise irgendwo innerhalb dieses Kreises</string>
     <string name="group_member_title">Mitglied</string>

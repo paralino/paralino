@@ -436,6 +436,7 @@
     <string name="group_members_item_request_location_button">Pokušajte locirati</string>
     <string name="group_members_item_refresh_location_button">Osvježite</string>
     <string name="group_members_item_old_location_button">Prikažite posljednju lokaciju</string>
+    <string name="group_members_item_directions_button">Upute</string>
     <string name="group_members_marker_circle_info">%s je negdje unutar ovog kruga</string>
     <string name="group_members_marker_circle_info_inaccurate">%s se možda nalazi unutar ovog kruga</string>
     <string name="group_member_title">Korisnik</string>
