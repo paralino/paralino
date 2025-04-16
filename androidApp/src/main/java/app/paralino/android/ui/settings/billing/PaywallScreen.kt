@@ -12,12 +12,12 @@ import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.android.utils.extensions.getActivity
 import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PurchaseErrorException
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.settings.billing.PaywallScreenCore
+import app.paralino.core.utils.extensions.getActivity
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf

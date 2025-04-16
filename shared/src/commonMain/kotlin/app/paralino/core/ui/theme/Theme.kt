@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.paralino.core.provider.ComposeLocalUriHandler
+import app.paralino.core.provider.ComposeUriHandler
 
 private val LightThemeColors = lightColors(
 	background = AppColors.lightBackground,
@@ -134,6 +136,7 @@ fun AppTheme(
 		){
 			CompositionLocalProvider(
 				LocalIndication provides ScaleIndication,
+				ComposeLocalUriHandler provides remember { ComposeUriHandler() },
 				content = content
 			)
 		}
