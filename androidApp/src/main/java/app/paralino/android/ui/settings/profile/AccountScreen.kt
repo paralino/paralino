@@ -10,6 +10,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.MR
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -40,6 +41,13 @@ fun AccountScreen(
             openConvertAccount = {
                 appState.navController.navigate(
                     AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature
+                )
+            },
+            openProfileRawScreen = {
+                appState.navController.navigate(
+                    AppScreen.Settings.ProfileDetails.RawDataScreen.route(
+                        RawPresentationDataType.UserPresentation
+                    )
                 )
             },
             openEditProfile = {

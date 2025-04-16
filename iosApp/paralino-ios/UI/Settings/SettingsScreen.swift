@@ -36,9 +36,6 @@ struct SettingsScreen: View {
                     openBlockList: {
                         path.append(.settings(.blocklist))
                     },
-                    openProfileRawScreen: {
-                        path.append(.settings(.rawData(type: .UserPresentation())))
-                    },
                     openGeneralInfo: {
                         path.append(.settings(.generalInfo))
                     },

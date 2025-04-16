@@ -63,13 +63,6 @@ fun SettingsScreen(
             openBlockList = {
                 appState.navController.navigate(AppScreen.Settings.BlockList.routeSignature)
             },
-            openProfileRawScreen = {
-                appState.navController.navigate(
-                    AppScreen.Settings.ProfileDetails.RawDataScreen.route(
-                        RawPresentationDataType.UserPresentation
-                    )
-                )
-            },
             openGeneralInfo = {
                 appState.navController.navigate(AppScreen.Settings.GeneralInfo.routeSignature)
             },

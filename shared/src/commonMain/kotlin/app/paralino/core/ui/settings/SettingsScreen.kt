@@ -64,7 +64,6 @@ fun SettingsScreenCore(
     openConvertAccount: () -> Unit,
     openProfileDetails: () -> Unit,
     openPersonalCodes: () -> Unit,
-    openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
     openGeneralInfo: () -> Unit,
     openAppStatus: () -> Unit,
@@ -141,13 +140,6 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.Block.asPainterResource()
             ) {
                 openBlockList()
-            }
-
-            SettingsActionItem(
-                name = stringResource(MR.strings.raw_data_screen_title),
-                icon = CoreAppIcons.Security.asPainterResource()
-            ) {
-                openProfileRawScreen()
             }
 
             SettingsActionItem(

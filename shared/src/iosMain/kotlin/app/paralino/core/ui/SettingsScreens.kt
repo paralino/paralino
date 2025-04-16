@@ -42,7 +42,6 @@ object SettingsScreens {
         openProfileDetails: () -> Unit,
         openPersonalCodes: () -> Unit,
         openBlockList: () -> Unit,
-        openProfileRawScreen: () -> Unit,
         openGeneralInfo: () -> Unit,
         openAppStatus: () -> Unit,
         openSubscriptions: () -> Unit,
@@ -58,7 +57,6 @@ object SettingsScreens {
                 openConvertAccount = openConvertAccount,
                 openProfileDetails = openProfileDetails,
                 openPersonalCodes = openPersonalCodes,
-                openProfileRawScreen = openProfileRawScreen,
                 openBlockList = openBlockList,
                 openGeneralInfo = openGeneralInfo,
                 openAppStatus = openAppStatus,
@@ -76,6 +74,7 @@ object SettingsScreens {
         openEditProfile: () -> Unit,
         openChangeEmail: () -> Unit,
         openChangePassword: () -> Unit,
+        openProfileRawScreen: () -> Unit,
         onShare: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -86,6 +85,7 @@ object SettingsScreens {
                 openEditProfile = openEditProfile,
                 openChangePassword = openChangePassword,
                 openChangeEmail = openChangeEmail,
+                openProfileRawScreen = openProfileRawScreen,
                 onShare = onShare
             )
         }
