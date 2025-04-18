@@ -65,8 +65,15 @@ class PaywallViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        if (sourceType.isOnboarding) {
-            appRatingManager.tryShowingAppRating(source = AppRatingSource.PAYWALL_ONBOARDING)
+        when (sourceType) {
+            BillingScreenSourceType.GROUP_ONBOARDING,
+            BillingScreenSourceType.SKIPPED_ONBOARDING -> {
+                appRatingManager.tryShowingAppRating(source = AppRatingSource.PAYWALL_ONBOARDING)
+            }
+            BillingScreenSourceType.FREE_PLAN_NEW_USER,
+            BillingScreenSourceType.UPGRADE,
+            BillingScreenSourceType.FREE_PLAN_NOTICE,
+            BillingScreenSourceType.NORMAL -> {}
         }
 
         combine(

@@ -28,7 +28,7 @@ fun MemberInviteScreen(
     groupId: String?,
     code: String?,
     isOnboarding: Boolean,
-    vm: MemberInviteViewModel = koinViewModel { parametersOf(groupId, code) },
+    vm: MemberInviteViewModel = koinViewModel { parametersOf(groupId, code, isOnboarding) },
 ) {
     val pickerState = rememberGroupBottomSheetPickerState()
     Scaffold(
@@ -69,6 +69,15 @@ fun MemberInviteScreen(
                         groupId = groupId, isOnboarding = isOnboarding
                     )
                 )
+            },
+            openPaywall = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.BillingPaywall.route(groupId = null, type = it)
+                ) {
+                    this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
+                        this.inclusive = false
+                    }
+                }
             }
         )
     }

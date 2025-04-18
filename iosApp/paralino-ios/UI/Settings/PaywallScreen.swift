@@ -61,7 +61,7 @@ struct PaywallScreen: View {
                 path.removeLast()
             }
 
-        case .skippedOnboarding, .normal, .upgrade:
+        case .skippedOnboarding, .normal, .upgrade, .freePlanNewUser:
             path.removeLast()
             
         default:

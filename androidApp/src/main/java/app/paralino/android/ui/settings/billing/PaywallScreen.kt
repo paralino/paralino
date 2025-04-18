@@ -59,6 +59,7 @@ fun PaywallScreen(
             }
 
             BillingScreenSourceType.NORMAL,
+            BillingScreenSourceType.FREE_PLAN_NEW_USER,
             BillingScreenSourceType.SKIPPED_ONBOARDING,
             BillingScreenSourceType.UPGRADE -> {
                 appState.navController.popBackStack()

@@ -190,10 +190,11 @@ object KoinSetup {
         }
         viewModel { LoggedOutViewModel(get(), get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
-        viewModel { (groupId: String?, code: String?) ->
+        viewModel { (groupId: String?, code: String?, isOnboarding: Boolean) ->
             MemberInviteViewModel(
                 groupId = groupId,
                 code = code,
+                isOnboarding = isOnboarding,
                 codeRepo = get(),
                 groupRepo = get(),
                 groupMemberAdd = get(),

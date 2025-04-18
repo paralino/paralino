@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 class MemberInviteViewModel(
     val groupId: String?,
     code: String?,
+    val isOnboarding: Boolean,
     private val codeRepo: PersonalCodesRepository,
     private val groupRepo: UserGroupLocalDataSource,
     private val groupMemberAdd: GroupMemberAddUseCase,
@@ -167,7 +168,16 @@ class MemberInviteViewModel(
 
                     is Payload.Success -> {
                         _uiState.update { state.copy(actionLoading = false) }
-                        _eventChannel.send(MemberInviteScreenEvent.MemberAdded)
+
+                        if (isOnboarding) {
+                            _eventChannel.send(MemberInviteScreenEvent.MemberAdded)
+                        } else {
+                            if (userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium) {
+                                _eventChannel.send(MemberInviteScreenEvent.MemberAdded)
+                            } else {
+                                _eventChannel.send(MemberInviteScreenEvent.OpenPaywall)
+                            }
+                        }
                     }
                 }
             }

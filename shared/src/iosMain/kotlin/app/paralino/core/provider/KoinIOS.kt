@@ -200,10 +200,11 @@ object KoinIOS {
             }
             factory { LoggedOutViewModel(get(), get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
-            factory { (groupId: String?, code: String?) ->
+            factory { (groupId: String?, code: String?, isOnboarding: Boolean) ->
                 MemberInviteViewModel(
                     groupId = groupId,
                     code = code,
+                    isOnboarding = isOnboarding,
                     codeRepo = get(),
                     groupRepo = get(),
                     groupMemberAdd = get(),

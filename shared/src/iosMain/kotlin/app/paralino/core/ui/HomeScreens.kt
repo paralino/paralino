@@ -187,6 +187,7 @@ object HomeScreens {
         vm: MemberInviteViewModel,
         isOnboarding: Boolean,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
+        openPaywall: (BillingScreenSourceType) -> Unit,
         onMemberAdded: () -> Unit,
         onSkipOnboarding: () -> Unit
     ) = ComposeUIViewController {
@@ -197,6 +198,7 @@ object HomeScreens {
                 isOnboarding = isOnboarding,
                 contentPadding = PaddingValues(),
                 onPickGroup = onPickGroup,
+                openPaywall = openPaywall,
                 onMemberAdded = onMemberAdded,
                 onSkipOnboarding = onSkipOnboarding
             )
