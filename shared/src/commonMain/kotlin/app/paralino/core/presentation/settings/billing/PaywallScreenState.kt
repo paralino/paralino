@@ -10,6 +10,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.extensions.annotatedBold
 
 data class PaywallScreenState(
     val freePlanInfo: PlanInfoState,
@@ -29,6 +30,9 @@ data class PaywallScreenState(
 ) {
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod
+
+    val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
+    val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
 
     val featureTable: FeatureTableState =
         FeatureTableState.constructFeaturesTable(freeUiPlan = freePlanInfo, uiPlans = plans)
@@ -64,13 +68,11 @@ data class PlanInfoState(
     val selectedBillingPeriod: PlanBillingPeriodState? =
         billingPeriods.firstOrNull { it.isSelected }
 
-    val shouldDisplayCurrentPlanIndicator: Boolean = isCurrentPlan && isSelected && billingPeriods.none { it.isCurrentBillingPeriod }
-
     val displayedName: String = if (hasSpecialOffer) {
         "🎁$name"
     } else {
         name
-    } + if (isCurrentPlan) "*" else ""
+    }
 }
 
 data class PlanBillingPeriodState(

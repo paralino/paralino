@@ -231,7 +231,7 @@
     <string name="paywall_onboarding_skip_button">Kostenlose Version nutzen</string>
     <string name="paywall_screen_header">Wählen Sie den Plan, der zu Ihnen passt</string>
     <string name="paywall_screen_title">Premium</string>
-    <string name="paywall_current_plan_label">Aktueller Plan</string>
+    <string name="paywall_current_plan_label">Aktueller Plan: %1$s</string>
     <string name="paywall_special_offer_label">Sonderangebot</string>
     <string name="paywall_special_offer_title">Dauerhafter Rabatt</string>
     <string name="paywall_special_offer_info">Nur für kurze Zeit! Sichern Sie sich ein spezielles Angebot und **behalten Sie diesen Preis für immer**.</string>

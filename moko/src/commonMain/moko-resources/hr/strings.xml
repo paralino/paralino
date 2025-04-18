@@ -231,7 +231,7 @@
     <string name="paywall_onboarding_skip_button">Besplatna verzija</string>
     <string name="paywall_screen_header">Odaberite plan koji vam odgovara</string>
     <string name="paywall_screen_title">Premium</string>
-    <string name="paywall_current_plan_label">Trenutni plan</string>
+    <string name="paywall_current_plan_label">Trenutni plan: %1$s</string>
     <string name="paywall_special_offer_label">Posebna ponuda</string>
     <string name="paywall_special_offer_title">Trajni popust</string>
     <string name="paywall_special_offer_info">Samo na ograničeno vrijeme! Iskoristite posebnu ponudu i **zadržite ovu cijenu zauvijek**.</string>

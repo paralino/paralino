@@ -152,7 +152,7 @@ fun SubscriptionScreenCore(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 4.dp, top = 40.dp),
-                text = stringResource(MR.strings.paywall_current_plan_label),
+                text = stringResource(MR.strings.paywall_current_plan_label, uiState.subscriptionState?.name ?: ""),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
             )

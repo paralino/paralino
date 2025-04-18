@@ -395,6 +395,20 @@ private fun ColumnScope.PaywallScreen(
 
     Spacer(modifier = Modifier.size(16.dp))
 
+    AnimatedVisibility(
+        state.currentPlan != null
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 8.dp),
+            text = stringResource(MR.strings.paywall_current_plan_label, state.currentPlanName).annotatedBoldCompose(),
+            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Normal),
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onBackground.copy(ContentAlpha.medium)
+        )
+    }
+
     PlanTypePicker(
         state = state,
         onEvent = onEvent
@@ -691,7 +705,6 @@ private fun ColumnScope.PlanTypePicker(
     onEvent: (PaywallScreenUiEvent) -> Unit
 ) {
     var containerWidth by remember { mutableFloatStateOf(0f) }
-
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
@@ -732,29 +745,6 @@ private fun ColumnScope.PlanTypePicker(
                 text = plan.displayedName
             )
         }
-    }
-
-    AnimatedVisibility(
-        state.selectedPlan?.shouldDisplayCurrentPlanIndicator == true
-    ) {
-        SmallActionButton(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(top = 4.dp),
-            backgroundColor = Color.Transparent,
-            contentColor = MaterialTheme.colors.onBackground.copy(ContentAlpha.disabled),
-            shape = RoundedCornerShape(percent = 25),
-            icon = null,
-            text = {
-                Text(
-                    text = "*" + stringResource(MR.strings.paywall_current_plan_label),
-                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onBackground.copy(ContentAlpha.medium)
-                )
-            },
-            onClick = null
-        )
     }
 }
 
@@ -949,7 +939,6 @@ private fun BillingPeriodOptions(
                     monthlyEquivalent = state.pricePerMonth,
                     isPromoDiscount = state.isPromoDiscount,
                     isSelected = state.isSelected,
-                    isCurrentPeriod = state.isCurrentBillingPeriod,
                     onClick = { onPeriodSelected(state.billingPeriod) }
                 )
             }
@@ -982,7 +971,6 @@ private fun SubscriptionOptionItem(
     discountedPrice: String? = null,
     monthlyEquivalent: String? = null,
     isPromoDiscount: Boolean,
-    isCurrentPeriod: Boolean,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -1065,16 +1053,6 @@ private fun SubscriptionOptionItem(
                 lineHeight = if (DeviceType.current == DeviceType.iOS) 22.sp else 24.sp,
                 color = contentColor
             )
-
-            AnimatedVisibility(isCurrentPeriod) {
-                Text(
-                    text = "*" + stringResource(MR.strings.paywall_current_plan_label),
-                    fontSize = 12.sp,
-                    lineHeight = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = contentColor.copy(alpha = ContentAlpha.medium)
-                )
-            }
 
             AnimatedVisibility(monthlyEquivalent != null) {
                 Text(
