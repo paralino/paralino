@@ -79,6 +79,7 @@ import app.paralino.core.provider.NetworkType
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.GroupStatusTag
@@ -245,7 +246,12 @@ fun GroupMemberWithLocations(
             ) {
                 val iconId = "deviceIcon"
                 Text(
-                    text = remember(state.memberState.name, state.singleLocation?.name, expanded, state.allowShowingDevices) {
+                    text = remember(
+                        state.memberState.name,
+                        state.singleLocation?.name,
+                        expanded,
+                        state.allowShowingDevices
+                    ) {
                         buildAnnotatedString {
                             this.append(state.memberState.name)
                             if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
@@ -370,16 +376,6 @@ fun GroupMemberWithLocations(
             }
         }
 
-        if (canShowOldLocation) {
-            GroupMemberOldLocation(
-                modifier = Modifier.padding(horizontal = 10.dp),
-                state = state.singleLocation,
-                onToggleLocation = {
-                    onEvent?.invoke(GroupMemberItemEvent.onShowLocation(state))
-                }
-            )
-        }
-
         // action item
         AnimatedVisibility(
             modifier = Modifier
@@ -399,8 +395,7 @@ fun GroupMemberWithLocations(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clickable { onEvent?.invoke(GroupMemberItemEvent.onCopyCode(state.memberState.paralinoId)) }
-                                .padding(6.dp)
-                            ,
+                                .padding(6.dp),
                             painter = CoreAppIcons.ContentCopy.asPainterResource(),
                             contentDescription = null
                         )
@@ -432,32 +427,36 @@ fun GroupMemberWithLocations(
                     }
                 }
 
-                state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }?.let {
-                    Column(modifier = Modifier.padding(top = 12.dp)) {
-                        Text(
-                            modifier = Modifier.padding(start = 8.dp),
-                            text = stringResource(MR.strings.group_member_devices_section_title),
-                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
-                        )
-                        it.forEach {
-                            GroupMemberLocationChild(
-                                state = it,
-                                onClick = {
-                                    // open device
-                                },
-                                onDelete = {
-                                    // delete device
-                                    onEvent?.invoke(GroupMemberItemEvent.onDeleteDeviceClick(it))
-                                }
+                state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }
+                    ?.let {
+                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                            Text(
+                                modifier = Modifier.padding(start = 8.dp),
+                                text = stringResource(MR.strings.group_member_devices_section_title),
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
                             )
+                            it.forEach {
+                                GroupMemberLocationChild(
+                                    state = it,
+                                    onClick = {
+                                        // open device
+                                    },
+                                    onDelete = {
+                                        // delete device
+                                        onEvent?.invoke(GroupMemberItemEvent.onDeleteDeviceClick(it))
+                                    }
+                                )
+                            }
                         }
                     }
-                }
 
-                if (state.actions.isActive) {
+                if (state.actions.isActive || canShowOldLocation) {
                     GroupMemberActions(
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier
+                            .padding(top = 0.dp)
+                            .fillMaxWidth(),
                         state = state,
+                        canShowOldLocation = canShowOldLocation,
                         onEvent = { event ->
                             if (collapseOnActionClick) {
                                 expanded = !expanded
@@ -496,12 +495,13 @@ fun GroupMemberWithLocations(
 @Composable
 private fun ColumnScope.GroupMemberActions(
     modifier: Modifier = Modifier,
-    state: GroupMemberItemState,
+    state: GroupMemberItemStateWithLocations,
+    canShowOldLocation: Boolean,
     onEvent: (GroupMemberItemEvent) -> Unit
 ) {
     FlowRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         GroupMemberSmallAction(
@@ -523,20 +523,9 @@ private fun ColumnScope.GroupMemberActions(
             onEvent(GroupMemberItemEvent.onActionClick(it, state))
         }
 
-        if (state.actions.locationRequest != null) {
-            LocationRequestItem(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .fillMaxWidth(),
-                state = state.actions.locationRequest!!
-            ) {
-                onEvent(GroupMemberItemEvent.onLocationRequest(state))
-            }
-        }
-
         if (state.actions.deleteLocation != null) {
             GroupMemberActionButton(
-                modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
+                modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = MemberActionType.DELETE_LOCATION.actionIcon,
                 endIcon = null,
                 isLoading = state.actions.deleteLocation?.isLoading ?: false,
@@ -544,21 +533,54 @@ private fun ColumnScope.GroupMemberActions(
                 backgroundColor = AppColors.errorBackground,
                 contentColor = AppColors.redMain,
                 onClick = {
-                    onEvent(GroupMemberItemEvent.onActionClick(state.actions.deleteLocation!!, state))
+                    onEvent(
+                        GroupMemberItemEvent.onActionClick(
+                            action = state.actions.deleteLocation,
+                            item = state
+                        )
+                    )
                 }
             )
         }
 
         if (state.actions.navigate != null) {
             GroupMemberActionButton(
-                modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
+                modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = CoreAppIcons.Map.asPainterResource(),
-                endIcon = CoreAppIcons.ArrowOpenNew.asPainterResource(),
+                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
                 text = stringResource(MR.strings.group_members_item_directions_button),
                 onClick = {
-                    onEvent(GroupMemberItemEvent.onDirectionsRequest(state.actions.navigate!!, state))
+                    onEvent(
+                        GroupMemberItemEvent.onDirectionsRequest(
+                            action = state.actions.navigate,
+                            item = state
+                        )
+                    )
                 }
             )
+        }
+
+        if (state.singleLocation?.visibility == MemberLocationVisibilityType.HIDDEN && canShowOldLocation) {
+            GroupMemberActionButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                startIcon = CoreAppIcons.LocationOn.asPainterResource(),
+                endIcon = null,
+                text = stringResource(MR.strings.group_members_item_old_location_button),
+                onClick = {
+                    onEvent(GroupMemberItemEvent.onShowLocation(state))
+                }
+            )
+        }
+
+        if (state.actions.locationRequest != null) {
+            LocationRequestItem(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .fillMaxWidth(),
+                state = state.actions.locationRequest
+            ) {
+                onEvent(GroupMemberItemEvent.onLocationRequest(state))
+            }
         }
 
         if (state.actions.securityAction) {
@@ -748,22 +770,6 @@ private fun GroupMemberLocationChild(
 }
 
 @Composable
-private fun GroupMemberOldLocation(
-    modifier: Modifier = Modifier,
-    state: GroupMemberItemLocationState?,
-    onToggleLocation: () -> Unit
-) {
-    if (state?.visibility == MemberLocationVisibilityType.HIDDEN) {
-        GroupMemberActionButton(
-            modifier = modifier.fillMaxWidth(),
-            startIcon = CoreAppIcons.LocationOn.asPainterResource(),
-            text = stringResource(MR.strings.group_members_item_old_location_button),
-            onClick = onToggleLocation
-        )
-    }
-}
-
-@Composable
 private fun GroupMemberActionButton(
     modifier: Modifier = Modifier,
     startIcon: Painter,
@@ -772,55 +778,105 @@ private fun GroupMemberActionButton(
     endIcon: Painter? = CoreAppIcons.ChevronRight.asPainterResource(),
     backgroundColor: Color = MaterialTheme.colors.surface,
     contentColor: Color = contentColorFor(backgroundColor),
-    contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
+    contentPadding: PaddingValues = PaddingValues(
+        start = 8.dp,
+        top = 6.dp,
+        end = if (endIcon == null) 10.dp else 6.dp,
+        bottom = 6.dp
+    ),
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .clip(RoundedCornerShape(8.dp))
-            .background(backgroundColor)
-            .padding(contentPadding),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(18.dp),
-                strokeWidth = 2.dp,
-                color = contentColor
+    DataInfoChip(
+        modifier = modifier,
+        shape = RoundedCornerShape(100),
+        backgroundColor = backgroundColor,
+        innerPaddingValues = contentPadding,
+        imageOrIcon = {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = contentColor
+                )
+            } else {
+                Icon(
+                    modifier = Modifier.size(18.dp),
+                    painter = startIcon,
+                    contentDescription = null,
+                    tint = contentColor
+                )
+            }
+        },
+        hasEndArrow = false,
+        text = {
+            Text(
+                text = text,
+                color = contentColor,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+                lineHeight = 14.sp,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(start = 4.dp)
             )
-        } else {
-            Icon(
-                painter = startIcon,
-                modifier = Modifier.size(18.dp),
-                tint = contentColor,
-                contentDescription = null
-            )
-        }
-
-        Text(
-            text = text,
-            color = contentColor,
-            fontWeight = FontWeight.Normal,
-            fontSize = 12.sp,
-            lineHeight = 14.sp,
-            textAlign = TextAlign.Start,
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .weight(weight = 1f)
-        )
-
-        if (endIcon != null) {
-            Icon(
-                modifier = Modifier.width(20.dp),
-                painter = endIcon,
-                tint = contentColor.copy(alpha = ContentAlpha.disabled),
-                contentDescription = null
-            )
-        } else {
-            Spacer(Modifier.size(8.dp))
-        }
-    }
+            if (endIcon != null) {
+                Icon(
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .width(16.dp),
+                    painter = endIcon,
+                    tint = contentColor.copy(alpha = ContentAlpha.disabled),
+                    contentDescription = null
+                )
+            }
+        },
+        onClick = onClick
+    )
+//    Row(
+//        modifier = modifier
+//            .clickable(onClick = onClick)
+//            .clip(RoundedCornerShape(8.dp))
+//            .background(backgroundColor)
+//            .padding(contentPadding),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        if (isLoading) {
+//            CircularProgressIndicator(
+//                modifier = Modifier.size(18.dp),
+//                strokeWidth = 2.dp,
+//                color = contentColor
+//            )
+//        } else {
+//            Icon(
+//                painter = startIcon,
+//                modifier = Modifier.size(18.dp),
+//                tint = contentColor,
+//                contentDescription = null
+//            )
+//        }
+//
+//        Text(
+//            text = text,
+//            color = contentColor,
+//            fontWeight = FontWeight.Normal,
+//            fontSize = 12.sp,
+//            lineHeight = 14.sp,
+//            textAlign = TextAlign.Start,
+//            modifier = Modifier
+//                .padding(horizontal = 8.dp)
+//                .weight(weight = 1f)
+//        )
+//
+//        if (endIcon != null) {
+//            Icon(
+//                modifier = Modifier.width(20.dp),
+//                painter = endIcon,
+//                tint = contentColor.copy(alpha = ContentAlpha.disabled),
+//                contentDescription = null
+//            )
+//        } else {
+//            Spacer(Modifier.size(8.dp))
+//        }
+//    }
 }
 
 @Composable
