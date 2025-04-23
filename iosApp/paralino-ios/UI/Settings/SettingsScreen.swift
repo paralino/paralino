@@ -48,6 +48,9 @@ struct SettingsScreen: View {
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
                     },
+                    openAppSettings: {
+                        path.append(.settings(.appSettings))
+                    },
                     openLocationSettings: {
                         path.append(.settings(.locationSettings))
                     },

@@ -43,7 +43,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyMemberState
-import app.paralino.core.ui.settings.location.LocationSettingsOptionItem
+import app.paralino.core.ui.settings.GenericSettingsOptionItem
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
 import dev.icerock.moko.resources.compose.stringResource
@@ -351,7 +351,7 @@ private fun BatteryPerformance1Switch(
     itemState: Boolean,
     onClick: () -> Unit
 ) {
-    LocationSettingsOptionItem(
+    GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_4),
         description = stringResource(MR.strings.setting_location_balanced_level_4_info),
@@ -369,7 +369,7 @@ private fun BatteryPerformance2Switch(
     itemState: Boolean,
     onClick: () -> Unit
 ) {
-    LocationSettingsOptionItem(
+    GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_5),
         description = stringResource(MR.strings.setting_location_balanced_level_5_info),

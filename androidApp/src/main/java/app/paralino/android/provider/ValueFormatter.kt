@@ -5,9 +5,10 @@ import android.icu.util.LocaleData
 import android.icu.util.ULocale
 import android.text.format.DateFormat
 import app.paralino.android.utils.extensions.fromUTCtoLocal
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.nowUTC
-import app.paralino.core.utils.format.DistanceUnitType
+import app.paralino.core.provider.MeasurementSystemType
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
@@ -16,18 +17,28 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 
-class ValueFormatter() : IValueFormatter() {
+class ValueFormatter(
+    private val appPrefs: AppPrefs
+) : IValueFormatter() {
 
-    override val unitType: DistanceUnitType
+    override val measurementSystem: MeasurementSystemType
+        get() {
+            return when (val measurementSystem = appPrefs.measurementSystem) {
+                null -> deviceDefaultMeasurementSystem
+                else -> measurementSystem
+            }
+        }
+
+    override val deviceDefaultMeasurementSystem: MeasurementSystemType
         get() {
             return try {
                 when (LocaleData.getMeasurementSystem(ULocale.getDefault())) {
                     LocaleData.MeasurementSystem.US,
-                    LocaleData.MeasurementSystem.UK -> DistanceUnitType.IMPERIAL
-                    else -> DistanceUnitType.METRIC
+                    LocaleData.MeasurementSystem.UK -> MeasurementSystemType.IMPERIAL
+                    else -> MeasurementSystemType.METRIC
                 }
             } catch (e: Exception) {
-                DistanceUnitType.METRIC
+                MeasurementSystemType.METRIC
             }
         }
 

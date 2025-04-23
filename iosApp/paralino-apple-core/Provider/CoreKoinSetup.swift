@@ -119,7 +119,7 @@ public class CoreKoinSetup {
             functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },
             realtimeApi: { module, _ in RealtimeApi(remoteModule: module as! AppwriteRemoteModule) },
             cryptoServiceProvider: { CryptoFrameworkProvider() },
-            valueFormatter: { ValueFormatter() },
+            valueFormatter: { prefs in ValueFormatter(appPrefs: prefs) },
             appUpdateManager: appUpdateManager,
             billingProvider: billingProvider,
             appRatingPresenter: appRatingPresenter

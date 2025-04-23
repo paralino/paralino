@@ -209,6 +209,11 @@
     <string name="setting_title_placeActivityThrottle">Filter aktivnosti mjesta</string>
     <string name="setting_description_placeActivityThrottle_enabled">Vaš uređaj će kreirati notifikaciju o mjestu ako se zadržite u ili izvan određenog mjesta.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Vaš uređaj će brže reagirati na promjene mjesta te je moguće da će kreirati više notifikacija o mjestu (npr: ako kratko prođete kraj mjesta).</string>
+    <string name="setting_appSettings_title">Postavke aplikacije</string>
+    <string name="setting_measurementSystem_title">Mjerne jedinice</string>
+    <string name="setting_measurementSystem_default_title">Zadano na uređaju</string>
+    <string name="setting_measurementSystem_metric_title">Metrički</string>
+    <string name="setting_measurementSystem_imperial_title">Imperijalni</string>
     <string name="plans_banner_settings_title">Nadogradite svoj plan</string>
     <string name="plans_banner_settings_description">Otključajte više mogućnosti i poboljšajte svoje iskustvo!</string>
     <string name="plans_banner_settings_action">Nadogradite sad</string>

@@ -79,6 +79,7 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
@@ -126,7 +127,7 @@ object KoinSetup {
 
         single<ICrashReportingLogr> { CrashReportingLogr(get(), appPrefs) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
-        single<IValueFormatter> { ValueFormatter() }
+        single<IValueFormatter> { ValueFormatter(get()) }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
@@ -224,5 +225,6 @@ object KoinSetup {
         viewModel { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
         viewModel { WelcomeOnboardingViewModel(get(), get()) }
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
+        viewModel { MeasurementSystemViewModel(get(), get()) }
     }
 }

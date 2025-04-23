@@ -70,6 +70,7 @@ fun SettingsScreenCore(
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
     openLocationSettings: () -> Unit,
+    openAppSettings: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -140,6 +141,13 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.Block.asPainterResource()
             ) {
                 openBlockList()
+            }
+
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_appSettings_title),
+                icon = CoreAppIcons.Settings.asPainterResource()
+            ) {
+                openAppSettings()
             }
 
             SettingsActionItem(

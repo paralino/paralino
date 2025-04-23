@@ -75,6 +75,9 @@ fun SettingsScreen(
             openPaywall = {
                 appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.NORMAL))
             },
+            openAppSettings = {
+                appState.navController.navigate(AppScreen.Settings.AppSettings.routeSignature)
+            },
             openLocationSettings = {
                 appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)
             },

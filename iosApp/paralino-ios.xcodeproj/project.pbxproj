@@ -93,6 +93,8 @@
 		25F234CD2CE12FAA007208CD /* GroupPickerGroupCreateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */; };
 		25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F37E332A5AC6EE00317D85 /* ImageModelImage.swift */; };
 		25F37E362A5AE1EB00317D85 /* MapGroupPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F37E352A5AE1EB00317D85 /* MapGroupPicker.swift */; };
+		25F8DB902DB91268007AECEB /* AppSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F8DB8F2DB91268007AECEB /* AppSettingsScreen.swift */; };
+		25F8DB922DB912E3007AECEB /* GenericSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F8DB912DB912E3007AECEB /* GenericSettingsScreen.swift */; };
 		25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */; };
 		25FC5CA82A45811C0006E796 /* ChangeEmailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA72A45811C0006E796 /* ChangeEmailScreen.swift */; };
 		25FC5CAA2A458D970006E796 /* NavigationGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA92A458D970006E796 /* NavigationGraph.swift */; };
@@ -245,6 +247,8 @@
 		25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerGroupCreateSection.swift; sourceTree = "<group>"; };
 		25F37E332A5AC6EE00317D85 /* ImageModelImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageModelImage.swift; sourceTree = "<group>"; };
 		25F37E352A5AE1EB00317D85 /* MapGroupPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGroupPicker.swift; sourceTree = "<group>"; };
+		25F8DB8F2DB91268007AECEB /* AppSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsScreen.swift; sourceTree = "<group>"; };
+		25F8DB912DB912E3007AECEB /* GenericSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericSettingsScreen.swift; sourceTree = "<group>"; };
 		25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordScreen.swift; sourceTree = "<group>"; };
 		25FC5CA72A45811C0006E796 /* ChangeEmailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailScreen.swift; sourceTree = "<group>"; };
 		25FC5CA92A458D970006E796 /* NavigationGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGraph.swift; sourceTree = "<group>"; };
@@ -525,6 +529,8 @@
 				252040C82CFDF93600793B2D /* LocationSettingsScreen.swift */,
 				25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */,
 				2592D9ED2CE9291F00ECAC3C /* GeneralInfoScreen.swift */,
+				25F8DB912DB912E3007AECEB /* GenericSettingsScreen.swift */,
+				25F8DB8F2DB91268007AECEB /* AppSettingsScreen.swift */,
 				25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */,
 				25EF802E2CAEABD000DFC890 /* FreePlanInfoScreen.swift */,
 				25B2DB422A44D7F60007E89D /* SettingsScreen.swift */,
@@ -995,6 +1001,7 @@
 				25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */,
 				25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */,
 				25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */,
+				25F8DB902DB91268007AECEB /* AppSettingsScreen.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
 				2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */,
 				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
@@ -1053,6 +1060,7 @@
 				25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */,
 				25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */,
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
+				25F8DB922DB912E3007AECEB /* GenericSettingsScreen.swift in Sources */,
 				25F234CB2CE12F16007208CD /* PlanLimitCount.swift in Sources */,
 				252035C82D311D8900926962 /* PlaceAlertsSettingsScreen.swift in Sources */,
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,

@@ -209,6 +209,11 @@
     <string name="setting_title_placeActivityThrottle">Ortsaktivität drosseln</string>
     <string name="setting_description_placeActivityThrottle_enabled">Ihr Gerät wird Ortswarnungen erstellen, wenn Sie mehr Zeit in oder außerhalb eines bestimmten Ortes verbringen.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Ihr Gerät wird schneller auf Ortsänderungen reagieren und möglicherweise mehrere Ortswarnungen in kurzer Zeit erstellen (zum Beispiel, wenn Sie kurz an einem bestimmten Ort vorbeifahren).</string>
+    <string name="setting_appSettings_title">App-Einstellungen</string>
+    <string name="setting_measurementSystem_title">Messsystem</string>
+    <string name="setting_measurementSystem_default_title">Geräte-Standard</string>
+    <string name="setting_measurementSystem_metric_title">Metrisch</string>
+    <string name="setting_measurementSystem_imperial_title">Englisch</string>
     <string name="plans_banner_settings_title">Plan upgraden</string>
     <string name="plans_banner_settings_description">Holen Sie sich mehr von allem und bringen Sie Ihr Erlebnis auf die nächste Stufe!</string>
     <string name="plans_banner_settings_action">Jetzt upgraden</string>
@@ -330,8 +335,6 @@
     <string name="login_placeholder_password">Passwort*</string>
     <string name="login_placeholder_password_old">Altes Passwort*</string>
     <string name="login_placeholder_password_confirm">Passwort bestätigen*</string>
-    <string name="login_signup_switch_button_login">Haben Sie ein Konto? **Anmelden**</string>
-    <string name="login_signup_switch_button_signup">oder **Konto Erstellen**</string>
     <string name="login_button_forgot_password">Passwort vergessen?</string>
     <string name="login_button_create_account">Konto Erstellen</string>
     <string name="login_button_create_guest_account">Fortfahren als Gast</string>

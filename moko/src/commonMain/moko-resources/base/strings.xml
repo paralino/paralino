@@ -210,6 +210,11 @@
     <string name="setting_title_placeActivityThrottle">Throttle place activity</string>
     <string name="setting_description_placeActivityThrottle_enabled">Your device will create place activity notification if you spend more time in or out of certain place.</string>
     <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in short time (for example: if you shortly drive by a certain place).</string>
+    <string name="setting_appSettings_title">App settings</string>
+    <string name="setting_measurementSystem_title">Measurement system</string>
+    <string name="setting_measurementSystem_default_title">Device default</string>
+    <string name="setting_measurementSystem_metric_title">Metric</string>
+    <string name="setting_measurementSystem_imperial_title">Imperial</string>
     <string name="plans_banner_settings_title">Upgrade your Plan</string>
     <string name="plans_banner_settings_description">Get more of everything and take your experience to the next level!</string>
     <string name="plans_banner_settings_action">Upgrade now</string>

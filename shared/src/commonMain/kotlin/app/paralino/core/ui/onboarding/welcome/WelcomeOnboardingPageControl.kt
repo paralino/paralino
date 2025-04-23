@@ -31,13 +31,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.rememberSeekbarState
-import app.paralino.core.ui.settings.location.LocationSettingsOptionItem
+import app.paralino.core.ui.settings.GenericSettingsOptionItem
 import app.paralino.core.ui.share.getTime
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.SharingDurationPreset
@@ -312,7 +313,7 @@ private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationSta
             itemState = !itemState
         }
     }
-    LocationSettingsOptionItem(
+    GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_5),
         description = stringResource(MR.strings.setting_location_balanced_level_5_info),
@@ -327,7 +328,7 @@ private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationSta
 @Composable
 private fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
     var itemState by remember { mutableStateOf(false) }
-    LocationSettingsOptionItem(
+    GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_1),
         description = stringResource(MR.strings.setting_location_balanced_level_1_info),

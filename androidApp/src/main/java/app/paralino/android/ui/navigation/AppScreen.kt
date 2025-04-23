@@ -276,6 +276,14 @@ sealed class AppScreen {
         object WelcomeOnboarding : AppScreen() {
             override val routeSignature: String = "settings-onboarding"
         }
+
+        object AppSettings : AppScreen() {
+            override val routeSignature: String = "app-settings"
+        }
+
+        object MeasurementSystem : AppScreen() {
+            override val routeSignature: String = "settings-measurement-system"
+        }
     }
 
     object Common {

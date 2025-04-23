@@ -5,6 +5,7 @@ import app.paralino.core.appPrefs
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.db.LogsDatabaseHelper
 import app.paralino.core.db.MainDatabaseHelper
@@ -63,6 +64,7 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
@@ -123,7 +125,7 @@ object KoinIOS {
         functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
         realtimeApi: (IRemoteModule, AppBuildConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: () -> ICryptoServiceProviderIOS,
-        valueFormatter: () -> IValueFormatter,
+        valueFormatter: (AppPrefs) -> IValueFormatter,
         appUpdateManager: () -> IAppUpdateManager,
         billingProvider: () -> IBillingProvider,
         appRatingPresenter: () -> IAppRatingPresenter
@@ -153,7 +155,7 @@ object KoinIOS {
                     single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(get()))) }
                     single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(get()))) }
                     single { CryptoServiceWrapperIOS(cryptoServiceProvider()) } bind ICryptoServiceProvider::class
-                    single { valueFormatter() } bind IValueFormatter::class
+                    single { valueFormatter(get()) } bind IValueFormatter::class
                     single { appUpdateManager() } bind IAppUpdateManager::class
                     single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
@@ -273,6 +275,7 @@ object KoinIOS {
             factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
             factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
+            factory { MeasurementSystemViewModel(get(), get()) }
         }
     }
 
@@ -345,5 +348,6 @@ object KoinIOS {
         val locationSettingsVM get() = get<LocationSettingsViewModel>()
         val welcomeOnboardingVM get() = get<WelcomeOnboardingViewModel>()
         val verifyEmailVM get() = get<VerifyEmailViewModel>()
+        val measurementSystemVM get() = get<MeasurementSystemViewModel>()
     }
 }
