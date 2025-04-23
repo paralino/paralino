@@ -14,12 +14,17 @@ abstract class IPushNotificationPresenter(
 
     data class Payload(
         val notificationId: Int,
+        val notificationGroupId: String?,
         val title: String,
         val message: String?,
         val timeMillis: Long?,
         val timeInfo: String?,
         val loggerTag: String? = null
     )
+
+    companion object {
+        val notificationGroupSystem = "system_messages"
+    }
 }
 
 abstract class IInfoMessagesNotificationPresenter(inAppLogger: InAppLogger) :

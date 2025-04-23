@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.telephony.SubscriptionManager
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -62,7 +63,8 @@ class GroupActivityNotificationPresenter(
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setSound(null)
-            .setGroup("group_notify")
+            .setGroup(payload.notificationGroupId)
+            .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_ALL)
             .setColor(notificationColor)
             .setColorized(true)
             .setShowWhen(true)
@@ -71,7 +73,22 @@ class GroupActivityNotificationPresenter(
         registerNotificationChannel(context)
 
         val notification = notificationBuilder.build()
+
         notificationManager.notify(payload.notificationId, notification)
+
+        if (payload.notificationGroupId != null) {
+            val summaryNotification = NotificationCompat.Builder(context, channelId)
+                .setContentTitle(payload.title)
+                // Content text to support devices running API level < 24 - ignored since we are not running on < 24.
+                .setContentText("New notifications")
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setStyle(NotificationCompat.InboxStyle().setSummaryText(payload.timeInfo))
+                .setGroup(payload.notificationGroupId)
+                .setGroupSummary(true)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .build()
+            notificationManager.notify(payload.notificationGroupId.hashCode(), summaryNotification)
+        }
     }
 
     private fun buildNotificationIntent(context: Context): Intent {

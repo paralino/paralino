@@ -234,7 +234,7 @@ object KoinIOS {
                     resetPassword = get()
                 )
             }
-            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get()) }
+            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get()) }
             factory { (groupID: String, placeId: String) ->
                 PlaceDetailViewModel(
                     groupId = groupID,

@@ -66,7 +66,8 @@ class InfoMessagesNotificationPresenter(
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setSound(null)
-            .setGroup("system_messages")
+            .setGroup(payload.notificationGroupId)
+            .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_ALL)
             .setColor(notificationColor)
             .setColorized(true)
             .setShowWhen(true)
@@ -76,6 +77,20 @@ class InfoMessagesNotificationPresenter(
 
         val notification = notificationBuilder.build()
         notificationManager.notify(payload.notificationId, notification)
+
+        if (payload.notificationGroupId != null) {
+            val summaryNotification = NotificationCompat.Builder(context, channelId)
+                .setContentTitle(payload.title)
+                // Content text to support devices running API level < 24 - ignored since we are not running on < 24.
+                .setContentText("New notifications")
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setStyle(NotificationCompat.InboxStyle().setSummaryText(payload.timeInfo))
+                .setGroup(payload.notificationGroupId)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .setGroupSummary(true)
+                .build()
+            notificationManager.notify(payload.notificationGroupId.hashCode(), summaryNotification)
+        }
     }
 
     private fun buildNotificationIntent(context: Context): Intent {
@@ -117,6 +132,7 @@ class InfoMessagesNotificationPresenter(
         notify(
             IPushNotificationPresenter.Payload(
                 notificationId = 54343,
+                notificationGroupId = IPushNotificationPresenter.notificationGroupSystem,
                 title = MR.strings.error_something_wrong.getString(context),
                 message = message,
                 timeMillis = null,

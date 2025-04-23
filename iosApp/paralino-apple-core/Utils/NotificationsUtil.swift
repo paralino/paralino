@@ -25,6 +25,8 @@ extension IPushNotificationPresenter.Payload {
             content.body = title
         }
         
+        content.threadIdentifier = self.notificationGroupId ?? "paralino"
+        
         return content
     }
 }

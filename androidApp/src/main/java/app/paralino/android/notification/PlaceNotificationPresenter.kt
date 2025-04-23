@@ -64,7 +64,8 @@ class PlaceNotificationPresenter(
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setSound(null)
-            .setGroup("place_notify")
+            .setGroup(payload.notificationGroupId)
+            .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_ALL)
             .setColor(notificationColor)
             .setColorized(true)
             .setShowWhen(true)
@@ -74,6 +75,20 @@ class PlaceNotificationPresenter(
 
         val notification = notificationBuilder.build()
         notificationManager.notify(payload.notificationId, notification)
+
+        if (payload.notificationGroupId != null) {
+            val summaryNotification = NotificationCompat.Builder(context, channelId)
+                .setContentTitle(payload.title)
+                // Content text to support devices running API level < 24 - ignored since we are not running on < 24.
+                .setContentText("New notifications")
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setStyle(NotificationCompat.InboxStyle().setSummaryText(payload.timeInfo))
+                .setGroup(payload.notificationGroupId)
+                .setGroupSummary(true)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .build()
+            notificationManager.notify(payload.notificationGroupId.hashCode(), summaryNotification)
+        }
     }
 
     private fun buildNotificationIntent(context: Context): Intent {

@@ -79,10 +79,15 @@ class NotificationsGroupingViewModel(
 }
 
 enum class NotificationGroupingType(val key: String) {
-    NONE("none"), TYPE("type"), GROUP("group"), PERSON("person");
+    NONE("none"),
+    EVERYTHING("everything"),
+    TYPE("type"),
+    GROUP("group"),
+    PERSON("person");
 
     val title get() = when(this) {
         NONE -> MR.strings.setting_notificationGrouping_noGroup_title
+        EVERYTHING -> MR.strings.setting_notificationGrouping_everything_title
         GROUP -> MR.strings.setting_notificationGrouping_byGroup_title
         PERSON -> MR.strings.setting_notificationGrouping_byPerson_title
         TYPE -> MR.strings.setting_notificationGrouping_byType_title
@@ -90,6 +95,7 @@ enum class NotificationGroupingType(val key: String) {
 
     val description get() = when(this) {
         NONE -> MR.strings.setting_notificationGrouping_noGroup_info
+        EVERYTHING -> MR.strings.setting_notificationGrouping_everything_info
         GROUP -> MR.strings.setting_notificationGrouping_byGroup_info
         PERSON -> MR.strings.setting_notificationGrouping_byPerson_info
         TYPE -> MR.strings.setting_notificationGrouping_byType_info

@@ -6,6 +6,7 @@ import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -63,8 +64,17 @@ class GroupMemberAddedNotificationProcessor(
             MR.strings.group_member_add_notification_default.localizedString()
         }
 
+        val notificationGroup = when (appPrefs.notificationGrouping) {
+            NotificationGroupingType.NONE -> null
+            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+            NotificationGroupingType.TYPE -> "new_member"
+            NotificationGroupingType.GROUP -> payload.groupId
+            NotificationGroupingType.PERSON -> payload.memberUserId
+        }
+
         val pushPayload = IPushNotificationPresenter.Payload(
             notificationId = "new_member_${payload}".hashCode(),
+            notificationGroupId = notificationGroup,
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),
