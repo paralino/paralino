@@ -20,6 +20,7 @@
     <string name="button_open">Otvorite</string>
     <string name="button_cool">Cool</string>
     <string name="button_continue">Nastavite</string>
+    <string name="button_notNow">Ne sada</string>
     <string name="button_open_settings">Otvorite postavke</string>
     <string name="alert_title_confirm">Molimo potvrdite</string>
     <string name="alert_sessionExpired_title">Prijava istekla</string>
@@ -354,6 +355,8 @@
     <string name="login_signup_selection_signup_info">Novi račun</string>
     <string name="login_signup_selection_login_title">Prijava</string>
     <string name="login_signup_selection_login_info">Email/lozinka</string>
+    <string name="login_signup_selection_guest_title">Gost</string>
+    <string name="login_signup_selection_guest_info">Lokalni račun</string>
     <string name="login_signup_terms_privacy_text">Izradom računa pristajete na pravila privatnosti i uvjete korištenja.</string>
     <string name="login_signup_terms_privacy_privacy">pravila privatnosti</string>
     <string name="login_signup_terms_privacy_terms">uvjete korištenja</string>

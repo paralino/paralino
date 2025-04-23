@@ -20,6 +20,7 @@
     <string name="button_open">Öffnen</string>
     <string name="button_cool">Cool</string>
     <string name="button_continue">Fortfahren</string>
+    <string name="button_notNow">Nicht jetzt</string>
     <string name="button_open_settings">Einstellungen öffnen</string>
     <string name="alert_title_confirm">Bitte bestätigen</string>
     <string name="alert_sessionExpired_title">Sitzung abgelaufen</string>
@@ -354,6 +355,8 @@
     <string name="login_signup_selection_signup_info">Neues Konto</string>
     <string name="login_signup_selection_login_title">Anmelden</string>
     <string name="login_signup_selection_login_info">E-Mail/Passwort</string>
+    <string name="login_signup_selection_guest_title">Gast</string>
+    <string name="login_signup_selection_guest_info">Lokales Konto</string>
     <string name="login_signup_terms_privacy_text">Durch die Erstellung eines Kontos stimmen Sie der Datenschutzrichtlinie und den Nutzungsbedingungen zu.</string>
     <string name="login_signup_terms_privacy_privacy">Datenschutzrichtlinie</string>
     <string name="login_signup_terms_privacy_terms">Nutzungsbedingungen</string>
