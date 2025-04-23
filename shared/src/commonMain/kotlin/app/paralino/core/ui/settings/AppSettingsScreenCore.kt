@@ -21,6 +21,7 @@ fun AppSettingsScreenCore(
     appState: CoreUiState,
     paddingValues: PaddingValues,
     onMeasurementSystemClick: () -> Unit,
+    onNotificationGroupingClick: () -> Unit,
 ) {
 //    MessageDispatcherEffect(vm, appState)
 //    val uiState by vm.uiState.collectAsState()
@@ -35,8 +36,13 @@ fun AppSettingsScreenCore(
     ) {
         SettingsActionItem(
             name = stringResource(MR.strings.setting_measurementSystem_title),
-            icon = CoreAppIcons.Speed.asPainterResource(),
+            icon = CoreAppIcons.Ruler.asPainterResource(),
             onClick = onMeasurementSystemClick
+        )
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_notificationGrouping_title),
+            icon = CoreAppIcons.NotificationsActive.asPainterResource(),
+            onClick = onNotificationGroupingClick
         )
     }
 }

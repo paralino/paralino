@@ -18,6 +18,9 @@ struct AppSettingsScreen: View {
                 ScreensIOS.shared.settings.AppSettingsScreenVC(
                     openMeasurementSystemScreen: {
                         path.append(.settings(.measurementSystemSettings))
+                    },
+                    openNotificationGroupingScreen: {
+                        path.append(.settings(.notificationGroupingSettings))
                     }
                 )
             }

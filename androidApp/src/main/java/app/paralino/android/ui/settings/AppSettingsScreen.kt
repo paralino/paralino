@@ -36,6 +36,9 @@ fun AppSettingsScreen(
             paddingValues = it,
             onMeasurementSystemClick = {
                 appState.navController.navigate(AppScreen.Settings.MeasurementSystem.routeSignature)
+            },
+            onNotificationGroupingClick = {
+                appState.navController.navigate(AppScreen.Settings.NotificationGrouping.routeSignature)
             }
         )
     }

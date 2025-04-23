@@ -2,6 +2,7 @@ package app.paralino.core.db
 
 import app.paralino.core.appPrefs
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.provider.MeasurementSystemType
 import com.russhwolf.settings.Settings
@@ -91,6 +92,7 @@ class AppPrefs(
         const val keyPreviousAppVersion = "prefs.device.appVersion.previous"
         const val keyCurrentAppVersion = "prefs.device.appVersion.current"
         const val keyMeasurementSystem = "prefs.device.measurementSystem"
+        const val keyNotificationGrouping = "prefs.device.notificationGrouping"
         const val keyDeviceTheme = "prefs.device.theme"
     }
 
@@ -374,6 +376,14 @@ class AppPrefs(
             } else {
                 provider.appSettings.putString(keyMeasurementSystem, value.key)
             }
+        }
+
+    var notificationGrouping: NotificationGroupingType
+        get() = provider.appSettings.getString(keyNotificationGrouping, "")
+            .let { NotificationGroupingType.fromKey(it) }
+            ?: NotificationGroupingType.NONE
+        set(value) {
+            provider.appSettings.putString(keyNotificationGrouping, value.key)
         }
 
 

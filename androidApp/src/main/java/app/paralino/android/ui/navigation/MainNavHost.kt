@@ -48,6 +48,7 @@ import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
+import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
 
@@ -256,6 +257,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             GenericSettingsScreen(
                 appState = appState,
                 vm = koinViewModel<MeasurementSystemViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.NotificationGrouping.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<NotificationsGroupingViewModel>()
             )
         }
     }
