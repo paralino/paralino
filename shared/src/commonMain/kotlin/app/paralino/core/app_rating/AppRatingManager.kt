@@ -16,7 +16,7 @@ class AppRatingManager(
 ) : BaseRepository() {
 
     fun tryShowingAppRating(source: AppRatingSource) {
-        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(180.days) || shouldRetryAppRating(source)) {
+        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(90.days) || shouldRetryAppRating(source)) {
             val canLaunch = when (source) {
                 AppRatingSource.GROUP_DETAIL -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
                 AppRatingSource.MAIN_MAP -> appPrefs.appLaunchedCountWhenLoggedIn >= 3
@@ -42,11 +42,11 @@ class AppRatingManager(
             else -> {
                 when (deviceApiProvider.deviceType) {
                     DeviceType.Android -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion <= 52
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 56
                     }
 
                     DeviceType.iOS -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion <= 30
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 34
                     }
                 }
             }
