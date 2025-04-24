@@ -72,7 +72,7 @@ fun MemberInviteScreen(
             },
             openPaywall = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.BillingPaywall.route(groupId = null, type = it)
+                    AppScreen.MainHome.BillingPaywall.route(groupId = vm.currentGroupId, type = it)
                 ) {
                     this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
                         this.inclusive = false

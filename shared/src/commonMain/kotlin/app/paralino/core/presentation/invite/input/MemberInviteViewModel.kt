@@ -42,6 +42,7 @@ class MemberInviteViewModel(
     val uiState: StateFlow<MemberInviteScreenState> = _uiState
 
     private val currentGroup = MutableStateFlow<GroupItemState?>(null)
+    val currentGroupId: String? get() = currentGroup.value?.id ?: groupId
 
     private val _eventChannel = Channel<MemberInviteScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()

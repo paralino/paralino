@@ -24,7 +24,7 @@ struct MemberInviteScreen: View {
                     isOnboarding: appState.isOnboarding,
                     onPickGroup: { sheet in groupPicker = sheet },
                     openPaywall: { type in
-                        path.append(.settings(.paywall(type: type)))
+                        path.append(.settings(.paywall(groupId: appState.vm.currentGroupId, type: type)))
                     },
                     onMemberAdded: {
                         if appState.isOnboarding {

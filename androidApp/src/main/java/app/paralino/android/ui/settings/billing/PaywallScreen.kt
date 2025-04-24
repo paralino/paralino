@@ -32,7 +32,8 @@ fun PaywallScreen(
 ) {
     fun goBack(isSuccess: Boolean) {
         when (type) {
-            BillingScreenSourceType.GROUP_ONBOARDING -> {
+            BillingScreenSourceType.GROUP_ONBOARDING,
+            BillingScreenSourceType.FREE_PLAN_NEW_USER -> {
                 if (groupId.isNullOrBlank()) {
                     appState.navController.navigate(AppScreen.MainHome.MainMap.routeSignature)
                 } else {
@@ -59,7 +60,6 @@ fun PaywallScreen(
             }
 
             BillingScreenSourceType.NORMAL,
-            BillingScreenSourceType.FREE_PLAN_NEW_USER,
             BillingScreenSourceType.SKIPPED_ONBOARDING,
             BillingScreenSourceType.UPGRADE -> {
                 appState.navController.popBackStack()
