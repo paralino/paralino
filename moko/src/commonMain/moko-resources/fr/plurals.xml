@@ -26,7 +26,7 @@
         <item quantity="other">%d ans</item>
     </plurals>
     <plurals name="notifications_sharing_active_message">
-        <item quantity="one">Partage de la position avec 1 groupe</item>
+        <item quantity="one">Partage de la position avec %d groupe</item>
         <item quantity="many">Partage de la position avec %d groupes</item>
         <item quantity="other">Partage de la position avec %d groupes</item>
     </plurals>
