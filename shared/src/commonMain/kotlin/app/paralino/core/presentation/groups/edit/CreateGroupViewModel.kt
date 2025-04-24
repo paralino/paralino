@@ -48,7 +48,7 @@ class CreateGroupViewModel(
     private val _eventChannel = Channel<CreateGroupScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
-    val groupNameLengthLimit = 30
+    val groupNameLengthLimit = 35
 
     init {
         coroutineScope.launch {
