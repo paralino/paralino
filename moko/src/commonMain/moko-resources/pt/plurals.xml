@@ -2,38 +2,47 @@
 <resources>
     <plurals name="groups_sharing_duration_type_minutes">
         <item quantity="one">%d minuto</item>
+        <item quantity="many">%d minutos</item>
         <item quantity="other">%d minutos</item>
     </plurals>
     <plurals name="groups_sharing_duration_type_hours">
         <item quantity="one">%d hora</item>
+        <item quantity="many">%d horas</item>
         <item quantity="other">%d horas</item>
     </plurals>
     <plurals name="groups_sharing_duration_type_days">
         <item quantity="one">%d dia</item>
+        <item quantity="many">%d dias</item>
         <item quantity="other">%d dias</item>
     </plurals>
     <plurals name="groups_sharing_duration_type_months">
         <item quantity="one">%d mês</item>
+        <item quantity="many">%d meses</item>
         <item quantity="other">%d meses</item>
     </plurals>
     <plurals name="groups_sharing_duration_type_years">
         <item quantity="one">%d ano</item>
+        <item quantity="many">%d anos</item>
         <item quantity="other">%d anos</item>
     </plurals>
     <plurals name="notifications_sharing_active_message">
-        <item quantity="one">Compartilhando localização com 1 grupo</item>
+        <item quantity="one">Compartilhando localização com %d grupo</item>
+        <item quantity="many">Compartilhando localização com %d grupos</item>
         <item quantity="other">Compartilhando localização com %d grupos</item>
     </plurals>
     <plurals name="plan_benefit_group">
         <item quantity="one">**%d grupo**</item>
+        <item quantity="many">**%d grupos**</item>
         <item quantity="other">**%d grupos**</item>
     </plurals>
     <plurals name="plan_benefit_members">
         <item quantity="one">**%d membro**</item>
+        <item quantity="many">**%d membros**</item>
         <item quantity="other">**%d membros**</item>
     </plurals>
     <plurals name="plan_benefit_places">
         <item quantity="one">**%d local** com alertas ilimitados</item>
+        <item quantity="many">**%d locais** com alertas ilimitados</item>
         <item quantity="other">**%d locais** com alertas ilimitados</item>
     </plurals>
-</resources> 
+</resources>
