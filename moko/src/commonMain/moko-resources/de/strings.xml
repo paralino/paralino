@@ -339,7 +339,7 @@
     <string name="plans_gift_screen_title">Lassen Sie uns feiern!</string>
     <string name="plans_gift_screen_box_title">Geschenk für Erstnutzer</string>
     <string name="plans_gift_screen_box_message">Sie erhalten einen speziellen lebenslangen **Starter**-Plan, komplett KOSTENLOS!</string>
-    <string name="plans_gift_screen_benefits_title">Was Sie erhalten</string>
+    <string name="plans_gift_screen_benefits_title">⭐️ Was Sie erhalten ⭐️</string>
     <string name="plans_gift_screen_separator_text">Brauchen Sie mehr?</string>
     <string name="plans_benefit_location_requests">Mitgliederstandort bei Bedarf abrufen</string>
     <string name="plans_benefit_sharing">Unbegrenzte Standortfreigabe</string>
@@ -377,7 +377,7 @@
     <string name="login_step_encryption">Verschlüsselung wird eingerichtet</string>
     <string name="login_step_allDone">Erfolg!</string>
     <string name="login_step_user_setup">Benutzer wird vorbereitet</string>
-    <string name="login_step_generic_loading">Bitte warten...</string>
+    <string name="login_step_generic_loading">Bitte warten…</string>
     <string name="login_step_error_signUp">Fehler beim Erstellen des Kontos</string>
     <string name="login_step_error_encryption_signUp">Fehler beim Einrichten der Verschlüsselung</string>
     <string name="login_step_error_user_setup">Benutzerdaten können nicht vorbereitet werden</string>

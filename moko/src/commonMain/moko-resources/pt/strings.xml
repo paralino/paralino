@@ -545,7 +545,7 @@
     <string name="places_create_error_no_place">Por favor adicione uma localização mantendo pressionado no mapa</string>
     <string name="places_create_location_hint_longpress">**DICA:** Mantenha pressionado no mapa para adicionar ou ajustar seu lugar</string>
     <string name="places_create_location_hint_tap">**DICA:** Toque no mapa para adicionar ou ajustar seu lugar</string>
-    <string name="places_create_plan_limit_info">Para criar mais lugares, atualize seu plano</string>
+    <string name="places_create_plan_limit_info">Para criar mais lugares, atualize seu plano.</string>
     <string name="place_list_menu_delete">Excluir lugar</string>
     <string name="place_list_delete_place_alert_title">Tem certeza de que quer excluir este lugar?</string>
     <string name="place_detail_setting_button_notify_enter">Entrada</string>
