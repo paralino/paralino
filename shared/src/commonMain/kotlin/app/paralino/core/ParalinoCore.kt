@@ -254,7 +254,7 @@ val coreModule = module {
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
@@ -298,15 +298,15 @@ val coreModule = module {
     factory { PushNotificationDeleteUseCase(get(), get()) }
     single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    factory { PlaceActivityNotificationProcessor(get(), get(), get(), get(), get()) }
-    factory { PlaceCreatedNotificationProcessor(get(), get(), get()) }
+    factory { PlaceActivityNotificationProcessor(get(), get(), get(), get(), get(), get()) }
+    factory { PlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
     factory { PlaceDeletedNotificationProcessor(get()) }
     factory { PlaceUpdatedNotificationProcessor(get()) }
     factory { GroupMemberAddedNotificationProcessor(get(), get(), get(), appPrefs) }
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), appPrefs) }
     factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get()) }
-    factory { LowBatteryNotificationProcessor(get(), get()) }
+    factory { LowBatteryNotificationProcessor(get(), get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), appPrefs) }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -102,15 +104,20 @@ fun NoticeInfoChip(
 @Composable
 fun DataInfoChip(
     modifier: Modifier = Modifier,
+    innerPaddingValues: PaddingValues? = null,
     image: ImageModel?,
     text: String,
     backgroundColor: Color = MaterialTheme.colors.surface,
+    shape: CornerBasedShape = RoundedCornerShape(10.dp),
+    imageShape: CornerBasedShape = RoundedCornerShape(6.dp),
     hasEndArrow: Boolean = false,
     onClick: (() -> Unit)? = null
 ) {
     DataInfoChip(
         modifier = modifier,
+        innerPaddingValues = innerPaddingValues,
         backgroundColor = backgroundColor,
+        shape = shape,
         hasEndArrow = hasEndArrow,
         imageOrIcon = if (image != null) {
             {
@@ -119,11 +126,11 @@ fun DataInfoChip(
                     modifier = Modifier
                         .size(26.dp)
                         .border(
-                            0.5.dp,
-                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                            RoundedCornerShape(6.dp)
+                            width = 0.5.dp,
+                            color = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                            shape = imageShape
                         ),
-                    clipShape = RoundedCornerShape(6.dp)
+                    clipShape = imageShape
                 )
                 Spacer(modifier = Modifier.size(8.dp))
             }
@@ -142,7 +149,9 @@ fun DataInfoChip(
 @Composable
 fun DataInfoChip(
     modifier: Modifier = Modifier,
+    innerPaddingValues: PaddingValues? = null,
     backgroundColor: Color = MaterialTheme.colors.surface,
+    shape: CornerBasedShape = RoundedCornerShape(10.dp),
     hasEndArrow: Boolean = false,
     imageOrIcon: (@Composable RowScope.() -> Unit)?,
     text: @Composable RowScope.() -> Unit,
@@ -155,11 +164,16 @@ fun DataInfoChip(
                     it.clickable { onClick() }
                 else it
             }
-            .clip(RoundedCornerShape(10.dp))
+            .clip(shape)
             .background(MaterialTheme.colors.background)
             .background(backgroundColor)
-            .padding(vertical = 5.dp)
-            .padding(start = 5.dp, end = 8.dp),
+            .conditional(innerPaddingValues != null) {
+                padding(innerPaddingValues ?: PaddingValues())
+            }
+            .conditional(innerPaddingValues == null) {
+                padding(vertical = 5.dp)
+                .padding(start = 5.dp, end = 8.dp)
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (imageOrIcon != null) {

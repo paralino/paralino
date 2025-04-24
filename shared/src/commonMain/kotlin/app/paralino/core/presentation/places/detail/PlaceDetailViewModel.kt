@@ -95,6 +95,7 @@ class PlaceDetailViewModel(
                 lat = place.place.data.data?.lat,
                 lng = place.place.data.data?.lng,
                 radiusMeters = place.place.data.data?.radiusMeters ?: 0,
+                canHaveAlerts = place.place.canSendAlert,
                 canEdit = canEditPlace(),
                 fullLoading = false,
                 arePlaceAlertsActive = place.settings?.alertData?.isActive != false,

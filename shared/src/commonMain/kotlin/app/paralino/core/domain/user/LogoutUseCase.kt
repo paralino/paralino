@@ -17,6 +17,7 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.cancelChildren
@@ -36,6 +37,7 @@ class LogoutUseCase(
     private val geofenceManager: IGeofenceManager,
     private val sessionMonitor: UserSessionMonitor,
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
+    private val userConfigRepo: UserConfigRepository,
     private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
@@ -117,6 +119,7 @@ class LogoutUseCase(
         sharingManager.stopAllSharing()
         geofenceManager.deleteAllGeofences()
         userRepo.clearLocally()
+        userConfigRepo.logout()
         accessLogs.clearAll()
         logg.i("account_state", "Cleared all data on logout")
     }

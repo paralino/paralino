@@ -2,12 +2,15 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.extensions.annotatedBold
 
 data class PaywallScreenState(
     val freePlanInfo: PlanInfoState,
@@ -18,19 +21,28 @@ data class PaywallScreenState(
     val alertDialog: MainAlertDialog?,
     val faq: FaqSectionState?,
     val isPromoCodeSectionVisible: Boolean,
-    val promoCode: String
+    val promoCode: String,
+    val screenStep: PaywallScreenStep,
+    val screenType: BillingScreenSourceType,
+    val memberImageModel: ImageModel,
+    val memberName: String,
+    val memberDeviceName: String,
 ) {
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod
 
+    val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
+    val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
+
     val featureTable: FeatureTableState =
-        constructFeaturesTable(freeUiPlan = freePlanInfo, uiPlans = plans)
+        FeatureTableState.constructFeaturesTable(freeUiPlan = freePlanInfo, uiPlans = plans)
     val featureTableForSelectedPlan: FeatureTableState? = selectedPlan?.let { plan ->
         FeatureTableState(
+            canExpand = true,
             features = featureTable.features.map {
                 it.copy(
                     values = it.values.mapNotNull {
-                        if (it.planType == plan.type || !it.planType.isPremium) {
+                        if (it.planType == plan.type) {
                             it
                         } else {
                             null
@@ -39,218 +51,6 @@ data class PaywallScreenState(
                 )
             }
         )
-    }
-
-    private fun constructFeaturesTable(
-        freeUiPlan: PlanInfoState,
-        uiPlans: List<PlanInfoState>
-    ): FeatureTableState {
-        val plans = buildList {
-            add(freeUiPlan)
-            addAll(uiPlans)
-        }
-
-        val values = buildList {
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_table_header.localizedString(),
-                    isTitle = true,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = it.name,
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.TOP
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_privacy.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = "✅",
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_groups.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = it.config.groupsLimit.toString(),
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_members.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = it.config.membersLimit.toString(),
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_devices.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = it.config.devicesLimit.toString(),
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_places.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = it.config.placesLimit.toString(),
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_battery.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = "✅",
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_locate.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = if (it.type.isPremium) "✅" else "❌",
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_performance.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = if (it.type.isSilverOrMore) "✅" else "❌",
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_multi_device.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = if (it.config.devicesLimit > 1) "✅" else "❌",
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-
-            add(
-                FeatureTableItemState(
-                    name = MR.strings.paywall_feature_notify.localizedString(),
-                    isTitle = false,
-                    values = plans.map {
-                        FeatureTableItemValue(
-                            name = if (it.type.isSilverOrMore) "✅" else "❌",
-                            planType = it.type,
-                            highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.BOTTOM
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-                        )
-                    }
-                )
-            )
-        }
-
-        return FeatureTableState(features = values)
     }
 }
 
@@ -262,18 +62,17 @@ data class PlanInfoState(
     val hasSpecialOffer: Boolean,
     val isSelected: Boolean,
     val isExpanded: Boolean,
-    val includedMembersPerGroup: Int,
-    val billingPeriods: List<PlanBillingPeriodState>,
-    val benefits: List<PlanConfig.PlanBenefit>
+    val billingPeriods: List<PlanBillingPeriodState>
 ) {
     val type: PlanType = config.planTypeEnum
     val selectedBillingPeriod: PlanBillingPeriodState? =
         billingPeriods.firstOrNull { it.isSelected }
+
     val displayedName: String = if (hasSpecialOffer) {
         "🎁$name"
     } else {
         name
-    } + if (isCurrentPlan) "*" else ""
+    }
 }
 
 data class PlanBillingPeriodState(
@@ -288,28 +87,11 @@ data class PlanBillingPeriodState(
     val discountPercent: String?,
     val isPromoDiscount: Boolean,
     val trialDurationDays: Int?,
+    val isCurrentBillingPeriod: Boolean
 )
 
-data class FeatureTableState(
-    val features: List<FeatureTableItemState>
-)
-
-data class FeatureTableItemState(
-    val name: String,
-    val isTitle: Boolean,
-    val values: List<FeatureTableItemValue>
-)
-
-data class FeatureTableItemValue(
-    val name: String,
-    val planType: PlanType,
-    val highlightMode: FeatureTableItemHighlightMode,
-) {
-    val isPremium: Boolean = planType.isPremium
-}
-
-enum class FeatureTableItemHighlightMode {
-    NONE, FULL, TOP, BOTTOM
+enum class PaywallScreenStep {
+    ONBOARDING, DEMO, PAYWALL
 }
 
 data class FaqSectionState(

@@ -1,8 +1,10 @@
 package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -13,18 +15,17 @@ import app.paralino.android.ui.map.PlaceCreateMapComposable
 import app.paralino.core.MR
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
-import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.DefaultToolbar
+import app.paralino.core.ui.components.EmojiBottomSheetPicker
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.components.rememberEmojiBottomSheetPickerState
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun CreatePlaceScreen(
@@ -33,12 +34,13 @@ fun CreatePlaceScreen(
     placeId: String?,
     lat: Double? = null,
     lng: Double? = null,
-    vm: CreatePlaceViewModel = getViewModel { parametersOf(groupId, placeId, lat, lng) },
+    vm: CreatePlaceViewModel = koinViewModel { parametersOf(groupId, placeId, lat, lng) },
 ) {
     val isNewPlace by vm.uiState.map { it.data?.isNewPlace }.collectAsState(initial = null)
     val pickerState = rememberEmojiBottomSheetPickerState()
 
     Scaffold(
+        modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = when (isNewPlace) {

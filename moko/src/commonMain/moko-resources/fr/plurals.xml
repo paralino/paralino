@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="many">%d minutes</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d heure</item>
+        <item quantity="many">%d heures</item>
+        <item quantity="other">%d heures</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d jour</item>
+        <item quantity="many">%d jours</item>
+        <item quantity="other">%d jours</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d mois</item>
+        <item quantity="many">%d mois</item>
+        <item quantity="other">%d mois</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d an</item>
+        <item quantity="many">%d ans</item>
+        <item quantity="other">%d ans</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Partage de la position avec %d groupe</item>
+        <item quantity="many">Partage de la position avec %d groupes</item>
+        <item quantity="other">Partage de la position avec %d groupes</item>
+    </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one">**%d groupe**</item>
+        <item quantity="many">**%d groupes**</item>
+        <item quantity="other">**%d groupes**</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">**%d membre**</item>
+        <item quantity="many">**%d membres**</item>
+        <item quantity="other">**%d membres**</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one">**%d lieu** avec alertes illimitées</item>
+        <item quantity="many">**%d lieux** avec alertes illimitées</item>
+        <item quantity="other">**%d lieux** avec alertes illimitées</item>
+    </plurals>
+</resources>

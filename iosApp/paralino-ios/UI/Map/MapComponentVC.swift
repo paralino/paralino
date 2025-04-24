@@ -211,7 +211,7 @@ extension MapComponentVC: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {
         guard let customAnnotation = annotation as? MapAnnotatedItem else { return }
-        mapState?.onMarkerTap(markerData: customAnnotation.data.asFocusedMarker())
+        mapState?.onMarkerTap(markerData: customAnnotation.data)
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {

@@ -44,6 +44,9 @@ struct MapRootScreen: View {
                                     mainAppState.userReadyGraph.removeLast()
                                 }
                             )
+                            case .appSettings: AppSettingsScreen(path: $mainAppState.userReadyGraph)
+                            case .measurementSystemSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.measurementSystemVM))
+                            case .notificationGroupingSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.notificationGroupingVM))
                             }
                         case let .home(homeGraph):
                             switch homeGraph {

@@ -20,6 +20,7 @@ data class GroupPlace constructor(
     val nameOrNull: String? get() = data.data?.name
 
     val eventSeed: String? = data.data?.eventSeed
+    val canSendAlert: Boolean = (data.data?.radiusMeters ?: 0) > 0
 }
 
 @Serializable

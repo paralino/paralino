@@ -88,6 +88,7 @@ import paralino.shared.generated.resources.ic_wifi_1
 import paralino.shared.generated.resources.ic_wifi_2
 import paralino.shared.generated.resources.ic_wifi_3
 import paralino.shared.generated.resources.ic_wifi_off
+import paralino.shared.generated.resources.ic_ruler
 import paralino.shared.generated.resources.image_map_mockup_dark
 import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
@@ -155,6 +156,7 @@ object CoreAppIcons {
     val MoreVert get() = Res.drawable.ic_more_vert
     val PersonAdd get() = Res.drawable.ic_person_add
     val Settings get() = Res.drawable.ic_settings
+    val Ruler get() = Res.drawable.ic_ruler
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay

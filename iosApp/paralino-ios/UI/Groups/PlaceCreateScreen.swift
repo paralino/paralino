@@ -93,8 +93,8 @@ class PlaceCreateState: BaseMapObservableObject {
         }
     }
     
-    override func onMarkerTap(markerData: FocusedMarkerData) {
-        focusToMarker(data: markerData)
+    override func onMarkerTap(markerData: MapPinData) {
+        focusToMarker(data: markerData.asFocusedMarker())
     }
     
     deinit {

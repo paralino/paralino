@@ -5,6 +5,7 @@ import app.paralino.core.appPrefs
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.AppPrefsProvider
 import app.paralino.core.db.LogsDatabaseHelper
 import app.paralino.core.db.MainDatabaseHelper
@@ -63,6 +64,8 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
+import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
@@ -123,7 +126,7 @@ object KoinIOS {
         functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
         realtimeApi: (IRemoteModule, AppBuildConfig) -> IRealtimeApiIOS,
         cryptoServiceProvider: () -> ICryptoServiceProviderIOS,
-        valueFormatter: () -> IValueFormatter,
+        valueFormatter: (AppPrefs) -> IValueFormatter,
         appUpdateManager: () -> IAppUpdateManager,
         billingProvider: () -> IBillingProvider,
         appRatingPresenter: () -> IAppRatingPresenter
@@ -153,7 +156,7 @@ object KoinIOS {
                     single { MainDatabaseHelper(AppMainDatabase.create(SqlDriverFactory(get()))) }
                     single { LogsDatabaseHelper(AppLogsDatabase.create(SqlDriverFactory(get()))) }
                     single { CryptoServiceWrapperIOS(cryptoServiceProvider()) } bind ICryptoServiceProvider::class
-                    single { valueFormatter() } bind IValueFormatter::class
+                    single { valueFormatter(get()) } bind IValueFormatter::class
                     single { appUpdateManager() } bind IAppUpdateManager::class
                     single { appRatingPresenter() } bind IAppRatingPresenter::class
                     single { oneTimeLocationProvider(get(), get()) }
@@ -200,10 +203,11 @@ object KoinIOS {
             }
             factory { LoggedOutViewModel(get(), get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
-            factory { (groupId: String?, code: String?) ->
+            factory { (groupId: String?, code: String?, isOnboarding: Boolean) ->
                 MemberInviteViewModel(
                     groupId = groupId,
                     code = code,
+                    isOnboarding = isOnboarding,
                     codeRepo = get(),
                     groupRepo = get(),
                     groupMemberAdd = get(),
@@ -230,7 +234,7 @@ object KoinIOS {
                     resetPassword = get()
                 )
             }
-            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get()) }
+            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get()) }
             factory { (groupID: String, placeId: String) ->
                 PlaceDetailViewModel(
                     groupId = groupID,
@@ -266,12 +270,14 @@ object KoinIOS {
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
             factory { SubscriptionViewModel(get(), get(), get()) }
-            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get()) }
+            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), appPrefs) }
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
             factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
+            factory { MeasurementSystemViewModel(get(), get()) }
+            factory { NotificationsGroupingViewModel(get()) }
         }
     }
 
@@ -322,8 +328,8 @@ object KoinIOS {
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
         fun groupSettingsVM(groupId: String) = get<GroupSettingsViewModel> { parametersOf(groupId) }
         fun groupBatterySettingsVM(groupId: String) = get<BatteryNotificationsViewModel> { parametersOf(groupId) }
-        fun memberInviteVM(groupId: String?, code: String?) =
-            get<MemberInviteViewModel> { parametersOf(groupId, code) }
+        fun memberInviteVM(groupId: String?, code: String?, isOnboarding: Boolean) =
+            get<MemberInviteViewModel> { parametersOf(groupId, code, isOnboarding) }
 
         fun sharingStartVM(groupId: String?, isOnboarding: Boolean) = get<SharingStartViewModel> { parametersOf(groupId, isOnboarding) }
         fun placesVM(groupId: String, isOnboarding: Boolean) = get<PlacesViewModel> { parametersOf(groupId, isOnboarding) }
@@ -344,5 +350,7 @@ object KoinIOS {
         val locationSettingsVM get() = get<LocationSettingsViewModel>()
         val welcomeOnboardingVM get() = get<WelcomeOnboardingViewModel>()
         val verifyEmailVM get() = get<VerifyEmailViewModel>()
+        val measurementSystemVM get() = get<MeasurementSystemViewModel>()
+        val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
     }
 }

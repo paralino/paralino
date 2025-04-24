@@ -35,13 +35,13 @@ struct PaywallScreen: View {
             }
             .navigationTitle(MR.shared.strings.plan_limit_alert_title.localizedString())
             .toolbar(.hidden, for: .navigationBar)
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.all, edges: .vertical)
         }
     }
     
     private func goBack(isSuccess: Bool) {
         switch state.type {
-        case .onboarding:
+        case .groupOnboarding, .freePlanNewUser:
             if let groupId = state.groupId, !groupId.isEmpty {
                 if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                     path.removeSubrange(index+1..<path.count)
@@ -61,7 +61,7 @@ struct PaywallScreen: View {
                 path.removeLast()
             }
 
-        case .normal, .upgrade:
+        case .skippedOnboarding, .normal, .upgrade:
             path.removeLast()
             
         default:

@@ -38,7 +38,7 @@ data class MemberLocation constructor(
         return (adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS || isStatusOlderThan(1.minutes))
                 && adaptedStatus != MemberDeviceStatusType.ACTIVE
                 && adaptedStatus?.isDeviceSetupWrong != true
-                && (isOlderThan(40.seconds) || !hasLocation)
+                && ((isOlderThan(2.minutes) || !hasLocation) || ((isOlderThan(40.seconds) || !hasLocation) && adaptedStatus != MemberDeviceStatusType.BATTERY_SAVER_ON))
                 && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
     }
 
@@ -48,7 +48,7 @@ data class MemberLocation constructor(
                 isEnded -> MemberDeviceStatusType.NOT_SHARING
                 status.data?.statusType == MemberDeviceStatusType.NOT_SHARING -> MemberDeviceStatusType.NOT_SHARING
                 isExpired -> {
-                    if (status.data?.statusType?.isDeviceSetupWrong == true && !isStatusOlderThan(1.hours)) {
+                    if (status.data?.statusType?.isDeviceSetupWrongOrBatterySaver == true && !isStatusOlderThan(1.hours)) {
                         status.data?.statusType ?: MemberDeviceStatusType.INACTIVE
                     } else {
                         MemberDeviceStatusType.INACTIVE

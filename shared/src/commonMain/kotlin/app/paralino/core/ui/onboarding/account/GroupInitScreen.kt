@@ -43,6 +43,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.invite.manage.PersonalCodeItem
 import app.paralino.core.ui.invite.manage.PersonalCodeItemWithHints
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.ConditionErrorType
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -50,14 +51,14 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun GroupInitScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: GroupInitViewModel,
-    paddingValues: PaddingValues,
     openSettings: () -> Unit,
     onCreateGroup: () -> Unit,
     openFreePlanInfo: () -> Unit,
     openPersonalCodes: () -> Unit,
-    openPaywall: () -> Unit,
+    openPaywall: (BillingScreenSourceType) -> Unit,
     onSharePersonalCode: (String) -> Unit,
     askNotificationPermission: () -> Unit
 ) {
@@ -72,7 +73,7 @@ fun GroupInitScreenCore(
                 is GroupInitScreenEvent.SharePersonalCode -> onSharePersonalCode(event.code)
                 GroupInitScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                 GroupInitScreenEvent.OpenGroupCreate -> onCreateGroup()
-                GroupInitScreenEvent.OpenPaywall -> openPaywall()
+                is GroupInitScreenEvent.OpenPaywall -> openPaywall(event.type)
 
                 null -> {
                     /* do nothing */
@@ -101,8 +102,8 @@ fun GroupInitScreenCore(
             when (val finalStep = finalState.data.onboardingStep) {
                 is AccountOnboardingContent -> {
                     AccountOnboardingScreen(
+                        modifier = modifier,
                         coreUiState = appState,
-                        paddingValues = paddingValues,
                         step = finalStep,
                         onEvent = {
                             vm.onEvent(GroupInitScreenUiEvent.OnboardingStep(event = it))
@@ -111,6 +112,7 @@ fun GroupInitScreenCore(
                 }
                 null -> {
                     GroupInitScreenFinal(
+                        modifier = modifier,
                         state = finalState.data,
                         vm = vm,
                         openSettings = openSettings,
@@ -128,6 +130,7 @@ fun GroupInitScreenCore(
 
 @Composable
 private fun GroupInitScreenFinal(
+    modifier: Modifier,
     state: GroupInitScreenState,
     vm: GroupInitViewModel,
     openSettings: () -> Unit,
@@ -138,7 +141,7 @@ private fun GroupInitScreenFinal(
     askNotificationPermission: () -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(MR.strings.group_create_start_title),

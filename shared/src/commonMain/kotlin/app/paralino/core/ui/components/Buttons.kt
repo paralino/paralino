@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -24,6 +25,7 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +41,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -163,43 +166,49 @@ fun FullWidthActionButton(
     modifier: Modifier = Modifier,
     startIcon: Painter,
     text: String,
-    endIcon: Painter = CoreAppIcons.ChevronRight.asPainterResource(),
+    endIcon: Painter? = CoreAppIcons.ChevronRight.asPainterResource(),
+    backgroundColor: Color = MaterialTheme.colors.surface,
+    contentColor: Color = contentColorFor(backgroundColor),
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
     onClick: () -> Unit
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .clickable(onClick = onClick)
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colors.surface)
+            .background(backgroundColor)
             .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = startIcon,
             modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colors.onSurface,
+            tint = contentColor,
             contentDescription = null
         )
 
         Text(
             text = text,
-            color = MaterialTheme.colors.onSurface,
+            color = contentColor,
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
             lineHeight = 14.sp,
+            textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .weight(1f)
+                .weight(weight = 1f)
         )
 
-        Icon(
-            modifier = Modifier.width(20.dp),
-            painter = endIcon,
-            tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-            contentDescription = null
-        )
+        if (endIcon != null) {
+            Icon(
+                modifier = Modifier.width(20.dp),
+                painter = endIcon,
+                tint = contentColor.copy(alpha = ContentAlpha.disabled),
+                contentDescription = null
+            )
+        } else {
+            Spacer(Modifier.size(8.dp))
+        }
     }
 }
 

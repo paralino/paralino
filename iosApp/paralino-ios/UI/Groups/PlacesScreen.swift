@@ -85,7 +85,7 @@ class PlacesState: BaseMapObservableObject {
         refocusMap(animate: false)
     }
     
-    override func onMarkerTap(markerData: FocusedMarkerData) {
+    override func onMarkerTap(markerData: MapPinData) {
         refocusMap(animate: true)
     }
     

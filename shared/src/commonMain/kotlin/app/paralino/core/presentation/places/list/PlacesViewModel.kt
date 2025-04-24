@@ -1,12 +1,14 @@
 package app.paralino.core.presentation.places.list
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -41,6 +43,7 @@ class PlacesViewModel(
     private val groupRepo: UserGroupLocalDataSource,
     private val notificationPresenter: IGroupActivityNotificationPresenter,
     val deviceApiProvider: IDeviceApiProvider,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<Payload<PlacesListScreenState>>(Payload.Loading)
@@ -143,6 +146,13 @@ class PlacesViewModel(
                     notificationPresenter.notify(
                         payload = IPushNotificationPresenter.Payload(
                             notificationId = event.content.hashCode(),
+                            notificationGroupId = when (appPrefs.notificationGrouping) {
+                            NotificationGroupingType.NONE -> null
+                            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+                            NotificationGroupingType.TYPE -> "place_activity"
+                            NotificationGroupingType.GROUP -> _uiState.value.data?.groupId ?: "place_activity"
+                            NotificationGroupingType.PERSON -> appPrefs.userId
+                        },
                             title = event.content,
                             message = null,
                             timeMillis = null,

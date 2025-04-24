@@ -1,8 +1,8 @@
 package app.paralino.android.ui.groups
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
@@ -10,7 +10,6 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 
 
 @Composable
@@ -26,8 +25,8 @@ fun GroupInitScreen(
 
     val context = LocalContext.current
     GroupInitScreenCore(
+        modifier = Modifier.safeDrawingPadding(),
         appState = appState,
-        paddingValues = remember { PaddingValues() },
         vm = vm,
         openSettings = { appState.navController.navigate(AppScreen.Settings.routeSignature) },
         onCreateGroup = {
@@ -40,7 +39,7 @@ fun GroupInitScreen(
         },
         openPaywall = {
             appState.navController.navigate(
-                AppScreen.MainHome.BillingPaywall.route(groupId = null, type = BillingScreenSourceType.UPGRADE)
+                AppScreen.MainHome.BillingPaywall.route(groupId = null, type = it)
             )
         },
         openPersonalCodes = { appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature) },

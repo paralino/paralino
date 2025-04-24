@@ -50,11 +50,14 @@ kotlin {
             api(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.datetime)
             api(libs.kotlinx.serialization.json)
-            api(libs.koin.core)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.multiplatform.settings)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.logging)
+            implementation(libs.network.ktor.client.core)
+            implementation(libs.network.ktor.client.logging)
+            implementation(libs.network.ktor.content.negotiation)
+            implementation(libs.network.ktor.serialization)
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.aboutLibraries.core)
@@ -62,6 +65,7 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.android)
             api(libs.lifecycle.viewmodel.ktx)
             implementation(libs.androidx.preference.ktx)
@@ -70,19 +74,19 @@ kotlin {
             api(libs.appcompat)
             api(libs.androidx.core.ktx)
             api(libs.kotlinx.coroutines.android)
-            implementation(libs.ktor.client.okhttp)
+            implementation(libs.network.ktor.client.okhttp)
         }
 
         iosMain.get().dependsOn(commonMain.get())
         iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+            implementation(libs.network.ktor.client.darwin)
         }
     }
 }
 
 android {
     namespace = "app.paralino"
-    compileSdk = 34
+    compileSdk = 35
 
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/moko-resources")

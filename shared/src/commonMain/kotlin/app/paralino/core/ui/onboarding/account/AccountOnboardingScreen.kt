@@ -21,12 +21,12 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun AccountOnboardingScreen(
     coreUiState: CoreUiState,
-    paddingValues: PaddingValues,
+    modifier: Modifier = Modifier,
     step: AccountOnboardingContent,
     onEvent: (AccountOnboardingUiEvent) -> Unit
 ) {
     BaseOnboardingScreen(
-        modifier = Modifier.fillMaxSize().padding(paddingValues),
+        modifier = modifier.fillMaxSize(),
         buttonText = stringResource(step.buttonText),
         skipButtonText = step.skipButtonText?.let { stringResource(it) }
             ?: stringResource(MR.strings.button_skip),

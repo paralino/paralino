@@ -82,6 +82,7 @@ class ReRegisterDeviceUseCase(
                     infoNotificationPresenter.notify(
                         IPushNotificationPresenter.Payload(
                             notificationId = 54343,
+                            notificationGroupId = IPushNotificationPresenter.notificationGroupSystem,
                             title = MR.strings.error_something_wrong.localizedString(),
                             message = MR.strings.error_device_registration_notification_message.localizedString(),
                             timeMillis = null,
@@ -96,6 +97,7 @@ class ReRegisterDeviceUseCase(
             infoNotificationPresenter.notify(
                 IPushNotificationPresenter.Payload(
                     notificationId = 54343,
+                    notificationGroupId = IPushNotificationPresenter.notificationGroupSystem,
                     title = MR.strings.error_something_wrong.localizedString(),
                     message = MR.strings.error_device_registration_notification_message.localizedString(),
                     timeMillis = null,

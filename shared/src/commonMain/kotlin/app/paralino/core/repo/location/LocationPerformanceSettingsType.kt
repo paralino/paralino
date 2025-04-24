@@ -26,7 +26,7 @@ sealed interface LocationPerformanceSettingsType {
 
         data object Level2 : HighPerformance() {
             override val maxAllowedDuration: Duration = 20.minutes
-            override val isPremiumFeature: Boolean = false
+            override val isPremiumFeature: Boolean = true
             override val key: String = "high_performance_200"
         }
 
@@ -43,7 +43,7 @@ sealed interface LocationPerformanceSettingsType {
         }
 
         companion object {
-            val default: HighPerformance = Level2
+            val default: HighPerformance = Level1
             fun fromKey(key: String?): HighPerformance {
                 return when (key) {
                     Level1.key -> Level1

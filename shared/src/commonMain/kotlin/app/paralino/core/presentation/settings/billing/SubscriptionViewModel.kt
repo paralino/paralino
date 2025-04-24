@@ -29,7 +29,8 @@ class SubscriptionViewModel(
         SubscriptionScreenState(
             subscriptionState = getPlanState(userRepo.userPlans.value.highestValidPlan),
             isLoading = true,
-            canShowMoreInfo = AppBuildConfig.instance.isDevMode
+            canShowMoreInfo = false, //AppBuildConfig.instance.isDevMode,
+            featureTableState = constructFeatureTable()
         )
     )
     val uiState: StateFlow<SubscriptionScreenState> = _uiState
@@ -40,7 +41,12 @@ class SubscriptionViewModel(
     init {
         userRepo.userPlans
             .onEach { plans ->
-                _uiState.update { it.copy(subscriptionState = getPlanState(plans.highestValidPlan)) }
+                _uiState.update {
+                    it.copy(
+                        subscriptionState = getPlanState(plans.highestValidPlan),
+                        featureTableState = constructFeatureTable()
+                    )
+                }
             }
             .launchIn(coroutineScope)
 
@@ -79,6 +85,24 @@ class SubscriptionViewModel(
         }
     }
 
+    private fun constructFeatureTable(): FeatureTableState {
+        val currentPlan = userRepo.userPlans.value.highestValidPlanConfig
+        return FeatureTableState.constructFeaturesTable(
+            plans = listOf(
+                PlanInfoState(
+                    productId = "",
+                    name = currentPlan.adjustedPlanName,
+                    config = currentPlan,
+                    isCurrentPlan = true,
+                    hasSpecialOffer = false,
+                    isSelected = true,
+                    isExpanded = true,
+                    billingPeriods = emptyList()
+                )
+            )
+        )
+    }
+
     fun onEvent(event: SubscriptionScreenUiEvent) {
         when (event) {
             is SubscriptionScreenUiEvent.DialogAction -> {
@@ -88,9 +112,7 @@ class SubscriptionViewModel(
                         _eventChannel.trySend(SubscriptionScreenEvent.OnNavigateBack)
                     }
 
-                    else -> {
-
-                    }
+                    else -> {}
                 }
             }
         }

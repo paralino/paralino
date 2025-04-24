@@ -1,7 +1,5 @@
 package app.paralino.core.ui.settings.billing
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +27,7 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionsState
@@ -44,8 +43,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyMemberState
-import app.paralino.core.ui.settings.location.LocationSettingsOptionItem
-import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.settings.GenericSettingsOptionItem
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
 import dev.icerock.moko.resources.compose.stringResource
@@ -58,29 +56,30 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun PaywallScreenFeatureElements(
     modifier: Modifier,
+    memberImageModel: ImageModel,
+    memberName: String,
+    memberDeviceName: String,
+    displayTitle: Boolean,
     valueFormatter: IValueFormatter
 ) {
     Column(
         modifier = modifier
-            .background(
-                color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
-            )
-            .padding(bottom = 40.dp, top = 20.dp)
             .padding(horizontal = 20.dp)
     ) {
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
-            text = stringResource(MR.strings.paywall_header_try_it),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-        )
+        if (displayTitle) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
+                text = stringResource(MR.strings.paywall_header_try_it),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
+            )
+        }
 
         Icon(
             modifier = Modifier
-                .padding(bottom = 20.dp)
                 .align(Alignment.CenterHorizontally)
                 .size(24.dp)
                 .padding(2.dp)
@@ -91,7 +90,11 @@ fun PaywallScreenFeatureElements(
 
         MemberItem(
             modifier = Modifier
+                .padding(top = 20.dp)
                 .rotate(2f),
+            memberName = memberName,
+            memberImageModel = memberImageModel,
+            memberDeviceName = memberDeviceName,
             valueFormatter = valueFormatter
         )
 
@@ -124,11 +127,24 @@ fun PaywallScreenFeatureElements(
                 .padding(top = 8.dp)
                 .rotate(-2f),
         )
+
+        MemberItemWithLocations(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .rotate(2f),
+            memberName = memberName,
+            memberImageModel = memberImageModel,
+            memberDeviceName = memberDeviceName,
+            valueFormatter = valueFormatter
+        )
     }
 }
 
 @Composable
 private fun MemberItem(
+    memberImageModel: ImageModel,
+    memberName: String,
+    memberDeviceName: String,
     modifier: Modifier = Modifier,
     valueFormatter: IValueFormatter
 ) {
@@ -138,8 +154,10 @@ private fun MemberItem(
         mutableStateOf(
             GroupMemberItemLocationState(
                 locationId = "",
-                name = "Primary",
+                name = memberDeviceName,
                 image = ImageModel.emoji(Emojis.lock),
+                lat = null,
+                lng = null,
                 actualBatteryLevel = 58,
                 adjustedBatteryLevel = 58,
                 isBatteryCharging = false,
@@ -180,7 +198,7 @@ private fun MemberItem(
         modifier = modifier,
         state = GroupMemberItemStateWithOneLocation(
             memberState = dummyMemberState.copy(
-                name = "Peter", image = ImageModel.emoji(Emojis.goat)
+                name = memberName, image = memberImageModel
             ),
             location = location,
             actions = memberActions
@@ -206,7 +224,7 @@ private fun MemberItem(
                             isWaitingForUser = true
                         )
                     )
-                    delay(3000)
+                    delay(2500)
                     memberActions = memberActions.copy(locationRequest = null)
                     location = location.copy(
                         accuracyMeters = 40f,
@@ -216,7 +234,7 @@ private fun MemberItem(
                         deviceStatus = MemberDeviceStatusType.ACTIVE_NO_LOCATION,
                         onlineStatus = MemberDeviceOnlineStatusType.ONLINE
                     )
-                    delay(2000)
+                    delay(1500)
                     location = location.copy(
                         accuracyMeters = 20f,
                         deviceStatus = MemberDeviceStatusType.ACTIVE,
@@ -236,12 +254,104 @@ private fun MemberItem(
 }
 
 @Composable
+private fun MemberItemWithLocations(
+    memberImageModel: ImageModel,
+    memberName: String,
+    memberDeviceName: String,
+    modifier: Modifier = Modifier,
+    valueFormatter: IValueFormatter
+) {
+    val uiScope = rememberCoroutineScope()
+
+    val locations = remember {
+        listOf(
+            GroupMemberItemLocationState(
+                locationId = "",
+                name = memberDeviceName,
+                image = ImageModel.emoji(Emojis.lock),
+                lat = null,
+                lng = null,
+                actualBatteryLevel = 58,
+                adjustedBatteryLevel = 58,
+                isBatteryCharging = false,
+                speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
+                elevation = valueFormatter.getDistanceSmall(meters = 250.0),
+                lastLocationPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().toLocalDateTime(TimeZone.UTC)
+                ),
+                lastStatusPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().minus(30.minutes).toLocalDateTime(TimeZone.UTC)
+                ),
+                accuracyMeters = 200f,
+                deviceStatus = MemberDeviceStatusType.ACTIVE,
+                canEdit = false,
+                currentDevice = true,
+                onlineStatus = MemberDeviceOnlineStatusType.ONLINE,
+                networkType = NetworkType.G2,
+                signalStrength = NetworkSignalStrength.POOR,
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+            ),
+            GroupMemberItemLocationState(
+                locationId = "",
+                name = "$memberDeviceName #2",
+                image = ImageModel.emoji(Emojis.lock),
+                lat = null,
+                lng = null,
+                actualBatteryLevel = 75,
+                adjustedBatteryLevel = 75,
+                isBatteryCharging = true,
+                speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.3f),
+                elevation = valueFormatter.getDistanceSmall(meters = 280.0),
+                lastLocationPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().minus(20.minutes).toLocalDateTime(TimeZone.UTC)
+                ),
+                lastStatusPing = valueFormatter.formatRelativeDateTime(
+                    nowUTC().minus(20.minutes).toLocalDateTime(TimeZone.UTC)
+                ),
+                accuracyMeters = 100f,
+                deviceStatus = MemberDeviceStatusType.IDLE,
+                canEdit = false,
+                currentDevice = false,
+                onlineStatus = MemberDeviceOnlineStatusType.BUSY,
+                networkType = NetworkType.G4,
+                signalStrength = NetworkSignalStrength.GREAT,
+                visibility = MemberLocationVisibilityType.VISIBLE_ALWAYS
+            )
+        )
+    }
+
+    val memberActions: MemberActionsState = remember {
+        MemberActionsState()
+    }
+
+    GroupMember(
+        modifier = modifier,
+        state = GroupMemberItemStateWithLocations(
+            memberState = dummyMemberState.copy(
+                name = memberName, image = memberImageModel
+            ),
+            locations = locations,
+            actions = memberActions,
+            allowShowingDevices = true,
+            lastLocationPing = locations.first().lastLocationPing,
+            lastStatusPing = locations.first().lastStatusPing
+        ),
+        forceExpandAction = true,
+        collapseOnActionClick = false,
+        backgroundColor = MaterialTheme.colors.background,
+        canShowOldLocation = false
+    ) {
+
+    }
+}
+
+@Composable
 private fun BatteryPerformance1Switch(
     modifier: Modifier = Modifier,
     itemState: Boolean,
     onClick: () -> Unit
 ) {
-    LocationSettingsOptionItem(
+    GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_4),
         description = stringResource(MR.strings.setting_location_balanced_level_4_info),
@@ -259,7 +369,7 @@ private fun BatteryPerformance2Switch(
     itemState: Boolean,
     onClick: () -> Unit
 ) {
-    LocationSettingsOptionItem(
+    GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_5),
         description = stringResource(MR.strings.setting_location_balanced_level_5_info),

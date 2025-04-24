@@ -17,6 +17,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun WelcomeOnboardingScreenCore(
+    modifier: Modifier = Modifier,
     vm: WelcomeOnboardingViewModel,
     isDemo: Boolean,
     step: MutableState<WelcomeOnboardingContent> = rememberSaveable {
@@ -25,7 +26,7 @@ fun WelcomeOnboardingScreenCore(
     onFinish: () -> Unit
 ) {
     BaseOnboardingScreen(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         order = step.value.titleKey,
         title = stringResource(step.value.title),

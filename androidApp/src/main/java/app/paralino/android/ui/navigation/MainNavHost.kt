@@ -27,9 +27,11 @@ import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
 import app.paralino.android.ui.places.PlacesScreen
+import app.paralino.android.ui.settings.AppSettingsScreen
 import app.paralino.android.ui.settings.AppStatusDebugScreen
 import app.paralino.android.ui.settings.BlocklistScreen
 import app.paralino.android.ui.settings.GeneralInfoScreen
+import app.paralino.android.ui.settings.GenericSettingsScreen
 import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.LocationSettingsScreen
 import app.paralino.android.ui.settings.RawDataScreen
@@ -45,7 +47,10 @@ import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
+import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
@@ -243,6 +248,21 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             WelcomeOnboardingScreen(
                 isDemo = true,
                 onFinish = { appState.navController.popBackStack() }
+            )
+        }
+        composable(AppScreen.Settings.AppSettings.routeSignature) {
+            AppSettingsScreen(appState)
+        }
+        composable(AppScreen.Settings.MeasurementSystem.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<MeasurementSystemViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.NotificationGrouping.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<NotificationsGroupingViewModel>()
             )
         }
     }

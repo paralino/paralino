@@ -46,6 +46,7 @@ import app.paralino.core.ui.components.OnboardingSkipButton
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
@@ -59,6 +60,7 @@ fun MemberInviteScreenCore(
     isOnboarding: Boolean,
     contentPadding: PaddingValues,
     onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
+    openPaywall: (BillingScreenSourceType) -> Unit,
     onMemberAdded: () -> Unit,
     onSkipOnboarding: () -> Unit,
 ) {
@@ -69,9 +71,8 @@ fun MemberInviteScreenCore(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                MemberInviteScreenEvent.MemberAdded -> {
-                    onMemberAdded()
-                }
+                MemberInviteScreenEvent.MemberAdded -> onMemberAdded()
+                MemberInviteScreenEvent.OpenPaywall -> openPaywall(BillingScreenSourceType.FREE_PLAN_NEW_USER)
 
                 null -> {
                     /* do nothing */

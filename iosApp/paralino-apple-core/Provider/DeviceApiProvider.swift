@@ -48,6 +48,7 @@ class DeviceApiProvider: IDeviceApiProvider {
     }
     
     override var _batteryLevel: Int32 {
+        UIDevice.current.isBatteryMonitoringEnabled = true
         let level = UIDevice.current.batteryLevel
         if level >= 0 && level <= 1 {
             return Int32(level * 100)

@@ -32,6 +32,9 @@ struct AccountScreen: View {
                     openChangePassword: {
                         path.append(.settings(.changePassword))
                     },
+                    openProfileRawScreen: {
+                        path.append(.settings(.rawData(type: .UserPresentation())))
+                    },
                     onShare: { data in
                         shareText = ShareText(text: data)
                     }

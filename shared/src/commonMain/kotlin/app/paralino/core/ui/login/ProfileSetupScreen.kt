@@ -19,6 +19,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun ProfileSetupScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: EditProfileViewModel,
     onBottomSheetAction: (BottomSheetPickerType.EmojiPickerBottomSheet) -> Unit,
@@ -28,7 +29,7 @@ fun ProfileSetupScreenCore(
     val uiState by vm.uiState.collectAsState(initial = EditProfileScreenState())
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(MR.strings.welcome_account_edit_profile),

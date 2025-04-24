@@ -16,6 +16,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
@@ -47,7 +48,7 @@ class CreateGroupViewModel(
     private val _eventChannel = Channel<CreateGroupScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
-    val groupNameLengthLimit = 30
+    val groupNameLengthLimit = 35
 
     init {
         coroutineScope.launch {
@@ -61,7 +62,44 @@ class CreateGroupViewModel(
             groupFlow.value = value
             _uiState.update {
                 when {
-                    isGroupCreate() -> Payload.Success(CreateGroupState.empty())
+                    isGroupCreate() -> {
+                        val suggestions = listOf(
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.home),
+                                name = MR.strings.group_create_suggestion_family.localizedString()
+                            ),
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.artMasks),
+                                name = MR.strings.group_create_suggestion_friends.localizedString()
+                            ),
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.heart),
+                                name = MR.strings.group_create_suggestion_couple.localizedString()
+                            ),
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.coffee),
+                                name = MR.strings.group_create_suggestion_coffee.localizedString()
+                            ),
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.star),
+                                name = MR.strings.group_create_suggestion_bestGroup.localizedString()
+                            ),
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.airplane),
+                                name = MR.strings.group_create_suggestion_travel.localizedString()
+                            ),
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.schoolBooks),
+                                name = MR.strings.group_create_suggestion_school.localizedString()
+                            ),
+                            NewGroupSuggestionChipData(
+                                image = ImageModel.emoji(Emojis.suitecase),
+                                name = MR.strings.group_create_suggestion_work.localizedString()
+                            )
+                        )
+                        Payload.Success(CreateGroupState.empty(suggestions = suggestions))
+                    }
+
                     else -> value.mapSuccess { group ->
                         CreateGroupState(
                             isNewGroup = false,
@@ -69,7 +107,8 @@ class CreateGroupViewModel(
                             image = group.image,
                             hasNameError = false,
                             isLoading = false,
-                            alertDialog = it.data?.alertDialog
+                            alertDialog = it.data?.alertDialog,
+                            suggestions = emptyList()
                         )
                     }
                 }
@@ -93,6 +132,12 @@ class CreateGroupViewModel(
 
                     else -> {}
                 }
+            }
+
+            is CreateGroupScreenUiEvent.OnGroupNameChange -> updateName(event.name)
+            is CreateGroupScreenUiEvent.OnGroupSuggestionClicked -> {
+                updateImage(event.suggestionChipData.image)
+                updateName(event.suggestionChipData.name)
             }
         }
     }
@@ -167,7 +212,12 @@ class CreateGroupViewModel(
                 }
 
                 _uiState.update {
-                    it.mapSuccess { it.copy(isLoading = data is Payload.Loading, hasNameError = false) }
+                    it.mapSuccess {
+                        it.copy(
+                            isLoading = data is Payload.Loading,
+                            hasNameError = false
+                        )
+                    }
                 }
             }
             .launchIn(coroutineScope)
@@ -179,7 +229,7 @@ class CreateGroupViewModel(
         }
     }
 
-    fun updateName(name: String) {
+    private fun updateName(name: String) {
         if (name.trim().length > groupNameLengthLimit)
             return
         _uiState.update {
@@ -193,8 +243,10 @@ class CreateGroupViewModel(
 
     private suspend fun checkGroupCreateLimits(): Boolean {
         val limit = userRepo.userPlans.value.groupsLimit
-        val groupCount = groupRepo.allGroupsState.value.data?.filter { it.group.isCurrentUserOwner }?.size ?: 0
-        val maxGroupLimit = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.groupsLimit
+        val groupCount =
+            groupRepo.allGroupsState.value.data?.filter { it.group.isCurrentUserOwner }?.size ?: 0
+        val maxGroupLimit =
+            remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.groupsLimit
 
         if (maxGroupLimit != null && groupCount >= maxGroupLimit) {
             _uiState.update {

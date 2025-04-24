@@ -2,7 +2,9 @@ package app.paralino.core.db
 
 import app.paralino.core.appPrefs
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
+import app.paralino.core.provider.MeasurementSystemType
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.datetime.Instant
@@ -89,6 +91,9 @@ class AppPrefs(
         const val keyShowedAppRatingVersion = "prefs.user.appRating.appVersion"
         const val keyPreviousAppVersion = "prefs.device.appVersion.previous"
         const val keyCurrentAppVersion = "prefs.device.appVersion.current"
+        const val keyMeasurementSystem = "prefs.device.measurementSystem"
+        const val keyNotificationGrouping = "prefs.device.notificationGrouping"
+        const val keyDeviceTheme = "prefs.device.theme"
     }
 
     val isTokenValid: Boolean
@@ -360,6 +365,32 @@ class AppPrefs(
             } else {
                 provider.appSettings.putLong(keyCurrentAppVersion, value)
             }
+        }
+
+    var measurementSystem: MeasurementSystemType?
+        get() = provider.appSettings.getString(keyMeasurementSystem, "")
+            .let { MeasurementSystemType.fromKey(it) }
+        set(value) {
+            if (value == null) {
+                provider.appSettings.remove(keyMeasurementSystem)
+            } else {
+                provider.appSettings.putString(keyMeasurementSystem, value.key)
+            }
+        }
+
+    var notificationGrouping: NotificationGroupingType
+        get() = provider.appSettings.getString(keyNotificationGrouping, "")
+            .let { NotificationGroupingType.fromKey(it) }
+            ?: NotificationGroupingType.NONE
+        set(value) {
+            provider.appSettings.putString(keyNotificationGrouping, value.key)
+        }
+
+
+    var deviceTheme: String
+        get() = provider.appSettings.getString(keyDeviceTheme, "")
+        set(value) {
+            provider.appSettings.putString(keyDeviceTheme, value)
         }
 
 

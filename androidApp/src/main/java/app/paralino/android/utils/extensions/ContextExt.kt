@@ -1,17 +1,17 @@
 package app.paralino.android.utils.extensions
 
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Context.BATTERY_SERVICE
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.BatteryManager
 import android.os.PowerManager
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
 
@@ -57,28 +57,6 @@ fun Context.share(data: String) {
 fun Context.copy(data: String, copyKey: String = app.paralino.android.BuildConfig.APPLICATION_ID + "_copyKey") {
     ContextCompat.getSystemService(this, ClipboardManager::class.java)
         ?.setPrimaryClip(ClipData.newPlainText(copyKey, data))
-}
-
-fun Context.openUri(uri: Uri) {
-    val intent = Intent(Intent.ACTION_VIEW, uri)
-    val chooserIntent = Intent.createChooser(intent, "Open")
-    chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    startActivity(chooserIntent)
-}
-
-fun Context.openUri(uri: String) {
-    openUri(uri.toUri())
-}
-
-fun Context.hideKeyboardFrom(view: View) {
-    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(view.windowToken, 0)
-}
-
-fun Context.getActivity(): AppCompatActivity? = when (this) {
-    is AppCompatActivity -> this
-    is ContextWrapper -> baseContext.getActivity()
-    else -> null
 }
 
 fun Context.contactSupport() {

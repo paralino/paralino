@@ -23,6 +23,9 @@ struct MemberInviteScreen: View {
                     vm: appState.vm,
                     isOnboarding: appState.isOnboarding,
                     onPickGroup: { sheet in groupPicker = sheet },
+                    openPaywall: { type in
+                        path.append(.settings(.paywall(groupId: appState.vm.currentGroupId, type: type)))
+                    },
                     onMemberAdded: {
                         if appState.isOnboarding {
                             path.append(.home(HomeGraph.places(groupId: appState.groupId!, isOnboarding: appState.isOnboarding)))
@@ -69,7 +72,7 @@ class MemberInviteState: ObservableObject {
         self.groupId = groupId
         self.code = code
         self.isOnboarding = isOnboarding
-        self.vm = KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code)
+        self.vm = KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code, isOnboarding: isOnboarding)
     }
     
     deinit {

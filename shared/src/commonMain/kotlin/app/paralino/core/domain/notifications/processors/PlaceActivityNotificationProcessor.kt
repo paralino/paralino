@@ -2,9 +2,11 @@ package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.MR
 import app.paralino.core.crypto.CryptoCore
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource
@@ -24,6 +26,7 @@ class PlaceActivityNotificationProcessor(
     private val valueFormatter: IValueFormatter,
     private val cryptoCore: CryptoCore,
     private val accessLogSource: AccessLogDataSource,
+    private val appPrefs: AppPrefs
 ) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
@@ -37,9 +40,11 @@ class PlaceActivityNotificationProcessor(
         var placeName: String? = null
         var userName: String? = null
         var eventSeed: String? = null
+        var groupId: String? = null
 
         try {
             val place = placeRepo.getPlaceWithoutSettingsOnce(payload.placeId)
+            groupId = place?.groupId
             placeName = place?.data?.data?.name
             userName = groupRepo.getMemberNameOnce(place!!.groupId, payload.memberUserId)
             eventSeed = place.eventSeed
@@ -82,8 +87,17 @@ class PlaceActivityNotificationProcessor(
             null
         }
 
+        val notificationGroup = when (appPrefs.notificationGrouping) {
+            NotificationGroupingType.NONE -> null
+            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+            NotificationGroupingType.TYPE -> "place_activity"
+            NotificationGroupingType.GROUP -> groupId ?: payload.placeId
+            NotificationGroupingType.PERSON -> payload.memberUserId
+        }
+
         val pushPayload = IPushNotificationPresenter.Payload(
             notificationId = notificationId,
+            notificationGroupId = notificationGroup,
             title = title,
             message = null,
             timeMillis = triggerTime.toEpochMilliseconds(),

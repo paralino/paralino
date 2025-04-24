@@ -51,7 +51,7 @@ class PlacesActivityProcessor(
         placeActivityUploadEngine.syncPendingEventsInBackground()
 
         val places = local.getAllPlacesOnce().filter {
-            locationSharingManager.isSharingActiveForGroup(it.groupId)
+            locationSharingManager.isSharingActiveForGroup(it.groupId) && it.canSendAlert
         }
         places.forEach { place ->
             place.data.data?.let { placeData ->
@@ -371,9 +371,17 @@ class PlacesActivityProcessor(
 
         if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
             // reset place activity if sharing stops
-            placeActivityRepo.updatePlaceActivity(placeId, null)
+            placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
             logg.tag("place_activity")
                 .d("Cancel place $activityTag notify (sharing off) - $placeId")
+            return
+        }
+
+        if (!place.canSendAlert) {
+            // reset place activity if place is not capable of alerts
+            placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (place without alerts) - $placeId")
             return
         }
 

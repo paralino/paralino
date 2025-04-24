@@ -2,8 +2,12 @@ package app.paralino.android.ui.share
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.groups.GroupBottomSheetPicker
@@ -19,7 +23,7 @@ import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -28,7 +32,7 @@ fun SharingStartScreen(
     appState: MainAppState,
     groupId: String?,
     isOnboarding: Boolean,
-    vm: SharingStartViewModel = getViewModel { parametersOf(groupId, isOnboarding) },
+    vm: SharingStartViewModel = koinViewModel { parametersOf(groupId, isOnboarding) },
 ) {
 
     val permissionHandler = rememberLocationPermissionHandler(
@@ -53,7 +57,7 @@ fun SharingStartScreen(
                 AppScreen.MainHome.BillingPaywall.route(
                     groupId = vm.currentGroupId,
                     type = when (isOnboarding) {
-                        true -> BillingScreenSourceType.ONBOARDING
+                        true -> BillingScreenSourceType.GROUP_ONBOARDING
                         false -> BillingScreenSourceType.UPGRADE
                     }
                 )
@@ -76,6 +80,7 @@ fun SharingStartScreen(
     }
 
     Scaffold(
+        modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.groups_sharing_title),

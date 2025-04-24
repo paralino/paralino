@@ -1,8 +1,10 @@
 package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -15,6 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 class PlaceCreatedNotificationProcessor(
     private val groupRepo: UserGroupLocalDataSource,
     private val placeRepo: PlacesLocalDataSource,
+    private val appPrefs: AppPrefs,
     accessLogSource: AccessLogDataSource
 ): INotificationProcessor<PlaceCreatedNotificationProcessor.PlaceCreatedHookPayload>(accessLogSource) {
 
@@ -35,9 +38,11 @@ class PlaceCreatedNotificationProcessor(
 
         var placeName: String? = null
         var groupName: String? = null
+        var placeOwner: String? = null
 
         try {
             val place = placeRepo.getPlaceWithoutSettingsOnce(payload.placeId)
+            placeOwner = place?.ownerUserId
             placeName = place?.nameOrNull
             groupName = groupRepo.getGroupOnce(payload.groupId)?.nameOrNull
         } catch (e: Exception) {
@@ -49,8 +54,17 @@ class PlaceCreatedNotificationProcessor(
             MR.strings.place_created_notification.localizedString(groupName, placeName)
         }
 
+        val notificationGroup = when (appPrefs.notificationGrouping) {
+            NotificationGroupingType.NONE -> null
+            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+            NotificationGroupingType.TYPE -> "place_created"
+            NotificationGroupingType.GROUP -> payload.groupId
+            NotificationGroupingType.PERSON -> placeOwner ?: "place_created"
+        }
+
         val pushPayload = IPushNotificationPresenter.Payload(
             notificationId = payload.hashCode(),
+            notificationGroupId = notificationGroup,
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),

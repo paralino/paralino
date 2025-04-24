@@ -7,6 +7,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -83,8 +84,9 @@ class LocationSettingsViewModel(
                         AppBuildConfig.instance.hasPreviewFeatures
                     }
                 ).map { level ->
-                    LocationSettingsItemState(
-                        performance = level,
+                    GroupOptionItem(
+                        key = level,
+                        id = level.key,
                         isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
@@ -102,8 +104,9 @@ class LocationSettingsViewModel(
                     LocationPerformanceSettingsType.BatterySaver.Level2,
                     LocationPerformanceSettingsType.BatterySaver.Level3
                 ).map { level ->
-                    LocationSettingsItemState(
-                        performance = level,
+                    GroupOptionItem(
+                        key = level,
+                        id = level.key,
                         isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
@@ -131,8 +134,9 @@ class LocationSettingsViewModel(
                     LocationPerformanceSettingsType.Balanced.Level4,
                     LocationPerformanceSettingsType.Balanced.Level5
                 ).map { level ->
-                    LocationSettingsItemState(
-                        performance = level,
+                    GroupOptionItem(
+                        key = level,
+                        id = level.key,
                         isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
@@ -186,8 +190,8 @@ class LocationSettingsViewModel(
         }
         locationPerformanceManager.updateLocationSettings(
             useHighPerformanceLocation = newSettings.useHighPerformanceLocation,
-            balancedPerformanceSettings = newSettings.selectedItem.performance,
-            batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
+            balancedPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType,
+            batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.key as LocationPerformanceSettingsType
         )
     }
 
@@ -203,19 +207,20 @@ class LocationSettingsViewModel(
     }
 
     private fun changeLocationPerformance(event: LocationSettingsScreenUiEvent.ChangePerformance) {
-        if (event.type.isPremiumFeature && !canUserHavePremiumModes()) {
+        val type = event.option.key as LocationPerformanceSettingsType
+        if (type.isPremiumFeature && !canUserHavePremiumModes()) {
             _uiState.update {
                 it.copy(alertDialog = MainAlertDialog.LocationPerformancePremiumInfo)
             }
             return
         }
 
-        when (event.type) {
+        when (type) {
             is LocationPerformanceSettingsType.HighPerformance -> {
-                appPrefs.locationSettingsHighPerformanceDurationType = event.type.key
+                appPrefs.locationSettingsHighPerformanceDurationType = type.key
                 val newSettings = uiState.value.highPerformanceSettings.copy(
                     items = uiState.value.highPerformanceSettings.items.map {
-                        it.copy(isSelected = event.type.key == it.performance.key)
+                        it.copy(isSelected = type.key == it.id)
                     }
                 )
                 _uiState.update {
@@ -224,10 +229,10 @@ class LocationSettingsViewModel(
             }
 
             is LocationPerformanceSettingsType.Balanced -> {
-                appPrefs.locationSettingsBalancedPerformanceType = event.type.key
+                appPrefs.locationSettingsBalancedPerformanceType = type.key
                 val newSettings = uiState.value.balancedSettings.copy(
                     items = uiState.value.balancedSettings.items.map {
-                        it.copy(isSelected = event.type.key == it.performance.key)
+                        it.copy(isSelected = type.key == it.id)
                     }
                 )
                 _uiState.update {
@@ -235,16 +240,16 @@ class LocationSettingsViewModel(
                 }
                 locationPerformanceManager.updateLocationSettings(
                     useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
-                    balancedPerformanceSettings = newSettings.selectedItem.performance,
-                    batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.performance
+                    balancedPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType,
+                    batterySaverPerformanceSettings = uiState.value.batterySaverSettings.selectedItem.key as LocationPerformanceSettingsType
                 )
             }
 
             is LocationPerformanceSettingsType.BatterySaver -> {
-                appPrefs.locationSettingsBatterySaverPerformanceType = event.type.key
+                appPrefs.locationSettingsBatterySaverPerformanceType = type.key
                 val newSettings = uiState.value.batterySaverSettings.copy(
                     items = uiState.value.batterySaverSettings.items.map {
-                        it.copy(isSelected = event.type.key == it.performance.key)
+                        it.copy(isSelected = type.key == it.id)
                     }
                 )
                 _uiState.update {
@@ -252,8 +257,8 @@ class LocationSettingsViewModel(
                 }
                 locationPerformanceManager.updateLocationSettings(
                     useHighPerformanceLocation = uiState.value.balancedSettings.useHighPerformanceLocation,
-                    balancedPerformanceSettings = uiState.value.balancedSettings.selectedItem.performance,
-                    batterySaverPerformanceSettings = newSettings.selectedItem.performance
+                    balancedPerformanceSettings = uiState.value.balancedSettings.selectedItem.key as LocationPerformanceSettingsType,
+                    batterySaverPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType
                 )
             }
         }

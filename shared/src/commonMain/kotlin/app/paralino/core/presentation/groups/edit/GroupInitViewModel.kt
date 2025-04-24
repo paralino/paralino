@@ -22,6 +22,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
 import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
@@ -72,6 +73,11 @@ class GroupInitViewModel(
 
     val shouldShowFreePlanNoticeScreen: Boolean
         get() = userRepo.shouldShowFreePlanNoticeScreen
+
+    private val shouldProceedToPaywall: Boolean
+        get() {
+            return !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+        }
 
     init {
         combine(
@@ -244,7 +250,15 @@ class GroupInitViewModel(
     private fun skipOnboarding() {
         when (val step = uiState.value.data?.onboardingStep) {
             AccountOnboardingContent.GroupCreate -> {
-                finishOnboarding()
+                if (shouldProceedToPaywall) {
+                    _eventChannel.trySend(GroupInitScreenEvent.OpenPaywall(type = BillingScreenSourceType.SKIPPED_ONBOARDING))
+                    coroutineScope.launch {
+                        delay(1000)
+                        finishOnboarding()
+                    }
+                } else {
+                    finishOnboarding()
+                }
             }
 
             is AccountOnboardingContent.ParalinoID -> {
