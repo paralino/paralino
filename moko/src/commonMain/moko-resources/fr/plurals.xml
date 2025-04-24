@@ -1,3 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">%d jours</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">**%d lieux** avec des alertes illimitées</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">%d mois</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">%d heures</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">**%d membres**</item>
+    </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">**%d groupes**</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">Partage de la localisation avec %d groupes</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one"></item>
+        <item quantity="many"></item>
+        <item quantity="other">%d années</item>
+    </plurals>
 </resources>
