@@ -248,7 +248,7 @@
     <string name="plan_limit_locationRequest_groupMember_message">**Função Premium**\n\nContate o administrador do grupo para habilitar solicitações de localização de alta prioridade para atualizações mais rápidas.</string>
     <string name="paywall_onboarding_skip_button">Usar versão gratuita</string>
     <string name="paywall_screen_header">Selecione o plano que seja adequado para você</string>
-        <string name="paywall_screen_title">Premium</string>
+    <string name="paywall_screen_title">Premium</string>
     <string name="paywall_current_plan_label">Plano atual: %1$s</string>
     <string name="paywall_special_offer_label">Oferta especial</string>
     <string name="paywall_special_offer_title">Desconto para sempre</string>
@@ -488,7 +488,7 @@
     <string name="group_settings_verification_description_on">Cada membro do grupo é verificado criptograficamente por você e apenas você pode adicionar novos membros.\nCaso contrário, eles aparecerão como NÃO VERIFICADOS e não poderão enviar nem receber atualizações de localização.</string>
     <string name="group_settings_verification_description_off">Os membros do grupo podem ser adicionados por outros usuários agora e não há verificação adicional do proprietário do grupo.</string>
     <string name="group_settings_verification_dialog_message_on">Habilitar a verificação ativará o processo de re-verificação para todos os membros atuais.\n\nOs membros serão verificados criptograficamente e ninguém mais poderá adicionar novos membros a este grupo.</string>
-        <string name="group_settings_verification_dialog_message_off">Desabilitar a verificação de membros permitirá que outros adicionem novos membros ao seu grupo.</string>
+    <string name="group_settings_verification_dialog_message_off">Desabilitar a verificação de membros permitirá que outros adicionem novos membros ao seu grupo.</string>
     <string name="group_settings_battery_notifications_title">Notificações de bateria</string>
     <string name="group_settings_battery_notifications_info">Decida se você quer receber notificações quando o nível de bateria de um membro do grupo estiver baixo.</string>
     <string name="group_settings_battery_notifications_notice">As notificações só serão enviadas se os membros optarem por compartilhar seus dados de bateria e seu dispositivo detectar um nível de bateria abaixo de 15%.</string>
@@ -588,7 +588,7 @@
     <string name="recover_account_step_password_wrong">A senha não coincide</string>
     <string name="recover_account_header_recover_possible">Sua senha não coincide com suas chaves de descriptografia</string>
     <string name="recover_account_caption_recover_possible">Para recuperar sua conta, tente recuperar a chave com a senha anterior.</string>
-        <string name="recover_account_header_recover_not_possible">Sua conta não tem chaves correspondentes! Por favor redefina sua conta.</string>
+    <string name="recover_account_header_recover_not_possible">Sua conta não tem chaves correspondentes! Por favor redefina sua conta.</string>
     <string name="recover_account_caption_recover_not_possible">Se você não consegue recuperar a chave, você pode redefinir sua conta. **Redefinir sua conta excluirá todos os seus dados!**</string>
     <string name="recover_account_caption_reset">**Redefinir sua conta excluirá todos os seus dados!**</string>
     <string name="reset_password_screen_title">Redefinir senha</string>
@@ -627,4 +627,4 @@
     <string name="blocklist_unblock_user_alert_message">Desbloquear permitirá que o usuário adicione você a novos grupos e você será notificado sobre as atualizações de localização do usuário.</string>
     <string name="blocklist_unblock_alert_button">Desbloquear</string>
     <string name="blocklist_unblock_alert_unknown">Remover tipo de bloqueio desconhecido?</string>
-</resources> 
+</resources>
