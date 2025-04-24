@@ -72,7 +72,7 @@ class MemberInviteState: ObservableObject {
         self.groupId = groupId
         self.code = code
         self.isOnboarding = isOnboarding
-        self.vm = KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code)
+        self.vm = KoinIOS.ViewModels.shared.memberInviteVM(groupId: groupId, code: code, isOnboarding: isOnboarding)
     }
     
     deinit {

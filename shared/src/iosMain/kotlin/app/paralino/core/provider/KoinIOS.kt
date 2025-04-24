@@ -328,8 +328,8 @@ object KoinIOS {
         fun groupDetailVM(groupId: String) = get<GroupDetailViewModel> { parametersOf(groupId) }
         fun groupSettingsVM(groupId: String) = get<GroupSettingsViewModel> { parametersOf(groupId) }
         fun groupBatterySettingsVM(groupId: String) = get<BatteryNotificationsViewModel> { parametersOf(groupId) }
-        fun memberInviteVM(groupId: String?, code: String?) =
-            get<MemberInviteViewModel> { parametersOf(groupId, code) }
+        fun memberInviteVM(groupId: String?, code: String?, isOnboarding: Boolean) =
+            get<MemberInviteViewModel> { parametersOf(groupId, code, isOnboarding) }
 
         fun sharingStartVM(groupId: String?, isOnboarding: Boolean) = get<SharingStartViewModel> { parametersOf(groupId, isOnboarding) }
         fun placesVM(groupId: String, isOnboarding: Boolean) = get<PlacesViewModel> { parametersOf(groupId, isOnboarding) }
