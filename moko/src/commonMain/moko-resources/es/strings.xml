@@ -627,4 +627,4 @@
     <string name="blocklist_unblock_user_alert_message">Desbloquear permitirá que el usuario te agregue a nuevos grupos y serás notificado sobre las actualizaciones de ubicación del usuario.</string>
     <string name="blocklist_unblock_alert_button">Desbloquear</string>
     <string name="blocklist_unblock_alert_unknown">¿Eliminar tipo de bloqueo desconocido?</string>
-</resources> 
+</resources>
