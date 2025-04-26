@@ -627,4 +627,16 @@
     <string name="groups_sharing_setting_notifyOthers_title">Stel leden op de hoogte</string>
     <string name="groups_sharing_setting_notifyOthers_description">Als ingeschakeld, zullen groepsleden een melding ontvangen dat je bent begonnen met het delen van je locatie.</string>
     <string name="groups_sharing_button_start">Begin met delen</string>
+    <string name="setting_navigationApp_settings_title">Standaard navigatie-app</string>
+    <string name="setting_navigationApp_title">Navigatie-app</string>
+    <string name="setting_navigationApp_info">Kies de standaard navigatie-app die u wilt gebruiken voor routebeschrijvingen.</string>
+    <string name="setting_navigationApp_appleMaps_title">Apple Maps</string>
+    <string name="setting_navigationApp_googleMaps_title">Google Maps</string>
+    <string name="setting_navigationApp_osmand_title">OsmAnd Maps</string>
+    <string name="setting_navigationApp_sygic_title">Sygic</string>
+    <string name="setting_navigationApp_hereWeGo_title">Here WeGo</string>
+    <string name="setting_navigationApp_citymapper_title">Citymapper</string>
+    <string name="setting_navigationApp_yandex_title">Yandex Maps</string>
+    <string name="setting_navigationApp_moovit_title">Moovit</string>
+    <string name="setting_navigationApp_waze_title">Waze</string>
 </resources>

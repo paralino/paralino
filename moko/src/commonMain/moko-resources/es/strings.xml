@@ -627,4 +627,16 @@
     <string name="blocklist_unblock_user_alert_message">Desbloquear permitirá que el usuario te agregue a nuevos grupos y serás notificado sobre las actualizaciones de ubicación del usuario.</string>
     <string name="blocklist_unblock_alert_button">Desbloquear</string>
     <string name="blocklist_unblock_alert_unknown">¿Eliminar tipo de bloqueo desconocido?</string>
+    <string name="setting_navigationApp_settings_title">Aplicación de navegación predeterminada</string>
+    <string name="setting_navigationApp_info">Elija la aplicación de navegación predeterminada para usar para direcciones.</string>
+    <string name="setting_navigationApp_appleMaps_title">Apple Maps</string>
+    <string name="setting_navigationApp_googleMaps_title">Google Maps</string>
+    <string name="setting_navigationApp_osmand_title">OsmAnd Maps</string>
+    <string name="setting_navigationApp_waze_title">Waze</string>
+    <string name="setting_navigationApp_sygic_title">Sygic</string>
+    <string name="setting_navigationApp_hereWeGo_title">Here WeGo</string>
+    <string name="setting_navigationApp_citymapper_title">Citymapper</string>
+    <string name="setting_navigationApp_yandex_title">Yandex Maps</string>
+    <string name="setting_navigationApp_moovit_title">Moovit</string>
+    <string name="setting_navigationApp_title">Aplicación de navegación</string>
 </resources>

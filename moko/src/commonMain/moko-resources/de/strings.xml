@@ -627,4 +627,16 @@
     <string name="blocklist_unblock_user_alert_message">Durch das Entsperren kann der Benutzer Sie zu neuen Gruppen hinzufügen und Sie werden über Standortaktualisierungen des Benutzers benachrichtigt.</string>
     <string name="blocklist_unblock_alert_button">Entsperren</string>
     <string name="blocklist_unblock_alert_unknown">Unbekannten blockierten Typ entfernen?</string>
+    <string name="setting_navigationApp_settings_title">Standard-Navigations-App</string>
+    <string name="setting_navigationApp_title">Navigations-App</string>
+    <string name="setting_navigationApp_info">Wählen Sie die Standard-Navigations-App für die Routenführung aus.</string>
+    <string name="setting_navigationApp_appleMaps_title">Apple Karten</string>
+    <string name="setting_navigationApp_googleMaps_title">Google Karten</string>
+    <string name="setting_navigationApp_osmand_title">OsmAnd Karten</string>
+    <string name="setting_navigationApp_waze_title">Waze</string>
+    <string name="setting_navigationApp_sygic_title">Sygic</string>
+    <string name="setting_navigationApp_hereWeGo_title">Here WeGo</string>
+    <string name="setting_navigationApp_citymapper_title">Citymapper</string>
+    <string name="setting_navigationApp_yandex_title">Yandex Karten</string>
+    <string name="setting_navigationApp_moovit_title">Moovit</string>
 </resources>

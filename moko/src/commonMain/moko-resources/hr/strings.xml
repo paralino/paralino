@@ -627,4 +627,16 @@
     <string name="blocklist_unblock_user_alert_message">Odblokiranje će korisniku omogućiti da Vas doda u nove grupe i bit ćete obaviješteni o ažuriranjima lokacije korisnika.</string>
     <string name="blocklist_unblock_alert_button">Odblokiraj</string>
     <string name="blocklist_unblock_alert_unknown">Ukloniti nepoznatu vrstu blokiranja?</string>
+    <string name="setting_navigationApp_settings_title">Zadana aplikacija za navigaciju</string>
+    <string name="setting_navigationApp_title">Aplikacija za navigaciju</string>
+    <string name="setting_navigationApp_info">Odaberite zadanu aplikaciju za navigaciju koju želite koristiti za upute.</string>
+    <string name="setting_navigationApp_appleMaps_title">Apple Maps</string>
+    <string name="setting_navigationApp_googleMaps_title">Google Maps</string>
+    <string name="setting_navigationApp_osmand_title">OsmAnd Maps</string>
+    <string name="setting_navigationApp_waze_title">Waze</string>
+    <string name="setting_navigationApp_sygic_title">Sygic</string>
+    <string name="setting_navigationApp_hereWeGo_title">Here WeGo</string>
+    <string name="setting_navigationApp_citymapper_title">Citymapper</string>
+    <string name="setting_navigationApp_yandex_title">Yandex Maps</string>
+    <string name="setting_navigationApp_moovit_title">Moovit</string>
 </resources>
