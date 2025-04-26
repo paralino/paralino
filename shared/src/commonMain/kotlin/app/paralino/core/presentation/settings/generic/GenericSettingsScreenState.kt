@@ -79,7 +79,7 @@ data class GroupOptionItem(
     val key: Any?,
     val id: String,
     val title: String,
-    val description: String,
+    val description: String?,
     val batteryImpact: String?,
     val highBatteryImpact: Boolean,
     val isPremiumFeatureEnabled: Boolean,

@@ -627,4 +627,16 @@
     <string name="places_create_seekbar_info">Rayon</string>
     <string name="places_create_button_create">Créez un lieu</string>
     <string name="places_create_error_no_place">Veuillez ajouter un emplacement en maintenant enfoncé sur la carte</string>
+    <string name="setting_navigationApp_settings_title">Application de navigation par défaut</string>
+    <string name="setting_navigationApp_title">Application de navigation</string>
+    <string name="setting_navigationApp_info">Choisissez l\'application de navigation par défaut à utiliser pour les directions.</string>
+    <string name="setting_navigationApp_appleMaps_title">Apple Maps</string>
+    <string name="setting_navigationApp_googleMaps_title">Google Maps</string>
+    <string name="setting_navigationApp_osmand_title">OsmAnd Maps</string>
+    <string name="setting_navigationApp_waze_title">Waze</string>
+    <string name="setting_navigationApp_sygic_title">Sygic</string>
+    <string name="setting_navigationApp_hereWeGo_title">Here WeGo</string>
+    <string name="setting_navigationApp_citymapper_title">Citymapper</string>
+    <string name="setting_navigationApp_yandex_title">Yandex Maps</string>
+    <string name="setting_navigationApp_moovit_title">Moovit</string>
 </resources>

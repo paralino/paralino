@@ -1023,7 +1023,8 @@ class MapHomeViewModel constructor(
                                 MapHomeScreenEvent.OpenExternalNavigation(
                                     lat = event.event.action.lat,
                                     lng = event.event.action.lng,
-                                    name = event.event.action.title
+                                    name = event.event.action.title,
+                                    navigationApp = appPrefs.iosNavigationApp
                                 )
                             )
                         }

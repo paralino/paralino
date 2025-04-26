@@ -64,6 +64,7 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.DefaultNavigationAppViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
@@ -278,6 +279,7 @@ object KoinIOS {
             factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
+            factory { DefaultNavigationAppViewModel(get()) }
         }
     }
 
@@ -352,5 +354,6 @@ object KoinIOS {
         val verifyEmailVM get() = get<VerifyEmailViewModel>()
         val measurementSystemVM get() = get<MeasurementSystemViewModel>()
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
+        val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
     }
 }

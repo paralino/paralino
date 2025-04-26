@@ -6,4 +6,10 @@ actual class ComposeUriHandler {
     actual fun openUri(uri: String) {
         CoreAppClass.instance.applicationContext.openUri(uri)
     }
+
+    actual companion object {
+        actual fun isUrlSchemeSupported(scheme: String): Boolean {
+            return true
+        }
+    }
 }

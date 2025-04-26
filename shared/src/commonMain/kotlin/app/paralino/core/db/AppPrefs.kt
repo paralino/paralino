@@ -2,9 +2,10 @@ package app.paralino.core.db
 
 import app.paralino.core.appPrefs
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
-import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.provider.MeasurementSystemType
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.datetime.Instant
@@ -93,6 +94,7 @@ class AppPrefs(
         const val keyCurrentAppVersion = "prefs.device.appVersion.current"
         const val keyMeasurementSystem = "prefs.device.measurementSystem"
         const val keyNotificationGrouping = "prefs.device.notificationGrouping"
+        const val keyNavigatioApp = "prefs.device.navigationApp"
         const val keyDeviceTheme = "prefs.device.theme"
     }
 
@@ -384,6 +386,23 @@ class AppPrefs(
             ?: NotificationGroupingType.NONE
         set(value) {
             provider.appSettings.putString(keyNotificationGrouping, value.key)
+        }
+
+    var iosNavigationApp: IOSNavigationAppType
+        get() {
+            val value = provider.appSettings.getString(keyNavigatioApp, "")
+                .let { IOSNavigationAppType.fromKey(it) }
+
+            if (value != null) {
+                return value
+            } else {
+                val default = IOSNavigationAppType.default
+                iosNavigationApp = default
+                return default
+            }
+        }
+        set(value) {
+            provider.appSettings.putString(keyNavigatioApp, value.key)
         }
 
 

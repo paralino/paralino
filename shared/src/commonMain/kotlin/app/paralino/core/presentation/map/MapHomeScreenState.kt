@@ -8,6 +8,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -83,7 +84,12 @@ sealed class MapHomeScreenEvent {
     data class OpenCreatePlace(val groupId: String) : MapHomeScreenEvent()
     data class OpenGroupDetails(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaceDetails(val groupId: String, val placeId: String) : MapHomeScreenEvent()
-    data class OpenExternalNavigation(val lat: Double, val lng: Double, val name: String?) : MapHomeScreenEvent()
+    data class OpenExternalNavigation(
+        val lat: Double,
+        val lng: Double,
+        val name: String?,
+        val navigationApp: IOSNavigationAppType
+    ) : MapHomeScreenEvent()
 }
 
 sealed interface MapHomeScreenUiEvent {
