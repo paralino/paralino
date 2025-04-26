@@ -14,4 +14,8 @@ expect class ComposeUriHandler constructor(){
      * system
      */
     fun openUri(uri: String)
+
+    companion object {
+        fun isUrlSchemeSupported(scheme: String) : Boolean
+    }
 }

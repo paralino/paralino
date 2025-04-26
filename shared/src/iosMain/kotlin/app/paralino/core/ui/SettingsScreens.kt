@@ -283,13 +283,15 @@ object SettingsScreens {
     fun AppSettingsScreenVC(
         openMeasurementSystemScreen: () -> Unit,
         openNotificationGroupingScreen: () -> Unit,
+        openNavigationAppScreen: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppSettingsScreenCore(
                 appState = it,
                 paddingValues = PaddingValues(),
                 onMeasurementSystemClick = openMeasurementSystemScreen,
-                onNotificationGroupingClick = openNotificationGroupingScreen
+                onNotificationGroupingClick = openNotificationGroupingScreen,
+                onNavigationAppClick = openNavigationAppScreen
             )
         }
     }

@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -185,7 +186,7 @@ fun GenericSettingsOptions(
 fun GenericSettingsOptionItem(
     modifier: Modifier = Modifier,
     title: String,
-    description: String,
+    description: String?,
     batteryImpact: String?,
     highBatteryImpact: Boolean,
     isSelected: Boolean,
@@ -237,14 +238,17 @@ fun GenericSettingsOptionItem(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .alpha(if (isPremiumFeatureEnabled) 1f else 0.5f)
+                .align(Alignment.CenterVertically)
+                .alpha(if (isPremiumFeatureEnabled) 1f else 0.5f),
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = if (DeviceType.current == DeviceType.iOS) 22.sp else 24.sp,
-                color = contentColor
+                style = MaterialTheme.typography.subtitle1.copy(
+                    color = contentColor,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = if (DeviceType.current == DeviceType.iOS) 18.sp else 24.sp,
+                )
             )
 
             if (batteryImpact != null) {
@@ -277,14 +281,16 @@ fun GenericSettingsOptionItem(
                 )
             }
 
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    modifier = Modifier,
-                    text = description.annotatedBoldCompose(),
-                    style = MaterialTheme.typography.caption,
-                    textAlign = TextAlign.Start,
-                    color = contentColor
-                )
+            if (description != null) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        modifier = Modifier.padding(top = 2.dp),
+                        text = description.annotatedBoldCompose(),
+                        style = MaterialTheme.typography.caption,
+                        textAlign = TextAlign.Start,
+                        color = contentColor
+                    )
+                }
             }
         }
 

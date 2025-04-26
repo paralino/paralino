@@ -51,11 +51,10 @@ struct MapHomeScreen: View {
                             path.append(.home(.placeDetail(groupId: event.groupId, placeId: event.placeId)))
                         },
                         onDirectionsRequest: { event in
-                            let coordinate = CLLocationCoordinate2DMake(event.lat, event.lng)
-                            let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: coordinate))
-                            mapItem.name = event.name ?? ""
-                            let launchOptions = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDefault]
-                            mapItem.openInMaps(launchOptions: launchOptions)
+                            let url = event.navigationApp.buildLaunchURL(lat: event.lat, lng: event.lng, title: event.name)
+                            if let deeplink = URL(string: url), UIApplication.shared.canOpenURL(deeplink) {
+                                UIApplication.shared.open(deeplink)
+                            }
                         },
                         onCreateGroup: {
                             path.append(.home(.groupCreate(groupId: nil)))

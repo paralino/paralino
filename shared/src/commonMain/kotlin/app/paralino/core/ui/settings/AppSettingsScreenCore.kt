@@ -7,10 +7,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.base.DeviceType
+import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
+import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -22,6 +26,7 @@ fun AppSettingsScreenCore(
     paddingValues: PaddingValues,
     onMeasurementSystemClick: () -> Unit,
     onNotificationGroupingClick: () -> Unit,
+    onNavigationAppClick: () -> Unit,
 ) {
 //    MessageDispatcherEffect(vm, appState)
 //    val uiState by vm.uiState.collectAsState()
@@ -44,5 +49,18 @@ fun AppSettingsScreenCore(
             icon = CoreAppIcons.NotificationsActive.asPainterResource(),
             onClick = onNotificationGroupingClick
         )
+        if (DeviceType.current == DeviceType.iOS) {
+            val canShow = rememberSaveable {
+                IOSNavigationAppType.supportedMaps().size > 1
+            }
+
+            if (canShow) {
+                SettingsActionItem(
+                    name = stringResource(MR.strings.setting_navigationApp_settings_title),
+                    icon = CoreAppIcons.Map.asPainterResource(),
+                    onClick = onNavigationAppClick
+                )
+            }
+        }
     }
 }
