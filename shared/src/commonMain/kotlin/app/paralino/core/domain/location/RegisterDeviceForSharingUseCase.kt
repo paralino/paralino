@@ -6,7 +6,7 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
@@ -31,7 +31,7 @@ class RegisterDeviceForSharingUseCase constructor(
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val cryptoCore: CryptoCore,
-    private val deviceKeyRotation: MemberDeviceKeyRotation,
+    private val deviceKeyRotation: IMemberDeviceKeyRotation,
     private val deviceStatusProvider: MemberDeviceStatusProvider,
     private val appPrefs: AppPrefs
 ) : LimitedExecutionRepository() {
@@ -57,7 +57,10 @@ class RegisterDeviceForSharingUseCase constructor(
                 val group = groupLocal.getGroupWithMembers(groupId).firstOrNull()
                     ?: throw IllegalStateException("Group does not exist: $groupId")
 
-                val member = userMemberId.getCurrentUserMemberForGroup(groupId)
+                val member = groupLocal.getMemberOnce(
+                    groupId = groupId,
+                    userId = appPrefs.userId
+                )
                     ?: throw IllegalStateException("Missing member for a group $groupId")
 
                 val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.groupKeyVersion)

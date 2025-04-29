@@ -28,13 +28,10 @@ import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
-import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
-import app.paralino.core.presentation.map.MapSheetSelectedContentType
-import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
@@ -63,6 +60,7 @@ import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlacesScreenCore
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.share.SharingStartScreenCore
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.collectLatest
@@ -77,15 +75,15 @@ object HomeScreens {
         onCreateGroup: () -> Unit,
         openFreePlanInfo: () -> Unit,
         openPersonalCodes: () -> Unit,
-        openPaywall: () -> Unit,
+        openPaywall: (BillingScreenSourceType) -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupInitScreenCore(
+                modifier = Modifier.padding(paddingValues.toComposePaddingValues()),
                 appState = it,
                 vm = vm,
-                paddingValues = paddingValues.toComposePaddingValues(),
                 openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
                 openFreePlanInfo = openFreePlanInfo,
@@ -189,6 +187,7 @@ object HomeScreens {
         vm: MemberInviteViewModel,
         isOnboarding: Boolean,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
+        openPaywall: (BillingScreenSourceType) -> Unit,
         onMemberAdded: () -> Unit,
         onSkipOnboarding: () -> Unit
     ) = ComposeUIViewController {
@@ -199,6 +198,7 @@ object HomeScreens {
                 isOnboarding = isOnboarding,
                 contentPadding = PaddingValues(),
                 onPickGroup = onPickGroup,
+                openPaywall = openPaywall,
                 onMemberAdded = onMemberAdded,
                 onSkipOnboarding = onSkipOnboarding
             )
@@ -237,15 +237,15 @@ object HomeScreens {
         vm: MapHomeViewModel,
         paddingValues: AppleScreenPaddingValues,
         initialUiState: MapHomeScreenState,
-        trackMarker: (FocusedMarkerData) -> Unit,
-        onOpenPlacesScreen: () -> Unit,
-        onOpenCreatePlaceScreen: () -> Unit,
+        onOpenPlacesScreen: (String) -> Unit,
+        onOpenCreatePlaceScreen: (String) -> Unit,
         onSheetOffsetChange: (Float) -> Unit,
         onGroupPickerClick: () -> Unit,
-        onGroupDetailsClick: () -> Unit,
-        onSharingStartClick: () -> Unit,
+        onGroupDetailsClick: (String) -> Unit,
+        onSharingStartClick: (String) -> Unit,
         onSettingsClick: () -> Unit,
-        onPlaceClick: (PlaceListItemData) -> Unit,
+        onPlaceClick: (MapHomeScreenEvent.OpenPlaceDetails) -> Unit,
+        onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
         onCreateGroup: () -> Unit,
         openFreePlanInfo: () -> Unit,
         openPaywall: () -> Unit,
@@ -291,6 +291,14 @@ object HomeScreens {
                             MapHomeScreenEvent.AddGroup -> onCreateGroup()
                             MapHomeScreenEvent.ShowFreePlanInfo -> openFreePlanInfo()
                             MapHomeScreenEvent.OpenPaywall -> openPaywall()
+                            is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId)
+                            is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
+                            MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick()
+                            is MapHomeScreenEvent.OpenPlaceDetails -> onPlaceClick(event)
+                            is MapHomeScreenEvent.OpenPlaces -> onOpenPlacesScreen(event.groupId)
+                            MapHomeScreenEvent.OpenSettings -> onSettingsClick()
+                            is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
+                            is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)
                             null -> {}
                         }
                     }
@@ -316,17 +324,8 @@ object HomeScreens {
                 MainMapSheet(
                     appState = it,
                     swipeableState = sheetState,
-                    trackMarker = trackMarker,
                     readyState = readyState,
-                    onOpenPlacesScreen = onOpenPlacesScreen,
-                    onOpenCreatePlaceScreen = onOpenCreatePlaceScreen,
-                    onOpenGroupScreen = onGroupDetailsClick,
-                    onFocusOnPlacesClick = {
-                        vm.setSelectedContentType(MapSheetSelectedContentType.PLACES)
-                    },
-                    onFocusOnMembersClick = {
-                        vm.setSelectedContentType(MapSheetSelectedContentType.MEMBERS)
-                    },
+                    onEvent = { vm.onEvent(it) },
                     screenContent = {
                         UIKitViewController(
                             modifier = Modifier.fillMaxSize(),
@@ -338,36 +337,14 @@ object HomeScreens {
                         )
 
                         MapHomeScreenElements(
-                            modifier = Modifier.padding(top = paddingValues.top.dp),
+                            modifier = Modifier,
                             state = uiState,
+                            topPadding = paddingValues.top.dp,
                             sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
                                 minimumValue = if (sheetState.currentValue == BottomSheetPosition.HIDDEN) paddingValues.bottom.dp else 0.dp,
                                 maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
                             ),
-                            onGroupPickerClick = onGroupPickerClick,
-                            onGroupDetailsClick = onGroupDetailsClick,
-                            onSharingStartClick = onSharingStartClick,
-                            onSettingsClick = onSettingsClick,
-                            onPlaceClick = onPlaceClick,
-                            onMemberActionClick = { action, state ->
-                                vm.memberAction(action, state)
-                            },
-                            onMemberClick = {
-                                // TODO refocus right away
-                                vm.trackMarker(it.asFocusedMarker())
-                            },
-                            onToggleLocation = {
-                                vm.toggleMarkerVisibility(it)
-                            },
-                            onRequestLocation = {
-                                vm.requestLocationUpdate(it)
-                            },
-                            onMapModeSwitch = {
-                                vm.switchMapMode()
-                            },
-                            onCloseFocusedItem = {
-                                vm.hideFocusedItem()
-                            }
+                            onEvent = { vm.onEvent(it) },
                         )
                     }
                 )

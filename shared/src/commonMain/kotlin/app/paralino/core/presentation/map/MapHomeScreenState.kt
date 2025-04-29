@@ -4,9 +4,11 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -75,11 +77,38 @@ sealed class MapHomeScreenEvent {
     data object AddGroup : MapHomeScreenEvent()
     data object ShowFreePlanInfo : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
+    data object OpenSettings : MapHomeScreenEvent()
+    data object OpenGroupPicker : MapHomeScreenEvent()
+    data class OpenSharingStart(val groupId: String) : MapHomeScreenEvent()
+    data class OpenPlaces(val groupId: String) : MapHomeScreenEvent()
+    data class OpenCreatePlace(val groupId: String) : MapHomeScreenEvent()
+    data class OpenGroupDetails(val groupId: String) : MapHomeScreenEvent()
+    data class OpenPlaceDetails(val groupId: String, val placeId: String) : MapHomeScreenEvent()
+    data class OpenExternalNavigation(
+        val lat: Double,
+        val lng: Double,
+        val name: String?,
+        val navigationApp: IOSNavigationAppType
+    ) : MapHomeScreenEvent()
 }
 
 sealed interface MapHomeScreenUiEvent {
     data class DialogAction(val action: AlertDialogAction) : MapHomeScreenUiEvent
     data class UiLifecycleChange(val active: Boolean) : MapHomeScreenUiEvent
+    data class OnMarkerClick(val pin: MapPinData) : MapHomeScreenUiEvent
+    data class OnPlaceClick(val place: PlaceListItemData) : MapHomeScreenUiEvent
+    data class OnMemberItemEvent(val event: GroupMemberItemEvent) : MapHomeScreenUiEvent
+    data object OnFocusOnMembersClick : MapHomeScreenUiEvent
+    data object OnFocusOnPlacesClick : MapHomeScreenUiEvent
+    data object OnOpenPlacesScreen : MapHomeScreenUiEvent
+    data object OnOpenCreatePlaceScreen : MapHomeScreenUiEvent
+    data object OnMapTouch : MapHomeScreenUiEvent
+    data object OnGroupPickerClick : MapHomeScreenUiEvent
+    data object OnGroupDetailsClick : MapHomeScreenUiEvent
+    data object OnSharingStartClick : MapHomeScreenUiEvent
+    data object OnSettingsClick : MapHomeScreenUiEvent
+    data object OnMapModeSwitch : MapHomeScreenUiEvent
+    data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {
@@ -94,6 +123,7 @@ sealed interface MapHomeScreenFocusType {
         val memberUserId: String,
         val memberLocationId: String?,
         val memberKeyId: String,
+        val isIdleActive: Boolean,
         val forceZoom: Boolean
     ) : MapHomeScreenFocusType
 

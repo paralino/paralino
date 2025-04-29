@@ -7,7 +7,8 @@ data class SubscriptionScreenState(
     val subscriptionState: SubscriptionInfoState? = null,
     val alertDialog: MainAlertDialog? = null,
     val isLoading: Boolean = true,
-    val canShowMoreInfo: Boolean = false
+    val canShowMoreInfo: Boolean = false,
+    val featureTableState: FeatureTableState
 ) {
     val isSubscribed: Boolean = subscriptionState != null
 }

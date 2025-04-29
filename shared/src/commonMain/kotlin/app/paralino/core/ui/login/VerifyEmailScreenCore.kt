@@ -59,6 +59,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun VerifyEmailScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: VerifyEmailViewModel,
     openChangeEmail: () -> Unit
@@ -95,7 +96,7 @@ fun VerifyEmailScreenCore(
     }
 
     ActionScaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         buttonState = AppButtonState.loadingStateWithCheck(uiState.actionLoading),
         buttonText = stringResource(MR.strings.info_email_confirm_alert_button_resend),
         buttonIcon = null,

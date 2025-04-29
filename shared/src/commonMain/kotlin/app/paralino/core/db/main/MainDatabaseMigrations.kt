@@ -70,10 +70,21 @@ object MainDatabaseMigrations {
 
     private val MIGRATION_10_11 = object : Migration(10, 11) {
         override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE memberLocationEntity ADD COLUMN locationHistory TEXT DEFAULT NULL")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `localDeviceKeysEntity` (`id` TEXT NOT NULL, `locationId` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `deviceKeyVersion` INTEGER NOT NULL, `userKeyVersion` INTEGER NOT NULL, `encryptedSenderKey` TEXT NOT NULL, PRIMARY KEY(`id`))")
         }
     }
 
+    private val MIGRATION_11_12 = object : Migration(11, 12) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `shareDeviceStatus` INTEGER NOT NULL DEFAULT 1")
+        }
+    }
+
+    private val MIGRATION_12_13 = object : Migration(12, 13) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE memberLocationEntity ADD COLUMN locationHistory TEXT DEFAULT NULL")
+        }
+    }
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -86,5 +97,7 @@ object MainDatabaseMigrations {
         MIGRATION_8_9,
         MIGRATION_9_10,
         MIGRATION_10_11,
+        MIGRATION_11_12,
+        MIGRATION_12_13,
     )
 }

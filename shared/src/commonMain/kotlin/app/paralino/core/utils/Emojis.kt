@@ -16,6 +16,10 @@ object Emojis {
     val schoolBooks = "emoji_u1f4da"
     val suitecase = "emoji_u1f9f3"
     val heart = "emoji_u2764"
+    val coffee = "emoji_u2615"
+    val artMasks = "emoji_u1f3ad"
+    val airplane = "emoji_u2708"
+    val globe = "emoji_u1f30d"
 
     private val userSpecific = listOf(
 //        "emoji_u1f4a9",
@@ -87,7 +91,7 @@ object Emojis {
         "emoji_u1f3a4",
         "emoji_u1f3a8",
         "emoji_u1f3aa",
-        "emoji_u1f3ad",
+        artMasks,
         "emoji_u1f3ae",
         "emoji_u1f3b3",
         "emoji_u1f3bc",
@@ -116,7 +120,7 @@ object Emojis {
         "emoji_u1f6dd",
         suitecase,
         "emoji_u1f30a",
-        "emoji_u1f30d",
+        globe,
         "emoji_u1f31b",
         "emoji_u1f31e",
         "emoji_u1f36d",
@@ -146,7 +150,7 @@ object Emojis {
         "emoji_u26f8",
         "emoji_u26fa",
         "emoji_u2600",
-        "emoji_u2615",
+        coffee,
         heart,
     )
 
@@ -165,7 +169,7 @@ object Emojis {
         "emoji_u1f682",
         "emoji_u1f697",
         "emoji_u26f4",
-        "emoji_u2708",
+        airplane
     )
 
     val groupEmojis = groupSpecific + circles + transport

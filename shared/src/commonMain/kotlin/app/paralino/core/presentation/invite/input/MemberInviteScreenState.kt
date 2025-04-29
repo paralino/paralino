@@ -35,4 +35,5 @@ sealed class MemberInviteScreenState() {
 
 sealed class MemberInviteScreenEvent() {
     object MemberAdded : MemberInviteScreenEvent()
+    object OpenPaywall : MemberInviteScreenEvent()
 }

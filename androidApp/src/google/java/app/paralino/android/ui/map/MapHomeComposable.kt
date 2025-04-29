@@ -21,17 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
-import app.paralino.core.logg
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
-import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
-import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.theme.AppColors
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
@@ -48,7 +45,7 @@ import kotlinx.coroutines.flow.filter
 fun MainHomeMapComposable(
     appState: MainAppState,
     uiState: MapHomeScreenState,
-    vm: MapHomeViewModel,
+    onEvent: (MapHomeScreenUiEvent) -> Unit,
     mapContentPadding: PaddingValues = PaddingValues(),
 ) {
     MainHomeMapComposable(
@@ -68,13 +65,7 @@ fun MainHomeMapComposable(
                 )
             }
         },
-        onMapTouch = {
-            vm.onMapTouch()
-        },
-        onMarkerClick = {
-            logg.tag("marker_click").v("Marker clicked: ${it.pinType}")
-            vm.trackMarker(it.asFocusedMarker())
-        }
+        onEvent = onEvent
     )
 }
 
@@ -84,8 +75,7 @@ fun MainHomeMapComposable(
     state: MapHomeScreenState.Ready?,
     mapContentPadding: PaddingValues,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
-    onMapTouch: () -> Unit,
-    onMarkerClick: (MapPinData) -> Unit
+    onEvent: (MapHomeScreenUiEvent) -> Unit
 ) {
 
     val stateData by rememberUpdatedState(newValue = state)
@@ -139,7 +129,7 @@ fun MainHomeMapComposable(
         snapshotFlow { cameraPositionState.isMoving }
             .distinctUntilChanged()
             .filter { it && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE }
-            .collectLatest { onMapTouch() }
+            .collectLatest { onEvent(MapHomeScreenUiEvent.OnMapTouch) }
     }
 
     val uiSettings by defaultMapUiSettings()
@@ -149,7 +139,7 @@ fun MainHomeMapComposable(
     )
 
     val markerClick: (MapPinData) -> Unit = {
-        onMarkerClick(it)
+        onEvent(MapHomeScreenUiEvent.OnMarkerClick(it))
     }
 
     GoogleMap(
@@ -159,7 +149,7 @@ fun MainHomeMapComposable(
         uiSettings = uiSettings,
         contentPadding = mapContentPadding,
         onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
-        onMapClick = { onMapTouch() }
+        onMapClick = { onEvent(MapHomeScreenUiEvent.OnMapTouch) }
     ) {
         stateData?.visibleMarkers?.forEach { model ->
             MapMarkerComposable(

@@ -6,7 +6,6 @@ import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
-import app.paralino.core.utils.format.DistanceUnitType
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime
@@ -20,7 +19,8 @@ import kotlin.time.Duration.Companion.seconds
 
 abstract class IValueFormatter {
 
-    abstract val unitType: DistanceUnitType
+    abstract val measurementSystem: MeasurementSystemType
+    abstract val deviceDefaultMeasurementSystem: MeasurementSystemType
     private val kmInMile = 1.609344
 
     abstract fun formatTimeOnly(timeUTC: LocalDateTime?): String?
@@ -31,10 +31,10 @@ abstract class IValueFormatter {
 
     fun getDistanceSmall(
         meters: Double,
-        unitType: DistanceUnitType? = null,
+        measurementSystem: MeasurementSystemType? = null,
     ): String {
-        return when (unitType ?: this.unitType) {
-            DistanceUnitType.METRIC -> {
+        return when (measurementSystem ?: this.measurementSystem) {
+            MeasurementSystemType.METRIC -> {
                 if (meters.toInt() < 1000) {
                     val value = formatNumber(meters, minFractions = 0, maxFractions = 0)
                     MR.strings.placeholder_unit_meter.localizedString(value)
@@ -43,7 +43,7 @@ abstract class IValueFormatter {
                     MR.strings.placeholder_unit_km.localizedString(value)
                 }
             }
-            DistanceUnitType.IMPERIAL -> {
+            MeasurementSystemType.IMPERIAL -> {
                 if (meters / 1000 < kmInMile / 10) { // Less than 1/10 mile
                     val feet = meters * 3.28084
                     val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
@@ -168,15 +168,15 @@ abstract class IValueFormatter {
 
     fun getSpeedSmall(
         metersPerSecond: Float,
-        unitType: DistanceUnitType? = null,
+        measurementSystem: MeasurementSystemType? = null,
     ): String {
         val kmh = metersPerSecond * 3.6
-        return when (unitType ?: this.unitType) {
-            DistanceUnitType.METRIC -> {
+        return when (measurementSystem ?: this.measurementSystem) {
+            MeasurementSystemType.METRIC -> {
                 MR.strings.placeholder_unit_speed_kmph.localizedString(kmh.toInt().toString())
             }
 
-            DistanceUnitType.IMPERIAL -> {
+            MeasurementSystemType.IMPERIAL -> {
                 val mph = kmh / kmInMile
                 MR.strings.placeholder_unit_speed_mph.localizedString(mph.toInt().toString())
             }

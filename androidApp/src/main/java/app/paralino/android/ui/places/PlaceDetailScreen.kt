@@ -1,9 +1,12 @@
 package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +28,7 @@ import app.paralino.core.ui.places.PlaceDetailScreenCore
 import app.paralino.core.ui.places.PlaceDetailUserListItem
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -34,7 +37,7 @@ fun PlaceDetailScreen(
     appState: MainAppState,
     groupId: String,
     placeId: String,
-    vm: PlaceDetailViewModel = getViewModel { parametersOf(groupId, placeId) },
+    vm: PlaceDetailViewModel = koinViewModel { parametersOf(groupId, placeId) },
 ) {
 
     var userScroll by remember {
@@ -42,6 +45,7 @@ fun PlaceDetailScreen(
     }
 
     Scaffold(
+        modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = null,

@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource
@@ -64,8 +65,17 @@ class LocationSharingStartedNotificationsProcessor(
             null
         }
 
+        val notificationGroup = when (appPrefs.notificationGrouping) {
+            NotificationGroupingType.NONE -> null
+            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+            NotificationGroupingType.TYPE -> "sharing_started"
+            NotificationGroupingType.GROUP -> payload.groupId
+            NotificationGroupingType.PERSON -> payload.memberUserId
+        }
+
         val pushPayload = IPushNotificationPresenter.Payload(
             notificationId = "sharing_start_${payload}".hashCode(),
+            notificationGroupId = notificationGroup,
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),

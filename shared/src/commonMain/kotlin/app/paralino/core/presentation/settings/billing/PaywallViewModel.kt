@@ -2,11 +2,14 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
+import app.paralino.core.app_rating.AppRatingManager
+import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.user.UserPlans
@@ -19,6 +22,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.poll
@@ -42,6 +46,7 @@ class PaywallViewModel(
     private val refreshUseCase: RefreshEverythingUseCase,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val deviceApiProvider: IDeviceApiProvider,
+    private val appRatingManager: AppRatingManager,
     val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider
 ) : CoreViewModel() {
@@ -60,6 +65,17 @@ class PaywallViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
+        when (sourceType) {
+            BillingScreenSourceType.GROUP_ONBOARDING,
+            BillingScreenSourceType.SKIPPED_ONBOARDING -> {
+                appRatingManager.tryShowingAppRating(source = AppRatingSource.PAYWALL_ONBOARDING)
+            }
+            BillingScreenSourceType.FREE_PLAN_NEW_USER,
+            BillingScreenSourceType.UPGRADE,
+            BillingScreenSourceType.FREE_PLAN_NOTICE,
+            BillingScreenSourceType.NORMAL -> {}
+        }
+
         combine(
             userRepo.userPlans,
             flow {
@@ -187,27 +203,37 @@ class PaywallViewModel(
             }
 
             PaywallScreenUiEvent.StartPurchase -> {
-                val selectedPlan = uiState.value.selectedPlan
-                val selectedBillingPeriod = selectedPlan?.selectedBillingPeriod
-                if (selectedPlan == null) {
-                    messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
-                } else if (selectedPlan.type.isPremium) {
-                    if (selectedBillingPeriod == null) {
-                        messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
-                    } else {
-                        _uiState.update { it.copy(isPurchaseButtonLoading = true) }
-                        coroutineScope.launch {
-                            _eventChannel.send(
-                                PaywallScreenEvent.OnStartPurchase(
-                                    planType = selectedPlan.type,
-                                    newPlanProductId = selectedBillingPeriod.productPlanId
-                                )
-                            )
-                        }
+                when (uiState.value.screenStep) {
+                    PaywallScreenStep.ONBOARDING -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO) }
                     }
-                } else {
-                    coroutineScope.launch {
-                        _eventChannel.send(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
+                    PaywallScreenStep.DEMO -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.PAYWALL) }
+                    }
+                    PaywallScreenStep.PAYWALL -> {
+                        val selectedPlan = uiState.value.selectedPlan
+                        val selectedBillingPeriod = selectedPlan?.selectedBillingPeriod
+                        if (selectedPlan == null) {
+                            messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
+                        } else if (selectedPlan.type.isPremium) {
+                            if (selectedBillingPeriod == null) {
+                                messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
+                            } else {
+                                _uiState.update { it.copy(isPurchaseButtonLoading = true) }
+                                coroutineScope.launch {
+                                    _eventChannel.send(
+                                        PaywallScreenEvent.OnStartPurchase(
+                                            planType = selectedPlan.type,
+                                            newPlanProductId = selectedBillingPeriod.productPlanId
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            coroutineScope.launch {
+                                _eventChannel.send(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
+                            }
+                        }
                     }
                 }
             }
@@ -287,19 +313,13 @@ class PaywallViewModel(
         )
         val freeUiPlan = PlanInfoState(
             productId = "free",
-            name = if (freePlanConfig.planTypeEnum == PlanType.SILVER) {
-                MR.strings.paywall_silver_plan_name.localizedString()
-            } else {
-                MR.strings.paywall_free_plan_name.localizedString()
-            },
+            name = freePlanConfig.adjustedPlanName,
             config = freePlanConfig,
             isCurrentPlan = false,
             hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
-            billingPeriods = emptyList(),
-            includedMembersPerGroup = freePlanConfig.membersLimit,
-            benefits = freePlanConfig.planBenefits()
+            billingPeriods = emptyList()
         )
 
         val uiPlans = availableProducts.map { product ->
@@ -364,21 +384,20 @@ class PaywallViewModel(
                             ?.let { "$it%" },
                         isPromoDiscount = highestPrice != null,
                         trialDurationDays = lowestPrice.trialDurationDays,
+                        isCurrentBillingPeriod = plans.highestValidPlan?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }?.plan?.billingPeriod == period.billingPeriod
                     )
                 }
                 .sortedByDescending { it.billingPeriod }
 
             PlanInfoState(
                 productId = product.productId,
-                name = planConfig.planName,
+                name = planConfig.adjustedPlanName,
                 config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
                 hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
                 isExpanded = !sourceType.shouldPreselectPlan,
-                billingPeriods = billingPeriods,
-                includedMembersPerGroup = planConfig.membersLimit,
-                benefits = planConfig.planBenefits()
+                billingPeriods = billingPeriods
             )
         }
 
@@ -396,7 +415,16 @@ class PaywallViewModel(
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
             faq = currentState?.faq ?: getFaqSection(config),
             isPromoCodeSectionVisible = currentState?.isPromoCodeSectionVisible ?: false,
-            promoCode = currentState?.promoCode ?: ""
+            promoCode = currentState?.promoCode ?: "",
+            screenStep = currentState?.screenStep ?: if (sourceType.isOnboarding) {
+                PaywallScreenStep.ONBOARDING
+            } else {
+                PaywallScreenStep.PAYWALL
+            },
+            screenType = sourceType,
+            memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
+            memberImageModel = userRepo.cachedUser?.data?.userImage ?: ImageModel.emoji(Emojis.goat),
+            memberDeviceName = deviceApiProvider.defaultDeviceName
         )
     }
 

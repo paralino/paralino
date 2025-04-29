@@ -4,7 +4,8 @@ import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
-import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.location.ClearUserLocationUseCase
+import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.logg
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
@@ -26,10 +27,11 @@ class RefreshEverythingUseCase(
     private val groupRefreshUseCase: GroupRefreshUseCase,
     private val configRepo: RemoteConfigRepository,
     private val userConfigRepo: UserConfigRepository,
-    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
+    private val revokeDeviceStatusUseCase: RevokeDeviceActiveStatusUseCase,
     private val placeActivityUploadEngine: PlaceActivityUploadEngine,
     private val pushProviderManager: IPushProviderManager,
     private val premiumStatusManager: PremiumStatusManager,
+    private val clearUserLocationUseCase: ClearUserLocationUseCase,
     private val parentManager: LimitedExecutionParentManager
 ) : LimitedExecutionRepository() {
 
@@ -72,8 +74,8 @@ class RefreshEverythingUseCase(
                     )
                     pushProviderManager.syncPushNotifications()
                     personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
-                    deviceStatusProcessor.revokeActiveStatus()
-                    deviceStatusProcessor.deleteOldLocations()
+                    revokeDeviceStatusUseCase.revokeActiveStatus()
+                    clearUserLocationUseCase.deleteOldLocations()
                     premiumStatusManager.adjustDeviceSettingsForPlan()
                 }
             )

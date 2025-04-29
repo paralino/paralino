@@ -78,7 +78,6 @@ struct MainApp: App {
                     requestReview()
                 }
             }
-            
         }
     }
     
@@ -101,15 +100,11 @@ struct AppReadyScreen: View {
         if userState is AppAccountState.ACCOUNT_RESET {
             RecoverKeysScreen()
         } else if userState is AppAccountState.EMAIL_VERIFICATION {
-            NavigationStack {
-                VerifyEmailScreen()
-            }
+            VerifyEmailScreen()
         } else if userState is AppAccountState.NO_PROFILE {
             ProfileSetupScreen()
         } else if userState is AppAccountState.NO_USER {
-            NavigationStack {
-                WelcomeScreen()
-            }
+            WelcomeScreen()
         } else if userState is AppAccountState.NO_USER_DATA || userState is AppAccountState.DATA_REFRESH {
             VStack {
                 ProgressView()

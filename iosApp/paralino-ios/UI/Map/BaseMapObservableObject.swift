@@ -23,7 +23,7 @@ class BaseMapObservableObject : ObservableObject {
     @Published var bottomSafeArea: CGFloat = 0
     @Published var previousBottomSafeArea: CGFloat = 0
     
-    func onMarkerTap(markerData: FocusedMarkerData) {}
+    func onMarkerTap(markerData: MapPinData) {}
     
     func focusToMarker(data: FocusedMarkerData?, forceZoom: Bool = true) {
         guard let data = data else { return }

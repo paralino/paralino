@@ -17,8 +17,10 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
 import app.paralino.core.presentation.groups.LocationRequestItemState
@@ -26,6 +28,7 @@ import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
@@ -252,6 +255,16 @@ class MapHomeViewModel constructor(
                                     GroupMemberItemStateWithOneLocation(
                                         memberState = memberState,
                                         actions = MemberActionsState(
+                                            navigate = location.locationData.data?.takeIf {
+                                                locationVisibility.isVisible()
+                                            }?.let {
+                                                MemberNavigateItemState(
+                                                    lat = it.lat,
+                                                    lng = it.lng,
+                                                    title = member.member.name,
+                                                    isEnabled = true
+                                                )
+                                            },
                                             deleteLocation = takeIf {
                                                 canDeleteLocation(
                                                     groupId = group.id,
@@ -442,7 +455,7 @@ class MapHomeViewModel constructor(
     ): Boolean {
         return isCurrentUser
                 && hasLocation
-                && (!isCurrentDevice || !sharingManager.isSharingActiveForGroup(groupId))
+                && (!isCurrentDevice || !sharingManager.isSharingActiveForGroupMaybe(groupId))
     }
 
     fun switchGroup(groupId: String) {
@@ -493,6 +506,7 @@ class MapHomeViewModel constructor(
                         memberId = memberItem.memberState.memberId,
                         memberLocationId = memberItem.singleLocation?.locationId,
                         memberKeyId = memberItem.keyId,
+                        isIdleActive = memberItem.singleLocation?.deviceStatus?.isIdlingOrActive ?: false,
                         forceZoom = false
                     )
 
@@ -511,9 +525,10 @@ class MapHomeViewModel constructor(
                 }
             )
         }
+        uiRefreshPingFlow.update { nowUTC() }
     }
 
-    fun trackMarker(markerData: FocusedMarkerData) {
+    private fun trackMarker(markerData: FocusedMarkerData) {
 
         val marker = _uiState.value.asReady()
             ?.markers?.firstOrNull { it.markerId == markerData.markerId }
@@ -539,6 +554,7 @@ class MapHomeViewModel constructor(
                                     memberId = memberStateForMarker.memberState.memberId,
                                     memberLocationId = memberStateForMarker.location?.locationId,
                                     memberKeyId = markerData.markerId,
+                                    isIdleActive = memberStateForMarker.location?.deviceStatus?.isIdlingOrActive ?: false,
                                     forceZoom = isRequestForSameVisibleMarker
                                 )
                             } else {
@@ -556,7 +572,7 @@ class MapHomeViewModel constructor(
         }
     }
 
-    fun onMapTouch() = updateReadyState {
+    private fun onMapTouch() = updateReadyState {
         if (it.mapHomeScreenFocusType.isMemberOrPlaceFocused) {
             // de-init focused marker so it is not tracked
             // and reset zoom enforcing for member focus
@@ -576,7 +592,7 @@ class MapHomeViewModel constructor(
         }
     }
 
-    fun hideFocusedItem() = updateReadyState {
+    private fun hideFocusedItem() = updateReadyState {
         it.copy(
             trackingMarker = null,
             markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
@@ -587,7 +603,7 @@ class MapHomeViewModel constructor(
         )
     }
 
-    fun setSelectedContentType(selectedContentType: MapSheetSelectedContentType) =
+    private fun setSelectedContentType(selectedContentType: MapSheetSelectedContentType) =
         updateReadyState { currentState ->
             currentState.copy(
                 trackingMarker = null,
@@ -605,7 +621,7 @@ class MapHomeViewModel constructor(
             )
         }
 
-    fun switchMapMode() {
+    private fun switchMapMode() {
         _uiState.update {
             when (it) {
                 is MapHomeScreenState.Empty -> it.copy(isSatelliteMode = !it.isSatelliteMode)
@@ -645,7 +661,7 @@ class MapHomeViewModel constructor(
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
                 group.isGroupOverLimits(remoteConfig.getCachedConfigOnce()) -> GroupItemState.GroupUiType.OVER_LIMITS
-                sharingManager.isSharingActiveForGroup(group.id) -> GroupItemState.GroupUiType.ACTIVE
+                sharingManager.isSharingActiveForGroupMaybe(group.id) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
             val isSelected = group.id == groupIdData.value
@@ -726,19 +742,20 @@ class MapHomeViewModel constructor(
             }
 
             MemberActionType.DELETE_LOCATION -> {
-                if (state is GroupMemberItemStateWithOneLocation) {
-                    clearMyLocation(state)
-                }
+                clearMyLocation(state)
             }
         }
     }
 
-    private fun clearMyLocation(state: GroupMemberItemStateWithOneLocation) {
-        if (state.location == null) {
+    private fun clearMyLocation(state: GroupMemberItemState) {
+
+        val stateWithLocation = _uiState.value.asReady()?.members?.firstOrNull { it.keyId == state.keyId }
+
+        if (stateWithLocation?.location == null) {
             return
         }
 
-        clearUserLocation.clearLocation(groupId = state.memberState.groupId, locationId = state.location.locationId)
+        clearUserLocation.clearLocation(groupId = state.memberState.groupId, locationId = stateWithLocation.location.locationId)
             .onStart {
                 updateReadyState { readyState ->
                     readyState.copy(
@@ -794,28 +811,30 @@ class MapHomeViewModel constructor(
     fun requestLocationUpdate(state: GroupMemberItemState) {
 
         logg.v("location_request", "Got location request click: ${state::class}")
-        if (state !is GroupMemberItemStateWithOneLocation) {
+        val stateWithLocation = _uiState.value.asReady()?.members?.firstOrNull { it.keyId == state.keyId }
+
+        if (stateWithLocation?.location == null) {
             logg.v("location_request", "Abort location request")
             return
         }
 
-        if (state.location == null || state.actions.locationRequest == null) {
+        if (stateWithLocation.actions.locationRequest == null) {
             coroutineScope.launch {
                 messageDispatcher.showSnackbar(Throwable("Active device not found").errorString())
             }
             return
         }
 
-        if (state.actions.locationRequest?.isEnabled == false) {
+        if (!stateWithLocation.actions.locationRequest.isEnabled) {
             coroutineScope.launch {
                 messageDispatcher.showSnackbar(MR.strings.group_member_device_request_disabled.localizedString())
             }
             return
         }
 
-        if (state.actions.locationRequest?.isPremiumFeatureEnabled == false) {
+        if (!stateWithLocation.actions.locationRequest.isPremiumFeatureEnabled) {
             coroutineScope.launch {
-                val group = getAllGroupsItemState().firstOrNull { it.id == state.memberState.groupId }
+                val group = getAllGroupsItemState().firstOrNull { it.id == stateWithLocation.memberState.groupId }
                 if (group != null) {
                     if (group.isCurrentUserOwner) {
                         messageDispatcher.showSnackbarForResult(
@@ -837,9 +856,9 @@ class MapHomeViewModel constructor(
 
         flow {
             locationRequestUseCase.requestMemberDeviceLocation(
-                groupId = state.memberState.groupId,
-                memberUserId = state.memberState.userId,
-                locationId = state.location.locationId
+                groupId = stateWithLocation.memberState.groupId,
+                memberUserId = stateWithLocation.memberState.userId,
+                locationId = stateWithLocation.location.locationId
             )
             delay(500)
             emit(Unit)
@@ -848,7 +867,7 @@ class MapHomeViewModel constructor(
                 updateReadyState { readyState ->
                     readyState.copy(
                         members = readyState.members.map {
-                            if (it.keyId == state.keyId) {
+                            if (it.keyId == stateWithLocation.keyId) {
                                 it.copy(
                                     actions = it.actions.copy(
                                         locationRequest = LocationRequestItemState(
@@ -873,7 +892,7 @@ class MapHomeViewModel constructor(
                 updateReadyState { readyState ->
                     readyState.copy(
                         members = readyState.members.map {
-                            if (it.keyId == state.keyId) {
+                            if (it.keyId == stateWithLocation.keyId) {
                                 it.copy(
                                     actions = it.actions.copy(
                                         locationRequest = it.actions.locationRequest?.copy(
@@ -978,6 +997,79 @@ class MapHomeViewModel constructor(
             }
             is MapHomeScreenUiEvent.UiLifecycleChange -> {
                 uiFocusedStatus.update { event.active }
+            }
+
+            MapHomeScreenUiEvent.OnCloseFocusedItemClick -> hideFocusedItem()
+            MapHomeScreenUiEvent.OnFocusOnMembersClick -> setSelectedContentType(MapSheetSelectedContentType.MEMBERS)
+            MapHomeScreenUiEvent.OnFocusOnPlacesClick -> setSelectedContentType(MapSheetSelectedContentType.PLACES)
+            MapHomeScreenUiEvent.OnMapModeSwitch -> switchMapMode()
+            MapHomeScreenUiEvent.OnMapTouch -> onMapTouch()
+            is MapHomeScreenUiEvent.OnMarkerClick -> trackMarker(event.pin.asFocusedMarker())
+            is MapHomeScreenUiEvent.OnMemberItemEvent -> {
+                when (event.event) {
+                    is GroupMemberItemEvent.onActionClick -> memberAction(
+                        action = event.event.action.type,
+                        state = event.event.item
+                    )
+                    is GroupMemberItemEvent.onCopyCode -> {}
+                    is GroupMemberItemEvent.onDeleteDeviceClick -> {}
+                    is GroupMemberItemEvent.onItemClick -> trackMarker(event.event.item.asFocusedMarker())
+                    is GroupMemberItemEvent.onLocationRequest -> requestLocationUpdate(event.event.item)
+                    is GroupMemberItemEvent.onOpenRawData -> {}
+                    is GroupMemberItemEvent.onShowLocation -> toggleMarkerVisibility(event.event.item)
+                    is GroupMemberItemEvent.onDirectionsRequest -> {
+                        _uiState.value.asReady()?.let {
+                            _eventChannel.trySend(
+                                MapHomeScreenEvent.OpenExternalNavigation(
+                                    lat = event.event.action.lat,
+                                    lng = event.event.action.lng,
+                                    name = event.event.action.title,
+                                    navigationApp = appPrefs.iosNavigationApp
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+            MapHomeScreenUiEvent.OnGroupDetailsClick -> {
+                _uiState.value.asReady()?.let {
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = it.groupId))
+                }
+            }
+            MapHomeScreenUiEvent.OnGroupPickerClick -> {
+                _eventChannel.trySend(MapHomeScreenEvent.OpenGroupPicker)
+            }
+            MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
+                _uiState.value.asReady()?.let {
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenCreatePlace(groupId = it.groupId))
+                }
+            }
+            MapHomeScreenUiEvent.OnOpenPlacesScreen -> {
+                _uiState.value.asReady()?.let {
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenPlaces(groupId = it.groupId))
+                }
+            }
+            is MapHomeScreenUiEvent.OnPlaceClick -> {
+                _uiState.value.asReady()?.let {
+                    if (it.focusedPlace?.id == event.place.id) {
+                        _eventChannel.trySend(
+                            MapHomeScreenEvent.OpenPlaceDetails(
+                                groupId = it.groupId,
+                                placeId = event.place.id
+                            )
+                        )
+                    } else {
+                        trackMarker(event.place.asFocusedMarker())
+                    }
+                }
+            }
+            MapHomeScreenUiEvent.OnSettingsClick -> {
+                _eventChannel.trySend(MapHomeScreenEvent.OpenSettings)
+            }
+            MapHomeScreenUiEvent.OnSharingStartClick -> {
+                _uiState.value.asReady()?.let {
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenSharingStart(groupId = it.groupId))
+                }
             }
         }
     }

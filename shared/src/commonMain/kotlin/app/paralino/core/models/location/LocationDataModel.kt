@@ -135,10 +135,11 @@ enum class MemberDeviceStatusType {
     val key: String = name
 
     val isDeviceSetupWrong: Boolean get() = when(this) {
-        GPS_OFF, MISSING_PERMISSIONS, BATTERY_SAVER_ON, NOT_SHARING -> true
+        GPS_OFF, MISSING_PERMISSIONS, NOT_SHARING -> true
         else -> false
     }
-    val isInBlockedState: Boolean get() = this == NOT_SHARING || isDeviceSetupWrong
+    val isDeviceSetupWrongOrBatterySaver: Boolean get() = this == BATTERY_SAVER_ON || isDeviceSetupWrong
+    val isInBlockedState: Boolean get() = this == NOT_SHARING || isDeviceSetupWrongOrBatterySaver
     val isIdlingOrActive: Boolean get() = isIdling || this == ACTIVE
     val isIdling: Boolean get() = when(this) {
         INACTIVE, BATTERY_SAVER_ON, THROTTLING, IDLE -> true

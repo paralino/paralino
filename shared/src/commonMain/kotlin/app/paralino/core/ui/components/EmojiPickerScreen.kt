@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EmojiBottomSheetPicker(
     modifier: Modifier = Modifier,
@@ -98,7 +100,12 @@ private fun EmojiPickerScreen(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(6),
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(
+            top = 20.dp,
+            bottom = 20.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+            start = 20.dp,
+            end = 20.dp
+        ),
         horizontalArrangement = Arrangement.Center
     ) {
         items(images.size) {

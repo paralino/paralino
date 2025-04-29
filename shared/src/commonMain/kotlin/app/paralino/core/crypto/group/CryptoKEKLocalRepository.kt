@@ -10,7 +10,10 @@ import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
+import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.logg
+import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppHost
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.repo.base.BaseRepository
@@ -21,6 +24,7 @@ class CryptoKEKLocalRepository(
     private val userKeyRepository: CryptoUserKeysLocalSource,
     private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs,
+    private val appBuildConfig: AppBuildConfig
 ) : BaseRepository() {
 
     suspend fun getGroupKey(groupId: String, keyVersion: Long?): GroupMasterKey {
@@ -190,6 +194,36 @@ class CryptoKEKLocalRepository(
                     .d("member sender key not found for group $groupId & member $memberUserId, key count: ${allMemberKeys.size}")
                 return GroupMemberSenderKey.Error.MissingKeys
             }
+
+        if (memberUserId == appPrefs.userId) {
+            val key = local.getLocalGroupSenderKey(groupId = groupId)
+                ?.takeIf { key ->
+                    key.locationId == locationId
+                            && keyRaw.memberKeyVersion == key.memberKeyVersion
+                            && keyRaw.deviceKeyVersion == key.deviceKeyVersion
+                }
+                ?.let { key ->
+                    logg.tag("tag_crypto_key_group_member")
+                        .d("Try to load current device sender key from encrypted cache")
+                    try {
+                        GroupMemberSenderKey.Valid(
+                            key = cryptoCore.decryptDataWithKey(
+                                data = key.encryptedSenderKey,
+                                key = userKeyRepository.personalKey(version = key.userKeyVersion).key
+                            ),
+                            deviceKeyVersion = key.deviceKeyVersion,
+                            memberKeyVersion = key.memberKeyVersion
+                        )
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+
+            if (key != null) {
+                return key
+            }
+        }
+
         return parseMemberSenderKey(keyRaw)
     }
 
@@ -237,11 +271,30 @@ class CryptoKEKLocalRepository(
             return GroupMemberSenderKey.Error.Invalid
         }
 
+        if (keyRaw.ownerUserId == appPrefs.userId && appBuildConfig.appHost == AppHost.MAIN_APP) {
+            if (keyRaw.locationId == local.getCurrentDeviceLocationId(groupId = keyRaw.groupId)) {
+                logg.tag("tag_crypto_key_group_member")
+                    .d("Save current device sender key to encrypted cache")
+                val userKey = userKeyRepository.activePersonalKeyWithVersion()
+                val localKey = LocalGroupDeviceKeysEntity(
+                    id = keyRaw.groupId,
+                    locationId = keyRaw.locationId,
+                    memberKeyVersion = keyRaw.memberKeyVersion,
+                    deviceKeyVersion = keyRaw.deviceKeyVersion,
+                    userKeyVersion = userKey.version,
+                    encryptedSenderKey = cryptoCore.encryptDataWithKey(
+                        data = memberKey,
+                        key = userKey.key
+                    )
+                )
+                local.saveLocalGroupSenderKey(key = localKey)
+            }
+        }
+
         return GroupMemberSenderKey.Valid(
             key = memberKey,
             deviceKeyVersion = keyRaw.deviceKeyVersion,
-            memberKeyVersion = keyRaw.memberKeyVersion,
-            kxKey = memberPublicKey
+            memberKeyVersion = keyRaw.memberKeyVersion
         )
     }
 

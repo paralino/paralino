@@ -30,6 +30,7 @@ import app.paralino.core.db.main.user.PersonalCodeEntity
 import app.paralino.core.db.main.common.RemoteConfigDao
 import app.paralino.core.db.main.common.RemoteConfigEntity
 import app.paralino.core.db.main.groups.BatteryAlertEventEntity
+import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.db.main.user.SubscriptionPlanEntity
 import app.paralino.core.db.main.user.UserConfigDao
 import app.paralino.core.db.main.user.UserConfigEntity
@@ -55,6 +56,7 @@ import kotlinx.coroutines.IO
         GroupMembersKeysEntity::class,
         GroupDeviceKeysEntity::class,
         GroupDeviceIntegrityEntity::class,
+        LocalGroupDeviceKeysEntity::class,
         PlaceActivityEntity::class,
         GroupEntity::class,
         MemberEntity::class,
@@ -64,7 +66,7 @@ import kotlinx.coroutines.IO
         PendingPlaceEventsEntity::class,
         BatteryAlertEventEntity::class
     ],
-    version = 11
+    version = 13
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
 abstract class AppMainDatabase : RoomDatabase() {

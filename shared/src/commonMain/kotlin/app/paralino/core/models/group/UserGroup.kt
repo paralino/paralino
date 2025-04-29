@@ -148,7 +148,24 @@ data class UserGroupWithMembers constructor(
     val members: List<MemberModelWithLocations>
 ) {
 
-    val isGroupVerified get() = memberByUserId(appPrefs.userId)!!.isVerified
+    val isGroupVerified: Boolean
+        get() {
+            if (members.isEmpty()) {
+                throw IllegalArgumentException("No members found in group")
+            }
+
+            val userId = appPrefs.userId
+
+            if (userId.isBlank()) {
+                throw IllegalArgumentException("Missing current user id from preferences")
+            }
+
+            val currentUser = memberByUserId(userId)
+                ?: throw IllegalArgumentException("Missing current user in group members")
+
+            return currentUser.isVerified
+        }
+
     val id: String get() = group.id
     val ownerUserId: String get() = group.ownerUserId
     val groupKeyVersion: Long get() = group.groupKeyVersion

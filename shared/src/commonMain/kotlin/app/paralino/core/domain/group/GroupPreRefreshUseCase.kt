@@ -3,8 +3,8 @@ package app.paralino.core.domain.group
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
+import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.filterNotNull
 
 class GroupPreRefreshUseCase constructor(
     private val groupCryptoKeyRotation: GroupCryptoKeyRotation,
-    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
-    private val deviceKeyRotation: MemberDeviceKeyRotation,
+    private val memberCryptoKeyRotation: IMemberCryptoKeyRotation,
+    private val deviceKeyRotation: IMemberDeviceKeyRotation,
     private val groupRemove: GroupRemoveUseCase,
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupMemberAdd: GroupMemberAddUseCase,

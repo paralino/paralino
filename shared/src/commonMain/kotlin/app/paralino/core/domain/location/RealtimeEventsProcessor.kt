@@ -23,6 +23,7 @@ class RealtimeEventsProcessor constructor(
     private val placesRepo: PlacesRepository,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val memberLocal: LocationLocalDataSource,
+    private val saveLocationUseCase: SaveLocationUseCase,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val pushProvider: IPushProviderManager
@@ -192,10 +193,10 @@ class RealtimeEventsProcessor constructor(
                     cacheTimeMillis = 15_000
                 )
                 if (!result) {
-                    memberLocal.createOrUpdateMemberLocation(location)
+                    saveLocationUseCase.saveLocationLocally(location)
                 }
             } else {
-                memberLocal.createOrUpdateMemberLocation(location)
+                saveLocationUseCase.saveLocationLocally(location)
             }
 
         } else {

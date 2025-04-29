@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -305,14 +306,14 @@ fun LargeSeekbarSwitch(
                 if (!description.isNullOrBlank()) {
                     if (focusDescription) {
                         Text(
-                            text = description,
+                            text = description.annotatedBoldCompose(textColor = contentColor),
                             maxLines = 6,
                             style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
                             color = contentColor
                         )
                     } else {
                         Text(
-                            text = description,
+                            text = description.annotatedBoldCompose(textColor = contentColor.copy(alpha = ContentAlpha.medium)),
                             maxLines = 6,
                             style = MaterialTheme.typography.caption,
                             color = contentColor.copy(alpha = ContentAlpha.medium)

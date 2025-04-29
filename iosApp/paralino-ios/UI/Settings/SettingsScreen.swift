@@ -36,9 +36,6 @@ struct SettingsScreen: View {
                     openBlockList: {
                         path.append(.settings(.blocklist))
                     },
-                    openProfileRawScreen: {
-                        path.append(.settings(.rawData(type: .UserPresentation())))
-                    },
                     openGeneralInfo: {
                         path.append(.settings(.generalInfo))
                     },
@@ -50,6 +47,9 @@ struct SettingsScreen: View {
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.normal)))
+                    },
+                    openAppSettings: {
+                        path.append(.settings(.appSettings))
                     },
                     openLocationSettings: {
                         path.append(.settings(.locationSettings))

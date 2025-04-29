@@ -15,6 +15,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -48,14 +49,18 @@ class GeofenceRegistrationMonitor(
         val places = placesRepo.getAllPlacesLocally()
             .map {
                 it.mapNotNull { place ->
-                    place.data.data?.let {
-                        GroupPlaceGeofenceData(
-                            groupId = place.groupId,
-                            placeId = place.id,
-                            lat = it.lat,
-                            lng = it.lng,
-                            radiusMeters = it.radiusMeters
-                        )
+                    if (place.canSendAlert) {
+                        place.data.data?.let {
+                            GroupPlaceGeofenceData(
+                                groupId = place.groupId,
+                                placeId = place.id,
+                                lat = it.lat,
+                                lng = it.lng,
+                                radiusMeters = it.radiusMeters
+                            )
+                        }
+                    } else {
+                        null
                     }
                 }
             }

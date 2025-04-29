@@ -51,8 +51,8 @@ class MapHomeState : BaseMapObservableObject {
         }
     }
     
-    override func onMarkerTap(markerData: FocusedMarkerData) {
-        vm.trackMarker(markerData: markerData)
+    override func onMarkerTap(markerData: MapPinData) {
+        vm.onEvent(event: MapHomeScreenUiEventOnMarkerClick(pin: markerData))
     }
     
     deinit {

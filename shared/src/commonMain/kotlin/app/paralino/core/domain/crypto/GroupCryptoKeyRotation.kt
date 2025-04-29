@@ -3,8 +3,8 @@ package app.paralino.core.domain.crypto
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
-import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
@@ -31,8 +31,8 @@ class GroupCryptoKeyRotation constructor(
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val cryptoKEKRepository: CryptoKEKLocalRepository,
     private val cryptoKEKRefreshUseCase: CryptoKEKRefreshUseCase,
-    private val memberCryptoKeyRotation: MemberCryptoKeyRotation,
-    private val deviceKeyRotation: MemberDeviceKeyRotation,
+    private val memberCryptoKeyRotation: IMemberCryptoKeyRotation,
+    private val deviceKeyRotation: IMemberDeviceKeyRotation,
     private val validityVerification: GroupValidityVerification,
     private val appPrefs: AppPrefs
 ) : LimitedExecution() {

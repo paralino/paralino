@@ -91,12 +91,22 @@ data class GroupMemberItemStateWithLocations constructor(
     val statusTag: MemberDeviceStatusType?
         get() = singleLocation?.deviceStatus
             ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
+
+    val asSingleLocationState = singleLocation?.let {
+        GroupMemberItemStateWithOneLocation(
+            memberState = memberState,
+            location = it,
+            actions = actions
+        )
+    }
 }
 
 data class GroupMemberItemLocationState constructor(
     val locationId: String,
     val name: String?,
     val image: ImageModel,
+    val lat: Double?,
+    val lng: Double?,
     val actualBatteryLevel: Int?,
     val adjustedBatteryLevel: Int?,
     val isBatteryCharging: Boolean,
@@ -126,6 +136,8 @@ data class GroupMemberItemLocationState constructor(
         locationId = memberLocation.id,
         name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
+        lat = memberLocation.locationData.data?.lat,
+        lng = memberLocation.locationData.data?.lng,
         actualBatteryLevel = memberLocation.status.data?.validBatteryLevel(checkForTime = false),
         adjustedBatteryLevel = memberLocation.status.data?.validBatteryLevel(checkForTime = true),
         isBatteryCharging = memberLocation.status.data?.isCharging ?: false,
@@ -156,16 +168,32 @@ data class MemberActionsState(
     val deleteLocation: MemberActionItemState? = null,
     val blockUser: MemberActionItemState? = null,
     val unblockUser: MemberActionItemState? = null,
+    val navigate: MemberNavigateItemState? = null,
     val locationRequest: LocationRequestItemState? = null,
     val securityAction: Boolean = false
 ) {
-    val isActive = listOfNotNull(deleteMember, deleteLocation, blockUser, unblockUser, locationRequest, securityAction.takeIf { it }).isNotEmpty()
+    val isActive = listOfNotNull(
+        deleteMember,
+        deleteLocation,
+        blockUser,
+        unblockUser,
+        locationRequest,
+        navigate,
+        securityAction.takeIf { it }
+    ).isNotEmpty()
 }
 
 data class MemberActionItemState(
     val type: MemberActionType,
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
+)
+
+data class MemberNavigateItemState(
+    val lat: Double,
+    val lng: Double,
+    val title: String?,
+    val isEnabled: Boolean = true
 )
 
 data class LocationRequestItemState(

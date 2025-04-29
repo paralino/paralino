@@ -2,9 +2,13 @@ package app.paralino.android.ui.settings
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.ui.main.MainAppState
@@ -20,17 +24,20 @@ import app.paralino.core.ui.settings.SettingsScreenCore
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(
     appState: MainAppState,
-    viewModel: SettingsViewModel = getViewModel(),
+    viewModel: SettingsViewModel = koinViewModel(),
 ) {
 
     val context = LocalContext.current
     Scaffold(
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
+            .safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(resource = MR.strings.title_settings),
@@ -56,13 +63,6 @@ fun SettingsScreen(
             openBlockList = {
                 appState.navController.navigate(AppScreen.Settings.BlockList.routeSignature)
             },
-            openProfileRawScreen = {
-                appState.navController.navigate(
-                    AppScreen.Settings.ProfileDetails.RawDataScreen.route(
-                        RawPresentationDataType.UserPresentation
-                    )
-                )
-            },
             openGeneralInfo = {
                 appState.navController.navigate(AppScreen.Settings.GeneralInfo.routeSignature)
             },
@@ -74,6 +74,9 @@ fun SettingsScreen(
             },
             openPaywall = {
                 appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.NORMAL))
+            },
+            openAppSettings = {
+                appState.navController.navigate(AppScreen.Settings.AppSettings.routeSignature)
             },
             openLocationSettings = {
                 appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)

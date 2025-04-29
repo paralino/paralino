@@ -3,7 +3,11 @@ package app.paralino.android.ui.map
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -11,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceIn
@@ -28,8 +33,6 @@ import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
-import app.paralino.core.presentation.map.MapSheetSelectedContentType
-import app.paralino.core.presentation.map.asFocusedMarker
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -39,6 +42,7 @@ import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.ui.map.rememberSwipeableSheetState
+import app.paralino.core.utils.extensions.openUri
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -81,10 +85,12 @@ private fun MapHomeContent(
     val readyState by rememberUpdatedState(newValue = uiState.asReady())
     val density = LocalDensity.current
     val pickerState = rememberGroupBottomSheetPickerState()
+    val context = LocalContext.current
 
     val sheetState = rememberSwipeableSheetState(
         initialValue = BottomSheetPosition.default,
-        collapsedAnchorBottomPaddingPixels = 0f,
+        collapsedAnchorBottomPaddingPixels = WindowInsets.navigationBars.getBottom(density)
+            .toFloat(),
         confirmValueChange = {
             it != BottomSheetPosition.HIDDEN
         }
@@ -120,6 +126,62 @@ private fun MapHomeContent(
                     appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
                 }
 
+                is MapHomeScreenEvent.OpenCreatePlace -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceCreate.route(
+                            groupId = readyState?.groupId ?: "",
+                            placeId = null
+                        )
+                    )
+                }
+
+                is MapHomeScreenEvent.OpenGroupDetails -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.GroupDetails.route(
+                            groupId = event.groupId
+                        )
+                    )
+                }
+
+                MapHomeScreenEvent.OpenGroupPicker -> {
+                    appState.uiScope.launch {
+                        val groupPickerState = vm.getGroupPickerState()
+                        pickerState.show(groupPickerState)
+                    }
+                }
+
+                is MapHomeScreenEvent.OpenPlaceDetails -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceDetail.route(
+                            groupId = event.groupId,
+                            placeId = event.placeId
+                        )
+                    )
+                }
+
+                is MapHomeScreenEvent.OpenPlaces -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlacesList.route(
+                            groupId = event.groupId
+                        )
+                    )
+                }
+
+                MapHomeScreenEvent.OpenSettings -> {
+                    appState.navController.navigate(AppScreen.Settings.routeSignature)
+                }
+
+                is MapHomeScreenEvent.OpenSharingStart -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.SharingStart.route(event.groupId)
+                    )
+                }
+                is MapHomeScreenEvent.OpenExternalNavigation -> {
+                    context.openUri(
+                        uri = "geo:${event.lat},${event.lng}?q=${event.lat},${event.lng}${event.name?.let { "(${it})" } ?: ""}"
+                    )
+                }
+
                 null -> {}
             }
         }
@@ -136,7 +198,7 @@ private fun MapHomeContent(
         appState.uiScope.launch {
             sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
         }
-        vm.hideFocusedItem()
+        vm.onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
     }
 
     val dialog = uiState.alertDialog
@@ -147,50 +209,16 @@ private fun MapHomeContent(
     MainMapSheet(
         appState = appState,
         swipeableState = sheetState,
-        trackMarker = { vm.trackMarker(it) },
         readyState = readyState,
-        onOpenGroupScreen = {
-            appState.navController.navigate(
-                AppScreen.MainHome.GroupDetails.route(
-                    groupId = readyState?.groupId ?: ""
-                )
-            )
-        },
-        onOpenPlacesScreen = {
-            appState.navController.navigate(
-                AppScreen.MainHome.PlacesList.route(
-                    groupId = readyState?.groupId ?: ""
-                )
-            )
-        },
-        onOpenCreatePlaceScreen = {
-            appState.navController.navigate(
-                AppScreen.MainHome.PlaceCreate.route(
-                    groupId = readyState?.groupId ?: "",
-                    placeId = null
-                )
-            )
-        },
+        onEvent = { vm.onEvent(it) },
         screenContent = {
             MapContent(
                 appState = appState,
                 uiState = uiState,
                 readyState = readyState,
-                vm = vm,
                 bottomOffset = bottomOffset,
-                onGroupPickerClick = {
-                    appState.uiScope.launch {
-                        val groupPickerState = vm.getGroupPickerState()
-                        pickerState.show(groupPickerState)
-                    }
-                }
+                onEvent = { vm.onEvent(it) }
             )
-        },
-        onFocusOnMembersClick = {
-            vm.setSelectedContentType(MapSheetSelectedContentType.MEMBERS)
-        },
-        onFocusOnPlacesClick = {
-            vm.setSelectedContentType(MapSheetSelectedContentType.PLACES)
         }
     )
 
@@ -234,22 +262,21 @@ private fun MapContent(
     appState: MainAppState,
     uiState: MapHomeScreenState,
     readyState: MapHomeScreenState.Ready?,
-    vm: MapHomeViewModel,
     bottomOffset: Dp,
-    onGroupPickerClick: () -> Unit
+    onEvent: (MapHomeScreenUiEvent) -> Unit
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         MainHomeMapComposable(
             appState = appState,
             uiState = uiState,
-            vm = vm,
+            onEvent = onEvent,
             mapContentPadding = PaddingValues(
                 top = 68.dp,
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
-                    0.dp
+                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                 } else {
                     (this.maxHeight - bottomOffset).coerceIn(
-                        0.dp,
+                        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
                         this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
                     )
                 }
@@ -257,64 +284,15 @@ private fun MapContent(
         )
 
         MapHomeScreenElements(
+            modifier = Modifier,
             state = uiState,
+            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(),
             sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
-                0.dp,
-                this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                minimumValue = WindowInsets.navigationBars.asPaddingValues()
+                    .calculateBottomPadding(),
+                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
             ),
-            onGroupPickerClick = onGroupPickerClick,
-            onGroupDetailsClick = {
-                when (val state = uiState) {
-                    is MapHomeScreenState.Ready -> {
-                        appState.navController.navigate(
-                            AppScreen.MainHome.GroupDetails.route(state.groupId)
-                        )
-                    }
-
-                    is MapHomeScreenState.Empty -> {}
-                }
-            },
-            onSharingStartClick = {
-                when (val state = uiState) {
-                    is MapHomeScreenState.Ready -> {
-                        appState.navController.navigate(
-                            AppScreen.MainHome.SharingStart.route(state.groupId)
-                        )
-                    }
-
-                    is MapHomeScreenState.Empty -> {}
-                }
-            },
-            onSettingsClick = {
-                appState.navController.navigate(AppScreen.Settings.routeSignature)
-            },
-            onPlaceClick = { state ->
-                appState.navController.navigate(
-                    AppScreen.MainHome.PlaceDetail.route(
-                        groupId = state.groupId,
-                        placeId = state.id
-                    )
-                )
-            },
-            onMemberActionClick = { action, state ->
-                vm.memberAction(action, state)
-            },
-            onMemberClick = {
-                // TODO refocus right away
-                vm.trackMarker(it.asFocusedMarker())
-            },
-            onToggleLocation = {
-                vm.toggleMarkerVisibility(it)
-            },
-            onRequestLocation = {
-                vm.requestLocationUpdate(it)
-            },
-            onMapModeSwitch = {
-                vm.switchMapMode()
-            },
-            onCloseFocusedItem = {
-                vm.hideFocusedItem()
-            }
+            onEvent = onEvent
         )
     }
 }

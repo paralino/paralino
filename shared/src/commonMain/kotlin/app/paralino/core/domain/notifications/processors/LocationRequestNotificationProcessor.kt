@@ -24,7 +24,7 @@ class LocationRequestNotificationProcessor(
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val memberIdUseCase: UserMemberIdUseCase,
     private val coroutineScopeProvider: ICoroutineScopeProvider,
-    private val accessLogSource: AccessLogDataSource
+    private val accessLogSource: AccessLogDataSource,
 ) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(

@@ -1,7 +1,10 @@
 package app.paralino.core.crypto.group
 
+import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
+import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -12,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class CryptoKeyLocalDataSource constructor(
     private val database: MainDatabaseHelper,
     private val keysMapper: GroupKeysMapper,
+    private val appPrefs: AppPrefs
 ) {
 
     private var cachedGroupKeys = MutableStateFlow<List<GroupCryptoKeyDataRaw>>(emptyList())
@@ -45,6 +49,22 @@ class CryptoKeyLocalDataSource constructor(
             getAllPersonalGroupKeys()
                 .also { cachedPersonalGroupKeys.value = it }
         }
+    }
+
+    suspend fun getLocalGroupSenderKey(groupId: String): LocalGroupDeviceKeysEntity? {
+        return database.groupRelatedKeysDao.getLocalGroupDeviceSenderKey(groupId = groupId)
+    }
+
+    suspend fun saveLocalGroupSenderKey(key: LocalGroupDeviceKeysEntity) {
+        database.groupRelatedKeysDao.createLocalGroupDeviceSenderKey(key)
+    }
+
+    suspend fun getCurrentDeviceLocationId(groupId: String): String? {
+        return database.groupRelatedDao.getSingleLocationForMemberAndDeviceOnce(
+            groupId = groupId,
+            userId = appPrefs.userId,
+            deviceId = appPrefs.deviceId
+        )?.id
     }
 
     suspend fun recreateAllGroupKeys(

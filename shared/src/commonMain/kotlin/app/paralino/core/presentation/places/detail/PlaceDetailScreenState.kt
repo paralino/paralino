@@ -13,6 +13,7 @@ data class PlaceDetailScreenState constructor(
     val lng: Double?,
     val radiusMeters: Int,
     val canEdit: Boolean,
+    val canHaveAlerts: Boolean,
     val fullLoading: Boolean,
     val isPlaceAlertsSwitchLoading: Boolean,
     val arePlaceAlertsActive: Boolean,

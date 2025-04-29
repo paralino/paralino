@@ -4,9 +4,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
-import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenState
-import app.paralino.core.presentation.map.asFocusedMarker
+import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -19,13 +18,8 @@ import kotlinx.coroutines.launch
 fun MainMapSheet(
     appState: CoreUiState,
     swipeableState: SwipeableSheetState,
-    trackMarker: (FocusedMarkerData) -> Unit,
     readyState: MapHomeScreenState.Ready?,
-    onOpenGroupScreen: () -> Unit,
-    onOpenPlacesScreen: () -> Unit,
-    onOpenCreatePlaceScreen: () -> Unit,
-    onFocusOnMembersClick: () -> Unit,
-    onFocusOnPlacesClick: () -> Unit,
+    onEvent: (MapHomeScreenUiEvent) -> Unit,
     screenContent: @Composable () -> Unit,
 ) {
     SwipeableBottomSheet(
@@ -35,13 +29,8 @@ fun MainMapSheet(
             MainMapSheetActiveBody(
                 appState = appState,
                 swipeableState = swipeableState,
-                trackMarker = trackMarker,
                 readyState = readyState,
-                onOpenPlacesScreen = onOpenPlacesScreen,
-                onOpenCreatePlaceScreen = onOpenCreatePlaceScreen,
-                onOpenGroupScreen = onOpenGroupScreen,
-                onFocusOnMembersClick = onFocusOnMembersClick,
-                onFocusOnPlacesClick = onFocusOnPlacesClick
+                onEvent = onEvent
             )
         }
     )
@@ -51,13 +40,8 @@ fun MainMapSheet(
 private fun MainMapSheetActiveBody(
     appState: CoreUiState,
     swipeableState: SwipeableSheetState,
-    trackMarker: (FocusedMarkerData) -> Unit,
     readyState: MapHomeScreenState.Ready?,
-    onOpenGroupScreen: () -> Unit,
-    onOpenPlacesScreen: () -> Unit,
-    onOpenCreatePlaceScreen: () -> Unit,
-    onFocusOnMembersClick: () -> Unit,
-    onFocusOnPlacesClick: () -> Unit,
+    onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
     LaunchedEffect(readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused) {
         snapshotFlow { readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused }
@@ -82,19 +66,7 @@ private fun MainMapSheetActiveBody(
         readyState = readyState,
         members = readyState?.members ?: emptyList(),
         places = readyState?.places ?: emptyList(),
-        onGroupClick = onOpenGroupScreen,
-        onMemberClick = {
-            trackMarker(it.asFocusedMarker())
-        },
-        onPlaceClick = {
-            trackMarker(it.asFocusedMarker())
-        },
-        onOpenPlaces = {
-            onOpenPlacesScreen()
-        },
-        onCreatePlace = {
-            onOpenCreatePlaceScreen()
-        },
+        onEvent = onEvent,
         onWholeContentClick = {
             appState.uiScope.launch {
                 if (swipeableState.isCollapsed() || swipeableState.isFullyExpanded()) {
@@ -103,8 +75,6 @@ private fun MainMapSheetActiveBody(
                     swipeableState.animateTo(BottomSheetPosition.COLLAPSED)
                 }
             }
-        },
-        onFocusOnMembersClick = onFocusOnMembersClick,
-        onFocusOnPlacesClick = onFocusOnPlacesClick,
+        }
     )
 }

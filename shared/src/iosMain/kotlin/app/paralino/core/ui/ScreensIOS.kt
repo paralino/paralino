@@ -23,7 +23,12 @@ fun RootScreenIOS(content: @Composable (CoreUiState) -> Unit) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             scaffoldState = coreUiState.scaffoldState,
-            snackbarHost = { AppSnackbar(it) }
+            snackbarHost = {
+                AppSnackbar(
+                    drawingPaddingValues = remember { PaddingValues() },
+                    snackbarHostState = it
+                )
+            }
         ) { innerPadding ->
             content(coreUiState)
         }

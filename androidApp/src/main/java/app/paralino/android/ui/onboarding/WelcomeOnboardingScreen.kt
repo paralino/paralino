@@ -1,9 +1,11 @@
 package app.paralino.android.ui.onboarding
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingContent
 import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingScreenCore
@@ -23,6 +25,7 @@ fun WelcomeOnboardingScreen(
         }
     }
     WelcomeOnboardingScreenCore(
+        modifier = Modifier.safeDrawingPadding(),
         vm = vm,
         isDemo = isDemo,
         step = step,

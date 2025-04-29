@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 11,
-    "identityHash": "df5ef2d80cd0b25e9e2e0b804490545e",
+    "identityHash": "05af394ffc06679ab3486ff886f81fbb",
     "entities": [
       {
         "tableName": "subscriptionPlanEntity",
@@ -653,6 +653,54 @@
         }
       },
       {
+        "tableName": "localDeviceKeysEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `locationId` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `deviceKeyVersion` INTEGER NOT NULL, `userKeyVersion` INTEGER NOT NULL, `encryptedSenderKey` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationId",
+            "columnName": "locationId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberKeyVersion",
+            "columnName": "memberKeyVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceKeyVersion",
+            "columnName": "deviceKeyVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userKeyVersion",
+            "columnName": "userKeyVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encryptedSenderKey",
+            "columnName": "encryptedSenderKey",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
         "tableName": "placeActivityEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`placeId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `isEnter` INTEGER NOT NULL, `stateChangeTimeMillis` INTEGER NOT NULL, `stateChangeTrigger` TEXT NOT NULL, `isScheduledStateEnter` INTEGER, `isLastNotifyStateEnter` INTEGER, `notifyTrigger` TEXT, `scheduleTrigger` TEXT, `notifyTimeMillis` INTEGER, PRIMARY KEY(`placeId`))",
         "fields": [
@@ -904,7 +952,7 @@
       },
       {
         "tableName": "memberLocationEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `userId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `groupKeyVersion` INTEGER NOT NULL, `deviceKeyVersion` INTEGER NOT NULL, `deviceData` TEXT, `locationData` TEXT, `locationHistory` TEXT, `status` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `userId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `groupKeyVersion` INTEGER NOT NULL, `deviceKeyVersion` INTEGER NOT NULL, `deviceData` TEXT, `locationData` TEXT, `status` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -956,11 +1004,6 @@
           {
             "fieldPath": "locationData",
             "columnName": "locationData",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "locationHistory",
-            "columnName": "locationHistory",
             "affinity": "TEXT"
           },
           {
@@ -1141,7 +1184,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'df5ef2d80cd0b25e9e2e0b804490545e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '05af394ffc06679ab3486ff886f81fbb')"
     ]
   }
 }

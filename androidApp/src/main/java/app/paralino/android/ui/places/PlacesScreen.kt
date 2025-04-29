@@ -2,13 +2,17 @@ package app.paralino.android.ui.places
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
@@ -25,7 +29,7 @@ import app.paralino.core.ui.places.PlacesScreenCore
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -34,7 +38,7 @@ fun PlacesScreen(
     appState: MainAppState,
     groupId: String,
     isOnboarding: Boolean,
-    vm: PlacesViewModel = getViewModel { parametersOf(groupId, isOnboarding) },
+    vm: PlacesViewModel = koinViewModel { parametersOf(groupId, isOnboarding) },
 ) {
 
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
@@ -48,6 +52,7 @@ fun PlacesScreen(
     }
 
     Scaffold(
+        modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
                 title = stringResource(MR.strings.places_list_screen_title),

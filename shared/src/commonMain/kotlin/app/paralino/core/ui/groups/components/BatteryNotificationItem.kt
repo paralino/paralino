@@ -127,6 +127,6 @@ fun BatteryNotificationToggle(
             if (!loading)
                 onChange(!state)
         },
-        content = {}
+        content = null
     )
 }

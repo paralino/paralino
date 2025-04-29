@@ -84,6 +84,7 @@ interface GroupRelatedKeysDao {
         clearAllGroupDeviceKeys()
         clearAllPersonalGroupKeys()
         clearAllGroupDeviceIntegrityKeys()
+        clearAllLocalGroupDeviceSenderKeys()
     }
 
     @Transaction
@@ -93,6 +94,7 @@ interface GroupRelatedKeysDao {
         clearAllGroupDeviceKeys(groupId = groupId)
         clearAllPersonalGroupKeys(groupId = groupId)
         clearAllGroupDeviceIntegrityKeys(groupId = groupId)
+        clearAllLocalGroupDeviceSenderKeys(groupId = groupId)
     }
 
     @Transaction
@@ -117,6 +119,9 @@ interface GroupRelatedKeysDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createGroupDeviceIntegrityKey(key: GroupDeviceIntegrityEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createLocalGroupDeviceSenderKey(key: LocalGroupDeviceKeysEntity)
+
 
 
     @Query("SELECT * FROM groupKeysEntity")
@@ -133,6 +138,9 @@ interface GroupRelatedKeysDao {
 
     @Query("SELECT * FROM groupDeviceIntegrityEntity WHERE id = :groupId")
     suspend fun getGroupDeviceIntegrityKey(groupId: String): GroupDeviceIntegrityEntity?
+
+    @Query("SELECT * FROM localDeviceKeysEntity WHERE id = :groupId")
+    suspend fun getLocalGroupDeviceSenderKey(groupId: String): LocalGroupDeviceKeysEntity?
 
 
 
@@ -151,6 +159,9 @@ interface GroupRelatedKeysDao {
     @Query("DELETE FROM groupDeviceIntegrityEntity")
     suspend fun clearAllGroupDeviceIntegrityKeys()
 
+    @Query("DELETE FROM localDeviceKeysEntity")
+    suspend fun clearAllLocalGroupDeviceSenderKeys()
+
 
 
     @Query("DELETE FROM groupKeysEntity WHERE groupId = :groupId")
@@ -167,6 +178,9 @@ interface GroupRelatedKeysDao {
 
     @Query("DELETE FROM groupDeviceIntegrityEntity WHERE id = :groupId")
     suspend fun clearAllGroupDeviceIntegrityKeys(groupId: String)
+
+    @Query("DELETE FROM localDeviceKeysEntity WHERE id = :groupId")
+    suspend fun clearAllLocalGroupDeviceSenderKeys(groupId: String)
 
 
 

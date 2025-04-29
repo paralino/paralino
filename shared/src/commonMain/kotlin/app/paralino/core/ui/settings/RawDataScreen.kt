@@ -95,6 +95,7 @@ fun RawDataScreen(
         this.item(key = "header") {
             Column(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .shadow(elevation = 12.dp, shape = RoundedCornerShape(12.dp))
                     .background(
                         color = MaterialTheme.colors.background,

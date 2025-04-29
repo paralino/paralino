@@ -70,23 +70,30 @@ class LocationRequestUseCase constructor(
                 failOnError = false
             )
         ) {
-            logg.tag("location_performance")
-                .v("Map is active (${focusType::class.simpleName}), sending ping")
             try {
                 when (focusType) {
                     is MapHomeScreenFocusType.MEMBER -> {
-                        val requestPayload = LocationFocusPayload(
-                            groupId = groupId,
-                            userId = focusType.memberUserId,
-                            locationId = focusType.memberLocationId
-                        )
+                        if (focusType.isIdleActive) {
+                            logg.tag("location_performance")
+                                .v("Map is active (${focusType::class.simpleName}), sending ping")
+                            val requestPayload = LocationFocusPayload(
+                                groupId = groupId,
+                                userId = focusType.memberUserId,
+                                locationId = focusType.memberLocationId
+                            )
 
-                        functionsApi.runAsync(
-                            function = ServerFunction.LOCATION_FOCUS_MEMBER,
-                            data = requestPayload
-                        )
+                            functionsApi.runAsync(
+                                function = ServerFunction.LOCATION_FOCUS_MEMBER,
+                                data = requestPayload
+                            )
+                        } else {
+                            logg.tag("location_performance")
+                                .v("User not sharing, skip ping")
+                        }
                     }
                     else -> {
+                        logg.tag("location_performance")
+                            .v("Map is active (${focusType::class.simpleName}), sending ping")
                         val requestPayload = LocationFocusPayload(
                             groupId = groupId,
                             userId = null,
@@ -102,6 +109,8 @@ class LocationRequestUseCase constructor(
             } catch (e: Exception) {
                 throw e
             }
+
+            Unit
         }
     }
 

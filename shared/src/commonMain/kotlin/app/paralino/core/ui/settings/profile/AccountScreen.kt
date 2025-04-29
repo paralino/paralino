@@ -75,6 +75,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun AccountScreenCore(
     appState: CoreUiState,
     viewModel: SettingsViewModel,
+    openProfileRawScreen: () -> Unit,
     openConvertAccount: () -> Unit,
     openEditProfile: () -> Unit,
     openChangeEmail: () -> Unit,
@@ -127,6 +128,13 @@ fun AccountScreenCore(
                 )
 
                 Spacer(modifier = Modifier.size(20.dp))
+
+                SettingsActionItem(
+                    name = stringResource(MR.strings.raw_data_screen_title),
+                    icon = CoreAppIcons.Security.asPainterResource()
+                ) {
+                    openProfileRawScreen()
+                }
 
                 SettingsActionItem(
                     name = stringResource(MR.strings.settings_account_edit_profile),

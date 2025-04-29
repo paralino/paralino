@@ -3,7 +3,6 @@ package app.paralino.core.repo.group
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.crypto.VerificationResult
-import app.paralino.core.domain.crypto.VerificationResultError
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -237,44 +236,6 @@ class UserGroupLocalDataSource constructor(
     fun getGroupsCount(): Flow<Int?> {
         return database.groupRelatedDao.getGroupsCount()
     }
-
-    suspend fun getMemberModelsWithLocationForUser(userId: String): List<MemberModelWithLocations> {
-        val members = database.groupRelatedDao.getAllMembersForUserOnce(userId = userId)
-        val locations = database.groupRelatedDao.getMemberLocationsForUserOnce(userId = userId)
-
-        return members.mapNotNull { member ->
-            val group = getGroupOnce(member.groupId)
-                ?: return@mapNotNull null
-
-            val memberLocations = locations.filter {
-                it.memberId == member.id
-            }
-            memberMapper.local2Core(
-                member = member,
-                memberLocations = memberLocations,
-                group = group
-            )
-        }
-    }
-
-    suspend fun getMemberWithLocationsOnce(
-        groupId: String,
-        userId: String
-    ): MemberModelWithLocations? {
-        val member = database.groupRelatedDao.getMemberOnce(
-            groupId = groupId,
-            userId = userId
-        ) ?: return null
-        val locations = database.groupRelatedDao.getMemberLocationsOnce(memberId = member.id)
-        val group = getGroupOnce(groupId) ?: return null
-
-        return memberMapper.local2Core(
-            member = member,
-            memberLocations = locations,
-            group = group
-        )
-    }
-
 
     fun getMemberRawPresentation(group: UserGroup?, memberId: String): Flow<Pair<MemberWithLocationsRaw, MemberModelWithLocations>> {
         return combine(

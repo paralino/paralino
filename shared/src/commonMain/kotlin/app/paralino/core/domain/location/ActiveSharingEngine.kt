@@ -82,7 +82,7 @@ class ActiveSharingEngine(
                 // do nothing
             }
             AppHost.IOS_LOCATION_EXTENSION -> {
-                locationRepo.startLocationUploadEngine()
+                // do nothing
             }
         }
     }

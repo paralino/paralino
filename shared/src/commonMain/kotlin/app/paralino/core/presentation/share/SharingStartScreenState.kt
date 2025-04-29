@@ -24,6 +24,7 @@ data class SharingStartScreenState constructor(
     val shareSpeed: Boolean = true,
     val shareElevation: Boolean = true,
     val shareNetwork: Boolean = true,
+    val shareDeviceStatus: Boolean = true,
     val notifyOthers: Boolean = true,
     val showNotifyOthers: Boolean = false,
     val isPremiumSectionVisible: Boolean = false,

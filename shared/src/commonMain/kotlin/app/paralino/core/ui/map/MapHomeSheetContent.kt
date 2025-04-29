@@ -50,6 +50,7 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.map.MapHomeScreenState
+import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapSheetSelectedContentType
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.provider.localizedString
@@ -74,14 +75,8 @@ fun MapHomeSheetContent(
     readyState: MapHomeScreenState.Ready?,
     members: List<GroupMemberItemState>,
     places: List<PlaceListItemData>,
-    onGroupClick: () -> Unit,
-    onMemberClick: (GroupMemberItemState) -> Unit,
-    onPlaceClick: (PlaceListItemData) -> Unit,
-    onOpenPlaces: () -> Unit,
-    onCreatePlace: () -> Unit,
+    onEvent: (MapHomeScreenUiEvent) -> Unit,
     onWholeContentClick: () -> Unit,
-    onFocusOnMembersClick: () -> Unit,
-    onFocusOnPlacesClick: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(swipeableState) {
@@ -149,7 +144,7 @@ fun MapHomeSheetContent(
                     if (swipeableState.isCollapsed()) {
                         onWholeContentClick()
                     } else {
-                        onGroupClick()
+                        onEvent(MapHomeScreenUiEvent.OnGroupDetailsClick)
                     }
                 }
             )
@@ -170,7 +165,9 @@ fun MapHomeSheetContent(
                     focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
                     text = MR.strings.group_details_section_members_title.localizedString(),
                     icon = CoreAppIcons.Group.asPainterResource(),
-                    onClick = onFocusOnMembersClick
+                    onClick = {
+                        onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
+                    }
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 MapBottomSheetTab(
@@ -179,7 +176,9 @@ fun MapHomeSheetContent(
                     focused = readyState?.mapHomeScreenFocusType?.arePlacesFocused == true,
                     text = MR.strings.places_list_screen_title.localizedString(),
                     icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                    onClick = onFocusOnPlacesClick
+                    onClick = {
+                        onEvent(MapHomeScreenUiEvent.OnFocusOnPlacesClick)
+                    }
                 )
             }
         }
@@ -217,16 +216,24 @@ fun MapHomeSheetContent(
                 MapSheetSelectedContentType.PLACES -> {
                     placesList(
                         places = places,
-                        onCreatePlace = onCreatePlace,
-                        onOpenPlaces = onOpenPlaces,
-                        onPlaceClick = onPlaceClick
+                        onCreatePlace = {
+                            onEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen)
+                        },
+                        onOpenPlaces = {
+                            onEvent(MapHomeScreenUiEvent.OnOpenPlacesScreen)
+                        },
+                        onPlaceClick = {
+                            onEvent(MapHomeScreenUiEvent.OnPlaceClick(it))
+                        }
                     )
                 }
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
                         members = members,
-                        onMemberClick = onMemberClick
+                        onEvent = {
+                            onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
+                        }
                     )
                 }
 
@@ -238,7 +245,7 @@ fun MapHomeSheetContent(
 
 private fun LazyListScope.membersList(
     members: List<GroupMemberItemState>,
-    onMemberClick: (GroupMemberItemState) -> Unit
+    onEvent: (GroupMemberItemEvent) -> Unit
 ) {
     this.itemsIndexed(
         items = members,
@@ -250,15 +257,7 @@ private fun LazyListScope.membersList(
             state = itemState,
             collapseOnActionClick = true,
             forceExpandAction = false,
-            onEvent = { event ->
-                when (event) {
-                    is GroupMemberItemEvent.onItemClick -> {
-                        onMemberClick(event.item)
-                    }
-
-                    else -> {}
-                }
-            }
+            onEvent = onEvent
         )
     }
 }

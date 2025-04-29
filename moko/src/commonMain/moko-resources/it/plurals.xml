@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d giorno</item>
+        <item quantity="many">%d giorni</item>
+        <item quantity="other">%d giorni</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d mese</item>
+        <item quantity="many">%d mesi</item>
+        <item quantity="other">%d mesi</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d ora</item>
+        <item quantity="many">%d ore</item>
+        <item quantity="other">%d ore</item>
+    </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one">**%d gruppo**</item>
+        <item quantity="many">**%d gruppi**</item>
+        <item quantity="other">**%d gruppi**</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="many">%d minuti</item>
+        <item quantity="other">%d minuti</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Condivisione della posizione a 1 gruppo</item>
+        <item quantity="many">Condivisione della posizione a %d gruppi</item>
+        <item quantity="other">Condivisione della posizione a %d gruppi</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d anno</item>
+        <item quantity="many">%d anni</item>
+        <item quantity="other">%d anni</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one">**%d luogo** con avvisi illimitati</item>
+        <item quantity="many">**%d luoghi** con avvisi illimitati</item>
+        <item quantity="other">**%d luoghi** con avvisi illimitati</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">**%d membro**</item>
+        <item quantity="many">**%d membri**</item>
+        <item quantity="other">**%d membri**</item>
+    </plurals>
+</resources>

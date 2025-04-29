@@ -5,6 +5,7 @@ import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
 import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.ConditionErrorType
 
 data class GroupInitScreenState constructor(
@@ -20,7 +21,7 @@ sealed interface GroupInitScreenEvent {
     data object AskNotificationPermission: GroupInitScreenEvent
     data object OpenPersonalCodes: GroupInitScreenEvent
     data object OpenGroupCreate: GroupInitScreenEvent
-    data object OpenPaywall: GroupInitScreenEvent
+    data class OpenPaywall(val type: BillingScreenSourceType): GroupInitScreenEvent
     data class SharePersonalCode(val code: String): GroupInitScreenEvent
 }
 

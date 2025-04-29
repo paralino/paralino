@@ -10,12 +10,26 @@ import shared
 
 class ValueFormatter: IValueFormatter {
     
-    override var unitType: DistanceUnitType {
+    private let appPrefs: AppPrefs
+    
+    init(appPrefs: AppPrefs) {
+        self.appPrefs = appPrefs
+    }
+    
+    override var measurementSystem: MeasurementSystemType {
+        switch appPrefs.measurementSystem {
+            case .imperial: return MeasurementSystemType.imperial
+            case .metric: return MeasurementSystemType.metric
+            default: return deviceDefaultMeasurementSystem
+        }
+    }
+    
+    override var deviceDefaultMeasurementSystem: MeasurementSystemType {
         let measurementSystem = Locale.current.measurementSystem
         if measurementSystem == .uk || measurementSystem == .us {
-            return DistanceUnitType.imperial
+            return MeasurementSystemType.imperial
         } else {
-            return DistanceUnitType.metric
+            return MeasurementSystemType.metric
         }
     }
     

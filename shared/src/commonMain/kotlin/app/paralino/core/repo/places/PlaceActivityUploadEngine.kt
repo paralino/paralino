@@ -144,6 +144,11 @@ class PlaceActivityUploadEngine(
         } catch (e: Exception) {
         }
 
+        if (!place.canSendAlert) {
+            logg.tag(executionKey).v("Place can't send alert, skip")
+            return
+        }
+
         if (isEnter) {
             remote.notifyPlaceEnter(
                 place = place,

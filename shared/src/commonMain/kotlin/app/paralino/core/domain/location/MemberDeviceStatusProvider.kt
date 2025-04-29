@@ -16,9 +16,10 @@ class MemberDeviceStatusProvider(
     private val valueFormatter: IValueFormatter
 ) {
 
-    private fun getStatusType(groupId: String, contract: LocationSharingContract?): MemberDeviceStatusType {
+    private suspend fun getStatusType(groupId: String, contract: LocationSharingContract?): MemberDeviceStatusType {
         val locationStatus = deviceApiProvider.locationStatusProvider.currentStatus
         val isSharingActive = contract?.asValidContract()?.groupId == groupId || locationSharingManager.isSharingActiveForGroup(groupId)
+        val shareDeviceStatus = contract?.asValidContract()?.shareDeviceStatus ?: false
 
         // if app was not launched from foreground and we are missing background location permission
         val missingBackgroundPermission = !locationStatus.isBackgroundPermissionAllowed
@@ -26,12 +27,27 @@ class MemberDeviceStatusProvider(
                 && !deviceApiProvider.appLifecycleState.value.wasEverActive
 
         return when {
-            !isSharingActive -> MemberDeviceStatusType.NOT_SHARING
-            !locationStatus.isAnyLocationPermissionAllowed -> MemberDeviceStatusType.MISSING_PERMISSIONS
-            missingBackgroundPermission -> MemberDeviceStatusType.MISSING_PERMISSIONS
-            !locationStatus.isGpsOn -> MemberDeviceStatusType.GPS_OFF
+            !isSharingActive -> {
+                if (shareDeviceStatus) MemberDeviceStatusType.NOT_SHARING
+                else MemberDeviceStatusType.INACTIVE
+            }
+            !locationStatus.isAnyLocationPermissionAllowed -> {
+                if (shareDeviceStatus) MemberDeviceStatusType.MISSING_PERMISSIONS
+                else MemberDeviceStatusType.INACTIVE
+            }
+            missingBackgroundPermission -> {
+                if (shareDeviceStatus) MemberDeviceStatusType.MISSING_PERMISSIONS
+                else MemberDeviceStatusType.INACTIVE
+            }
+            !locationStatus.isGpsOn -> {
+                if (shareDeviceStatus) MemberDeviceStatusType.GPS_OFF
+                else MemberDeviceStatusType.INACTIVE
+            }
             locationPerformanceManager.locationPerformanceType.value.isThrottlingLocationRequest -> MemberDeviceStatusType.TOO_MANY_REQUESTS
-            locationPerformanceManager.locationPerformanceType.value.current <= LocationPerformanceType.BATTERY_SAVER -> MemberDeviceStatusType.BATTERY_SAVER_ON
+            locationPerformanceManager.locationPerformanceType.value.current <= LocationPerformanceType.BATTERY_SAVER -> {
+                if (shareDeviceStatus) MemberDeviceStatusType.BATTERY_SAVER_ON
+                else MemberDeviceStatusType.IDLE
+            }
             locationPerformanceManager.locationPerformanceType.value.isThrottling -> MemberDeviceStatusType.THROTTLING
             locationPerformanceManager.locationPerformanceType.value.isSlow -> MemberDeviceStatusType.IDLE
             else -> MemberDeviceStatusType.ACTIVE

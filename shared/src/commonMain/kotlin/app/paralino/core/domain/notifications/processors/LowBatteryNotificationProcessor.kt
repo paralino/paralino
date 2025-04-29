@@ -1,9 +1,11 @@
 package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -13,6 +15,7 @@ import kotlinx.serialization.Serializable
 class LowBatteryNotificationProcessor(
     private val groupRepo: UserGroupLocalDataSource,
     private val accessLogSource: AccessLogDataSource,
+    private val appPrefs: AppPrefs
 ) : BaseNotificationProcessor(accessLogSource) {
 
     override suspend fun constructPushPayload(
@@ -44,8 +47,17 @@ class LowBatteryNotificationProcessor(
 
         val notificationId = "low_battery_${payload}".hashCode()
 
+        val notificationGroup = when (appPrefs.notificationGrouping) {
+            NotificationGroupingType.NONE -> null
+            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+            NotificationGroupingType.TYPE -> "low_battery"
+            NotificationGroupingType.GROUP -> payload.groupId
+            NotificationGroupingType.PERSON -> payload.memberUserId
+        }
+
         val pushPayload = IPushNotificationPresenter.Payload(
             notificationId = notificationId,
+            notificationGroupId = notificationGroup,
             title = title,
             message = null,
             timeMillis = push.createdAt.toEpochMilliseconds(),

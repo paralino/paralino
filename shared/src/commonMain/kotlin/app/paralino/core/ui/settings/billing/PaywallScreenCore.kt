@@ -2,8 +2,10 @@ package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -11,6 +13,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,6 +37,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -57,6 +61,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -83,9 +88,11 @@ import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.presentation.settings.billing.FaqSectionItem
 import app.paralino.core.presentation.settings.billing.FeatureTableItemHighlightMode
 import app.paralino.core.presentation.settings.billing.FeatureTableItemState
+import app.paralino.core.presentation.settings.billing.FeatureTableItemVisibilityMode
 import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallScreenState
+import app.paralino.core.presentation.settings.billing.PaywallScreenStep
 import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoState
@@ -112,10 +119,15 @@ import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.ui.theme.featureItemTitle
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun PaywallScreenCore(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     vm: PaywallViewModel,
     paddingValues: PaddingValues,
@@ -154,108 +166,374 @@ fun PaywallScreenCore(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            DefaultToolbar(
-                title = if (uiState.isLoading || uiState.selectedPlan == null) {
-                    null
-                } else {
-                    stringResource(MR.strings.paywall_screen_title)
-                },
-                navigationIcon = if (uiState.isLoading) {
-                    null
-                } else {
-                    { ToolbarButtons.Close { onNavigateBack(false) } }
-                }
-            )
-        },
+        modifier = modifier.fillMaxSize()
     ) {
-        AnimatedVisibility(visible = uiState.isLoading, modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
+        var bottomCardHeight by remember { mutableStateOf(0) }
+        val density = LocalDensity.current
+        val focusManager = LocalFocusManager.current
+        var buttonVisible by remember { mutableStateOf(false) }
+
+        LaunchedEffect(uiState.screenStep) {
+            when (uiState.screenStep) {
+                PaywallScreenStep.ONBOARDING -> {
+                    buttonVisible = false
+                    delay(700)
+                    buttonVisible = true
+                }
+
+                else -> {
+                    buttonVisible = true
+                }
             }
         }
 
-        AnimatedVisibility(visible = !uiState.isLoading, modifier = Modifier.fillMaxSize()) {
-            val uriHandler = LocalUriHandler.current
-            PaywallScreen(
-                valueFormatter = vm.valueFormatter,
-                state = uiState,
-                paddingValues = paddingValues,
-                onTermsClick = { uriHandler.openUri(BackendResourceIDs.termsOfUseUrl) },
-                onPrivacyClick = { uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl) },
-                onEvent = { vm.onEvent(it) }
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }
+        ) {
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = uiState.screenStep == PaywallScreenStep.ONBOARDING,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(paddingValues)
+                        .padding(bottom = 100.dp)
+                        .padding(top = 30.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Spacer(modifier.weight(1f))
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .padding(horizontal = 20.dp)
+                            .fillMaxWidth(),
+                        text = stringResource(MR.strings.paywall_header_feature_list_screen),
+                        style = MaterialTheme.typography.h4,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier.weight(1f))
+                    FeaturesSection(modifier = Modifier)
+                    Spacer(modifier.weight(1f))
+                }
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = uiState.screenStep == PaywallScreenStep.DEMO,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
+                        )
+                        .verticalScroll(rememberScrollState())
+                        .padding(paddingValues)
+                        .padding(bottom = 140.dp)
+                        .padding(top = 30.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Spacer(modifier.weight(1f))
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .padding(horizontal = 20.dp)
+                            .fillMaxWidth(),
+                        text = stringResource(MR.strings.paywall_header_feature_demo_screen),
+                        style = MaterialTheme.typography.h4,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier.weight(1f))
+
+                    PaywallScreenFeatureElements(
+                        modifier = Modifier
+                            .padding(bottom = 20.dp, top = 20.dp)
+                            .fillMaxWidth(),
+                        displayTitle = false,
+                        memberName = uiState.memberName,
+                        memberImageModel = uiState.memberImageModel,
+                        memberDeviceName = uiState.memberDeviceName,
+                        valueFormatter = vm.valueFormatter
+                    )
+
+                    Spacer(modifier.weight(1f))
+                }
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = uiState.isLoading && uiState.screenStep == PaywallScreenStep.PAYWALL,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = !uiState.isLoading && uiState.screenStep == PaywallScreenStep.PAYWALL,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
+            ) {
+                val uriHandler = LocalUriHandler.current
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(paddingValues),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    DefaultToolbar(
+                        title = if (uiState.isLoading || uiState.selectedPlan == null) {
+                            null
+                        } else {
+                            stringResource(MR.strings.paywall_select_plan_label)
+                        },
+                        navigationIcon = if (uiState.isLoading) {
+                            null
+                        } else {
+                            { ToolbarButtons.Close { onNavigateBack(false) } }
+                        },
+                        elevation = 0.dp
+                    )
+
+                    PaywallScreen(
+                        valueFormatter = vm.valueFormatter,
+                        state = uiState,
+                        bottomCardHeight = bottomCardHeight,
+                        onTermsClick = { uriHandler.openUri(BackendResourceIDs.termsOfUseUrl) },
+                        onPrivacyClick = { uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl) },
+                        onEvent = { vm.onEvent(it) }
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                visible = buttonVisible && (uiState.selectedPlan != null || uiState.screenStep != PaywallScreenStep.PAYWALL),
+                enter = fadeIn() + slideInVertically { it },
+                exit = fadeOut() + slideOutVertically { it }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(with(density) { bottomCardHeight.toDp() })
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    MaterialTheme.colors.background,
+                                    MaterialTheme.colors.background
+                                )
+                            )
+                        )
+                )
+
+                PaywallBottomCard(
+                    state = uiState,
+                    paddingValues = paddingValues,
+                    onStartPurchase = { vm.onEvent(PaywallScreenUiEvent.StartPurchase) },
+                    modifier = Modifier
+                        .onGloballyPositioned { coordinates ->
+                            bottomCardHeight = coordinates.size.height
+                        }
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun PaywallScreen(
+private fun ColumnScope.PaywallScreen(
     valueFormatter: IValueFormatter,
     state: PaywallScreenState,
-    paddingValues: PaddingValues,
+    bottomCardHeight: Int,
     onTermsClick: () -> Unit,
     onPrivacyClick: () -> Unit,
     onEvent: (PaywallScreenUiEvent) -> Unit,
 ) {
-    var bottomCardHeight by remember { mutableStateOf(0) }
     val density = LocalDensity.current
     val focusManager = LocalFocusManager.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            }
+    AnimatedVisibility(state.selectedPlan == null) {
+        Text(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth(),
+            text = stringResource(MR.strings.paywall_screen_header),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            fontSize = 28.sp,
+            textAlign = TextAlign.Center
+        )
+    }
+
+    Spacer(modifier = Modifier.size(16.dp))
+
+    AnimatedVisibility(
+        state.currentPlan != null
     ) {
-        val scrollState = rememberScrollState()
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 8.dp),
+            text = stringResource(MR.strings.paywall_current_plan_label, state.currentPlanName).annotatedBoldCompose(),
+            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Normal),
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onBackground.copy(ContentAlpha.medium)
+        )
+    }
+
+    PlanTypePicker(
+        state = state,
+        onEvent = onEvent
+    )
+
+    if (state.selectedPlan != null) {
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
+            BillingPeriodOptions(
+                modifier = Modifier
+                    .padding(top = 8.dp, bottom = 20.dp)
+                    .padding(horizontal = 20.dp),
+                selectedPlan = state.selectedPlan!!,
+                onPeriodSelected = {
+                    onEvent(
+                        PaywallScreenUiEvent.SelectBillingPeriod(
+                            planType = state.selectedPlan!!.type,
+                            period = it
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    AnimatedVisibility(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        visible = state.selectedBillingPeriod?.isPromoDiscount == true
+    ) {
+        NoticeInfoChip(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 20.dp)
+                .padding(top = 8.dp, bottom = 16.dp),
+            text = stringResource(MR.strings.paywall_special_offer_description),
+            icon = {
+                Text(text = "🎁")
+            }
+        )
+    }
+
+    var arePlansExpanded by remember { mutableStateOf(false) }
+
+    FeatureTable(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+            .padding(horizontal = 20.dp),
+        table = if (arePlansExpanded) {
+            state.featureTable
+        } else {
+            state.featureTableForSelectedPlan ?: state.featureTable
+        },
+        isExpanded = arePlansExpanded,
+        onExpandPlans = {
+            arePlansExpanded = true
+        }
+    )
+
+    if (!state.screenType.isOnboarding) {
+        FeaturesSection()
+
+        PaywallScreenFeatureElements(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .background(
+                    color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
+                )
+                .padding(bottom = 40.dp, top = 20.dp)
+                .fillMaxWidth(),
+            displayTitle = true,
+            memberName = state.memberName,
+            memberImageModel = state.memberImageModel,
+            memberDeviceName = state.memberDeviceName,
+            valueFormatter = valueFormatter
+        )
+    }
+
+    AnimatedVisibility(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null
+    ) {
+        NoticeInfoChip(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = if (!state.screenType.isOnboarding) 0.dp else 20.dp)
+                .padding(top = 40.dp),
+            text = stringResource(
+                MR.strings.paywall_free_trial_notice_main,
+                "${state.selectedBillingPeriod?.trialDurationDays ?: " "}"
+            ),
+            icon = {
+                Text(text = "🎁")
+            }
+        )
+    }
+
+    if (!state.screenType.isOnboarding) {
+        Spacer(Modifier.size(40.dp))
+    } else {
+        Spacer(Modifier.size(30.dp))
+    }
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 4.dp),
+        text = stringResource(MR.strings.paywall_header_user_reviews),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
+    )
+
+    PaywallUserReviewsSection()
+
+    if (!state.screenType.isOnboarding) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(bottom = paddingValues.calculateBottomPadding())
-                .padding(top = 12.dp),
-            verticalArrangement = Arrangement.Top
+                .padding(top = 40.dp)
+                .padding(bottom = 20.dp)
+                .background(
+                    color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
+                )
+                .padding(top = 50.dp, bottom = 45.dp)
         ) {
-            AnimatedVisibility(state.selectedPlan == null) {
-                Text(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth(),
-                    text = stringResource(MR.strings.paywall_screen_header),
-                    style = MaterialTheme.typography.h4,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            AnimatedVisibility(state.selectedPlan != null) {
-                Text(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth(),
-                    text = stringResource(MR.strings.paywall_header_take_control),
-                    style = MaterialTheme.typography.h4,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            Spacer(modifier = Modifier.size(16.dp))
-
             PlanTypePicker(
                 state = state,
                 onEvent = onEvent
@@ -265,7 +543,7 @@ private fun PaywallScreen(
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
                     BillingPeriodOptions(
                         modifier = Modifier
-                            .padding(top = 8.dp, bottom = 20.dp)
+                            .padding(top = 8.dp)
                             .padding(horizontal = 20.dp),
                         selectedPlan = state.selectedPlan!!,
                         onPeriodSelected = {
@@ -279,244 +557,144 @@ private fun PaywallScreen(
                     )
                 }
             }
-
-            AnimatedVisibility(visible = state.selectedBillingPeriod?.isPromoDiscount == true) {
-                NoticeInfoChip(
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                        .padding(top = 8.dp, bottom = 16.dp),
-                    text = stringResource(MR.strings.paywall_special_offer_description),
-                    icon = {
-                        Text(text = "🎁")
-                    }
-                )
-            }
-
-            state.featureTableForSelectedPlan?.let {
-                FeatureTable(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                        .padding(horizontal = 20.dp),
-                    table = it
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .padding(vertical = 20.dp)
-                    .padding(horizontal = 20.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                SettingsActionItem(
-                    name = stringResource(MR.strings.paywall_feature_privacy),
-                    tag = stringResource(MR.strings.paywall_feature_privacy_description),
-                    nameTextStyle = MaterialTheme.typography.featureItemTitle,
-                    icon = CoreAppIcons.PrivacyTip.asPainterResource(),
-                    type = SettingsActionItemType.Action
-                )
-                SettingsActionItem(
-                    name = stringResource(MR.strings.paywall_feature_premium_sharing),
-                    tag = stringResource(MR.strings.paywall_feature_premium_sharing_description),
-                    nameTextStyle = MaterialTheme.typography.featureItemTitle,
-                    icon = CoreAppIcons.StarFamily.asPainterResource(),
-                    type = SettingsActionItemType.Action
-                )
-                SettingsActionItem(
-                    name = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices),
-                    tag = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices_tag),
-                    nameTextStyle = MaterialTheme.typography.featureItemTitle,
-                    icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                    type = SettingsActionItemType.Action
-                )
-                SettingsActionItem(
-                    name = stringResource(MR.strings.paywall_feature_control),
-                    tag = stringResource(MR.strings.paywall_feature_control_description),
-                    nameTextStyle = MaterialTheme.typography.featureItemTitle,
-                    icon = CoreAppIcons.Settings.asPainterResource(),
-                    type = SettingsActionItemType.Action
-                )
-            }
-
-            PaywallScreenFeatureElements(
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .fillMaxWidth(),
-                valueFormatter = valueFormatter
-            )
-
-            AnimatedVisibility(visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null) {
-                NoticeInfoChip(
-                    modifier = Modifier.padding(horizontal = 20.dp).padding(top = 40.dp),
-                    text = stringResource(
-                        MR.strings.paywall_free_trial_notice_main,
-                        "${state.selectedBillingPeriod?.trialDurationDays ?: " "}"
-                    ),
-                    icon = {
-                        Text(text = "🎁")
-                    }
-                )
-            }
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 40.dp, bottom = 12.dp),
-                text = stringResource(MR.strings.paywall_header_unlock_premium),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-            )
-
-            FeatureTable(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                table = state.featureTable
-            )
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 40.dp, bottom = 4.dp),
-                text = stringResource(MR.strings.paywall_header_user_reviews),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-            )
-
-            PaywallUserReviewsSection()
-
-            Column(
-                modifier = Modifier
-                    .padding(top = 30.dp)
-                    .padding(bottom = 20.dp)
-                    .background(
-                        color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
-                    )
-                    .padding(top = 40.dp, bottom = 40.dp)
-            ) {
-                PlanTypePicker(
-                    state = state,
-                    onEvent = onEvent
-                )
-
-                if (state.selectedPlan != null) {
-                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
-                        BillingPeriodOptions(
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                                .padding(horizontal = 20.dp),
-                            selectedPlan = state.selectedPlan!!,
-                            onPeriodSelected = {
-                                onEvent(
-                                    PaywallScreenUiEvent.SelectBillingPeriod(
-                                        planType = state.selectedPlan!!.type,
-                                        period = it
-                                    )
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-
-            if (state.faq != null) {
-                FaqSection(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    faqsList = state.faq!!.faqs
-                )
-            }
-
-            Spacer(modifier = Modifier.size(12.dp))
-
-            SettingsActionItem(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                name = stringResource(MR.strings.setting_title_privacy),
-                icon = CoreAppIcons.PrivacyTip.asPainterResource(),
-                type = SettingsActionItemType.Link,
-                onClick = onPrivacyClick
-            )
-
-            SettingsActionItem(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                name = stringResource(MR.strings.setting_title_terms),
-                icon = CoreAppIcons.PrivacyTip.asPainterResource(),
-                type = SettingsActionItemType.Link,
-                onClick = onTermsClick
-            )
-
-            AnimatedVisibility(state.isPromoCodeSectionVisible && !state.isPurchaseButtonLoading) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                ) {
-                    Spacer(modifier = Modifier.size(20.dp))
-                    MainInputField(
-                        text = state.promoCode,
-                        hint = "Code",
-                        hasError = false,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done,
-                        capitalization = KeyboardCapitalization.Words,
-                        focusManager = focusManager,
-                        onInputChange = { onEvent(PaywallScreenUiEvent.OnChangePromoCode(it)) }
-                    )
-                    Spacer(modifier = Modifier.size(4.dp))
-                    FilledButton(
-                        style = ButtonStyle.BIG,
-                        state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
-                        onClick = { onEvent(PaywallScreenUiEvent.ApplyPromoCode) }
-                    ) {
-                        Text(text = stringResource(MR.strings.button_confirm))
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                }
-            }
-
-            SettingsActionItem(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                name = stringResource(MR.strings.paywall_button_restore),
-                icon = CoreAppIcons.Sync.asPainterResource(),
-                type = SettingsActionItemType.Action,
-                onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) },
-                onLongClick = { onEvent(PaywallScreenUiEvent.RequestPromoCode) }
-            )
-
-            Spacer(modifier = Modifier.size(8.dp))
-            Spacer(modifier = Modifier.size(with(density) { bottomCardHeight.toDp() }))
         }
+    } else {
+        Spacer(Modifier.size(30.dp))
+    }
 
-        AnimatedVisibility(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            visible = state.selectedPlan != null,
-            enter = fadeIn() + slideInVertically { it },
-            exit = fadeOut() + slideOutVertically { it }
+    if (state.faq != null) {
+        FaqSection(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            faqsList = state.faq!!.faqs
+        )
+    }
+
+    Spacer(modifier = Modifier.size(12.dp))
+
+    SettingsActionItem(
+        modifier = Modifier.padding(horizontal = 20.dp),
+        name = stringResource(MR.strings.setting_title_privacy),
+        icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+        type = SettingsActionItemType.Link,
+        onClick = onPrivacyClick
+    )
+
+    SettingsActionItem(
+        modifier = Modifier.padding(horizontal = 20.dp),
+        name = stringResource(MR.strings.setting_title_terms),
+        icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+        type = SettingsActionItemType.Link,
+        onClick = onTermsClick
+    )
+
+    AnimatedVisibility(state.isPromoCodeSectionVisible && !state.isPurchaseButtonLoading) {
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(with(density) { bottomCardHeight.toDp() })
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                MaterialTheme.colors.background,
-                                MaterialTheme.colors.background
-                            )
-                        )
-                    )
+            Spacer(modifier = Modifier.size(20.dp))
+            MainInputField(
+                text = state.promoCode,
+                hint = "Code",
+                hasError = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done,
+                capitalization = KeyboardCapitalization.Words,
+                focusManager = focusManager,
+                onInputChange = { onEvent(PaywallScreenUiEvent.OnChangePromoCode(it)) }
             )
+            Spacer(modifier = Modifier.size(4.dp))
+            FilledButton(
+                style = ButtonStyle.BIG,
+                state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
+                onClick = { onEvent(PaywallScreenUiEvent.ApplyPromoCode) }
+            ) {
+                Text(text = stringResource(MR.strings.button_confirm))
+            }
+            Spacer(modifier = Modifier.size(20.dp))
+        }
+    }
 
-            PaywallBottomCard(
-                state = state,
-                paddingValues = paddingValues,
-                onStartPurchase = { onEvent(PaywallScreenUiEvent.StartPurchase) },
-                modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        bottomCardHeight = coordinates.size.height
-                    }
+    SettingsActionItem(
+        modifier = Modifier.padding(horizontal = 20.dp),
+        name = stringResource(MR.strings.paywall_button_restore),
+        icon = CoreAppIcons.Sync.asPainterResource(),
+        type = SettingsActionItemType.Action,
+        onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) },
+        onLongClick = { onEvent(PaywallScreenUiEvent.RequestPromoCode) }
+    )
+
+    Spacer(modifier = Modifier.size(8.dp))
+    Spacer(modifier = Modifier.size(with(density) { bottomCardHeight.toDp() }))
+}
+
+@Composable
+private fun FeaturesSection(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(vertical = 20.dp)
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        FeatureInfoItem(delay = 0.seconds) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.paywall_feature_privacy),
+                tag = stringResource(MR.strings.paywall_feature_privacy_description),
+                nameTextStyle = MaterialTheme.typography.featureItemTitle,
+                icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+                type = SettingsActionItemType.Action
             )
         }
+        FeatureInfoItem(delay = 150.milliseconds) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.paywall_feature_premium_sharing),
+                tag = stringResource(MR.strings.paywall_feature_premium_sharing_description),
+                nameTextStyle = MaterialTheme.typography.featureItemTitle,
+                icon = CoreAppIcons.StarFamily.asPainterResource(),
+                type = SettingsActionItemType.Action
+            )
+        }
+        FeatureInfoItem(delay = 300.milliseconds) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices),
+                tag = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices_tag),
+                nameTextStyle = MaterialTheme.typography.featureItemTitle,
+                icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                type = SettingsActionItemType.Action
+            )
+        }
+        FeatureInfoItem(delay = 450.milliseconds) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.paywall_feature_control),
+                tag = stringResource(MR.strings.paywall_feature_control_description),
+                nameTextStyle = MaterialTheme.typography.featureItemTitle,
+                icon = CoreAppIcons.Settings.asPainterResource(),
+                type = SettingsActionItemType.Action
+            )
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.FeatureInfoItem(
+    delay: Duration,
+    content: @Composable () -> Unit
+) {
+    var itemVisible by remember { mutableStateOf(0f) }
+    LaunchedEffect(Unit) {
+        delay(delay)
+        itemVisible = 1f
+    }
+    Box(
+        modifier = Modifier.alpha(
+            animateFloatAsState(
+                itemVisible,
+                tween(durationMillis = 600)
+            ).value
+        ),
+    ) {
+        content()
     }
 }
 
@@ -527,15 +705,15 @@ private fun ColumnScope.PlanTypePicker(
     onEvent: (PaywallScreenUiEvent) -> Unit
 ) {
     var containerWidth by remember { mutableFloatStateOf(0f) }
-
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(100))
+            .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .padding(4.dp)
-            .clip(RoundedCornerShape(100))
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.background)
             .align(Alignment.CenterHorizontally)
             .onSizeChanged { size ->
                 containerWidth = size.width.toFloat()
@@ -560,34 +738,13 @@ private fun ColumnScope.PlanTypePicker(
                     )
                     .clickable {
                         onEvent(PaywallScreenUiEvent.SelectPlanType(plan.type))
-                    },
+                    }
+                    .height(60.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 selected = plan.isSelected,
                 text = plan.displayedName
             )
         }
-    }
-
-    AnimatedVisibility(
-        state.selectedPlan?.isCurrentPlan == true
-    ) {
-        SmallActionButton(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(top = 4.dp),
-            backgroundColor = Color.Transparent,
-            contentColor = MaterialTheme.colors.onBackground.copy(ContentAlpha.disabled),
-            shape = RoundedCornerShape(percent = 25),
-            icon = null,
-            text = {
-                Text(
-                    text = "*" + stringResource(MR.strings.paywall_current_plan_label),
-                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onBackground.copy(ContentAlpha.medium)
-                )
-            },
-            onClick = null
-        )
     }
 }
 
@@ -619,7 +776,7 @@ private fun PaywallBottomCard(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedVisibility(billingPeriodState?.trialDurationDays != null) {
+            AnimatedVisibility(billingPeriodState?.trialDurationDays != null && state.screenStep == PaywallScreenStep.PAYWALL) {
                 Text(
                     modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
                     text = stringResource(
@@ -632,7 +789,7 @@ private fun PaywallBottomCard(
                 )
             }
 
-            AnimatedVisibility(selectedPlan != null) {
+            AnimatedVisibility(selectedPlan != null && state.screenStep == PaywallScreenStep.PAYWALL) {
                 SmallActionButton(
                     modifier = Modifier.padding(bottom = 8.dp),
                     backgroundColor = Color.Transparent,
@@ -655,31 +812,41 @@ private fun PaywallBottomCard(
                 )
             }
 
-            AnimatedVisibility(selectedPlan != null) {
-                Column {
-                    FilledButton(
-                        modifier = Modifier,
-                        style = ButtonStyle.BIG,
-                        state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
-                        onClick = onStartPurchase
-                    ) {
-                        Text(
-                            text = if (billingPeriodState?.trialDurationDays != null) {
-                                stringResource(
-                                    MR.strings.paywall_start_button_free,
-                                    "${billingPeriodState.trialDurationDays}"
-                                )
-                            } else {
-                                stringResource(MR.strings.paywall_start_button_continue)
-                            }.annotatedBoldCompose(),
-                            style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.Bold),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+            AnimatedVisibility(state.screenStep != PaywallScreenStep.PAYWALL) {
+                Spacer(modifier = Modifier.size(12.dp))
+            }
+
+            AnimatedVisibility(selectedPlan != null || state.screenStep != PaywallScreenStep.PAYWALL) {
+                FilledButton(
+                    modifier = Modifier,
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
+                    onClick = onStartPurchase
+                ) {
+                    Text(
+                        text = when (state.screenStep) {
+                            PaywallScreenStep.PAYWALL -> {
+                                if (billingPeriodState?.trialDurationDays != null) {
+                                    stringResource(
+                                        MR.strings.paywall_start_button_free,
+                                        "${billingPeriodState.trialDurationDays}"
+                                    )
+                                } else {
+                                    stringResource(MR.strings.paywall_start_button_continue)
+                                }
+                            }
+
+                            else -> {
+                                stringResource(MR.strings.button_continue)
+                            }
+                        }.annotatedBoldCompose(),
+                        style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.Bold),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
 
-            AnimatedVisibility(selectedPlan == null) {
+            AnimatedVisibility(selectedPlan == null && state.screenStep == PaywallScreenStep.PAYWALL) {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
                     text = stringResource(MR.strings.paywall_select_plan_label),
@@ -710,21 +877,19 @@ private fun PlanName(
 
     Row(
         modifier = modifier
-            .height(60.dp)
-            .clip(RoundedCornerShape(100))
             .background(backgroundColor),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            modifier = Modifier.scale(animateFloatAsState(if (selected) 1.1f else 0.8f).value),
+            modifier = Modifier.scale(animateFloatAsState(if (selected) 1.15f else 0.8f).value),
             text = text,
             fontSize = animateFloatAsState(if (selected) 22f else 18f).value.sp,
             color = contentColor,
             fontWeight = if (selected) {
-                FontWeight.Bold
+                FontWeight.ExtraBold
             } else {
-                FontWeight.Medium
+                FontWeight.Bold
             }
         )
     }
@@ -739,18 +904,18 @@ private fun BillingPeriodOptions(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Divider(modifier = Modifier.weight(1f))
-            Text(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                text = stringResource(MR.strings.paywall_divider_plan_duration),
-                style = MaterialTheme.typography.caption
-            )
-            Divider(modifier = Modifier.weight(1f))
-        }
+//        Row(
+//            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Divider(modifier = Modifier.weight(1f))
+//            Text(
+//                modifier = Modifier.padding(horizontal = 12.dp),
+//                text = stringResource(MR.strings.paywall_divider_plan_duration),
+//                style = MaterialTheme.typography.caption
+//            )
+//            Divider(modifier = Modifier.weight(1f))
+//        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -779,7 +944,9 @@ private fun BillingPeriodOptions(
             }
         }
 
-        AnimatedVisibility(visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null) {
+        AnimatedVisibility(
+            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null
+        ) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -807,9 +974,10 @@ private fun SubscriptionOptionItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val sourceColor = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+    val sourceColor = if (isSelected) MaterialTheme.colors.surface else MaterialTheme.colors.surface
     val backgroundColor by animateColorAsState(targetValue = sourceColor)
     val contentColor by animateColorAsState(targetValue = contentColorFor(backgroundColor = sourceColor))
+    val highlightColor by animateColorAsState(if (isSystemInDarkTheme()) MaterialTheme.colors.onBackground else MaterialTheme.colors.primary)
 
     Row(
         modifier = Modifier
@@ -818,6 +986,17 @@ private fun SubscriptionOptionItem(
             .clickable(onClick = onClick)
             .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
+            .border(
+                width = if (isSystemInDarkTheme()) 3.dp else 2.dp,
+                color = animateColorAsState(
+                    if (isSelected) {
+                        if (isSystemInDarkTheme()) AppColors.accentDark else MaterialTheme.colors.primary
+                    } else {
+                        Color.Transparent
+                    }
+                ).value,
+                shape = RoundedCornerShape(10.dp)
+            )
             .padding(vertical = 12.dp, horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -832,13 +1011,13 @@ private fun SubscriptionOptionItem(
                     modifier = Modifier
                         .size(24.dp)
                         .background(
-                            MaterialTheme.colors.onPrimary,
+                            color = highlightColor,
                             shape = CircleShape
                         )
                         .padding(1.dp),
                     painter = CoreAppIcons.CheckCircle.asPainterResource(),
                     contentDescription = null,
-                    tint = MaterialTheme.colors.primary
+                    tint = if (isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onPrimary
                 )
             }
 
@@ -870,7 +1049,7 @@ private fun SubscriptionOptionItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
                 lineHeight = if (DeviceType.current == DeviceType.iOS) 22.sp else 24.sp,
                 color = contentColor
             )
@@ -909,29 +1088,13 @@ private fun SubscriptionOptionItem(
                     color = AppColors.lightBackground
                 )
             }
-            Column(
-                modifier = Modifier
-//                    .background(
-//                        color = animateColorAsState(if (isSelected) AppColors.lightBackground else backgroundColor).value,
-//                        shape = if (discountPercent != null) {
-//                            RoundedCornerShape(
-//                                topStart = 8.dp,
-//                                bottomStart = 8.dp,
-//                                topEnd = 0.dp,
-//                                bottomEnd = 8.dp
-//                            )
-//                        } else {
-//                            RoundedCornerShape(8.dp)
-//                        }
-//                    )
-                    .padding(horizontal = 0.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
-                    color = contentColor,
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-                )
-            }
+
+            Text(
+                modifier = Modifier.padding(vertical = 4.dp),
+                text = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
+                color = contentColor,
+                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
+            )
         }
     }
 }
@@ -939,7 +1102,10 @@ private fun SubscriptionOptionItem(
 @Composable
 fun FeatureTable(
     modifier: Modifier = Modifier,
-    table: FeatureTableState
+    table: FeatureTableState,
+    canExpand: Boolean = table.canExpand,
+    isExpanded: Boolean,
+    onExpandPlans: () -> Unit
 ) {
     BoxWithConstraints(
         modifier = modifier
@@ -953,43 +1119,87 @@ fun FeatureTable(
         val scrollState = rememberScrollState()
         var containerWidth by remember { mutableStateOf(0f) }
 
-        Column(
-            modifier = Modifier
-                .horizontalScroll(scrollState)
-                .onSizeChanged { size ->
-                    containerWidth = size.width.toFloat()
-                }
-        ) {
-            table.features.forEachIndexed { index, feature ->
-                Box {
-                    FeatureTableItem(
-                        modifier = Modifier,
-                        featureItem = feature,
-                        nameWidth = if (feature.values.size > 2) {
-                            maxWidth * 0.5f
-                        } else if (feature.values.size == 2) {
-                            maxWidth * 0.6f
-                        } else {
-                            maxWidth * 0.7f
-                        },
-                        valueWidth = if (feature.values.size > 2) {
-                            maxWidth * 0.19f
-                        } else if (feature.values.size == 2) {
-                            maxWidth * 0.2f
-                        } else {
-                            maxWidth * 0.3f
-                        }
-                    )
-
-                    if (index > 0) {
-                        Divider(
-                            modifier = Modifier
-                                .width(with(LocalDensity.current) { containerWidth.toDp() })
-                                .padding(horizontal = 8.dp),
-                            color = Color.Gray.copy(alpha = 0.2f),
-                            thickness = 0.5.dp
-                        )
+        Column() {
+            Column(
+                modifier = Modifier
+                    .animateContentSize()
+                    .horizontalScroll(scrollState)
+                    .onSizeChanged { size ->
+                        containerWidth = size.width.toFloat()
                     }
+            ) {
+                table.features.forEachIndexed { index, feature ->
+                    if (
+                        feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_ALWAYS
+                        || (isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_EXPANDED)
+                        || (!isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_COLLAPSED)
+                    ) {
+                        Box {
+                            FeatureTableItem(
+                                modifier = Modifier,
+                                featureItem = feature,
+                                nameWidth = if (feature.values.size > 2) {
+                                    maxWidth * 0.5f
+                                } else if (feature.values.size == 2) {
+                                    maxWidth * 0.6f
+                                } else {
+                                    maxWidth * 0.7f
+                                },
+                                valueWidth = if (feature.values.size > 2) {
+                                    maxWidth * 0.19f
+                                } else if (feature.values.size == 2) {
+                                    maxWidth * 0.2f
+                                } else {
+                                    maxWidth * 0.3f
+                                }
+                            )
+
+                            if (index > 0) {
+                                Divider(
+                                    modifier = Modifier
+                                        .width(with(LocalDensity.current) { containerWidth.toDp() })
+                                        .padding(horizontal = 8.dp),
+                                    color = Color.Gray.copy(alpha = 0.2f),
+                                    thickness = 0.5.dp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            AnimatedVisibility(visible = canExpand) {
+                FilledButton(
+                    modifier = Modifier
+                        .padding(bottom = 14.dp, top = 24.dp)
+                        .padding(horizontal = 14.dp)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(10.dp)
+                        ),
+                    style = remember {
+                        ButtonStyle.BIG(
+                            paddingValues = PaddingValues(horizontal = 4.dp, vertical = 12.dp),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                    },
+                    state = AppButtonState.CONTENT,
+                    icon = null,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.surface,
+                        contentColor = MaterialTheme.colors.onBackground
+                    ),
+                    elevation = 0.dp,
+                    onClick = onExpandPlans
+                ) {
+                    Text(text = stringResource(MR.strings.paywall_feature_table_expand_button))
+                    Icon(
+                        modifier = Modifier.padding(start = 4.dp).width(20.dp),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface,
+                        contentDescription = null
+                    )
                 }
             }
         }
@@ -1033,7 +1243,7 @@ fun FeatureTableItem(
                         color = when (value.highlightMode) {
                             FeatureTableItemHighlightMode.TOP,
                             FeatureTableItemHighlightMode.BOTTOM,
-                            FeatureTableItemHighlightMode.FULL -> AppColors.accentDark.copy(alpha = 0.3f)
+                            FeatureTableItemHighlightMode.FULL -> AppColors.accentDark.copy(alpha = 0.2f)
 
                             else -> Color.Transparent
                         },

@@ -89,7 +89,7 @@ class CoreAppManager(
                 // do nothing
             }
             AppHost.IOS_LOCATION_EXTENSION -> {
-                activeSharingEngine.startMonitoring()
+                // do nothing
             }
         }
     }

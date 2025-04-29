@@ -64,13 +64,13 @@ fun SettingsScreenCore(
     openConvertAccount: () -> Unit,
     openProfileDetails: () -> Unit,
     openPersonalCodes: () -> Unit,
-    openProfileRawScreen: () -> Unit,
     openBlockList: () -> Unit,
     openGeneralInfo: () -> Unit,
     openAppStatus: () -> Unit,
     openSubscriptions: () -> Unit,
     openPaywall: () -> Unit,
     openLocationSettings: () -> Unit,
+    openAppSettings: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -144,10 +144,10 @@ fun SettingsScreenCore(
             }
 
             SettingsActionItem(
-                name = stringResource(MR.strings.raw_data_screen_title),
-                icon = CoreAppIcons.Security.asPainterResource()
+                name = stringResource(MR.strings.setting_appSettings_title),
+                icon = CoreAppIcons.Settings.asPainterResource()
             ) {
-                openProfileRawScreen()
+                openAppSettings()
             }
 
             SettingsActionItem(

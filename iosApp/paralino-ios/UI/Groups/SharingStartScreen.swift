@@ -81,7 +81,7 @@ struct SharingStartScreen: View {
             }
             path.append(
                 .settings(
-                    .paywall(groupId: appState.currentGroupId, type: isOnboarding ? BillingScreenSourceType.onboarding : BillingScreenSourceType.upgrade)
+                    .paywall(groupId: appState.currentGroupId, type: isOnboarding ? BillingScreenSourceType.groupOnboarding : BillingScreenSourceType.upgrade)
                 )
             )
         } else if isOnboarding {
