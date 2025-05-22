@@ -321,3 +321,44 @@ data class UserEmailChangePayload(
     val oldPassword: String,
     val newPassword: String
 )
+
+@Serializable
+data class LocationHistoryUploadPayload(
+    val deviceId: String,
+    val groupHistory: List<LocationHistoryGroupPayload>,
+    val personalHistory: List<LocationHistoryPersonalPayload>,
+)
+
+@Serializable
+data class LocationHistoryPersonalPayload(
+    val entries: List<LocationHistoryPayloadEntry>,
+    val keys: List<LocationHistoryPersonalKeyPayload>
+)
+
+@Serializable
+data class LocationHistoryGroupPayload(
+    val groupId: String,
+    val locationId: String,
+    val entries: List<LocationHistoryPayloadEntry>,
+    val keys: List<LocationHistoryGroupKeyPayload>
+)
+
+@Serializable
+data class LocationHistoryPayloadEntry(
+    val dateIdentifier: String,
+    val historyData: String,
+    val historyKeyVersion: Long
+)
+
+@Serializable
+data class LocationHistoryGroupKeyPayload constructor(
+    val memberUserId: String,
+    val memberKeyVersion: Long,
+    val encryptedHistoryKey: String,
+)
+
+@Serializable
+data class LocationHistoryPersonalKeyPayload constructor(
+    val userKeyVersion: Long,
+    val encryptedHistoryKey: String,
+)

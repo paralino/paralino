@@ -83,6 +83,11 @@ object MainDatabaseMigrations {
     private val MIGRATION_12_13 = object : Migration(12, 13) {
         override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE memberLocationEntity ADD COLUMN locationHistory TEXT DEFAULT NULL")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `pendingLocationHistoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT, `userKeyVersion` INTEGER NOT NULL)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryKeysEntity` (`id` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryKeysEntity` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `memberUserId` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryEntity` (`id` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryEntity` (`id` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyData` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
         }
     }
 
