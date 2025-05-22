@@ -105,9 +105,9 @@ data class UserGroup constructor(
     }
 
     companion object {
-        const val groupPublicSharingId = "publicSharing"
+        const val groupPublicSharingId = "public_sharing"
+        const val groupPersonalDevicesId = "personal_devices"
         const val groupPrivateGroupId = "privateGroup"
-        const val groupPersonalDevicesId = "personalDevices"
     }
 }
 

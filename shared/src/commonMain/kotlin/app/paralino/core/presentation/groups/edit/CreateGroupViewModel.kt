@@ -165,8 +165,13 @@ class CreateGroupViewModel(
             val newData = when (group.data) {
                 is CryptoResource.Ready, is CryptoResource.WrongKeyOrData, is CryptoResource.NotInitialized -> {
                     CryptoResource.Ready(
-                        group.data.data?.copy(name = filteredName, image = image)
-                            ?: UserGroupData(filteredName, image, UserGroup.groupPrivateGroupId)
+                        group.data.data
+                            ?.copy(name = filteredName, image = image)
+                            ?: UserGroupData(
+                                name = filteredName,
+                                image = image,
+                                type = UserGroup.groupPrivateGroupId
+                            )
                     )
                 }
 

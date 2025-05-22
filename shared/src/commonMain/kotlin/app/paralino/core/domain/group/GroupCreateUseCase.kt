@@ -103,7 +103,11 @@ class GroupCreateUseCase(
             publicKey = exchangeKeyPair.publicKey
         )
 
-        val groupData = UserGroupData(name, image, UserGroup.groupPrivateGroupId)
+        val groupData = UserGroupData(
+            name = name,
+            image = image,
+            type = UserGroup.groupPrivateGroupId
+        )
         val ownerVerificationSecret = cryptoCore.hashProvider.computeHash(
             data = myIdentityKeys.publicKey,
             type = HashType.GENERIC_256
