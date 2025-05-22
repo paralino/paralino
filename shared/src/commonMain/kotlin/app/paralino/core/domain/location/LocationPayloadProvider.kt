@@ -72,21 +72,17 @@ class LocationPayloadProvider(
                 locationData,
                 contract?.takeIf { it.locationHistoryDaysMax == null || it.locationHistoryDaysMax > 0 }
             ) { data, contract ->
-                LocationHistoryModel(
-                    history = listOf(
-                        LocationHistoryPointModel(
-                            lat = data.lat,
-                            lng = data.lng,
-                            acc = data.accuracy,
-                            timeUTC = data.timeUTC,
-                            speed = data.speed,
-                            alt = data.altitude,
-                            bat = status.batteryLevel,
-                            charging = status.isCharging,
-                            network = status.network,
-                            signal = status.signal
-                        )
-                    )
+                LocationHistoryPointModel(
+                    lat = data.lat,
+                    lng = data.lng,
+                    acc = data.accuracy,
+                    timeUTC = data.timeUTC,
+                    speed = data.speed,
+                    alt = data.altitude,
+                    bat = status.batteryLevel,
+                    charging = status.isCharging,
+                    network = status.network,
+                    signal = status.signal
                 )
             }
 

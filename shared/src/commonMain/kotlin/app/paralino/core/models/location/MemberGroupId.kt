@@ -6,5 +6,5 @@ data class MemberGroupId constructor(
     val locationId: String,
     val locationData: LocationDataModel?,
     val deviceStatus: MemberDeviceStatus?,
-    val locationHistory: LocationHistoryModel?,
+    val locationHistory: LocationHistoryPointModel?,
 )

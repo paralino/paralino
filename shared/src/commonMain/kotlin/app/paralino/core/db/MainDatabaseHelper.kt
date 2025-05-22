@@ -23,4 +23,5 @@ class MainDatabaseHelper(
     val groupRelatedKeysDao by lazy { roomDatabase.groupRelatedKeysDao() }
     val placeActivityDao by lazy { roomDatabase.placeActivityDao() }
     val groupRelatedDao by lazy { roomDatabase.groupRelatedDao() }
+    val pendingLocationHistoryDao by lazy { roomDatabase.pendingLocationHistoryDao() }
 }

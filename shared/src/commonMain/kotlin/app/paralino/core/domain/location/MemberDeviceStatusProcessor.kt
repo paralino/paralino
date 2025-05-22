@@ -9,6 +9,7 @@ import app.paralino.core.repo.places.PlaceActivityUploadEngine
 
 class MemberDeviceStatusProcessor(
     private val saveLocationUseCase: SaveLocationUseCase,
+    private val savePendingLocationUseCase: SavePendingLocationUseCase,
     private val payloadProvider: LocationPayloadProvider,
     private val sharingManager: LocationSharingManager,
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
@@ -34,6 +35,8 @@ class MemberDeviceStatusProcessor(
                 try {
                     saveLocationUseCase.uploadAndSaveCurrentLocation(payload)
                 } finally {
+                    savePendingLocationUseCase.saveNewLocations(listOf(payload))
+
                     // trigger sync for pending data regardless of error
                     batteryAlertUploadEngine.sendBatteryAlert(payloads = listOf(payload))
                     placeActivityUploadEngine.syncPendingEventsInBackground()

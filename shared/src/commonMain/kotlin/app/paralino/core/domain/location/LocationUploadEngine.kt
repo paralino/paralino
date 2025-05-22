@@ -38,6 +38,7 @@ class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val saveLocationUseCase: SaveLocationUseCase,
+    private val savePendingLocationUseCase: SavePendingLocationUseCase,
     private val placesActivityProcessor: IPlacesActivityProcessor,
     private val registerDeviceForSharing: IReRegisterDeviceUseCase,
     private val payloadProvider: LocationPayloadProvider,
@@ -172,39 +173,58 @@ class LocationUploadEngine constructor(
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {
-        triggerRemoteOnly {
+        val payloads = triggerRemoteOnly {
             val contracts = locationSharingManager.allValidContracts()
-            val mapped = contracts.mapNotNull { contract ->
+            contracts.mapNotNull { contract ->
                 getLocationPayload(
                     groupId = contract.groupId,
                     data = data,
                     contract = contract
                 )
             }
+        }
 
+        // save location to history locally
+        try { savePendingLocationUseCase.saveNewLocations(payloads) }
+        catch (e: Exception) { }
+
+        // location upload
+        val uploadError = try {
+            triggerRemoteOnly {
+                logg.v(
+                    tag = "location_service",
+                    message = "Upload (${payloads.size}) new ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) with performance ${locationPerformanceManager.locationPerformanceType.value.current}"
+                )
+
+                payloads.forEach {
+                    try {
+                        saveLocationUseCase.uploadAndSaveCurrentLocation(it)
+                    } catch (e: Exception) {
+                        logg.w("location_service", "Error saving location for group ${it}", e)
+                    }
+                }
+
+                logg.v(
+                    tag = "location_service",
+                    message = "New ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) uploaded"
+                )
+            }
+            null
+        } catch (e: Exception) {
+            e
+        }
+
+        // extra processing
+        triggerRemoteOnly {
             if (data != null) {
                 placesActivityProcessor.processLocation(data)
             }
 
-            batteryAlertUploadEngine.sendBatteryAlert(payloads = mapped)
+            batteryAlertUploadEngine.sendBatteryAlert(payloads = payloads)
+        }
 
-            logg.v(
-                tag = "location_service",
-                message = "Upload (${mapped.size}) new ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) with performance ${locationPerformanceManager.locationPerformanceType.value.current}"
-            )
-
-            mapped.forEach {
-                try {
-                    saveLocationUseCase.uploadAndSaveCurrentLocation(it)
-                } catch (e: Exception) {
-                    logg.w("location_service", "Error saving location for group ${it}", e)
-                }
-            }
-
-            logg.v(
-                tag = "location_service",
-                message = "New ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) uploaded"
-            )
+        if (uploadError != null) {
+            throw uploadError
         }
     }
 

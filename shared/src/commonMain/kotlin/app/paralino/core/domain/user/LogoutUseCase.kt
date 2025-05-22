@@ -3,6 +3,7 @@ package app.paralino.core.domain.user
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.location.LocationUploadEngine
@@ -40,6 +41,7 @@ class LogoutUseCase(
     private val userConfigRepo: UserConfigRepository,
     private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
+    private val appMainDatabase: MainDatabaseHelper
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 
     private val executionKey = "logout_or_delete"
@@ -120,6 +122,7 @@ class LogoutUseCase(
         geofenceManager.deleteAllGeofences()
         userRepo.clearLocally()
         userConfigRepo.logout()
+        appMainDatabase.pendingLocationHistoryDao.clearAll()
         accessLogs.clearAll()
         logg.i("account_state", "Cleared all data on logout")
     }
