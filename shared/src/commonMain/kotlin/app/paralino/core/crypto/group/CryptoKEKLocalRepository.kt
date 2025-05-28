@@ -504,11 +504,13 @@ class CryptoKEKLocalRepository(
     suspend fun updateIntegrity(
         groupId: String,
         integrity: String,
+        safetySignature: String,
         userKeyVersion: Long
     ) {
         local.updateGroupDeviceIntegrity(
             groupId = groupId,
             integrity = integrity,
+            safetySignature = safetySignature,
             userKeyVersion = userKeyVersion
         )
     }

@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.localizedString
+import app.paralino.core.utils.exceptions.DeviceSafetySignatureCorrupted
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -67,7 +68,8 @@ class ReRegisterDeviceUseCase(
                     groupId = groupId,
                     deviceName = null,
                     contract = contract,
-                    notifyOthers = false
+                    notifyOthers = false,
+                    enforceSafetySignature = true
                 )
                 logg.v("location_service", "Device registered, retry payload")
                 return true
@@ -104,6 +106,11 @@ class ReRegisterDeviceUseCase(
                     timeInfo = null
                 )
             )
+
+            if (e is DeviceSafetySignatureCorrupted) {
+                throw e
+            }
+
             return false
         }
     }

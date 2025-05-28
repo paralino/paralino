@@ -181,6 +181,8 @@ data class UserGroupWithMembers constructor(
         return members.firstOrNull { it.member.userId == userId }?.member
     }
 
+    val currentUserMember: MemberModel? = memberByUserId(userId = appPrefs.userId)
+
     val currentDeviceLocation: MemberLocation?
         get() {
             return members.firstOrNull { it.member.userId == appPrefs.userId }?.currentDeviceLocation

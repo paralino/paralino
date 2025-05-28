@@ -82,6 +82,7 @@ object MainDatabaseMigrations {
 
     private val MIGRATION_12_13 = object : Migration(12, 13) {
         override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE groupDeviceIntegrityEntity ADD COLUMN safetySignature TEXT DEFAULT NULL")
             connection.execSQL("ALTER TABLE memberLocationEntity ADD COLUMN locationHistory TEXT DEFAULT NULL")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `pendingLocationHistoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT, `userKeyVersion` INTEGER NOT NULL)")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryKeysEntity` (`id` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")

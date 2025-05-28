@@ -14,6 +14,7 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.MissingMemberKeyException
 
 class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
@@ -249,16 +250,41 @@ class GroupValidityVerification(
 
     suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
+
         if (keyIntegrity?.integrity.isNullOrBlank()) {
             logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id} (missing)")
             return IntegrityResult.VALID_EXPIRED
         }
 
+        if (keyIntegrity.safetySignature != null) {
+            val member = group.currentUserMember ?: return IntegrityResult.CORRUPTED
+            val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = group.id, memberUserId = member.id)
+
+            if (publicKey !is GroupMemberMainPublicKey.Valid) {
+                logg.tag("integrity_check_device").e("Member public key is not valid for ${group.id}")
+                return IntegrityResult.CORRUPTED
+            }
+
+            val safetySignature = GroupIntegrity.createDeviceSafetySignature(
+                hashProvider = cryptoCore.hashProvider,
+                groupId = group.id,
+                memberId = member.id,
+                memberVerification = member.verification,
+                identityKey = publicKey.identityKey.key,
+                membershipKey = publicKey.membershipKey,
+            )
+
+            if (safetySignature != keyIntegrity.safetySignature) {
+                logg.tag("integrity_check_device").e("Device safety signature is not valid for ${group.id}")
+                return IntegrityResult.CORRUPTED
+            }
+        }
+
         val integrity = getIntegrity(
             groupId = group.group.id,
             serverIntegrity = group.group.serverIntegrity,
-            myIntegrity = keyIntegrity?.integrity,
-            userKeyVersion = keyIntegrity?.userKeyVersion,
+            myIntegrity = keyIntegrity.integrity,
+            userKeyVersion = keyIntegrity.userKeyVersion,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
         )

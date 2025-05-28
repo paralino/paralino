@@ -2,11 +2,14 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
+import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
+import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IntegrityResult
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
@@ -18,10 +21,11 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.DeviceSafetySignatureCorrupted
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.serialization.encodeToString
 
 class RegisterDeviceForSharingUseCase constructor(
     private val functionsApi: IFunctionsApi,
@@ -33,6 +37,7 @@ class RegisterDeviceForSharingUseCase constructor(
     private val cryptoCore: CryptoCore,
     private val deviceKeyRotation: IMemberDeviceKeyRotation,
     private val deviceStatusProvider: MemberDeviceStatusProvider,
+    private val validityVerification: GroupValidityVerification,
     private val appPrefs: AppPrefs
 ) : LimitedExecutionRepository() {
 
@@ -44,7 +49,8 @@ class RegisterDeviceForSharingUseCase constructor(
         groupId: String,
         deviceName: String?,
         contract: LocationSharingContract?,
-        notifyOthers: Boolean
+        notifyOthers: Boolean,
+        enforceSafetySignature: Boolean
     ) {
         startProcessing(groupId)
 
@@ -67,6 +73,15 @@ class RegisterDeviceForSharingUseCase constructor(
 
                 if (groupKey !is GroupMasterKey.Valid)
                     throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
+
+                if (enforceSafetySignature) {
+                    // block location sharing if safety signature is enforced
+                    // this should be used for all background device registration
+                    val integrity = validityVerification.checkIntegrityForDeviceKey(group = group)
+                    if (integrity == IntegrityResult.CORRUPTED) {
+                        throw DeviceSafetySignatureCorrupted(groupId = groupId)
+                    }
+                }
 
                 // always rotate keys for every sharing session
                 val keyData = deviceKeyRotation.getNewSenderKeys(group = group)
@@ -129,9 +144,13 @@ class RegisterDeviceForSharingUseCase constructor(
                             key = userKey.key
                         )
                     }
+
+                    val safetySignature = getSafetySignature(groupId = groupId, memberId = member.id)
+
                     cryptoKEKRepo.updateIntegrity(
                         groupId = group.id,
                         integrity = groupDeviceIntegrity,
+                        safetySignature = safetySignature,
                         userKeyVersion = userKey.version
                     )
 
@@ -147,5 +166,25 @@ class RegisterDeviceForSharingUseCase constructor(
         } finally {
             stopProcessing(groupId)
         }
+    }
+
+    private suspend fun getSafetySignature(
+        groupId: String,
+        memberId: String
+    ): String {
+        val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = groupId, memberUserId = memberId)
+
+        if (publicKey !is GroupMemberMainPublicKey.Valid) {
+            throw MissingMemberKeyException(groupId = groupId, memberId = memberId)
+        }
+
+        return GroupIntegrity.createDeviceSafetySignature(
+            hashProvider = cryptoCore.hashProvider,
+            groupId = groupId,
+            memberId = memberId,
+            memberVerification = publicKey.membershipKey,
+            identityKey = publicKey.identityKey.key,
+            membershipKey = publicKey.membershipKey,
+        )
     }
 }

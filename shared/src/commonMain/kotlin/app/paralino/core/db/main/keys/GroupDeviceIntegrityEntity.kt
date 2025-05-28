@@ -8,5 +8,6 @@ import androidx.room.PrimaryKey
 data class GroupDeviceIntegrityEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "integrity") val integrity: String?,
+    @ColumnInfo(name = "safetySignature") val safetySignature: String?,
     @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long?
 )

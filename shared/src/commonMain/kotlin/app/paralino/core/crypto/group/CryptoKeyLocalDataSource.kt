@@ -151,12 +151,14 @@ class CryptoKeyLocalDataSource constructor(
     suspend fun updateGroupDeviceIntegrity(
         groupId: String,
         integrity: String,
+        safetySignature: String,
         userKeyVersion: Long
     ) {
         database.groupRelatedKeysDao.createGroupDeviceIntegrityKey(
             GroupDeviceIntegrityEntity(
                 id = groupId,
                 integrity = integrity,
+                safetySignature = safetySignature,
                 userKeyVersion = userKeyVersion
             )
         )

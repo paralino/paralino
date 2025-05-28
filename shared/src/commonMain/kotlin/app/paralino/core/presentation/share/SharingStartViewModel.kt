@@ -323,7 +323,8 @@ class SharingStartViewModel(
                     groupId = group.id,
                     deviceName = _uiState.value.deviceName,
                     contract = contract,
-                    notifyOthers = _uiState.value.notifyOthers
+                    notifyOthers = _uiState.value.notifyOthers,
+                    enforceSafetySignature = false
                 )
             } catch (e: Exception) {
                 logg.e("Unable to register device", e)

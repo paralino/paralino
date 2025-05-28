@@ -184,9 +184,27 @@ class MemberDeviceKeyRotation(
                     key = userKey.key
                 )
             }
+
+            val member = group.currentUserMember!!
+            val publicKey = cryptoKEKRepository.getMemberPublicKey(groupId = group.id, memberUserId = member.id)
+
+            if (publicKey !is GroupMemberMainPublicKey.Valid) {
+                throw MissingMemberKeyException(groupId = group.id, memberId = member.id)
+            }
+
+            val safetySignature = GroupIntegrity.createDeviceSafetySignature(
+                hashProvider = cryptoCore.hashProvider,
+                groupId = group.id,
+                memberId = member.id,
+                memberVerification = member.verification,
+                identityKey = publicKey.identityKey.key,
+                membershipKey = publicKey.membershipKey,
+            )
+
             cryptoKEKRepository.updateIntegrity(
                 groupId = group.id,
                 integrity = groupDeviceIntegrity,
+                safetySignature = safetySignature,
                 userKeyVersion = userKey.version
             )
             logg.tag("tag_crypto_key_group_device_rotation")

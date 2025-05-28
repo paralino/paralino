@@ -2,6 +2,7 @@ package app.paralino.core.models.group
 
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.ICryptoHashProvider
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
@@ -49,6 +50,22 @@ data class GroupIntegrity(
             }
             val seed = ids.joinToString(separator = ",")
             return hashProvider.computeHash(seed, HashType.GENERIC_256)
+        }
+
+        fun createDeviceSafetySignature(
+            hashProvider: ICryptoHashProvider,
+            groupId: String,
+            memberId: String,
+            memberVerification: String,
+            identityKey: String,
+            membershipKey: String,
+        ): String {
+            return hashProvider.computeHash(
+                data = BaseRemoteModule.formatter.encodeToString(
+                    listOf(groupId, memberId, memberVerification, identityKey, membershipKey)
+                ),
+                type = HashType.GENERIC_256
+            )
         }
     }
 }

@@ -16,6 +16,7 @@ import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.utils.exceptions.DeviceSafetySignatureCorrupted
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -243,11 +244,25 @@ class LocationUploadEngine constructor(
             is LocationPayloadStatus.Success -> payload.payload
 
             LocationPayloadStatus.MissingLocationDocument -> {
-                val result = registerDeviceForSharing.tryRegisterDeviceAgain(
-                    groupId = groupId,
-                    data = data,
-                    contract = contract
-                )
+                val result = try {
+                    registerDeviceForSharing.tryRegisterDeviceAgain(
+                        groupId = groupId,
+                        data = data,
+                        contract = contract
+                    )
+                } catch (e: Exception) {
+                    if (e is DeviceSafetySignatureCorrupted) {
+                        logg.d(
+                            "location_service",
+                            "Location device safety signature is corrupted, abort sharing"
+                        )
+                        locationSharingManager.stopSharing(groupId = groupId)
+                        placeActivityRepo.clearForGroup(groupId = groupId)
+                        return null
+                    } else {
+                        false
+                    }
+                }
 
                 if (result) {
                     // retry once again
