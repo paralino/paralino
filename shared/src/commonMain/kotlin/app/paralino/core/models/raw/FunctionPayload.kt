@@ -321,7 +321,7 @@ data class UserEmailChangePayload(
 data class LocationHistoryUploadPayload(
     val deviceId: String,
     val groupHistory: List<LocationHistoryGroupPayload>,
-    val personalHistory: LocationHistoryPersonalPayload,
+    val personalHistory: LocationHistoryPersonalPayload?,
 )
 
 @Serializable
@@ -356,8 +356,8 @@ data class LocationHistoryPersonalKeyPayload constructor(
 
 @Serializable
 data class HistoryUploadResponse(
-    val personalHistoryResult: PersonalHistoryUploadResponse?,
-    val groupHistoryResult: GroupHistoryUploadResponse?
+    val personalHistoryResult: PersonalHistoryUploadResponse? = null,
+    val groupHistoryResult: GroupHistoryUploadResponse? = null
 )
 
 @Serializable

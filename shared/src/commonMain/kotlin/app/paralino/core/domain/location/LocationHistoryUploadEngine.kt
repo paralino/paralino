@@ -108,12 +108,19 @@ class LocationHistoryUploadEngine(
             .getAllEntriesOnce()
             .let { historyMapper.pendingLocationToCore(it) }
 
+        val personalHistory = pendingEntries.mapPersonalHistory()
+        val groupHistory = groupLocalDataSource.allGroupsState.value.data?.mapNotNull {
+            pendingEntries.mapGroupHistory(groupId = it.id)
+        } ?: emptyList()
+
+        if (personalHistory == null && groupHistory.isEmpty()) {
+            return
+        }
+
         val payload = LocationHistoryUploadPayload(
             deviceId = appPrefs.deviceId,
-            groupHistory = groupLocalDataSource.allGroupsState.value.data?.mapNotNull {
-                pendingEntries.mapGroupHistory(groupId = it.id)
-            } ?: emptyList(),
-            personalHistory = pendingEntries.mapPersonalHistory()
+            groupHistory = groupHistory,
+            personalHistory = personalHistory
         )
 
         try {
@@ -153,83 +160,91 @@ class LocationHistoryUploadEngine(
         }
     }
 
-    private suspend fun List<LocationHistoryModelForMember>.mapPersonalHistory(): LocationHistoryPersonalPayload {
-        val historyKeyEntity =
-            database.locationHistoryDao.getLatestHistoryKey(groupId = UserGroup.groupPersonalDevicesId)
-                ?.takeIf { key -> key.createdAtInstant?.isOlderThan(30.days) == false }
-
-        val historyKeyData = if (historyKeyEntity == null) {
-            // create new key
-            val newKey = cryptoCore.getNewSymmetricKeyForLocationData()
-            val userKey = cryptoUserKeysRepo.personalKey()
-            HistoryKeyPayload(
-                key = newKey,
-                encryptedKey = cryptoCore.encryptDataWithKey(
-                    data = newKey,
-                    key = userKey.key
-                ),
-                userKeyVersion = userKey.version,
-                historyKeyVersion = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
-            )
-        } else {
-            HistoryKeyPayload(
-                key = cryptoCore.decryptDataWithKey(
-                    data = historyKeyEntity.encryptedHistoryKey,
-                    key = cryptoUserKeysRepo.personalKey(version = historyKeyEntity.userKeyVersion).key
-                ),
-                encryptedKey = historyKeyEntity.encryptedHistoryKey,
-                userKeyVersion = historyKeyEntity.userKeyVersion,
-                historyKeyVersion = historyKeyEntity.historyKeyVersion,
-            )
-        }
+    private suspend fun List<LocationHistoryModelForMember>.mapPersonalHistory(): LocationHistoryPersonalPayload? {
 
         val personalHistoryNodes = this
             .filter { it.groupId == UserGroup.groupPersonalDevicesId }
 
-        val personalHistory = personalHistoryNodes
-            .groupBy { it.history.dayKey }
-            .mapNotNull { entry ->
-                val dateKey = entry.key
-                if (!dateKey.isNullOrBlank()) {
+        val result = if (personalHistoryNodes.isNotEmpty()) {
+            val historyKeyEntity =
+                database.locationHistoryDao.getLatestHistoryKey(groupId = UserGroup.groupPersonalDevicesId)
+                    ?.takeIf { key -> key.createdAtInstant?.isOlderThan(30.days) == false }
 
-                    val chunked = if (entry.value.size > 120) {
-                        entry.value.chunked(100)
-                    } else {
-                        listOf(entry.value)
-                    }
-
-                    chunked.map { list ->
-                        val model = LocationHistoryModel(
-                            history = list.map { it.history }
-                        )
-
-                        LocationHistoryPayloadEntry(
-                            dateIdentifier = dateKey,
-                            historyData = cryptoCore.encryptDataWithKey(
-                                data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
-                                    model
-                                ),
-                                key = historyKeyData.key
-                            ),
-                            pendingUploadId = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED),
-                            historyKeyVersion = historyKeyData.historyKeyVersion
-                        )
-                    }
-                } else {
-                    null
-                }
+            val historyKeyData = if (historyKeyEntity == null) {
+                // create new key
+                val newKey = cryptoCore.getNewSymmetricKeyForLocationData()
+                val userKey = cryptoUserKeysRepo.personalKey()
+                HistoryKeyPayload(
+                    key = newKey,
+                    encryptedKey = cryptoCore.encryptDataWithKey(
+                        data = newKey,
+                        key = userKey.key
+                    ),
+                    userKeyVersion = userKey.version,
+                    historyKeyVersion = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+                )
+            } else {
+                HistoryKeyPayload(
+                    key = cryptoCore.decryptDataWithKey(
+                        data = historyKeyEntity.encryptedHistoryKey,
+                        key = cryptoUserKeysRepo.personalKey(version = historyKeyEntity.userKeyVersion).key
+                    ),
+                    encryptedKey = historyKeyEntity.encryptedHistoryKey,
+                    userKeyVersion = historyKeyEntity.userKeyVersion,
+                    historyKeyVersion = historyKeyEntity.historyKeyVersion,
+                )
             }
-            .flatMap { it }
 
-        val newKeyData = if (historyKeyEntity == null) {
-            LocationHistoryPersonalKeyPayload(
-                historyKeyVersion = historyKeyData.historyKeyVersion,
-                userKeyVersion = historyKeyData.userKeyVersion,
-                encryptedHistoryKey = historyKeyData.encryptedKey
-            )
+            val newKeyData = if (historyKeyEntity == null) {
+                LocationHistoryPersonalKeyPayload(
+                    historyKeyVersion = historyKeyData.historyKeyVersion,
+                    userKeyVersion = historyKeyData.userKeyVersion,
+                    encryptedHistoryKey = historyKeyData.encryptedKey
+                )
+            } else {
+                null
+            }
+
+            newKeyData to personalHistoryNodes
+                .groupBy { it.history.dayKey }
+                .mapNotNull { entry ->
+                    val dateKey = entry.key
+                    if (!dateKey.isNullOrBlank()) {
+
+                        val chunked = if (entry.value.size > 120) {
+                            entry.value.chunked(100)
+                        } else {
+                            listOf(entry.value)
+                        }
+
+                        chunked.map { list ->
+                            val model = LocationHistoryModel(
+                                history = list.map { it.history }
+                            )
+
+                            LocationHistoryPayloadEntry(
+                                dateIdentifier = dateKey,
+                                historyData = cryptoCore.encryptDataWithKey(
+                                    data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
+                                        model
+                                    ),
+                                    key = historyKeyData.key
+                                ),
+                                pendingUploadId = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED),
+                                historyKeyVersion = historyKeyData.historyKeyVersion
+                            )
+                        }
+                    } else {
+                        null
+                    }
+                }
+                .flatMap { it }
         } else {
-            null
+            null to emptyList()
         }
+
+        val newKeyData = result.first
+        val personalHistory = result.second
 
         val currentUnconfirmed = database.pendingLocationHistoryDao.getAllUnconfirmedEntriesForGroupOnce(groupId = UserGroup.groupPersonalDevicesId)
             .map {
@@ -256,7 +271,7 @@ class LocationHistoryUploadEngine(
                     groupId = UserGroup.groupPersonalDevicesId,
                     createdAt = nowUTC().toString(),
                     userKeyVersion = newKeyData.userKeyVersion,
-                    historyKeyVersion = newKeyData.historyKeyVersion,
+                    historyKeyVersion =  newKeyData.historyKeyVersion,
                     encryptedHistoryKey = newKeyData.encryptedHistoryKey,
                     isSynced = false
                 )
@@ -279,6 +294,10 @@ class LocationHistoryUploadEngine(
             ids = personalHistoryNodes.map { it.localHistoryKeyId }
         )
 
+        if (personalHistory.isEmpty() && currentUnconfirmed.isEmpty() && unsyncedKeys.isEmpty() && newKeyData == null) {
+            return null
+        }
+
         return LocationHistoryPersonalPayload(
             entries = personalHistory,
             keys = listOfNotNull(newKeyData),
@@ -288,12 +307,6 @@ class LocationHistoryUploadEngine(
     }
 
     private suspend fun List<LocationHistoryModelForMember>.mapGroupHistory(groupId: String): LocationHistoryGroupPayload? {
-
-        val groupHistoryNodes = this.filter { it.groupId == groupId }
-
-        if (groupHistoryNodes.isEmpty()) {
-            return null
-        }
 
         val group = groupLocalDataSource.getGroupWithMembersOnce(groupId = groupId)
 
@@ -310,59 +323,65 @@ class LocationHistoryUploadEngine(
 
         val historyKeys = database.locationHistoryDao.getHistoryKeys(groupId = group.id)
 
-        val groupHistory = groupHistoryNodes
-            .groupBy { it.history.dayKey }
-            .mapValues { it.value.groupBy { entry -> entry.localHistoryKeyId } }
-            .flatMap { entryPerDay ->
-                val dateKey = entryPerDay.key
-                if (!dateKey.isNullOrBlank()) {
-                    entryPerDay.value.mapNotNull { entryPerKey ->
+        val groupHistoryNodes = this.filter { it.groupId == groupId }
 
-                        val historyKey = historyKeys.firstOrNull { it.id == entryPerKey.key }
+        val groupHistory = if (groupHistoryNodes.isNotEmpty()) {
+            groupHistoryNodes
+                .groupBy { it.history.dayKey }
+                .mapValues { it.value.groupBy { entry -> entry.localHistoryKeyId } }
+                .flatMap { entryPerDay ->
+                    val dateKey = entryPerDay.key
+                    if (!dateKey.isNullOrBlank()) {
+                        entryPerDay.value.mapNotNull { entryPerKey ->
 
-                        if (historyKey != null) {
-                            val historyKeyData = HistoryKeyPayload(
-                                key = cryptoCore.decryptDataWithKey(
-                                    data = historyKey.encryptedHistoryKey,
-                                    key = cryptoUserKeysRepo.personalKey(version = historyKey.userKeyVersion).key
-                                ),
-                                encryptedKey = historyKey.encryptedHistoryKey,
-                                userKeyVersion = historyKey.userKeyVersion,
-                                historyKeyVersion = historyKey.historyKeyVersion
-                            )
+                            val historyKey = historyKeys.firstOrNull { it.id == entryPerKey.key }
 
-                            val chunked = if (entryPerKey.value.size > 120) {
-                                entryPerKey.value.chunked(100)
-                            } else {
-                                listOf(entryPerKey.value)
-                            }
-
-                            chunked.map { list ->
-                                val model = LocationHistoryModel(
-                                    history = list.map { it.history }
-                                )
-
-                                LocationHistoryPayloadEntry(
-                                    dateIdentifier = dateKey,
-                                    historyData = cryptoCore.encryptDataWithKey(
-                                        data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
-                                            model
-                                        ),
-                                        key = historyKeyData.key
+                            if (historyKey != null) {
+                                val historyKeyData = HistoryKeyPayload(
+                                    key = cryptoCore.decryptDataWithKey(
+                                        data = historyKey.encryptedHistoryKey,
+                                        key = cryptoUserKeysRepo.personalKey(version = historyKey.userKeyVersion).key
                                     ),
-                                    pendingUploadId = "",
+                                    encryptedKey = historyKey.encryptedHistoryKey,
+                                    userKeyVersion = historyKey.userKeyVersion,
                                     historyKeyVersion = historyKey.historyKeyVersion
                                 )
+
+                                val chunked = if (entryPerKey.value.size > 120) {
+                                    entryPerKey.value.chunked(100)
+                                } else {
+                                    listOf(entryPerKey.value)
+                                }
+
+                                chunked.map { list ->
+                                    val model = LocationHistoryModel(
+                                        history = list.map { it.history }
+                                    )
+
+                                    LocationHistoryPayloadEntry(
+                                        dateIdentifier = dateKey,
+                                        historyData = cryptoCore.encryptDataWithKey(
+                                            data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
+                                                model
+                                            ),
+                                            key = historyKeyData.key
+                                        ),
+                                        pendingUploadId = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED),
+                                        historyKeyVersion = historyKey.historyKeyVersion
+                                    )
+                                }
+                            } else {
+                                null
                             }
-                        } else {
-                            null
                         }
+                    } else {
+                        listOf()
                     }
-                } else {
-                    listOf()
                 }
-            }
-            .flatMap { it }
+                .flatMap { it }
+        } else {
+            emptyList()
+        }
 
         val currentUnconfirmed = database.pendingLocationHistoryDao.getAllUnconfirmedEntriesForGroupOnce(groupId = groupId)
             .map {
@@ -387,8 +406,12 @@ class LocationHistoryUploadEngine(
         )
 
         database.pendingLocationHistoryDao.deleteEntries(
-            ids = groupHistoryNodes.map { it.localHistoryKeyId }
+            ids = groupHistoryNodes.map { it.entryId }
         )
+
+        if (groupHistory.isEmpty() && currentUnconfirmed.isEmpty()) {
+            return null
+        }
 
         return LocationHistoryGroupPayload(
             groupId = groupId,

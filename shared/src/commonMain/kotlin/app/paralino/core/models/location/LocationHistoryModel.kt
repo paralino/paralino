@@ -11,6 +11,7 @@ data class LocationHistoryModel(
 @Serializable
 data class LocationHistoryModelForMember(
     val groupId: String,
+    val entryId: Long,
     val localHistoryKeyId: Long,
     val history: LocationHistoryPointModel
 )

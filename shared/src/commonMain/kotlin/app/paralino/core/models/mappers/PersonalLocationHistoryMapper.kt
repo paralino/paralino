@@ -26,6 +26,7 @@ class PersonalLocationHistoryMapper(
                         }.let {
                             LocationHistoryModelForMember(
                                 groupId = entry.groupId,
+                                entryId = entry.id,
                                 localHistoryKeyId = entry.localHistoryKeyId,
                                 history = it
                             )

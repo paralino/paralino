@@ -32,7 +32,7 @@ interface LocationHistoryDao {
     @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId ORDER BY id DESC")
     suspend fun getHistoryKeys(groupId: String): List<LocalLocationHistoryKeyEntity>
 
-    @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId AND isSynced = 1 ORDER BY id DESC")
+    @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId AND isSynced = 0 ORDER BY id DESC")
     suspend fun getUnsyncedHistoryKeys(groupId: String): List<LocalLocationHistoryKeyEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
