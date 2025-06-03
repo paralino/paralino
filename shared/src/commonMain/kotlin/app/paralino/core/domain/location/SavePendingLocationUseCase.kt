@@ -31,7 +31,7 @@ class SavePendingLocationUseCase(
                         key = userKey.key
                     )
                 }?.let { encryptedHistory ->
-                    val historyKey = database.locationHistoryDao.getLatestHistoryKey(groupId = entry.groupId)
+                    val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupId = entry.groupId)
 
                     if (historyKey != null) {
                         PendingLocationHistoryEntity(

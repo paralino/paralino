@@ -174,7 +174,7 @@ class CryptoKeyLocalDataSource constructor(
         encryptedHistoryKey: String,
         isSynced: Boolean,
     ) {
-        database.locationHistoryDao.saveLocalHistoryKey(
+        database.pendingLocationHistoryDao.saveLocalHistoryKey(
             key = LocalLocationHistoryKeyEntity(
                 groupId = groupId,
                 createdAt = nowUTC().toString(),

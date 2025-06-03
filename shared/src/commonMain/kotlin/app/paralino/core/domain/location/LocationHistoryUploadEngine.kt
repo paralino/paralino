@@ -139,7 +139,7 @@ class LocationHistoryUploadEngine(
                     )
 
                     it.uploadedHistoryKeys.forEach {
-                        database.locationHistoryDao.updateLocalHistoryKey(
+                        database.pendingLocationHistoryDao.updateLocalHistoryKey(
                             groupId = UserGroup.groupPersonalDevicesId,
                             historyKeyVersion = it,
                             synced = true
@@ -167,7 +167,7 @@ class LocationHistoryUploadEngine(
 
         val result = if (personalHistoryNodes.isNotEmpty()) {
             val historyKeyEntity =
-                database.locationHistoryDao.getLatestHistoryKey(groupId = UserGroup.groupPersonalDevicesId)
+                database.pendingLocationHistoryDao.getLatestHistoryKey(groupId = UserGroup.groupPersonalDevicesId)
                     ?.takeIf { key -> key.createdAtInstant?.isOlderThan(30.days) == false }
 
             val historyKeyData = if (historyKeyEntity == null) {
@@ -256,7 +256,7 @@ class LocationHistoryUploadEngine(
                 )
             }
 
-        val unsyncedKeys = database.locationHistoryDao.getUnsyncedHistoryKeys(groupId = UserGroup.groupPersonalDevicesId)
+        val unsyncedKeys = database.pendingLocationHistoryDao.getUnsyncedHistoryKeys(groupId = UserGroup.groupPersonalDevicesId)
             .map {
                 LocationHistoryPersonalKeyPayload(
                     historyKeyVersion = it.historyKeyVersion,
@@ -266,7 +266,7 @@ class LocationHistoryUploadEngine(
             }
 
         if (newKeyData != null) {
-            database.locationHistoryDao.saveLocalHistoryKey(
+            database.pendingLocationHistoryDao.saveLocalHistoryKey(
                 key = LocalLocationHistoryKeyEntity(
                     groupId = UserGroup.groupPersonalDevicesId,
                     createdAt = nowUTC().toString(),
@@ -321,7 +321,7 @@ class LocationHistoryUploadEngine(
             return null
         }
 
-        val historyKeys = database.locationHistoryDao.getHistoryKeys(groupId = group.id)
+        val historyKeys = database.pendingLocationHistoryDao.getHistoryKeys(groupId = group.id)
 
         val groupHistoryNodes = this.filter { it.groupId == groupId }
 

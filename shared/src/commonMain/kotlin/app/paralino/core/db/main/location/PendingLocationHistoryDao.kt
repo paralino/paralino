@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -15,6 +16,8 @@ interface PendingLocationHistoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createUnconfirmedEntries(entries: List<UnconfirmedLocationHistoryEntity>)
+
+
 
     @Query("SELECT * FROM pendingLocationHistoryEntity WHERE id = :id")
     suspend fun getEntryOnce(id: Long): PendingLocationHistoryEntity?
@@ -34,6 +37,9 @@ interface PendingLocationHistoryDao {
     @Query("SELECT * FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
     suspend fun getAllUnconfirmedEntriesForGroupOnce(groupId: String): List<UnconfirmedLocationHistoryEntity>
 
+
+
+
     @Query("DELETE FROM pendingLocationHistoryEntity WHERE id IN (:ids)")
     suspend fun deleteEntries(ids: List<Long>)
 
@@ -43,10 +49,36 @@ interface PendingLocationHistoryDao {
     @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE pendingUploadId IN (:ids)")
     suspend fun deleteUnconfirmedUploadEntries(ids: List<String>)
 
+
+
+    @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId ORDER BY id DESC")
+    suspend fun getLatestHistoryKey(groupId: String): LocalLocationHistoryKeyEntity?
+
+    @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId ORDER BY id DESC")
+    suspend fun getHistoryKeys(groupId: String): List<LocalLocationHistoryKeyEntity>
+
+    @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId AND isSynced = 0 ORDER BY id DESC")
+    suspend fun getUnsyncedHistoryKeys(groupId: String): List<LocalLocationHistoryKeyEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveLocalHistoryKey(key: LocalLocationHistoryKeyEntity)
+
+    @Query("UPDATE localLocationHistoryKeyEntity SET isSynced = :synced WHERE groupId = :groupId AND historyKeyVersion = :historyKeyVersion")
+    suspend fun updateLocalHistoryKey(groupId: String, historyKeyVersion: String, synced: Boolean)
+
+
     @Transaction
     suspend fun clearAll() {
         clearAllPending()
         clearAllUnconfirmed()
+        clearAllLocalHistoryKeys()
+    }
+
+    @Transaction
+    suspend fun clearAllForGroup(groupId: String) {
+        clearAllPendingForGroup(groupId = groupId)
+        clearAllUnconfirmedForGroup(groupId = groupId)
+        clearAllLocalHistoryKeysForGroup(groupId = groupId)
     }
 
     @Query("DELETE FROM pendingLocationHistoryEntity")
@@ -54,4 +86,16 @@ interface PendingLocationHistoryDao {
 
     @Query("DELETE FROM unconfirmedLocationHistoryEntity")
     suspend fun clearAllUnconfirmed()
+
+    @Query("DELETE FROM localLocationHistoryKeyEntity")
+    suspend fun clearAllLocalHistoryKeys()
+
+    @Query("DELETE FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllPendingForGroup(groupId: String)
+
+    @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllUnconfirmedForGroup(groupId: String)
+
+    @Query("DELETE FROM localLocationHistoryKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllLocalHistoryKeysForGroup(groupId: String)
 }
