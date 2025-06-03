@@ -258,7 +258,7 @@ class GroupValidityVerification(
 
         if (keyIntegrity.safetySignature != null) {
             val member = group.currentUserMember ?: return IntegrityResult.CORRUPTED
-            val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = group.id, memberUserId = member.id)
+            val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = group.id, memberUserId = member.userId)
 
             if (publicKey !is GroupMemberMainPublicKey.Valid) {
                 logg.tag("integrity_check_device").e("Member public key is not valid for ${group.id}")

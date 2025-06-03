@@ -188,7 +188,7 @@ class MemberDeviceKeyRotation(
             }
 
             val member = group.currentUserMember!!
-            val publicKey = cryptoKEKRepository.getMemberPublicKey(groupId = group.id, memberUserId = member.id)
+            val publicKey = cryptoKEKRepository.getMemberPublicKey(groupId = group.id, memberUserId = member.userId)
 
             if (publicKey !is GroupMemberMainPublicKey.Valid) {
                 throw MissingMemberKeyException(groupId = group.id, memberId = member.id)

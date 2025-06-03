@@ -15,6 +15,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceData
+import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.raw.LocationCreatePayload
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
@@ -147,7 +148,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     }
 
                     val safetySignature =
-                        getSafetySignature(groupId = groupId, memberId = member.id)
+                        getSafetySignature(groupId = groupId, member = member)
 
                     cryptoKEKRepo.saveGroupHistoryKey(
                         groupId = groupId,
@@ -185,19 +186,19 @@ class RegisterDeviceForSharingUseCase constructor(
 
     private suspend fun getSafetySignature(
         groupId: String,
-        memberId: String
+        member: MemberModel
     ): String {
-        val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = groupId, memberUserId = memberId)
+        val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = groupId, memberUserId = appPrefs.userId)
 
         if (publicKey !is GroupMemberMainPublicKey.Valid) {
-            throw MissingMemberKeyException(groupId = groupId, memberId = memberId)
+            throw MissingMemberKeyException(groupId = groupId, memberId = member.id)
         }
 
         return GroupIntegrity.createDeviceSafetySignature(
             hashProvider = cryptoCore.hashProvider,
             groupId = groupId,
-            memberId = memberId,
-            memberVerification = publicKey.membershipKey,
+            memberId = member.id,
+            memberVerification = member.verification,
             identityKey = publicKey.identityKey.key,
             membershipKey = publicKey.membershipKey,
         )
