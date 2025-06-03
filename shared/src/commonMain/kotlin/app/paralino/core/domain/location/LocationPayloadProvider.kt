@@ -72,18 +72,22 @@ class LocationPayloadProvider(
                 locationData,
                 contract?.takeIf { it.locationHistoryDaysMax == null || it.locationHistoryDaysMax > 0 }
             ) { data, contract ->
-                LocationHistoryPointModel(
-                    lat = data.lat,
-                    lng = data.lng,
-                    acc = data.accuracy,
-                    timeUTC = data.timeUTC,
-                    speed = data.speed,
-                    alt = data.altitude,
-                    bat = status.batteryLevel,
-                    charging = status.isCharging,
-                    network = status.network,
-                    signal = status.signal
-                )
+                if (data.timeUTC != null) {
+                    LocationHistoryPointModel(
+                        lat = data.lat,
+                        lng = data.lng,
+                        acc = data.accuracy,
+                        timeUTC = data.timeUTC,
+                        speed = data.speed,
+                        alt = data.altitude,
+                        bat = status.batteryLevel,
+                        charging = status.isCharging,
+                        network = status.network,
+                        signal = status.signal
+                    )
+                } else {
+                    null
+                }
             }
 
             return LocationPayloadStatus.Success(
@@ -92,8 +96,8 @@ class LocationPayloadProvider(
                     memberId = member.id,
                     groupId = groupId,
                     locationData = locationData,
-                    locationHistory = locationHistory,
-                    deviceStatus = status
+                    deviceStatus = status,
+                    locationHistory = locationHistory
                 )
             )
     }

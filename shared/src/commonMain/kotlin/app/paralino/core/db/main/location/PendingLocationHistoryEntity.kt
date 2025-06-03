@@ -8,8 +8,8 @@ import androidx.room.PrimaryKey
 data class PendingLocationHistoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "groupId") val groupId: String,
-    @ColumnInfo(name = "memberId") val memberId: String,
     @ColumnInfo(name = "locationId") val locationId: String,
-    @ColumnInfo(name = "locationHistoryData") val locationHistoryData: String?,
-    @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long
+    @ColumnInfo(name = "locationHistoryData") val locationHistoryData: String,
+    @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long,
+    @ColumnInfo(name = "historyKeyId") val localHistoryKeyId: Long
 )

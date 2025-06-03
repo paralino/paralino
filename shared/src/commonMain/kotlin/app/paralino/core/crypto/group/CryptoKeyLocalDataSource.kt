@@ -5,11 +5,14 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class CryptoKeyLocalDataSource constructor(
@@ -160,6 +163,25 @@ class CryptoKeyLocalDataSource constructor(
                 integrity = integrity,
                 safetySignature = safetySignature,
                 userKeyVersion = userKeyVersion
+            )
+        )
+    }
+
+    suspend fun saveGroupHistoryKey(
+        groupId: String,
+        userKeyVersion: Long,
+        historyKeyVersion: String,
+        encryptedHistoryKey: String,
+        isSynced: Boolean,
+    ) {
+        database.locationHistoryDao.saveLocalHistoryKey(
+            key = LocalLocationHistoryKeyEntity(
+                groupId = groupId,
+                createdAt = nowUTC().toString(),
+                userKeyVersion = userKeyVersion,
+                historyKeyVersion = historyKeyVersion,
+                encryptedHistoryKey = encryptedHistoryKey,
+                isSynced = isSynced
             )
         )
     }

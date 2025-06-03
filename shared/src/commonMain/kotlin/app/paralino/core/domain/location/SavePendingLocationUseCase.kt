@@ -23,23 +23,30 @@ class SavePendingLocationUseCase(
     suspend fun saveNewLocations(data: List<MemberGroupId>) {
         val userKey = cryptoUserKeysRepo.activePersonalKeyWithVersion()
 
-        database.pendingLocationHistoryDao.createEntries(
-            entries = data.map {
-                val locationHistoryData = it.locationHistory?.let {
+        database.pendingLocationHistoryDao.createPendingEntries(
+            entries = data.mapNotNull { entry ->
+                entry.locationHistory?.let {
                     cryptoCore.encryptDataWithKey(
                         data = BaseRemoteModule.locationHistoryFormatter.encodeToString(it),
                         key = userKey.key
                     )
-                }
+                }?.let { encryptedHistory ->
+                    val historyKey = database.locationHistoryDao.getLatestHistoryKey(groupId = entry.groupId)
 
-                PendingLocationHistoryEntity(
-                    id = 0,
-                    groupId = it.groupId,
-                    memberId = it.memberId,
-                    locationId = it.locationId,
-                    locationHistoryData = locationHistoryData,
-                    userKeyVersion = userKey.version
-                )
+                    if (historyKey != null) {
+                        PendingLocationHistoryEntity(
+                            id = 0,
+                            groupId = entry.groupId,
+                            locationId = entry.locationId,
+                            locationHistoryData = encryptedHistory,
+                            userKeyVersion = userKey.version,
+                            localHistoryKeyId = historyKey.id
+                        )
+                    } else {
+                        // history key is missing so we are skipping location point
+                        null
+                    }
+                }
             }
         )
     }

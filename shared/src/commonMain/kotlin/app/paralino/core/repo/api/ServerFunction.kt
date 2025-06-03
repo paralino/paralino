@@ -27,6 +27,11 @@ enum class ServerFunction constructor(
     LOCATION_FOCUS_GROUP(method = "POST", path = "/focus/group", functionId = "ping"),
     LOCATION_REQUEST_MEMBER(method = "POST", path = "/refresh/member", functionId = "ping"),
 
+    HISTORY_READ(method = "POST", path = "/history/read"),
+    HISTORY_DELETE(method = "DELETE", path = "/history"),
+    HISTORY_CREATE(method = "POST", path = "/history"),
+    HISTORY_UPDATE(method = "PATCH", path = "/history"),
+
     PLACE_CREATE(method = "PUT", path = "/places"),
     PLACE_DELETE(method = "DELETE", path = "/places"),
     PLACE_UPDATE(method = "PATCH", path = "/places"),

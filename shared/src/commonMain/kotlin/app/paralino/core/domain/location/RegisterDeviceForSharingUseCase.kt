@@ -58,7 +58,8 @@ class RegisterDeviceForSharingUseCase constructor(
             triggerRemoteOnly {
                 // refresh all group data before sharing starts
                 logg.tag("sharing_start").d("Start location register, refresh group data")
-                val result1 = groupPreRefreshUseCase.refreshGroupWithMembers(groupId, throwOnError = true)
+                val result1 =
+                    groupPreRefreshUseCase.refreshGroupWithMembers(groupId, throwOnError = true)
                 logg.tag("sharing_start").d("Group refreshed ($result1), fetch group")
                 val group = groupLocal.getGroupWithMembers(groupId).firstOrNull()
                     ?: throw IllegalStateException("Group does not exist: $groupId")
@@ -103,7 +104,7 @@ class RegisterDeviceForSharingUseCase constructor(
                             contract = contract
                         )
                     ),
-                    key = keyData.first
+                    key = keyData.plainTextSenderKey
                 )
 
                 val payload = LocationCreatePayload(
@@ -115,7 +116,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     status = status,
                     groupKeyVersion = groupKey.version,
                     notify = notifyOthers,
-                    keys = keyData.second
+                    keys = keyData.keys
                 )
 
                 logg.tag("sharing_start").d("Send register device request")
@@ -145,7 +146,19 @@ class RegisterDeviceForSharingUseCase constructor(
                         )
                     }
 
-                    val safetySignature = getSafetySignature(groupId = groupId, memberId = member.id)
+                    val safetySignature =
+                        getSafetySignature(groupId = groupId, memberId = member.id)
+
+                    cryptoKEKRepo.saveGroupHistoryKey(
+                        groupId = groupId,
+                        userKeyVersion = userKey.version,
+                        historyKeyVersion = keyData.historyKeyVersion,
+                        encryptedHistoryKey = cryptoCore.encryptDataWithKey(
+                            data = keyData.plainTextHistoryKey,
+                            key = userKey.key
+                        ),
+                        isSynced = true
+                    )
 
                     cryptoKEKRepo.updateIntegrity(
                         groupId = group.id,
@@ -155,8 +168,10 @@ class RegisterDeviceForSharingUseCase constructor(
                     )
 
                     logg.tag("sharing_start").d("Integrity updated, refresh group")
-                    val result2 =
-                        groupPreRefreshUseCase.refreshGroupWithMembers(groupId, cacheTimeMillis = 0)
+                    val result2 = groupPreRefreshUseCase.refreshGroupWithMembers(
+                        groupId = groupId,
+                        cacheTimeMillis = 0
+                    )
                     logg.tag("sharing_start").d("Group refreshed ($result2)")
                 } else {
                     logg.tag("sharing_start").w("Device not registered")

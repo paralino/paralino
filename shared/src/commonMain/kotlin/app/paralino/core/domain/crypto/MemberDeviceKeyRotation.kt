@@ -1,5 +1,6 @@
 package app.paralino.core.domain.crypto
 
+import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
@@ -8,6 +9,7 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation.GroupDeviceSenderKeyData
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
@@ -35,7 +37,7 @@ abstract class IMemberDeviceKeyRotation: LimitedExecution() {
         force: Boolean = false
     ): Boolean
 
-    abstract suspend fun getNewSenderKeys(group: UserGroupWithMembers): Pair<String, List<GroupSenderKeyPayload>>
+    abstract suspend fun getNewSenderKeys(group: UserGroupWithMembers): GroupDeviceSenderKeyData
 }
 
 class NoOpMemberDeviceKeyRotation: IMemberDeviceKeyRotation() {
@@ -48,7 +50,7 @@ class NoOpMemberDeviceKeyRotation: IMemberDeviceKeyRotation() {
         return false
     }
 
-    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): Pair<String, List<GroupSenderKeyPayload>> {
+    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): GroupDeviceSenderKeyData {
         throw IllegalStateException("Device key rotation not allowed")
     }
 }
@@ -153,7 +155,7 @@ class MemberDeviceKeyRotation(
 
         val payloadData = UpdateGroupMemberSenderKeysPayload(
             groupId = group.id,
-            locationData = newLocationData,
+            locationData = newLocationData.locationPayload,
         )
 
         val response = functionsApi.runAndWait(
@@ -201,6 +203,19 @@ class MemberDeviceKeyRotation(
                 membershipKey = publicKey.membershipKey,
             )
 
+            if (newLocationData.keyData != null) {
+                cryptoKEKRepository.saveGroupHistoryKey(
+                    groupId = group.id,
+                    userKeyVersion = userKey.version,
+                    historyKeyVersion = newLocationData.keyData.historyKeyVersion,
+                    encryptedHistoryKey = cryptoCore.encryptDataWithKey(
+                        data = newLocationData.keyData.plainTextHistoryKey,
+                        key = userKey.key
+                    ),
+                    isSynced = false
+                )
+            }
+
             cryptoKEKRepository.updateIntegrity(
                 groupId = group.id,
                 integrity = groupDeviceIntegrity,
@@ -217,7 +232,7 @@ class MemberDeviceKeyRotation(
         groupKey: GroupMasterKey.Valid,
         currentDeviceLocation: MemberLocation,
         forceSenderKeyCreation: Boolean = false
-    ): MemberLocationDataPayload {
+    ): GroupDeviceLocationKeyData {
 
         // rotate current keys if location is available
         // keys will be rotated anyway when location sharing restarts
@@ -235,12 +250,12 @@ class MemberDeviceKeyRotation(
         val senderKeys = if (locationDataValid || forceSenderKeyCreation) {
             getNewSenderKeys(group)
         } else {
-            null to emptyList()
+            null
         }
 
         val newLocationData = safeLet(
             p1 = currentDeviceLocation.locationData.data,
-            p2 = senderKeys.first,
+            p2 = senderKeys?.plainTextSenderKey,
             block = { locationData, key ->
                 suspend {
                     cryptoCore.encryptDataWithKey(
@@ -251,7 +266,7 @@ class MemberDeviceKeyRotation(
             }
         )?.invoke()
 
-        val status = senderKeys.first?.let {
+        val status = senderKeys?.plainTextSenderKey?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
                     deviceStatusProvider.getStatus(group.id)
@@ -260,7 +275,7 @@ class MemberDeviceKeyRotation(
             )
         }
 
-        return MemberLocationDataPayload(
+        val locationPayload = MemberLocationDataPayload(
             locationId = currentDeviceLocation.id,
             deviceId = appPrefs.deviceId,
             groupKeyVersion = groupKey.version,
@@ -272,11 +287,16 @@ class MemberDeviceKeyRotation(
             } ?: "",
             locationData = newLocationData ?: "",
             status = status ?: "",
-            encryptedSenderKeys = senderKeys.second
+            encryptedSenderKeys = senderKeys?.keys ?: emptyList()
+        )
+
+        return GroupDeviceLocationKeyData(
+            locationPayload = locationPayload,
+            keyData = senderKeys
         )
     }
 
-    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): Pair<String, List<GroupSenderKeyPayload>> {
+    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): GroupDeviceSenderKeyData {
 
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
 
@@ -284,6 +304,8 @@ class MemberDeviceKeyRotation(
             throw MissingMemberKeyException(group.id, appPrefs.userId)
 
         val newSenderKey = cryptoCore.getNewSymmetricKeyForLocationData()
+        val newHistoryKey = cryptoCore.getNewSymmetricKeyForLocationData()
+        val historyKeyVersion = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
 
         val keys = group.members.mapNotNull { groupMember ->
 
@@ -297,6 +319,7 @@ class MemberDeviceKeyRotation(
                     groupId = group.id,
                     memberUserId = groupMember.member.userId
                 )
+
             if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
                 GroupSenderKeyPayload(
                     userId = groupMember.member.userId,
@@ -307,14 +330,27 @@ class MemberDeviceKeyRotation(
                         // encrypt with user public key
                         publicKey = memberPublicKey.key
                     ),
-                    memberKeyVersion = memberPublicKey.memberKeyVersion
+                    memberKeyVersion = memberPublicKey.memberKeyVersion,
+                    historyKeyVersion = historyKeyVersion,
+                    encryptedHistoryKey = cryptoCore.encryptDataWithKeyPair(
+                        data = newSenderKey,
+                        // sign with owner private key
+                        myPrivateKey = myMembershipKeys.key.privateKey,
+                        // encrypt with user public key
+                        publicKey = memberPublicKey.key
+                    )
                 )
             } else {
                 null
             }
         }
 
-        return newSenderKey to keys
+        return GroupDeviceSenderKeyData(
+            plainTextSenderKey = newSenderKey,
+            plainTextHistoryKey = newHistoryKey,
+            historyKeyVersion = historyKeyVersion,
+            keys = keys
+        )
     }
 
     private suspend fun shouldRemoveMemberKeyFromUnverifiedMembers(remoteGroup: UserGroupWithMembers): Boolean {
@@ -331,4 +367,16 @@ class MemberDeviceKeyRotation(
             !member.member.isVerified && memberKey != null && !memberKey.encryptedSenderKey.isNullOrBlank()
         }
     }
+
+    private data class GroupDeviceLocationKeyData(
+        val locationPayload: MemberLocationDataPayload,
+        val keyData: GroupDeviceSenderKeyData?
+    )
+
+    data class GroupDeviceSenderKeyData(
+        val plainTextSenderKey: String,
+        val plainTextHistoryKey: String,
+        val historyKeyVersion: String,
+        val keys: List<GroupSenderKeyPayload>,
+    )
 }

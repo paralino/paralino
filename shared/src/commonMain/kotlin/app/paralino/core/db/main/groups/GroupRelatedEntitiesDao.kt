@@ -225,6 +225,9 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT * FROM memberLocationEntity WHERE groupId = :groupId")
     fun getMemberLocationsForGroup(groupId: String): Flow<List<MemberLocationEntity>>
 
+    @Query("SELECT * FROM memberLocationEntity WHERE groupId = :groupId")
+    suspend fun getMemberLocationsForGroupOnce(groupId: String): List<MemberLocationEntity>
+
     @Query("SELECT * FROM memberLocationEntity WHERE memberId = :memberId")
     suspend fun getMemberLocationsOnce(memberId: String): List<MemberLocationEntity>
 

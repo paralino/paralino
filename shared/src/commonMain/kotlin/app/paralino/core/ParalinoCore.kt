@@ -80,6 +80,7 @@ import app.paralino.core.models.mappers.MemberMapperCore
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
+import app.paralino.core.models.mappers.PersonalLocationHistoryMapper
 import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.mappers.PlaceSettingsMapperCore
 import app.paralino.core.models.mappers.SharingContractsMapper
@@ -204,6 +205,7 @@ val mappersModule = module {
     single { PlaceSettingsMapperCore() }
     single { PlaceMapperCore(get(), get(), get()) }
     single { GroupPlaceMapperLocal(get(), get()) }
+    single { PersonalLocationHistoryMapper(get(), get()) }
 }
 
 
@@ -266,7 +268,7 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), appPrefs) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }

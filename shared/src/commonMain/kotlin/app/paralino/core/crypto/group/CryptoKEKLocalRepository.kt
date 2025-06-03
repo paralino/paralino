@@ -14,6 +14,7 @@ import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.repo.base.BaseRepository
@@ -512,6 +513,22 @@ class CryptoKEKLocalRepository(
             integrity = integrity,
             safetySignature = safetySignature,
             userKeyVersion = userKeyVersion
+        )
+    }
+
+    suspend fun saveGroupHistoryKey(
+        groupId: String,
+        userKeyVersion: Long,
+        historyKeyVersion: String,
+        encryptedHistoryKey: String,
+        isSynced: Boolean,
+    ) {
+        local.saveGroupHistoryKey(
+            groupId = groupId,
+            userKeyVersion = userKeyVersion,
+            historyKeyVersion = historyKeyVersion,
+            encryptedHistoryKey = encryptedHistoryKey,
+            isSynced = isSynced
         )
     }
 

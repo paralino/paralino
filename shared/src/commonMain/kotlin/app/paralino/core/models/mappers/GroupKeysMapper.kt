@@ -10,6 +10,8 @@ import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupLocationHistoryCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
+import app.paralino.core.utils.extensions.nowUTC
 
 class GroupKeysMapper {
     fun local2Remote(model: GroupKeysEntity): GroupCryptoKeyDataRaw {
@@ -114,9 +116,11 @@ class GroupKeysMapper {
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
             memberUserId = model.memberUserId,
+            deviceId = model.deviceId,
             memberKeyVersion = model.memberKeyVersion,
             historyKeyVersion = model.historyKeyVersion,
-            encryptedHistoryKey = model.encryptedHistoryKey
+            encryptedHistoryKey = model.encryptedHistoryKey,
+            createdAt = model.createdAt.isoWithOffsetToInstant() ?: nowUTC()
         )
     }
 
@@ -126,9 +130,11 @@ class GroupKeysMapper {
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
             memberUserId = model.memberUserId,
+            deviceId = model.deviceId,
             memberKeyVersion = model.memberKeyVersion,
             historyKeyVersion = model.historyKeyVersion,
-            encryptedHistoryKey = model.encryptedHistoryKey
+            encryptedHistoryKey = model.encryptedHistoryKey,
+            createdAt = model.createdAt.toString()
         )
     }
 }

@@ -94,13 +94,6 @@ data class GroupKeysPayload(
 )
 
 @Serializable
-data class GroupMemberPublicKeyPayload(
-    val userId: String,
-    val signedPublicKey: String,
-    val ownerIdentityKey: String,
-)
-
-@Serializable
 data class UpdateGroupMemberSenderKeysPayload(
     val groupId: String,
     val locationData: MemberLocationDataPayload,
@@ -135,6 +128,8 @@ data class GroupSenderKeyPayload constructor(
     val userId: String,
     val memberKeyVersion: Long,
     val encryptedSenderKey: String,
+    val historyKeyVersion: String?,
+    val encryptedHistoryKey: String?,
 )
 
 @Serializable
@@ -326,39 +321,61 @@ data class UserEmailChangePayload(
 data class LocationHistoryUploadPayload(
     val deviceId: String,
     val groupHistory: List<LocationHistoryGroupPayload>,
-    val personalHistory: List<LocationHistoryPersonalPayload>,
+    val personalHistory: LocationHistoryPersonalPayload,
 )
 
 @Serializable
 data class LocationHistoryPersonalPayload(
     val entries: List<LocationHistoryPayloadEntry>,
-    val keys: List<LocationHistoryPersonalKeyPayload>
+    val keys: List<LocationHistoryPersonalKeyPayload>,
+    val retryEntries: List<LocationHistoryPayloadEntry>,
+    val retryKeys: List<LocationHistoryPersonalKeyPayload>,
 )
 
 @Serializable
 data class LocationHistoryGroupPayload(
     val groupId: String,
-    val locationId: String,
     val entries: List<LocationHistoryPayloadEntry>,
-    val keys: List<LocationHistoryGroupKeyPayload>
+    val retryEntries: List<LocationHistoryPayloadEntry>,
 )
 
 @Serializable
 data class LocationHistoryPayloadEntry(
     val dateIdentifier: String,
+    val pendingUploadId: String,
     val historyData: String,
-    val historyKeyVersion: Long
-)
-
-@Serializable
-data class LocationHistoryGroupKeyPayload constructor(
-    val memberUserId: String,
-    val memberKeyVersion: Long,
-    val encryptedHistoryKey: String,
+    val historyKeyVersion: String
 )
 
 @Serializable
 data class LocationHistoryPersonalKeyPayload constructor(
+    val historyKeyVersion: String,
     val userKeyVersion: Long,
     val encryptedHistoryKey: String,
+)
+
+@Serializable
+data class HistoryUploadResponse(
+    val personalHistoryResult: PersonalHistoryUploadResponse?,
+    val groupHistoryResult: GroupHistoryUploadResponse?
+)
+
+@Serializable
+data class PersonalHistoryUploadResponse(
+    val uploadedEntries: List<String>,
+    val uploadedHistoryKeys: List<String>,
+    val errors: List<HistoryUploadError>
+)
+
+@Serializable
+data class GroupHistoryUploadResponse(
+    val uploadedEntries: List<String>,
+    val errors: List<HistoryUploadError>
+)
+
+@Serializable
+data class HistoryUploadError(
+    val groupId: String? = null,
+    val key: String,
+    val error: FunctionErrorBody?
 )

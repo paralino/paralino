@@ -18,8 +18,11 @@ import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberDeviceKeyRotation
+import app.paralino.core.domain.location.ILocationHistoryUploadEngine
+import app.paralino.core.domain.location.IOSLocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
+import app.paralino.core.domain.location.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.NoOpReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
@@ -171,12 +174,14 @@ object KoinIOS {
                             single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
                             single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+                            single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
                         }
                         else -> {
                             single { NoOpMemberCryptoKeyRotation() } bind IMemberCryptoKeyRotation::class
                             single { NoOpMemberDeviceKeyRotation() } bind IMemberDeviceKeyRotation::class
                             single { NoOpReRegisterDeviceUseCase() } bind IReRegisterDeviceUseCase::class
                             single { IOSLSEPlacesActivityProcessor() } bind IPlacesActivityProcessor::class
+                            single { IOSLocationHistoryUploadEngine() } bind ILocationHistoryUploadEngine::class
                         }
                     }
                 }

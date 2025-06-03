@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -8,15 +9,24 @@ data class LocationHistoryModel(
 )
 
 @Serializable
+data class LocationHistoryModelForMember(
+    val groupId: String,
+    val localHistoryKeyId: Long,
+    val history: LocationHistoryPointModel
+)
+
+@Serializable
 data class LocationHistoryPointModel(
     val lat: Double,
     val lng: Double,
     val acc: Float = 0f,
-    val timeUTC: String? = null,
+    val timeUTC: String,
     val speed: Float? = null,
     val alt: Float? = null,
     val bat: Int? = null,
     val charging: Boolean? = null,
     val network: String? = null,
     val signal: Int? = null,
-)
+) {
+    val dayKey = timeUTC.isoToLocalDateTime()?.date?.toString()
+}

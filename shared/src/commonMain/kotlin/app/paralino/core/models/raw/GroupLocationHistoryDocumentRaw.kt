@@ -1,5 +1,6 @@
 package app.paralino.core.models.raw
 
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
@@ -24,13 +25,7 @@ class GroupLocationHistoryDocumentRaw(
         fun from(map: Map<String, Any>): GroupLocationHistoryDocumentRaw {
             return GroupLocationHistoryDocumentRaw(
                 id = map["\$id"] as String,
-                createdAt = (map["\$createdAt"] as String).let {
-                    try {
-                        Instant.parse(it)
-                    } catch (e: Exception) {
-                        nowUTC()
-                    }
-                },
+                createdAt = (map["\$createdAt"] as String).isoWithOffsetToInstant() ?: nowUTC(),
                 dateIdentifier = map["dateIdentifier"] as String,
                 groupId = map["groupId"] as String,
                 ownerUserId = map["ownerUserId"] as String,

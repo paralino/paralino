@@ -41,7 +41,9 @@ import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.location.ILocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
+import app.paralino.core.domain.location.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
@@ -157,6 +159,7 @@ object KoinSetup {
         single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
         single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+        single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
 
         single {
             AppBuildConfig(
@@ -211,7 +214,7 @@ object KoinSetup {
         viewModel { ChangePasswordViewModel(get(), get(), get(), get()) }
         viewModel { ConvertAccountViewModel(get(), get(), get()) }
         viewModel { EditProfileViewModel(get(), get()) }
-        viewModel { RecoverKeysViewModel(get(), get(), get(), appPrefs) }
+        viewModel { RecoverKeysViewModel(get(), get(), get(), get()) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
         viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get(), get(), get(), get()) }

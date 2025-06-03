@@ -24,14 +24,17 @@ import app.paralino.core.db.main.keys.GroupKeysEntity
 import app.paralino.core.db.main.keys.GroupMembersKeysEntity
 import app.paralino.core.db.main.keys.GroupRelatedKeysDao
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
 import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.db.main.keys.UserKeysDao
 import app.paralino.core.db.main.keys.UserKeysEntity
 import app.paralino.core.db.main.location.GroupHistoryEntity
+import app.paralino.core.db.main.location.LocationHistoryDao
 import app.paralino.core.db.main.location.PendingLocationHistoryDao
 import app.paralino.core.db.main.location.PendingLocationHistoryEntity
 import app.paralino.core.db.main.location.PersonalHistoryEntity
+import app.paralino.core.db.main.location.UnconfirmedLocationHistoryEntity
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.db.main.places.PlaceActivityDao
 import app.paralino.core.db.main.places.PlaceActivityEntity
@@ -75,7 +78,9 @@ import kotlinx.coroutines.IO
         PersonalHistoryKeyEntity::class,
         PersonalHistoryEntity::class,
         GroupHistoryKeyEntity::class,
-        GroupHistoryEntity::class
+        GroupHistoryEntity::class,
+        LocalLocationHistoryKeyEntity::class,
+        UnconfirmedLocationHistoryEntity::class
     ],
     version = 13
 )
@@ -92,6 +97,7 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun placeActivityDao(): PlaceActivityDao
     abstract fun groupRelatedDao(): GroupRelatedEntitiesDao
     abstract fun pendingLocationHistoryDao(): PendingLocationHistoryDao
+    abstract fun locationHistoryDao(): LocationHistoryDao
 
     companion object {
         fun create(builder: SqlDriverFactory): AppMainDatabase {

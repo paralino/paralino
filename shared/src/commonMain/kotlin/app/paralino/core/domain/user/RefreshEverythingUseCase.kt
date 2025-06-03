@@ -5,6 +5,7 @@ import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
+import app.paralino.core.domain.location.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.logg
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -32,6 +33,7 @@ class RefreshEverythingUseCase(
     private val pushProviderManager: IPushProviderManager,
     private val premiumStatusManager: PremiumStatusManager,
     private val clearUserLocationUseCase: ClearUserLocationUseCase,
+    private val locationHistoryUploadEngine: LocationHistoryUploadEngine,
     private val parentManager: LimitedExecutionParentManager
 ) : LimitedExecutionRepository() {
 
@@ -77,6 +79,7 @@ class RefreshEverythingUseCase(
                     revokeDeviceStatusUseCase.revokeActiveStatus()
                     clearUserLocationUseCase.deleteOldLocations()
                     premiumStatusManager.adjustDeviceSettingsForPlan()
+                    locationHistoryUploadEngine.syncPendingEntriesInBackground()
                 }
             )
         } catch (e: Exception) {

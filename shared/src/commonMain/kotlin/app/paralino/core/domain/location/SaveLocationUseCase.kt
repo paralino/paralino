@@ -3,7 +3,6 @@ package app.paralino.core.domain.location
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMemberSenderKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
-import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
@@ -11,8 +10,8 @@ import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.LocationHistoryModel
-import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.mappers.PersonalLocationHistoryMapper
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.BaseRemoteModule
@@ -27,7 +26,7 @@ class SaveLocationUseCase(
     private val appBuildConfig: AppBuildConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
-    private val cryptoUserKeysRepo: CryptoUserKeysLocalSource,
+    private val historyMapper: PersonalLocationHistoryMapper,
     private val appPrefs: AppPrefs
 ) {
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
@@ -47,27 +46,15 @@ class SaveLocationUseCase(
             )
         }
 
+        val historyKey = database.locationHistoryDao.getLatestHistoryKey(groupId = data.groupId)
         val historyEntries = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = data.groupId)
-            // TODO: Take by time only
-            // TODO: group similar locations
+            .filter { it.localHistoryKeyId == historyKey?.id }
+            .sortedByDescending { it.id }
             .take(100)
-            .groupBy { it.userKeyVersion }
-            .flatMap {
-                val userKey = cryptoUserKeysRepo.personalKey(version = it.key)
-                it.value.mapNotNull {
-                    it.locationHistoryData?.let {
-                        cryptoCore.decryptDataWithKey(
-                            data = it,
-                            key = userKey.key
-                        ).let {
-                            BaseRemoteModule.locationHistoryFormatter.decodeFromString<LocationHistoryPointModel>(it)
-                        }
-                    }
-                }
-            }
+            .let { historyMapper.pendingLocationToCore(it) }
 
         val historyModel = LocationHistoryModel(
-            history = historyEntries
+            history = historyEntries.map { it.history }
         )
 
         val locationHistory = cryptoCore.encryptDataWithKey(

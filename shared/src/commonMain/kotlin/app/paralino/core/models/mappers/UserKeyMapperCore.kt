@@ -11,6 +11,8 @@ import app.paralino.core.models.user.OldMasterKeys
 import app.paralino.core.models.user.SessionCryptoKeyData
 import app.paralino.core.models.user.SymmetricCryptoKeyData
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
+import app.paralino.core.utils.extensions.nowUTC
 
 class UserKeyMapperCore constructor(
     private val cryptoCore: CryptoCore,
@@ -109,9 +111,11 @@ class UserKeyMapperCore constructor(
         return PersonalLocationHistoryCryptoKeyRaw(
             id = model.id,
             ownerUserId = model.ownerUserId,
+            deviceId = model.deviceId,
             encryptedHistoryKey = model.encryptedHistoryKey,
             userKeyVersion = model.userKeyVersion,
-            historyKeyVersion = model.historyKeyVersion
+            historyKeyVersion = model.historyKeyVersion,
+            createdAt = model.createdAt.isoWithOffsetToInstant() ?: nowUTC()
         )
     }
 
@@ -119,9 +123,11 @@ class UserKeyMapperCore constructor(
         return PersonalHistoryKeyEntity(
             id = model.id,
             ownerUserId = model.ownerUserId,
+            deviceId = model.deviceId,
             encryptedHistoryKey = model.encryptedHistoryKey,
             userKeyVersion = model.userKeyVersion,
-            historyKeyVersion = model.historyKeyVersion
+            historyKeyVersion = model.historyKeyVersion,
+            createdAt = model.createdAt.toString()
         )
     }
 }

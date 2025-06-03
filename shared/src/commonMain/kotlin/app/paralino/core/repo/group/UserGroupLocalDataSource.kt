@@ -191,6 +191,27 @@ class UserGroupLocalDataSource constructor(
         }
     }
 
+    suspend fun getGroupWithMembersOnce(groupId: String): UserGroupWithMembers? {
+        val groupEntity = database.groupRelatedDao.getGroupOnce(groupId = groupId)
+        val members = database.groupRelatedDao.getAllMembersForGroupOnce(groupId = groupId)
+        val locations = database.groupRelatedDao.getMemberLocationsForGroupOnce(groupId = groupId)
+
+        if (groupEntity != null && members.isNotEmpty()) {
+            val group = mapper.local2Core(groupEntity)
+            val mappedMembers = members.map { member ->
+                val memberLocations = locations.filter { it.memberId == member.id }
+                memberMapper.local2Core(member, memberLocations, group)
+            }
+
+            return UserGroupWithMembers(
+                group = mapper.local2Core(groupEntity),
+                members = mappedMembers
+            )
+        } else {
+            return null
+        }
+    }
+
     fun getAllGroupsWithMetadata(): Flow<List<UserGroupWithMetadata>> {
         return database.groupRelatedDao.getAllGroups()
             .flatMapLatest { groups ->
