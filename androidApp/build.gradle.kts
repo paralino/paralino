@@ -146,8 +146,8 @@ android {
         }
         create("dev") {
             dimension = "version"
-            versionCode = 54
-            versionName = "1.1.1"
+            versionCode = 57
+            versionName = "1.3.0"
             versionNameSuffix = "-dev"
             applicationIdSuffix = ".dev"
         }
