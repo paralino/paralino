@@ -86,7 +86,10 @@ class RegisterDeviceForSharingUseCase constructor(
                 }
 
                 // always rotate keys for every sharing session
-                val keyData = deviceKeyRotation.getNewSenderKeys(group = group)
+                val keyData = deviceKeyRotation.getNewSenderKeys(
+                    group = group,
+                    contract = contract
+                )
 
                 val deviceData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.formatter.encodeToString(
@@ -147,19 +150,20 @@ class RegisterDeviceForSharingUseCase constructor(
                         )
                     }
 
-                    val safetySignature =
-                        getSafetySignature(groupId = groupId, member = member)
+                    val safetySignature = getSafetySignature(groupId = groupId, member = member)
 
-                    cryptoKEKRepo.saveGroupHistoryKey(
-                        groupId = groupId,
-                        userKeyVersion = userKey.version,
-                        historyKeyVersion = keyData.historyKeyVersion,
-                        encryptedHistoryKey = cryptoCore.encryptDataWithKey(
-                            data = keyData.plainTextHistoryKey,
-                            key = userKey.key
-                        ),
-                        isSynced = true
-                    )
+                    if (keyData.historyKeyVersion != null && keyData.plainTextHistoryKey != null) {
+                        cryptoKEKRepo.saveGroupHistoryKey(
+                            groupId = groupId,
+                            userKeyVersion = userKey.version,
+                            historyKeyVersion = keyData.historyKeyVersion,
+                            encryptedHistoryKey = cryptoCore.encryptDataWithKey(
+                                data = keyData.plainTextHistoryKey,
+                                key = userKey.key
+                            ),
+                            isSynced = true
+                        )
+                    }
 
                     cryptoKEKRepo.updateIntegrity(
                         groupId = group.id,

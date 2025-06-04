@@ -70,7 +70,7 @@ class LocationPayloadProvider(
 
             val locationHistory = safeLet(
                 locationData,
-                contract?.takeIf { it.locationHistoryDaysMax == null || it.locationHistoryDaysMax > 0 }
+                contract?.takeIf { it.isSavingToHistory }
             ) { data, contract ->
                 if (data.timeUTC != null) {
                     LocationHistoryPointModel(

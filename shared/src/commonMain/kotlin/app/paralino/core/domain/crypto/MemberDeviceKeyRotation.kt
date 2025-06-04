@@ -16,10 +16,12 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.raw.GroupSenderKeyPayload
 import app.paralino.core.models.raw.MemberLocationDataPayload
 import app.paralino.core.models.raw.UpdateGroupMemberSenderKeysPayload
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
@@ -29,7 +31,6 @@ import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.safeLet
-import kotlinx.serialization.encodeToString
 
 abstract class IMemberDeviceKeyRotation: LimitedExecution() {
     abstract suspend fun rotateDeviceKeys(
@@ -37,7 +38,10 @@ abstract class IMemberDeviceKeyRotation: LimitedExecution() {
         force: Boolean = false
     ): Boolean
 
-    abstract suspend fun getNewSenderKeys(group: UserGroupWithMembers): GroupDeviceSenderKeyData
+    abstract suspend fun getNewSenderKeys(
+        group: UserGroupWithMembers,
+        contract: LocationSharingContract?
+    ): GroupDeviceSenderKeyData
 }
 
 class NoOpMemberDeviceKeyRotation: IMemberDeviceKeyRotation() {
@@ -50,7 +54,10 @@ class NoOpMemberDeviceKeyRotation: IMemberDeviceKeyRotation() {
         return false
     }
 
-    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): GroupDeviceSenderKeyData {
+    override suspend fun getNewSenderKeys(
+        group: UserGroupWithMembers,
+        contract: LocationSharingContract?
+    ): GroupDeviceSenderKeyData {
         throw IllegalStateException("Device key rotation not allowed")
     }
 }
@@ -62,6 +69,7 @@ class MemberDeviceKeyRotation(
     private val cryptoKEKRepository: CryptoKEKLocalRepository,
     private val validityVerification: GroupValidityVerification,
     private val deviceStatusProvider: MemberDeviceStatusProvider,
+    private val locationSharingManager: LocationSharingManager,
     private val appPrefs: AppPrefs
 ) : IMemberDeviceKeyRotation() {
 
@@ -203,7 +211,7 @@ class MemberDeviceKeyRotation(
                 membershipKey = publicKey.membershipKey,
             )
 
-            if (newLocationData.keyData != null) {
+            if (newLocationData.keyData?.historyKeyVersion != null && newLocationData.keyData.plainTextHistoryKey != null) {
                 cryptoKEKRepository.saveGroupHistoryKey(
                     groupId = group.id,
                     userKeyVersion = userKey.version,
@@ -248,7 +256,7 @@ class MemberDeviceKeyRotation(
         }
 
         val senderKeys = if (locationDataValid || forceSenderKeyCreation) {
-            getNewSenderKeys(group)
+            getNewSenderKeys(group = group, contract = locationSharingManager.currentSharingContractForGroup(id = group.id))
         } else {
             null
         }
@@ -287,6 +295,9 @@ class MemberDeviceKeyRotation(
             } ?: "",
             locationData = newLocationData ?: "",
             status = status ?: "",
+
+            // location history cache always set to empty so we don't leak old history to new members
+            locationHistory = "",
             encryptedSenderKeys = senderKeys?.keys ?: emptyList()
         )
 
@@ -296,7 +307,10 @@ class MemberDeviceKeyRotation(
         )
     }
 
-    override suspend fun getNewSenderKeys(group: UserGroupWithMembers): GroupDeviceSenderKeyData {
+    override suspend fun getNewSenderKeys(
+        group: UserGroupWithMembers,
+        contract: LocationSharingContract?
+    ): GroupDeviceSenderKeyData {
 
         val myMembershipKeys = cryptoKEKRepository.getMyPreKeyForGroup(group.id, version = 0)
 
@@ -304,8 +318,14 @@ class MemberDeviceKeyRotation(
             throw MissingMemberKeyException(group.id, appPrefs.userId)
 
         val newSenderKey = cryptoCore.getNewSymmetricKeyForLocationData()
-        val newHistoryKey = cryptoCore.getNewSymmetricKeyForLocationData()
-        val historyKeyVersion = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+
+        val (newHistoryKey, historyKeyVersion) = if (contract?.asValidContract()?.isSavingToHistory == true) {
+            val newHistoryKey = cryptoCore.getNewSymmetricKeyForLocationData()
+            val historyKeyVersion = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
+            newHistoryKey to historyKeyVersion
+        } else {
+            null to null
+        }
 
         val keys = group.members.mapNotNull { groupMember ->
 
@@ -332,13 +352,17 @@ class MemberDeviceKeyRotation(
                     ),
                     memberKeyVersion = memberPublicKey.memberKeyVersion,
                     historyKeyVersion = historyKeyVersion,
-                    encryptedHistoryKey = cryptoCore.encryptDataWithKeyPair(
-                        data = newSenderKey,
-                        // sign with owner private key
-                        myPrivateKey = myMembershipKeys.key.privateKey,
-                        // encrypt with user public key
-                        publicKey = memberPublicKey.key
-                    )
+                    encryptedHistoryKey = if (newHistoryKey != null) {
+                        cryptoCore.encryptDataWithKeyPair(
+                            data = newHistoryKey,
+                            // sign with owner private key
+                            myPrivateKey = myMembershipKeys.key.privateKey,
+                            // encrypt with user public key
+                            publicKey = memberPublicKey.key
+                        )
+                    } else {
+                        null
+                    }
                 )
             } else {
                 null
@@ -375,8 +399,8 @@ class MemberDeviceKeyRotation(
 
     data class GroupDeviceSenderKeyData(
         val plainTextSenderKey: String,
-        val plainTextHistoryKey: String,
-        val historyKeyVersion: String,
+        val plainTextHistoryKey: String?,
+        val historyKeyVersion: String?,
         val keys: List<GroupSenderKeyPayload>,
     )
 }

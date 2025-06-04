@@ -24,6 +24,7 @@ data class LocationSharingContract constructor(
 
     val isAlwaysOn: Boolean get() = endTimeUTC == null
     val isLongTerm: Boolean get() = isLongTerm(endsInMillis)
+    val isSavingToHistory: Boolean get() = locationHistoryDaysMax == null || locationHistoryDaysMax > 0
 
     val endsInMillis: Long get() {
         if (isAlwaysOn) return -1

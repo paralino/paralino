@@ -12,6 +12,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.group.GroupSettings
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberDeviceStatus
 import app.paralino.core.models.location.MemberLocation
@@ -224,6 +225,49 @@ class MemberMapperCore constructor(
                 CryptoResource.MissingKey
             }
 
+            val locationHistory = if (memberKey is GroupMemberSenderKey.Valid) {
+                if (location.locationHistory.isNullOrBlank()) {
+                    CryptoResource.NotInitialized
+                } else {
+                    try {
+                        cryptoCore.decryptDataWithKey(
+                            data = location.locationHistory,
+                            key = memberKey.key
+                        ).let {
+                            BaseRemoteModule.locationHistoryFormatter.decodeFromString<LocationHistoryModel>(it)
+                        }.let {
+                            if (verification is VerificationResult.Verified) {
+                                CryptoResource.Ready(it)
+                            } else {
+                                CryptoResource.UnverifiedKeyOrData(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        if (memberKey.deviceKeyVersion != location.deviceKeyVersion) {
+                            logg.w(
+                                tag = "tag_crypto_key_group_member",
+                                message = "Missing device key (location: ${location.deviceKeyVersion} - key: ${memberKey.deviceKeyVersion}) ${e.message}"
+                            )
+                            CryptoResource.MissingKey
+                        } else {
+                            logg.tag("tag_crypto_key_group_member")
+                                .e(
+                                    message = "Error decrypting location history for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
+                                            "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
+                                    t = DecryptionException(
+                                        type = "locationHistory",
+                                        message = "Error decrypting device location history: ${e::class}: ${e.message}",
+                                        cause = e
+                                    )
+                                )
+                            CryptoResource.WrongKeyOrData
+                        }
+                    }
+                }
+            } else {
+                CryptoResource.MissingKey
+            }
+
             MemberLocation(
                 id = location.id,
                 groupId = model.member.groupId,
@@ -233,6 +277,7 @@ class MemberMapperCore constructor(
                 groupKeyVersion = location.groupKeyVersion,
                 deviceData = deviceData,
                 locationData = locationData,
+                locationHistory = locationHistory,
                 status = status
             )
         }

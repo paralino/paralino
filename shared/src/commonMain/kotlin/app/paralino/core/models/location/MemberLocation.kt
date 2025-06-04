@@ -28,6 +28,9 @@ data class MemberLocation constructor(
     val locationData: CryptoResource<LocationDataModel>,
 
     @Contextual
+    val locationHistory: CryptoResource<LocationHistoryModel>,
+
+    @Contextual
     val status: CryptoResource<MemberDeviceStatus>
 ) {
     val name: String get() = nameOrNull ?: "---"
