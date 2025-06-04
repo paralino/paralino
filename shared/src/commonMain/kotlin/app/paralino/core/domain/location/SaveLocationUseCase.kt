@@ -27,6 +27,7 @@ class SaveLocationUseCase(
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val historyMapper: PersonalLocationHistoryMapper,
+    private val locationHistoryUpload: LocationHistoryUploadEngine,
     private val appPrefs: AppPrefs
 ) {
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
@@ -88,6 +89,10 @@ class SaveLocationUseCase(
         ).let { MemberLocationRaw.from(it) }
 
         saveLocationLocally(newData)
+
+        if (historyEntries.size >= 80) {
+            locationHistoryUpload.syncPendingEntriesInBackground()
+        }
 
         return newData
     }
