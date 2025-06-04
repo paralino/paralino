@@ -41,10 +41,13 @@ interface PendingLocationHistoryDao {
 
 
     @Query("DELETE FROM pendingLocationHistoryEntity WHERE id IN (:ids)")
-    suspend fun deleteEntries(ids: List<Long>)
+    suspend fun deletePendingEntries(ids: List<Long>)
 
     @Query("DELETE FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
-    suspend fun deleteAllEntriesForGroup(groupId: String)
+    suspend fun deleteAllPendingEntriesForGroup(groupId: String)
+
+    @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
+    suspend fun deleteAllUnconfirmedEntriesForGroup(groupId: String)
 
     @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE pendingUploadId IN (:ids)")
     suspend fun deleteUnconfirmedUploadEntries(ids: List<String>)

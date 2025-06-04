@@ -290,8 +290,8 @@ class LocationHistoryUploadEngine(
             }
         )
 
-        database.pendingLocationHistoryDao.deleteEntries(
-            ids = personalHistoryNodes.map { it.localHistoryKeyId }
+        database.pendingLocationHistoryDao.deletePendingEntries(
+            ids = personalHistoryNodes.map { it.entryId }
         )
 
         if (personalHistory.isEmpty() && currentUnconfirmed.isEmpty() && unsyncedKeys.isEmpty() && newKeyData == null) {
@@ -316,12 +316,13 @@ class LocationHistoryUploadEngine(
 
         val result = validityVerification.checkIntegrityForDeviceKey(group = group)
         if (result == IntegrityResult.CORRUPTED) {
-            logg.tag(executionKey).v("Group device integrity is corrupted, clear pending location history for (${group.group.id})")
-            database.pendingLocationHistoryDao.deleteAllEntriesForGroup(groupId = group.id)
+            logg.tag(executionKey).v("Group device integrity is corrupted, clear pending location history for (${groupId})")
+            database.pendingLocationHistoryDao.deleteAllPendingEntriesForGroup(groupId = groupId)
+            database.pendingLocationHistoryDao.deleteAllUnconfirmedEntriesForGroup(groupId = groupId)
             return null
         }
 
-        val historyKeys = database.pendingLocationHistoryDao.getHistoryKeys(groupId = group.id)
+        val historyKeys = database.pendingLocationHistoryDao.getHistoryKeys(groupId = groupId)
 
         val groupHistoryNodes = this.filter { it.groupId == groupId }
 
@@ -405,7 +406,7 @@ class LocationHistoryUploadEngine(
             }
         )
 
-        database.pendingLocationHistoryDao.deleteEntries(
+        database.pendingLocationHistoryDao.deletePendingEntries(
             ids = groupHistoryNodes.map { it.entryId }
         )
 
