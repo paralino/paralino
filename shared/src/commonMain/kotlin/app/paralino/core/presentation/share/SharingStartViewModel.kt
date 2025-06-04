@@ -315,7 +315,7 @@ class SharingStartViewModel(
                 shareNetwork = _uiState.value.shareNetwork,
                 shareDeviceStatus = _uiState.value.shareDeviceStatus,
                 approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
-                locationHistoryDaysMax = null
+                saveToHistory = _uiState.value.saveToHistory
             )
 
             try {
@@ -430,6 +430,12 @@ class SharingStartViewModel(
     fun turnOnDeviceStatusSharing(state: Boolean) {
         _uiState.update {
             it.copy(shareDeviceStatus = state)
+        }
+    }
+
+    fun turnOnLocationHistory(state: Boolean) {
+        _uiState.update {
+            it.copy(saveToHistory = state)
         }
     }
 

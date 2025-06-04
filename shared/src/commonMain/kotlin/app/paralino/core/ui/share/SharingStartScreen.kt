@@ -455,6 +455,24 @@ fun SharingStartScreenCore(
                     )
 
                     Spacer(modifier = Modifier.size(10.dp))
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = CoreAppIcons.AccessTime.asPainterResource(),
+                        title = "Location history",
+                        description = "Save location updates to location history",
+                        state = rememberSeekbarState(
+                            key = state,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(state.saveToHistory)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.turnOnLocationHistory(it)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp))
                     if (state.isPremiumSectionVisible) {
                         SettingsSectionHeader(
                             modifier = Modifier.zIndex(0f),

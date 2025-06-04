@@ -4,7 +4,10 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.datetime.*
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 
 data class LocationSharingContract constructor(
@@ -19,12 +22,11 @@ data class LocationSharingContract constructor(
     /**
      * Use null as not set
      */
-    val locationHistoryDaysMax: Int? = null,
+    val saveToHistory: Boolean,
 ) {
 
     val isAlwaysOn: Boolean get() = endTimeUTC == null
     val isLongTerm: Boolean get() = isLongTerm(endsInMillis)
-    val isSavingToHistory: Boolean get() = locationHistoryDaysMax == null || locationHistoryDaysMax > 0
 
     val endsInMillis: Long get() {
         if (isAlwaysOn) return -1

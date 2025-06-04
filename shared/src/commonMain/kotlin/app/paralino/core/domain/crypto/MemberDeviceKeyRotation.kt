@@ -319,7 +319,7 @@ class MemberDeviceKeyRotation(
 
         val newSenderKey = cryptoCore.getNewSymmetricKeyForLocationData()
 
-        val (newHistoryKey, historyKeyVersion) = if (contract?.asValidContract()?.isSavingToHistory == true) {
+        val (newHistoryKey, historyKeyVersion) = if (contract?.asValidContract()?.saveToHistory == true) {
             val newHistoryKey = cryptoCore.getNewSymmetricKeyForLocationData()
             val historyKeyVersion = cryptoCore.randomId(length = 32, alphabet = AlphabetType.EXTENDED)
             newHistoryKey to historyKeyVersion

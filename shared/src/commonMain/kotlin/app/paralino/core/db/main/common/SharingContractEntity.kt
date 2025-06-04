@@ -13,5 +13,6 @@ data class SharingContractEntity(
     @ColumnInfo(name = "shareElevation") val shareElevation: Boolean,
     @ColumnInfo(name = "approximateLocationInMeters") val approximateLocationInMeters: Int?,
     @ColumnInfo(name = "shareNetwork") val shareNetwork: Boolean,
-    @ColumnInfo(name = "shareDeviceStatus") val shareDeviceStatus: Boolean = true
+    @ColumnInfo(name = "shareDeviceStatus") val shareDeviceStatus: Boolean = true,
+    @ColumnInfo(name = "saveToHistory") val saveToHistory: Boolean = false
 )

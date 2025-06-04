@@ -54,14 +54,17 @@ class SaveLocationUseCase(
             .take(100)
             .let { historyMapper.pendingLocationToCore(it) }
 
-        val historyModel = LocationHistoryModel(
-            history = historyEntries.map { it.history }
-        )
-
-        val locationHistory = cryptoCore.encryptDataWithKey(
-            data = BaseRemoteModule.locationHistoryFormatter.encodeToString(historyModel),
-            key = memberKey.key
-        )
+        val locationHistory = if (historyEntries.isNotEmpty()) {
+            val historyModel = LocationHistoryModel(
+                history = historyEntries.map { it.history }
+            )
+            cryptoCore.encryptDataWithKey(
+                data = BaseRemoteModule.locationHistoryFormatter.encodeToString(historyModel),
+                key = memberKey.key
+            )
+        } else {
+            ""
+        }
 
         val status = data.deviceStatus?.let {
             cryptoCore.encryptDataWithKey(
