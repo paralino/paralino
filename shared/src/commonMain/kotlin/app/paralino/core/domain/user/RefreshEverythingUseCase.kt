@@ -4,10 +4,12 @@ import app.paralino.core.crypto.group.CryptoKEKRefreshUseCase
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
+import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.data
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -34,7 +36,8 @@ class RefreshEverythingUseCase(
     private val premiumStatusManager: PremiumStatusManager,
     private val clearUserLocationUseCase: ClearUserLocationUseCase,
     private val locationHistoryUploadEngine: LocationHistoryUploadEngine,
-    private val parentManager: LimitedExecutionParentManager
+    private val groupRemoveUseCase: GroupRemoveUseCase,
+    private val parentManager: LimitedExecutionParentManager,
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "full_refresh"
@@ -120,9 +123,22 @@ class RefreshEverythingUseCase(
                 .also { cryptoKEKRefreshUseCase.refreshAllKeys(it, force = false) }
                 .let { it.map { groupRefreshUseCase.handleGroupKeysUpdate(it) } }
         }
-            .also {
-                logg.tag("full_refresh").d("group and keys ready, updating groups")
-                local.recreateGroups(it)
+            .also { newGroups ->
+                logg.tag("full_refresh").d("group and keys ready, updating groups (${newGroups.size})")
+                val removedGroups = local.allGroupsState.value.data
+                    ?.map { it.group.id }
+                    ?.filter { groupId -> newGroups.none { it.group.group.id == groupId } }
+                    ?: emptyList()
+
+                if (removedGroups.isNotEmpty()) {
+                    logg.tag("full_refresh").d("Found (${removedGroups.size}) removed groups, will clear data")
+                }
+
+                local.recreateGroups(newGroups)
+
+                removedGroups.forEach {
+                    groupRemoveUseCase.deleteGroup(groupId = it)
+                }
             }
     }
 }
