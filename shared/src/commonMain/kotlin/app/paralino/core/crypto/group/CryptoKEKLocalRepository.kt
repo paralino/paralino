@@ -544,7 +544,7 @@ class CryptoKEKLocalRepository(
         local.deleteKeysForUser(groupId, userId)
     }
 
-    suspend fun clearKeys() {
-        local.deleteAllKeys()
+    suspend fun clearCachedKeys() {
+        local.clearCache()
     }
 }

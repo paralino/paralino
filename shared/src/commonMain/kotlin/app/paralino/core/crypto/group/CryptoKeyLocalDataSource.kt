@@ -229,12 +229,10 @@ class CryptoKeyLocalDataSource constructor(
         database.groupRelatedKeysDao.clearAllKeysForUser(groupId = groupId, userId = userId)
     }
 
-    suspend fun deleteAllKeys() {
+    suspend fun clearCache() {
         cachedMemberKeys.value = emptyList()
         cachedGroupKeys.value = emptyList()
         cachedGroupDeviceKeys.value = emptyList()
         cachedPersonalGroupKeys.value = emptyList()
-
-        database.groupRelatedKeysDao.clearAllGroupRelatedKeys()
     }
 }

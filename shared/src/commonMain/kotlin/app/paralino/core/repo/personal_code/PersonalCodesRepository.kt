@@ -219,10 +219,6 @@ class PersonalCodesRepository constructor(
         }
     }
 
-    suspend fun clearLocally() {
-        local.clear()
-    }
-
     private fun String.cleanCode(): String {
         return this
             .trim()

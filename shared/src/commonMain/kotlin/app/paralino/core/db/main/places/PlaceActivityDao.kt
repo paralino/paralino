@@ -41,7 +41,4 @@ interface PlaceActivityDao {
 
     @Query("DELETE FROM placeActivityEntity WHERE groupId = :groupId")
     suspend fun deleteForGroup(groupId: String)
-
-    @Query("DELETE FROM placeActivityEntity")
-    suspend fun clearAll()
 }

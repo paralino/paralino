@@ -277,8 +277,8 @@ class UserRepository constructor(
         triggerRemoteOnly { remote.redeemPromoCode(code = code) }
     }
 
-    suspend fun clearLocally() {
-        local.clear()
+    suspend fun clearUserAndPlansLocally() {
+        local.clearUserAndPlans()
     }
 
     suspend fun remoteLogout() {

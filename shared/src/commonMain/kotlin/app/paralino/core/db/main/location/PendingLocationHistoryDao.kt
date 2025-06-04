@@ -65,37 +65,4 @@ interface PendingLocationHistoryDao {
 
     @Query("UPDATE localLocationHistoryKeyEntity SET isSynced = :synced WHERE groupId = :groupId AND historyKeyVersion = :historyKeyVersion")
     suspend fun updateLocalHistoryKey(groupId: String, historyKeyVersion: String, synced: Boolean)
-
-
-    @Transaction
-    suspend fun clearAll() {
-        clearAllPending()
-        clearAllUnconfirmed()
-        clearAllLocalHistoryKeys()
-    }
-
-    @Transaction
-    suspend fun clearAllForGroup(groupId: String) {
-        clearAllPendingForGroup(groupId = groupId)
-        clearAllUnconfirmedForGroup(groupId = groupId)
-        clearAllLocalHistoryKeysForGroup(groupId = groupId)
-    }
-
-    @Query("DELETE FROM pendingLocationHistoryEntity")
-    suspend fun clearAllPending()
-
-    @Query("DELETE FROM unconfirmedLocationHistoryEntity")
-    suspend fun clearAllUnconfirmed()
-
-    @Query("DELETE FROM localLocationHistoryKeyEntity")
-    suspend fun clearAllLocalHistoryKeys()
-
-    @Query("DELETE FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
-    suspend fun clearAllPendingForGroup(groupId: String)
-
-    @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
-    suspend fun clearAllUnconfirmedForGroup(groupId: String)
-
-    @Query("DELETE FROM localLocationHistoryKeyEntity WHERE groupId = :groupId")
-    suspend fun clearAllLocalHistoryKeysForGroup(groupId: String)
 }

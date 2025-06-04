@@ -41,7 +41,7 @@ interface UserDao {
     suspend fun clearUser()
 
     @Transaction
-    suspend fun clearUserData() {
+    suspend fun clearUserAndPlans() {
         clearUser()
         clearAllPlans()
     }

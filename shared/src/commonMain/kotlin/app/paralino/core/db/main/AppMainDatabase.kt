@@ -8,6 +8,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import app.paralino.core.db.SqlDriverFactory
 import app.paralino.core.db.main.blocklist.BlocklistDao
 import app.paralino.core.db.main.blocklist.BlocklistEntity
+import app.paralino.core.db.main.common.LogoutDao
 import app.paralino.core.db.main.common.RemoteConfigDao
 import app.paralino.core.db.main.common.RemoteConfigEntity
 import app.paralino.core.db.main.common.SharingContractDao
@@ -98,6 +99,7 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun groupRelatedDao(): GroupRelatedEntitiesDao
     abstract fun pendingLocationHistoryDao(): PendingLocationHistoryDao
     abstract fun locationHistoryDao(): LocationHistoryDao
+    abstract fun logoutDao(): LogoutDao
 
     companion object {
         fun create(builder: SqlDriverFactory): AppMainDatabase {

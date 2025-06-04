@@ -123,11 +123,10 @@ class PlaceActivityDataSource(
         database.placeActivityDao.deleteForGroup(groupId = groupId)
     }
 
-    suspend fun clearAll() {
+    suspend fun clearCache() {
         _placeActivityCache.update {
             it.forEach { it.value.tryNotifyJob?.cancel() }
             emptyMap()
         }
-        database.placeActivityDao.clearAll()
     }
 }

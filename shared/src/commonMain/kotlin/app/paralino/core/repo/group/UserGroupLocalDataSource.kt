@@ -321,8 +321,4 @@ class UserGroupLocalDataSource constructor(
     suspend fun deletePlace(placeId: String) {
         database.groupRelatedDao.deletePlaceData(placeId = placeId)
     }
-
-    suspend fun clearAll() {
-        database.groupRelatedDao.clearAllEntities()
-    }
 }

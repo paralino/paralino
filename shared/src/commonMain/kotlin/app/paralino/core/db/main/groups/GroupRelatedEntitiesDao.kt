@@ -40,7 +40,7 @@ interface GroupRelatedEntitiesDao {
     suspend fun deleteGroup(groupId: String)
 
     @Query("DELETE FROM groupEntity")
-    suspend fun clearAllGroups()
+    suspend fun clearAllGroupsObject()
 
 
 
@@ -308,6 +308,21 @@ interface GroupRelatedEntitiesDao {
 
 
 
+    // location history
+    @Query("DELETE FROM groupHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllLocationHistoryForGroup(groupId: String)
+
+    @Query("DELETE FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllPendingHistoryForGroup(groupId: String)
+
+    @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllUnconfirmedLocationHistoryForGroup(groupId: String)
+
+    @Query("DELETE FROM localLocationHistoryKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllLocalHistoryKeysForGroup(groupId: String)
+
+
+
     // Transaction operations
 
     @Transaction
@@ -318,7 +333,7 @@ interface GroupRelatedEntitiesDao {
         places: List<PlaceEntity>,
         placeSettings: List<PlaceSettingsEntity>
     ) {
-        clearAllGroups()
+        clearAllGroupsObject()
         clearAllMembers()
         clearAllMemberLocations()
         clearAllPlaces()
@@ -352,17 +367,6 @@ interface GroupRelatedEntitiesDao {
     }
 
     @Transaction
-    suspend fun clearAllEntities() {
-        clearAllGroups()
-        clearAllMembers()
-        clearAllPlaces()
-        clearAllPlaceSettings()
-        clearAllMemberLocations()
-        clearAllPendingEvents()
-        clearAllBatteryAlertEvents()
-    }
-
-    @Transaction
     suspend fun deleteAllGroupDataForGroup(groupId: String) {
         deleteGroup(groupId = groupId)
         clearMembersForGroup(groupId = groupId)
@@ -371,6 +375,10 @@ interface GroupRelatedEntitiesDao {
         clearLocationsForGroup(groupId = groupId)
         deletePendingEventsForGroup(groupId = groupId)
         deleteBatteryAlertEvent(groupId = groupId)
+        clearAllLocationHistoryForGroup(groupId = groupId)
+        clearAllPendingHistoryForGroup(groupId = groupId)
+        clearAllUnconfirmedLocationHistoryForGroup(groupId = groupId)
+        clearAllLocalHistoryKeysForGroup(groupId = groupId)
     }
 
     @Transaction
