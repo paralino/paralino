@@ -159,6 +159,9 @@ class GroupDetailViewModel(
                     shareBattery = it.shareBattery,
                     shareSpeed = it.shareSpeed,
                     shareElevation = it.shareElevation,
+                    shareNetwork = it.shareNetwork,
+                    shareDeviceStatus = it.shareDeviceStatus,
+                    saveToHistory = it.saveToHistory,
                     approximateLocation = it.approximateLocationInMeters?.let {
                         valueFormatter.getDistanceSmall(it.toDouble())
                     }

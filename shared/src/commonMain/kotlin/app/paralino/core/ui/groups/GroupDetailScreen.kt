@@ -636,6 +636,37 @@ fun GroupDetailSharingStatusElement(
                 )
             }
 
+            if (contract.shareNetwork) {
+                Icon(
+                    painter = CoreAppIcons.SignalCell3.asPainterResource(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .size(18.dp)
+                )
+            }
+
+            if (contract.shareDeviceStatus) {
+                Icon(
+                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .size(18.dp)
+                )
+            }
+
+
+            if (contract.saveToHistory) {
+                Icon(
+                    painter = CoreAppIcons.Timer.asPainterResource(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .size(18.dp)
+                )
+            }
+
             if (contract.approximateLocation != null) {
                 Icon(
                     painter = CoreAppIcons.ShareLocation.asPainterResource(),

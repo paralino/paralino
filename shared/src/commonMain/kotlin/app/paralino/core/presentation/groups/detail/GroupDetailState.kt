@@ -24,6 +24,9 @@ data class LocationSharingState(
     val shareBattery: Boolean,
     val shareSpeed: Boolean,
     val shareElevation: Boolean,
+    val shareNetwork: Boolean,
+    val shareDeviceStatus: Boolean,
+    val saveToHistory: Boolean,
     val approximateLocation: String?
 )
 
