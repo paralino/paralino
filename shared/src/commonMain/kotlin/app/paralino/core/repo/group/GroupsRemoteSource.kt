@@ -38,7 +38,6 @@ import app.paralino.core.utils.exceptions.UnsupportedGroupEncryptionSchemeExcept
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.serialization.encodeToString
 
 class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
@@ -126,11 +125,21 @@ class GroupsRemoteSource constructor(
 
     suspend fun getAllGroups(): List<GroupWithMembersAndPlacesRaw> {
         return blocking {
-            val groupsAsync = async {
-                api.listAllDocuments(
-                    databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionGroupsID
-                ).map { it.parseGroup() }
+            val groups = api.listAllDocuments(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = appBuildConfig.resourceIds.collectionGroupsID
+            )
+                .map { it.parseGroup() }
+                .filter {
+                    AppPrefs.isEncryptionSchemeSupported(
+                        schemeVersion = it.schemeVersion,
+                        supportedEncryptionScheme = AppPrefs.supportedGroupEncryptionScheme
+                    )
+                }
+
+            if (groups.isEmpty()) {
+                // no need to fetch other resources if there are no groups
+                return@blocking emptyList()
             }
 
             val membersAsync = async {
@@ -158,37 +167,29 @@ class GroupsRemoteSource constructor(
                 placesRemote.getAllPlaces()
             }
 
-            val groups = groupsAsync.await()
             val members = membersAsync.await()
             val settings = settingsAsync.await()
             val locations = locationsAsync.await()
             val places = placesAsync.await()
 
-            groups
-                .filter {
-                    AppPrefs.isEncryptionSchemeSupported(
-                        schemeVersion = it.schemeVersion,
-                        supportedEncryptionScheme = AppPrefs.supportedGroupEncryptionScheme
-                    )
-                }
-                .map { group ->
-                    GroupWithMembersAndPlacesRaw(
-                        group = GroupWithMembersRaw(
-                            group = group,
-                            members = members
-                                .filter { it.groupId == group.id }
-                                .map { member ->
-                                    MemberWithLocationsRaw(
-                                        member = member.copy(settingsRaw = settings.firstOrNull { it.id == member.id && it.groupId == group.id }),
-                                        locations = locations.filter { location ->
-                                            member.locationIds.contains(location.id)
-                                        }
-                                    )
-                                },
-                        ),
-                        places = places.filter { it.place.groupId == group.id }
-                    )
-                }
+            groups.map { group ->
+                GroupWithMembersAndPlacesRaw(
+                    group = GroupWithMembersRaw(
+                        group = group,
+                        members = members
+                            .filter { it.groupId == group.id }
+                            .map { member ->
+                                MemberWithLocationsRaw(
+                                    member = member.copy(settingsRaw = settings.firstOrNull { it.id == member.id && it.groupId == group.id }),
+                                    locations = locations.filter { location ->
+                                        member.locationIds.contains(location.id)
+                                    }
+                                )
+                            },
+                    ),
+                    places = places.filter { it.place.groupId == group.id }
+                )
+            }
         }
     }
 
@@ -214,7 +215,7 @@ class GroupsRemoteSource constructor(
                 }
             }
 
-            val isEncryptionSchemeSupported =  AppPrefs.isEncryptionSchemeSupported(
+            val isEncryptionSchemeSupported = AppPrefs.isEncryptionSchemeSupported(
                 schemeVersion = group.schemeVersion,
                 supportedEncryptionScheme = AppPrefs.supportedGroupEncryptionScheme
             )
