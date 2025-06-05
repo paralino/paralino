@@ -242,7 +242,7 @@ private fun ElevationSwitch(modifier: Modifier = Modifier, animationStarted: Boo
         modifier = modifier
             .height(LargeSwitchDefaults.minHeight)
             .fillMaxWidth(0.45f),
-        icon = CoreAppIcons.StackedLineChart.asPainterResource(),
+        icon = CoreAppIcons.Elevation.asPainterResource(),
         title = stringResource(MR.strings.groups_sharing_setting_elevation_share),
         description = null,
         state = rememberSeekbarState(

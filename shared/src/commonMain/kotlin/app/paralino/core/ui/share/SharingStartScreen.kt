@@ -378,7 +378,7 @@ fun SharingStartScreenCore(
                         )
                         LargeSeekbarSwitch(
                             modifier = Modifier.fillMaxWidth(),
-                            icon = CoreAppIcons.StackedLineChart.asPainterResource(),
+                            icon = CoreAppIcons.Elevation.asPainterResource(),
                             title = stringResource(MR.strings.groups_sharing_setting_elevation_share),
                             description = null,
                             state = shareElevationState,

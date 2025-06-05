@@ -333,7 +333,7 @@ fun GroupMemberWithLocations(
 
                     if (state.singleVisibleLocation?.elevation != null) {
                         Icon(
-                            painter = CoreAppIcons.StackedLineChart.asPainterResource(),
+                            painter = CoreAppIcons.Elevation.asPainterResource(),
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(end = 2.dp)
@@ -546,7 +546,7 @@ private fun ColumnScope.GroupMemberActions(
         if (state.actions.navigate != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                startIcon = CoreAppIcons.Map.asPainterResource(),
+                startIcon = CoreAppIcons.Directions.asPainterResource(),
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
                 text = stringResource(MR.strings.group_members_item_directions_button),
                 onClick = {
@@ -752,7 +752,7 @@ private fun GroupMemberLocationChild(
 
                 if (state.elevation != null) {
                     Icon(
-                        painter = CoreAppIcons.StackedLineChart.asPainterResource(),
+                        painter = CoreAppIcons.Elevation.asPainterResource(),
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 2.dp)

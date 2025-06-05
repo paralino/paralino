@@ -628,7 +628,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.shareElevation) {
                 Icon(
-                    painter = CoreAppIcons.StackedLineChart.asPainterResource(),
+                    painter = CoreAppIcons.Elevation.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)
@@ -659,7 +659,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.saveToHistory) {
                 Icon(
-                    painter = CoreAppIcons.Timer.asPainterResource(),
+                    painter = CoreAppIcons.TimelinePath.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)

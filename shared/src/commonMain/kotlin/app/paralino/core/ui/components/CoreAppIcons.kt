@@ -29,8 +29,10 @@ import paralino.shared.generated.resources.ic_content_copy
 import paralino.shared.generated.resources.ic_delete
 import paralino.shared.generated.resources.ic_delete_forever
 import paralino.shared.generated.resources.ic_devices
+import paralino.shared.generated.resources.ic_directions
 import paralino.shared.generated.resources.ic_drag_indicator
 import paralino.shared.generated.resources.ic_edit
+import paralino.shared.generated.resources.ic_elevation_2
 import paralino.shared.generated.resources.ic_expand_less
 import paralino.shared.generated.resources.ic_expand_more
 import paralino.shared.generated.resources.ic_family_star
@@ -65,6 +67,7 @@ import paralino.shared.generated.resources.ic_privacy_tip
 import paralino.shared.generated.resources.ic_radio_button_unchecked
 import paralino.shared.generated.resources.ic_refresh
 import paralino.shared.generated.resources.ic_replay
+import paralino.shared.generated.resources.ic_route_alt
 import paralino.shared.generated.resources.ic_save
 import paralino.shared.generated.resources.ic_schedule
 import paralino.shared.generated.resources.ic_security
@@ -89,6 +92,8 @@ import paralino.shared.generated.resources.ic_wifi_2
 import paralino.shared.generated.resources.ic_wifi_3
 import paralino.shared.generated.resources.ic_wifi_off
 import paralino.shared.generated.resources.ic_ruler
+import paralino.shared.generated.resources.ic_timeline
+import paralino.shared.generated.resources.ic_timeline_path
 import paralino.shared.generated.resources.image_map_mockup_dark
 import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
@@ -171,6 +176,12 @@ object CoreAppIcons {
     val NotificationsOff get() = Res.drawable.ic_notifications_off
     val Adjust get() = Res.drawable.ic_adjust
     val Groups get() = Res.drawable.ic_groups
+
+    val Elevation get() = Res.drawable.ic_elevation_2
+    val Timeline get() = Res.drawable.ic_timeline
+    val TimelinePath get() = Res.drawable.ic_timeline_path
+    val RouteAlt get() = Res.drawable.ic_route_alt
+    val Directions get() = Res.drawable.ic_directions
 
     val SignalWifi3 get() = Res.drawable.ic_wifi_3
     val SignalWifi2 get() = Res.drawable.ic_wifi_2
