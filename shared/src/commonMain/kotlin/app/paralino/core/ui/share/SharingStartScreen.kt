@@ -439,6 +439,24 @@ fun SharingStartScreenCore(
                     Spacer(modifier = Modifier.size(10.dp))
                     LargeSeekbarSwitch(
                         modifier = Modifier.fillMaxWidth(),
+                        icon = CoreAppIcons.TimelinePath.asPainterResource(),
+                        title = stringResource(MR.strings.groups_sharing_setting_timeline_title),
+                        description = stringResource(MR.strings.groups_sharing_setting_timeline_description),
+                        state = rememberSeekbarState(
+                            key = state,
+                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                seekbarState = null,
+                                switchState = LargeSeekbarSwitchState.Switch(state.saveToHistory)
+                            )
+                        ).value,
+                        onStateChange = {
+                            vm.turnOnLocationHistory(it)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.size(10.dp))
+                    LargeSeekbarSwitch(
+                        modifier = Modifier.fillMaxWidth(),
                         icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
                         title = stringResource(MR.strings.groups_sharing_setting_deviceStatus_title),
                         description = stringResource(MR.strings.groups_sharing_setting_deviceStatus_description, stringResource(MR.strings.group_members_status_inactive)),
@@ -451,24 +469,6 @@ fun SharingStartScreenCore(
                         ).value,
                         onStateChange = {
                             vm.turnOnDeviceStatusSharing(it)
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.size(10.dp))
-                    LargeSeekbarSwitch(
-                        modifier = Modifier.fillMaxWidth(),
-                        icon = CoreAppIcons.AccessTime.asPainterResource(),
-                        title = "Location history",
-                        description = "Save location updates to location history",
-                        state = rememberSeekbarState(
-                            key = state,
-                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                                seekbarState = null,
-                                switchState = LargeSeekbarSwitchState.Switch(state.saveToHistory)
-                            )
-                        ).value,
-                        onStateChange = {
-                            vm.turnOnLocationHistory(it)
                         }
                     )
 

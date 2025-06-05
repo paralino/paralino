@@ -431,6 +431,8 @@
     <string name="groups_sharing_setting_deviceStatus_description">If enabled, your status will show if your location is off, you are missing location permissions, or you stop sharing your location. If disabled, your status will show **%s** in those cases.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notify members</string>
     <string name="groups_sharing_setting_notifyOthers_description">If enabled, group members will receive notification that you started sharing your location.</string>
+    <string name="groups_sharing_setting_timeline_title">Timeline</string>
+    <string name="groups_sharing_setting_timeline_description">If enabled, your location updates will be saved to location history.</string>
     <string name="groups_sharing_button_start">Start sharing</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_device_name_placeholder">Device name (optional)</string>
