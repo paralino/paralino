@@ -152,18 +152,21 @@ class RegisterDeviceForSharingUseCase constructor(
 
                     val safetySignature = getSafetySignature(groupId = groupId, member = member)
 
-                    if (keyData.historyKeyVersion != null && keyData.plainTextHistoryKey != null) {
-                        cryptoKEKRepo.saveGroupHistoryKey(
-                            groupId = groupId,
-                            userKeyVersion = userKey.version,
-                            historyKeyVersion = keyData.historyKeyVersion,
-                            encryptedHistoryKey = cryptoCore.encryptDataWithKey(
+                    // always save history key entry even if invalid so we keep ratchet going
+                    cryptoKEKRepo.saveGroupHistoryKey(
+                        groupId = groupId,
+                        userKeyVersion = userKey.version,
+                        historyKeyVersion = keyData.historyKeyVersion ?: "",
+                        encryptedHistoryKey = if (!keyData.plainTextHistoryKey.isNullOrBlank()) {
+                            cryptoCore.encryptDataWithKey(
                                 data = keyData.plainTextHistoryKey,
                                 key = userKey.key
-                            ),
-                            isSynced = true
-                        )
-                    }
+                            )
+                        } else {
+                            ""
+                        },
+                        isSynced = true
+                    )
 
                     cryptoKEKRepo.updateIntegrity(
                         groupId = group.id,

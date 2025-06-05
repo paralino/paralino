@@ -48,6 +48,8 @@ class SaveLocationUseCase(
         }
 
         val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupId = data.groupId)
+            ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
+
         val historyEntries = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = data.groupId)
             .filter { it.localHistoryKeyId == historyKey?.id }
             .sortedByDescending { it.id }

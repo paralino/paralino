@@ -336,6 +336,7 @@ class LocationHistoryUploadEngine(
                         entryPerDay.value.mapNotNull { entryPerKey ->
 
                             val historyKey = historyKeys.firstOrNull { it.id == entryPerKey.key }
+                                ?.takeIf { it.historyKeyVersion.isNotBlank() }
 
                             if (historyKey != null) {
                                 val historyKeyData = HistoryKeyPayload(

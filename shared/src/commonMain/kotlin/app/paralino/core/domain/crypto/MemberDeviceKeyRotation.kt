@@ -211,18 +211,21 @@ class MemberDeviceKeyRotation(
                 membershipKey = publicKey.membershipKey,
             )
 
-            if (newLocationData.keyData?.historyKeyVersion != null && newLocationData.keyData.plainTextHistoryKey != null) {
-                cryptoKEKRepository.saveGroupHistoryKey(
-                    groupId = group.id,
-                    userKeyVersion = userKey.version,
-                    historyKeyVersion = newLocationData.keyData.historyKeyVersion,
-                    encryptedHistoryKey = cryptoCore.encryptDataWithKey(
+            // always save history key entry even if invalid so we keep ratchet going
+            cryptoKEKRepository.saveGroupHistoryKey(
+                groupId = group.id,
+                userKeyVersion = userKey.version,
+                historyKeyVersion = newLocationData.keyData?.historyKeyVersion ?: "",
+                encryptedHistoryKey = if (!newLocationData.keyData?.plainTextHistoryKey.isNullOrBlank()) {
+                    cryptoCore.encryptDataWithKey(
                         data = newLocationData.keyData.plainTextHistoryKey,
                         key = userKey.key
-                    ),
-                    isSynced = false
-                )
-            }
+                    )
+                } else {
+                    ""
+                },
+                isSynced = false
+            )
 
             cryptoKEKRepository.updateIntegrity(
                 groupId = group.id,
