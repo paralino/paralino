@@ -48,7 +48,7 @@ class GetLocationHistoryUseCase(
                 keys = it.map { it.historyKeyVersion }
             )
 
-            historyMapper.local2Core(
+            historyMapper.local2CoreGroup(
                 groupId = groupId,
                 memberUserId = memberUserId,
                 keys = keys,

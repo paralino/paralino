@@ -205,7 +205,7 @@ val mappersModule = module {
     single { PlaceMapperCore(get(), get(), get()) }
     single { GroupPlaceMapperLocal(get(), get()) }
     single { PendingLocationHistoryMapper(get(), get()) }
-    single { LocationHistoryMapper(get(), get()) }
+    single { LocationHistoryMapper(get(), get(), get()) }
 }
 
 

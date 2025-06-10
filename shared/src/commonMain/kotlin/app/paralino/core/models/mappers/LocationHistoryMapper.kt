@@ -3,12 +3,14 @@ package app.paralino.core.models.mappers
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.LocationHistoryKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.db.main.location.GroupHistoryEntity
 import app.paralino.core.db.main.location.PersonalHistoryEntity
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
@@ -18,12 +20,11 @@ import app.paralino.core.utils.exceptions.DecryptionException
 
 class LocationHistoryMapper(
     private val cryptoCore: CryptoCore,
-    private val cryptoKEKRepo: CryptoKEKLocalRepository
+    private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val appPrefs: AppPrefs
 ) {
 
-    suspend fun local2Core(
-        groupId: String,
-        memberUserId: String,
+    suspend fun local2CorePersonal(
         keys: List<PersonalHistoryKeyEntity>,
         entries: List<PersonalHistoryEntity>
     ): LocationHistoryModelForUser {
@@ -33,8 +34,8 @@ class LocationHistoryMapper(
             .mapNotNull { cryptoKEKRepo.parseLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid }
 
         return remote2Core(
-            groupId = groupId,
-            memberUserId = memberUserId,
+            groupId = UserGroup.groupPersonalDevicesId,
+            memberUserId = appPrefs.userId,
             keys = actualKeys,
             entries = entries.map {
                 LocationHistoryReadEntry(
@@ -49,7 +50,7 @@ class LocationHistoryMapper(
         )
     }
 
-    suspend fun local2Core(
+    suspend fun local2CoreGroup(
         groupId: String,
         memberUserId: String,
         keys: List<GroupHistoryKeyEntity>,

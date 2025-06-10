@@ -39,7 +39,7 @@ interface LocationHistoryDao {
         dates: List<String>
     ): List<GroupHistoryEntity>
 
-    @Query("SELECT * FROM groupHistoryKeyEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId AND historyKeyVersion IN (:keys)")
+    @Query("SELECT * FROM groupHistoryKeysEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId AND historyKeyVersion IN (:keys)")
     suspend fun getGroupHistoryKeysOnce(
         groupId: String,
         ownerUserId: String,
@@ -55,9 +55,9 @@ interface LocationHistoryDao {
     @Query("SELECT * FROM personalHistoryEntity WHERE dateIdentifier IN (:dates)")
     suspend fun getPersonalHistoryOnce(
         dates: List<String>
-    )
+    ): List<PersonalHistoryEntity>
 
-    @Query("SELECT * FROM personalHistoryKeyEntity WHERE historyKeyVersion IN (:keys)")
+    @Query("SELECT * FROM personalHistoryKeysEntity WHERE historyKeyVersion IN (:keys)")
     suspend fun getPersonalHistoryKeysOnce(
         keys: List<String>
     ): List<PersonalHistoryKeyEntity>
