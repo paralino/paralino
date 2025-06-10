@@ -4,6 +4,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class LocationHistoryModel(
@@ -34,16 +35,19 @@ data class LocationHistoryPointModelForMember(
 
 @Serializable
 data class LocationHistoryPointModel(
+    val timeUTC: String,
+    val statusTime: String,
     val lat: Double,
     val lng: Double,
     val acc: Float = 0f,
-    val timeUTC: String,
     val speed: Float? = null,
     val alt: Float? = null,
+    val status: String? = null,
     val bat: Int? = null,
     val charging: Boolean? = null,
     val network: String? = null,
     val signal: Int? = null,
 ) {
-    val dayKey = timeUTC.isoToLocalDateTime()?.date?.toString()
+    @Transient
+    val dayKey = statusTime.isoToLocalDateTime()?.date?.toString()
 }

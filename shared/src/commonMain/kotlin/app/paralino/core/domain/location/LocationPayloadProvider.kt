@@ -72,14 +72,16 @@ class LocationPayloadProvider(
                 locationData,
                 contract?.takeIf { it.saveToHistory }
             ) { data, contract ->
-                if (data.timeUTC != null) {
+                if (data.timeUTC != null && status.timeUTC != null) {
                     LocationHistoryPointModel(
+                        timeUTC = data.timeUTC,
+                        statusTime = status.timeUTC,
                         lat = data.lat,
                         lng = data.lng,
                         acc = data.accuracy,
-                        timeUTC = data.timeUTC,
                         speed = data.speed,
                         alt = data.altitude,
+                        status = status.status,
                         bat = status.batteryLevel,
                         charging = status.isCharging,
                         network = status.network,
