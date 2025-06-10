@@ -1,6 +1,8 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,7 +11,21 @@ data class LocationHistoryModel(
 )
 
 @Serializable
-data class LocationHistoryModelForMember(
+data class LocationHistoryModelForUser(
+    val groupId: String,
+    val memberUserId: String,
+    val history: List<LocationHistoryModelForDevice>
+)
+
+@Serializable
+data class LocationHistoryModelForDevice(
+    val locationId: String?,
+    @Contextual
+    val history: CryptoResource<LocationHistoryModel>
+)
+
+@Serializable
+data class LocationHistoryPointModelForMember(
     val groupId: String,
     val entryId: Long,
     val localHistoryKeyId: Long,

@@ -380,3 +380,12 @@ data class HistoryUploadError(
     val key: String,
     val error: FunctionErrorBody?
 )
+
+@Serializable
+data class GroupLocationHistoryReadPayload(
+    val groupId: String,
+    val memberUserId: String,
+    val locationId: String?,
+    val startDateKey: String,
+    val endDateKey: String
+)

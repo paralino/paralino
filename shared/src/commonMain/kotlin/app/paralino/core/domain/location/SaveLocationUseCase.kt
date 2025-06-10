@@ -11,7 +11,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.mappers.PersonalLocationHistoryMapper
+import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.utils.BaseRemoteModule
@@ -26,7 +26,7 @@ class SaveLocationUseCase(
     private val appBuildConfig: AppBuildConfig,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
-    private val historyMapper: PersonalLocationHistoryMapper,
+    private val historyMapper: PendingLocationHistoryMapper,
     private val locationHistoryUpload: LocationHistoryUploadEngine,
     private val appPrefs: AppPrefs
 ) {

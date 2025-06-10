@@ -1,17 +1,13 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.db.main.keys.GroupDeviceKeysEntity
-import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.GroupKeysEntity
 import app.paralino.core.db.main.keys.GroupMembersKeysEntity
 import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
-import app.paralino.core.models.raw.GroupLocationHistoryCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
-import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import app.paralino.core.utils.extensions.nowUTC
 
 class GroupKeysMapper {
     fun local2Remote(model: GroupKeysEntity): GroupCryptoKeyDataRaw {
@@ -107,34 +103,6 @@ class GroupKeysMapper {
             groupId = model.groupId,
             personalGroupKeyVersion = model.personalGroupKeyVersion,
             userKeyVersion = model.userKeyVersion
-        )
-    }
-
-    fun local2Remote(model: GroupHistoryKeyEntity): GroupLocationHistoryCryptoKeyRaw {
-        return GroupLocationHistoryCryptoKeyRaw(
-            id = model.id,
-            groupId = model.groupId,
-            ownerUserId = model.ownerUserId,
-            memberUserId = model.memberUserId,
-            deviceId = model.deviceId,
-            memberKeyVersion = model.memberKeyVersion,
-            historyKeyVersion = model.historyKeyVersion,
-            encryptedHistoryKey = model.encryptedHistoryKey,
-            createdAt = model.createdAt.isoWithOffsetToInstant() ?: nowUTC()
-        )
-    }
-
-    fun remote2Local(model: GroupLocationHistoryCryptoKeyRaw): GroupHistoryKeyEntity {
-        return GroupHistoryKeyEntity(
-            id = model.id,
-            groupId = model.groupId,
-            ownerUserId = model.ownerUserId,
-            memberUserId = model.memberUserId,
-            deviceId = model.deviceId,
-            memberKeyVersion = model.memberKeyVersion,
-            historyKeyVersion = model.historyKeyVersion,
-            encryptedHistoryKey = model.encryptedHistoryKey,
-            createdAt = model.createdAt.toString()
         )
     }
 }

@@ -10,13 +10,12 @@ import app.paralino.core.db.main.location.UnconfirmedLocationHistoryEntity
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.IntegrityResult
-import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
-import app.paralino.core.models.location.LocationHistoryModelForMember
-import app.paralino.core.models.mappers.PersonalLocationHistoryMapper
+import app.paralino.core.models.location.LocationHistoryPointModelForMember
+import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.HistoryUploadResponse
 import app.paralino.core.models.raw.LocationHistoryGroupPayload
 import app.paralino.core.models.raw.LocationHistoryPayloadEntry
@@ -27,18 +26,15 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.InvalidRequestException
-import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 interface ILocationHistoryUploadEngine {
     abstract fun syncPendingEntriesInBackground()
@@ -54,7 +50,7 @@ class IOSLocationHistoryUploadEngine : ILocationHistoryUploadEngine {
 class LocationHistoryUploadEngine(
     private val cryptoUserKeysRepo: CryptoUserKeysLocalSource,
     private val validityVerification: GroupValidityVerification,
-    private val historyMapper: PersonalLocationHistoryMapper,
+    private val historyMapper: PendingLocationHistoryMapper,
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val database: MainDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider,
@@ -160,7 +156,7 @@ class LocationHistoryUploadEngine(
         }
     }
 
-    private suspend fun List<LocationHistoryModelForMember>.mapPersonalHistory(): LocationHistoryPersonalPayload? {
+    private suspend fun List<LocationHistoryPointModelForMember>.mapPersonalHistory(): LocationHistoryPersonalPayload? {
 
         val personalHistoryNodes = this
             .filter { it.groupId == UserGroup.groupPersonalDevicesId }
@@ -306,7 +302,7 @@ class LocationHistoryUploadEngine(
         )
     }
 
-    private suspend fun List<LocationHistoryModelForMember>.mapGroupHistory(groupId: String): LocationHistoryGroupPayload? {
+    private suspend fun List<LocationHistoryPointModelForMember>.mapGroupHistory(groupId: String): LocationHistoryGroupPayload? {
 
         val group = groupLocalDataSource.getGroupWithMembersOnce(groupId = groupId)
 

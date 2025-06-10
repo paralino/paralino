@@ -15,8 +15,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.crypto.GroupCryptoKeyRotation
 import app.paralino.core.domain.crypto.GroupValidityVerification
-import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
-import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.RawCryptoPresentation
 import app.paralino.core.domain.group.GroupBatterySettingsUpdateUseCase
 import app.paralino.core.domain.group.GroupCreateUseCase
@@ -30,6 +28,7 @@ import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
+import app.paralino.core.domain.location.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationPayloadProvider
@@ -76,11 +75,12 @@ import app.paralino.core.models.mappers.GroupMapperCore
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.mappers.GroupWithPlacesMapperCore
 import app.paralino.core.models.mappers.GroupsMapperLocal
+import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.mappers.MemberMapperCore
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
-import app.paralino.core.models.mappers.PersonalLocationHistoryMapper
+import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.mappers.PlaceSettingsMapperCore
 import app.paralino.core.models.mappers.SharingContractsMapper
@@ -105,7 +105,6 @@ import app.paralino.core.repo.personal_code.PersonalCodesRemoteSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
-import app.paralino.core.repo.places.PlacesActivityProcessor
 import app.paralino.core.repo.places.PlacesGetRemoteSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
@@ -205,7 +204,8 @@ val mappersModule = module {
     single { PlaceSettingsMapperCore() }
     single { PlaceMapperCore(get(), get(), get()) }
     single { GroupPlaceMapperLocal(get(), get()) }
-    single { PersonalLocationHistoryMapper(get(), get()) }
+    single { PendingLocationHistoryMapper(get(), get()) }
+    single { LocationHistoryMapper(get(), get()) }
 }
 
 
@@ -270,6 +270,7 @@ val coreModule = module {
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
+    single { GetLocationHistoryUseCase(get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }

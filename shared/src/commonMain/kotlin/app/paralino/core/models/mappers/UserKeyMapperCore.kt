@@ -2,17 +2,13 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.SimpleKeyPairData
-import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.db.main.keys.UserKeysEntity
 import app.paralino.core.logg
-import app.paralino.core.models.raw.PersonalLocationHistoryCryptoKeyRaw
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.user.OldMasterKeys
 import app.paralino.core.models.user.SessionCryptoKeyData
 import app.paralino.core.models.user.SymmetricCryptoKeyData
 import app.paralino.core.utils.BaseRemoteModule
-import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import app.paralino.core.utils.extensions.nowUTC
 
 class UserKeyMapperCore constructor(
     private val cryptoCore: CryptoCore,
@@ -105,29 +101,5 @@ class UserKeyMapperCore constructor(
         ).let {
             BaseRemoteModule.formatter.decodeFromString<OldMasterKeys>(it)
         }
-    }
-
-    fun local2Remote(model: PersonalHistoryKeyEntity): PersonalLocationHistoryCryptoKeyRaw {
-        return PersonalLocationHistoryCryptoKeyRaw(
-            id = model.id,
-            ownerUserId = model.ownerUserId,
-            deviceId = model.deviceId,
-            encryptedHistoryKey = model.encryptedHistoryKey,
-            userKeyVersion = model.userKeyVersion,
-            historyKeyVersion = model.historyKeyVersion,
-            createdAt = model.createdAt.isoWithOffsetToInstant() ?: nowUTC()
-        )
-    }
-
-    fun remote2Local(model: PersonalLocationHistoryCryptoKeyRaw): PersonalHistoryKeyEntity {
-        return PersonalHistoryKeyEntity(
-            id = model.id,
-            ownerUserId = model.ownerUserId,
-            deviceId = model.deviceId,
-            encryptedHistoryKey = model.encryptedHistoryKey,
-            userKeyVersion = model.userKeyVersion,
-            historyKeyVersion = model.historyKeyVersion,
-            createdAt = model.createdAt.toString()
-        )
     }
 }

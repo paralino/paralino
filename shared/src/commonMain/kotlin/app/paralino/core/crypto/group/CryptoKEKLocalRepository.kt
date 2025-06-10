@@ -5,16 +5,18 @@ import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberIdentityKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
+import app.paralino.core.crypto.LocationHistoryKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
+import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.repo.base.BaseRepository
@@ -296,6 +298,86 @@ class CryptoKEKLocalRepository(
             key = memberKey,
             deviceKeyVersion = keyRaw.deviceKeyVersion,
             memberKeyVersion = keyRaw.memberKeyVersion
+        )
+    }
+
+    suspend fun parseLocationHistoryKey(
+        keyRaw: GroupHistoryKeyEntity
+    ): LocationHistoryKey {
+        if (keyRaw.encryptedHistoryKey.isBlank()) {
+            logg.tag("tag_crypto_key_history")
+                .w("No history keys available for user ${keyRaw.ownerUserId} in group ${keyRaw.groupId}")
+            return LocationHistoryKey.Error.MissingHistoryKey
+        }
+
+        val memberPublicKey = when (
+            val memberPublicKey = getMemberPublicKey(groupId = keyRaw.groupId, memberUserId = keyRaw.ownerUserId)
+        ) {
+            is GroupMemberMainPublicKey.Error -> {
+                return LocationHistoryKey.Error.InvalidOwnerPublicKey(memberPublicKey)
+            }
+
+            is GroupMemberMainPublicKey.Valid -> {
+                memberPublicKey
+            }
+        }
+
+        val myPreKey =
+            when (val myPreKey = getMyPreKeyForGroup(keyRaw.groupId, keyRaw.memberKeyVersion)) {
+                is UserGroupPersonalKeyPair.Error -> {
+                    return LocationHistoryKey.Error.InvalidPersonalKeyPair(myPreKey)
+                }
+
+                is UserGroupPersonalKeyPair.Valid -> {
+                    myPreKey
+                }
+            }
+
+        val historyKey = try {
+            cryptoCore.decryptKeyWithKeyPair(
+                key = keyRaw.encryptedHistoryKey,
+                myPrivateKey = myPreKey.key.privateKey,
+                publicKey = memberPublicKey.membershipKey
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_history")
+                .w("Invalid history key for group ${keyRaw.groupId} & member ${keyRaw.ownerUserId} (${e.message})")
+            return LocationHistoryKey.Error.Invalid
+        }
+
+        return LocationHistoryKey.Valid(
+            key = historyKey,
+            historyKeyVersion = keyRaw.historyKeyVersion,
+            memberKeyVersion = keyRaw.memberKeyVersion
+        )
+    }
+
+    suspend fun parseLocationHistoryKey(
+        keyRaw: PersonalHistoryKeyEntity
+    ): LocationHistoryKey {
+        if (keyRaw.encryptedHistoryKey.isBlank()) {
+            logg.tag("tag_crypto_key_history")
+                .w("No private history keys available")
+            return LocationHistoryKey.Error.MissingHistoryKey
+        }
+
+        val userKey = userKeyRepository.personalKey(version = keyRaw.userKeyVersion)
+
+        val historyKey = try {
+            cryptoCore.decryptDataWithKey(
+                data = keyRaw.encryptedHistoryKey,
+                key = userKey.key
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_history")
+                .w("Invalid personal history key (${e.message})")
+            return LocationHistoryKey.Error.Invalid
+        }
+
+        return LocationHistoryKey.Valid(
+            key = historyKey,
+            historyKeyVersion = keyRaw.historyKeyVersion,
+            memberKeyVersion = userKey.version
         )
     }
 
