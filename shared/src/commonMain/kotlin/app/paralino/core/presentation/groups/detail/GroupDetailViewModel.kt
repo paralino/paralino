@@ -231,7 +231,7 @@ class GroupDetailViewModel(
     }
 
     fun blockUser(userId: String) {
-        val member = groupData.value?.memberByUserId(userId = userId) ?: return
+        val member = groupData.value?.memberByUserId(userId = userId)?.member ?: return
         groupMemberRemove.blockUser(member)
             .mapToPayload { Unit }
             .onEach { result ->

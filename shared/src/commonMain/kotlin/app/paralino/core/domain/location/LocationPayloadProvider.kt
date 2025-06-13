@@ -9,9 +9,12 @@ import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.logg
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationHistoryModel
+import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.LocationHistoryPointModel
+import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
 
 class LocationPayloadProvider(
@@ -74,18 +77,26 @@ class LocationPayloadProvider(
             ) { data, contract ->
                 if (data.timeUTC != null && status.timeUTC != null) {
                     LocationHistoryPointModel(
-                        timeUTC = data.timeUTC,
-                        statusTime = status.timeUTC,
-                        lat = data.lat,
-                        lng = data.lng,
-                        acc = data.accuracy,
-                        speed = data.speed,
-                        alt = data.altitude,
-                        status = status.status,
-                        bat = status.batteryLevel,
-                        charging = status.isCharging,
-                        network = status.network,
-                        signal = status.signal
+                        loc = LocationHistoryPointLocationModel(
+                            tA = data.timeUTC,
+                            tB = data.timeUTC,
+                            lat = data.lat,
+                            lng = data.lng,
+                            // we only need partial decimal places for accuracy, speed and elevation
+                            // that is already more than enough
+                            acc = data.accuracy.roundToPrecision(decimalPlaces = 2),
+                            spd = data.speed?.roundToPrecision(decimalPlaces = 2),
+                            alt = data.altitude?.roundToPrecision(decimalPlaces = 2)
+                        ),
+                        status = LocationHistoryPointStatusModel(
+                            tA = status.timeUTC,
+                            tB = status.timeUTC,
+                            stat = status.statusType?.id,
+                            bat = status.batteryLevel,
+                            chrg = if (status.isCharging == null) null else if (status.isCharging) 1 else 0,
+                            net = status.network,
+                            sig = status.signal
+                        ),
                     )
                 } else {
                     null

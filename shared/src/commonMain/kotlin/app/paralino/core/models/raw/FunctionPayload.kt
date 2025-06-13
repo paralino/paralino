@@ -336,6 +336,7 @@ data class LocationHistoryPersonalPayload(
 @Serializable
 data class LocationHistoryGroupPayload(
     val groupId: String,
+    val locationId: String,
     val entries: List<LocationHistoryPayloadEntry>,
     val retryEntries: List<LocationHistoryPayloadEntry>,
 )
@@ -385,6 +386,13 @@ data class HistoryUploadError(
 data class GroupLocationHistoryReadPayload(
     val groupId: String,
     val memberUserId: String,
+    val locationId: String?,
+    val startDateKey: String,
+    val endDateKey: String
+)
+
+@Serializable
+data class PersonalLocationHistoryReadPayload(
     val locationId: String?,
     val startDateKey: String,
     val endDateKey: String

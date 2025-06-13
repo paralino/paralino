@@ -67,7 +67,7 @@ class MemberDeviceStatusProvider(
             isCharging = if(sharingBattery) deviceApiProvider.isCharging.takeIf { sharingBattery } else null,
             network = if(sharingNetwork) deviceApiProvider.connectionStatusProvider.initAndGetStatus().networkType?.key else null,
             signal = if(sharingNetwork) deviceApiProvider.connectionStatusProvider.getSignalStrength() else null,
-            status = getStatusType(groupId, sharingContract).key
+            status = getStatusType(groupId, sharingContract).fullKey
         )
     }
 }

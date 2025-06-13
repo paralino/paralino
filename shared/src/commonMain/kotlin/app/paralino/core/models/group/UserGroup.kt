@@ -96,6 +96,14 @@ data class UserGroup constructor(
         }
     }
 
+    fun historyDaysLimit(config: ConfigData): Int {
+        if (isPlanExpired) {
+            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).historyDaysLimit
+        } else {
+            return config.planConfigForPlanTypeOrDefault(planType).historyDaysLimit
+        }
+    }
+
     fun planConfig(config: ConfigData): PlanConfig {
         if (isPlanExpired) {
             return config.planConfigForPlanTypeOrDefault(fallbackPlanType)
@@ -160,7 +168,7 @@ data class UserGroupWithMembers constructor(
                 throw IllegalArgumentException("Missing current user id from preferences")
             }
 
-            val currentUser = memberByUserId(userId)
+            val currentUser = memberByUserId(userId)?.member
                 ?: throw IllegalArgumentException("Missing current user in group members")
 
             return currentUser.isVerified
@@ -177,11 +185,11 @@ data class UserGroupWithMembers constructor(
 
     val isCurrentUserOwner: Boolean get() = group.isCurrentUserOwner
 
-    fun memberByUserId(userId: String): MemberModel? {
-        return members.firstOrNull { it.member.userId == userId }?.member
+    fun memberByUserId(userId: String): MemberModelWithLocations? {
+        return members.firstOrNull { it.member.userId == userId }
     }
 
-    val currentUserMember: MemberModel? = memberByUserId(userId = appPrefs.userId)
+    val currentUserMember: MemberModel? = memberByUserId(userId = appPrefs.userId)?.member
 
     val currentDeviceLocation: MemberLocation?
         get() {

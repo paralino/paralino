@@ -9,11 +9,17 @@ data class GroupLocationHistoryReadResponse(
 )
 
 @Serializable
+data class PersonalLocationHistoryReadResponse(
+    val entries: List<LocationHistoryReadEntry>,
+    val keys: List<LocationHistoryReadKey>,
+)
+
+@Serializable
 data class LocationHistoryReadEntry(
     val id: String,
     val dateKey: String,
-    val deviceId: String?,
-    val locationId: String?,
+    val deviceId: String? = null,
+    val locationId: String? = null,
     val keyVersion: String,
     val historyData: String
 )

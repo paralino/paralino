@@ -38,6 +38,7 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.domain.location.RealtimeEventsProcessor
+import app.paralino.core.domain.location.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.domain.location.SaveLocationUseCase
@@ -270,7 +271,8 @@ val coreModule = module {
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
-    single { GetLocationHistoryUseCase(get(), get(), get()) }
+    single { GetLocationHistoryUseCase(get(), get()) }
+    single { RefreshLocationHistoryUseCase(get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }

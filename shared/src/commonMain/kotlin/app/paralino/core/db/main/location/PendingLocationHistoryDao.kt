@@ -34,6 +34,9 @@ interface PendingLocationHistoryDao {
     @Query("SELECT * FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
     suspend fun getAllEntriesForGroupOnce(groupId: String): List<PendingLocationHistoryEntity>
 
+    @Query("SELECT * FROM pendingLocationHistoryEntity WHERE groupId = :groupId ORDER BY id DESC")
+    suspend fun getLatestPendingEntryOnce(groupId: String): PendingLocationHistoryEntity?
+
     @Query("SELECT * FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
     suspend fun getAllUnconfirmedEntriesForGroupOnce(groupId: String): List<UnconfirmedLocationHistoryEntity>
 

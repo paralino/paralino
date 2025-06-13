@@ -55,7 +55,7 @@ class BatteryNotificationsViewModel(
             .map { group ->
                 groupData.update { group }
 
-                val currentMemberSettings = group.memberByUserId(appPrefs.userId)?.settings!!
+                val currentMemberSettings = group.memberByUserId(appPrefs.userId)?.member?.settings!!
 
                 BatteryNotificationScreenState(
                     groupId = groupId,

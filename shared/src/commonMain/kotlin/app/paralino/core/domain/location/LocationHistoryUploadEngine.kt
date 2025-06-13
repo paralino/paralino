@@ -413,6 +413,7 @@ class LocationHistoryUploadEngine(
 
         return LocationHistoryGroupPayload(
             groupId = groupId,
+            locationId = group.currentDeviceLocation?.id ?: "",
             entries = groupHistory,
             retryEntries = currentUnconfirmed
         )

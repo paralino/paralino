@@ -85,7 +85,7 @@ data class MemberDeviceStatus constructor(
     val signal: Int? = null,
     val status: String? = null,
 ) {
-    val statusType: MemberDeviceStatusType? get() = MemberDeviceStatusType.fromKey(status)
+    val statusType: MemberDeviceStatusType? get() = MemberDeviceStatusType.fromFullKey(status)
     val networkType: NetworkType? get() = NetworkType.fromKey(network)
     val signalStrength: NetworkSignalStrength? get() = NetworkSignalStrength.fromLevel(signal)
     val onlineStatus: MemberDeviceOnlineStatusType get() {
@@ -117,22 +117,22 @@ enum class MemberDeviceOnlineStatusType {
     ONLINE, BUSY, OFFLINE, UNKNOWN
 }
 
-enum class MemberDeviceStatusType {
-    INACTIVE,
-    ACTIVE_NO_LOCATION,
-    IDLE_NO_LOCATION,
+enum class MemberDeviceStatusType constructor(val id: String) {
+    INACTIVE("na"),
+    ACTIVE_NO_LOCATION("anl"),
+    IDLE_NO_LOCATION("inl"),
 
-    NOT_SHARING,
-    ACTIVE,
-    GPS_OFF,
-    MISSING_PERMISSIONS,
-    BATTERY_SAVER_ON,
-    TOO_MANY_REQUESTS,
-    THROTTLING,
-    IDLE,
+    NOT_SHARING("ns"),
+    ACTIVE("awl"),
+    GPS_OFF("gof"),
+    MISSING_PERMISSIONS("mp"),
+    BATTERY_SAVER_ON("bson"),
+    TOO_MANY_REQUESTS("tmr"),
+    THROTTLING("thr"),
+    IDLE("iwl"),
     ;
 
-    val key: String = name
+    val fullKey: String = name
 
     val isDeviceSetupWrong: Boolean get() = when(this) {
         GPS_OFF, MISSING_PERMISSIONS, NOT_SHARING -> true
@@ -147,8 +147,12 @@ enum class MemberDeviceStatusType {
     }
 
     companion object {
-        fun fromKey(key: String?): MemberDeviceStatusType? {
-            return values().firstOrNull { it.key == key }
+        fun fromFullKey(key: String?): MemberDeviceStatusType? {
+            return entries.firstOrNull { it.fullKey == key }
+        }
+
+        fun fromShortId(id: String?): MemberDeviceStatusType? {
+            return entries.firstOrNull { it.id == id }
         }
     }
 }

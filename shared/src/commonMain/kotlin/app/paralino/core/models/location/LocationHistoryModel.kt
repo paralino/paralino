@@ -35,19 +35,51 @@ data class LocationHistoryPointModelForMember(
 
 @Serializable
 data class LocationHistoryPointModel(
-    val timeUTC: String,
-    val statusTime: String,
+    val loc: LocationHistoryPointLocationModel?,
+    val status: LocationHistoryPointStatusModel
+
+) {
+    @Transient
+    val dayKey = status.tB.isoToLocalDateTime()?.date?.toString()
+
+    fun isLocationUnchanged(location: LocationHistoryPointLocationModel?): Boolean {
+        if (location == null && this.loc == null) return true
+        if (location == null || this.loc == null) return false
+
+        return location.lat == this.loc.lat
+                && location.lng == this.loc.lng
+                && location.acc == this.loc.acc
+                && location.spd == this.loc.spd
+                && location.alt == this.loc.alt
+    }
+
+    fun isStatusUnchanged(status: LocationHistoryPointStatusModel): Boolean {
+        return status.stat == this.status.stat
+                && status.bat == this.status.bat
+                && status.chrg == this.status.chrg
+                && status.net == this.status.net
+                && status.sig == this.status.sig
+    }
+}
+
+@Serializable
+data class LocationHistoryPointLocationModel(
+    val tA: String,
+    val tB: String,
     val lat: Double,
     val lng: Double,
     val acc: Float = 0f,
-    val speed: Float? = null,
+    val spd: Float? = null,
     val alt: Float? = null,
-    val status: String? = null,
+)
+
+@Serializable
+data class LocationHistoryPointStatusModel(
+    val tA: String,
+    val tB: String,
+    val stat: String? = null,
     val bat: Int? = null,
-    val charging: Boolean? = null,
-    val network: String? = null,
-    val signal: Int? = null,
-) {
-    @Transient
-    val dayKey = statusTime.isoToLocalDateTime()?.date?.toString()
-}
+    val chrg: Int? = null,
+    val net: String? = null,
+    val sig: Int? = null,
+)

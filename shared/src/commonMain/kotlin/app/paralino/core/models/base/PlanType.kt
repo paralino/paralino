@@ -130,6 +130,7 @@ data class PlanConfig(
     val historyDaysLimit: Int,
     val paralinoIdsLimit: Int,
     val personalDevicesLimit: Int,
+    val personalHistoryDaysLimit: Int = 2,
     val isActive: Boolean = true,
     val productIds: List<String> = emptyList(),
     val productPlanIds: List<String> = emptyList(),
@@ -204,6 +205,7 @@ data class PlanConfig(
             historyDaysLimit = 2,
             paralinoIdsLimit = 1,
             personalDevicesLimit = 1,
+            personalHistoryDaysLimit = 2,
             isActive = true,
             productIds = listOf("free"),
             productPlanIds = listOf("free")
