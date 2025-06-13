@@ -75,8 +75,9 @@ class SavePendingLocationUseCase(
         userKey: SymmetricCryptoKeyData,
         historyKey: LocalLocationHistoryKeyEntity
     ): PendingLocationHistoryEntity? {
-        if (entry.locationHistory == null)
+        if (entry.locationHistory == null) {
             return null
+        }
 
         val lastPendingEntry = database.pendingLocationHistoryDao.getLatestPendingEntryOnce(
             groupId = entry.groupId
@@ -89,9 +90,8 @@ class SavePendingLocationUseCase(
                         data = lastPendingEntry.locationHistoryData,
                         key = userKey.key
                     ).let {
-                        BaseRemoteModule.locationHistoryFormatter.decodeFromString<LocationHistoryPointModel>(
-                            it
-                        )
+                        BaseRemoteModule.locationHistoryFormatter
+                            .decodeFromString<LocationHistoryPointModel>(it)
                     }
                 } catch (e: Exception) {
                     null
@@ -99,6 +99,10 @@ class SavePendingLocationUseCase(
             } else {
                 null
             }
+
+        if (entry.locationHistory.dayKey != lastEntryPoint?.dayKey) {
+            return null
+        }
 
         val updatedEntry =
             if (lastEntryPoint?.isStatusUnchanged(entry.locationHistory.status) == true) {
