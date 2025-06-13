@@ -176,9 +176,19 @@ private fun MapHomeContent(
                         AppScreen.MainHome.SharingStart.route(event.groupId)
                     )
                 }
+
                 is MapHomeScreenEvent.OpenExternalNavigation -> {
                     context.openUri(
                         uri = "geo:${event.lat},${event.lng}?q=${event.lat},${event.lng}${event.name?.let { "(${it})" } ?: ""}"
+                    )
+                }
+
+                is MapHomeScreenEvent.OpenLocationHistory -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.LocationHistory.route(
+                            groupId = event.groupId,
+                            memberUserId = event.memberUserId,
+                        )
                     )
                 }
 

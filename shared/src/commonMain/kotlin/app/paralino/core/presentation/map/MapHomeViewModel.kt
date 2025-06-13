@@ -279,6 +279,10 @@ class MapHomeViewModel constructor(
                                                         ?: false,
                                                 )
                                             },
+                                            history = MemberActionItemState(
+                                                type = MemberActionType.LOCATION_HISTORY,
+                                                isLoading = false,
+                                            ),
                                             locationRequest = takeIf { location.canRequestLocation }?.let {
                                                 val isRequestInProgress =
                                                     previousState?.actions?.locationRequest?.run { isLoading && !isWaitingForUser }
@@ -743,6 +747,15 @@ class MapHomeViewModel constructor(
 
             MemberActionType.DELETE_LOCATION -> {
                 clearMyLocation(state)
+            }
+
+            MemberActionType.LOCATION_HISTORY -> {
+                _eventChannel.trySend(
+                    MapHomeScreenEvent.OpenLocationHistory(
+                        groupId = state.memberState.groupId,
+                        memberUserId = state.memberState.userId
+                    )
+                )
             }
         }
     }

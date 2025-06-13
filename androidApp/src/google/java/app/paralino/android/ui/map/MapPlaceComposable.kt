@@ -159,6 +159,7 @@ fun SimplePlaceMapComposable(
                         strokeColor = Color.Blue,
                         strokeWidth = 0f,
                         tag = model.markerId,
+                        zIndex = 10f,
                         onClick = {
                             cameraPositionState.refocus(scope = scope, markers = markers)
                         }
@@ -167,6 +168,7 @@ fun SimplePlaceMapComposable(
                 MapMarkerComposable(
                     state = model,
                     position = LatLng(latAnim, lngAnim),
+                    zIndex = 20f,
                     onClick = {
                         cameraPositionState.refocus(scope = scope, markers = markers)
                     }

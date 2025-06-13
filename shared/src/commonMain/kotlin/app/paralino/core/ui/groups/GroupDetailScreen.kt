@@ -406,6 +406,7 @@ fun GroupDetailScreenCore(
                                             }
 
                                             MemberActionType.DELETE_LOCATION -> {}
+                                            MemberActionType.LOCATION_HISTORY -> {}
                                         }
                                     }
 

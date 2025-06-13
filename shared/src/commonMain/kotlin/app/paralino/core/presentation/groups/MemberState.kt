@@ -168,6 +168,7 @@ data class MemberActionsState(
     val deleteLocation: MemberActionItemState? = null,
     val blockUser: MemberActionItemState? = null,
     val unblockUser: MemberActionItemState? = null,
+    val history: MemberActionItemState? = null,
     val navigate: MemberNavigateItemState? = null,
     val locationRequest: LocationRequestItemState? = null,
     val securityAction: Boolean = false
@@ -213,7 +214,7 @@ data class LocationRequestItemState(
 }
 
 enum class MemberActionType {
-    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
+    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER, LOCATION_HISTORY;
 }
 
 enum class MemberLocationVisibilityType {

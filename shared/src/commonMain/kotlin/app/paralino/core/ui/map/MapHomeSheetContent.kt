@@ -322,7 +322,7 @@ private fun LazyListScope.placesList(
 }
 
 @Composable
-fun MapBottomSheetTab(
+private fun MapBottomSheetTab(
     modifier: Modifier = Modifier,
     selected: Boolean,
     focused: Boolean,

@@ -84,6 +84,8 @@ sealed class AppScreen {
             }
         }
 
+        object LocationHistory : Common.LocationHistory("home")
+
         object SharingStart : AppScreen() {
             val argumentOnboarding: String = "onboarding"
             override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentOnboarding={$argumentOnboarding}"
@@ -353,5 +355,21 @@ sealed class AppScreen {
                 return "$parent-subscriptions-paywall?$args"
             }
         }
+
+        open class LocationHistory(private val parent: String) : AppScreen() {
+            val argumentMemberUserId: String = "memberUserId"
+            override val routeSignature: String =
+                "$parent-location-history?$argumentGroupId={$argumentGroupId}&$argumentMemberUserId={$argumentMemberUserId}"
+
+            fun route(groupId: String, memberUserId: String): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "${argumentMemberUserId}=$memberUserId"
+                )
+                    .joinToString(separator = "&")
+                return "$parent-location-history?$args"
+            }
+        }
+
     }
 }

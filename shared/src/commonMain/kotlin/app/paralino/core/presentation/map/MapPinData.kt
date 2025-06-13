@@ -3,9 +3,9 @@ package app.paralino.core.presentation.map
 import androidx.compose.runtime.Stable
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
@@ -101,6 +101,30 @@ data class MapPinData constructor(
         lng = location.locationData.data!!.lng,
         accuracy = location.locationData.data?.accuracy ?: 0f,
         shouldShowApproximateCircle = location.locationData.data?.shouldShowApproximateCircle ?: false
+    )
+
+    constructor(
+        groupId: String,
+        location: LocationHistoryPointLocationModel,
+        name: String?,
+        image: ImageModel?,
+        timeInfo: String?
+    ) : this(
+        groupId = groupId,
+        markerId = location.toString(),
+        pinType = MapPinType.MEMBER,
+        markerStyle = MapMarkerStyle.CIRCLE,
+        focused = false,
+        active = true,
+        obsolete = false,
+        hidden = false,
+        title = null,
+        image = null,
+        timeInfo = timeInfo,
+        lat = location.lat,
+        lng = location.lng,
+        accuracy = location.acc,
+        shouldShowApproximateCircle = location.acc > 100
     )
 
     @Stable

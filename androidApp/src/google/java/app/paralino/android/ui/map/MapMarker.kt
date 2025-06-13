@@ -51,6 +51,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun MapMarkerComposable(
     state: MapPinData,
     position: LatLng,
+    zIndex: Float,
     onClick: (MapPinData) -> Unit
 ) {
     val markerState = MarkerState(position = position)
@@ -72,7 +73,8 @@ fun MapMarkerComposable(
             true
         },
         infoWindowAnchor = Offset(0.5f, 0f),
-        icon = mapMarkerIcon(state = state)
+        icon = mapMarkerIcon(state = state),
+        zIndex = zIndex
     ) {
         MapMarkerInfoWindowContent(state = state)
     }

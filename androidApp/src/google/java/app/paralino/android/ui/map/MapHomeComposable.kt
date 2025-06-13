@@ -152,7 +152,7 @@ fun MainHomeMapComposable(
         onMapClick = { onEvent(MapHomeScreenUiEvent.OnMapTouch) }
     ) {
         stateData?.visibleMarkers?.forEach { model ->
-            MapMarkerComposable(
+            MapHomeMarkerComposable(
                 model = model,
                 satelliteMode = satelliteMode,
                 onMarkerClick = markerClick
@@ -162,7 +162,7 @@ fun MainHomeMapComposable(
 }
 
 @Composable
-private fun MapMarkerComposable(
+private fun MapHomeMarkerComposable(
     model: MapPinData,
     satelliteMode: Boolean,
     onMarkerClick: (MapPinData) -> Unit
@@ -177,6 +177,11 @@ private fun MapMarkerComposable(
 
     val animationSpec = remember {
         tween<Float>(durationMillis = 4000, easing = LinearEasing)
+    }
+
+    val zIndex = when (model.pinType) {
+        MapPinType.MEMBER -> if (model.focused) 40f else 30f
+        MapPinType.PLACE -> if (model.focused) 40f else 20f
     }
 
     LaunchedEffect(model.markerId) {
@@ -236,6 +241,7 @@ private fun MapMarkerComposable(
                 MapPinType.PLACE -> 0f
             },
             tag = model.markerId,
+            zIndex = if (model.focused) 11f else 10f,
             onClick = {
                 onMarkerClick(model)
             }
@@ -245,6 +251,7 @@ private fun MapMarkerComposable(
     MapMarkerComposable(
         state = model,
         position = LatLng(latValue, lngValue),
+        zIndex = zIndex,
         onClick = onMarkerClick
     )
 }

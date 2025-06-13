@@ -523,6 +523,23 @@ private fun ColumnScope.GroupMemberActions(
             onEvent(GroupMemberItemEvent.onActionClick(it, state))
         }
 
+        if (state.actions.history != null) {
+            GroupMemberActionButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                startIcon = CoreAppIcons.TimelinePath.asPainterResource(),
+                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                text = stringResource(MR.strings.groups_sharing_setting_timeline_title),
+                onClick = {
+                    onEvent(
+                        GroupMemberItemEvent.onActionClick(
+                            action = state.actions.history,
+                            item = state
+                        )
+                    )
+                }
+            )
+        }
+
         if (state.actions.deleteLocation != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -1007,6 +1024,7 @@ val MemberActionType.actionIcon: Painter
         MemberActionType.DELETE_LOCATION -> CoreAppIcons.Delete.asPainterResource()
         MemberActionType.BLOCK_USER -> CoreAppIcons.Block.asPainterResource()
         MemberActionType.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
+        MemberActionType.LOCATION_HISTORY -> CoreAppIcons.TimelinePath.asPainterResource()
     }
 
 val MemberActionType.actionText: StringResource
@@ -1015,4 +1033,5 @@ val MemberActionType.actionText: StringResource
         MemberActionType.DELETE_LOCATION -> MR.strings.group_members_item_clear_location_button
         MemberActionType.BLOCK_USER -> MR.strings.group_details_block_group_alert_button
         MemberActionType.UNBLOCK_USER -> MR.strings.blocklist_unblock_alert_button
+        MemberActionType.LOCATION_HISTORY -> MR.strings.groups_sharing_setting_timeline_title
     }
