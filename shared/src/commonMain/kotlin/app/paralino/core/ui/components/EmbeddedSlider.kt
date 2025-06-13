@@ -146,7 +146,7 @@ fun EmbeddedSlider(
         }
 
         if (!title.isNullOrBlank() || !value.isNullOrBlank()) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .padding(6.dp)
@@ -154,10 +154,11 @@ fun EmbeddedSlider(
                     .background(backgroundColor.copy(alpha = 0.9f))
                     .animateContentSize()
                     .padding(vertical = 3.dp, horizontal = 6.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+
             ) {
                 if (!title.isNullOrBlank()) {
                     Text(
+                        modifier = Modifier.align(Alignment.TopStart),
                         text = title,
                         style = MaterialTheme.typography.caption,
                         color = contentColor
@@ -166,6 +167,7 @@ fun EmbeddedSlider(
 
                 if (!value.isNullOrBlank()) {
                     Text(
+                        modifier = Modifier.align(Alignment.BottomStart),
                         text = value,
                         maxLines = 1,
                         fontWeight = FontWeight.Bold,
