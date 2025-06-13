@@ -137,7 +137,7 @@ class RefreshEverythingUseCase(
                 local.recreateGroups(newGroups)
 
                 removedGroups.forEach {
-                    groupRemoveUseCase.deleteGroup(groupId = it)
+                    groupRemoveUseCase.clearGroupLocally(groupId = it)
                 }
             }
     }
