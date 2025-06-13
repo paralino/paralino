@@ -71,11 +71,13 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.map.MapGroupPicker
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 
@@ -132,6 +134,10 @@ fun LocationHistoryScreenElements(
 //                }
 //            }
 
+            Box(modifier = Modifier.padding(start = 4.dp)) {
+                ToolbarButtons.Back { onEvent(LocationHistoryUiEvent.OnCloseScreen) }
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             FilledButton(
@@ -144,7 +150,10 @@ fun LocationHistoryScreenElements(
                     backgroundColor = MaterialTheme.colors.surface
                 ),
                 content = {
-                    Text(text = "${uiState.dateRangeDays}\ndays")
+                    Text(
+                        text = "${uiState.dateRangeDays}",
+                        style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold),
+                    )
                 }
             )
         }

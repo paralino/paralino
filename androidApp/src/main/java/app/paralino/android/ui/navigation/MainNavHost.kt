@@ -189,7 +189,6 @@ fun NavGraphBuilder.homeGraph(
                 appState = appState,
                 groupId = groupId,
                 memberUserId = memberUserId,
-                onClose = onAppClose
             )
         }
     }

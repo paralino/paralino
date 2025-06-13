@@ -93,6 +93,10 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.UiLifecycleChange -> {
                 uiFocusedStatus.update { event.active }
             }
+
+            LocationHistoryUiEvent.OnCloseScreen -> {
+                dataController._eventChannel.trySend(LocationHistoryScreenEvent.NavigateBack)
+            }
         }
     }
 

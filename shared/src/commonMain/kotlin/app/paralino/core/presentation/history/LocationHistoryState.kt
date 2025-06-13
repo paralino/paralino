@@ -109,8 +109,10 @@ sealed interface LocationHistoryUiEvent {
     data object OnPreviousDay : LocationHistoryUiEvent
     data object OnNextDay : LocationHistoryUiEvent
     data object ToggleDayRange : LocationHistoryUiEvent
+    data object OnCloseScreen : LocationHistoryUiEvent
 }
 
 sealed interface LocationHistoryScreenEvent {
     data class Error(val error: Throwable) : LocationHistoryScreenEvent
+    data object NavigateBack : LocationHistoryScreenEvent
 }

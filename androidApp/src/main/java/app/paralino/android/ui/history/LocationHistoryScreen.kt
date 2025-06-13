@@ -45,7 +45,6 @@ fun LocationHistoryScreen(
     groupId: String,
     memberUserId: String,
     vm: LocationHistoryViewModel = koinViewModel(),
-    onClose: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
 
@@ -81,6 +80,9 @@ fun LocationHistoryScreen(
         vm.events.collectLatest { event ->
             when (event) {
                 is LocationHistoryScreenEvent.Error -> TODO()
+                LocationHistoryScreenEvent.NavigateBack -> {
+                    appState.navController.popBackStack()
+                }
                 null -> TODO()
             }
         }
