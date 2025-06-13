@@ -19,9 +19,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,6 +50,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -79,7 +84,7 @@ fun LocationHistoryScreenElements(
     modifier: Modifier = Modifier,
     uiState: LocationHistoryScreenState,
     topPadding: Dp,
-    sheetPeekHeight: Dp,
+    cardHeight: (Dp) -> Unit,
     onEvent: (LocationHistoryUiEvent) -> Unit,
 ) {
     Column(
@@ -88,6 +93,7 @@ fun LocationHistoryScreenElements(
     ) {
 
         val isPinFocused = uiState.mapFocusType.isLocationPoint
+        val density = LocalDensity.current
 
         Box(
             modifier = Modifier
@@ -174,29 +180,34 @@ fun LocationHistoryScreenElements(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Box {
+        Box(
+            modifier = Modifier.padding(
+                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+            )
+        ) {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = sheetPeekHeight),
+                    .padding(bottom = 32.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = sheetPeekHeight)
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp)
             ) {
                 this.items(uiState.devices, key = { it.locationId }) { device ->
                     UserDeviceChip(
                         modifier = Modifier.padding(end = 12.dp),
-                        selected = device.locationId == uiState.selectedLocationId,
+                        selected = device.isSelected,
                         name = device.deviceName,
                         onClick = {
-                            onEvent(LocationHistoryUiEvent.SelectDevice(locationId = device.locationId))
+                            onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
                         }
                     )
                 }
             }
 
             Column(
-                modifier = Modifier
-                    .padding(bottom = animateDpAsState(targetValue = sheetPeekHeight).value)
+                modifier = Modifier.onGloballyPositioned { coordinates ->
+                    cardHeight(with(density) { coordinates.size.height.toDp() })
+                }
             ) {
                 AnimatedVisibility(
                     modifier = Modifier

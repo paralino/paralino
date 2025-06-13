@@ -78,7 +78,18 @@ class LocationHistoryViewModel(
             }
 
             is LocationHistoryUiEvent.OnMapLongPress -> {}
-            is LocationHistoryUiEvent.SelectDevice -> {}
+            is LocationHistoryUiEvent.SelectDevice -> {
+                dataController._uiState.update {
+                    it.copy(
+                        devices = it.devices.map {
+                            when (it) {
+                                is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == event.device.locationId)
+                                is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == event.device.locationId)
+                            }
+                        }
+                    )
+                }
+            }
             is LocationHistoryUiEvent.UiLifecycleChange -> {
                 uiFocusedStatus.update { event.active }
             }

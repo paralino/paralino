@@ -12,7 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -115,6 +118,8 @@ private fun MapContent(
     bottomOffset: Dp,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
+    var cardHeight by remember { mutableStateOf(0.dp) }
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         LocationHistoryMapContent(
             uiState = uiState,
@@ -124,24 +129,20 @@ private fun MapContent(
                 bottom = if (uiState.mapFocusType.isLocationPoint) {
                     WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                 } else {
-                    (this.maxHeight - bottomOffset).coerceIn(
+                    (cardHeight).coerceIn(
                         WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-                        this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                        this.maxHeight
                     )
                 }
             )
         )
 
-//        LocationHistoryScreenElements(
-//            modifier = Modifier,
-//            uiState = uiState,
-//            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(),
-//            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
-//                minimumValue = WindowInsets.navigationBars.asPaddingValues()
-//                    .calculateBottomPadding(),
-//                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-//            ),
-//            onEvent = onEvent
-//        )
+        LocationHistoryScreenElements(
+            modifier = Modifier,
+            uiState = uiState,
+            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(),
+            cardHeight = { cardHeight = it },
+            onEvent = onEvent
+        )
     }
 }

@@ -19,12 +19,16 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.component.getScopeId
 
 class LocationHistoryDataFetchController(
     val dataController: LocationHistoryViewModelDataController,
@@ -52,7 +56,6 @@ class LocationHistoryDataFetchController(
                 groupImage = null,
                 userName = null,
                 userImage = null,
-                deviceName = null,
                 isCurrentUser = memberUserId == appPrefs.userId,
                 isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId,
                 historyDaysLimit = null,
@@ -65,7 +68,6 @@ class LocationHistoryDataFetchController(
                 isLoadingLocations = true,
                 locations = emptyList(),
                 devices = emptyList(),
-                selectedLocationId = null,
                 selectedLocationIndex = null,
                 mapFocusType = LocationHistoryMapFocusType.None,
                 isSatelliteMode = it.isSatelliteMode,
@@ -117,20 +119,16 @@ class LocationHistoryDataFetchController(
             // TODO add actual devices and locations
             _uiState.update {
                 it.copy(
-                    selectedLocationId = null,
                     groupName = null,
                     groupImage = null,
                     historyDaysLimit = plans.highestValidPlanConfig.personalHistoryDaysLimit,
                     isGroupOwner = true,
                     userName = user.data?.name ?: "",
                     userImage = user.data?.data?.userImage,
-                    deviceName = "",
                     isLoadingData = false,
                     isDataMissing = user.data == null,
                     locations = history.history.flatMap {
-                        it.history.data?.history
-                            ?.map { mapLocationPoint(point = it) }
-                            ?: emptyList()
+                        mapLocationPoints(entry = it)
                     },
                     devices = emptyList(),
                     selectedLocationIndex = null,
@@ -153,43 +151,76 @@ class LocationHistoryDataFetchController(
             val group = userGroupRepo.getGroupWithMembersOnce(groupId = groupId)
             val currentMember = group?.memberByUserId(userId = memberUserId)
             if (group != null && currentMember != null) {
-                val devices = currentMember.locations.map {
-                    UserActiveLocationDeviceState(
+
+                val knownDevices = currentMember.locations.map {
+                    UserActiveLocationDeviceState.Known(
                         locationId = it.id,
                         deviceId = it.deviceId,
-                        deviceName = it.nameOrNull ?: "",
+                        deviceName = it.name,
+                        isSelected = it.id == _uiState.value.devices.firstOrNull { it.isSelected }?.locationId,
                     )
                 }
 
-                val selectedLocation = currentMember.locations
-                    .firstOrNull { it.id == _uiState.value.selectedLocationId }
-                    ?: currentMember.locations.firstOrNull()
+                val unknownDevices = history.history.filter { entry ->
+                    knownDevices.none { it.locationId == entry.locationId } || entry.locationId == null
+                }
+                    .takeIf { it.isNotEmpty() }
+                    ?.let {
+                        UserActiveLocationDeviceState.Unknown(
+                            ids = it.map { it.locationId }.distinct(),
+                            deviceName = "Unknown",
+                            isSelected = _uiState.value.devices.firstOrNull { it.isSelected } is UserActiveLocationDeviceState.Unknown,
+                        )
+                    }
 
-                val cachedHistory = if (selectedLocation != null) {
+                val devices = buildList {
+                    addAll(knownDevices)
+
+                    if (unknownDevices != null) {
+                        add(unknownDevices)
+                    }
+                }.let { list ->
+                    if (list.count { it.isSelected } != 1) {
+                        val firstSelected = list.firstOrNull()
+                        list.map {
+                            when (it) {
+                                is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == firstSelected?.locationId)
+                                is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == firstSelected?.locationId)
+                            }
+                        }
+                    } else {
+                        list
+                    }
+                }
+
+                val selectedKnownLocation = currentMember.locations
+                    .firstOrNull { location ->
+                        devices
+                            .filter { it.isSelected && it is UserActiveLocationDeviceState.Known }
+                            .any { it.locationId == location.id }
+                    }
+
+                val cachedHistory = if (selectedKnownLocation != null) {
                     LocationHistoryModelForDevice(
-                        locationId = selectedLocation.id,
-                        history = selectedLocation.locationHistory
+                        locationId = selectedKnownLocation.id,
+                        history = selectedKnownLocation.locationHistory
                     )
                 } else {
                     null
                 }
 
                 val locations = history.history
-                    .filter { it.locationId == selectedLocation?.id || it.locationId == null }
                     .run {
                         if (cachedHistory != null) plus(cachedHistory)
                         else this
                     }
-                    .flatMap {
-                        it.history.data?.history
-                            ?.map { mapLocationPoint(point = it) }
-                            ?: emptyList()
+                    .flatMap { entry ->
+                        mapLocationPoints(entry = entry)
                     }
                     .sortedByDescending { it.point.status.tB }
 
                 _uiState.update {
                     it.copy(
-                        selectedLocationId = selectedLocation?.id,
                         groupName = group.name,
                         groupImage = group.image,
                         historyDaysLimit = group.group.historyDaysLimit(remoteConfig.getConfigOnce()),
@@ -197,7 +228,6 @@ class LocationHistoryDataFetchController(
                         userName = currentMember.member.name,
                         userImage = currentMember.member.image
                             ?: ImageModel.emoji(Emojis.robot),
-                        deviceName = selectedLocation?.nameOrNull,
                         isDataMissing = false,
                         isLoadingData = false,
                         locations = locations,
@@ -215,26 +245,32 @@ class LocationHistoryDataFetchController(
             }
         }
             .catch { }
+            .flowOn(Dispatchers.IO)
     }
 
-    private fun mapLocationPoint(point: LocationHistoryPointModel): LocationHistoryPointState {
-        return LocationHistoryPointState(
-            point = point,
-            locationTime = valueFormatter.formatRelativeDateTime(point.loc?.tB?.isoToLocalDateTime()),
-            statusTime = valueFormatter.formatRelativeDateTime(point.status.tB.isoToLocalDateTime()),
-            formattedSpeed = point.loc?.spd?.let {
-                valueFormatter.getSpeedSmall(
-                    metersPerSecond = it
+    private fun mapLocationPoints(entry: LocationHistoryModelForDevice): List<LocationHistoryPointState> {
+        return entry.history.data?.history
+            ?.map { point ->
+                LocationHistoryPointState(
+                    locationId = entry.locationId,
+                    point = point,
+                    locationTime = valueFormatter.formatRelativeDateTime(point.loc?.tB?.isoToLocalDateTime()),
+                    statusTime = valueFormatter.formatRelativeDateTime(point.status.tB.isoToLocalDateTime()),
+                    formattedSpeed = point.loc?.spd?.let {
+                        valueFormatter.getSpeedSmall(
+                            metersPerSecond = it
+                        )
+                    },
+                    formattedElevation = point.loc?.alt?.let {
+                        valueFormatter.getDistanceSmall(
+                            meters = it.toDouble()
+                        )
+                    },
+                    deviceStatus = MemberDeviceStatusType.fromShortId(id = point.status.stat),
+                    networkType = NetworkType.fromKey(key = point.status.net),
+                    signalStrength = NetworkSignalStrength.fromLevel(level = point.status.sig)
                 )
-            },
-            formattedElevation = point.loc?.alt?.let {
-                valueFormatter.getDistanceSmall(
-                    meters = it.toDouble()
-                )
-            },
-            deviceStatus = MemberDeviceStatusType.fromShortId(id = point.status.stat),
-            networkType = NetworkType.fromKey(key = point.status.net),
-            signalStrength = NetworkSignalStrength.fromLevel(level = point.status.sig)
-        )
+            }
+            ?: emptyList()
     }
 }

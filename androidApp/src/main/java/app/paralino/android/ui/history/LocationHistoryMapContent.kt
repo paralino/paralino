@@ -56,7 +56,7 @@ fun LocationHistoryMapContent(
         shouldAnimateMapFocus = true
     }
 
-    LaunchedEffect(stateData.locations) {
+    LaunchedEffect(stateData.selectedLocations) {
         snapshotFlow { stateData.mapFocusType }
             .distinctUntilChanged()
             .collectLatest {
@@ -65,7 +65,7 @@ fun LocationHistoryMapContent(
                 }
                 cameraPositionState.refocus(
                     scope = scope,
-                    markers = stateData.locations.mapNotNull {
+                    markers = stateData.selectedLocations.mapNotNull {
                         it.point.loc?.let { location ->
                             MapPinData(
                                 groupId = stateData.groupId,
@@ -76,7 +76,7 @@ fun LocationHistoryMapContent(
                             )
                         }
                     },
-                    durationMs = if (canAnimateMapFocus) 3000 else 0
+                    durationMs = if (canAnimateMapFocus) 1000 else 0
                 )
             }
     }
@@ -90,7 +90,7 @@ fun LocationHistoryMapContent(
                 }
                 cameraPositionState.refocus(
                     scope = scope,
-                    markers = stateData.locations.mapNotNull {
+                    markers = stateData.selectedLocations.mapNotNull {
                         it.point.loc?.let { location ->
                             MapPinData(
                                 groupId = stateData.groupId,
@@ -119,12 +119,8 @@ fun LocationHistoryMapContent(
         satelliteMode = uiState.isSatelliteMode
     )
 
-    val markerClick: (MapPinData) -> Unit = {
-        onEvent(LocationHistoryUiEvent.OnMarkerClick(it))
-    }
-
-    val points = remember(uiState.locations) {
-        uiState.locations.mapNotNull {
+    val points = remember(uiState.selectedLocations) {
+        uiState.selectedLocations.mapNotNull {
             it.point.loc?.let {
                 LatLng(it.lat, it.lng)
             }

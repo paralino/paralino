@@ -21,7 +21,6 @@ data class LocationHistoryScreenState(
     val isGroupOwner: Boolean,
     val userName: String?,
     val userImage: ImageModel?,
-    val deviceName: String?,
     val isCurrentUser: Boolean,
     val isPersonalHistory: Boolean,
     val dateRangeDays: Int,
@@ -32,22 +31,52 @@ data class LocationHistoryScreenState(
     val isLoadingLocations: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
-    val selectedLocationId: String?,
     val selectedLocationIndex: Int?,
     val mapFocusType: LocationHistoryMapFocusType,
     val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
 ) {
     val deviceType: DeviceType = DeviceType.current
+    val selectedLocations = locations.filter { entry ->
+        devices.any { device ->
+            when (device) {
+                is UserActiveLocationDeviceState.Known -> {
+                    device.isSelected && device.locationId == entry.locationId
+                }
+
+                is UserActiveLocationDeviceState.Unknown -> {
+                    device.isSelected && (device.ids.contains(entry.locationId) || entry.locationId == null)
+                }
+            }
+        }
+    }
 }
 
-data class UserActiveLocationDeviceState(
-    val locationId: String,
-    val deviceId: String,
-    val deviceName: String
-)
+sealed class UserActiveLocationDeviceState {
+    abstract val locationId: String
+    abstract val deviceId: String
+    abstract val deviceName: String
+    abstract val isSelected: Boolean
+
+    data class Known(
+        override val locationId: String,
+        override val deviceId: String,
+        override val deviceName: String,
+        override val isSelected: Boolean
+    ) : UserActiveLocationDeviceState()
+
+    data class Unknown(
+        val ids: List<String?>,
+        override val deviceName: String,
+        override val isSelected: Boolean
+    ) : UserActiveLocationDeviceState() {
+        override val deviceId: String = "unknown"
+        override val locationId: String = "unknown"
+    }
+}
 
 data class LocationHistoryPointState(
+    val locationId: String?,
     val point: LocationHistoryPointModel,
     val formattedSpeed: String?,
     val formattedElevation: String?,
@@ -68,7 +97,7 @@ sealed interface LocationHistoryMapFocusType {
 sealed interface LocationHistoryUiEvent {
     data class UiLifecycleChange(val active: Boolean) : LocationHistoryUiEvent
     data class SelectLocation(val index: Int) : LocationHistoryUiEvent
-    data class SelectDevice(val locationId: String) : LocationHistoryUiEvent
+    data class SelectDevice(val device: UserActiveLocationDeviceState) : LocationHistoryUiEvent
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent

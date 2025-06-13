@@ -92,7 +92,7 @@ class RefreshLocationHistoryUseCase(
                     dateIdentifier = it.dateKey,
                     groupId = groupId,
                     ownerUserId = memberUserId,
-                    locationId = locationId,
+                    locationId = it.locationId,
                     deviceId = it.deviceId,
                     historyKeyVersion = it.keyVersion,
                     historyData = it.historyData
@@ -140,7 +140,7 @@ class RefreshLocationHistoryUseCase(
                 PersonalHistoryEntity(
                     id = it.id,
                     dateIdentifier = it.dateKey,
-                    locationId = locationId,
+                    locationId = it.locationId,
                     deviceId = it.deviceId,
                     historyKeyVersion = it.keyVersion,
                     historyData = it.historyData
