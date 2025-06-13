@@ -543,35 +543,34 @@ class MapHomeViewModel constructor(
         val memberStateForMarker = _uiState.value.asReady()
             ?.members?.firstOrNull { it.keyId == markerData.markerId }
 
-        if (marker != null) {
-            updateReadyState { readyState ->
-                readyState.copy(
-                    trackingMarker = markerData.takeIf { !marker.hidden },
-                    markers = readyState.markers.map {
-                        it.copy(focused = it.markerId == markerData.markerId)
-                    },
-                    mapHomeScreenFocusType = when (markerData.type) {
-                        MapPinType.MEMBER -> {
-                            if (memberStateForMarker != null) {
-                                MapHomeScreenFocusType.MEMBER(
-                                    memberUserId = memberStateForMarker.memberState.userId,
-                                    memberId = memberStateForMarker.memberState.memberId,
-                                    memberLocationId = memberStateForMarker.location?.locationId,
-                                    memberKeyId = markerData.markerId,
-                                    isIdleActive = memberStateForMarker.location?.deviceStatus?.isIdlingOrActive ?: false,
-                                    forceZoom = isRequestForSameVisibleMarker
-                                )
-                            } else {
-                                messageDispatcher.showSnackbar(MR.strings.group_member_no_location_info_message.localizedString())
-                                readyState.mapHomeScreenFocusType
-                            }
+        updateReadyState { readyState ->
+            readyState.copy(
+                trackingMarker = markerData.takeIf { marker?.hidden == false },
+                markers = readyState.markers.map {
+                    it.copy(focused = it.markerId == markerData.markerId)
+                },
+                mapHomeScreenFocusType = when (markerData.type) {
+                    MapPinType.MEMBER -> {
+                        if (memberStateForMarker?.location != null) {
+                            MapHomeScreenFocusType.MEMBER(
+                                memberUserId = memberStateForMarker.memberState.userId,
+                                memberId = memberStateForMarker.memberState.memberId,
+                                memberLocationId = memberStateForMarker.location?.locationId,
+                                memberKeyId = markerData.markerId,
+                                isIdleActive = memberStateForMarker.location?.deviceStatus?.isIdlingOrActive ?: false,
+                                forceZoom = isRequestForSameVisibleMarker
+                            )
+                        } else {
+                            readyState.mapHomeScreenFocusType
                         }
-
-                        MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = markerData.markerId)
                     }
-                )
-            }
-        } else {
+
+                    MapPinType.PLACE -> MapHomeScreenFocusType.PLACE(placeId = markerData.markerId)
+                }
+            )
+        }
+
+        if (marker == null || memberStateForMarker?.location == null) {
             messageDispatcher.showSnackbar(MR.strings.group_member_no_location_info_message.localizedString())
         }
     }
