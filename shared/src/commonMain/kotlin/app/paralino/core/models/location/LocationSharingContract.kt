@@ -19,10 +19,8 @@ data class LocationSharingContract constructor(
     val shareNetwork: Boolean,
     val shareDeviceStatus: Boolean,
     val approximateLocationInMeters: Int?,
-    /**
-     * Use null as not set
-     */
     val saveToHistory: Boolean,
+    val isEnabled: Boolean,
 ) {
 
     val isAlwaysOn: Boolean get() = endTimeUTC == null
@@ -36,13 +34,10 @@ data class LocationSharingContract constructor(
         return diff.inWholeMilliseconds
     }
 
-    val endTimeMillisUTC: Long? get() {
-        if (isAlwaysOn) return null
-        return endTimeUTC!!.fromUTCtoInstant()?.toEpochMilliseconds()
-    }
-
     fun asValidContract(sharingLimitDuration: Duration? = null): LocationSharingContract? {
-        if(isAlwaysOn) {
+        if (!isEnabled) {
+            return null
+        } else if(isAlwaysOn) {
             if (sharingLimitDuration != null) {
                 val now = nowUTC()
                 val maxSharing = now.plus(duration = sharingLimitDuration)

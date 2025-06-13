@@ -315,7 +315,8 @@ class SharingStartViewModel(
                 shareNetwork = _uiState.value.shareNetwork,
                 shareDeviceStatus = _uiState.value.shareDeviceStatus,
                 approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
-                saveToHistory = _uiState.value.saveToHistory
+                saveToHistory = _uiState.value.saveToHistory,
+                isEnabled = true
             )
 
             try {

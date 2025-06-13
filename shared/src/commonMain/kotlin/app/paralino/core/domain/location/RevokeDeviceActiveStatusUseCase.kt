@@ -24,10 +24,22 @@ class RevokeDeviceActiveStatusUseCase(
         ) {
             val memberModels = local.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation }
-                .filter {
-                    val sharingActive = sharingManager.isSharingActiveForGroup(it.groupId)
-                    val statusActive =
-                        it.locationAwareStatusType.let { it != null && it != MemberDeviceStatusType.NOT_SHARING }
+                .filter { location ->
+                    val sharingContract = sharingManager.unfilteredContractForGroup(id = location.groupId)
+                    val sharingActive = sharingContract?.asValidContract() != null
+
+                    val statusActive = location.locationAwareStatusType?.let {
+                        if (sharingContract?.shareDeviceStatus == true) {
+                            it != MemberDeviceStatusType.NOT_SHARING
+                        } else if (sharingContract?.shareDeviceStatus == false){
+                            it != MemberDeviceStatusType.INACTIVE
+                        } else {
+                            // in case sharing contract is not present (regardless if valid or not)
+                            // we continue with false which will not revoke the status
+                            // this way it stays as it is since we don't know what can be set safely
+                            false
+                        }
+                    } ?: false
                     !sharingActive && statusActive
                 }
 

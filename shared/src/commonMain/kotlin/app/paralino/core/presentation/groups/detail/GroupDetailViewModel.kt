@@ -322,7 +322,7 @@ class GroupDetailViewModel(
 
     fun stopSharing() {
         coroutineScope.launch {
-            sharingManager.stopSharing(groupId)
+            sharingManager.stopSharing(groupId = groupId, deleteContract = false)
             placeActivityRepo.clearForGroup(groupId = groupId)
             try {
                 deviceStatusProcessor.pushDeviceStatus(groupId = groupId)

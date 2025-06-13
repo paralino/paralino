@@ -256,7 +256,7 @@ class LocationUploadEngine constructor(
                             "location_service",
                             "Location device safety signature is corrupted, abort sharing"
                         )
-                        locationSharingManager.stopSharing(groupId = groupId)
+                        locationSharingManager.stopSharing(groupId = groupId, deleteContract = false)
                         placeActivityRepo.clearForGroup(groupId = groupId)
                         return null
                     } else {
@@ -281,7 +281,7 @@ class LocationUploadEngine constructor(
                     "location_service",
                     "Location device can not be established for current device, abort sharing"
                 )
-                locationSharingManager.stopSharing(groupId = groupId)
+                locationSharingManager.stopSharing(groupId = groupId, deleteContract = false)
                 placeActivityRepo.clearForGroup(groupId = groupId)
                 null
             }

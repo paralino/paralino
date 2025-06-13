@@ -14,7 +14,8 @@ object SharingContractsMapper {
             shareNetwork = model.shareNetwork,
             approximateLocationInMeters = model.approximateLocationInMeters,
             shareDeviceStatus = model.shareDeviceStatus,
-            saveToHistory = model.saveToHistory
+            saveToHistory = model.saveToHistory,
+            isEnabled = model.isEnabled
         )
     }
 
@@ -28,7 +29,8 @@ object SharingContractsMapper {
             shareNetwork = model.shareNetwork,
             approximateLocationInMeters = model.approximateLocationInMeters,
             shareDeviceStatus = model.shareDeviceStatus,
-            saveToHistory = model.saveToHistory
+            saveToHistory = model.saveToHistory,
+            isEnabled = model.isEnabled
         )
     }
 }

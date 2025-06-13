@@ -84,6 +84,7 @@ object MainDatabaseMigrations {
         override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE groupDeviceIntegrityEntity ADD COLUMN safetySignature TEXT DEFAULT NULL")
             connection.execSQL("ALTER TABLE memberLocationEntity ADD COLUMN locationHistory TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `saveToHistory` INTEGER NOT NULL DEFAULT 0")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `pendingLocationHistoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyId` INTEGER NOT NULL)")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `localLocationHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `unconfirmedLocationHistoryEntity` (`pendingUploadId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`pendingUploadId`))")
@@ -91,9 +92,15 @@ object MainDatabaseMigrations {
             connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryKeysEntity` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, PRIMARY KEY(`id`))")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyKeyVersion` TEXT NOT NULL, `historyData` TEXT NOT NULL, PRIMARY KEY(`id`))")
-            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `saveToHistory` INTEGER NOT NULL DEFAULT 0")
         }
     }
+
+    private val MIGRATION_13_14 = object : Migration(13, 14) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `isEnabled` INTEGER NOT NULL DEFAULT 1")
+        }
+    }
+
 
 
     val migrations: List<Migration> = listOf(
@@ -108,6 +115,7 @@ object MainDatabaseMigrations {
         MIGRATION_9_10,
         MIGRATION_10_11,
         MIGRATION_11_12,
-        MIGRATION_12_13
+        MIGRATION_12_13,
+        MIGRATION_13_14,
     )
 }

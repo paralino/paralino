@@ -62,7 +62,7 @@ class GroupRemoveUseCase(
     }
 
     suspend fun clearGroupLocally(groupId: String) {
-        locationSharingManager.stopSharing(groupId)
+        locationSharingManager.stopSharing(groupId = groupId, deleteContract = true)
         local.deleteGroup(groupId)
         placeActivityRepo.clearForGroup(groupId)
         cryptoKEKRepo.deleteAllKeysForGroup(groupId)

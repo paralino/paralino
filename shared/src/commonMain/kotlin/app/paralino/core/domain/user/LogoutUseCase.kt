@@ -26,7 +26,6 @@ import kotlinx.coroutines.cancelChildren
 class LogoutUseCase(
     private val userRepo: UserRepository,
     private val placeActivityRepo: PlaceActivityDataSource,
-    private val sharingManager: LocationSharingManager,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val pushManager: IPushProviderManager,
@@ -115,7 +114,6 @@ class LogoutUseCase(
         deviceApiProvider.logout()
         locationRepo.logout()
         placeActivityRepo.clearCache()
-        sharingManager.stopAllSharing()
         geofenceManager.deleteAllGeofences()
         accessLogs.clearAll()
         logg.i("account_state", "Cleared all data on logout")

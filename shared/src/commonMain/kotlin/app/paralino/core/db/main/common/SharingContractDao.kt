@@ -18,9 +18,20 @@ interface SharingContractDao {
     @Query("SELECT * FROM sharingContractEntity")
     suspend fun getAllContractsOnce(): List<SharingContractEntity>
 
-    @Query("DELETE FROM sharingContractEntity WHERE groupId IN (:groupIds)")
-    suspend fun deleteContract(groupIds: List<String>)
+    @Transaction
+    suspend fun cancelContract(groupId: String) {
+        val currentContract = getContractOnce(groupId)
 
-    @Query("DELETE FROM sharingContractEntity")
-    suspend fun clearAll()
+        if (currentContract != null) {
+            createContract(
+                contract = currentContract.copy(isEnabled = false)
+            )
+        } else {
+            deleteContract(groupId)
+        }
+    }
+
+
+    @Query("DELETE FROM sharingContractEntity WHERE groupId = :groupId")
+    suspend fun deleteContract(groupId: String)
 }

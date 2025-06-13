@@ -50,6 +50,10 @@ class LocationSharingManager(
         }.distinctUntilChanged()
     }
 
+    suspend fun unfilteredContractForGroup(id: String): LocationSharingContract? {
+        return contractsDataSource.getContractOnce(groupId = id)
+    }
+
     suspend fun currentSharingContractForGroup(id: String): LocationSharingContract? {
         return contractsDataSource.getContractOnce(groupId = id)?.asValidContract()
     }
@@ -76,27 +80,17 @@ class LocationSharingManager(
         }
     }
 
-    suspend fun stopAllSharing() {
-        contractsDataSource.cancelAll()
-    }
-
-    suspend fun stopSharing(groupId: String) {
-        contractsDataSource.cancelContracts(listOf(groupId))
+    suspend fun stopSharing(groupId: String, deleteContract: Boolean) {
+        if (deleteContract) {
+            contractsDataSource.deleteContract(id = groupId)
+        } else {
+            contractsDataSource.cancelContract(id = groupId)
+        }
     }
 
     suspend fun allValidContracts(): List<LocationSharingContract> {
-        val all = contractsDataSource.getAllContractsOnce()
-
-        val valid = all.mapNotNull { it.asValidContract() }
-        val expired = all.subtract(valid)
-
-        expired.takeIf { it.isNotEmpty() }
-            ?.map { it.groupId }
-            ?.let { contractsDataSource.cancelContracts(it) }
-
-        return valid
+        return contractsDataSource.getAllContractsOnce().mapNotNull { it.asValidContract() }
     }
-
 }
 
 class NoValidContractsException: Exception("No valid location sharing contracts")
