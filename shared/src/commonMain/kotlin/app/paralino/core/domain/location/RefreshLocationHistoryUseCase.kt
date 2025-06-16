@@ -99,8 +99,13 @@ class RefreshLocationHistoryUseCase(
                 )
             }
 
-            database.locationHistoryDao.createGroupHistory(entries = entries)
-            database.locationHistoryDao.createGroupKeys(entries = keys)
+            database.locationHistoryDao.recreateGroupHistory(
+                dates = response.dateKeys,
+                groupId = groupId,
+                memberUserId = memberUserId,
+                entries = entries,
+                keys = keys
+            )
         }
     }
 

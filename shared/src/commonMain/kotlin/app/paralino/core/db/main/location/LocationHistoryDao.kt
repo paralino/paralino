@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import kotlinx.coroutines.flow.Flow
@@ -18,10 +19,36 @@ interface LocationHistoryDao {
     suspend fun createPersonalHistory(entries: List<PersonalHistoryEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createGroupKeys(entries: List<GroupHistoryKeyEntity>)
+    suspend fun createGroupKeys(keys: List<GroupHistoryKeyEntity>)
+
+
+    @Transaction
+    suspend fun recreateGroupHistory(
+        groupId: String,
+        memberUserId: String,
+        dates: List<String>,
+        entries: List<GroupHistoryEntity>,
+        keys: List<GroupHistoryKeyEntity>
+    ) {
+        deleteOldGroupHistory(groupId = groupId, memberUserId = memberUserId, dates = dates)
+        deleteUnusedHistoryKeys(
+            groupId = groupId,
+            memberUserId = memberUserId,
+            usedIds = getAllHistoryKeysVersions(groupId = groupId, memberUserId = memberUserId)
+        )
+        createGroupHistory(entries = entries)
+        createGroupKeys(keys = keys)
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createGroupHistory(entries: List<GroupHistoryEntity>)
+
+
+    @Query("SELECT historyKeyVersion FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId")
+    suspend fun getAllHistoryKeysVersions(groupId: String, memberUserId: String): List<String>
+
+    @Query("DELETE FROM groupHistoryKeysEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND historyKeyVersion NOT IN (:usedIds)")
+    fun deleteUnusedHistoryKeys(groupId: String, memberUserId: String, usedIds: List<String>)
 
 
 
@@ -66,4 +93,7 @@ interface LocationHistoryDao {
 
     @Query("DELETE FROM personalHistoryEntity WHERE dateIdentifier IN (:dates)")
     suspend fun deleteOldPersonalHistory(dates: List<String>)
+
+    @Query("DELETE FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND dateIdentifier IN (:dates)")
+    suspend fun deleteOldGroupHistory(groupId: String, memberUserId: String, dates: List<String>)
 }

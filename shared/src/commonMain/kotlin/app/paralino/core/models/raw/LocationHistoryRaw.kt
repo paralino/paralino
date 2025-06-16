@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GroupLocationHistoryReadResponse(
+    val dateKeys: List<String>,
     val entries: List<LocationHistoryReadEntry>,
     val keys: List<LocationHistoryReadKey>,
 )
