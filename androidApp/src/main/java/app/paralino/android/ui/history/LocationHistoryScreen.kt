@@ -34,6 +34,7 @@ import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.ui.map.rememberSwipeableSheetState
+import app.paralino.core.utils.extensions.openNavigation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -78,11 +79,15 @@ fun LocationHistoryScreen(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is LocationHistoryScreenEvent.Error -> TODO()
                 LocationHistoryScreenEvent.NavigateBack -> {
                     appState.navController.popBackStack()
                 }
-                null -> TODO()
+
+                is LocationHistoryScreenEvent.OpenNavigation -> {
+                    context.openNavigation(event.event)
+                }
+
+                null -> {}
             }
         }
     }
@@ -127,8 +132,10 @@ private fun MapContent(
             onEvent = onEvent,
             mapContentPadding = PaddingValues(
                 top = 68.dp,
-                bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()).coerceIn(
-                    minimumValue = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues()
+                    .calculateBottomPadding()).coerceIn(
+                    minimumValue = WindowInsets.navigationBars.asPaddingValues()
+                        .calculateBottomPadding(),
                     maximumValue = this.maxHeight
                 )
             )

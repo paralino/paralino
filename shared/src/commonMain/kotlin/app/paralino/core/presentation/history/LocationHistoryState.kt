@@ -4,6 +4,12 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
+import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.MemberActionItemState
+import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.groups.MemberNavigateItemState
+import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
@@ -75,6 +81,20 @@ data class LocationHistoryScreenState(
             name = userName,
             image = userImage,
             timeInfo = null
+        )
+    }
+
+    val deleteAction = if (isCurrentUser) {
+        MemberActionItemState(type = MemberActionType.DELETE_LOCATION)
+    } else {
+        null
+    }
+
+    val navigateAction = selectedMapPinData?.let {
+        MemberNavigateItemState(
+            lat = it.lat,
+            lng = it.lng,
+            title = it.title
         )
     }
 }
@@ -242,6 +262,8 @@ sealed interface LocationHistoryUiEvent {
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
     data class ChangeMapFocusType(val type: LocationHistoryMapFocusType) : LocationHistoryUiEvent
+    data class onDirectionsRequest(val action: MemberNavigateItemState): LocationHistoryUiEvent
+    data object onDeleteSelectedLocationRequest: LocationHistoryUiEvent
     data object OnRefocusClick : LocationHistoryUiEvent
     data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnCloseFocusedItemClick : LocationHistoryUiEvent
@@ -253,6 +275,6 @@ sealed interface LocationHistoryUiEvent {
 }
 
 sealed interface LocationHistoryScreenEvent {
-    data class Error(val error: Throwable) : LocationHistoryScreenEvent
+    data class OpenNavigation(val event: MapHomeScreenEvent.OpenExternalNavigation) : LocationHistoryScreenEvent
     data object NavigateBack : LocationHistoryScreenEvent
 }

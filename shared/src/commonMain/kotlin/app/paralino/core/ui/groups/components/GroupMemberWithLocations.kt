@@ -787,10 +787,11 @@ private fun GroupMemberLocationChild(
 }
 
 @Composable
-private fun GroupMemberActionButton(
+fun GroupMemberActionButton(
     modifier: Modifier = Modifier,
     startIcon: Painter,
     text: String,
+    showText: Boolean = true,
     isLoading: Boolean = false,
     endIcon: Painter? = CoreAppIcons.ChevronRight.asPainterResource(),
     backgroundColor: Color = MaterialTheme.colors.surface,
@@ -826,15 +827,18 @@ private fun GroupMemberActionButton(
         },
         hasEndArrow = false,
         text = {
-            Text(
-                text = text,
-                color = contentColor,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,
-                lineHeight = 14.sp,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(start = 4.dp)
-            )
+            AnimatedVisibility(visible = showText) {
+                Text(
+                    text = text,
+                    color = contentColor,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+
             if (endIcon != null) {
                 Icon(
                     modifier = Modifier
@@ -848,52 +852,6 @@ private fun GroupMemberActionButton(
         },
         onClick = onClick
     )
-//    Row(
-//        modifier = modifier
-//            .clickable(onClick = onClick)
-//            .clip(RoundedCornerShape(8.dp))
-//            .background(backgroundColor)
-//            .padding(contentPadding),
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        if (isLoading) {
-//            CircularProgressIndicator(
-//                modifier = Modifier.size(18.dp),
-//                strokeWidth = 2.dp,
-//                color = contentColor
-//            )
-//        } else {
-//            Icon(
-//                painter = startIcon,
-//                modifier = Modifier.size(18.dp),
-//                tint = contentColor,
-//                contentDescription = null
-//            )
-//        }
-//
-//        Text(
-//            text = text,
-//            color = contentColor,
-//            fontWeight = FontWeight.Normal,
-//            fontSize = 12.sp,
-//            lineHeight = 14.sp,
-//            textAlign = TextAlign.Start,
-//            modifier = Modifier
-//                .padding(horizontal = 8.dp)
-//                .weight(weight = 1f)
-//        )
-//
-//        if (endIcon != null) {
-//            Icon(
-//                modifier = Modifier.width(20.dp),
-//                painter = endIcon,
-//                tint = contentColor.copy(alpha = ContentAlpha.disabled),
-//                contentDescription = null
-//            )
-//        } else {
-//            Spacer(Modifier.size(8.dp))
-//        }
-//    }
 }
 
 @Composable

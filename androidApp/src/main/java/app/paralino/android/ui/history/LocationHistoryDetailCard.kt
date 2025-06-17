@@ -2,12 +2,9 @@ package app.paralino.android.ui.history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +31,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,11 +42,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
+import app.paralino.core.presentation.groups.MemberActionItemState
+import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.history.LocationHistoryMapFocusType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
@@ -56,7 +57,11 @@ import app.paralino.core.ui.components.EmbeddedSliderSize
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.GroupStatusTag
 import app.paralino.core.ui.groups.GroupStatusTagType
+import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.groups.components.NetworkTypeIcon
+import app.paralino.core.ui.groups.components.actionIcon
+import app.paralino.core.ui.groups.components.actionText
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
@@ -161,9 +166,11 @@ fun LocationHistoryDetailCard(
                             }
                         }
                     }
+
                     LocationHistoryMapFocusType.Stats -> {
                         LocationTime(time = uiState.stats?.formattedTimeRange)
                     }
+
                     LocationHistoryMapFocusType.Timeline -> {}
                 }
             }
@@ -172,7 +179,9 @@ fun LocationHistoryDetailCard(
         AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.Stats) {
             uiState.stats?.let {
                 LocationHistoryStatsTable(
-                    modifier = Modifier.padding(bottom = 10.dp).padding(horizontal = 10.dp),
+                    modifier = Modifier
+                        .padding(bottom = 10.dp)
+                        .padding(horizontal = 10.dp),
                     stats = it
                 )
             }
@@ -211,12 +220,25 @@ fun LocationHistoryDetailCard(
                     }
                 }
 
-                val sliderSize = remember { EmbeddedSliderSize(minStepWidth = 80.dp, minHeight = 40.dp) }
+                GroupMemberActions(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                        .padding(bottom = 10.dp),
+                    id = uiState.locationIndex.toString(),
+                    deleteAction = uiState.deleteAction,
+                    navigateAction = uiState.navigateAction,
+                    onEvent = onEvent
+                )
+
+                val sliderSize = remember {
+                    EmbeddedSliderSize(minStepWidth = 80.dp, minHeight = 40.dp)
+                }
                 EmbeddedSlider(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 6.dp)
-                        .padding(bottom = 6.dp, top = 2.dp)
+                        .padding(horizontal = 10.dp)
+                        .padding(bottom = 10.dp)
                         .height(sliderSize.minHeight),
                     title = uiState.locationIndex.plus(1).toString(),
                     value = null,
@@ -372,5 +394,69 @@ private fun RowScope.BatteryAndNetworkData(
             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
         )
         Spacer(modifier = Modifier.size(8.dp))
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ColumnScope.GroupMemberActions(
+    modifier: Modifier = Modifier,
+    id: String,
+    deleteAction: MemberActionItemState?,
+    navigateAction: MemberNavigateItemState?,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    var isDeleteVisible by remember(id) {
+        mutableStateOf(false)
+    }
+
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.End,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (deleteAction != null) {
+            GroupMemberActionButton(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.CenterVertically),
+                startIcon = MemberActionType.DELETE_LOCATION.actionIcon,
+                endIcon = null,
+                isLoading = deleteAction.isLoading,
+                contentPadding = PaddingValues(
+                    start = animateDpAsState(if (isDeleteVisible) 8.dp else 6.dp).value,
+                    top = 6.dp,
+                    end = animateDpAsState(if (isDeleteVisible) 10.dp else 6.dp).value,
+                    bottom = 6.dp
+                ),
+                text = stringResource(MemberActionType.DELETE_LOCATION.actionText),
+                showText = isDeleteVisible,
+                backgroundColor = animateColorAsState(if (isDeleteVisible) AppColors.errorBackground else MaterialTheme.colors.surface).value,
+                contentColor = animateColorAsState(if (isDeleteVisible) AppColors.redMain else MaterialTheme.colors.onSurface).value,
+                onClick = {
+                    if (isDeleteVisible) {
+                        onEvent(LocationHistoryUiEvent.onDeleteSelectedLocationRequest)
+                    } else {
+                        isDeleteVisible = true
+                    }
+                }
+            )
+        }
+
+        if (navigateAction != null) {
+            GroupMemberActionButton(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.CenterVertically),
+                startIcon = CoreAppIcons.Directions.asPainterResource(),
+                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                text = stringResource(MR.strings.group_members_item_directions_button),
+                onClick = {
+                    onEvent(
+                        LocationHistoryUiEvent.onDirectionsRequest(action = navigateAction)
+                    )
+                }
+            )
+        }
     }
 }

@@ -4,6 +4,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.RefreshLocationHistoryUseCase
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -118,6 +119,30 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.ChangeMapFocusType -> {
                 dataController._uiState.update {
                     it.copy(mapFocusType = event.type)
+                }
+            }
+
+            LocationHistoryUiEvent.onDeleteSelectedLocationRequest -> {
+                dataController._uiState.value.deleteAction?.let {
+                    if (dataController._uiState.value.isCurrentUser) {
+                        // TODO delete
+                    } else {
+                        //
+                    }
+                }
+            }
+            is LocationHistoryUiEvent.onDirectionsRequest -> {
+                dataController._uiState.value.navigateAction?.let {
+                    dataController._eventChannel.trySend(
+                        LocationHistoryScreenEvent.OpenNavigation(
+                            MapHomeScreenEvent.OpenExternalNavigation(
+                                lat = it.lat,
+                                lng = it.lng,
+                                name = it.title,
+                                navigationApp = appPrefs.iosNavigationApp
+                            )
+                        )
+                    )
                 }
             }
         }

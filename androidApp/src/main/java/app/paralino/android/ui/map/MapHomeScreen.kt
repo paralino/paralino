@@ -42,6 +42,7 @@ import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.ui.map.rememberSwipeableSheetState
+import app.paralino.core.utils.extensions.openNavigation
 import app.paralino.core.utils.extensions.openUri
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -178,9 +179,7 @@ private fun MapHomeContent(
                 }
 
                 is MapHomeScreenEvent.OpenExternalNavigation -> {
-                    context.openUri(
-                        uri = "geo:${event.lat},${event.lng}?q=${event.lat},${event.lng}${event.name?.let { "(${it})" } ?: ""}"
-                    )
+                    context.openNavigation(event)
                 }
 
                 is MapHomeScreenEvent.OpenLocationHistory -> {
