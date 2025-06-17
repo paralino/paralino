@@ -14,6 +14,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -71,12 +73,20 @@ fun DefaultToolbar(
 
 object ToolbarButtons {
     @Composable
-    fun Back(onClick: () -> Unit) {
+    fun Back(
+        elevation: Dp = 0.dp,
+        onClick: () -> Unit
+    ) {
         Icon(
             modifier = Modifier
                 .padding(start = 4.dp)
                 .size(40.dp)
                 .clickable { onClick() }
+                .shadow(
+                    elevation = elevation,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .clip(shape = RoundedCornerShape(12.dp))
                 .background(
                     color = MaterialTheme.colors.surface,
                     shape = RoundedCornerShape(12.dp)

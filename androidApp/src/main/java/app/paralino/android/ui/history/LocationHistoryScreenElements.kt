@@ -8,20 +8,20 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,23 +29,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.history.LocationHistoryMapFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
+import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.theme.AppColors
@@ -88,25 +88,9 @@ fun LocationHistoryScreenElements(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // group picker button
-//            AnimatedVisibility(
-//                modifier = Modifier
-//                    .padding(horizontal = 8.dp),
-//                visible = state is MapHomeScreenState.Ready,
-//                enter = fadeIn() + slideInVertically(),
-//                exit = fadeOut() + slideOutVertically()
-//            ) {
-//                if (readyState != null) {
-//                    MapGroupPicker(
-//                        modifier = Modifier,
-//                        groupImage = readyState.groupImage,
-//                        onExpandClick = { onEvent(MapHomeScreenUiEvent.OnGroupPickerClick) }
-//                    )
-//                }
-//            }
 
             Box(modifier = Modifier.padding(start = 4.dp)) {
-                ToolbarButtons.Back { onEvent(LocationHistoryUiEvent.OnCloseScreen) }
+                ToolbarButtons.Back(elevation = 8.dp) { onEvent(LocationHistoryUiEvent.OnCloseScreen) }
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -165,53 +149,62 @@ fun LocationHistoryScreenElements(
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
             )
         ) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp)
+                    .size(width = 90.dp, height = 36.dp)
+                    .shadow(8.dp, RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colors.background)
+                    .padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                MapFocusTypeTab(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    selected = uiState.mapFocusType == LocationHistoryMapFocusType.Stats,
+                    name = "Stats",
+                    icon = CoreAppIcons.Home.asPainterResource(),
+                    onClick = {
+                        onEvent(
+                            LocationHistoryUiEvent.ChangeMapFocusType(
+                                LocationHistoryMapFocusType.Stats
+                            )
+                        )
+                    }
+                )
+
+                MapFocusTypeTab(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    selected = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint,
+                    name = "Point",
+                    icon = CoreAppIcons.Timeline.asPainterResource(),
+                    onClick = {
+                        onEvent(
+                            LocationHistoryUiEvent.ChangeMapFocusType(
+                                LocationHistoryMapFocusType.LocationPoint
+                            )
+                        )
+                    }
+                )
+            }
+
             Column(
                 modifier = Modifier.onGloballyPositioned { coordinates ->
                     cardHeight(with(density) { coordinates.size.height.toDp() })
                 }
             ) {
                 Box(
-                    modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 8.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+//                        .padding(bottom = 6.dp)
                 ) {
                     LocationHistoryDetailCard(
                         uiState = uiState,
                         onEvent = onEvent
                     )
-                }
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    contentPadding = PaddingValues(start = 10.dp, end = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally)
-                ) {
-                    this.item(key = "stats") {
-                        MapFocusTypeTab(
-                            modifier = Modifier,
-                            selected = uiState.mapFocusType == LocationHistoryMapFocusType.Stats,
-                            name = "Stats",
-                            onClick = {
-                                onEvent(
-                                    LocationHistoryUiEvent.ChangeMapFocusType(
-                                        LocationHistoryMapFocusType.Stats
-                                    )
-                                )
-                            }
-                        )
-                    }
-                    this.item(key = "point") {
-                        MapFocusTypeTab(
-                            modifier = Modifier,
-                            selected = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint,
-                            name = "Point",
-                            onClick = {
-                                onEvent(
-                                    LocationHistoryUiEvent.ChangeMapFocusType(
-                                        LocationHistoryMapFocusType.LocationPoint
-                                    )
-                                )
-                            }
-                        )
-                    }
                 }
             }
         }
@@ -223,34 +216,45 @@ private fun MapFocusTypeTab(
     modifier: Modifier = Modifier,
     selected: Boolean,
     name: String,
+    icon: Painter,
     onClick: () -> Unit
 ) {
     val contentColor by animateColorAsState(
         if (selected) MaterialTheme.colors.onPrimary
-        else MaterialTheme.colors.onSurface
+        else MaterialTheme.colors.onBackground
     )
     val backgroundColor by animateColorAsState(
+//        if (selected) MaterialTheme.colors.secondary.copy(alpha = 0.5f)
         if (selected) MaterialTheme.colors.primary
-        else MaterialTheme.colors.surface
+        else MaterialTheme.colors.background
     )
 
-    DataInfoChip(
-        modifier = modifier,
-        shape = RoundedCornerShape(100),
-        backgroundColor = backgroundColor,
-        imageOrIcon = null,
-        hasEndArrow = false,
-        text = {
-            Text(
-                text = name,
-                color = contentColor,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,
-                lineHeight = 14.sp,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(start = 4.dp)
+    Row(
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .clip(RoundedCornerShape(8.dp))
+            .background(backgroundColor),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(18.dp),
+            painter = icon,
+            contentDescription = null,
+            tint = contentColor.copy(
+                alpha = if (selected) 1f else 0.5f
             )
-        },
-        onClick = onClick
-    )
+        )
+
+//        Text(
+//            modifier = Modifier.padding(start = 4.dp),
+//            text = name,
+//            color = contentColor,
+//            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+//            fontSize = 12.sp,
+//            lineHeight = 14.sp,
+//            textAlign = TextAlign.Center
+//        )
+    }
 }

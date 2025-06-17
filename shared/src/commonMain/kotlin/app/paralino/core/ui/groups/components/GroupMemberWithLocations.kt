@@ -523,23 +523,6 @@ private fun ColumnScope.GroupMemberActions(
             onEvent(GroupMemberItemEvent.onActionClick(it, state))
         }
 
-        if (state.actions.history != null) {
-            GroupMemberActionButton(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                startIcon = CoreAppIcons.TimelinePath.asPainterResource(),
-                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(MR.strings.groups_sharing_setting_timeline_title),
-                onClick = {
-                    onEvent(
-                        GroupMemberItemEvent.onActionClick(
-                            action = state.actions.history,
-                            item = state
-                        )
-                    )
-                }
-            )
-        }
-
         if (state.actions.deleteLocation != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -553,6 +536,23 @@ private fun ColumnScope.GroupMemberActions(
                     onEvent(
                         GroupMemberItemEvent.onActionClick(
                             action = state.actions.deleteLocation,
+                            item = state
+                        )
+                    )
+                }
+            )
+        }
+
+        if (state.actions.history != null) {
+            GroupMemberActionButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                startIcon = CoreAppIcons.TimelinePath.asPainterResource(),
+                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                text = stringResource(MR.strings.groups_sharing_setting_timeline_title),
+                onClick = {
+                    onEvent(
+                        GroupMemberItemEvent.onActionClick(
+                            action = state.actions.history,
                             item = state
                         )
                     )
