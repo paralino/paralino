@@ -31,7 +31,6 @@ import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.history.LocationHistoryScreenElements
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.ui.map.rememberSwipeableSheetState
@@ -128,14 +127,10 @@ private fun MapContent(
             onEvent = onEvent,
             mapContentPadding = PaddingValues(
                 top = 68.dp,
-                bottom = if (uiState.mapFocusType.isLocationPoint) {
-                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                } else {
-                    (cardHeight).coerceIn(
-                        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-                        this.maxHeight
-                    )
-                }
+                bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()).coerceIn(
+                    minimumValue = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                    maximumValue = this.maxHeight
+                )
             )
         )
 

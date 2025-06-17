@@ -11,6 +11,7 @@ import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.Logr
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -19,6 +20,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.stripNanoseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -68,8 +70,9 @@ class LocationHistoryDataFetchController(
                 isLoadingLocations = true,
                 locations = emptyList(),
                 devices = emptyList(),
+                stats = null,
+                mapFocusType = LocationHistoryMapFocusType.Stats,
                 selectedLocationIndex = null,
-                mapFocusType = LocationHistoryMapFocusType.None,
                 isSatelliteMode = it.isSatelliteMode,
                 alertDialog = it.alertDialog
             )
@@ -131,7 +134,8 @@ class LocationHistoryDataFetchController(
                         mapLocationPoints(entry = it)
                     },
                     devices = emptyList(),
-                    selectedLocationIndex = null,
+                    stats = null,
+                    mapFocusType = LocationHistoryMapFocusType.Stats
                 )
             }
         }
@@ -232,7 +236,9 @@ class LocationHistoryDataFetchController(
                         isLoadingData = false,
                         locations = locations,
                         devices = devices,
-                        selectedLocationIndex = null,
+                        stats = null,
+                        // TODO adjust focused item
+                        mapFocusType = _uiState.value.mapFocusType,
                     )
                 }
             } else {
@@ -244,18 +250,44 @@ class LocationHistoryDataFetchController(
                 }
             }
         }
-            .catch { }
+            .catch {
+                Logr.d("Error loading history", it)
+            }
             .flowOn(Dispatchers.IO)
     }
 
     private fun mapLocationPoints(entry: LocationHistoryModelForDevice): List<LocationHistoryPointState> {
         return entry.history.data?.history
             ?.map { point ->
+                val locATime = point.loc?.tA?.isoToLocalDateTime()?.stripNanoseconds()
+                val locBTime = point.loc?.tB?.isoToLocalDateTime()?.stripNanoseconds()
+                val statusATime = point.status.tA.isoToLocalDateTime()?.stripNanoseconds()
+                val statusBTime = point.status.tB.isoToLocalDateTime()?.stripNanoseconds()
+
+                val locationTime = valueFormatter.formatTimeRangeForLocationHistory(
+                    startTimeUTC = locATime,
+                    endTimeUTC = locBTime,
+                    rangeStart = _uiState.value.startDate,
+                    rangeEnd = _uiState.value.endDate,
+                )
+
+                val statusTime = if (locBTime != statusBTime) {
+                    valueFormatter.formatTimeRangeForLocationHistory(
+                        // using same time to just indicate last point for status update
+                        startTimeUTC = statusATime.takeIf { it != locATime },
+                        endTimeUTC = statusBTime,
+                        rangeStart = _uiState.value.startDate,
+                        rangeEnd = _uiState.value.endDate,
+                    )
+                } else {
+                    null
+                }
+
                 LocationHistoryPointState(
                     locationId = entry.locationId,
                     point = point,
-                    locationTime = valueFormatter.formatRelativeDateTime(point.loc?.tB?.isoToLocalDateTime()),
-                    statusTime = valueFormatter.formatRelativeDateTime(point.status.tB.isoToLocalDateTime()),
+                    locationTime = locationTime,
+                    statusTime = statusTime.takeIf { it != locationTime },
                     formattedSpeed = point.loc?.spd?.let {
                         valueFormatter.getSpeedSmall(
                             metersPerSecond = it

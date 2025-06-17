@@ -116,7 +116,7 @@ fun EmbeddedSlider(
                             swipeableState.offset.value.toDp()
                         }
                     )
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(shape)
                     .background(MaterialTheme.colors.primary),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically

@@ -62,13 +62,13 @@ fun defaultMapProperties(
     }
 }
 
-fun boundsForMarkers(markers: List<MapPinData>): LatLngBounds? {
+fun boundsForMarkers(markers: List<MapPinData>, ignoreAccuracy: Boolean): LatLngBounds? {
     if (markers.isEmpty())
         return null
     return LatLngBounds.builder()
         .apply {
             markers.forEach {
-                val distanceFromCenterToCorner = it.accuracy * Math.sqrt(2.0)
+                val distanceFromCenterToCorner = (if (ignoreAccuracy) 1f else it.accuracy) * Math.sqrt(2.0)
                 val center = LatLng(it.lat, it.lng)
                 val southwestCorner =
                     SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0)
@@ -85,12 +85,13 @@ fun CameraPositionState.refocus(
     scope: CoroutineScope,
     markers: List<MapPinData>,
     forceZoom: Boolean = true,
+    ignoreAccuracy: Boolean = false,
     padding: Int = 60,
     durationMs: Int = 500
 ) {
     scope.launch {
         if (markers.isEmpty()) return@launch
-        val bounds = boundsForMarkers(markers) ?: return@launch
+        val bounds = boundsForMarkers(markers = markers, ignoreAccuracy = ignoreAccuracy) ?: return@launch
 
         val result = FloatArray(1)
         Location.distanceBetween(

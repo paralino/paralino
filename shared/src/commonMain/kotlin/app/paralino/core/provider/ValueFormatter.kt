@@ -6,10 +6,15 @@ import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
+import app.paralino.core.utils.extensions.stripNanoseconds
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -209,6 +214,200 @@ abstract class IValueFormatter {
                     timeUTC = dateTimeUTC,
                     pattern = "MMMdyyyy"
                 ) + timeFixed
+            }
+        }
+    }
+
+//    fun formatTimeRangeForLocationHistory(
+//        startTimeUTC: String?,
+//        endTimeUTC: String?,
+//        rangeStart: LocalDate,
+//        rangeEnd: LocalDate,
+//    ): String? {
+//        if (startTimeUTC == null && endTimeUTC == null) return null
+//
+//        val startTimeCorrect = startTimeUTC ?: endTimeUTC ?: return null
+//        val endTimeCorrect = endTimeUTC ?: startTimeUTC ?: return null
+//
+//        val startDateTimeUTC = startTimeCorrect.isoToLocalDateTime() ?: return null
+//        val localStart = startDateTimeUTC.fromUTCtoLocal()
+//
+//        val endDateTimeUTC = endTimeCorrect.isoToLocalDateTime() ?: return null
+//        val localEnd = endDateTimeUTC.fromUTCtoLocal()
+//
+//        val now = Clock.System.now()
+//        val timeZone = TimeZone.currentSystemDefault()
+//        val nowDate = now.toLocalDateTime(TimeZone.currentSystemDefault())
+//
+//        val showYearMonthDay = listOf(localStart.year, localEnd.year, rangeStart.year, rangeEnd.year, nowDate.year).distinct().size > 1
+//        val showMonthDay = showYearMonthDay || listOf(localStart.monthNumber, localEnd.monthNumber, rangeStart.monthNumber, rangeEnd.monthNumber, nowDate.monthNumber).distinct().size > 1
+//
+//        val isSameYearForRange = localStart.year == localEnd.year
+//        val isSameMonthForRange = isSameYearForRange && localStart.monthNumber == localEnd.monthNumber
+//        val isSameDayForRange = isSameMonthForRange && localStart.dayOfYear == localEnd.dayOfYear
+//
+//    }
+
+    fun formatTimeRangeForLocationHistory(
+        startTimeUTC: LocalDateTime?,
+        endTimeUTC: LocalDateTime?,
+        rangeStart: LocalDate,
+        rangeEnd: LocalDate,
+    ): String? {
+        if (startTimeUTC == null && endTimeUTC == null) return null
+
+        val startTimeCorrect = startTimeUTC ?: endTimeUTC ?: return null
+        val endTimeCorrect = endTimeUTC ?: startTimeUTC ?: return null
+
+        val localStart = startTimeCorrect.fromUTCtoLocal()
+
+        val localEnd = endTimeCorrect.fromUTCtoLocal()
+
+        val now = Clock.System.now()
+        val timeZone = TimeZone.currentSystemDefault()
+        val nowDate = now.toLocalDateTime(timeZone)
+        val currentYear = nowDate.year
+
+        // Calculate yesterday
+        val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
+
+        // Determine if we should show years based on context
+        val shouldShowYear = shouldShowYearInContext(
+            itemStartYear = localStart.year,
+            itemEndYear = localEnd.year,
+            currentYear = currentYear,
+            rangeStartYear = rangeStart.year,
+            rangeEndYear = rangeEnd.year
+        )
+
+        // Check if start and end are exactly the same
+        if (localStart == localEnd) {
+            return formatSingleDateTime(
+                dateTime = localStart,
+                timeUTC = startTimeCorrect,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+        }
+
+        // Check if same day (different times)
+        val isSameDay = localStart.date == localEnd.date
+
+        return if (isSameDay) {
+            // Same day, different times: "June 3, 2025 12:14:23 - 12:16:20"
+            val datePart = formatDatePart(
+                date = localStart,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+            val startTime = formatTimeOnly(timeUTC = startTimeCorrect, showSeconds = true)
+            val endTime = formatTimeOnly(timeUTC = endTimeCorrect, showSeconds = true)
+            "$datePart $startTime - $endTime"
+        } else {
+            // Different days: "June 3, 2025 12:14:23 - June 4, 2025 12:16:20"
+            val startPart = formatDateTimePart(
+                dateTime = localStart,
+                timeUTC = startTimeCorrect,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+            val endPart = formatDateTimePart(
+                dateTime = localEnd,
+                timeUTC = endTimeCorrect,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+            "$startPart - $endPart"
+        }
+    }
+
+    private fun shouldShowYearInContext(
+        itemStartYear: Int,
+        itemEndYear: Int,
+        currentYear: Int,
+        rangeStartYear: Int,
+        rangeEndYear: Int
+    ): Boolean {
+        // Show year if:
+        // 1. Any item year is different from current year, OR
+        // 2. Range spans different years from current year, OR
+        // 3. Multiple different years are involved
+        val allYears = setOf(itemStartYear, itemEndYear, currentYear, rangeStartYear, rangeEndYear)
+
+        return allYears.size > 1 ||
+                rangeStartYear != currentYear ||
+                rangeEndYear != currentYear ||
+                itemStartYear != currentYear ||
+                itemEndYear != currentYear
+    }
+
+    private fun formatSingleDateTime(
+        dateTime: LocalDateTime,
+        timeUTC: LocalDateTime,
+        nowDate: LocalDate,
+        yesterday: LocalDate,
+        shouldShowYear: Boolean
+    ): String {
+        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = true)
+
+        return when {
+            dateTime.date == nowDate -> "Today $timeStr"
+            dateTime.date == yesterday -> "Yesterday $timeStr"
+            else -> {
+                val datePart = formatDatePart(
+                    date = dateTime,
+                    nowDate = nowDate,
+                    yesterday = yesterday,
+                    shouldShowYear = shouldShowYear
+                )
+                "$datePart $timeStr"
+            }
+        }
+    }
+
+    private fun formatDateTimePart(
+        dateTime: LocalDateTime,
+        timeUTC: LocalDateTime,
+        nowDate: LocalDate,
+        yesterday: LocalDate,
+        shouldShowYear: Boolean
+    ): String {
+        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = true)
+
+        return when {
+            dateTime.date == nowDate -> "Today $timeStr"
+            dateTime.date == yesterday -> "Yesterday $timeStr"
+            else -> {
+                val datePart = formatDatePart(
+                    date = dateTime,
+                    nowDate = nowDate,
+                    yesterday = yesterday,
+                    shouldShowYear = shouldShowYear
+                )
+                "$datePart $timeStr"
+            }
+        }
+    }
+
+    private fun formatDatePart(
+        date: LocalDateTime,
+        nowDate: LocalDate,
+        yesterday: LocalDate,
+        shouldShowYear: Boolean
+    ): String {
+        return when {
+            date.date == nowDate -> "Today"
+            date.date == yesterday -> "Yesterday"
+            else -> {
+                val pattern = if (shouldShowYear) "MMMd, yyyy" else "MMMd"
+                formatBestPattern(
+                    timeUTC = date,
+                    pattern = pattern
+                )
             }
         }
     }

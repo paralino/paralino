@@ -43,8 +43,9 @@ class LocationHistoryViewModelDataController(
             isLoadingLocations = true,
             locations = emptyList(),
             devices = emptyList(),
+            stats = null,
+            mapFocusType = LocationHistoryMapFocusType.Stats,
             selectedLocationIndex = null,
-            mapFocusType = LocationHistoryMapFocusType.None,
             isSatelliteMode = false,
             alertDialog = null
         )

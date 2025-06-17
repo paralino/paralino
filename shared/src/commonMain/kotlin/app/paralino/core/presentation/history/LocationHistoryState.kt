@@ -31,8 +31,9 @@ data class LocationHistoryScreenState(
     val isLoadingLocations: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
-    val selectedLocationIndex: Int?,
+    val stats: LocationHistoryStats?,
     val mapFocusType: LocationHistoryMapFocusType,
+    val selectedLocationIndex: Int?,
     val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
 ) {
@@ -49,8 +50,47 @@ data class LocationHistoryScreenState(
                 }
             }
         }
+    }.reversed()
+
+    val locationIndex: Int = selectedLocationIndex?.takeIf {
+        it >= 0 && it < selectedLocations.size
+    } ?: selectedLocations.lastIndex
+
+    val selectedPoint: LocationHistoryPointState? = if (mapFocusType is LocationHistoryMapFocusType.LocationPoint) {
+        selectedLocations.withIndex().firstOrNull {
+            it.index == locationIndex
+        }?.value ?: selectedLocations.firstOrNull()
+    } else {
+        null
+    }
+
+    val selectedMapPinData: MapPinData? = selectedPoint?.point?.loc?.let {
+        MapPinData(
+            groupId = groupId,
+            location = it,
+            name = userName,
+            image = userImage,
+            timeInfo = null
+        )
     }
 }
+
+data class LocationHistoryStats(
+    val formattedTime: String?,
+    val totalDistanceMeters: Float,
+    val batteryRange: Pair<Int, Int>,
+    val averageBattery: Int,
+    val maxSpeedMps: Float,
+    val elevationRangeMeters: Pair<Float, Float>,
+    val elevationGainMeters: Float,
+    val locationEntriesCount: Int,
+    val networks: List<String>,
+
+    val formattedDistance: String,
+    val formattedMaxSpeed: String,
+    val formattedElevationRange: String,
+    val formattedElevationGain: String
+)
 
 sealed class UserActiveLocationDeviceState {
     abstract val locationId: String
@@ -88,8 +128,9 @@ data class LocationHistoryPointState(
 )
 
 sealed interface LocationHistoryMapFocusType {
-    data class LocationPoint(val state: LocationHistoryPointState) : LocationHistoryMapFocusType
-    data object None : LocationHistoryMapFocusType
+    data object Stats : LocationHistoryMapFocusType
+    data object Timeline : LocationHistoryMapFocusType
+    data object LocationPoint: LocationHistoryMapFocusType
 
     val isLocationPoint: Boolean get() = this is LocationPoint
 }
@@ -102,6 +143,7 @@ sealed interface LocationHistoryUiEvent {
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
+    data class ChangeMapFocusType(val type: LocationHistoryMapFocusType) : LocationHistoryUiEvent
     data object OnRefocusClick : LocationHistoryUiEvent
     data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnCloseFocusedItemClick : LocationHistoryUiEvent

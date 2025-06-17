@@ -113,18 +113,18 @@ data class MapPinData constructor(
         groupId = groupId,
         markerId = location.toString(),
         pinType = MapPinType.MEMBER,
-        markerStyle = MapMarkerStyle.CIRCLE,
+        markerStyle = if(location.acc < 100) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
         focused = false,
         active = true,
         obsolete = false,
         hidden = false,
-        title = null,
-        image = null,
+        title = name,
+        image = image,
         timeInfo = timeInfo,
         lat = location.lat,
         lng = location.lng,
         accuracy = location.acc,
-        shouldShowApproximateCircle = location.acc > 100
+        shouldShowApproximateCircle = location.acc > 50
     )
 
     @Stable

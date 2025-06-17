@@ -32,6 +32,7 @@ enum class GroupStatusTagType {
     SHARING_ACTIVE_NOT_ACCURATE,
     UNVERIFIED,
     INACTIVE,
+    INACTIVE_NOT_ACCURATE,
     NOT_SHARING,
     OFFLINE,
     GPS_OFF,
@@ -110,6 +111,7 @@ fun GroupStatusTag(
             GroupStatusTagType.IDLE,
             GroupStatusTagType.IDLE_NO_LOCATION,
             GroupStatusTagType.IDLE_NOT_ACCURATE,
+            GroupStatusTagType.INACTIVE_NOT_ACCURATE,
             GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
 
             GroupStatusTagType.INACTIVE,
@@ -125,6 +127,7 @@ fun GroupStatusTag(
 
             GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> ""
             GroupStatusTagType.IDLE_NOT_ACCURATE -> ""
+            GroupStatusTagType.INACTIVE_NOT_ACCURATE -> ""
 
             GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title)
             GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
@@ -143,6 +146,7 @@ fun GroupStatusTag(
         }
 
         val inaccurateLocationText = when (status) {
+            GroupStatusTagType.INACTIVE_NOT_ACCURATE,
             GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
             GroupStatusTagType.IDLE_NOT_ACCURATE -> stringResource(resource = MR.strings.group_members_status_location_inaccurate)
 
@@ -154,6 +158,7 @@ fun GroupStatusTag(
             GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
             GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
             GroupStatusTagType.IDLE_NOT_ACCURATE,
+            GroupStatusTagType.INACTIVE_NOT_ACCURATE,
             GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
 
             GroupStatusTagType.GPS_OFF,

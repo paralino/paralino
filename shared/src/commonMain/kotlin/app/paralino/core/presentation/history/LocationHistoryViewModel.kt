@@ -67,10 +67,14 @@ class LocationHistoryViewModel(
                 dataController._uiState.update { it.copy(isSatelliteMode = !it.isSatelliteMode) }
             }
             LocationHistoryUiEvent.OnMapTouch -> {}
-            is LocationHistoryUiEvent.OnMarkerClick -> TODO()
+            is LocationHistoryUiEvent.OnMarkerClick -> {}
             LocationHistoryUiEvent.OnRefocusClick -> TODO()
             is LocationHistoryUiEvent.SelectLocation -> {}
-            is LocationHistoryUiEvent.SetHistoryProgress -> TODO()
+            is LocationHistoryUiEvent.SetHistoryProgress -> {
+                dataController._uiState.update {
+                    it.copy(selectedLocationIndex = event.progress)
+                }
+            }
             LocationHistoryUiEvent.OnNextDay -> TODO()
             LocationHistoryUiEvent.OnPreviousDay -> TODO()
             LocationHistoryUiEvent.ToggleDayRange -> {
@@ -86,16 +90,24 @@ class LocationHistoryViewModel(
                                 is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == event.device.locationId)
                                 is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == event.device.locationId)
                             }
-                        }
+                        },
+                        selectedLocationIndex = null
                     )
                 }
             }
+
             is LocationHistoryUiEvent.UiLifecycleChange -> {
                 uiFocusedStatus.update { event.active }
             }
 
             LocationHistoryUiEvent.OnCloseScreen -> {
                 dataController._eventChannel.trySend(LocationHistoryScreenEvent.NavigateBack)
+            }
+
+            is LocationHistoryUiEvent.ChangeMapFocusType -> {
+                dataController._uiState.update {
+                    it.copy(mapFocusType = event.type)
+                }
             }
         }
     }
