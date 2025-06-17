@@ -305,7 +305,7 @@ fun GroupMemberWithLocations(
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(end = 2.dp)
-                                .size(14.dp)
+                                .size(16.dp)
                         )
                         Text(
                             text = state.filteredLastPing.annotatedBoldCompose(),
