@@ -162,15 +162,24 @@ fun LocationHistoryDetailCard(
                         }
                     }
                     LocationHistoryMapFocusType.Stats -> {
-                        LocationTime(time = uiState.stats?.formattedTime)
+                        LocationTime(time = uiState.stats?.formattedTimeRange)
                     }
                     LocationHistoryMapFocusType.Timeline -> {}
                 }
             }
         }
 
-        when (uiState.mapFocusType) {
-            LocationHistoryMapFocusType.LocationPoint -> {
+        AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.Stats) {
+            uiState.stats?.let {
+                LocationHistoryStatsTable(
+                    modifier = Modifier.padding(bottom = 10.dp).padding(horizontal = 10.dp),
+                    stats = it
+                )
+            }
+        }
+
+        AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint) {
+            Column {
                 uiState.selectedPoint?.let { point ->
                     AnimatedVisibility(point.statusTime != null) {
                         FlowRow(
@@ -220,12 +229,6 @@ fun LocationHistoryDetailCard(
                     }
                 )
             }
-            LocationHistoryMapFocusType.Stats -> {
-                uiState.stats?.let {
-                    LocationHistoryStatsTable(stats = it)
-                }
-            }
-            LocationHistoryMapFocusType.Timeline -> {}
         }
     }
 }
@@ -246,7 +249,7 @@ private fun ColumnScope.LocationTime(
                 contentDescription = null,
                 modifier = Modifier
                     .padding(end = 2.dp)
-                    .size(14.dp)
+                    .size(16.dp)
             )
             Text(
                 text = time.annotatedBoldCompose(),

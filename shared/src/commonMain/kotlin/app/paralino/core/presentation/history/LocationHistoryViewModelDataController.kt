@@ -6,6 +6,7 @@ import app.paralino.core.domain.location.RefreshLocationHistoryUseCase
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.channels.Channel
@@ -21,7 +22,8 @@ class LocationHistoryViewModelDataController(
     val valueFormatter: IValueFormatter,
     val appPrefs: AppPrefs,
     val remoteConfig: RemoteConfigRepository,
-    val viewModel: LocationHistoryViewModel
+    val geofenceManager: IGeofenceManager,
+    val viewModel: LocationHistoryViewModel,
 ) {
     val _uiState = MutableStateFlow<LocationHistoryScreenState>(
         LocationHistoryScreenState(

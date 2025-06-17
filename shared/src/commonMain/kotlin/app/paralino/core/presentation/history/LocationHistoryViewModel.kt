@@ -7,6 +7,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,8 @@ class LocationHistoryViewModel(
     private val userGroupRepo: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs,
-    private val remoteConfig: RemoteConfigRepository
+    private val remoteConfig: RemoteConfigRepository,
+    private val geofenceManager: IGeofenceManager
 ) : CoreViewModel() {
 
     private val dataController = LocationHistoryViewModelDataController(
@@ -33,6 +35,7 @@ class LocationHistoryViewModel(
         valueFormatter = valueFormatter,
         appPrefs = appPrefs,
         remoteConfig = remoteConfig,
+        geofenceManager = geofenceManager,
         viewModel = this
     )
 
@@ -84,7 +87,7 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.OnMapLongPress -> {}
             is LocationHistoryUiEvent.SelectDevice -> {
                 dataController._uiState.update {
-                    it.copy(
+                    val newState = it.copy(
                         devices = it.devices.map {
                             when (it) {
                                 is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == event.device.locationId)
@@ -93,6 +96,14 @@ class LocationHistoryViewModel(
                         },
                         selectedLocationIndex = null
                     )
+
+                    val stats = LocationHistoryStats.calculateStats(
+                        state = newState,
+                        valueFormatter = dataController.valueFormatter,
+                        geofenceManager = dataController.geofenceManager
+                    )
+
+                    newState.copy(stats = stats)
                 }
             }
 

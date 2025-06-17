@@ -5,11 +5,14 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.datetime.LocalDate
 
 data class LocationHistoryScreenState(
@@ -56,13 +59,14 @@ data class LocationHistoryScreenState(
         it >= 0 && it < selectedLocations.size
     } ?: selectedLocations.lastIndex
 
-    val selectedPoint: LocationHistoryPointState? = if (mapFocusType is LocationHistoryMapFocusType.LocationPoint) {
-        selectedLocations.withIndex().firstOrNull {
-            it.index == locationIndex
-        }?.value ?: selectedLocations.firstOrNull()
-    } else {
-        null
-    }
+    val selectedPoint: LocationHistoryPointState? =
+        if (mapFocusType is LocationHistoryMapFocusType.LocationPoint) {
+            selectedLocations.withIndex().firstOrNull {
+                it.index == locationIndex
+            }?.value ?: selectedLocations.firstOrNull()
+        } else {
+            null
+        }
 
     val selectedMapPinData: MapPinData? = selectedPoint?.point?.loc?.let {
         MapPinData(
@@ -76,7 +80,7 @@ data class LocationHistoryScreenState(
 }
 
 data class LocationHistoryStats(
-    val formattedTime: String?,
+    val formattedTimeRange: String?,
     val totalDistanceMeters: Float,
     val batteryRange: Pair<Int, Int>,
     val averageBattery: Int,
@@ -90,7 +94,101 @@ data class LocationHistoryStats(
     val formattedMaxSpeed: String,
     val formattedElevationRange: String,
     val formattedElevationGain: String
-)
+) {
+    companion object {
+        fun calculateStats(
+            state: LocationHistoryScreenState,
+            valueFormatter: IValueFormatter,
+            geofenceManager: IGeofenceManager
+        ): LocationHistoryStats? {
+            val locations = state.selectedLocations
+            if (state.locations.isEmpty()) {
+                return null
+            }
+
+            // Get location points with valid coordinates required for some data
+            val locationPoints = locations.mapNotNull { it.point.loc }.sortedBy { it.tB }
+
+            val formattedTimeRange = valueFormatter.formatTimeRangeForLocationHistory(
+                startTimeUTC = locations.first().point.loc?.tA?.isoToLocalDateTime(),
+                endTimeUTC = locations.last().point.status.tB.isoToLocalDateTime(),
+                rangeStart = state.startDate,
+                rangeEnd = state.endDate
+            )
+
+            var totalDistanceMeters = 0f
+            for (i in 1 until locationPoints.size) {
+                val prev = locationPoints[i - 1]
+                val curr = locationPoints[i]
+                totalDistanceMeters += geofenceManager.distanceBetweenPoints(
+                    lat1 = prev.lat,
+                    lng1 = prev.lng,
+                    lat2 = curr.lat,
+                    lng2 = curr.lng
+                )
+            }
+
+            val batteryLevels = locations.mapNotNull { it.point.status.bat }
+            val batteryRange = if (batteryLevels.isNotEmpty()) {
+                Pair(batteryLevels.minOrNull() ?: 0, batteryLevels.maxOrNull() ?: 0)
+            } else {
+                Pair(0, 0)
+            }
+            val averageBattery = if (batteryLevels.isNotEmpty()) {
+                batteryLevels.average().toInt()
+            } else {
+                0
+            }
+
+            val maxSpeedMps = locationPoints.mapNotNull { it.spd }.maxOrNull() ?: 0f
+
+            val elevations = locationPoints.mapNotNull { it.alt }
+            val elevationRangeMeters = if (elevations.isNotEmpty()) {
+                Pair(elevations.minOrNull() ?: 0f, elevations.maxOrNull() ?: 0f)
+            } else {
+                Pair(0f, 0f)
+            }
+
+            val elevationGainMeters = if (elevations.size >= 2) {
+                elevations.last() - elevations.first()
+            } else {
+                0f
+            }
+
+            val networks =
+                locations
+                    .mapNotNull { it.point.status.net?.let { NetworkType.fromKey(it)?.networkName } }
+                    .distinct()
+
+            // Format values
+            val formattedDistance = valueFormatter.getDistanceSmall(totalDistanceMeters.toDouble())
+            val formattedMaxSpeed = valueFormatter.getSpeedSmall(maxSpeedMps)
+            val formattedElevationRange =
+                "${valueFormatter.getDistanceSmall(elevationRangeMeters.first.toDouble())} - ${
+                    valueFormatter.getDistanceSmall(elevationRangeMeters.second.toDouble())
+                }"
+
+            val formattedElevationGain =
+                valueFormatter.getDistanceSmall(elevationGainMeters.toDouble())
+
+            return LocationHistoryStats(
+                formattedTimeRange = formattedTimeRange,
+                totalDistanceMeters = totalDistanceMeters,
+                batteryRange = batteryRange,
+                averageBattery = averageBattery,
+                maxSpeedMps = maxSpeedMps,
+                elevationRangeMeters = elevationRangeMeters,
+                elevationGainMeters = elevationGainMeters,
+                locationEntriesCount = locations.size,
+                networks = networks,
+                formattedDistance = formattedDistance,
+                formattedMaxSpeed = formattedMaxSpeed,
+                formattedElevationRange = formattedElevationRange,
+                formattedElevationGain = formattedElevationGain
+            )
+        }
+    }
+}
 
 sealed class UserActiveLocationDeviceState {
     abstract val locationId: String
@@ -130,7 +228,7 @@ data class LocationHistoryPointState(
 sealed interface LocationHistoryMapFocusType {
     data object Stats : LocationHistoryMapFocusType
     data object Timeline : LocationHistoryMapFocusType
-    data object LocationPoint: LocationHistoryMapFocusType
+    data object LocationPoint : LocationHistoryMapFocusType
 
     val isLocationPoint: Boolean get() = this is LocationPoint
 }

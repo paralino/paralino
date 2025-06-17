@@ -223,23 +223,31 @@ class LocationHistoryDataFetchController(
                     }
                     .sortedByDescending { it.point.status.tB }
 
+                val newState = _uiState.value.copy(
+                    groupName = group.name,
+                    groupImage = group.image,
+                    historyDaysLimit = group.group.historyDaysLimit(remoteConfig.getConfigOnce()),
+                    isGroupOwner = group.isCurrentUserOwner,
+                    userName = currentMember.member.name,
+                    userImage = currentMember.member.image
+                        ?: ImageModel.emoji(Emojis.robot),
+                    isDataMissing = false,
+                    isLoadingData = false,
+                    locations = locations,
+                    devices = devices,
+                    stats = null,
+                    // TODO adjust focused item
+                    mapFocusType = _uiState.value.mapFocusType,
+                )
+
+                val stats = LocationHistoryStats.calculateStats(
+                    state = newState,
+                    valueFormatter = dataController.valueFormatter,
+                    geofenceManager = dataController.geofenceManager,
+                )
+
                 _uiState.update {
-                    it.copy(
-                        groupName = group.name,
-                        groupImage = group.image,
-                        historyDaysLimit = group.group.historyDaysLimit(remoteConfig.getConfigOnce()),
-                        isGroupOwner = group.isCurrentUserOwner,
-                        userName = currentMember.member.name,
-                        userImage = currentMember.member.image
-                            ?: ImageModel.emoji(Emojis.robot),
-                        isDataMissing = false,
-                        isLoadingData = false,
-                        locations = locations,
-                        devices = devices,
-                        stats = null,
-                        // TODO adjust focused item
-                        mapFocusType = _uiState.value.mapFocusType,
-                    )
+                    newState.copy(stats = stats)
                 }
             } else {
                 _uiState.update {
