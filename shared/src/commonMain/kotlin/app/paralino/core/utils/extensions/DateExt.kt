@@ -1,7 +1,14 @@
 package app.paralino.core.utils.extensions
 
-import kotlinx.datetime.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
 import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.toInstant
 import kotlin.time.Duration
 
 fun nowUTC(): Instant = Clock.System.now()
@@ -45,4 +52,16 @@ fun Instant.isInFuture(): Boolean {
 
 fun Instant.isOlderThan(duration: Duration): Boolean {
     return this.plus(duration) < nowUTC()
+}
+
+fun LocalDateTime.stripNanoseconds(): LocalDateTime {
+    return LocalDateTime(
+        date = this.date,
+        time = LocalTime(
+            hour = this.time.hour,
+            minute = this.time.minute,
+            second = this.time.second,
+            nanosecond = 0
+        )
+    )
 }

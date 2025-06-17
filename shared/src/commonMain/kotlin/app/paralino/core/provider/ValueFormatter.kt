@@ -23,7 +23,7 @@ abstract class IValueFormatter {
     abstract val deviceDefaultMeasurementSystem: MeasurementSystemType
     private val kmInMile = 1.609344
 
-    abstract fun formatTimeOnly(timeUTC: LocalDateTime?): String?
+    abstract fun formatTimeOnly(timeUTC: LocalDateTime?, showSeconds: Boolean): String?
     abstract fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String
     abstract fun formatBestPattern(timeUTC: LocalDateTime, pattern: String): String
     abstract fun formatWithPattern(timeUTC: LocalDateTime, pattern: String): String
@@ -90,7 +90,7 @@ abstract class IValueFormatter {
         val sameDay = sameYear && local.dayOfYear == nowTime.dayOfYear
         val isYesterday = sameYear && local.dayOfYear == now.minus(1.days)
             .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfYear
-        val formattedTime = formatTimeOnly(timeUTC)
+        val formattedTime = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
 
         return when {
             timeInstant > now.minus(20.seconds) -> {
@@ -139,7 +139,7 @@ abstract class IValueFormatter {
         val nowTime = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault())
         val sameYear = local.year == nowTime.year
         val sameDay = sameYear && local.dayOfYear == nowTime.dayOfYear
-        val formattedTime = formatTimeOnly(timeUTC)
+        val formattedTime = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
 
         return when {
             sameDay && optionalMonth -> {
@@ -194,7 +194,7 @@ abstract class IValueFormatter {
         val isTomorrow = sameYear && local.dayOfYear == now.plus(1, DateTimeUnit.DAY, timeZone)
             .toLocalDateTime(timeZone).dayOfYear
 
-        val time = formatTimeOnly(dateTimeUTC)
+        val time = formatTimeOnly(timeUTC = dateTimeUTC, showSeconds = false)
         return when {
             sameDay -> "${MR.strings.date_name_today.localizedString()}, $time"
             isTomorrow -> "${MR.strings.date_name_tomorrow.localizedString()}, $time"

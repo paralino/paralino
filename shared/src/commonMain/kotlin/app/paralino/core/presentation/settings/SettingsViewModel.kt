@@ -308,7 +308,10 @@ class SettingsViewModel(
             it.mapSuccess {
                 it.copy(
                     boostTime = appPrefs.trackingBoostEndTime?.takeIf { it > nowUTC() }?.let {
-                        valueFormatter.formatTimeOnly(it.toLocalDateTime(TimeZone.UTC))
+                        valueFormatter.formatTimeOnly(
+                            timeUTC = it.toLocalDateTime(TimeZone.UTC),
+                            showSeconds = false
+                        )
                     }
                 )
             }
