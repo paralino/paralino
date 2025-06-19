@@ -551,7 +551,7 @@ class MapHomeViewModel constructor(
                 },
                 mapHomeScreenFocusType = when (markerData.type) {
                     MapPinType.MEMBER -> {
-                        if (memberStateForMarker?.location != null) {
+                        if (memberStateForMarker != null) {
                             MapHomeScreenFocusType.MEMBER(
                                 memberUserId = memberStateForMarker.memberState.userId,
                                 memberId = memberStateForMarker.memberState.memberId,
@@ -570,7 +570,7 @@ class MapHomeViewModel constructor(
             )
         }
 
-        if (marker == null || memberStateForMarker?.location == null) {
+        if (marker == null || (markerData.type == MapPinType.MEMBER && memberStateForMarker?.location == null)) {
             messageDispatcher.showSnackbar(MR.strings.group_member_no_location_info_message.localizedString())
         }
     }
