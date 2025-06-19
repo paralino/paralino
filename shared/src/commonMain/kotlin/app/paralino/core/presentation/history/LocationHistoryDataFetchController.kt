@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 class LocationHistoryDataFetchController(
     val dataController: LocationHistoryViewModelDataController,
@@ -57,6 +58,18 @@ class LocationHistoryDataFetchController(
             )
         }
 
+        return reload(
+            dateRangeDays = _uiState.value.dateRangeDays,
+            selectedDate = _uiState.value.selectedDate
+        )
+    }
+
+    fun reload(
+        dateRangeDays: Int,
+        selectedDate: LocalDate
+    ): Flow<Unit> {
+        val groupId = _uiState.value.groupId
+        val memberUserId = _uiState.value.memberUserId
         val job = if (groupId == UserGroup.groupPersonalDevicesId) {
             fetchPersonalLocationHistory()
         } else {

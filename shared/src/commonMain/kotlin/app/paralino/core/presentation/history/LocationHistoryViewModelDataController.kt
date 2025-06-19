@@ -219,16 +219,14 @@ class LocationHistoryViewModelDataController(
             else -> selectedDate
         }
 
-        val newEndDate = selectedDate
-
         // Update days with new selection
         val updatedDays = currentState.days.map { day ->
-            val isInRange = day.date >= newStartDate && day.date <= newEndDate
+            val isInRange = day.date >= newStartDate && day.date <= selectedDate
             val position = when {
                 !isInRange -> LocationHistorySelectedDayPosition.SOLO
                 currentRange == 1 -> LocationHistorySelectedDayPosition.SOLO
                 day.date == newStartDate -> LocationHistorySelectedDayPosition.START
-                day.date == newEndDate -> LocationHistorySelectedDayPosition.END
+                day.date == selectedDate -> LocationHistorySelectedDayPosition.END
                 else -> LocationHistorySelectedDayPosition.CENTER
             }
 
@@ -242,13 +240,19 @@ class LocationHistoryViewModelDataController(
         _uiState.update { state ->
             state.copy(
                 dateRangeDays = dateRangeDays,
-                selectedDate = newEndDate,
-                days = updatedDays
+                selectedDate = selectedDate,
+                days = updatedDays,
+                isRefreshingData = true
             )
         }
 
         // Reload history for the new date range
-        dataFetchController.loadHistory(currentState.groupId, currentState.memberUserId)
+        historySubscriptionJob?.cancel()
+        historySubscriptionJob = dataFetchController.reload(
+            dateRangeDays = dateRangeDays,
+            selectedDate = selectedDate
+        )
+            .launchIn(viewModel.coroutineScope)
     }
 
     private fun calculatePosition(
