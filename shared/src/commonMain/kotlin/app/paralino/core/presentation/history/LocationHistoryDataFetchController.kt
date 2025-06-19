@@ -226,6 +226,7 @@ class LocationHistoryDataFetchController(
                         mapLocationPoints(entry = entry)
                     }
                     .sortedByDescending { it.point.status.tB }
+                    .distinct()
 
                 val newState = _uiState.value.copy(
                     groupName = group.name,
