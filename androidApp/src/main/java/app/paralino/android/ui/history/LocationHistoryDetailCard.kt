@@ -82,7 +82,7 @@ fun LocationHistoryDetailCard(
             modifier = modifier
                 .fillMaxWidth()
 //            .clickable { }
-                .shadow(8.dp, RoundedCornerShape(16.dp))
+                .shadow(6.dp, RoundedCornerShape(16.dp))
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colors.background)
         ) {
@@ -233,25 +233,27 @@ fun LocationHistoryDetailCard(
                         onEvent = onEvent
                     )
 
-                    val sliderSize = remember {
-                        EmbeddedSliderSize(minStepWidth = 80.dp, minHeight = 40.dp)
-                    }
-                    EmbeddedSlider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 6.dp)
-                            .padding(bottom = 6.dp)
-                            .height(sliderSize.minHeight),
-                        title = uiState.locationIndex.plus(1).toString(),
-                        value = null,
-                        size = sliderSize,
-                        progress = uiState.locationIndex,
-                        shape = RoundedCornerShape(12.dp),
-                        steps = uiState.selectedLocations.size,
-                        onProgressChange = {
-                            onEvent(LocationHistoryUiEvent.SetHistoryProgress(it))
+                    if (uiState.selectedLocations.isNotEmpty()) {
+                        val sliderSize = remember {
+                            EmbeddedSliderSize(minStepWidth = 80.dp, minHeight = 40.dp)
                         }
-                    )
+                        EmbeddedSlider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 6.dp)
+                                .padding(bottom = 6.dp)
+                                .height(sliderSize.minHeight),
+                            title = uiState.locationIndex.plus(1).toString(),
+                            value = null,
+                            size = sliderSize,
+                            progress = uiState.locationIndex,
+                            shape = RoundedCornerShape(12.dp),
+                            steps = uiState.selectedLocations.size,
+                            onProgressChange = {
+                                onEvent(LocationHistoryUiEvent.SetHistoryProgress(it))
+                            }
+                        )
+                    }
                 }
             }
         }

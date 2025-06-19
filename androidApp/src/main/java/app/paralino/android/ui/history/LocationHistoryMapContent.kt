@@ -55,7 +55,7 @@ fun LocationHistoryMapContent(
     val scope = rememberCoroutineScope()
     var canAnimateMapFocus by remember { mutableStateOf(false) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
-    val polylineWidthPixels = with(LocalDensity.current) { 4.dp.toPx() }
+    val polylineWidthPixels = with(LocalDensity.current) { 6.dp.toPx() }
 
     val cameraPositionState = rememberCameraPositionState()
 
@@ -129,7 +129,7 @@ fun LocationHistoryMapContent(
                     scope = scope,
                     markers = listOf(it),
                     ignoreAccuracy = false,
-                    durationMs = if (canAnimateMapFocus) 100 else 0,
+                    durationMs = if (canAnimateMapFocus) 300 else 0,
                     forceZoom = false
                 )
             }
@@ -190,17 +190,17 @@ fun LocationHistoryMapContent(
 
                     val latAnim = animateFloatAsState(
                         targetValue = point.lat.toFloat(),
-                        animationSpec = tween(durationMillis = 100, easing = LinearEasing),
+                        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
                         label = "latAnim"
                     ).value.toDouble()
                     val lngAnim = animateFloatAsState(
                         targetValue = point.lng.toFloat(),
-                        animationSpec = tween(durationMillis = 100, easing = LinearEasing),
+                        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
                         label = "lngAnim"
                     ).value.toDouble()
                     val accuracyAnim = animateFloatAsState(
                         targetValue = point.accuracy,
-                        animationSpec = tween(durationMillis = 100, easing = LinearEasing),
+                        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
                         label = "accuracyAnim"
                     ).value.toDouble()
 
@@ -232,7 +232,12 @@ fun LocationHistoryMapContent(
         Polyline(
             points = points,
             clickable = true,
-            color = MaterialTheme.colors.primary,
+            color = if (uiState.isSatelliteMode || isSystemInDarkTheme()) {
+                AppColors.redMain
+            } else {
+                MaterialTheme.colors.primary
+            },
+            pattern = null,
             startCap = RoundCap(),
             endCap = RoundCap(),
             geodesic = false,
