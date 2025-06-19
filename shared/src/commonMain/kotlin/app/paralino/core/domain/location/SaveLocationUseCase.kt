@@ -47,14 +47,18 @@ class SaveLocationUseCase(
             )
         }
 
-        val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupId = data.groupId)
-            ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
+        val historyEntries = if (data.locationHistory != null) {
+            val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupId = data.groupId)
+                ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
 
-        val historyEntries = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = data.groupId)
-            .filter { it.localHistoryKeyId == historyKey?.id }
-            .sortedByDescending { it.id }
-            .take(100)
-            .let { historyMapper.pendingLocationToCore(it) }
+            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = data.groupId)
+                .filter { it.localHistoryKeyId == historyKey?.id }
+                .sortedByDescending { it.id }
+                .take(100)
+                .let { historyMapper.pendingLocationToCore(it) }
+        } else {
+            emptyList()
+        }
 
         val locationHistory = if (historyEntries.isNotEmpty()) {
             val historyModel = LocationHistoryModel(
