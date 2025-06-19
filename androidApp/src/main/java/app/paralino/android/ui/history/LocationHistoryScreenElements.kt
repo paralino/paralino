@@ -20,10 +20,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,7 +34,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -46,10 +43,8 @@ import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.theme.AppColors
-import app.paralino.core.ui.theme.ButtonStyle
 
 
 @Composable
@@ -88,29 +83,9 @@ fun LocationHistoryScreenElements(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Box(modifier = Modifier.padding(start = 4.dp)) {
                 ToolbarButtons.Back(elevation = 8.dp) { onEvent(LocationHistoryUiEvent.OnCloseScreen) }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            FilledButton(
-                modifier = Modifier.padding(end = 8.dp).size(42.dp),
-                onClick = { onEvent(LocationHistoryUiEvent.ToggleDayRange) },
-                icon = null,
-                style = ButtonStyle.ICON,
-                elevation = 8.dp,
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.surface
-                ),
-                content = {
-                    Text(
-                        text = "${uiState.dateRangeDays}",
-                        style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold),
-                    )
-                }
-            )
         }
 
         // map mode
@@ -149,6 +124,7 @@ fun LocationHistoryScreenElements(
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
             )
         ) {
+
             Row(
                 modifier = Modifier
                     .align(Alignment.End)
@@ -199,10 +175,25 @@ fun LocationHistoryScreenElements(
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
-//                        .padding(bottom = 6.dp)
+                        .padding(bottom = 12.dp)
                 ) {
                     LocationHistoryDetailCard(
                         uiState = uiState,
+                        onEvent = onEvent
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    LocationHistoryDateSelector(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp),
+                        dayRange = uiState.dateRangeDays,
+                        days = uiState.displayedDays,
                         onEvent = onEvent
                     )
                 }
