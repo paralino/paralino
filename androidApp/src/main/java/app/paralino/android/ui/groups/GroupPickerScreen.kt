@@ -131,7 +131,7 @@ private fun GroupPickerScreen(
                 elevation = 0.dp,
                 titleComposable = {
                     Row(
-                        modifier = Modifier,
+                        modifier = Modifier.padding(start = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
