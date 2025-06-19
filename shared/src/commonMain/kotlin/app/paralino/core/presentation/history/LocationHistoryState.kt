@@ -4,8 +4,6 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
@@ -19,7 +17,9 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
 
 data class LocationHistoryScreenState(
     val groupId: String,
@@ -33,19 +33,24 @@ data class LocationHistoryScreenState(
     val isCurrentUser: Boolean,
     val isPersonalHistory: Boolean,
     val dateRangeDays: Int,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val isDataMissing: Boolean,
-    val isLoadingData: Boolean,
+    val selectedDate: LocalDate,
+    val isRefreshingData: Boolean,
     val isLoadingLocations: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
     val stats: LocationHistoryStats?,
     val mapFocusType: LocationHistoryMapFocusType,
     val selectedLocationIndex: Int?,
+    val days: List<LocationHistoryDayState>,
     val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
 ) {
+    val isDataMissing: Boolean = groupId.isBlank() || memberUserId.isBlank()
+
+    val startDate: LocalDate = selectedDate.minus(DatePeriod(days = dateRangeDays - 1))
+    val endDate: LocalDate = selectedDate
+    val displayedDays = days.reversed()
+
     val deviceType: DeviceType = DeviceType.current
     val selectedLocations = locations.filter { entry ->
         devices.any { device ->
@@ -253,7 +258,24 @@ sealed interface LocationHistoryMapFocusType {
     val isLocationPoint: Boolean get() = this is LocationPoint
 }
 
+data class LocationHistoryDayState(
+    val isSelected: Boolean,
+    val isWeekend: Boolean,
+    val date: LocalDate,
+    val formattedDay: String,
+    val formattedMonth: String,
+    val position: LocationHistorySelectedDayPosition
+) {
+    val year = date.year
+    val day = date.dayOfMonth
+}
+
+enum class LocationHistorySelectedDayPosition {
+    START, CENTER, END, SOLO;
+}
+
 sealed interface LocationHistoryUiEvent {
+    data class LoadHistory(val groupId: String, val memberUserId: String) : LocationHistoryUiEvent
     data class UiLifecycleChange(val active: Boolean) : LocationHistoryUiEvent
     data class SelectLocation(val index: Int) : LocationHistoryUiEvent
     data class SelectDevice(val device: UserActiveLocationDeviceState) : LocationHistoryUiEvent
@@ -268,8 +290,8 @@ sealed interface LocationHistoryUiEvent {
     data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnCloseFocusedItemClick : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
-    data object OnPreviousDay : LocationHistoryUiEvent
-    data object OnNextDay : LocationHistoryUiEvent
+    data object OnPreviousMonth : LocationHistoryUiEvent
+    data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent
     data object ToggleDayRange : LocationHistoryUiEvent
     data object OnCloseScreen : LocationHistoryUiEvent
 }

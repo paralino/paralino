@@ -16,7 +16,6 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.byUnicodePattern
 
 class RefreshLocationHistoryUseCase(

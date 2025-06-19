@@ -93,7 +93,7 @@ fun LocationHistoryScreen(
     }
 
     rememberSaveable<String>(groupId, memberUserId) {
-        vm.loadHistory(groupId = groupId, memberUserId = memberUserId)
+        vm.onEvent(LocationHistoryUiEvent.LoadHistory(groupId = groupId, memberUserId = memberUserId))
         ""
     }
 

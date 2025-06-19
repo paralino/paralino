@@ -8,8 +8,8 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModelForDevice
-import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.Logr
 import app.paralino.core.provider.NetworkSignalStrength
@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.component.getScopeId
 
 class LocationHistoryDataFetchController(
     val dataController: LocationHistoryViewModelDataController,
@@ -51,30 +50,10 @@ class LocationHistoryDataFetchController(
         memberUserId: String
     ): Flow<Unit> {
         _uiState.update {
-            LocationHistoryScreenState(
+            dataController.emptyState(
+                previousState = it,
                 groupId = groupId,
-                memberUserId = memberUserId,
-                groupName = null,
-                groupImage = null,
-                userName = null,
-                userImage = null,
-                isCurrentUser = memberUserId == appPrefs.userId,
-                isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId,
-                historyDaysLimit = null,
-                isGroupOwner = false,
-                dateRangeDays = it.dateRangeDays,
-                startDate = it.startDate,
-                endDate = it.endDate,
-                isDataMissing = false,
-                isLoadingData = true,
-                isLoadingLocations = true,
-                locations = emptyList(),
-                devices = emptyList(),
-                stats = null,
-                mapFocusType = LocationHistoryMapFocusType.Stats,
-                selectedLocationIndex = null,
-                isSatelliteMode = it.isSatelliteMode,
-                alertDialog = it.alertDialog
+                memberUserId = memberUserId
             )
         }
 
@@ -102,7 +81,7 @@ class LocationHistoryDataFetchController(
                 dataController.viewModel.showSnackbar(text = e.errorString())
             }
 
-            _uiState.update { it.copy(isLoadingData = false) }
+            _uiState.update { it.copy(isRefreshingData = false) }
         }
 
         return job
@@ -120,6 +99,7 @@ class LocationHistoryDataFetchController(
             )
         ) { user, plans, history ->
             // TODO add actual devices and locations
+            // TODO handle user missing
             _uiState.update {
                 it.copy(
                     groupName = null,
@@ -128,8 +108,7 @@ class LocationHistoryDataFetchController(
                     isGroupOwner = true,
                     userName = user.data?.name ?: "",
                     userImage = user.data?.data?.userImage,
-                    isLoadingData = false,
-                    isDataMissing = user.data == null,
+                    isRefreshingData = false,
                     locations = history.history.flatMap {
                         mapLocationPoints(entry = it)
                     },
@@ -207,7 +186,19 @@ class LocationHistoryDataFetchController(
                 val cachedHistory = if (selectedKnownLocation != null) {
                     LocationHistoryModelForDevice(
                         locationId = selectedKnownLocation.id,
-                        history = selectedKnownLocation.locationHistory
+                        history = selectedKnownLocation.locationHistory.mapSuccess {
+                            it.copy(
+                                history = it.history
+                                    .filter {
+                                        val date = it.status.tA.isoToLocalDateTime()?.date
+                                        if (date == null) {
+                                            false
+                                        } else {
+                                           date in _uiState.value.startDate.._uiState.value.endDate
+                                        }
+                                    }
+                            )
+                        }
                     )
                 } else {
                     null
@@ -231,8 +222,7 @@ class LocationHistoryDataFetchController(
                     userName = currentMember.member.name,
                     userImage = currentMember.member.image
                         ?: ImageModel.emoji(Emojis.robot),
-                    isDataMissing = false,
-                    isLoadingData = false,
+                    isLoadingLocations = false,
                     locations = locations,
                     devices = devices,
                     stats = null,
@@ -250,10 +240,10 @@ class LocationHistoryDataFetchController(
                     newState.copy(stats = stats)
                 }
             } else {
+                // TODO handle data missing
                 _uiState.update {
                     it.copy(
-                        isDataMissing = false,
-                        isLoadingData = false
+                        isLoadingLocations = false
                     )
                 }
             }

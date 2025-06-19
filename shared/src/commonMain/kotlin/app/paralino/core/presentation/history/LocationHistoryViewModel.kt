@@ -4,16 +4,15 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.RefreshLocationHistoryUseCase
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.map.MapHomeScreenEvent
+import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 
@@ -43,7 +42,6 @@ class LocationHistoryViewModel(
     val uiState: StateFlow<LocationHistoryScreenState> = dataController._uiState
     val events = dataController._eventChannel.receiveAsFlow()
 
-    var historySubscriptionJob: Job? = null
     private val uiFocusedStatus = MutableStateFlow(false)
 
 
@@ -51,25 +49,17 @@ class LocationHistoryViewModel(
 
     }
 
-    fun loadHistory(
-        groupId: String,
-        memberUserId: String
-    ) {
-        historySubscriptionJob?.cancel()
-        historySubscriptionJob = dataController.dataFetchController.loadHistory(
-            groupId = groupId,
-            memberUserId = memberUserId
-        )
-            .launchIn(coroutineScope)
-    }
-
     fun onEvent(event: LocationHistoryUiEvent) {
         when (event) {
+            is LocationHistoryUiEvent.LoadHistory -> {
+                dataController.loadHistory(groupId = event.groupId, memberUserId = event.memberUserId)
+            }
             is LocationHistoryUiEvent.DialogAction -> TODO()
             LocationHistoryUiEvent.OnCloseFocusedItemClick -> TODO()
             LocationHistoryUiEvent.OnMapModeSwitch -> {
                 dataController._uiState.update { it.copy(isSatelliteMode = !it.isSatelliteMode) }
             }
+
             LocationHistoryUiEvent.OnMapTouch -> {}
             is LocationHistoryUiEvent.OnMarkerClick -> {}
             LocationHistoryUiEvent.OnRefocusClick -> TODO()
@@ -79,33 +69,20 @@ class LocationHistoryViewModel(
                     it.copy(selectedLocationIndex = event.progress)
                 }
             }
-            LocationHistoryUiEvent.OnNextDay -> TODO()
-            LocationHistoryUiEvent.OnPreviousDay -> TODO()
-            LocationHistoryUiEvent.ToggleDayRange -> {
 
+            LocationHistoryUiEvent.ToggleDayRange -> {
+                dataController.handleDaySelection(
+                    dateRangeDays = when (uiState.value.dateRangeDays) {
+                        1 -> 3
+                        else -> 1
+                    },
+                    selectedDate = uiState.value.selectedDate
+                )
             }
 
             is LocationHistoryUiEvent.OnMapLongPress -> {}
             is LocationHistoryUiEvent.SelectDevice -> {
-                dataController._uiState.update {
-                    val newState = it.copy(
-                        devices = it.devices.map {
-                            when (it) {
-                                is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == event.device.locationId)
-                                is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == event.device.locationId)
-                            }
-                        },
-                        selectedLocationIndex = null
-                    )
-
-                    val stats = LocationHistoryStats.calculateStats(
-                        state = newState,
-                        valueFormatter = dataController.valueFormatter,
-                        geofenceManager = dataController.geofenceManager
-                    )
-
-                    newState.copy(stats = stats)
-                }
+                dataController.selectDevice(event.device)
             }
 
             is LocationHistoryUiEvent.UiLifecycleChange -> {
@@ -131,11 +108,12 @@ class LocationHistoryViewModel(
                     }
                 }
             }
+
             is LocationHistoryUiEvent.onDirectionsRequest -> {
                 dataController._uiState.value.navigateAction?.let {
                     dataController._eventChannel.trySend(
-                        LocationHistoryScreenEvent.OpenNavigation(
-                            MapHomeScreenEvent.OpenExternalNavigation(
+                        OpenNavigation(
+                            OpenExternalNavigation(
                                 lat = it.lat,
                                 lng = it.lng,
                                 name = it.title,
@@ -145,11 +123,22 @@ class LocationHistoryViewModel(
                     )
                 }
             }
+
+            LocationHistoryUiEvent.OnPreviousMonth -> {
+                dataController.addPreviousMonth()
+            }
+
+            is LocationHistoryUiEvent.OnSelectDay -> {
+                dataController.handleDaySelection(
+                    dateRangeDays = uiState.value.dateRangeDays,
+                    selectedDate = event.day
+                )
+            }
         }
     }
 
     override fun onCleared() {
-        historySubscriptionJob?.cancel()
+        dataController.clear()
         super.onCleared()
     }
 }
