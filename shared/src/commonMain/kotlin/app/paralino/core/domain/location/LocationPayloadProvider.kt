@@ -84,9 +84,9 @@ class LocationPayloadProvider(
                             lng = data.lng,
                             // we only need partial decimal places for accuracy, speed and elevation
                             // that is already more than enough
-                            acc = data.accuracy.roundToPrecision(decimalPlaces = 2),
-                            spd = data.speed?.roundToPrecision(decimalPlaces = 2),
-                            alt = data.altitude?.roundToPrecision(decimalPlaces = 2)
+                            acc = data.accuracy.roundToPrecision(decimalPlaces = -1),
+                            spd = data.speed?.roundToPrecision(decimalPlaces = 1),
+                            alt = data.altitude?.roundToPrecision(decimalPlaces = 0)
                         ),
                         status = LocationHistoryPointStatusModel(
                             tA = status.timeUTC,
