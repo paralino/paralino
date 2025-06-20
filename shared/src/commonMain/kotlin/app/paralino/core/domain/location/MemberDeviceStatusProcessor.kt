@@ -1,5 +1,6 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager

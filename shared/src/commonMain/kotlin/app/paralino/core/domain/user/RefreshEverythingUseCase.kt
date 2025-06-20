@@ -6,7 +6,7 @@ import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
-import app.paralino.core.domain.location.LocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.data

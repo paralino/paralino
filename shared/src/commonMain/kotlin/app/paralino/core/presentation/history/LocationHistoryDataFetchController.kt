@@ -1,8 +1,8 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.domain.location.GetLocationHistoryUseCase
-import app.paralino.core.domain.location.RefreshLocationHistoryUseCase
+import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
+import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data

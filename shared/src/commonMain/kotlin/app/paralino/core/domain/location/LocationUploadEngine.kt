@@ -1,6 +1,7 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.domain.LimitedExecutionRepository
+import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -21,7 +22,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.filterNotNull

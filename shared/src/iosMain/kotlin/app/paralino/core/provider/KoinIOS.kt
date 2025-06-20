@@ -18,11 +18,11 @@ import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberDeviceKeyRotation
-import app.paralino.core.domain.location.ILocationHistoryUploadEngine
-import app.paralino.core.domain.location.IOSLocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.IOSLocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
-import app.paralino.core.domain.location.LocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.NoOpReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter

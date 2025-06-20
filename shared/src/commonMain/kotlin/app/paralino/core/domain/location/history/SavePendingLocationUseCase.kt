@@ -1,4 +1,4 @@
-package app.paralino.core.domain.location
+package app.paralino.core.domain.location.history
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource

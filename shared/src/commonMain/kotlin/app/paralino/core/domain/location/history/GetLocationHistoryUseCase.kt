@@ -1,4 +1,4 @@
-package app.paralino.core.domain.location
+package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.models.group.UserGroup
@@ -24,7 +24,7 @@ class GetLocationHistoryUseCase(
         startDate: LocalDate,
         endDate: LocalDate,
     ): Flow<LocationHistoryModelForUser> {
-        if (groupId == UserGroup.groupPersonalDevicesId) {
+        if (groupId == UserGroup.Companion.groupPersonalDevicesId) {
             return getPersonalLocationHistory(
                 startDate = startDate,
                 endDate = endDate
@@ -49,7 +49,7 @@ class GetLocationHistoryUseCase(
         var currentDate = startDate
         val dateList = mutableListOf<String>()
         while (currentDate <= endDate) {
-            dateList.add(currentDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd")}))
+            dateList.add(currentDate.format(LocalDate.Companion.Format { byUnicodePattern("yyyy-MM-dd")}))
             currentDate = currentDate.plus(DatePeriod(days = 1))
         }
 
@@ -81,7 +81,7 @@ class GetLocationHistoryUseCase(
         var currentDate = startDate
         val dateList = mutableListOf<String>()
         while (currentDate <= endDate) {
-            dateList.add(currentDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd")}))
+            dateList.add(currentDate.format(LocalDate.Companion.Format { byUnicodePattern("yyyy-MM-dd")}))
             currentDate = currentDate.plus(DatePeriod(days = 1))
         }
 

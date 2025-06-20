@@ -41,9 +41,9 @@ import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
-import app.paralino.core.domain.location.ILocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
-import app.paralino.core.domain.location.LocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter

@@ -28,7 +28,7 @@ import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
-import app.paralino.core.domain.location.GetLocationHistoryUseCase
+import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationPayloadProvider
@@ -38,11 +38,11 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.domain.location.RealtimeEventsProcessor
-import app.paralino.core.domain.location.RefreshLocationHistoryUseCase
+import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.domain.location.SaveLocationUseCase
-import app.paralino.core.domain.location.SavePendingLocationUseCase
+import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.notifications.PushNotificationDeleteUseCase
 import app.paralino.core.domain.notifications.PushNotificationHandler

@@ -1,4 +1,4 @@
-package app.paralino.core.domain.location
+package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity

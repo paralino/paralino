@@ -6,6 +6,7 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
+import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
