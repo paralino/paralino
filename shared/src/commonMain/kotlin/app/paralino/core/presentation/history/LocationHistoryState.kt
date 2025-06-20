@@ -91,7 +91,7 @@ data class LocationHistoryScreenState(
     }
 
     val selectedLocationDeleteId: String = "${locationIndex}_${selectedLocations.size}"
-    val deleteAction = if (isCurrentUser) {
+    val deleteAction = if (isCurrentUser && selectedPoint != null) {
         MemberActionItemState(type = MemberActionType.DELETE_LOCATION, isLoading = isDeletingEntry)
     } else {
         null

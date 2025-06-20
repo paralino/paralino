@@ -4,7 +4,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
-import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
@@ -63,7 +62,9 @@ class LocationHistoryViewModel(
                 when (event.action.dialog) {
                     is MainAlertDialog.DeleteLocationHistoryEntry -> {
                         dataController._uiState.update { it.copy(alertDialog = null) }
-                        dataController.deleteSelectedEntry()
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            dataController.deleteSelectedEntry()
+                        }
                     }
 
                     else -> {}
