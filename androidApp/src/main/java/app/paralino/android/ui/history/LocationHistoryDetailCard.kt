@@ -2,7 +2,6 @@ package app.paralino.android.ui.history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -28,13 +26,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -104,75 +102,183 @@ fun LocationHistoryDetailCard(
                 }
             }
 
-            Row(
+            Column(
                 modifier = Modifier
                     .padding(vertical = 10.dp)
-                    .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // image
-                Box(modifier = Modifier.width(IntrinsicSize.Min)) {
-                    Column(
-                        modifier = Modifier
-                            .width(50.dp)
-                            .heightIn(min = 50.dp)
-                    ) {
-                        if (uiState.userImage != null) {
-                            ImageModelImage(
-                                imageModel = uiState.userImage!!,
-                                modifier = Modifier
-                                    .size(50.dp)
-                                    .border(
-                                        width = if (uiState.isCurrentUser) {
-                                            2.dp
-                                        } else {
-                                            0.5.dp
-                                        },
-                                        color = if (uiState.isCurrentUser) {
-                                            MaterialTheme.colors.primary
-                                        } else {
-                                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
-                                        },
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
-                            )
-                        }
-                    }
-                }
-
-                // center content
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 12.dp, end = 8.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = uiState.userName ?: "",
-                        style = MaterialTheme.typography.subtitle1,
-                        modifier = Modifier
+                    .padding(horizontal = 6.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 12.dp,
+                            topEnd = 16.dp,
+                            bottomStart = 12.dp,
+                            bottomEnd = 16.dp
+                        )
                     )
-
-                    when (uiState.mapFocusType) {
-                        LocationHistoryMapFocusType.LocationPoint -> {
-                            uiState.selectedPoint?.let { point ->
-                                LocationTime(time = point.locationTime)
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    SpeedAndElevationData(point = point)
-                                }
-
-                                AnimatedVisibility(visible = point.point.loc != null && point.point.loc!!.acc > 300) {
-                                    GroupStatusTag(status = GroupStatusTagType.INACTIVE_NOT_ACCURATE)
+                    .background(MaterialTheme.colors.surface)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 10.dp)
+                            .padding(horizontal = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // image
+                        Box(modifier = Modifier.width(IntrinsicSize.Min)) {
+                            Column(
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .heightIn(min = 50.dp)
+                            ) {
+                                if (uiState.userImage != null) {
+                                    ImageModelImage(
+                                        imageModel = uiState.userImage!!,
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .border(
+                                                width = if (uiState.isCurrentUser) {
+                                                    2.dp
+                                                } else {
+                                                    0.5.dp
+                                                },
+                                                color = if (uiState.isCurrentUser) {
+                                                    MaterialTheme.colors.primary
+                                                } else {
+                                                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
+                                                },
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                    )
                                 }
                             }
                         }
 
-                        LocationHistoryMapFocusType.Stats -> {
-                            LocationTime(time = uiState.stats?.formattedTimeRange)
+                        // center content
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 12.dp, end = 8.dp),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = uiState.userName ?: "",
+                                style = MaterialTheme.typography.subtitle1,
+                                modifier = Modifier
+                            )
+
+                            when (uiState.mapFocusType) {
+                                LocationHistoryMapFocusType.LocationPoint -> {
+                                    uiState.selectedPoint?.let { point ->
+                                        LocationTime(time = point.locationTime)
+
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            SpeedAndElevationData(point = point)
+                                        }
+
+                                        AnimatedVisibility(visible = point.point.loc != null && point.point.loc!!.acc > 300) {
+                                            GroupStatusTag(status = GroupStatusTagType.INACTIVE_NOT_ACCURATE)
+                                        }
+                                    }
+                                }
+
+                                LocationHistoryMapFocusType.Stats -> {
+                                    LocationTime(time = uiState.stats?.formattedTimeRange)
+                                }
+
+                                LocationHistoryMapFocusType.Timeline -> {}
+                            }
+                        }
+                    }
+
+                    if (uiState.deleteAction != null) {
+                        GroupMemberActionButton(
+                            modifier = Modifier
+                                .padding(end = 2.dp, top = 2.dp)
+                                .align(Alignment.Top),
+                            startIcon = MemberActionType.DELETE_LOCATION.actionIcon,
+                            endIcon = null,
+                            isLoading = uiState.deleteAction!!.isLoading,
+                            contentPadding = PaddingValues(6.dp),
+                            text = stringResource(MemberActionType.DELETE_LOCATION.actionText),
+                            showText = false,
+                            backgroundColor = AppColors.errorBackground,
+                            contentColor = AppColors.redMain,
+                            onClick = {
+                                onEvent(LocationHistoryUiEvent.OnDeleteSelectedLocationRequest)
+                            }
+                        )
+                    }
+                }
+
+                AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint) {
+                    Column {
+                        AnimatedVisibility(uiState.selectedPoint?.statusTime != null) {
+                            FlowRow(
+                                modifier = Modifier
+                                    .padding(horizontal = 10.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = stringResource(MR.strings.group_members_last_status_update).annotatedBoldCompose(),
+                                    style = MaterialTheme.typography.caption,
+                                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                                )
+                                Text(
+                                    text = uiState.selectedPoint?.statusTime ?: "",
+                                    style = MaterialTheme.typography.caption,
+                                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                                )
+                            }
                         }
 
-                        LocationHistoryMapFocusType.Timeline -> {}
+                        Row(
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+//                                .padding(bottom = 10.dp)
+//                                .requiredHeight(30.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            uiState.selectedPoint?.let {
+                                BatteryAndNetworkData(point = it)
+                            }
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            if (uiState.navigateAction != null) {
+                                GroupMemberActionButton(
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .padding(bottom = 2.dp, end = 2.dp),
+                                    startIcon = CoreAppIcons.Directions.asPainterResource(),
+                                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                                    text = stringResource(MR.strings.group_members_item_directions_button),
+                                    backgroundColor = MaterialTheme.colors.primary,
+                                    onClick = {
+                                        onEvent(
+                                            LocationHistoryUiEvent.OnDirectionsRequest(action = uiState.navigateAction!!)
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                AnimatedVisibility(visible = uiState.selectedLocations.isEmpty()) {
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            text = "☹\nNo history for this period",
+                            textAlign = TextAlign.Center,
+                            lineHeight = 18.sp
+                        )
                     }
                 }
             }
@@ -190,49 +296,6 @@ fun LocationHistoryDetailCard(
 
             AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint) {
                 Column {
-                    AnimatedVisibility(uiState.selectedPoint?.statusTime != null) {
-                        FlowRow(
-                            modifier = Modifier
-                                .padding(horizontal = 10.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Text(
-                                text = stringResource(MR.strings.group_members_last_status_update).annotatedBoldCompose(),
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                            )
-                            Text(
-                                text = uiState.selectedPoint?.statusTime ?: "",
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                            )
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(bottom = 10.dp)
-                            .requiredHeight(30.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        uiState.selectedPoint?.let {
-                            BatteryAndNetworkData(point = it)
-                        }
-                    }
-
-                    GroupMemberActions(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
-                            .padding(bottom = 10.dp),
-                        id = uiState.selectedLocationDeleteId,
-                        deleteAction = uiState.deleteAction,
-                        navigateAction = uiState.navigateAction,
-                        onEvent = onEvent
-                    )
-
                     if (uiState.selectedLocations.isNotEmpty()) {
                         val sliderSize = remember {
                             EmbeddedSliderSize(minStepWidth = 80.dp, minHeight = 40.dp)
@@ -404,64 +467,19 @@ private fun RowScope.BatteryAndNetworkData(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ColumnScope.GroupMemberActions(
+private fun GroupMemberActions(
     modifier: Modifier = Modifier,
     id: String,
     deleteAction: MemberActionItemState?,
     navigateAction: MemberNavigateItemState?,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
-    var isDeleteVisible by remember(id) {
-        mutableStateOf(false)
-    }
-
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.End,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (deleteAction != null) {
-            GroupMemberActionButton(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .align(Alignment.CenterVertically),
-                startIcon = MemberActionType.DELETE_LOCATION.actionIcon,
-                endIcon = null,
-                isLoading = deleteAction.isLoading,
-                contentPadding = PaddingValues(
-                    start = animateDpAsState(if (isDeleteVisible) 8.dp else 6.dp).value,
-                    top = 6.dp,
-                    end = animateDpAsState(if (isDeleteVisible) 10.dp else 6.dp).value,
-                    bottom = 6.dp
-                ),
-                text = stringResource(MemberActionType.DELETE_LOCATION.actionText),
-                showText = isDeleteVisible,
-                backgroundColor = animateColorAsState(if (isDeleteVisible) AppColors.errorBackground else MaterialTheme.colors.surface).value,
-                contentColor = animateColorAsState(if (isDeleteVisible) AppColors.redMain else MaterialTheme.colors.onSurface).value,
-                onClick = {
-                    if (isDeleteVisible) {
-                        onEvent(LocationHistoryUiEvent.OnDeleteSelectedLocationRequest)
-                    } else {
-                        isDeleteVisible = true
-                    }
-                }
-            )
-        }
 
-        if (navigateAction != null) {
-            GroupMemberActionButton(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .align(Alignment.CenterVertically),
-                startIcon = CoreAppIcons.Directions.asPainterResource(),
-                endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(MR.strings.group_members_item_directions_button),
-                onClick = {
-                    onEvent(
-                        LocationHistoryUiEvent.OnDirectionsRequest(action = navigateAction)
-                    )
-                }
-            )
-        }
+
     }
 }
