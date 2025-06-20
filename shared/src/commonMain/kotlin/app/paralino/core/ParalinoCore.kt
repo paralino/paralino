@@ -44,6 +44,7 @@ import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.domain.location.SaveLocationUseCase
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.notifications.PushNotificationDeleteUseCase
 import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.domain.notifications.processors.GroupMemberAddedNotificationProcessor
@@ -272,7 +273,8 @@ val coreModule = module {
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
-    single { RefreshLocationHistoryUseCase(get(), get()) }
+    single { RefreshLocationHistoryUseCase(get(), get(), get()) }
+    single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }

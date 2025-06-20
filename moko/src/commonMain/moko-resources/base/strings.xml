@@ -21,6 +21,7 @@
     <string name="button_cool">Cool</string>
     <string name="button_continue">Continue</string>
     <string name="button_notNow">Not now</string>
+    <string name="button_delete">Delete</string>
     <string name="button_open_settings">Open settings</string>
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -641,4 +642,5 @@
     <string name="blocklist_unblock_user_alert_message">Unblocking will allow user to add you to new groups and you will be notified about users\' location updates.</string>
     <string name="blocklist_unblock_alert_button">Unblock</string>
     <string name="blocklist_unblock_alert_unknown">Remove unknown blocked type?</string>
+    <string name="history_entry_delete_alert_message">Delete location history entry from:\n%s\n\nThis action is irreversible.</string>
 </resources>

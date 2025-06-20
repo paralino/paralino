@@ -232,6 +232,6 @@ object KoinSetup {
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
-        viewModel { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     }
 }

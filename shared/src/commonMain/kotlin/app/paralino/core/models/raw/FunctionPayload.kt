@@ -397,3 +397,22 @@ data class PersonalLocationHistoryReadPayload(
     val startDateKey: String,
     val endDateKey: String
 )
+
+@Serializable
+data class LocationHistoryDeleteGroupPayload(
+    val groupId: String,
+    val entries: List<LocationHistoryDeletePayloadEntry>,
+)
+
+@Serializable
+data class LocationHistoryDeletePersonalPayload(
+    val entries: List<LocationHistoryDeletePayloadEntry>,
+)
+
+@Serializable
+data class LocationHistoryDeletePayloadEntry(
+    val id: String,
+    val dateIdentifier: String,
+    val historyData: String,
+    val historyKeyVersion: String
+)

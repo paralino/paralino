@@ -28,9 +28,10 @@ enum class ServerFunction constructor(
     LOCATION_REQUEST_MEMBER(method = "POST", path = "/refresh/member", functionId = "ping"),
 
     HISTORY_CREATE(method = "POST", path = "/history"),
-    HISTORY_READ_GROUP(method = "POST", path = "/history/read/group"),
-    HISTORY_READ_PERSONAL(method = "POST", path = "/history/read/personal"),
-    HISTORY_UPDATE(method = "PATCH", path = "/history"),
+    HISTORY_READ_GROUP(method = "POST", path = "/history/group/read"),
+    HISTORY_READ_PERSONAL(method = "POST", path = "/history/personal/read"),
+    HISTORY_UPDATE_GROUP(method = "PATCH", path = "/history/group"),
+    HISTORY_UPDATE_PERSONAL(method = "PATCH", path = "/history/personal"),
     HISTORY_DELETE(method = "DELETE", path = "/history"),
 
     PLACE_CREATE(method = "PUT", path = "/places"),

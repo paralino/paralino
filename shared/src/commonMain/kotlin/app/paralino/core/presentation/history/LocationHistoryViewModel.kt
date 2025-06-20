@@ -1,8 +1,10 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
@@ -11,6 +13,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.update
 class LocationHistoryViewModel(
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
+    private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
     private val userRepo: UserRepository,
     private val userGroupRepo: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
@@ -30,6 +34,7 @@ class LocationHistoryViewModel(
     private val dataController = LocationHistoryViewModelDataController(
         getLocationHistory = getLocationHistory,
         refreshLocationHistory = refreshLocationHistory,
+        deleteLocationHistory = deleteLocationHistory,
         userRepo = userRepo,
         userGroupRepo = userGroupRepo,
         valueFormatter = valueFormatter,
@@ -54,7 +59,16 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.LoadHistory -> {
                 dataController.loadHistory(groupId = event.groupId, memberUserId = event.memberUserId)
             }
-            is LocationHistoryUiEvent.DialogAction -> TODO()
+            is LocationHistoryUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.DeleteLocationHistoryEntry -> {
+                        dataController._uiState.update { it.copy(alertDialog = null) }
+                        dataController.deleteSelectedEntry()
+                    }
+
+                    else -> {}
+                }
+            }
             LocationHistoryUiEvent.OnCloseFocusedItemClick -> TODO()
             LocationHistoryUiEvent.OnMapModeSwitch -> {
                 dataController._uiState.update { it.copy(isSatelliteMode = !it.isSatelliteMode) }
@@ -99,17 +113,14 @@ class LocationHistoryViewModel(
                 }
             }
 
-            LocationHistoryUiEvent.onDeleteSelectedLocationRequest -> {
-                dataController._uiState.value.deleteAction?.let {
-                    if (dataController._uiState.value.isCurrentUser) {
-                        // TODO delete
-                    } else {
-                        //
-                    }
+            LocationHistoryUiEvent.OnDeleteSelectedLocationRequest -> {
+                val time = dataController._uiState.value.selectedPoint?.locationTime?.let { "**$it**" } ?: "-"
+                dataController._uiState.update {
+                    it.copy(alertDialog = MainAlertDialog.DeleteLocationHistoryEntry(info = time))
                 }
             }
 
-            is LocationHistoryUiEvent.onDirectionsRequest -> {
+            is LocationHistoryUiEvent.OnDirectionsRequest -> {
                 dataController._uiState.value.navigateAction?.let {
                     dataController._eventChannel.trySend(
                         OpenNavigation(

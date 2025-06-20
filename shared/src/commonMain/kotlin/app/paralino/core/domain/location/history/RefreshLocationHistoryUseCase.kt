@@ -1,11 +1,8 @@
 package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
-import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
-import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
-import app.paralino.core.db.main.location.GroupHistoryEntity
-import app.paralino.core.db.main.location.PersonalHistoryEntity
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.raw.GroupLocationHistoryReadPayload
 import app.paralino.core.models.raw.GroupLocationHistoryReadResponse
 import app.paralino.core.models.raw.PersonalLocationHistoryReadPayload
@@ -20,6 +17,7 @@ import kotlinx.datetime.format.byUnicodePattern
 
 class RefreshLocationHistoryUseCase(
     private val database: MainDatabaseHelper,
+    private val mapper: LocationHistoryMapper,
     private val functionsApi: IFunctionsApi,
 ): BaseRepository() {
 
@@ -75,27 +73,11 @@ class RefreshLocationHistoryUseCase(
             return@triggerRemoteOnly response.response<GroupLocationHistoryReadResponse>().data
         }.also { response ->
             val keys = response.keys.map {
-                GroupHistoryKeyEntity(
-                    id = groupId + memberUserId + it.keyVersion,
-                    groupId = groupId,
-                    ownerUserId = memberUserId,
-                    memberKeyVersion = it.memberKeyVersion,
-                    historyKeyVersion = it.keyVersion,
-                    encryptedHistoryKey = it.encryptedKey
-                )
+                mapper.remote2LocalGroup(groupId = groupId, memberUserId = memberUserId, model = it)
             }
 
             val entries = response.entries.map {
-                GroupHistoryEntity(
-                    id = it.id,
-                    dateIdentifier = it.dateKey,
-                    groupId = groupId,
-                    ownerUserId = memberUserId,
-                    locationId = it.locationId,
-                    deviceId = it.deviceId,
-                    historyKeyVersion = it.keyVersion,
-                    historyData = it.historyData
-                )
+                mapper.remote2LocalGroup(groupId = groupId, memberUserId = memberUserId, model = it)
             }
 
             database.locationHistoryDao.recreateGroupHistory(
@@ -132,23 +114,11 @@ class RefreshLocationHistoryUseCase(
             return@triggerRemoteOnly response.response<PersonalLocationHistoryReadResponse>().data
         }.also { response ->
             val keys = response.keys.map {
-                PersonalHistoryKeyEntity(
-                    id = it.keyVersion,
-                    userKeyVersion = it.memberKeyVersion,
-                    historyKeyVersion = it.keyVersion,
-                    encryptedHistoryKey = it.encryptedKey
-                )
+                mapper.remote2LocalPersonal(model = it)
             }
 
             val entries = response.entries.map {
-                PersonalHistoryEntity(
-                    id = it.id,
-                    dateIdentifier = it.dateKey,
-                    locationId = it.locationId,
-                    deviceId = it.deviceId,
-                    historyKeyVersion = it.keyVersion,
-                    historyData = it.historyData
-                )
+                mapper.remote2LocalPersonal(model = it)
             }
 
             database.locationHistoryDao.createPersonalHistory(entries = entries)

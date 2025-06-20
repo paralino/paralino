@@ -227,7 +227,7 @@ fun LocationHistoryDetailCard(
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp)
                             .padding(bottom = 10.dp),
-                        id = uiState.locationIndex.toString(),
+                        id = uiState.selectedLocationDeleteId,
                         deleteAction = uiState.deleteAction,
                         navigateAction = uiState.navigateAction,
                         onEvent = onEvent
@@ -440,7 +440,7 @@ private fun ColumnScope.GroupMemberActions(
                 contentColor = animateColorAsState(if (isDeleteVisible) AppColors.redMain else MaterialTheme.colors.onSurface).value,
                 onClick = {
                     if (isDeleteVisible) {
-                        onEvent(LocationHistoryUiEvent.onDeleteSelectedLocationRequest)
+                        onEvent(LocationHistoryUiEvent.OnDeleteSelectedLocationRequest)
                     } else {
                         isDeleteVisible = true
                     }
@@ -458,7 +458,7 @@ private fun ColumnScope.GroupMemberActions(
                 text = stringResource(MR.strings.group_members_item_directions_button),
                 onClick = {
                     onEvent(
-                        LocationHistoryUiEvent.onDirectionsRequest(action = navigateAction)
+                        LocationHistoryUiEvent.OnDirectionsRequest(action = navigateAction)
                     )
                 }
             )

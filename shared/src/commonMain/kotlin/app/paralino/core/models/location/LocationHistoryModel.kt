@@ -23,6 +23,10 @@ data class LocationHistoryModelForUser(
 @Serializable
 data class LocationHistoryModelForDevice(
     val locationId: String?,
+    val entryId: String,
+    val dateKey: String,
+    val historyKeyVersion: String,
+    val isCachedLocation: Boolean,
     @Contextual
     val history: CryptoResource<LocationHistoryModel>
 )

@@ -4,9 +4,11 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.mapSuccess
@@ -196,25 +198,29 @@ class LocationHistoryDataFetchController(
                             .any { it.locationId == location.id }
                     }
 
-                val cachedHistory = if (selectedKnownLocation != null) {
-                    LocationHistoryModelForDevice(
-                        locationId = selectedKnownLocation.id,
-                        history = selectedKnownLocation.locationHistory.mapSuccess {
-                            it.copy(
-                                history = it.history
-                                    .filter {
-                                        val date = it.status.tA.isoToLocalDateTime()?.date
-                                        if (date == null) {
-                                            false
-                                        } else {
-                                           date in _uiState.value.startDate.._uiState.value.endDate
-                                        }
-                                    }
-                            )
+                val cachedHistory = selectedKnownLocation?.locationHistory?.data?.let {
+                    it.history
+                        .filter {
+                            val date = it.status.tA.isoToLocalDateTime()?.date
+                            if (date == null) {
+                                false
+                            } else {
+                                date in _uiState.value.startDate.._uiState.value.endDate
+                            }
                         }
-                    )
-                } else {
-                    null
+                        .groupBy { it.dayKey }
+                        .mapNotNull { entry ->
+                            entry.key?.let {
+                                LocationHistoryModelForDevice(
+                                    locationId = selectedKnownLocation.id,
+                                    entryId = selectedKnownLocation.id,
+                                    dateKey = it,
+                                    historyKeyVersion = "",
+                                    isCachedLocation = true,
+                                    history = CryptoResource.Ready(LocationHistoryModel(history = entry.value))
+                                )
+                            }
+                        }
                 }
 
                 val locations = history.history
@@ -297,6 +303,9 @@ class LocationHistoryDataFetchController(
 
                 LocationHistoryPointState(
                     locationId = entry.locationId,
+                    entryId = entry.entryId,
+                    dateKey = entry.dateKey,
+                    isCachedLocation = entry.isCachedLocation,
                     point = point,
                     locationTime = locationTime,
                     statusTime = statusTime.takeIf { it != locationTime },

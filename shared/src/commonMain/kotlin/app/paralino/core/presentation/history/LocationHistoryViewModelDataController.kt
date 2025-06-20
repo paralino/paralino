@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.models.group.UserGroup
@@ -9,12 +10,14 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -27,6 +30,7 @@ import kotlinx.datetime.toLocalDateTime
 class LocationHistoryViewModelDataController(
     val getLocationHistory: GetLocationHistoryUseCase,
     val refreshLocationHistory: RefreshLocationHistoryUseCase,
+    val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
     val userRepo: UserRepository,
     val userGroupRepo: UserGroupLocalDataSource,
     val valueFormatter: IValueFormatter,
@@ -76,6 +80,7 @@ class LocationHistoryViewModelDataController(
             isGroupOwner = false,
             dateRangeDays = dateRangeDays,
             selectedDate = startDate,
+            isDeletingEntry = false,
             isRefreshingData = true,
             isLoadingLocations = true,
             locations = emptyList(),
@@ -277,10 +282,6 @@ class LocationHistoryViewModelDataController(
         }
     }
 
-    fun clear() {
-        historySubscriptionJob?.cancel()
-    }
-
     fun selectDevice(device: UserActiveLocationDeviceState) {
         _uiState.update {
             val newState = it.copy(
@@ -301,5 +302,33 @@ class LocationHistoryViewModelDataController(
 
             newState.copy(stats = stats)
         }
+    }
+
+    fun deleteSelectedEntry() {
+        _uiState.value.deleteAction?.let {
+            if (_uiState.value.isCurrentUser) {
+                _uiState.value.selectedPoint?.let {
+                    viewModel.coroutineScope.launch {
+                        _uiState.update { it.copy(isDeletingEntry = true) }
+                        try {
+                            deleteLocationHistory.deleteEntries(
+                                groupId = _uiState.value.groupId,
+                                memberUserId = _uiState.value.memberUserId,
+                                entries = listOf(it),
+                                startDate = _uiState.value.startDate,
+                                endDate = _uiState.value.endDate
+                            )
+                        } catch (e: Exception) {
+                            viewModel.showSnackbar(e.errorString())
+                        }
+                        _uiState.update { it.copy(isDeletingEntry = false) }
+                    }
+                }
+            }
+        }
+    }
+
+    fun clear() {
+        historySubscriptionJob?.cancel()
     }
 }

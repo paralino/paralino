@@ -754,4 +754,28 @@ sealed interface MainAlertDialog {
             )
         )
     }
+
+    data class DeleteLocationHistoryEntry(
+        val info: String,
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = MR.strings.history_entry_delete_alert_message.localizedString(info),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_delete),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = false
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
 }

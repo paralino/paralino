@@ -34,6 +34,7 @@ data class LocationHistoryScreenState(
     val isPersonalHistory: Boolean,
     val dateRangeDays: Int,
     val selectedDate: LocalDate,
+    val isDeletingEntry: Boolean,
     val isRefreshingData: Boolean,
     val isLoadingLocations: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
@@ -89,8 +90,9 @@ data class LocationHistoryScreenState(
         )
     }
 
+    val selectedLocationDeleteId: String = "${locationIndex}_${selectedLocations.size}"
     val deleteAction = if (isCurrentUser) {
-        MemberActionItemState(type = MemberActionType.DELETE_LOCATION)
+        MemberActionItemState(type = MemberActionType.DELETE_LOCATION, isLoading = isDeletingEntry)
     } else {
         null
     }
@@ -240,6 +242,9 @@ sealed class UserActiveLocationDeviceState {
 
 data class LocationHistoryPointState(
     val locationId: String?,
+    val entryId: String,
+    val dateKey: String,
+    val isCachedLocation: Boolean,
     val point: LocationHistoryPointModel,
     val formattedSpeed: String?,
     val formattedElevation: String?,
@@ -284,8 +289,8 @@ sealed interface LocationHistoryUiEvent {
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
     data class ChangeMapFocusType(val type: LocationHistoryMapFocusType) : LocationHistoryUiEvent
-    data class onDirectionsRequest(val action: MemberNavigateItemState): LocationHistoryUiEvent
-    data object onDeleteSelectedLocationRequest: LocationHistoryUiEvent
+    data class OnDirectionsRequest(val action: MemberNavigateItemState): LocationHistoryUiEvent
+    data object OnDeleteSelectedLocationRequest: LocationHistoryUiEvent
     data object OnRefocusClick : LocationHistoryUiEvent
     data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnCloseFocusedItemClick : LocationHistoryUiEvent
