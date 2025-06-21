@@ -2,6 +2,7 @@ package app.paralino.android.ui.history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -310,7 +312,8 @@ fun LocationHistoryDetailCard(
                 Column {
                     if (uiState.selectedLocations.isNotEmpty()) {
                         val sliderSize = remember {
-                            EmbeddedSliderSize(minStepWidth = 80.dp, minHeight = 40.dp)
+                            val factor = maxOf(0, (uiState.selectedLocations.size.toString().length - 1) / 3) * 15
+                            EmbeddedSliderSize(minStepWidth = (80 + factor).dp, minHeight = 40.dp)
                         }
                         EmbeddedSlider(
                             modifier = Modifier
@@ -318,8 +321,40 @@ fun LocationHistoryDetailCard(
                                 .padding(horizontal = 6.dp)
                                 .padding(bottom = 6.dp)
                                 .height(sliderSize.minHeight),
-                            title = uiState.locationIndex.plus(1).toString(),
-                            value = null,
+                            infoContent = {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .padding(6.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(MaterialTheme.colors.surface.copy(alpha = 0.9f))
+                                        .animateContentSize()
+                                        .padding(horizontal = 6.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        modifier = Modifier,
+                                        text = uiState.locationIndex.plus(1).toString(),
+                                        style = MaterialTheme.typography.caption,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        lineHeight = 10.sp,
+                                        maxLines = 1,
+                                        color = MaterialTheme.colors.onSurface
+                                    )
+
+                                    Text(
+                                        modifier = Modifier,
+                                        text = "\\ ${uiState.selectedLocations.size}",
+                                        style = MaterialTheme.typography.caption,
+                                        fontSize = 8.sp,
+                                        lineHeight = 8.sp,
+                                        maxLines = 1,
+                                        color = MaterialTheme.colors.onSurface
+                                    )
+                                }
+                            },
                             size = sliderSize,
                             progress = uiState.locationIndex,
                             shape = RoundedCornerShape(12.dp),
@@ -386,7 +421,9 @@ private fun UserDeviceChip(
         imageOrIcon = if (showIcon) {
             {
                 Icon(
-                    modifier = Modifier.padding(end = 4.dp).size(16.dp),
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .size(16.dp),
                     painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
                     contentDescription = null,
                     tint = contentColor
