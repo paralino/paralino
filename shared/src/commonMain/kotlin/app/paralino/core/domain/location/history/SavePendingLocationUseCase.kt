@@ -109,10 +109,10 @@ class SavePendingLocationUseCase(
                 if (entry.locationHistory.loc != null && lastEntryPoint.isLocationUnchanged(entry.locationHistory.loc) == true) {
                     lastEntryPoint.copy(
                         loc = lastEntryPoint.loc?.copy(
-                            tB = entry.locationHistory.loc.tB
+                            tB = entry.locationHistory.loc.tA
                         ),
                         status = lastEntryPoint.status.copy(
-                            tB = entry.locationHistory.status.tB,
+                            tB = entry.locationHistory.status.tA,
                         )
                     )
                 } else {

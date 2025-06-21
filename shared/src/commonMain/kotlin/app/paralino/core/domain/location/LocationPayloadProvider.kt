@@ -83,7 +83,7 @@ class LocationPayloadProvider(
                         id = cryptoCore.randomId(length = 8, alphabet = AlphabetType.EXTENDED),
                         loc = LocationHistoryPointLocationModel(
                             tA = data.timeUTC,
-                            tB = data.timeUTC,
+                            tB = null,
                             lat = data.lat,
                             lng = data.lng,
                             // we only need partial decimal places for accuracy, speed and elevation
@@ -94,10 +94,10 @@ class LocationPayloadProvider(
                         ),
                         status = LocationHistoryPointStatusModel(
                             tA = status.timeUTC,
-                            tB = status.timeUTC,
-                            stat = status.statusType?.id,
+                            tB = null,
+                            sts = status.statusType?.id,
                             bat = status.batteryLevel,
-                            chrg = if (status.isCharging == null) null else if (status.isCharging) 1 else 0,
+                            chr = if (status.isCharging == null) null else if (status.isCharging) 1 else 0,
                             net = status.network,
                             sig = status.signal
                         ),

@@ -134,11 +134,11 @@ data class LocationHistoryStats(
             }
 
             // Get location points with valid coordinates required for some data
-            val locationPoints = locations.mapNotNull { it.point.loc }.sortedBy { it.tB }
+            val locationPoints = locations.mapNotNull { it.point.loc }.sortedBy { it.startTime }
 
             val formattedTimeRange = valueFormatter.formatTimeRangeForLocationHistory(
-                startTimeUTC = locations.first().point.loc?.tA?.isoToLocalDateTime(),
-                endTimeUTC = locations.last().point.status.tB.isoToLocalDateTime(),
+                startTimeUTC = locations.first().point.status.startTime.isoToLocalDateTime(),
+                endTimeUTC = locations.last().point.status.endTime.isoToLocalDateTime(),
                 rangeStart = state.startDate,
                 rangeEnd = state.endDate
             )

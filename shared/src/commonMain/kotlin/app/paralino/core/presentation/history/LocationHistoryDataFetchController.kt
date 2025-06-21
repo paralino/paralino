@@ -231,8 +231,8 @@ class LocationHistoryDataFetchController(
                     .flatMap { entry ->
                         mapLocationPoints(entry = entry)
                     }
-                    .sortedByDescending { it.point.status.tB }
-                    .distinct()
+                    .sortedByDescending { it.point.status.startTime }
+                    .distinctBy { it.point.properID }
 
                 val newState = _uiState.value.copy(
                     groupName = group.name,
@@ -277,10 +277,10 @@ class LocationHistoryDataFetchController(
     private fun mapLocationPoints(entry: LocationHistoryModelForDevice): List<LocationHistoryPointState> {
         return entry.history.data?.history
             ?.map { point ->
-                val locATime = point.loc?.tA?.isoToLocalDateTime()?.stripNanoseconds()
-                val locBTime = point.loc?.tB?.isoToLocalDateTime()?.stripNanoseconds()
-                val statusATime = point.status.tA.isoToLocalDateTime()?.stripNanoseconds()
-                val statusBTime = point.status.tB.isoToLocalDateTime()?.stripNanoseconds()
+                val locATime = point.loc?.startTime?.isoToLocalDateTime()?.stripNanoseconds()
+                val locBTime = point.loc?.endTime?.isoToLocalDateTime()?.stripNanoseconds()
+                val statusATime = point.status.startTime.isoToLocalDateTime()?.stripNanoseconds()
+                val statusBTime = point.status.endTime.isoToLocalDateTime()?.stripNanoseconds()
 
                 val locationTime = valueFormatter.formatTimeRangeForLocationHistory(
                     startTimeUTC = locATime,
@@ -319,7 +319,7 @@ class LocationHistoryDataFetchController(
                             meters = it.toDouble()
                         )
                     },
-                    deviceStatus = MemberDeviceStatusType.fromShortId(id = point.status.stat),
+                    deviceStatus = MemberDeviceStatusType.fromShortId(id = point.status.sts),
                     networkType = NetworkType.fromKey(key = point.status.net),
                     signalStrength = NetworkSignalStrength.fromLevel(level = point.status.sig)
                 )

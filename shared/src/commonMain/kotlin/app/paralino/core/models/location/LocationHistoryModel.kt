@@ -47,10 +47,10 @@ data class LocationHistoryPointModel(
 
 ) {
     @Transient
-    val dayKey = status.tB.isoToLocalDateTime()?.date?.toString()
+    val dayKey = status.startTime.isoToLocalDateTime()?.date?.toString()
     
     @Transient
-    val properID: String = "${status.tB}_${id}"
+    val properID: String = "${status.startTime}_${id}"
 
     fun isLocationUnchanged(location: LocationHistoryPointLocationModel?): Boolean {
         if (location == null && this.loc == null) return true
@@ -79,9 +79,9 @@ data class LocationHistoryPointModel(
     }
 
     fun isStatusUnchanged(status: LocationHistoryPointStatusModel): Boolean {
-        return status.stat == this.status.stat
+        return status.sts == this.status.sts
                 && status.bat == this.status.bat
-                && status.chrg == this.status.chrg
+                && status.chr == this.status.chr
                 && status.net == this.status.net
                 && status.sig == this.status.sig
     }
@@ -90,21 +90,33 @@ data class LocationHistoryPointModel(
 @Serializable
 data class LocationHistoryPointLocationModel(
     val tA: String,
-    val tB: String,
+    val tB: String? = null,
     val lat: Double,
     val lng: Double,
     val acc: Float = 0f,
     val spd: Float? = null,
     val alt: Float? = null,
-)
+) {
+    @Transient
+    val startTime: String = tA
+    @Transient
+    val endTime: String = tB ?: tA
+}
 
 @Serializable
 data class LocationHistoryPointStatusModel(
     val tA: String,
-    val tB: String,
-    val stat: String? = null,
+    val tB: String? = null,
+    val sts: String? = null,
     val bat: Int? = null,
-    val chrg: Int? = null,
+    val chr: Int? = null,
     val net: String? = null,
     val sig: Int? = null,
-)
+) {
+    @Transient
+    val startTime: String = tA
+    @Transient
+    val endTime: String = tB ?: tA
+
+    val isCharging: Boolean get() = chr == 1
+}

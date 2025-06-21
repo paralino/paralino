@@ -433,10 +433,10 @@ private fun RowScope.BatteryAndNetworkData(
 ) {
     if (point.point.status.bat != null) {
         Icon(
-            painter = if (point.point.status.chrg == 1) {
-                CoreAppIcons.BatteryFull.asPainterResource()
-            } else {
+            painter = if (point.point.status.isCharging) {
                 CoreAppIcons.BatteryChargingFull.asPainterResource()
+            } else {
+                CoreAppIcons.BatteryFull.asPainterResource()
             },
             contentDescription = null,
             modifier = Modifier
