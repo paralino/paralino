@@ -82,6 +82,7 @@ data class LocationHistoryScreenState(
 
     val selectedMapPinData: MapPinData? = selectedPoint?.point?.loc?.let {
         MapPinData(
+            id = selectedPoint.point.properID,
             groupId = groupId,
             location = it,
             name = userName,
@@ -90,7 +91,6 @@ data class LocationHistoryScreenState(
         )
     }
 
-    val selectedLocationDeleteId: String = "${locationIndex}_${selectedLocations.size}"
     val deleteAction = if (isCurrentUser && selectedPoint != null) {
         MemberActionItemState(type = MemberActionType.DELETE_LOCATION, isLoading = isDeletingEntry)
     } else {

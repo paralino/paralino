@@ -41,12 +41,16 @@ data class LocationHistoryPointModelForMember(
 
 @Serializable
 data class LocationHistoryPointModel(
+    val id: String = "",
     val loc: LocationHistoryPointLocationModel?,
     val status: LocationHistoryPointStatusModel
 
 ) {
     @Transient
     val dayKey = status.tB.isoToLocalDateTime()?.date?.toString()
+    
+    @Transient
+    val properID: String = "${status.tB}_${id}"
 
     fun isLocationUnchanged(location: LocationHistoryPointLocationModel?): Boolean {
         if (location == null && this.loc == null) return true

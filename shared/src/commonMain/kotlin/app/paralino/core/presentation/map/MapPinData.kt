@@ -104,6 +104,7 @@ data class MapPinData constructor(
     )
 
     constructor(
+        id: String,
         groupId: String,
         location: LocationHistoryPointLocationModel,
         name: String?,
@@ -111,7 +112,7 @@ data class MapPinData constructor(
         timeInfo: String?
     ) : this(
         groupId = groupId,
-        markerId = location.toString(),
+        markerId = id,
         pinType = MapPinType.MEMBER,
         markerStyle = if(location.acc < 100) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
         focused = false,

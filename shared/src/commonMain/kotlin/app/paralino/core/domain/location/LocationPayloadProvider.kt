@@ -1,5 +1,7 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.crypto.AlphabetType
+import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberEntity
@@ -24,6 +26,7 @@ class LocationPayloadProvider(
     private val memberDeviceStatusProvider: MemberDeviceStatusProvider,
     private val memberCryptoKeyRotation: IMemberCryptoKeyRotation,
     private val deviceKeyRotation: IMemberDeviceKeyRotation,
+    private val cryptoCore: CryptoCore,
 ) {
 
     suspend fun getLocationPayload(
@@ -77,6 +80,7 @@ class LocationPayloadProvider(
             ) { data, contract ->
                 if (data.timeUTC != null && status.timeUTC != null) {
                     LocationHistoryPointModel(
+                        id = cryptoCore.randomId(length = 8, alphabet = AlphabetType.EXTENDED),
                         loc = LocationHistoryPointLocationModel(
                             tA = data.timeUTC,
                             tB = data.timeUTC,

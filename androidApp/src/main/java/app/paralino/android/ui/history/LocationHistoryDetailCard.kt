@@ -42,9 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
-import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.history.LocationHistoryMapFocusType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
@@ -462,24 +460,5 @@ private fun RowScope.BatteryAndNetworkData(
             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
         )
         Spacer(modifier = Modifier.size(8.dp))
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun GroupMemberActions(
-    modifier: Modifier = Modifier,
-    id: String,
-    deleteAction: MemberActionItemState?,
-    navigateAction: MemberNavigateItemState?,
-    onEvent: (LocationHistoryUiEvent) -> Unit
-) {
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-
-
     }
 }

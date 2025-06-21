@@ -83,7 +83,7 @@ class DeleteLocationHistoryEntryUseCase(
                         )
 
                         val newHistory = history.history.mapSuccess {
-                            it.history.filter { point -> entry.value.any { it.point == point } }
+                            it.history.filter { point -> entry.value.any { it.point.properID == point.properID } }
                         }.data
 
                         if (newHistory != null) {
@@ -157,7 +157,7 @@ class DeleteLocationHistoryEntryUseCase(
                         )
 
                         val newHistory = history.history.mapSuccess {
-                            it.history.filter { point -> entry.value.none { it.point == point } }
+                            it.history.filter { point -> entry.value.none { it.point.properID == point.properID } }
                         }.data
 
                         if (newHistory != null) {

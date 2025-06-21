@@ -77,6 +77,7 @@ fun LocationHistoryMapContent(
                     markers = stateData.selectedLocations.mapNotNull {
                         it.point.loc?.let { location ->
                             MapPinData(
+                                id = it.point.properID,
                                 groupId = stateData.groupId,
                                 location = location,
                                 name = null,
@@ -103,6 +104,7 @@ fun LocationHistoryMapContent(
                     markers = stateData.selectedLocations.mapNotNull {
                         it.point.loc?.let { location ->
                             MapPinData(
+                                id = it.point.properID,
                                 groupId = stateData.groupId,
                                 location = location,
                                 name = null,
