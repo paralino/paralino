@@ -88,11 +88,25 @@ fun LocationHistoryDetailCard(
                 verticalAlignment = Alignment.CenterVertically,
                 contentPadding = PaddingValues(start = 10.dp, end = 10.dp)
             ) {
+                if (uiState.devices.size > 1) {
+                    this.item(key = "title") {
+                        Text(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(end = 8.dp),
+                            text = stringResource(MR.strings.group_member_devices_section_title),
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                }
                 this.items(uiState.devices, key = { it.locationId }) { device ->
                     UserDeviceChip(
-                        modifier = Modifier.padding(end = 8.dp),
+                        modifier = Modifier
+                            .animateItem()
+                            .padding(end = 8.dp),
                         selected = device.isSelected,
                         name = device.deviceName,
+                        showIcon = uiState.devices.size == 1,
                         onClick = {
                             onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
                         }
@@ -353,7 +367,8 @@ private fun UserDeviceChip(
     modifier: Modifier = Modifier,
     selected: Boolean,
     name: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    showIcon: Boolean
 ) {
     val contentColor by animateColorAsState(
         if (selected) MaterialTheme.colors.onPrimary
@@ -368,13 +383,17 @@ private fun UserDeviceChip(
         modifier = modifier,
         shape = RoundedCornerShape(100),
         backgroundColor = backgroundColor,
-        imageOrIcon = {
-            Icon(
-                modifier = Modifier.size(18.dp),
-                painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                contentDescription = null,
-                tint = contentColor
-            )
+        imageOrIcon = if (showIcon) {
+            {
+                Icon(
+                    modifier = Modifier.padding(end = 4.dp).size(16.dp),
+                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                    contentDescription = null,
+                    tint = contentColor
+                )
+            }
+        } else {
+            null
         },
         hasEndArrow = false,
         text = {
@@ -385,7 +404,7 @@ private fun UserDeviceChip(
                 fontSize = 12.sp,
                 lineHeight = 14.sp,
                 textAlign = TextAlign.Start,
-                modifier = Modifier.padding(start = 4.dp)
+                modifier = Modifier
             )
         },
         onClick = onClick
