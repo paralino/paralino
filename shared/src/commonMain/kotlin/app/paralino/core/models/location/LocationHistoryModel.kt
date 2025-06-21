@@ -65,7 +65,7 @@ data class LocationHistoryPointModel(
     // flat-earth approximation - use for only short distance check
     private fun LocationHistoryPointLocationModel.isWithinRange(
         other: LocationHistoryPointLocationModel,
-        thresholdMeters: Double = 5.0
+        thresholdMeters: Double = 10.0
     ): Boolean {
         val avgLat = (this.lat + other.lat) / 2
         val metersPerDegreeLat = 111320.0
