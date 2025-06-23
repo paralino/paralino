@@ -118,14 +118,14 @@ fun LocationHistoryDetailCard(
 
             Column(
                 modifier = Modifier
-                    .padding(vertical = 10.dp)
+                    .padding(vertical = 6.dp)
                     .padding(horizontal = 6.dp)
                     .clip(
                         RoundedCornerShape(
                             topStart = 12.dp,
-                            topEnd = 16.dp,
+                            topEnd = if (uiState.deleteAction != null) 16.dp else 12.dp,
                             bottomStart = 12.dp,
-                            bottomEnd = 16.dp
+                            bottomEnd = if (uiState.navigateAction != null) 16.dp else 12.dp
                         )
                     )
                     .background(MaterialTheme.colors.surface)
@@ -310,7 +310,7 @@ fun LocationHistoryDetailCard(
 
             AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint) {
                 Column {
-                    if (uiState.selectedLocations.isNotEmpty()) {
+                    if (uiState.selectedLocations.size > 1) {
                         val sliderSize = remember {
                             val factor = maxOf(0, (uiState.selectedLocations.size.toString().length - 1) / 3) * 15
                             EmbeddedSliderSize(minStepWidth = (80 + factor).dp, minHeight = 40.dp)
