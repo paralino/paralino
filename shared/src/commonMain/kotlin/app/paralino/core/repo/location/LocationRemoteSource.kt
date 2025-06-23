@@ -85,6 +85,7 @@ class LocationRemoteSource constructor(
                 docId = locationId,
                 data = mapOf(
                     "locationData" to locationData,
+                    "locationHistory" to ""
                 )
             )
         }
