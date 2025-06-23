@@ -309,8 +309,21 @@ fun LocationHistoryDetailCard(
             }
 
             AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint) {
-                Column {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     if (uiState.selectedLocations.size > 1) {
+
+                        AnimatedVisibility(
+                            visible = uiState.locationsToDelete.isNotEmpty()
+                        ) {
+                            Text(
+                                modifier = Modifier,
+                                text = stringResource(MR.strings.history_entry_range_delete_notice_title, uiState.locationsToDelete.size),
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+
                         val sliderSize = remember {
                             val factor = maxOf(0, (uiState.selectedLocations.size.toString().length - 1) / 3) * 15
                             EmbeddedSliderSize(minStepWidth = (80 + factor).dp, minHeight = 40.dp)

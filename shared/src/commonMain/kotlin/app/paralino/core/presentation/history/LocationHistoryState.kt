@@ -20,6 +20,8 @@ import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
+import kotlin.math.max
+import kotlin.math.min
 
 data class LocationHistoryScreenState(
     val groupId: String,
@@ -35,6 +37,7 @@ data class LocationHistoryScreenState(
     val dateRangeDays: Int,
     val selectedDate: LocalDate,
     val isDeletingEntry: Boolean,
+    val deletionRangeStartIndex: Int?,
     val isRefreshingData: Boolean,
     val isLoadingLocations: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
@@ -107,6 +110,17 @@ data class LocationHistoryScreenState(
             lng = it.lng,
             title = it.title
         )
+    }
+
+    val locationsToDelete = if (deletionRangeStartIndex != null && selectedLocationIndex != null) {
+        val rangeStart = min(deletionRangeStartIndex, locationIndex)
+        val rangeEnd = max(deletionRangeStartIndex, locationIndex)
+        selectedLocations.subList(
+            fromIndex = rangeStart,
+            toIndex = rangeEnd + 1
+        )
+    } else {
+        emptyList()
     }
 }
 

@@ -137,12 +137,10 @@ class DeleteLocationHistoryEntryUseCase(
         entries: List<LocationHistoryPointState>,
     ) {
         // handle cached entries
-        val cachedEntries = entries.filter { it.isCachedLocation }
-
         val toDeletePending = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = groupId)
             .let { pendingHistoryMapper.pendingLocationToCore(it) }
             .filter { pending ->
-                cachedEntries.any { it.point.properID == pending.history.properID }
+                entries.any { it.point.properID == pending.history.properID }
             }
             .map { it.entryId }
 
@@ -151,8 +149,7 @@ class DeleteLocationHistoryEntryUseCase(
             deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
         }
 
-        val syncedEntries = entries.filter { !it.isCachedLocation }
-        val result = syncedEntries
+        val result = entries
             .groupBy { it.entryId }
             .mapNotNull { entry ->
                 val databaseEntry = database.locationHistoryDao.getGroupHistoryEntryOnce(id = entry.key)

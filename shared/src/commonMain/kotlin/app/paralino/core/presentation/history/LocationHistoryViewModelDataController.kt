@@ -26,6 +26,8 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.max
+import kotlin.math.min
 
 class LocationHistoryViewModelDataController(
     val getLocationHistory: GetLocationHistoryUseCase,
@@ -81,6 +83,7 @@ class LocationHistoryViewModelDataController(
             dateRangeDays = dateRangeDays,
             selectedDate = startDate,
             isDeletingEntry = false,
+            deletionRangeStartIndex = null,
             isRefreshingData = true,
             isLoadingLocations = true,
             locations = emptyList(),
@@ -296,7 +299,8 @@ class LocationHistoryViewModelDataController(
                         is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == device.locationId)
                     }
                 },
-                selectedLocationIndex = null
+                selectedLocationIndex = null,
+                deletionRangeStartIndex = null
             )
 
             val stats = LocationHistoryStats.calculateStats(
@@ -326,7 +330,48 @@ class LocationHistoryViewModelDataController(
                         } catch (e: Exception) {
                             viewModel.showSnackbar(e.errorString())
                         }
-                        _uiState.update { it.copy(isDeletingEntry = false) }
+                        _uiState.update {
+                            it.copy(isDeletingEntry = false, deletionRangeStartIndex = null)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun markForRangeDeletion() {
+        _uiState.value.deleteAction?.let {
+            if (_uiState.value.isCurrentUser) {
+                _uiState.value.selectedLocationIndex?.let {
+                    _uiState.update {
+                        it.copy(deletionRangeStartIndex = _uiState.value.locationIndex)
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteSelectedRange() {
+        _uiState.value.deleteAction?.let {
+            val locations = _uiState.value.locationsToDelete
+            if (_uiState.value.isCurrentUser && locations.isNotEmpty()) {
+                _uiState.value.selectedPoint?.let {
+                    viewModel.coroutineScope.launch {
+                        _uiState.update { it.copy(isDeletingEntry = true) }
+                        try {
+                            deleteLocationHistory.deleteEntries(
+                                groupId = _uiState.value.groupId,
+                                memberUserId = _uiState.value.memberUserId,
+                                entries = locations,
+                                startDate = _uiState.value.startDate,
+                                endDate = _uiState.value.endDate
+                            )
+                        } catch (e: Exception) {
+                            viewModel.showSnackbar(e.errorString())
+                        }
+                        _uiState.update {
+                            it.copy(isDeletingEntry = false, deletionRangeStartIndex = null)
+                        }
                     }
                 }
             }

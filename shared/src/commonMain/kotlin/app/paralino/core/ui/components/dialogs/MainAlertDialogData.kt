@@ -757,24 +757,79 @@ sealed interface MainAlertDialog {
 
     data class DeleteLocationHistoryEntry(
         val info: String,
+        val canDeleteRange: Boolean
     ) : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
+
+        companion object {
+            const val buttonMarkAsRangeId = "markAsRange"
+        }
 
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(resource = MR.strings.alert_title_confirm),
             message = MR.strings.history_entry_delete_alert_message.localizedString(info),
+            buttons = buildList {
+                add(
+                    AlertDialogButtonData(
+                        id = Buttons.buttonOk,
+                        text = stringResource(resource = MR.strings.button_delete),
+                        color = AlertDialogButtonData.destructiveColor,
+                        needsLongConfirmation = true
+                    )
+                )
+
+                if (canDeleteRange) {
+                    add(
+                        AlertDialogButtonData(
+                            id = buttonMarkAsRangeId,
+                            text = "Delete range..."
+                        )
+                    )
+                }
+
+                add(
+                    AlertDialogButtonData(
+                        id = Buttons.buttonCancel,
+                        text = stringResource(resource = MR.strings.button_cancel)
+                    )
+                )
+            }
+        )
+    }
+
+    data class DeleteLocationHistoryRange(
+        val startInfo: String,
+        val endInfo: String,
+        val count: String,
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        companion object {
+            const val buttonClearSelection = "buttonClearSelection"
+        }
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.history_entry_range_delete_alert_title),
+            message = MR.strings.history_entry_range_delete_alert_message.localizedString(startInfo, endInfo, count),
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(resource = MR.strings.button_delete),
+                    text = "Delete selected",
                     color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = buttonClearSelection,
+                    text = "Clear selection",
+                    color = AlertDialogButtonData.positiveColor,
                     needsLongConfirmation = false
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
                     text = stringResource(resource = MR.strings.button_cancel)
-                ),
+                )
             ),
         )
     }

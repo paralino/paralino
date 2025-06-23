@@ -13,6 +13,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -64,6 +65,17 @@ class LocationHistoryViewModel(
                         dataController._uiState.update { it.copy(alertDialog = null) }
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             dataController.deleteSelectedEntry()
+                        } else if (event.action.action == MainAlertDialog.DeleteLocationHistoryEntry.buttonMarkAsRangeId){
+                            dataController.markForRangeDeletion()
+                        }
+                    }
+
+                    is MainAlertDialog.DeleteLocationHistoryRange -> {
+                        dataController._uiState.update { it.copy(alertDialog = null) }
+                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            dataController.deleteSelectedRange()
+                        } else if (event.action.action == MainAlertDialog.DeleteLocationHistoryRange.buttonClearSelection) {
+                            dataController._uiState.update { it.copy(deletionRangeStartIndex = null) }
                         }
                     }
 
@@ -115,9 +127,46 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.OnDeleteSelectedLocationRequest -> {
-                val time = dataController._uiState.value.selectedPoint?.locationTime?.let { "**$it**" } ?: "-"
-                dataController._uiState.update {
-                    it.copy(alertDialog = MainAlertDialog.DeleteLocationHistoryEntry(info = time))
+                if (uiState.value.locationsToDelete.isNotEmpty()) {
+                    val startTime = uiState.value.locationsToDelete.firstOrNull()?.let {
+                        valueFormatter.formatTimeRangeForLocationHistory(
+                            startTimeUTC = it.point.status.startTime.isoToLocalDateTime(),
+                            endTimeUTC = null,
+                            rangeStart = uiState.value.startDate,
+                            rangeEnd = uiState.value.endDate
+                        ).let {
+                            "**$it**"
+                        }
+                    } ?: "-"
+                    val endTime = uiState.value.locationsToDelete.lastOrNull()?.let {
+                        valueFormatter.formatTimeRangeForLocationHistory(
+                            startTimeUTC = it.point.status.endTime.isoToLocalDateTime(),
+                            endTimeUTC = null,
+                            rangeStart = uiState.value.startDate,
+                            rangeEnd = uiState.value.endDate
+                        ).let {
+                            "**$it**"
+                        }
+                    } ?: "-"
+                    dataController._uiState.update {
+                        it.copy(
+                            alertDialog = MainAlertDialog.DeleteLocationHistoryRange(
+                                startInfo = startTime,
+                                endInfo = endTime,
+                                count = uiState.value.locationsToDelete.size.toString().let { "**$it**" }
+                            )
+                        )
+                    }
+                } else {
+                    val time = dataController._uiState.value.selectedPoint?.locationTime?.let { "**$it**" } ?: "-"
+                    dataController._uiState.update {
+                        it.copy(
+                            alertDialog = MainAlertDialog.DeleteLocationHistoryEntry(
+                                info = time,
+                                canDeleteRange = uiState.value.selectedLocations.size > 1
+                            )
+                        )
+                    }
                 }
             }
 
