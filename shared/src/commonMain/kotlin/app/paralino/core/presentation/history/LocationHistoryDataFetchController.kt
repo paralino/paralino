@@ -11,7 +11,6 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.MemberDeviceStatusType
-import app.paralino.core.models.mapSuccess
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.Logr
 import app.paralino.core.provider.NetworkSignalStrength
@@ -72,12 +71,20 @@ class LocationHistoryDataFetchController(
     ): Flow<Unit> {
         val groupId = _uiState.value.groupId
         val memberUserId = _uiState.value.memberUserId
+        val startDate = _uiState.value.startDate
+        val endDate = _uiState.value.endDate
+
         val job = if (groupId == UserGroup.groupPersonalDevicesId) {
-            fetchPersonalLocationHistory()
+            fetchPersonalLocationHistory(
+                startDate = startDate,
+                endDate = endDate
+            )
         } else {
             fetchGroupLocationHistory(
                 groupId = groupId,
-                memberUserId = memberUserId
+                memberUserId = memberUserId,
+                startDate = startDate,
+                endDate = endDate
             )
         }
 
@@ -87,8 +94,8 @@ class LocationHistoryDataFetchController(
                     groupId = groupId,
                     memberUserId = memberUserId,
                     locationId = null,
-                    startDate = _uiState.value.startDate,
-                    endDate = _uiState.value.endDate
+                    startDate = startDate,
+                    endDate = endDate
                 )
             } catch (e: Exception) {
                 // TODO handle error
@@ -102,15 +109,15 @@ class LocationHistoryDataFetchController(
         return job
     }
 
-    private fun fetchPersonalLocationHistory(): Flow<Unit> {
+    private fun fetchPersonalLocationHistory(startDate: LocalDate, endDate: LocalDate): Flow<Unit> {
         return combine(
             userRepo.localUser,
             userRepo.userPlans,
             getLocationHistory.getLocationHistory(
                 groupId = UserGroup.groupPersonalDevicesId,
                 memberUserId = appPrefs.userId,
-                startDate = _uiState.value.startDate,
-                endDate = _uiState.value.endDate
+                startDate = startDate,
+                endDate = endDate
             )
         ) { user, plans, history ->
             // TODO add actual devices and locations
@@ -123,7 +130,7 @@ class LocationHistoryDataFetchController(
                     isGroupOwner = true,
                     userName = user.data?.name ?: "",
                     userImage = user.data?.data?.userImage,
-                    isRefreshingData = false,
+                    isLoadingLocations = false,
                     locations = history.history.flatMap {
                         mapLocationPoints(entry = it)
                     },
@@ -139,12 +146,14 @@ class LocationHistoryDataFetchController(
     private fun fetchGroupLocationHistory(
         groupId: String,
         memberUserId: String,
+        startDate: LocalDate,
+        endDate: LocalDate,
     ): Flow<Unit> {
         return getLocationHistory.getLocationHistory(
             groupId = groupId,
             memberUserId = memberUserId,
-            startDate = _uiState.value.startDate,
-            endDate = _uiState.value.endDate
+            startDate = startDate,
+            endDate = endDate
         ).map { history ->
             val group = userGroupRepo.getGroupWithMembersOnce(groupId = groupId)
             val currentMember = group?.memberByUserId(userId = memberUserId)
@@ -156,6 +165,7 @@ class LocationHistoryDataFetchController(
                         deviceId = it.deviceId,
                         deviceName = it.name,
                         isSelected = it.id == _uiState.value.devices.firstOrNull { it.isSelected }?.locationId,
+                        isCurrent = it.id == group.currentDeviceLocation?.id
                     )
                 }
 

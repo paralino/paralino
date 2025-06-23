@@ -82,7 +82,7 @@ class RefreshEverythingUseCase(
                     revokeDeviceStatusUseCase.revokeActiveStatus()
                     clearUserLocationUseCase.deleteOldLocations()
                     premiumStatusManager.adjustDeviceSettingsForPlan()
-                    locationHistoryUploadEngine.syncPendingEntriesInBackground()
+                    locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 10.minutes)
                 }
             )
         } catch (e: Exception) {

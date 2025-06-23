@@ -91,11 +91,15 @@ data class LocationHistoryScreenState(
         )
     }
 
-    val deleteAction = if (isCurrentUser && selectedPoint != null) {
-        MemberActionItemState(type = MemberActionType.DELETE_LOCATION, isLoading = isDeletingEntry)
-    } else {
-        null
-    }
+    val deleteAction =
+        if (isCurrentUser && selectedPoint != null && (devices.firstOrNull { it.locationId == selectedPoint.locationId }?.isCurrent == true || !selectedPoint.isCachedLocation)) {
+            MemberActionItemState(
+                type = MemberActionType.DELETE_LOCATION,
+                isLoading = isDeletingEntry
+            )
+        } else {
+            null
+        }
 
     val navigateAction = selectedMapPinData?.let {
         MemberNavigateItemState(
@@ -222,12 +226,14 @@ sealed class UserActiveLocationDeviceState {
     abstract val deviceId: String
     abstract val deviceName: String
     abstract val isSelected: Boolean
+    abstract val isCurrent: Boolean
 
     data class Known(
         override val locationId: String,
         override val deviceId: String,
         override val deviceName: String,
-        override val isSelected: Boolean
+        override val isSelected: Boolean,
+        override val isCurrent: Boolean
     ) : UserActiveLocationDeviceState()
 
     data class Unknown(
@@ -237,6 +243,7 @@ sealed class UserActiveLocationDeviceState {
     ) : UserActiveLocationDeviceState() {
         override val deviceId: String = "unknown"
         override val locationId: String = "unknown"
+        override val isCurrent: Boolean = false
     }
 }
 
@@ -289,8 +296,8 @@ sealed interface LocationHistoryUiEvent {
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
     data class ChangeMapFocusType(val type: LocationHistoryMapFocusType) : LocationHistoryUiEvent
-    data class OnDirectionsRequest(val action: MemberNavigateItemState): LocationHistoryUiEvent
-    data object OnDeleteSelectedLocationRequest: LocationHistoryUiEvent
+    data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
+    data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
     data object OnRefocusClick : LocationHistoryUiEvent
     data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnCloseFocusedItemClick : LocationHistoryUiEvent
@@ -302,6 +309,8 @@ sealed interface LocationHistoryUiEvent {
 }
 
 sealed interface LocationHistoryScreenEvent {
-    data class OpenNavigation(val event: MapHomeScreenEvent.OpenExternalNavigation) : LocationHistoryScreenEvent
+    data class OpenNavigation(val event: MapHomeScreenEvent.OpenExternalNavigation) :
+        LocationHistoryScreenEvent
+
     data object NavigateBack : LocationHistoryScreenEvent
 }

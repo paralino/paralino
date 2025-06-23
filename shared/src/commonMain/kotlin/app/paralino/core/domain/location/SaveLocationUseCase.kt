@@ -20,6 +20,7 @@ import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.minutes
 
 class SaveLocationUseCase(
     private val database: MainDatabaseHelper,
@@ -101,7 +102,7 @@ class SaveLocationUseCase(
         saveLocationLocally(newData)
 
         if (historyEntries.size >= 80) {
-            locationHistoryUpload.syncPendingEntriesInBackground()
+            locationHistoryUpload.syncPendingEntriesInBackground(cacheTime = 2.minutes)
         }
 
         return newData

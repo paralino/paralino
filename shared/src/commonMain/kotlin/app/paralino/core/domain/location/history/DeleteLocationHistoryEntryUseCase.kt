@@ -5,11 +5,13 @@ import app.paralino.core.crypto.LocationHistoryKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.mappers.LocationHistoryMapper
+import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.LocationHistoryDeleteGroupPayload
 import app.paralino.core.models.raw.LocationHistoryDeletePayloadEntry
 import app.paralino.core.models.raw.LocationHistoryDeletePersonalPayload
@@ -23,11 +25,13 @@ import kotlinx.datetime.LocalDate
 
 class DeleteLocationHistoryEntryUseCase(
     private val database: MainDatabaseHelper,
-    private val mapper: LocationHistoryMapper,
+    private val historyMapper: LocationHistoryMapper,
+    private val pendingHistoryMapper: PendingLocationHistoryMapper,
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val refreshLocationHistoryUseCase: RefreshLocationHistoryUseCase,
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val appPrefs: AppPrefs
 ) {
 
@@ -75,7 +79,7 @@ class DeleteLocationHistoryEntryUseCase(
                     }
 
                     if (key != null) {
-                        val history = mapper.remote2Core(
+                        val history = historyMapper.remote2Core(
                             groupId = UserGroup.groupPersonalDevicesId,
                             memberUserId = appPrefs.userId,
                             historyKey = key,
@@ -134,6 +138,19 @@ class DeleteLocationHistoryEntryUseCase(
     ) {
         // handle cached entries
         val cachedEntries = entries.filter { it.isCachedLocation }
+
+        val toDeletePending = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = groupId)
+            .let { pendingHistoryMapper.pendingLocationToCore(it) }
+            .filter { pending ->
+                cachedEntries.any { it.point.properID == pending.history.properID }
+            }
+            .map { it.entryId }
+
+        if (toDeletePending.isNotEmpty()) {
+            database.pendingLocationHistoryDao.deletePendingEntries(ids = toDeletePending)
+            deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
+        }
+
         val syncedEntries = entries.filter { !it.isCachedLocation }
         val result = syncedEntries
             .groupBy { it.entryId }
@@ -149,7 +166,7 @@ class DeleteLocationHistoryEntryUseCase(
                     }
 
                     if (key != null) {
-                        val history = mapper.remote2Core(
+                        val history = historyMapper.remote2Core(
                             groupId = groupId,
                             memberUserId = memberUserId,
                             historyKey = key,

@@ -238,7 +238,7 @@ val dataSourceModule = module {
 val coreModule = module {
     single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
-    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -274,7 +274,7 @@ val coreModule = module {
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
     single { RefreshLocationHistoryUseCase(get(), get(), get()) }
-    single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), appPrefs) }

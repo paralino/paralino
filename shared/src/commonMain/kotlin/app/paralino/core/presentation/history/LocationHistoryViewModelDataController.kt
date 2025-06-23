@@ -212,6 +212,10 @@ class LocationHistoryViewModelDataController(
         dateRangeDays: Int,
         selectedDate: LocalDate
     ) {
+        if (_uiState.value.isLoadingLocations) {
+            return
+        }
+
         val currentState = _uiState.value
         val currentRange = dateRangeDays
 
@@ -247,7 +251,8 @@ class LocationHistoryViewModelDataController(
                 dateRangeDays = dateRangeDays,
                 selectedDate = selectedDate,
                 days = updatedDays,
-                isRefreshingData = true
+                isRefreshingData = true,
+                isLoadingLocations = true
             )
         }
 

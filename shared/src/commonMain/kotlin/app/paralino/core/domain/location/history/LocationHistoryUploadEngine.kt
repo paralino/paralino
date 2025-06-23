@@ -33,17 +33,18 @@ import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
 interface ILocationHistoryUploadEngine {
-    abstract fun syncPendingEntriesInBackground()
-    abstract suspend fun syncPendingEntriesNow(): Result<Unit>
+    abstract fun syncPendingEntriesInBackground(cacheTime: Duration)
+    abstract suspend fun syncPendingEntriesNow(cacheTime: Duration): Result<Unit>
 }
 
 class IOSLocationHistoryUploadEngine : ILocationHistoryUploadEngine {
-    override fun syncPendingEntriesInBackground() {}
-    override suspend fun syncPendingEntriesNow(): Result<Unit> =
+    override fun syncPendingEntriesInBackground(cacheTime: Duration) {}
+    override suspend fun syncPendingEntriesNow(cacheTime: Duration): Result<Unit> =
         Result.failure(InvalidRequestException("Function not available from iOS extension"))
 }
 
@@ -65,13 +66,13 @@ class LocationHistoryUploadEngine(
         return super.isProcessing(key)
     }
 
-    override fun syncPendingEntriesInBackground() {
+    override fun syncPendingEntriesInBackground(cacheTime: Duration) {
         scopeProvider.userSessionIOScope.launch {
-            syncPendingEntriesNow()
+            syncPendingEntriesNow(cacheTime)
         }
     }
 
-    override suspend fun syncPendingEntriesNow(): Result<Unit> {
+    override suspend fun syncPendingEntriesNow(cacheTime: Duration): Result<Unit> {
 
         try {
             startProcessing(executionKey)
@@ -84,7 +85,7 @@ class LocationHistoryUploadEngine(
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(
                     key = executionKey,
-                    timeMillis = 10.minutes.inWholeMilliseconds,
+                    timeMillis = cacheTime.inWholeMilliseconds,
                     failOnError = false
                 ),
                 remote = { syncPendingEntriesImpl() }
@@ -108,6 +109,8 @@ class LocationHistoryUploadEngine(
         val groupHistory = groupLocalDataSource.allGroupsState.value.data?.mapNotNull {
             pendingEntries.mapGroupHistory(groupId = it.id)
         } ?: emptyList()
+
+        logg.tag(executionKey).v("Found ${pendingEntries.size} pending history entries, personal (${personalHistory?.entries?.size} new, ${personalHistory?.retryEntries?.size} retries), groups (${groupHistory.sumOf { it.entries.size }} new, ${groupHistory.sumOf { it.retryEntries.size }} retries)")
 
         if (personalHistory == null && groupHistory.isEmpty()) {
             return
