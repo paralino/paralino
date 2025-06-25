@@ -11,6 +11,7 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.utils.extensions.dateForApi
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
 import kotlinx.datetime.format.byUnicodePattern
@@ -57,8 +58,8 @@ class RefreshLocationHistoryUseCase(
                 groupId = groupId,
                 memberUserId = memberUserId,
                 locationId = locationId,
-                startDateKey = startDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") }),
-                endDateKey = endDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
+                startDateKey = startDate.dateForApi(),
+                endDateKey = endDate.dateForApi()
             )
 
             val response = functionsApi.runAndWait(
@@ -98,8 +99,8 @@ class RefreshLocationHistoryUseCase(
         return triggerRemoteOnly {
             val payload = PersonalLocationHistoryReadPayload(
                 locationId = locationId,
-                startDateKey = startDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") }),
-                endDateKey = endDate.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
+                startDateKey = startDate.dateForApi(),
+                endDateKey = endDate.dateForApi()
             )
 
             val response = functionsApi.runAndWait(

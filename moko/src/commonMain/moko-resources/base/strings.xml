@@ -642,8 +642,14 @@
     <string name="blocklist_unblock_user_alert_message">Unblocking will allow user to add you to new groups and you will be notified about users\' location updates.</string>
     <string name="blocklist_unblock_alert_button">Unblock</string>
     <string name="blocklist_unblock_alert_unknown">Remove unknown blocked type?</string>
-    <string name="history_entry_delete_alert_message">Delete location history entry:\n%s\n\nThis action is irreversible.</string>
+    <string name="history_entry_delete_alert_message">Delete location history entry:\n%s</string>
     <string name="history_entry_range_delete_notice_title">Entries to delete: %d</string>
     <string name="history_entry_range_delete_alert_title">Delete location history?</string>
-    <string name="history_entry_range_delete_alert_message">Start: %1$s\nEnd: %2$s\nTotal entries: %3$s\n\nThis action is irreversible.</string>
+    <string name="history_entry_range_delete_alert_message">Start: %1$s\nEnd: %2$s\nTotal entries: %3$s</string>
+    <string name="history_delete_from">Deleting all location history from **%s**</string>
+    <string name="history_delete_until">Deleting all location history until **%s**</string>
+    <string name="history_delete_range_from_until">Deleting all location history\nFrom: **%1$s**\nUntil: **%2$s**</string>
+    <string name="history_delete_on_date">Deleting location history on **%s**</string>
+    <string name="history_delete_irreversible_action_notice">This action is irreversible.</string>
+    <string name="history_delete_screen_title">Delete location history</string>
 </resources>

@@ -199,6 +199,19 @@ sealed class AppScreen {
         object PlaceDetail : Common.PlaceDetail("home")
         object PlaceAlerts : Common.PlaceDetail("place-alerts")
 
+        object LocationHistoryDelete : AppScreen() {
+            override val routeSignature: String =
+                "location-history-delete?$argumentGroupId={$argumentGroupId}"
+
+            fun route(groupId: String): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId"
+                )
+                    .joinToString(separator = "&")
+                return "location-history-delete?$args"
+            }
+        }
+
         object RawDataScreen : Common.RawDataScreen("home")
 
         object Subscriptions : Common.Subscriptions("home")
@@ -370,6 +383,5 @@ sealed class AppScreen {
                 return "$parent-location-history?$args"
             }
         }
-
     }
 }

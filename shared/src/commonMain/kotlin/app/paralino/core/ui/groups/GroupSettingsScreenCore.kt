@@ -37,6 +37,7 @@ fun GroupSettingsScreenCore(
     openEditGroup: () -> Unit,
     onGroupDeleted: () -> Unit,
     openRawDataScreen: () -> Unit,
+    openLocationHistorySettings: () -> Unit
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState(initial = Resource.NotInitialized)
@@ -101,6 +102,14 @@ fun GroupSettingsScreenCore(
 //                    }
 
                     SettingsActionItem(
+                        name = stringResource(MR.strings.history_delete_screen_title),
+                        icon = CoreAppIcons.TimelinePath.asPainterResource(),
+                        iconTint = AppColors.errorBackground
+                    ) {
+                        openLocationHistorySettings()
+                    }
+
+                    SettingsActionItem(
                         name = stringResource(MR.strings.group_details_menu_delete),
                         icon = CoreAppIcons.Delete.asPainterResource(),
                         iconTint = AppColors.errorBackground
@@ -108,6 +117,13 @@ fun GroupSettingsScreenCore(
                         vm.onEvent(GroupSettingsUiEvent.DeleteGroup)
                     }
                 } else {
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.history_delete_screen_title),
+                        icon = CoreAppIcons.TimelinePath.asPainterResource(),
+                        iconTint = AppColors.errorBackground
+                    ) {
+                        openLocationHistorySettings()
+                    }
                     SettingsActionItem(
                         name = stringResource(MR.strings.group_details_menu_block),
                         icon = CoreAppIcons.Block.asPainterResource(),

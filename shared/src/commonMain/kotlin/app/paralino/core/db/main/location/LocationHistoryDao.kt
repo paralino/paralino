@@ -95,10 +95,52 @@ interface LocationHistoryDao {
         keys: List<String>
     ): List<PersonalHistoryKeyEntity>
 
+    @Query("DELETE FROM personalHistoryEntity WHERE dateIdentifier BETWEEN :startDate AND :endDate")
+    suspend fun deletePersonalHistoryBetweenDates(startDate: String, endDate: String)
 
+    @Query("DELETE FROM personalHistoryEntity WHERE dateIdentifier >= :startDate")
+    suspend fun deletePersonalHistoryFromDate(startDate: String)
+
+    @Query("DELETE FROM personalHistoryEntity WHERE dateIdentifier <= :endDate")
+    suspend fun deletePersonalHistoryUntilDate(endDate: String)
+
+    // Wrapper function to handle nullable date parameters
+    suspend fun deletePersonalHistoryByDateRange(
+        startDate: String? = null,
+        endDate: String? = null
+    ) {
+        when {
+            startDate != null && endDate != null -> deletePersonalHistoryBetweenDates(startDate, endDate)
+            startDate != null -> deletePersonalHistoryFromDate(startDate)
+            endDate != null -> deletePersonalHistoryUntilDate(endDate)
+        }
+    }
 
     @Query("DELETE FROM personalHistoryEntity WHERE dateIdentifier IN (:dates)")
     suspend fun deleteOldPersonalHistory(dates: List<String>)
+
+    @Query("DELETE FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND dateIdentifier BETWEEN :startDate AND :endDate")
+    suspend fun deleteGroupHistoryBetweenDates(groupId: String, memberUserId: String, startDate: String, endDate: String)
+
+    @Query("DELETE FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND dateIdentifier >= :startDate")
+    suspend fun deleteGroupHistoryFromDate(groupId: String, memberUserId: String, startDate: String)
+
+    @Query("DELETE FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND dateIdentifier <= :endDate")
+    suspend fun deleteGroupHistoryUntilDate(groupId: String, memberUserId: String, endDate: String)
+
+    // Wrapper function to handle nullable date parameters for group history
+    suspend fun deleteGroupHistoryByDateRange(
+        groupId: String,
+        memberUserId: String,
+        startDate: String? = null,
+        endDate: String? = null
+    ) {
+        when {
+            startDate != null && endDate != null -> deleteGroupHistoryBetweenDates(groupId, memberUserId, startDate, endDate)
+            startDate != null -> deleteGroupHistoryFromDate(groupId, memberUserId, startDate)
+            endDate != null -> deleteGroupHistoryUntilDate(groupId, memberUserId, endDate)
+        }
+    }
 
     @Query("DELETE FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND dateIdentifier IN (:dates)")
     suspend fun deleteOldGroupHistory(groupId: String, memberUserId: String, dates: List<String>)

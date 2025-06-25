@@ -768,7 +768,11 @@ sealed interface MainAlertDialog {
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(resource = MR.strings.alert_title_confirm),
-            message = MR.strings.history_entry_delete_alert_message.localizedString(info),
+            message = buildString {
+                append(MR.strings.history_entry_delete_alert_message.localizedString(info))
+                append("\n\n")
+                append(MR.strings.history_delete_irreversible_action_notice.localizedString())
+            },
             buttons = buildList {
                 add(
                     AlertDialogButtonData(
@@ -812,7 +816,11 @@ sealed interface MainAlertDialog {
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(resource = MR.strings.history_entry_range_delete_alert_title),
-            message = MR.strings.history_entry_range_delete_alert_message.localizedString(startInfo, endInfo, count),
+            message = buildString {
+                append(MR.strings.history_entry_range_delete_alert_message.localizedString(startInfo, endInfo, count))
+                append("\n\n")
+                append(MR.strings.history_delete_irreversible_action_notice.localizedString())
+            },
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
@@ -830,7 +838,35 @@ sealed interface MainAlertDialog {
                     id = Buttons.buttonCancel,
                     text = stringResource(resource = MR.strings.button_cancel)
                 )
-            ),
+            )
+        )
+    }
+
+    data class DeleteLocationHistoryDays(
+        val content: String
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = buildString {
+                append(content)
+                append("\n\n")
+                append(MR.strings.history_delete_irreversible_action_notice.localizedString())
+            },
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.button_delete),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
         )
     }
 }

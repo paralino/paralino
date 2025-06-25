@@ -416,3 +416,16 @@ data class LocationHistoryDeletePayloadEntry(
     val historyData: String,
     val historyKeyVersion: String
 )
+
+@Serializable
+data class LocationHistoryDeletePeriodGroupPayload(
+    val groupId: String,
+    val startDateKey: String?,
+    val endDateKey: String?
+)
+
+@Serializable
+data class LocationHistoryDeletePeriodPersonalPayload(
+    val startDateKey: String?,
+    val endDateKey: String?
+)

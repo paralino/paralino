@@ -150,7 +150,7 @@ fun LocationHistoryScreenElements(
                         modifier = Modifier
                             .padding(end = 4.dp)
                             .size(40.dp)
-                            .clickable { onEvent(LocationHistoryUiEvent.OnCloseScreen) }
+                            .clickable { onEvent(LocationHistoryUiEvent.OpenLocationSettings) }
                             .background(
                                 color = MaterialTheme.colors.surface,
                                 shape = CircleShape
@@ -272,6 +272,8 @@ fun LocationHistoryScreenElements(
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp),
+                        elevation = 4.dp,
+                        canNavigate = true,
                         dayRange = uiState.dateRangeDays,
                         days = uiState.displayedDays,
                         onEvent = onEvent

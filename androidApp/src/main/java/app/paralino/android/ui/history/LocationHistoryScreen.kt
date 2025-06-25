@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import app.paralino.android.ui.main.MainAppState
+import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -85,6 +86,12 @@ fun LocationHistoryScreen(
 
                 is LocationHistoryScreenEvent.OpenNavigation -> {
                     context.openNavigation(event.event)
+                }
+
+                LocationHistoryScreenEvent.OpenLocationSettings -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.LocationHistoryDelete.route(groupId = uiState.groupId)
+                    )
                 }
 
                 null -> {}

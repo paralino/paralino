@@ -55,6 +55,7 @@ import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
+import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
 import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
@@ -233,5 +234,6 @@ object KoinSetup {
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { LocationHistoryDeleteViewModel(get(), get(), get(), get()) }
     }
 }

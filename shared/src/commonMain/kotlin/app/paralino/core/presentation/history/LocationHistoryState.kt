@@ -289,7 +289,7 @@ data class LocationHistoryDayState(
     val isWeekend: Boolean,
     val date: LocalDate,
     val formattedDay: String,
-    val formattedMonth: String,
+    val formattedMonth: String?,
     val position: LocationHistorySelectedDayPosition
 ) {
     val year = date.year
@@ -320,11 +320,14 @@ sealed interface LocationHistoryUiEvent {
     data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent
     data object ToggleDayRange : LocationHistoryUiEvent
     data object OnCloseScreen : LocationHistoryUiEvent
+    data object OpenLocationSettings : LocationHistoryUiEvent
 }
 
 sealed interface LocationHistoryScreenEvent {
-    data class OpenNavigation(val event: MapHomeScreenEvent.OpenExternalNavigation) :
-        LocationHistoryScreenEvent
+    data class OpenNavigation(
+        val event: MapHomeScreenEvent.OpenExternalNavigation
+    ) : LocationHistoryScreenEvent
 
     data object NavigateBack : LocationHistoryScreenEvent
+    data object OpenLocationSettings : LocationHistoryScreenEvent
 }

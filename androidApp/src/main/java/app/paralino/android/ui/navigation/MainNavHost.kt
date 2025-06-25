@@ -11,6 +11,7 @@ import app.paralino.android.ui.groups.BatteryNotificationsScreen
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.groups.GroupSettingsScreen
+import app.paralino.android.ui.history.LocationHistoryDeleteScreen
 import app.paralino.android.ui.history.LocationHistoryScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
@@ -189,6 +190,14 @@ fun NavGraphBuilder.homeGraph(
                 appState = appState,
                 groupId = groupId,
                 memberUserId = memberUserId,
+            )
+        }
+        composable(AppScreen.MainHome.LocationHistoryDelete.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.LocationHistoryDelete.argumentGroupId)!!
+            LocationHistoryDeleteScreen(
+                appState = appState,
+                groupId = groupId
             )
         }
     }

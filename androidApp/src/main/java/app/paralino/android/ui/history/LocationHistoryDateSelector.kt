@@ -28,6 +28,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.presentation.history.LocationHistoryDayState
@@ -54,7 +56,9 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun LocationHistoryDateSelector(
     modifier: Modifier = Modifier,
-    dayRange: Int,
+    elevation: Dp,
+    canNavigate: Boolean,
+    dayRange: Int?,
     days: List<LocationHistoryDayState>,
     onEvent: (LocationHistoryUiEvent) -> Unit,
 ) {
@@ -69,10 +73,18 @@ fun LocationHistoryDateSelector(
                 .weight(1f),
             shape = RoundedCornerShape(12.dp),
             backgroundColor = MaterialTheme.colors.background,
-            elevation = 4.dp
+            elevation = elevation
         ) {
             val scrollState = rememberLazyListState(0)
             val scope = rememberCoroutineScope()
+
+            LaunchedEffect(days, dayRange) {
+                val selectedItemIndex = days.indexOfFirst { it.isSelected }.takeIf { it >= 0 }
+                if (selectedItemIndex != null) {
+                    scope.launch { scrollState.animateScrollToItem(index = (selectedItemIndex - 1).coerceAtLeast(0)) }
+                }
+            }
+
             LazyRow(
                 modifier = Modifier,
                 contentPadding = PaddingValues(4.dp),
@@ -95,48 +107,52 @@ fun LocationHistoryDateSelector(
                     )
                 }
 
-                // Load previous month arrow
-                item {
-                    Box(
-                        modifier = Modifier
-                            .clickable { onEvent(LocationHistoryUiEvent.OnPreviousMonth) }
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = CoreAppIcons.ChevronLeft.asPainterResource(),
-                            contentDescription = "Load previous dates",
-                            tint = MaterialTheme.colors.primary
-                        )
+                if (canNavigate) {
+                    // Load previous month arrow
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .clickable { onEvent(LocationHistoryUiEvent.OnPreviousMonth) }
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = CoreAppIcons.ChevronLeft.asPainterResource(),
+                                contentDescription = "Load previous dates",
+                                tint = MaterialTheme.colors.primary
+                            )
+                        }
                     }
                 }
             }
         }
 
-        // Day range button
-        Column(
-            modifier = Modifier
-                .size(width = 50.dp, height = 48.dp)
-                .clickable { onEvent(LocationHistoryUiEvent.ToggleDayRange) }
-                .shadow(elevation = 4.dp, RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colors.background),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            AnimatedContent(
-                targetState = dayRange,
-                label = "animated count",
-                transitionSpec = onboardingContentTransitionSpec()
+        if (dayRange != null) {
+            // Day range button
+            Column(
+                modifier = Modifier
+                    .size(width = 50.dp, height = 48.dp)
+                    .clickable { onEvent(LocationHistoryUiEvent.ToggleDayRange) }
+                    .shadow(elevation = elevation, RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colors.background),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    style = MaterialTheme.typography.caption,
-                    text = "${it}x",
-                    color = MaterialTheme.colors.onSurface,
-                    fontSize = 16.sp,
-                    lineHeight = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                AnimatedContent(
+                    targetState = dayRange,
+                    label = "animated count",
+                    transitionSpec = onboardingContentTransitionSpec()
+                ) {
+                    Text(
+                        style = MaterialTheme.typography.caption,
+                        text = "${it}x",
+                        color = MaterialTheme.colors.onSurface,
+                        fontSize = 16.sp,
+                        lineHeight = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
@@ -171,7 +187,7 @@ private fun DayCell(
 
     Column(
         modifier = Modifier
-            .defaultMinSize(minWidth = 40.dp)
+            .defaultMinSize(minWidth = 40.dp, minHeight = 42.dp)
             .clip(shape)
             .background(
                 if (dayState.isSelected) MaterialTheme.colors.primary else Color.Transparent
@@ -209,19 +225,22 @@ private fun DayCell(
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
-        Text(
-            style = MaterialTheme.typography.caption,
-            text = dayState.formattedMonth,
-            color = if (dayState.isSelected) {
-                MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
-            } else {
-                MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
-            },
-            fontSize = 8.sp,
-            lineHeight = 10.sp,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center
-        )
+
+        if (dayState.formattedMonth != null) {
+            Text(
+                style = MaterialTheme.typography.caption,
+                text = dayState.formattedMonth ?: "",
+                color = if (dayState.isSelected) {
+                    MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
+                } else {
+                    MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                },
+                fontSize = 8.sp,
+                lineHeight = 10.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -301,6 +320,8 @@ private fun LocationHistoryDateSelectorPreview() {
             LocationHistoryDateSelector(
                 modifier = Modifier.padding(16.dp),
                 dayRange = 7,
+                elevation = 8.dp,
+                canNavigate = true,
                 days = sampleDays.reversed(),
                 onEvent = { },
             )

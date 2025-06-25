@@ -13,6 +13,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.*
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -150,7 +151,7 @@ class LocationHistoryViewModel(
                     } ?: "-"
                     dataController._uiState.update {
                         it.copy(
-                            alertDialog = MainAlertDialog.DeleteLocationHistoryRange(
+                            alertDialog = DeleteLocationHistoryRange(
                                 startInfo = startTime,
                                 endInfo = endTime,
                                 count = uiState.value.locationsToDelete.size.toString().let { "**$it**" }
@@ -161,7 +162,7 @@ class LocationHistoryViewModel(
                     val time = dataController._uiState.value.selectedPoint?.locationTime?.let { "**$it**" } ?: "-"
                     dataController._uiState.update {
                         it.copy(
-                            alertDialog = MainAlertDialog.DeleteLocationHistoryEntry(
+                            alertDialog = DeleteLocationHistoryEntry(
                                 info = time,
                                 canDeleteRange = uiState.value.selectedLocations.size > 1
                             )
@@ -194,6 +195,10 @@ class LocationHistoryViewModel(
                     dateRangeDays = uiState.value.dateRangeDays,
                     selectedDate = event.day
                 )
+            }
+
+            LocationHistoryUiEvent.OpenLocationSettings -> {
+                dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenLocationSettings)
             }
         }
     }

@@ -7,7 +7,9 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
+import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toInstant
 import kotlin.time.Duration
 
@@ -64,4 +66,8 @@ fun LocalDateTime.stripNanoseconds(): LocalDateTime {
             nanosecond = 0
         )
     )
+}
+
+fun LocalDate.dateForApi(): String {
+    return this.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
 }

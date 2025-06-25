@@ -411,7 +411,7 @@ private fun ColumnScope.LocationTime(
 }
 
 @Composable
-private fun UserDeviceChip(
+fun UserDeviceChip(
     modifier: Modifier = Modifier,
     selected: Boolean,
     name: String,

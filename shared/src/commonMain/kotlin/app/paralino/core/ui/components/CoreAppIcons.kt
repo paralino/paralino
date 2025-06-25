@@ -180,7 +180,7 @@ object CoreAppIcons {
     val Elevation get() = Res.drawable.ic_elevation_2
     val Timeline get() = Res.drawable.ic_timeline
     val TimelinePath get() = Res.drawable.ic_timeline_path
-    val RouteAlt get() = Res.drawable.ic_route_alt
+    val RouteAltBold get() = Res.drawable.ic_route_alt
     val Directions get() = Res.drawable.ic_directions
 
     val SignalWifi3 get() = Res.drawable.ic_wifi_3

@@ -32,7 +32,8 @@ enum class ServerFunction constructor(
     HISTORY_READ_PERSONAL(method = "POST", path = "/history/personal/read"),
     HISTORY_UPDATE_GROUP(method = "PATCH", path = "/history/group"),
     HISTORY_UPDATE_PERSONAL(method = "PATCH", path = "/history/personal"),
-    HISTORY_DELETE(method = "DELETE", path = "/history"),
+    HISTORY_DELETE_GROUP(method = "DELETE", path = "/history/group"),
+    HISTORY_DELETE_PERSONAL(method = "DELETE", path = "/history/personal"),
 
     PLACE_CREATE(method = "PUT", path = "/places"),
     PLACE_DELETE(method = "DELETE", path = "/places"),

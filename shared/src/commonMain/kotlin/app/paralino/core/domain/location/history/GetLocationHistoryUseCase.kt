@@ -5,6 +5,7 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModelForUser
 import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.utils.extensions.dateForApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DatePeriod
@@ -49,7 +50,7 @@ class GetLocationHistoryUseCase(
         var currentDate = startDate
         val dateList = mutableListOf<String>()
         while (currentDate <= endDate) {
-            dateList.add(currentDate.format(LocalDate.Companion.Format { byUnicodePattern("yyyy-MM-dd")}))
+            dateList.add(currentDate.dateForApi())
             currentDate = currentDate.plus(DatePeriod(days = 1))
         }
 
@@ -81,7 +82,7 @@ class GetLocationHistoryUseCase(
         var currentDate = startDate
         val dateList = mutableListOf<String>()
         while (currentDate <= endDate) {
-            dateList.add(currentDate.format(LocalDate.Companion.Format { byUnicodePattern("yyyy-MM-dd")}))
+            dateList.add(currentDate.dateForApi())
             currentDate = currentDate.plus(DatePeriod(days = 1))
         }
 
