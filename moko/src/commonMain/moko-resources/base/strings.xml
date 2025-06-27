@@ -176,6 +176,8 @@
     <string name="setting_location_batterySaver_section_info">Choose your preferred location update frequency when your battery is low and the app is inactive.\nThe app will switch to **limited high performance** mode if you or one of your group members are looking at the map.</string>
     <string name="setting_location_batterySaver_battery_title">Battery</string>
     <string name="setting_location_batterySaver_batteryLow_info">Battery saver is always active with **Better Battery** mode when battery level is below 10%.</string>
+    <string name="setting_location_history_section_title">Location history</string>
+    <string name="setting_location_history_section_info">Choose your preferred location history update accuracy. Higher the accuracy, the more individual location points will be recorded.</string>
     <string name="setting_location_highPerformance_level_1">Short</string>
     <string name="setting_location_highPerformance_level_2">Medium</string>
     <string name="setting_location_highPerformance_level_3">Long</string>
@@ -200,6 +202,12 @@
     <string name="setting_location_batterySaver_level_1_info">Very slow location updates.\nVery large minimum distance between updates.</string>
     <string name="setting_location_batterySaver_level_2_info">Slow location updates.\nLarge minimum distance between updates.</string>
     <string name="setting_location_batterySaver_level_3_info">Regular location updates.\nMedium minimum distance between updates.</string>
+    <string name="setting_location_history_level_1">Medium</string>
+    <string name="setting_location_history_level_2">Balanced</string>
+    <string name="setting_location_history_level_3">High</string>
+    <string name="setting_location_history_level_1_info">More movement required for location updates</string>
+    <string name="setting_location_history_level_2_info">Balanced location updates</string>
+    <string name="setting_location_history_level_3_info">Frequent location updates</string>
     <string name="setting_location_batteryImpact_level_1">Battery Impact: Minimum</string>
     <string name="setting_location_batteryImpact_level_2">Battery Impact: Low</string>
     <string name="setting_location_batteryImpact_level_3">Battery Impact: Acceptable</string>

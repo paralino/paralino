@@ -1,6 +1,7 @@
 package app.paralino.core.models.location
 
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -52,20 +53,46 @@ data class LocationHistoryPointModel(
     @Transient
     val properID: String = "${status.startTime}_${id}"
 
-    fun isLocationUnchanged(location: LocationHistoryPointLocationModel?): Boolean {
+    fun isLocationUnchanged(
+        location: LocationHistoryPointLocationModel?,
+        mode: LocationPerformanceSettingsType.History
+    ): Boolean {
         if (location == null && this.loc == null) return true
         if (location == null || this.loc == null) return false
 
-        return this.loc.isWithinRange(location)
-                && location.acc == this.loc.acc
-                && location.spd == this.loc.spd
-                && location.alt == this.loc.alt
+        val locationValid = this.loc.isWithinRange(other = location, thresholdMeters = mode.minUpdateDistanceMeters)
+        val accuracyValid = location.acc in this.loc.acc.minus(mode.accuracyThreshold)..this.loc.acc.plus(mode.accuracyThreshold)
+
+        val speedValid = if (location.spd != null && this.loc.spd != null) {
+            location.spd in this.loc.spd.minus(mode.speedThresholdMs)..this.loc.spd.plus(mode.speedThresholdMs)
+        } else if (location.spd == null && this.loc.spd == null) {
+            // if both null, then nothing changed
+            true
+        } else {
+            // here only one of them is null, something changed
+            false
+        }
+
+        val elevationValid = if (location.alt != null && this.loc.alt != null) {
+            location.alt in this.loc.alt.minus(mode.elevationThreshold)..this.loc.alt.plus(mode.elevationThreshold)
+        } else if (location.alt == null && this.loc.alt == null) {
+            // if both null, then nothing changed
+            true
+        } else {
+            // here only one of them is null, something changed
+            false
+        }
+
+        return locationValid
+                && accuracyValid
+                && speedValid
+                && elevationValid
     }
 
     // flat-earth approximation - use for only short distance check
     private fun LocationHistoryPointLocationModel.isWithinRange(
         other: LocationHistoryPointLocationModel,
-        thresholdMeters: Double = 10.0
+        thresholdMeters: Int = 10
     ): Boolean {
         val avgLat = (this.lat + other.lat) / 2
         val metersPerDegreeLat = 111320.0

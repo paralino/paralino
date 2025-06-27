@@ -10,6 +10,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.user.SymmetricCryptoKeyData
+import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
@@ -106,15 +107,20 @@ class SavePendingLocationUseCase(
 
         val updatedEntry =
             if (lastEntryPoint?.isStatusUnchanged(entry.locationHistory.status) == true) {
-                if (entry.locationHistory.loc != null && lastEntryPoint.isLocationUnchanged(entry.locationHistory.loc) == true) {
-                    lastEntryPoint.copy(
-                        loc = lastEntryPoint.loc?.copy(
-                            tB = entry.locationHistory.loc.tA
-                        ),
-                        status = lastEntryPoint.status.copy(
-                            tB = entry.locationHistory.status.tA,
+                if (entry.locationHistory.loc != null) {
+                    val mode = LocationPerformanceSettingsType.History.fromKey(key = appPrefs.locationSettingsHistoryPerformanceType)
+                    if (lastEntryPoint.isLocationUnchanged(location = entry.locationHistory.loc, mode = mode) == true) {
+                        lastEntryPoint.copy(
+                            loc = lastEntryPoint.loc?.copy(
+                                tB = entry.locationHistory.loc.tA
+                            ),
+                            status = lastEntryPoint.status.copy(
+                                tB = entry.locationHistory.status.tA,
+                            )
                         )
-                    )
+                    } else {
+                        null
+                    }
                 } else {
                     null
                 }

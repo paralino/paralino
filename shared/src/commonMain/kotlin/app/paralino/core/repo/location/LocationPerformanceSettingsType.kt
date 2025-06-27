@@ -149,4 +149,50 @@ sealed interface LocationPerformanceSettingsType {
             }
         }
     }
+
+
+    sealed class History : LocationPerformanceSettingsType {
+        abstract val speedThresholdMs: Float
+        abstract val elevationThreshold: Int
+        abstract val accuracyThreshold: Int
+        override val updateInterval: Duration = 3.seconds
+        override val minUpdateInterval: Duration = 2.seconds
+        override val isPremiumFeature: Boolean = false
+
+        data object Level1 : History() {
+            override val minUpdateDistanceMeters: Int = 100
+            override val accuracyThreshold: Int = 100
+            override val elevationThreshold: Int = 50
+            override val speedThresholdMs: Float = 1f
+            override val key: String = "history_100"
+        }
+
+        data object Level2 : History() {
+            override val minUpdateDistanceMeters: Int = 30
+            override val accuracyThreshold: Int = 50
+            override val elevationThreshold: Int = 30
+            override val speedThresholdMs: Float = 0.5f
+            override val key: String = "history_200"
+        }
+
+        data object Level3 : History() {
+            override val minUpdateDistanceMeters: Int = 10
+            override val accuracyThreshold: Int = 5
+            override val elevationThreshold: Int = 5
+            override val speedThresholdMs: Float = 0.1f
+            override val key: String = "history_300"
+        }
+
+        companion object {
+            val default: History = Level2
+            fun fromKey(key: String?): History {
+                return when (key) {
+                    Level1.key -> Level1
+                    Level2.key -> Level2
+                    Level3.key -> Level3
+                    else -> default
+                }
+            }
+        }
+    }
 }

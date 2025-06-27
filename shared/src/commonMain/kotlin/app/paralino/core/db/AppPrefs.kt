@@ -96,6 +96,7 @@ class AppPrefs(
         const val keyNotificationGrouping = "prefs.device.notificationGrouping"
         const val keyNavigatioApp = "prefs.device.navigationApp"
         const val keyDeviceTheme = "prefs.device.theme"
+        const val keyLocationHistoryPerformance = "prefs.location.history.performance"
     }
 
     val isTokenValid: Boolean
@@ -311,6 +312,12 @@ class AppPrefs(
         get() = provider.userSettings.getStringOrNull(keyBalancedPerformance).takeIf { !it.isNullOrBlank() }
         set(value) {
             provider.userSettings.putString(keyBalancedPerformance, value ?: "")
+        }
+
+    var locationSettingsHistoryPerformanceType: String?
+        get() = provider.userSettings.getStringOrNull(keyLocationHistoryPerformance).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyLocationHistoryPerformance, value ?: "")
         }
 
     var didHaveWelcomeOnboarding: Boolean
