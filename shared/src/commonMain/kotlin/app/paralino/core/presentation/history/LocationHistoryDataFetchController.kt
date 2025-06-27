@@ -21,6 +21,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.stripNanoseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -32,6 +33,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class LocationHistoryDataFetchController(
     val dataController: LocationHistoryViewModelDataController,
@@ -52,10 +55,28 @@ class LocationHistoryDataFetchController(
         memberUserId: String
     ): Flow<Unit> {
         _uiState.update {
-            dataController.emptyState(
-                previousState = it,
+            val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            it.copy(
                 groupId = groupId,
-                memberUserId = memberUserId
+                memberUserId = memberUserId,
+                isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId,
+                isCurrentUser = memberUserId == appPrefs.userId,
+                historyDaysLimit = null,
+                isGroupOwner = false,
+                dateRangeDays = 1,
+                selectedDate = selectedDate,
+                locations = emptyList(),
+                devices = emptyList(),
+                isDeletingEntry = false,
+                deletionRangeStartIndex = null,
+                isRefreshingData = true,
+                isLoadingLocations = true,
+                stats = null,
+                selectedLocationIndex = null,
+                days = dataController.generateDates(
+                    dateRangeDays = 1,
+                    startDate = selectedDate
+                )
             )
         }
 

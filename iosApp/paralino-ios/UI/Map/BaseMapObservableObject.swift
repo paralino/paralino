@@ -14,6 +14,7 @@ import paralino_apple_core
 class BaseMapObservableObject : ObservableObject {
     
     @Published var markers: [MapAnnotatedItem] = []
+    @Published var polylinePoints: [CLLocationCoordinate2D] = []
     
     @Published var cameraPosition: MapCameraState = MapCameraState(animate: false, cameraRect: MapCameraPosition.automatic.rect)
     

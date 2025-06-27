@@ -42,11 +42,7 @@ class LocationHistoryViewModelDataController(
     val viewModel: LocationHistoryViewModel,
 ) {
     val _uiState = MutableStateFlow<LocationHistoryScreenState>(
-        emptyState(
-            previousState = null,
-            groupId = "",
-            memberUserId = ""
-        )
+        LocationHistoryScreenState.emptyState()
     )
 
     val _eventChannel = Channel<LocationHistoryScreenEvent?>()
@@ -56,46 +52,6 @@ class LocationHistoryViewModelDataController(
     val dataFetchController = LocationHistoryDataFetchController(
         dataController = this
     )
-
-    fun emptyState(
-        previousState: LocationHistoryScreenState?,
-        groupId: String,
-        memberUserId: String
-    ): LocationHistoryScreenState {
-        val dateRangeDays = previousState?.dateRangeDays ?: 1
-        val startDate = previousState?.selectedDate
-            ?: nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val days = previousState?.days ?: generateDates(
-            dateRangeDays = dateRangeDays,
-            startDate = startDate
-        )
-        return LocationHistoryScreenState(
-            groupId = groupId,
-            memberUserId = memberUserId,
-            groupName = null,
-            groupImage = null,
-            userName = null,
-            userImage = null,
-            isCurrentUser = memberUserId == appPrefs.userId,
-            isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId,
-            historyDaysLimit = null,
-            isGroupOwner = false,
-            dateRangeDays = dateRangeDays,
-            selectedDate = startDate,
-            isDeletingEntry = false,
-            deletionRangeStartIndex = null,
-            isRefreshingData = true,
-            isLoadingLocations = true,
-            locations = emptyList(),
-            devices = emptyList(),
-            stats = null,
-            mapFocusType = previousState?.mapFocusType ?: LocationHistoryMapFocusType.Stats,
-            selectedLocationIndex = null,
-            days = days,
-            isSatelliteMode = previousState?.isSatelliteMode ?: false,
-            alertDialog = previousState?.alertDialog
-        )
-    }
 
     fun loadHistory(
         groupId: String,

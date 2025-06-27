@@ -125,7 +125,7 @@ data class MapPinData constructor(
         lat = location.lat,
         lng = location.lng,
         accuracy = location.acc,
-        shouldShowApproximateCircle = location.acc > 50
+        shouldShowApproximateCircle = location.acc > 5
     )
 
     @Stable

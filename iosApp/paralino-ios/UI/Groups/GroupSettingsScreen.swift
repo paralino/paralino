@@ -30,6 +30,9 @@ struct GroupSettingsScreen: View {
                     },
                     openBatteryNotificationsSettings: {
                         path.append(.home(.batteryNotificationsSettings(groupId: appState.vm.groupId)))
+                    },
+                    openLocationHistorySettings: {
+                        path.append(.home(.locationHistorySettings(groupId: appState.vm.groupId)))
                     }
                 )
             }

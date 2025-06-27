@@ -1,4 +1,4 @@
-package app.paralino.android.ui.history
+package app.paralino.core.ui.history
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
@@ -70,7 +70,6 @@ fun LocationHistoryScreenElements(
             .fillMaxSize()
     ) {
 
-        val isPinFocused = uiState.mapFocusType.isLocationPoint
         val density = LocalDensity.current
 
         Box(

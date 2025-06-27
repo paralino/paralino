@@ -206,15 +206,17 @@ fun LocationHistoryMapContent(
                         label = "accuracyAnim"
                     ).value.toDouble()
 
-                    Circle(
-                        center = LatLng(latAnim, lngAnim),
-                        clickable = true,
-                        fillColor = AppColors.accentDark.copy(alpha = 0.5f),
-                        radius = accuracyAnim,
-                        strokeColor = Color.Blue,
-                        strokeWidth = 4f,
-                        zIndex = 10f
-                    )
+                    if (point.shouldShowApproximateCircle) {
+                        Circle(
+                            center = LatLng(latAnim, lngAnim),
+                            clickable = true,
+                            fillColor = AppColors.accentDark.copy(alpha = 0.5f),
+                            radius = accuracyAnim,
+                            strokeColor = Color.Blue,
+                            strokeWidth = 4f,
+                            zIndex = 10f
+                        )
+                    }
 
                     MapMarkerComposable(
                         state = point,

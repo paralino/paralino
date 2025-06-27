@@ -3,8 +3,11 @@ package app.paralino.core.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,6 +30,10 @@ import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
+import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
+import app.paralino.core.presentation.history.LocationHistoryScreenEvent
+import app.paralino.core.presentation.history.LocationHistoryUiEvent
+import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
@@ -49,6 +56,8 @@ import app.paralino.core.ui.groups.BatteryNotificationsScreenCore
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import app.paralino.core.ui.groups.GroupSettingsScreenCore
+import app.paralino.core.ui.history.LocationHistoryDeleteScreenCore
+import app.paralino.core.ui.history.LocationHistoryScreenElements
 import app.paralino.core.ui.invite.MemberInviteScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
@@ -155,6 +164,7 @@ object HomeScreens {
         onGroupDeleted: () -> Unit,
         openRawDataScreen: () -> Unit,
         openBatteryNotificationsSettings: () -> Unit,
+        openLocationHistorySettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupSettingsScreenCore(
@@ -163,7 +173,8 @@ object HomeScreens {
                 openEditGroup = openEditGroup,
                 onGroupDeleted = onGroupDeleted,
                 openRawDataScreen = openRawDataScreen,
-                openBatteryNotificationsSettings = openBatteryNotificationsSettings
+                openBatteryNotificationsSettings = openBatteryNotificationsSettings,
+                openLocationHistorySettings = openLocationHistorySettings
             )
         }
     }
@@ -249,6 +260,7 @@ object HomeScreens {
         onCreateGroup: () -> Unit,
         openFreePlanInfo: () -> Unit,
         openPaywall: () -> Unit,
+        openLocationHistory: (MapHomeScreenEvent.OpenLocationHistory) -> Unit,
         mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
         RootScreenIOS {
@@ -299,6 +311,7 @@ object HomeScreens {
                             MapHomeScreenEvent.OpenSettings -> onSettingsClick()
                             is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
                             is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)
+                            is MapHomeScreenEvent.OpenLocationHistory -> openLocationHistory(event)
                             null -> {}
                         }
                     }
@@ -348,6 +361,59 @@ object HomeScreens {
                         )
                     }
                 )
+            }
+        }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    fun LocationHistoryMapScreen(
+        vm: LocationHistoryViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        onCardHeightChange: (Float) -> Unit,
+        onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
+        openHistorySettings: () -> Unit,
+        onNavigateBack: () -> Unit,
+        mapUIView: () -> UIViewController,
+    ) = ComposeUIViewController() {
+        RootScreenIOS {
+            MessageDispatcherEffect(vm, it)
+            val uiState by vm.uiState.collectAsState()
+
+            BoxWithConstraints {
+                LaunchedEffect(key1 = Unit) {
+                    vm.events.collectLatest { event ->
+                        when (event) {
+                            LocationHistoryScreenEvent.NavigateBack -> onNavigateBack()
+                            LocationHistoryScreenEvent.OpenHistorySettings -> openHistorySettings()
+                            is LocationHistoryScreenEvent.OpenNavigation -> onDirectionsRequest(event.event)
+                            null -> {}
+                        }
+                    }
+                }
+
+                val dialog = uiState.alertDialog
+                dialog?.Show {
+                    vm.onEvent(LocationHistoryUiEvent.DialogAction(AlertDialogAction(dialog, it)))
+                }
+
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    UIKitViewController(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = mapUIView,
+                        properties = UIKitInteropProperties(
+                            interactionMode = UIKitInteropInteractionMode.NonCooperative,
+                            isNativeAccessibilityEnabled = true
+                        )
+                    )
+
+                    LocationHistoryScreenElements(
+                        modifier = Modifier,
+                        uiState = uiState,
+                        topPadding = paddingValues.top.dp,
+                        cardHeight = { onCardHeightChange(it.value) },
+                        onEvent = vm::onEvent
+                    )
+                }
             }
         }
     }
@@ -480,6 +546,20 @@ object HomeScreens {
                         )
                     }
                 }
+            )
+        }
+    }
+
+    fun LocationHistoryDeleteScreenVC(
+        vm: LocationHistoryDeleteViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        onNavigateBack: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            LocationHistoryDeleteScreenCore(
+                appState = it,
+                vm = vm,
+                onNavigateBack = onNavigateBack,
             )
         }
     }

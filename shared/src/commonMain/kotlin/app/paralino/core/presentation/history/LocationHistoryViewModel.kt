@@ -32,7 +32,7 @@ class LocationHistoryViewModel(
     private val geofenceManager: IGeofenceManager
 ) : CoreViewModel() {
 
-    private val dataController = LocationHistoryViewModelDataController(
+    val dataController = LocationHistoryViewModelDataController(
         getLocationHistory = getLocationHistory,
         refreshLocationHistory = refreshLocationHistory,
         deleteLocationHistory = deleteLocationHistory,
@@ -50,10 +50,6 @@ class LocationHistoryViewModel(
 
     private val uiFocusedStatus = MutableStateFlow(false)
 
-
-    init {
-
-    }
 
     fun onEvent(event: LocationHistoryUiEvent) {
         when (event) {
@@ -198,7 +194,7 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.OpenLocationSettings -> {
-                dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenLocationSettings)
+                dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenHistorySettings)
             }
         }
     }

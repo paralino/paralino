@@ -41,6 +41,8 @@ import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
+import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
+import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
@@ -285,6 +287,8 @@ object KoinIOS {
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
             factory { DefaultNavigationAppViewModel(get()) }
+            factory { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId, get(), get(), get(), get()) }
         }
     }
 
@@ -360,5 +364,7 @@ object KoinIOS {
         val measurementSystemVM get() = get<MeasurementSystemViewModel>()
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
         val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
+        val locationHistoryVM get() = get<LocationHistoryViewModel>()
+        fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
     }
 }

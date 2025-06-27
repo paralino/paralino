@@ -1,4 +1,4 @@
-package app.paralino.android.ui.history
+package app.paralino.core.ui.history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState

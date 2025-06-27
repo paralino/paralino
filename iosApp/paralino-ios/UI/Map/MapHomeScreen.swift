@@ -65,9 +65,12 @@ struct MapHomeScreen: View {
                         openPaywall: {
                             path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
                         },
+                        openLocationHistory: { event in
+                            path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId)))
+                        },
                         mapUIView: { () -> UIViewController in
                             let controller = MapComponentVC()
-                            controller.additionalSafeAreaInsets = .init(top: 60, left: 0, bottom: 0, right: 0)
+                            controller.additionalSafeAreaInsets = .init(top: 65, left: 0, bottom: 0, right: 0)
                             controller.mapState = mapState
                             controller.onMapPan = {
                                 mapState.vm.onEvent(event: MapHomeScreenUiEventOnMapTouch())

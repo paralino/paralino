@@ -29,6 +29,12 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         return map
     }()
     
+    var showsTraffic: Bool = false {
+        didSet {
+            mapView.showsTraffic = showsTraffic
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupMapView()
@@ -59,6 +65,13 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
             .receive(on: RunLoop.main)
             .sink { [weak self] updatedMarkers in
                 self?.updateMarkers(updatedMarkers)
+            }
+            .store(in: &cancellables)
+        
+        mapState?.$polylinePoints
+            .receive(on: RunLoop.main)
+            .sink { [weak self] updatedPolyline in
+                self?.updatePolyline(updatedPolyline)
             }
             .store(in: &cancellables)
         
@@ -115,9 +128,23 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         mapState!.previousBottomSafeArea = bottomOffset
     }
     
+    private func updatePolyline(_ polylinePoints: [CLLocationCoordinate2D]) {
+        
+        let existingOverlays = mapView.overlays.filter { $0 is MKPolyline }
+        let polyline = MKPolyline(coordinates: polylinePoints, count: polylinePoints.count)
+        
+        mapView.removeOverlays(existingOverlays)
+        mapView.addOverlay(polyline)
+        
+        // Animate changes
+        UIView.animate(withDuration: 0.3) {
+            self.mapView.layoutIfNeeded()
+        }
+    }
+    
     private func updateMarkers(_ newMarkers: [MapAnnotatedItem]) {
         
-        let existingOverlays = mapView.overlays
+        let existingOverlays = mapView.overlays.filter { $0 is MKCircle }
         let existingAnnotations = mapView.annotations
         
         for marker in newMarkers {
@@ -127,9 +154,9 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
                     mapView.addAnnotation(marker)
                 } else {
                     // Animations are disabled for now
-//                    UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut){
+                    UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut){
                         currentMarker.data = marker.data
-//                    }
+                    }
                 }
             } else {
                 let annotation = marker
@@ -218,6 +245,18 @@ extension MapComponentVC: MKMapViewDelegate {
         if let circle = overlay as? MKCircle {
             let renderer = MKCircleRenderer(circle: circle)
             renderer.fillColor = UIColor.blue.withAlphaComponent(0.2)
+            return renderer
+        } else if let polyline = overlay as? MKPolyline {
+            let renderer = MKPolylineRenderer(polyline: polyline)
+            
+            let color = (mapView.mapType == .hybrid || traitCollection.userInterfaceStyle == .dark)
+            ? UIColor(withAlphaRGB: AppColors.Raw.redMain)
+            : UIColor(withAlphaRGB: AppColors.Raw.lightThemePrimary)
+            
+            renderer.strokeColor = color
+            renderer.lineWidth = 6.0
+            renderer.lineCap = .round
+            renderer.lineJoin = .round
             return renderer
         }
         return MKOverlayRenderer()

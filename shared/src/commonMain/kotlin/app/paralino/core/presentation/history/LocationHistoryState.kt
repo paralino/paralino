@@ -2,6 +2,7 @@ package app.paralino.core.presentation.history
 
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -17,9 +18,12 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 import kotlin.math.max
 import kotlin.math.min
 
@@ -85,7 +89,7 @@ data class LocationHistoryScreenState(
 
     val selectedMapPinData: MapPinData? = selectedPoint?.point?.loc?.let {
         MapPinData(
-            id = selectedPoint.point.properID,
+            id = memberUserId,
             groupId = groupId,
             location = it,
             name = userName,
@@ -121,6 +125,38 @@ data class LocationHistoryScreenState(
         )
     } else {
         emptyList()
+    }
+
+    companion object {
+        fun emptyState(): LocationHistoryScreenState {
+            val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            return LocationHistoryScreenState(
+                groupId = "",
+                memberUserId = "",
+                groupName = null,
+                groupImage = null,
+                userName = null,
+                userImage = null,
+                isCurrentUser = false,
+                isPersonalHistory = false,
+                historyDaysLimit = null,
+                isGroupOwner = false,
+                dateRangeDays = 1,
+                selectedDate = selectedDate,
+                isDeletingEntry = false,
+                deletionRangeStartIndex = null,
+                isRefreshingData = true,
+                isLoadingLocations = true,
+                locations = emptyList(),
+                devices = emptyList(),
+                stats = null,
+                mapFocusType = LocationHistoryMapFocusType.Stats,
+                selectedLocationIndex = null,
+                days = emptyList(),
+                isSatelliteMode = false,
+                alertDialog = null
+            )
+        }
     }
 }
 
@@ -280,8 +316,6 @@ sealed interface LocationHistoryMapFocusType {
     data object Stats : LocationHistoryMapFocusType
     data object Timeline : LocationHistoryMapFocusType
     data object LocationPoint : LocationHistoryMapFocusType
-
-    val isLocationPoint: Boolean get() = this is LocationPoint
 }
 
 data class LocationHistoryDayState(
@@ -329,5 +363,5 @@ sealed interface LocationHistoryScreenEvent {
     ) : LocationHistoryScreenEvent
 
     data object NavigateBack : LocationHistoryScreenEvent
-    data object OpenLocationSettings : LocationHistoryScreenEvent
+    data object OpenHistorySettings : LocationHistoryScreenEvent
 }

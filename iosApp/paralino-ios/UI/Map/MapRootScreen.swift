@@ -79,6 +79,9 @@ struct MapRootScreen: View {
                             case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
                                 PlaceCreateScreen(path: $mainAppState.userReadyGraph, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
                             case .freePlanInfo: FreePlanInfoScreen(path: $mainAppState.userReadyGraph)
+                            case .locationHistorySettings(groupId: let groupId): LocationHistoryDeleteScreen(path: $mainAppState.userReadyGraph, appState: LocationHistoryDeleteScreen.createState(groupId: groupId))
+                            case .locationHistory(groupId: let groupId, memberUserId: let memberUserId):
+                                LocationHistoryMapScreen(path: $mainAppState.userReadyGraph, mapState: LocationHistoryMapState(groupId: groupId, memberUserId: memberUserId))
                             }
                         }
                     }.onAppear {

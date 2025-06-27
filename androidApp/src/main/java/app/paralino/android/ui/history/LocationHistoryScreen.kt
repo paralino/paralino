@@ -1,13 +1,18 @@
 package app.paralino.android.ui.history
 
-import androidx.activity.compose.BackHandler
+import android.content.res.Configuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,26 +23,29 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.core.presentation.history.LocationHistoryDayState
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryScreenState
+import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
+import app.paralino.core.presentation.history.LocationHistoryStats
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
-import app.paralino.core.ui.map.BottomSheetPosition
-import app.paralino.core.ui.map.isFullyExpanded
-import app.paralino.core.ui.map.rememberSwipeableSheetState
+import app.paralino.core.ui.history.LocationHistoryDateSelector
+import app.paralino.core.ui.history.LocationHistoryScreenElements
+import app.paralino.core.ui.history.LocationHistoryStatsTable
+import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.openNavigation
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -50,25 +58,7 @@ fun LocationHistoryScreen(
     MessageDispatcherEffect(vm, appState)
 
     val uiState by vm.uiState.collectAsState()
-    val density = LocalDensity.current
     val context = LocalContext.current
-
-    val sheetState = rememberSwipeableSheetState(
-        initialValue = BottomSheetPosition.default,
-        collapsedAnchorBottomPaddingPixels = WindowInsets.navigationBars.getBottom(density)
-            .toFloat(),
-        confirmValueChange = {
-            it != BottomSheetPosition.HIDDEN
-        }
-    )
-
-    val bottomOffset = density.run {
-        try {
-            sheetState.offset.toDp()
-        } catch (e: Exception) {
-            0.dp
-        }
-    }
 
     LifecycleStartEffect(Unit) {
         vm.onEvent(LocationHistoryUiEvent.UiLifecycleChange(active = true))
@@ -88,7 +78,7 @@ fun LocationHistoryScreen(
                     context.openNavigation(event.event)
                 }
 
-                LocationHistoryScreenEvent.OpenLocationSettings -> {
+                LocationHistoryScreenEvent.OpenHistorySettings -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.LocationHistoryDelete.route(groupId = uiState.groupId)
                     )
@@ -104,15 +94,6 @@ fun LocationHistoryScreen(
         ""
     }
 
-    BackHandler(
-        enabled = uiState.mapFocusType.isLocationPoint || sheetState.isFullyExpanded()
-    ) {
-        appState.uiScope.launch {
-            sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
-        }
-        vm.onEvent(LocationHistoryUiEvent.OnCloseFocusedItemClick)
-    }
-
     val dialog = uiState.alertDialog
     dialog?.Show {
         vm.onEvent(LocationHistoryUiEvent.DialogAction(AlertDialogAction(dialog, it)))
@@ -120,7 +101,6 @@ fun LocationHistoryScreen(
 
     MapContent(
         uiState = uiState,
-        bottomOffset = bottomOffset,
         onEvent = { vm.onEvent(it) }
     )
 }
@@ -128,7 +108,6 @@ fun LocationHistoryScreen(
 @Composable
 private fun MapContent(
     uiState: LocationHistoryScreenState,
-    bottomOffset: Dp,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     var cardHeight by remember { mutableStateOf(0.dp) }
@@ -155,5 +134,123 @@ private fun MapContent(
             cardHeight = { cardHeight = it },
             onEvent = onEvent
         )
+    }
+}
+
+
+
+@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun LocationHistoryDateSelectorPreview() {
+    val sampleDays = listOf(
+        LocationHistoryDayState(
+            isSelected = false,
+            date = LocalDate(2024, 1, 15),
+            formattedDay = "Mon",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.SOLO,
+            isWeekend = false
+        ),
+        LocationHistoryDayState(
+            isSelected = true,
+            date = LocalDate(2024, 1, 16),
+            formattedDay = "Tue",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.START,
+            isWeekend = false
+        ),
+        LocationHistoryDayState(
+            isSelected = true,
+            date = LocalDate(2024, 1, 17),
+            formattedDay = "Wed",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.CENTER,
+            isWeekend = false
+        ),
+        LocationHistoryDayState(
+            isSelected = true,
+            date = LocalDate(2024, 1, 18),
+            formattedDay = "Thu",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.END,
+            isWeekend = false
+        ),
+        LocationHistoryDayState(
+            isSelected = false,
+            date = LocalDate(2024, 1, 19),
+            formattedDay = "Fri",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.SOLO,
+            isWeekend = false
+        ),
+        LocationHistoryDayState(
+            isSelected = false,
+            date = LocalDate(2024, 1, 20),
+            formattedDay = "Sat",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.SOLO,
+            isWeekend = true
+        ),
+        LocationHistoryDayState(
+            isSelected = false,
+            date = LocalDate(2024, 1, 21),
+            formattedDay = "Sun",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.SOLO,
+            isWeekend = true
+        ),
+        LocationHistoryDayState(
+            isSelected = true,
+            date = LocalDate(2024, 1, 22),
+            formattedDay = "Mon",
+            formattedMonth = "Jan",
+            position = LocationHistorySelectedDayPosition.SOLO,
+            isWeekend = false
+        )
+    )
+
+    AppTheme {
+        Surface {
+            LocationHistoryDateSelector(
+                modifier = Modifier.padding(16.dp),
+                dayRange = 7,
+                elevation = 8.dp,
+                canNavigate = true,
+                days = sampleDays.reversed(),
+                onEvent = { },
+            )
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun LocationHistoryStatsTablePreview() {
+    AppTheme {
+        val sampleStats = LocationHistoryStats(
+            batteryRange = 35 to 85,
+            averageBattery = 65,
+            locationEntriesCount = 253,
+            networks = listOf("WIFI", "Cell"),
+            formattedDistance = "12.3 km",
+            formattedMaxSpeed = "45.1 km/h",
+            formattedElevationRange = "120 - 200 m",
+            formattedElevationGain = "340 m",
+            formattedTimeRange = "",
+            totalDistanceMeters = 0f,
+            maxSpeedMps = 2f,
+            elevationGainMeters = 12f,
+            elevationRangeMeters = 12f to 12f
+        )
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colors.background)
+                .padding(12.dp)
+        ) {
+            LocationHistoryStatsTable(stats = sampleStats)
+        }
     }
 }

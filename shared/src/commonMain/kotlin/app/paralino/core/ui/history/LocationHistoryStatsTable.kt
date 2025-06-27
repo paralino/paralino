@@ -1,9 +1,7 @@
-package app.paralino.android.ui.history
+package app.paralino.core.ui.history
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -19,11 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.history.LocationHistoryStats
 import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.theme.AppTheme
 import org.jetbrains.compose.resources.DrawableResource
 
 private data class StatInfo(
@@ -115,35 +111,5 @@ private fun StatItem(
             style = MaterialTheme.typography.caption,
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun LocationHistoryStatsTablePreview() {
-    AppTheme {
-        val sampleStats = LocationHistoryStats(
-            batteryRange = 35 to 85,
-            averageBattery = 65,
-            locationEntriesCount = 253,
-            networks = listOf("WIFI", "Cell"),
-            formattedDistance = "12.3 km",
-            formattedMaxSpeed = "45.1 km/h",
-            formattedElevationRange = "120 - 200 m",
-            formattedElevationGain = "340 m",
-            formattedTimeRange = "",
-            totalDistanceMeters = 0f,
-            maxSpeedMps = 2f,
-            elevationGainMeters = 12f,
-            elevationRangeMeters = 12f to 12f
-        )
-        Box(
-            modifier = Modifier
-                .background(MaterialTheme.colors.background)
-                .padding(12.dp)
-        ) {
-            LocationHistoryStatsTable(stats = sampleStats)
-        }
     }
 }
