@@ -235,6 +235,6 @@ object KoinSetup {
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { LocationHistoryDeleteViewModel(get(), get(), get(), get()) }
+        viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId, get(), get(), get(), get()) }
     }
 }

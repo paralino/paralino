@@ -48,7 +48,7 @@ interface LocationHistoryDao {
     suspend fun getAllHistoryKeysVersions(groupId: String, memberUserId: String): List<String>
 
     @Query("DELETE FROM groupHistoryKeysEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND historyKeyVersion NOT IN (:usedIds)")
-    fun deleteUnusedHistoryKeys(groupId: String, memberUserId: String, usedIds: List<String>)
+    suspend fun deleteUnusedHistoryKeys(groupId: String, memberUserId: String, usedIds: List<String>)
 
 
 
