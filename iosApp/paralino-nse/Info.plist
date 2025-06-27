@@ -9,19 +9,19 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
 	</dict>
-    <key>TEAM_ID</key>
-    <string>$(TEAM_ID)</string>
-    <key>forceLogToSystem</key>
-    <string>$(forceLogToSystem)</string>
-    <key>internalTesting</key>
-    <string>$(internalTesting)</string>
-    <key>paralinoPublicServerUrl</key>
-    <string>$(publicServerUrl)</string>
-    <key>paralinoServerKey</key>
-    <string>$(serverKey)</string>
-    <key>paralinoServerUrl</key>
-    <string>$(serverUrl)</string>
-    <key>revenueCatApiKey</key>
-    <string></string>
+	<key>TEAM_ID</key>
+	<string>$(TEAM_ID)</string>
+	<key>forceLogToSystem</key>
+	<string>$(forceLogToSystem)</string>
+	<key>internalTesting</key>
+	<string>$(internalTesting)</string>
+	<key>paralinoPublicServerUrl</key>
+	<string>$(publicServerUrl)</string>
+	<key>paralinoServerKey</key>
+	<string>$(serverKey)</string>
+	<key>paralinoServerUrl</key>
+	<string>$(serverUrl)</string>
+	<key>revenueCatApiKey</key>
+	<string></string>
 </dict>
 </plist>

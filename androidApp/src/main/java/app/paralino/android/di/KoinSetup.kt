@@ -171,6 +171,7 @@ object KoinSetup {
                 billingRCApiKey = BuildConfig.revenueCatApiKey,
                 iOSTeamId = "",
                 iOSAppGroup = "",
+                appPackageName = BuildConfig.APPLICATION_ID,
                 appHost = AppHost.MAIN_APP,
                 isDevMode = BuildConfig.internalTesting,
                 hasPreviewFeatures = BuildConfig.internalTesting,
