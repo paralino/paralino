@@ -60,8 +60,25 @@ data class LocationHistoryPointModel(
         if (location == null && this.loc == null) return true
         if (location == null || this.loc == null) return false
 
-        val locationValid = this.loc.isWithinRange(other = location, thresholdMeters = mode.minUpdateDistanceMeters)
-        val accuracyValid = location.acc in this.loc.acc.minus(mode.accuracyThreshold)..this.loc.acc.plus(mode.accuracyThreshold)
+        // Adapt distance threshold based on accuracy - worse accuracy = larger threshold
+        val adaptiveDistanceThreshold = when {
+            location.acc > 100f -> mode.minUpdateDistanceMeters * 3
+            location.acc > 50f -> mode.minUpdateDistanceMeters * 2
+            location.acc > 20f -> (mode.minUpdateDistanceMeters * 1.5f).toInt()
+            else -> mode.minUpdateDistanceMeters  // Good accuracy
+        }
+
+        val locationValid = this.loc.isWithinRange(other = location, thresholdMeters = adaptiveDistanceThreshold)
+        
+        // Adapt accuracy threshold based on absolute accuracy - worse accuracy = larger threshold
+        val adaptiveAccuracyThreshold = when {
+            location.acc > 100f || this.loc.acc > 100f -> mode.accuracyThreshold * 3
+            location.acc > 50f || this.loc.acc > 50f -> mode.accuracyThreshold * 2
+            location.acc > 20f || this.loc.acc > 20f -> (mode.accuracyThreshold * 1.5f).toInt()
+            else -> mode.accuracyThreshold  // Good accuracy
+        }
+        
+        val accuracyValid = location.acc in this.loc.acc.minus(adaptiveAccuracyThreshold)..this.loc.acc.plus(adaptiveAccuracyThreshold)
 
         val speedValid = if (location.spd != null && this.loc.spd != null) {
             location.spd in this.loc.spd.minus(mode.speedThresholdMs)..this.loc.spd.plus(mode.speedThresholdMs)

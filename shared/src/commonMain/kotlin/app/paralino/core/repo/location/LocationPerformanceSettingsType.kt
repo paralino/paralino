@@ -160,17 +160,17 @@ sealed interface LocationPerformanceSettingsType {
         override val isPremiumFeature: Boolean = false
 
         data object Level1 : History() {
-            override val minUpdateDistanceMeters: Int = 100
-            override val accuracyThreshold: Int = 100
-            override val elevationThreshold: Int = 50
+            override val minUpdateDistanceMeters: Int = 80
+            override val accuracyThreshold: Int = 60
+            override val elevationThreshold: Int = 30
             override val speedThresholdMs: Float = 1f
             override val key: String = "history_100"
         }
 
         data object Level2 : History() {
-            override val minUpdateDistanceMeters: Int = 30
-            override val accuracyThreshold: Int = 50
-            override val elevationThreshold: Int = 30
+            override val minUpdateDistanceMeters: Int = 20
+            override val accuracyThreshold: Int = 20
+            override val elevationThreshold: Int = 20
             override val speedThresholdMs: Float = 0.5f
             override val key: String = "history_200"
         }
@@ -178,7 +178,7 @@ sealed interface LocationPerformanceSettingsType {
         data object Level3 : History() {
             override val minUpdateDistanceMeters: Int = 10
             override val accuracyThreshold: Int = 5
-            override val elevationThreshold: Int = 5
+            override val elevationThreshold: Int = 10
             override val speedThresholdMs: Float = 0.1f
             override val key: String = "history_300"
         }
