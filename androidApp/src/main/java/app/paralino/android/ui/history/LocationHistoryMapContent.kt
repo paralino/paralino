@@ -25,7 +25,8 @@ import app.paralino.android.ui.map.MapMarkerComposable
 import app.paralino.android.ui.map.defaultMapProperties
 import app.paralino.android.ui.map.defaultMapUiSettings
 import app.paralino.android.ui.map.refocus
-import app.paralino.core.presentation.history.LocationHistoryMapFocusType
+import app.paralino.core.presentation.history.LocationHistoryDataViewType
+import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
@@ -65,32 +66,46 @@ fun LocationHistoryMapContent(
         shouldAnimateMapFocus = true
     }
 
-    LaunchedEffect(stateData.selectedLocations) {
-        snapshotFlow { stateData.mapFocusType }
-            .distinctUntilChanged()
-            .collectLatest {
-                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
-                    delay(20)
-                }
-                cameraPositionState.refocus(
-                    scope = scope,
-                    markers = stateData.selectedLocations.mapNotNull {
-                        it.point.loc?.let { location ->
-                            MapPinData(
-                                id = it.point.properID,
-                                groupId = stateData.groupId,
-                                location = location,
-                                name = null,
-                                image = null,
-                                timeInfo = null
-                            )
-                        }
-                    },
-                    ignoreAccuracy = it != LocationHistoryMapFocusType.LocationPoint,
-                    durationMs = if (canAnimateMapFocus) 1000 else 0
-                )
-            }
-    }
+//    LaunchedEffect(stateData.selectedLocations) {
+//        snapshotFlow { stateData.mapFocusType }
+//            .distinctUntilChanged()
+//            .collectLatest {
+//                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
+//                    delay(20)
+//                }
+//                cameraPositionState.refocus(
+//                    scope = scope,
+//                    markers = stateData.selectedLocations.mapNotNull {
+//                        when (it) {
+//                            is LocationHistoryPointState.Cluster -> {
+//                                MapPinData(
+//                                    id = "",
+//                                    groupId = stateData.groupId,
+//                                    cluster = it,
+//                                    name = null,
+//                                    image = null,
+//                                    timeInfo = null
+//                                )
+//                            }
+//                            is LocationHistoryPointState.Point -> {
+//                                it.point.loc?.let { location ->
+//                                    MapPinData(
+//                                        id = it.point.properID,
+//                                        groupId = stateData.groupId,
+//                                        location = location,
+//                                        name = null,
+//                                        image = null,
+//                                        timeInfo = null
+//                                    )
+//                                }
+//                            }
+//                        }
+//                    },
+//                    ignoreAccuracy = it != LocationHistoryMapFocusType.LocationPoint,
+//                    durationMs = if (canAnimateMapFocus) 1000 else 0
+//                )
+//            }
+//    }
 
     LaunchedEffect(uiState.mapFocusType) {
         snapshotFlow { stateData.mapFocusType }
@@ -102,18 +117,32 @@ fun LocationHistoryMapContent(
                 cameraPositionState.refocus(
                     scope = scope,
                     markers = stateData.selectedLocations.mapNotNull {
-                        it.point.loc?.let { location ->
-                            MapPinData(
-                                id = it.point.properID,
-                                groupId = stateData.groupId,
-                                location = location,
-                                name = null,
-                                image = null,
-                                timeInfo = null
-                            )
+                        when (it) {
+                            is LocationHistoryPointState.Cluster -> {
+                                MapPinData(
+                                    id = "",
+                                    groupId = stateData.groupId,
+                                    cluster = it,
+                                    name = null,
+                                    image = null,
+                                    timeInfo = null
+                                )
+                            }
+                            is LocationHistoryPointState.Point -> {
+                                it.point.loc?.let { location ->
+                                    MapPinData(
+                                        id = it.point.properID,
+                                        groupId = stateData.groupId,
+                                        location = location,
+                                        name = null,
+                                        image = null,
+                                        timeInfo = null
+                                    )
+                                }
+                            }
                         }
                     },
-                    ignoreAccuracy = it != LocationHistoryMapFocusType.LocationPoint,
+                    ignoreAccuracy = it != LocationHistoryDataViewType.LocationPoint,
                     durationMs = if (canAnimateMapFocus) 500 else 0
                 )
             }
@@ -152,8 +181,15 @@ fun LocationHistoryMapContent(
 
     val points = remember(uiState.selectedLocations) {
         uiState.selectedLocations.mapNotNull {
-            it.point.loc?.let {
-                LatLng(it.lat, it.lng)
+            when (it) {
+                is LocationHistoryPointState.Cluster -> {
+                    LatLng(it.lat, it.lng)
+                }
+                is LocationHistoryPointState.Point -> {
+                    it.point.loc?.let {
+                        LatLng(it.lat, it.lng)
+                    }
+                }
             }
         }
     }
@@ -187,7 +223,7 @@ fun LocationHistoryMapContent(
 //        }
 
         when (uiState.mapFocusType) {
-            LocationHistoryMapFocusType.LocationPoint -> {
+            LocationHistoryDataViewType.LocationPoint -> {
                 uiState.selectedMapPinData?.let { point ->
 
                     val latAnim = animateFloatAsState(
@@ -229,8 +265,7 @@ fun LocationHistoryMapContent(
                 }
             }
 
-            LocationHistoryMapFocusType.Stats -> {}
-            LocationHistoryMapFocusType.Timeline -> {}
+            LocationHistoryDataViewType.Stats -> {}
         }
 
         Polyline(

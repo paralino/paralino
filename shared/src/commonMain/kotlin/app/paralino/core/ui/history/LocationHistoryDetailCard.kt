@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.MemberActionType
-import app.paralino.core.presentation.history.LocationHistoryMapFocusType
+import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -185,7 +185,7 @@ fun LocationHistoryDetailCard(
                             )
 
                             when (uiState.mapFocusType) {
-                                LocationHistoryMapFocusType.LocationPoint -> {
+                                LocationHistoryDataViewType.LocationPoint -> {
                                     uiState.selectedPoint?.let { point ->
                                         LocationTime(time = point.locationTime)
 
@@ -193,17 +193,17 @@ fun LocationHistoryDetailCard(
                                             SpeedAndElevationData(point = point)
                                         }
 
-                                        AnimatedVisibility(visible = point.point.loc != null && point.point.loc!!.acc > 300) {
+                                        AnimatedVisibility(
+                                            visible = point is LocationHistoryPointState.Point && point.point.loc != null && point.point.loc!!.acc > 300
+                                        ) {
                                             GroupStatusTag(status = GroupStatusTagType.INACTIVE_NOT_ACCURATE)
                                         }
                                     }
                                 }
 
-                                LocationHistoryMapFocusType.Stats -> {
+                                LocationHistoryDataViewType.Stats -> {
                                     LocationTime(time = uiState.stats?.formattedTimeRange)
                                 }
-
-                                LocationHistoryMapFocusType.Timeline -> {}
                             }
                         }
                     }
@@ -228,7 +228,7 @@ fun LocationHistoryDetailCard(
                     }
                 }
 
-                AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint) {
+                AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint) {
                     Column {
                         AnimatedVisibility(uiState.selectedPoint?.statusTime != null) {
                             FlowRow(
@@ -242,7 +242,7 @@ fun LocationHistoryDetailCard(
                                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                                 )
                                 Text(
-                                    text = uiState.selectedPoint?.statusTime ?: "",
+                                    text = uiState.selectedPoint?.statusTime?.let { " $it" } ?: "",
                                     style = MaterialTheme.typography.caption,
                                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                                 )
@@ -257,8 +257,17 @@ fun LocationHistoryDetailCard(
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            uiState.selectedPoint?.let {
-                                BatteryAndNetworkData(point = it)
+                            when (uiState.selectedPoint) {
+                                is LocationHistoryPointState.Cluster -> {
+                                    Text(
+                                        text = "Entries: **${uiState.selectedPoint.points.size}**".annotatedBoldCompose(),
+                                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                                    )
+                                }
+                                is LocationHistoryPointState.Point -> {
+                                    BatteryAndNetworkData(point = uiState.selectedPoint)
+                                }
+                                null -> {}
                             }
 
                             Spacer(modifier = Modifier.weight(1f))
@@ -297,7 +306,7 @@ fun LocationHistoryDetailCard(
                 }
             }
 
-            AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.Stats) {
+            AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryDataViewType.Stats) {
                 uiState.stats?.let {
                     LocationHistoryStatsTable(
                         modifier = Modifier
@@ -308,7 +317,7 @@ fun LocationHistoryDetailCard(
                 }
             }
 
-            AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint) {
+            AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -498,7 +507,7 @@ private fun RowScope.SpeedAndElevationData(
 
 @Composable
 private fun RowScope.BatteryAndNetworkData(
-    point: LocationHistoryPointState
+    point: LocationHistoryPointState.Point
 ) {
     if (point.point.status.bat != null) {
         Icon(

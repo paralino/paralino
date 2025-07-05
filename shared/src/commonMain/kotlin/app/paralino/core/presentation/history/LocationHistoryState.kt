@@ -2,7 +2,6 @@ package app.paralino.core.presentation.history
 
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -10,14 +9,11 @@ import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
-import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -46,9 +42,10 @@ data class LocationHistoryScreenState(
     val isLoadingLocations: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
+    val viewMode: LocationHistoryPathViewMode,
     val stats: LocationHistoryStats?,
-    val mapFocusType: LocationHistoryMapFocusType,
-    val selectedLocationIndex: Int?,
+    val mapFocusType: LocationHistoryDataViewType,
+    val selectedLocationId: String?,
     val days: List<LocationHistoryDayState>,
     val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
@@ -60,7 +57,22 @@ data class LocationHistoryScreenState(
     val displayedDays = days.reversed()
 
     val deviceType: DeviceType = DeviceType.current
-    val selectedLocations = locations.filter { entry ->
+    private val displayLocations = when (viewMode) {
+        LocationHistoryPathViewMode.OVERVIEW -> {
+            locations
+        }
+
+        LocationHistoryPathViewMode.DETAILED -> {
+            locations.flatMap {
+                when (it) {
+                    is LocationHistoryPointState.Cluster -> it.points
+                    is LocationHistoryPointState.Point -> listOf(it)
+                }
+            }
+        }
+    }
+
+    val selectedLocations = displayLocations.filter { entry ->
         devices.any { device ->
             when (device) {
                 is UserActiveLocationDeviceState.Known -> {
@@ -72,14 +84,19 @@ data class LocationHistoryScreenState(
                 }
             }
         }
-    }.reversed()
+    }
 
-    val locationIndex: Int = selectedLocationIndex?.takeIf {
-        it >= 0 && it < selectedLocations.size
+    val locationIndex: Int = selectedLocationId?.let { id ->
+        selectedLocations.indexOfFirst {
+            when (it) {
+                is LocationHistoryPointState.Cluster -> it.points.any { it.point.properID == id }
+                is LocationHistoryPointState.Point -> it.point.properID == id
+            }
+        }.takeIf { it >= 0 }
     } ?: selectedLocations.lastIndex
 
     val selectedPoint: LocationHistoryPointState? =
-        if (mapFocusType is LocationHistoryMapFocusType.LocationPoint) {
+        if (mapFocusType is LocationHistoryDataViewType.LocationPoint) {
             selectedLocations.withIndex().firstOrNull {
                 it.index == locationIndex
             }?.value ?: selectedLocations.firstOrNull()
@@ -87,19 +104,42 @@ data class LocationHistoryScreenState(
             null
         }
 
-    val selectedMapPinData: MapPinData? = selectedPoint?.point?.loc?.let {
-        MapPinData(
-            id = memberUserId,
-            groupId = groupId,
-            location = it,
-            name = userName,
-            image = userImage,
-            timeInfo = null
-        )
+    val selectedMapPinData: MapPinData? = selectedPoint?.let {
+        when (it) {
+            is LocationHistoryPointState.Cluster -> {
+                MapPinData(
+                    id = memberUserId,
+                    groupId = groupId,
+                    cluster = it,
+                    name = userName,
+                    image = userImage,
+                    timeInfo = null
+                )
+            }
+            is LocationHistoryPointState.Point -> {
+                it.point.loc?.let {
+                    MapPinData(
+                        id = memberUserId,
+                        groupId = groupId,
+                        location = it,
+                        name = userName,
+                        image = userImage,
+                        timeInfo = null
+                    )
+                }
+            }
+        }
     }
 
     val deleteAction =
-        if (isCurrentUser && selectedPoint != null && (devices.firstOrNull { it.locationId == selectedPoint.locationId }?.isCurrent == true || !selectedPoint.isCachedLocation)) {
+        if (
+            isCurrentUser &&
+            selectedPoint != null &&
+            (
+                    devices.firstOrNull { it.locationId == selectedPoint.locationId }?.isCurrent == true ||
+                            (selectedPoint is LocationHistoryPointState.Point && !selectedPoint.isCachedLocation))
+            )
+        {
             MemberActionItemState(
                 type = MemberActionType.DELETE_LOCATION,
                 isLoading = isDeletingEntry
@@ -116,13 +156,18 @@ data class LocationHistoryScreenState(
         )
     }
 
-    val locationsToDelete = if (deletionRangeStartIndex != null && selectedLocationIndex != null) {
+    val locationsToDelete = if (deletionRangeStartIndex != null && selectedLocationId != null) {
         val rangeStart = min(deletionRangeStartIndex, locationIndex)
         val rangeEnd = max(deletionRangeStartIndex, locationIndex)
         selectedLocations.subList(
             fromIndex = rangeStart,
             toIndex = rangeEnd + 1
-        )
+        ).flatMap {
+            when (it) {
+                is LocationHistoryPointState.Cluster -> it.points
+                is LocationHistoryPointState.Point -> listOf(it)
+            }
+        }
     } else {
         emptyList()
     }
@@ -148,124 +193,14 @@ data class LocationHistoryScreenState(
                 isRefreshingData = true,
                 isLoadingLocations = true,
                 locations = emptyList(),
+                viewMode = LocationHistoryPathViewMode.OVERVIEW,
                 devices = emptyList(),
                 stats = null,
-                mapFocusType = LocationHistoryMapFocusType.Stats,
-                selectedLocationIndex = null,
+                mapFocusType = LocationHistoryDataViewType.Stats,
+                selectedLocationId = null,
                 days = emptyList(),
                 isSatelliteMode = false,
                 alertDialog = null
-            )
-        }
-    }
-}
-
-data class LocationHistoryStats(
-    val formattedTimeRange: String?,
-    val totalDistanceMeters: Float,
-    val batteryRange: Pair<Int, Int>,
-    val averageBattery: Int,
-    val maxSpeedMps: Float,
-    val elevationRangeMeters: Pair<Float, Float>,
-    val elevationGainMeters: Float,
-    val locationEntriesCount: Int,
-    val networks: List<String>,
-
-    val formattedDistance: String,
-    val formattedMaxSpeed: String,
-    val formattedElevationRange: String,
-    val formattedElevationGain: String
-) {
-    companion object {
-        fun calculateStats(
-            state: LocationHistoryScreenState,
-            valueFormatter: IValueFormatter,
-            geofenceManager: IGeofenceManager
-        ): LocationHistoryStats? {
-            val locations = state.selectedLocations
-            if (state.locations.isEmpty()) {
-                return null
-            }
-
-            // Get location points with valid coordinates required for some data
-            val locationPoints = locations.mapNotNull { it.point.loc }.sortedBy { it.startTime }
-
-            val formattedTimeRange = valueFormatter.formatTimeRangeForLocationHistory(
-                startTimeUTC = locations.first().point.status.startTime.isoToLocalDateTime(),
-                endTimeUTC = locations.last().point.status.endTime.isoToLocalDateTime(),
-                rangeStart = state.startDate,
-                rangeEnd = state.endDate
-            )
-
-            var totalDistanceMeters = 0f
-            for (i in 1 until locationPoints.size) {
-                val prev = locationPoints[i - 1]
-                val curr = locationPoints[i]
-                totalDistanceMeters += geofenceManager.distanceBetweenPoints(
-                    lat1 = prev.lat,
-                    lng1 = prev.lng,
-                    lat2 = curr.lat,
-                    lng2 = curr.lng
-                )
-            }
-
-            val batteryLevels = locations.mapNotNull { it.point.status.bat }
-            val batteryRange = if (batteryLevels.isNotEmpty()) {
-                Pair(batteryLevels.minOrNull() ?: 0, batteryLevels.maxOrNull() ?: 0)
-            } else {
-                Pair(0, 0)
-            }
-            val averageBattery = if (batteryLevels.isNotEmpty()) {
-                batteryLevels.average().toInt()
-            } else {
-                0
-            }
-
-            val maxSpeedMps = locationPoints.mapNotNull { it.spd }.maxOrNull() ?: 0f
-
-            val elevations = locationPoints.mapNotNull { it.alt }
-            val elevationRangeMeters = if (elevations.isNotEmpty()) {
-                Pair(elevations.minOrNull() ?: 0f, elevations.maxOrNull() ?: 0f)
-            } else {
-                Pair(0f, 0f)
-            }
-
-            val elevationGainMeters = if (elevations.size >= 2) {
-                elevations.last() - elevations.first()
-            } else {
-                0f
-            }
-
-            val networks =
-                locations
-                    .mapNotNull { it.point.status.net?.let { NetworkType.fromKey(it)?.networkName } }
-                    .distinct()
-
-            // Format values
-            val formattedDistance = valueFormatter.getDistanceSmall(totalDistanceMeters.toDouble())
-            val formattedMaxSpeed = valueFormatter.getSpeedSmall(maxSpeedMps)
-            val formattedElevationRange =
-                "${valueFormatter.getDistanceSmall(elevationRangeMeters.first.toDouble())} - ${
-                    valueFormatter.getDistanceSmall(elevationRangeMeters.second.toDouble())
-                }"
-
-            val formattedElevationGain =
-                valueFormatter.getDistanceSmall(elevationGainMeters.toDouble())
-
-            return LocationHistoryStats(
-                formattedTimeRange = formattedTimeRange,
-                totalDistanceMeters = totalDistanceMeters,
-                batteryRange = batteryRange,
-                averageBattery = averageBattery,
-                maxSpeedMps = maxSpeedMps,
-                elevationRangeMeters = elevationRangeMeters,
-                elevationGainMeters = elevationGainMeters,
-                locationEntriesCount = locations.size,
-                networks = networks,
-                formattedDistance = formattedDistance,
-                formattedMaxSpeed = formattedMaxSpeed,
-                formattedElevationRange = formattedElevationRange,
-                formattedElevationGain = formattedElevationGain
             )
         }
     }
@@ -297,25 +232,51 @@ sealed class UserActiveLocationDeviceState {
     }
 }
 
-data class LocationHistoryPointState(
-    val locationId: String?,
-    val entryId: String,
-    val dateKey: String,
-    val isCachedLocation: Boolean,
-    val point: LocationHistoryPointModel,
-    val formattedSpeed: String?,
-    val formattedElevation: String?,
-    val locationTime: String?,
-    val statusTime: String?,
-    val deviceStatus: MemberDeviceStatusType?,
-    val networkType: NetworkType?,
-    val signalStrength: NetworkSignalStrength?
-)
+sealed interface LocationHistoryPointState {
+    val locationId: String?
+    val locationTime: String?
+    val statusTime: String?
+    val formattedSpeed: String?
+    val formattedElevation: String?
 
-sealed interface LocationHistoryMapFocusType {
-    data object Stats : LocationHistoryMapFocusType
-    data object Timeline : LocationHistoryMapFocusType
-    data object LocationPoint : LocationHistoryMapFocusType
+    data class Cluster(
+        override val locationId: String?,
+        override val locationTime: String?,
+        val points: List<LocationHistoryPointState.Point>,
+        val lat: Double,
+        val lng: Double,
+        val accuracy: Float,
+        val battery: String?
+    ): LocationHistoryPointState {
+        override val statusTime: String? = null
+        override val formattedElevation: String? = null
+        override val formattedSpeed: String? = null
+    }
+
+    data class Point(
+        override val locationId: String?,
+        override val formattedSpeed: String?,
+        override val formattedElevation: String?,
+        val dateKey: String,
+        val entryId: String,
+        val isCachedLocation: Boolean,
+        val point: LocationHistoryPointModel,
+        override val locationTime: String?,
+        override val statusTime: String? = null,
+        val deviceStatus: MemberDeviceStatusType?,
+        val networkType: NetworkType?,
+        val signalStrength: NetworkSignalStrength?
+    ): LocationHistoryPointState
+}
+
+sealed interface LocationHistoryDataViewType {
+    data object Stats : LocationHistoryDataViewType
+    data object LocationPoint : LocationHistoryDataViewType
+}
+
+enum class LocationHistoryPathViewMode {
+    OVERVIEW,
+    DETAILED
 }
 
 data class LocationHistoryDayState(
@@ -343,7 +304,7 @@ sealed interface LocationHistoryUiEvent {
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
-    data class ChangeMapFocusType(val type: LocationHistoryMapFocusType) : LocationHistoryUiEvent
+    data class ChangeMapFocusType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
     data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
     data object OnRefocusClick : LocationHistoryUiEvent
@@ -353,6 +314,7 @@ sealed interface LocationHistoryUiEvent {
     data object OnPreviousMonth : LocationHistoryUiEvent
     data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent
     data object ToggleDayRange : LocationHistoryUiEvent
+    data object ToggleViewMode : LocationHistoryUiEvent
     data object OnCloseScreen : LocationHistoryUiEvent
     data object OpenLocationSettings : LocationHistoryUiEvent
 }

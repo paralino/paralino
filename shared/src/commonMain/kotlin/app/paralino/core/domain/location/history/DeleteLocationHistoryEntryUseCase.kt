@@ -46,10 +46,17 @@ class DeleteLocationHistoryEntryUseCase(
             throw PermissionDeniedException(code = 400, "Not authorized for action")
         }
 
+        val mappedEntries = entries.flatMap {
+            when (it) {
+                is LocationHistoryPointState.Cluster -> it.points
+                is LocationHistoryPointState.Point -> listOf(it)
+            }
+        }
+
         if (groupId == UserGroup.groupPersonalDevicesId) {
-            deletePersonalHistoryEntry(entries)
+            deletePersonalHistoryEntry(mappedEntries)
         } else {
-            deleteGroupHistoryEntry(groupId = groupId, memberUserId = memberUserId, entries = entries)
+            deleteGroupHistoryEntry(groupId = groupId, memberUserId = memberUserId, entries = mappedEntries)
         }
 
         refreshLocationHistoryUseCase.refreshLocationHistory(
@@ -62,7 +69,7 @@ class DeleteLocationHistoryEntryUseCase(
     }
 
     private suspend fun deletePersonalHistoryEntry(
-        entries: List<LocationHistoryPointState>,
+        entries: List<LocationHistoryPointState.Point>,
     ) {
         val cachedEntries = entries.filter { it.isCachedLocation }
         val syncedEntries = entries.filter { !it.isCachedLocation }
@@ -134,7 +141,7 @@ class DeleteLocationHistoryEntryUseCase(
     private suspend fun deleteGroupHistoryEntry(
         groupId: String,
         memberUserId: String,
-        entries: List<LocationHistoryPointState>,
+        entries: List<LocationHistoryPointState.Point>,
     ) {
         // handle cached entries
         val toDeletePending = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = groupId)

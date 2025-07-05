@@ -89,8 +89,16 @@ class LocationHistoryViewModel(
             LocationHistoryUiEvent.OnRefocusClick -> TODO()
             is LocationHistoryUiEvent.SelectLocation -> {}
             is LocationHistoryUiEvent.SetHistoryProgress -> {
+                val newId = dataController._uiState.value.selectedLocations.getOrNull(
+                    index = event.progress
+                )?.let {
+                    when (it) {
+                        is LocationHistoryPointState.Cluster -> it.points.firstOrNull()?.point?.properID
+                        is LocationHistoryPointState.Point -> it.point.properID
+                    }
+                }
                 dataController._uiState.update {
-                    it.copy(selectedLocationIndex = event.progress)
+                    it.copy(selectedLocationId = newId)
                 }
             }
 
@@ -104,7 +112,19 @@ class LocationHistoryViewModel(
                 )
             }
 
+            LocationHistoryUiEvent.ToggleViewMode -> {
+                dataController._uiState.update {
+                    it.copy(
+                        viewMode = when (it.viewMode) {
+                            LocationHistoryPathViewMode.OVERVIEW -> LocationHistoryPathViewMode.DETAILED
+                            LocationHistoryPathViewMode.DETAILED -> LocationHistoryPathViewMode.OVERVIEW
+                        }
+                    )
+                }
+            }
+
             is LocationHistoryUiEvent.OnMapLongPress -> {}
+
             is LocationHistoryUiEvent.SelectDevice -> {
                 dataController.selectDevice(event.device)
             }

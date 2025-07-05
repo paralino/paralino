@@ -6,6 +6,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
@@ -126,6 +127,31 @@ data class MapPinData constructor(
         lng = location.lng,
         accuracy = location.acc,
         shouldShowApproximateCircle = location.acc > 5
+    )
+
+    constructor(
+        id: String,
+        groupId: String,
+        cluster: LocationHistoryPointState.Cluster,
+        name: String?,
+        image: ImageModel?,
+        timeInfo: String?
+    ) : this(
+        groupId = groupId,
+        markerId = id,
+        pinType = MapPinType.MEMBER,
+        markerStyle = MapMarkerStyle.CIRCLE,
+        focused = false,
+        active = true,
+        obsolete = false,
+        hidden = false,
+        title = name,
+        image = image,
+        timeInfo = timeInfo,
+        lat = cluster.lat,
+        lng = cluster.lng,
+        accuracy = cluster.accuracy,
+        shouldShowApproximateCircle = cluster.accuracy > 5
     )
 
     @Stable

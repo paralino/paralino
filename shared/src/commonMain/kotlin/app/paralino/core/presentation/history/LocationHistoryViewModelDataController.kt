@@ -4,7 +4,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
-import app.paralino.core.models.group.UserGroup
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -26,8 +25,6 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import kotlin.math.max
-import kotlin.math.min
 
 class LocationHistoryViewModelDataController(
     val getLocationHistory: GetLocationHistoryUseCase,
@@ -255,7 +252,7 @@ class LocationHistoryViewModelDataController(
                         is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == device.locationId)
                     }
                 },
-                selectedLocationIndex = null,
+                selectedLocationId = null,
                 deletionRangeStartIndex = null
             )
 
@@ -298,7 +295,7 @@ class LocationHistoryViewModelDataController(
     fun markForRangeDeletion() {
         _uiState.value.deleteAction?.let {
             if (_uiState.value.isCurrentUser) {
-                _uiState.value.selectedLocationIndex?.let {
+                _uiState.value.selectedLocationId?.let {
                     _uiState.update {
                         it.copy(deletionRangeStartIndex = _uiState.value.locationIndex)
                     }
@@ -337,4 +334,32 @@ class LocationHistoryViewModelDataController(
     fun clear() {
         historySubscriptionJob?.cancel()
     }
+    
+//    fun processLocationHistory() {
+//        val currentState = _uiState.value
+//        val locations = currentState.locations
+//
+//        if (locations.isEmpty()) return
+//
+//        // Use the clustering service from the data fetch controller
+//        val processedHistory = dataFetchController.clusteringService.processLocations(
+//            points = locations,
+//            mode = currentState.viewMode,
+//            rangeStart = _uiState.value.startDate,
+//            rangeEnd = _uiState.value.endDate
+//        )
+//
+//        val newState = currentState.copy(processedHistory = processedHistory)
+//
+//        // Recalculate stats with the new processed history
+//        val stats = LocationHistoryStats.calculateStats(
+//            state = newState,
+//            valueFormatter = valueFormatter,
+//            geofenceManager = geofenceManager
+//        )
+//
+//        _uiState.update {
+//            newState.copy(stats = stats)
+//        }
+//    }
 }

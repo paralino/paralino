@@ -45,9 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
-import app.paralino.core.presentation.history.LocationHistoryMapFocusType
+import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
+import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultToolbar
@@ -205,7 +206,7 @@ fun LocationHistoryScreenElements(
                     .align(Alignment.End)
                     .padding(horizontal = 8.dp)
                     .padding(bottom = 8.dp)
-                    .size(width = 90.dp, height = 36.dp)
+                    .size(width = 130.dp, height = 36.dp)
                     .shadow(8.dp, RoundedCornerShape(12.dp))
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colors.background)
@@ -217,13 +218,13 @@ fun LocationHistoryScreenElements(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
-                    selected = uiState.mapFocusType == LocationHistoryMapFocusType.Stats,
+                    selected = uiState.mapFocusType == LocationHistoryDataViewType.Stats,
                     name = "Stats",
                     icon = CoreAppIcons.Home.asPainterResource(),
                     onClick = {
                         onEvent(
                             LocationHistoryUiEvent.ChangeMapFocusType(
-                                LocationHistoryMapFocusType.Stats
+                                LocationHistoryDataViewType.Stats
                             )
                         )
                     }
@@ -233,15 +234,31 @@ fun LocationHistoryScreenElements(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
-                    selected = uiState.mapFocusType == LocationHistoryMapFocusType.LocationPoint,
+                    selected = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint,
                     name = "Point",
                     icon = CoreAppIcons.Timeline.asPainterResource(),
                     onClick = {
                         onEvent(
                             LocationHistoryUiEvent.ChangeMapFocusType(
-                                LocationHistoryMapFocusType.LocationPoint
+                                LocationHistoryDataViewType.LocationPoint
                             )
                         )
+                    }
+                )
+
+                MapFocusTypeTab(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
+                    name = if (uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW) "Overview" else "Detailed",
+                    icon = if (uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW) {
+                        CoreAppIcons.LocationOn.asPainterResource()
+                    } else {
+                        CoreAppIcons.LibraryBooks.asPainterResource()
+                    },
+                    onClick = {
+                        onEvent(LocationHistoryUiEvent.ToggleViewMode)
                     }
                 )
             }
@@ -318,15 +335,5 @@ private fun MapFocusTypeTab(
                 alpha = if (selected) 1f else 0.5f
             )
         )
-
-//        Text(
-//            modifier = Modifier.padding(start = 4.dp),
-//            text = name,
-//            color = contentColor,
-//            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-//            fontSize = 12.sp,
-//            lineHeight = 14.sp,
-//            textAlign = TextAlign.Center
-//        )
     }
 }
