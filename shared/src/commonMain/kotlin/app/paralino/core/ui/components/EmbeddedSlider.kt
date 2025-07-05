@@ -1,6 +1,7 @@
 package app.paralino.core.ui.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -19,12 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SwipeableDefaults.AnimationSpec
+import androidx.compose.material.SwipeableState
 import androidx.compose.material.Text
-import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +45,29 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+
+@Composable
+@ExperimentalMaterialApi
+private fun <T : Any> rememberSwipeableState(
+    key: Any,
+    initialValue: T,
+    animationSpec: AnimationSpec<Float> = AnimationSpec,
+    confirmStateChange: (newValue: T) -> Boolean = { true }
+): SwipeableState<T> {
+    return rememberSaveable(
+        key,
+        saver = SwipeableState.Saver(
+            animationSpec = animationSpec,
+            confirmStateChange = confirmStateChange
+        )
+    ) {
+        SwipeableState(
+            initialValue = initialValue,
+            animationSpec = animationSpec,
+            confirmStateChange = confirmStateChange
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -63,9 +89,9 @@ fun EmbeddedSlider(
             .clip(shape)
             .background(backgroundColor)
     ) {
-        val swipeableState = rememberSwipeableState(progress)
+        val swipeableState = rememberSwipeableState(key = steps, initialValue = progress)
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(steps) {
             snapshotFlow { swipeableState.targetValue }
                 .distinctUntilChanged()
                 .collectLatest { onProgressChange?.invoke(it) }
