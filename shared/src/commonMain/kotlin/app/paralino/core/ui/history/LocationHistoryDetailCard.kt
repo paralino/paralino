@@ -310,8 +310,8 @@ fun LocationHistoryDetailCard(
                 uiState.stats?.let {
                     LocationHistoryStatsTable(
                         modifier = Modifier
-                            .padding(bottom = 10.dp)
-                            .padding(horizontal = 10.dp),
+                            .padding(bottom = 6.dp)
+                            .padding(horizontal = 6.dp),
                         stats = it
                     )
                 }

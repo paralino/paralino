@@ -16,8 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.presentation.history.LocationHistoryStats
 import app.paralino.core.ui.components.CoreAppIcons
 import org.jetbrains.compose.resources.DrawableResource
@@ -72,9 +74,12 @@ fun LocationHistoryStatsTable(
 
     Column(modifier = modifier) {
         LazyVerticalGrid(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colors.surface),
             columns = GridCells.Fixed(2),
             userScrollEnabled = false,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             items(statsList) { stat ->
@@ -92,23 +97,26 @@ private fun StatItem(
 ) {
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colors.surface)
             .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = value,
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.subtitle1.copy(
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                lineHeight = 16.sp,
+                color = MaterialTheme.colors.onSurface,
+            ),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colors.onSurface
         )
         Text(
             text = label,
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.caption.copy(
+                textAlign = TextAlign.Center
+            ),
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
         )
     }
