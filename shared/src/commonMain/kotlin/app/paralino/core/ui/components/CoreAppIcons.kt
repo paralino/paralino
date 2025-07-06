@@ -14,6 +14,7 @@ import paralino.shared.generated.resources.ic_adjust
 import paralino.shared.generated.resources.ic_arrow_open_in_new
 import paralino.shared.generated.resources.ic_arrow_spinny
 import paralino.shared.generated.resources.ic_auto_fix_high
+import paralino.shared.generated.resources.ic_bar_chart_stats
 import paralino.shared.generated.resources.ic_battery_charging_full
 import paralino.shared.generated.resources.ic_battery_full
 import paralino.shared.generated.resources.ic_block
@@ -21,6 +22,7 @@ import paralino.shared.generated.resources.ic_check
 import paralino.shared.generated.resources.ic_check_circle
 import paralino.shared.generated.resources.ic_chevron_left
 import paralino.shared.generated.resources.ic_chevron_right
+import paralino.shared.generated.resources.ic_circle_cluster_dots
 import paralino.shared.generated.resources.ic_circle_only_outline
 import paralino.shared.generated.resources.ic_circle_with_outline
 import paralino.shared.generated.resources.ic_close
@@ -47,6 +49,7 @@ import paralino.shared.generated.resources.ic_launcher_foreground
 import paralino.shared.generated.resources.ic_library_books
 import paralino.shared.generated.resources.ic_location_off
 import paralino.shared.generated.resources.ic_location_on
+import paralino.shared.generated.resources.ic_location_on_filled
 import paralino.shared.generated.resources.ic_lock
 import paralino.shared.generated.resources.ic_lock_open
 import paralino.shared.generated.resources.ic_login
@@ -63,11 +66,11 @@ import paralino.shared.generated.resources.ic_person_add
 import paralino.shared.generated.resources.ic_person_remove
 import paralino.shared.generated.resources.ic_phone_android
 import paralino.shared.generated.resources.ic_phonelink_setup
+import paralino.shared.generated.resources.ic_polyline
 import paralino.shared.generated.resources.ic_privacy_tip
 import paralino.shared.generated.resources.ic_radio_button_unchecked
 import paralino.shared.generated.resources.ic_refresh
 import paralino.shared.generated.resources.ic_replay
-import paralino.shared.generated.resources.ic_route_alt
 import paralino.shared.generated.resources.ic_save
 import paralino.shared.generated.resources.ic_schedule
 import paralino.shared.generated.resources.ic_security
@@ -92,12 +95,14 @@ import paralino.shared.generated.resources.ic_wifi_2
 import paralino.shared.generated.resources.ic_wifi_3
 import paralino.shared.generated.resources.ic_wifi_off
 import paralino.shared.generated.resources.ic_ruler
+import paralino.shared.generated.resources.ic_target_circles
 import paralino.shared.generated.resources.ic_timeline
 import paralino.shared.generated.resources.ic_timeline_path
 import paralino.shared.generated.resources.image_map_mockup_dark
 import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
 import paralino.shared.generated.resources.paralino_start_background
+import paralino.shared.generated.resources.ic_route_dots
 
 object CoreAppIcons {
     val LauncherLogo get() = Res.drawable.ic_launcher_foreground
@@ -118,6 +123,7 @@ object CoreAppIcons {
     val ChevronRight get() = Res.drawable.ic_chevron_right
     val Warning get() = Res.drawable.ic_warning
     val LocationOn get() = Res.drawable.ic_location_on
+    val LocationOnFilled get() = Res.drawable.ic_location_on_filled
     val Group get() = Res.drawable.ic_group
     val Close get() = Res.drawable.ic_close
     val Add get() = Res.drawable.ic_add
@@ -180,8 +186,12 @@ object CoreAppIcons {
     val Elevation get() = Res.drawable.ic_elevation_2
     val Timeline get() = Res.drawable.ic_timeline
     val TimelinePath get() = Res.drawable.ic_timeline_path
-    val RouteAltBold get() = Res.drawable.ic_route_alt
     val Directions get() = Res.drawable.ic_directions
+    val BarChartStats get() = Res.drawable.ic_bar_chart_stats
+    val CircleCluster get() = Res.drawable.ic_circle_cluster_dots
+    val Polyline get() = Res.drawable.ic_polyline
+    val TargetCircles get() = Res.drawable.ic_target_circles
+    val RouteWithDots get() = Res.drawable.ic_route_dots
 
     val SignalWifi3 get() = Res.drawable.ic_wifi_3
     val SignalWifi2 get() = Res.drawable.ic_wifi_2

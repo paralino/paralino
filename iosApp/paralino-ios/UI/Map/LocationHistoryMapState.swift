@@ -29,23 +29,26 @@ class LocationHistoryMapState : BaseMapObservableObject {
                 self?.uiState = state
                 
                 self?.polylinePoints = state.selectedLocations
-                    .compactMap { $0.point.loc }
-                    .map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lng) }
+                    .compactMap {
+                        if let lat = $0.lat, let lng = $0.lng {
+                            CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lng.doubleValue)
+                        } else {
+                            nil
+                        }
+                    }
                 
-                if state.mapFocusType is LocationHistoryMapFocusTypeStats {
+                if state.mapFocusType is LocationHistoryDataViewTypeStats {
                     if let region = self?.getFocusRegion(state.selectedLocations) {
                         self?.focusCamera(rect: region, animate: true, canInteruptAnimation: true)
                     }
                     self?.markers = []
-                } else if state.mapFocusType is LocationHistoryMapFocusTypeLocationPoint {
+                } else if state.mapFocusType is LocationHistoryDataViewTypeLocationPoint {
                     if let pin = state.selectedMapPinData {
                         self?.markers = [MapAnnotatedItem(marker: pin)]
                         self?.focusToMarker(data: pin.asFocusedMarker(), forceZoom: false)
                     } else {
                         self?.markers = []
                     }
-                } else if state.mapFocusType is LocationHistoryMapFocusTypeTimeline {
-                    // nothing for now
                 }
                 
                 self?.isSatelliteMode = state.isSatelliteMode
@@ -61,11 +64,11 @@ class LocationHistoryMapState : BaseMapObservableObject {
         
         let rect = points
             .compactMap {
-                if let loc = $0.point.loc {
+                if let lat = $0.lat, let lng = $0.lng, let acc = $0.accuracy {
                     let region = MKCoordinateRegion.init(
-                        center: CLLocationCoordinate2D(latitude: loc.lat, longitude: loc.lng),
-                        latitudinalMeters: max(Double(loc.acc) * 2, 250),
-                        longitudinalMeters: max(Double(loc.acc) * 2, 250)
+                        center: CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lng.doubleValue),
+                        latitudinalMeters: max(acc.doubleValue * 2, 250),
+                        longitudinalMeters: max(acc.doubleValue * 2, 250)
                     )
                     return region.rect
                 } else {

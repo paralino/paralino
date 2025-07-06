@@ -5,6 +5,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
+import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -84,33 +87,80 @@ fun LocationHistoryDetailCard(
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colors.background)
         ) {
-            LazyRow(
+            Row(
                 modifier = Modifier
-                    .padding(top = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                contentPadding = PaddingValues(start = 10.dp, end = 10.dp)
+                    .padding(vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (uiState.devices.size > 1) {
-                    this.item(key = "title") {
-                        Text(
+                LazyRow(
+                    modifier = Modifier
+                        .weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
+                ) {
+                    if (uiState.devices.size > 1) {
+                        this.item(key = "title") {
+                            Text(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .padding(end = 8.dp),
+                                text = stringResource(MR.strings.group_member_devices_section_title),
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                    }
+                    this.items(uiState.devices, key = { it.locationId }) { device ->
+                        UserDeviceChip(
                             modifier = Modifier
                                 .animateItem()
-                                .padding(end = 8.dp),
-                            text = stringResource(MR.strings.group_member_devices_section_title),
-                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
+                                .padding(end = 6.dp),
+                            selected = device.isSelected,
+                            name = device.deviceName,
+                            showIcon = uiState.devices.size == 1,
+                            onClick = {
+                                onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
+                            }
                         )
                     }
                 }
-                this.items(uiState.devices, key = { it.locationId }) { device ->
-                    UserDeviceChip(
+
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .size(width = 90.dp, height = 36.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colors.surface)
+                        .padding(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    HistoryDataViewTypeTab(
                         modifier = Modifier
-                            .animateItem()
-                            .padding(end = 8.dp),
-                        selected = device.isSelected,
-                        name = device.deviceName,
-                        showIcon = uiState.devices.size == 1,
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        selected = uiState.mapFocusType == LocationHistoryDataViewType.Stats,
+                        icon = CoreAppIcons.BarChartStats.asPainterResource(),
                         onClick = {
-                            onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
+                            onEvent(
+                                LocationHistoryUiEvent.ChangeMapDataViewType(
+                                    LocationHistoryDataViewType.Stats
+                                )
+                            )
+                        }
+                    )
+
+                    HistoryDataViewTypeTab(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        selected = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint,
+                        icon = CoreAppIcons.RouteWithDots.asPainterResource(),
+                        onClick = {
+                            onEvent(
+                                LocationHistoryUiEvent.ChangeMapDataViewType(
+                                    LocationHistoryDataViewType.LocationPoint
+                                )
+                            )
                         }
                     )
                 }
@@ -118,7 +168,7 @@ fun LocationHistoryDetailCard(
 
             Column(
                 modifier = Modifier
-                    .padding(vertical = 6.dp)
+                    .padding(bottom = 6.dp)
                     .padding(horizontal = 6.dp)
                     .clip(
                         RoundedCornerShape(
@@ -260,7 +310,7 @@ fun LocationHistoryDetailCard(
                             when (uiState.selectedPoint) {
                                 is LocationHistoryPointState.Cluster -> {
                                     Text(
-                                        text = "Entries: **${uiState.selectedPoint.points.size}**".annotatedBoldCompose(),
+                                        text = stringResource(MR.strings.history_entry_clustered_count, "**${uiState.selectedPoint.points.size}**").annotatedBoldCompose(),
                                         style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                                     )
                                 }
@@ -297,8 +347,9 @@ fun LocationHistoryDetailCard(
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
-                            text = "☹\nNo history for this period",
+                                .padding(horizontal = 10.dp)
+                                .padding(bottom = 20.dp),
+                            text = stringResource(MR.strings.history_map_no_locations_placeholder),
                             textAlign = TextAlign.Center,
                             lineHeight = 18.sp
                         )
@@ -538,5 +589,41 @@ private fun RowScope.BatteryAndNetworkData(
             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
         )
         Spacer(modifier = Modifier.size(8.dp))
+    }
+}
+
+@Composable
+private fun HistoryDataViewTypeTab(
+    modifier: Modifier = Modifier,
+    selected: Boolean,
+    icon: Painter,
+    onClick: () -> Unit
+) {
+    val contentColor by animateColorAsState(
+        if (selected) MaterialTheme.colors.onPrimary
+        else MaterialTheme.colors.onBackground
+    )
+    val backgroundColor by animateColorAsState(
+        if (selected) MaterialTheme.colors.primary
+        else MaterialTheme.colors.surface
+    )
+
+    Row(
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .clip(RoundedCornerShape(8.dp))
+            .background(backgroundColor),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(18.dp),
+            painter = icon,
+            contentDescription = null,
+            tint = contentColor.copy(
+                alpha = if (selected) 1f else 0.5f
+            )
+        )
     }
 }

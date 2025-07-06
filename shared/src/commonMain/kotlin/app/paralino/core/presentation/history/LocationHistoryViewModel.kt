@@ -58,20 +58,20 @@ class LocationHistoryViewModel(
             }
             is LocationHistoryUiEvent.DialogAction -> {
                 when (event.action.dialog) {
-                    is MainAlertDialog.DeleteLocationHistoryEntry -> {
+                    is DeleteLocationHistoryEntry -> {
                         dataController._uiState.update { it.copy(alertDialog = null) }
-                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                        if (event.action.action == Buttons.buttonOk) {
                             dataController.deleteSelectedEntry()
-                        } else if (event.action.action == MainAlertDialog.DeleteLocationHistoryEntry.buttonMarkAsRangeId){
+                        } else if (event.action.action == DeleteLocationHistoryEntry.buttonMarkAsRangeId){
                             dataController.markForRangeDeletion()
                         }
                     }
 
-                    is MainAlertDialog.DeleteLocationHistoryRange -> {
+                    is DeleteLocationHistoryRange -> {
                         dataController._uiState.update { it.copy(alertDialog = null) }
-                        if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                        if (event.action.action == Buttons.buttonOk) {
                             dataController.deleteSelectedRange()
-                        } else if (event.action.action == MainAlertDialog.DeleteLocationHistoryRange.buttonClearSelection) {
+                        } else if (event.action.action == DeleteLocationHistoryRange.buttonClearSelection) {
                             dataController._uiState.update { it.copy(deletionRangeStartIndex = null) }
                         }
                     }
@@ -86,17 +86,19 @@ class LocationHistoryViewModel(
 
             LocationHistoryUiEvent.OnMapTouch -> {}
             is LocationHistoryUiEvent.OnMarkerClick -> {}
+
+            is LocationHistoryUiEvent.OnPointClicked -> {
+                dataController._uiState.update {
+                    it.copy(selectedLocationId = event.point.pointId)
+                }
+            }
+
             LocationHistoryUiEvent.OnRefocusClick -> TODO()
-            is LocationHistoryUiEvent.SelectLocation -> {}
             is LocationHistoryUiEvent.SetHistoryProgress -> {
                 val newId = dataController._uiState.value.selectedLocations.getOrNull(
                     index = event.progress
-                )?.let {
-                    when (it) {
-                        is LocationHistoryPointState.Cluster -> it.points.firstOrNull()?.point?.properID
-                        is LocationHistoryPointState.Point -> it.point.properID
-                    }
-                }
+                )?.pointId
+
                 dataController._uiState.update {
                     it.copy(selectedLocationId = newId)
                 }
@@ -137,7 +139,7 @@ class LocationHistoryViewModel(
                 dataController._eventChannel.trySend(LocationHistoryScreenEvent.NavigateBack)
             }
 
-            is LocationHistoryUiEvent.ChangeMapFocusType -> {
+            is LocationHistoryUiEvent.ChangeMapDataViewType -> {
                 dataController._uiState.update {
                     it.copy(mapFocusType = event.type)
                 }
@@ -215,6 +217,32 @@ class LocationHistoryViewModel(
 
             LocationHistoryUiEvent.OpenLocationSettings -> {
                 dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenHistorySettings)
+            }
+
+            LocationHistoryUiEvent.ToggleClusterPins -> {
+                dataController._uiState.update {
+                    it.copy(clusterPins = !it.clusterPins)
+                }
+            }
+
+            LocationHistoryUiEvent.ToggleShowPins -> {
+                dataController._uiState.update {
+                    if (it.showPolyline) {
+                        it.copy(showPins = !it.showPins)
+                    } else {
+                        it.copy(showPolyline = true, showPins = false)
+                    }
+                }
+            }
+
+            LocationHistoryUiEvent.ToggleShowPolyline -> {
+                dataController._uiState.update {
+                    if (it.showPins) {
+                        it.copy(showPolyline = !it.showPolyline)
+                    } else {
+                        it.copy(showPolyline = false, showPins = true)
+                    }
+                }
             }
         }
     }

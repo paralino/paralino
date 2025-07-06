@@ -1,6 +1,8 @@
 package app.paralino.core.ui.history
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
@@ -28,9 +31,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -45,16 +52,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
-import app.paralino.core.presentation.history.LocationHistoryDataViewType
+import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
 
@@ -200,68 +208,69 @@ fun LocationHistoryScreenElements(
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
             )
         ) {
+            var optionsExpanded by remember { mutableStateOf(false) }
 
-            Row(
+            AnimatedVisibility(
+                modifier = Modifier.align(alignment = Alignment.End),
+                visible = optionsExpanded
+            ) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 4.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    AnimatedVisibility(uiState.showPins) {
+                        HistoryMapOptionChip(
+                            modifier = Modifier.padding(top = 4.dp),
+                            selected = uiState.clusterPins,
+                            name = stringResource(MR.strings.history_map_options_pin_clustering),
+                            icon = CoreAppIcons.CircleCluster.asPainterResource(),
+                            onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterPins) }
+                        )
+                    }
+
+                    HistoryMapOptionChip(
+                        modifier = Modifier.padding(top = 4.dp),
+                        selected = uiState.showPins,
+                        name = stringResource(MR.strings.history_map_options_show_pins),
+                        icon = CoreAppIcons.LocationOn.asPainterResource(),
+                        onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPins) }
+                    )
+
+                    HistoryMapOptionChip(
+                        modifier = Modifier.padding(top = 4.dp),
+                        selected = uiState.showPolyline,
+                        name = stringResource(MR.strings.history_map_options_show_path),
+                        icon = CoreAppIcons.Timeline.asPainterResource(),
+                        onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPolyline) }
+                    )
+
+                    HistoryMapOptionChip(
+                        modifier = Modifier.padding(top = 4.dp),
+                        selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
+                        name = stringResource(MR.strings.history_map_options_location_clustering),
+                        icon = CoreAppIcons.TargetCircles.asPainterResource(),
+                        onClick = { onEvent(LocationHistoryUiEvent.ToggleViewMode) }
+                    )
+                }
+            }
+
+            Icon(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 8.dp)
-                    .size(width = 130.dp, height = 36.dp)
-                    .shadow(8.dp, RoundedCornerShape(12.dp))
-                    .clip(RoundedCornerShape(12.dp))
+                    .padding(end = 16.dp, bottom = 8.dp)
+                    .size(32.dp)
+                    .clickable(onClick = { optionsExpanded = !optionsExpanded })
+                    .shadow(elevation = 4.dp, RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colors.background)
-                    .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                MapFocusTypeTab(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    selected = uiState.mapFocusType == LocationHistoryDataViewType.Stats,
-                    name = "Stats",
-                    icon = CoreAppIcons.Home.asPainterResource(),
-                    onClick = {
-                        onEvent(
-                            LocationHistoryUiEvent.ChangeMapFocusType(
-                                LocationHistoryDataViewType.Stats
-                            )
-                        )
-                    }
-                )
-
-                MapFocusTypeTab(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    selected = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint,
-                    name = "Point",
-                    icon = CoreAppIcons.Timeline.asPainterResource(),
-                    onClick = {
-                        onEvent(
-                            LocationHistoryUiEvent.ChangeMapFocusType(
-                                LocationHistoryDataViewType.LocationPoint
-                            )
-                        )
-                    }
-                )
-
-                MapFocusTypeTab(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
-                    name = if (uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW) "Overview" else "Detailed",
-                    icon = if (uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW) {
-                        CoreAppIcons.LocationOn.asPainterResource()
-                    } else {
-                        CoreAppIcons.LibraryBooks.asPainterResource()
-                    },
-                    onClick = {
-                        onEvent(LocationHistoryUiEvent.ToggleViewMode)
-                    }
-                )
-            }
+                    .padding(4.dp)
+                    .rotate(animateFloatAsState(if (optionsExpanded) 90f else -90f).value),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                contentDescription = null
+            )
 
             Column(
                 modifier = Modifier.onGloballyPositioned { coordinates ->
@@ -301,7 +310,7 @@ fun LocationHistoryScreenElements(
 }
 
 @Composable
-private fun MapFocusTypeTab(
+private fun HistoryMapOptionChip(
     modifier: Modifier = Modifier,
     selected: Boolean,
     name: String,
@@ -313,27 +322,34 @@ private fun MapFocusTypeTab(
         else MaterialTheme.colors.onBackground
     )
     val backgroundColor by animateColorAsState(
-//        if (selected) MaterialTheme.colors.secondary.copy(alpha = 0.5f)
         if (selected) MaterialTheme.colors.primary
-        else MaterialTheme.colors.background
+        else MaterialTheme.colors.surface
     )
 
-    Row(
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .clip(RoundedCornerShape(8.dp))
-            .background(backgroundColor),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            modifier = Modifier
-                .size(18.dp),
-            painter = icon,
-            contentDescription = null,
-            tint = contentColor.copy(
-                alpha = if (selected) 1f else 0.5f
+    DataInfoChip(
+        modifier = modifier.shadow(elevation = 4.dp, RoundedCornerShape(50)),
+        backgroundColor = backgroundColor,
+        shape = RoundedCornerShape(50),
+        imageOrIcon = {
+            Icon(
+                modifier = Modifier
+                    .padding(start = 2.dp)
+                    .size(16.dp),
+                painter = icon,
+                contentDescription = null,
+                tint = contentColor.copy(
+                    alpha = if (selected) 1f else 0.5f
+                )
             )
-        )
-    }
+            Spacer(Modifier.size(4.dp))
+        },
+        text = {
+            Text(
+                text = name.annotatedBoldCompose(textColor = contentColor),
+                style = MaterialTheme.typography.body2,
+                color = contentColor
+            )
+        },
+        onClick = onClick
+    )
 }

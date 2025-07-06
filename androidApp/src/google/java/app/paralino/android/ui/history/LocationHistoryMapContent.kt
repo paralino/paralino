@@ -3,10 +3,21 @@ package app.paralino.android.ui.history
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,19 +28,26 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.android.ui.map.MapMarkerComposable
 import app.paralino.android.ui.map.defaultMapProperties
 import app.paralino.android.ui.map.defaultMapUiSettings
 import app.paralino.android.ui.map.refocus
+import app.paralino.core.MR
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
@@ -38,7 +56,9 @@ import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -56,7 +76,7 @@ fun LocationHistoryMapContent(
     val scope = rememberCoroutineScope()
     var canAnimateMapFocus by remember { mutableStateOf(false) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
-    val polylineWidthPixels = with(LocalDensity.current) { 6.dp.toPx() }
+    val polylineWidthPixels = with(LocalDensity.current) { 5.dp.toPx() }
 
     val cameraPositionState = rememberCameraPositionState()
 
@@ -179,21 +199,6 @@ fun LocationHistoryMapContent(
         satelliteMode = uiState.isSatelliteMode
     )
 
-    val points = remember(uiState.selectedLocations) {
-        uiState.selectedLocations.mapNotNull {
-            when (it) {
-                is LocationHistoryPointState.Cluster -> {
-                    LatLng(it.lat, it.lng)
-                }
-                is LocationHistoryPointState.Point -> {
-                    it.point.loc?.let {
-                        LatLng(it.lat, it.lng)
-                    }
-                }
-            }
-        }
-    }
-
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -268,24 +273,112 @@ fun LocationHistoryMapContent(
             LocationHistoryDataViewType.Stats -> {}
         }
 
-        Polyline(
-            points = points,
-            clickable = true,
-            color = if (uiState.isSatelliteMode || isSystemInDarkTheme()) {
-                AppColors.redMain
+        if (stateData.showPolyline) {
+            val points = remember(uiState.selectedLocations) {
+                uiState.selectedLocations.mapNotNull {
+                    when (it) {
+                        is LocationHistoryPointState.Cluster -> {
+                            LatLng(it.lat, it.lng)
+                        }
+                        is LocationHistoryPointState.Point -> {
+                            it.point.loc?.let {
+                                LatLng(it.lat, it.lng)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Polyline(
+                points = points,
+                clickable = true,
+                color = if (uiState.isSatelliteMode || isSystemInDarkTheme()) {
+                    AppColors.redMain
+                } else {
+                    MaterialTheme.colors.primary
+                },
+                pattern = null,
+                startCap = RoundCap(),
+                endCap = RoundCap(),
+                geodesic = false,
+                jointType = JointType.ROUND,
+                tag = "points",
+                visible = true,
+                width = polylineWidthPixels,
+                zIndex = 0f,
+                onClick = { }
+            )
+        }
+
+        if (stateData.showPins) {
+            if (stateData.clusterPins) {
+                val clusterPoints = remember(stateData.selectedLocations) {
+                    stateData.selectedLocations.mapNotNull {
+                        if (it.lat != null && it.lng != null) {
+                            LocationHistoryClusterItem(it)
+                        } else {
+                            null
+                        }
+                    }
+                }
+
+                Clustering<LocationHistoryClusterItem>(
+                    items = clusterPoints,
+                    onClusterClick = {
+                        try {
+                            onEvent(LocationHistoryUiEvent.OnPointClicked(it.items.first().item))
+                        } catch (e: Exception) { }
+                        false
+                    },
+                    onClusterItemClick = {
+                        onEvent(LocationHistoryUiEvent.OnPointClicked(it.item))
+                        true
+                    },
+                    clusterContent = {
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(AppColors.highlightGold)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = it.size.toString(),
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                                color = AppColors.darkBackground
+                            )
+                        }
+                    },
+                    clusterItemContent = {
+                        Icon(
+                            modifier = Modifier
+                                .size(16.dp),
+                            painter = CoreAppIcons.LocationOnFilled.asPainterResource(),
+                            contentDescription = null,
+                            tint = if (uiState.isSatelliteMode || isSystemInDarkTheme()) {
+                                AppColors.highlightGold
+                            } else {
+                                AppColors.redMain
+                            }
+                        )
+                    },
+                )
             } else {
-                MaterialTheme.colors.primary
-            },
-            pattern = null,
-            startCap = RoundCap(),
-            endCap = RoundCap(),
-            geodesic = false,
-            jointType = JointType.ROUND,
-            tag = "points",
-            visible = true,
-            width = polylineWidthPixels,
-            zIndex = 0f,
-            onClick = { }
-        )
+                stateData.selectedLocations.forEach { pin ->
+                    if (pin.lat != null && pin.lng != null) {
+                        HistoryMapPin(
+                            state = pin,
+                            position = LatLng(pin.lat!!, pin.lng!!),
+                            isDarkMode = uiState.isSatelliteMode || isSystemInDarkTheme(),
+                            zIndex = 1f,
+                            onClick = {
+                                onEvent(LocationHistoryUiEvent.OnPointClicked(it))
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
 }

@@ -40,6 +40,9 @@ data class LocationHistoryScreenState(
     val deletionRangeStartIndex: Int?,
     val isRefreshingData: Boolean,
     val isLoadingLocations: Boolean,
+    val showPolyline: Boolean,
+    val showPins: Boolean,
+    val clusterPins: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
     val viewMode: LocationHistoryPathViewMode,
@@ -192,6 +195,9 @@ data class LocationHistoryScreenState(
                 deletionRangeStartIndex = null,
                 isRefreshingData = true,
                 isLoadingLocations = true,
+                showPolyline = true,
+                showPins = true,
+                clusterPins = true,
                 locations = emptyList(),
                 viewMode = LocationHistoryPathViewMode.OVERVIEW,
                 devices = emptyList(),
@@ -233,24 +239,29 @@ sealed class UserActiveLocationDeviceState {
 }
 
 sealed interface LocationHistoryPointState {
+    val pointId: String
     val locationId: String?
     val locationTime: String?
     val statusTime: String?
     val formattedSpeed: String?
     val formattedElevation: String?
+    val lat: Double?
+    val lng: Double?
+    val accuracy: Float?
 
     data class Cluster(
         override val locationId: String?,
         override val locationTime: String?,
         val points: List<LocationHistoryPointState.Point>,
-        val lat: Double,
-        val lng: Double,
-        val accuracy: Float,
+        override val lat: Double,
+        override val lng: Double,
+        override val accuracy: Float,
         val battery: String?
     ): LocationHistoryPointState {
         override val statusTime: String? = null
         override val formattedElevation: String? = null
         override val formattedSpeed: String? = null
+        override val pointId: String = points.first().point.properID
     }
 
     data class Point(
@@ -266,7 +277,12 @@ sealed interface LocationHistoryPointState {
         val deviceStatus: MemberDeviceStatusType?,
         val networkType: NetworkType?,
         val signalStrength: NetworkSignalStrength?
-    ): LocationHistoryPointState
+    ): LocationHistoryPointState {
+        override val pointId: String = point.properID
+        override val lat: Double? = point.loc?.lat
+        override val lng: Double? = point.loc?.lng
+        override val accuracy: Float? = point.loc?.acc
+    }
 }
 
 sealed interface LocationHistoryDataViewType {
@@ -298,14 +314,17 @@ enum class LocationHistorySelectedDayPosition {
 sealed interface LocationHistoryUiEvent {
     data class LoadHistory(val groupId: String, val memberUserId: String) : LocationHistoryUiEvent
     data class UiLifecycleChange(val active: Boolean) : LocationHistoryUiEvent
-    data class SelectLocation(val index: Int) : LocationHistoryUiEvent
     data class SelectDevice(val device: UserActiveLocationDeviceState) : LocationHistoryUiEvent
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent
+    data class OnPointClicked(val point: LocationHistoryPointState) : LocationHistoryUiEvent
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
-    data class ChangeMapFocusType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
+    data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
+    data object ToggleShowPins : LocationHistoryUiEvent
+    data object ToggleShowPolyline : LocationHistoryUiEvent
+    data object ToggleClusterPins : LocationHistoryUiEvent
     data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
     data object OnRefocusClick : LocationHistoryUiEvent
     data object OnMapModeSwitch : LocationHistoryUiEvent

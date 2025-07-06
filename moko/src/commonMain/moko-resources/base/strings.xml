@@ -650,6 +650,12 @@
     <string name="blocklist_unblock_user_alert_message">Unblocking will allow user to add you to new groups and you will be notified about users\' location updates.</string>
     <string name="blocklist_unblock_alert_button">Unblock</string>
     <string name="blocklist_unblock_alert_unknown">Remove unknown blocked type?</string>
+    <string name="history_map_options_location_clustering">Location clustering</string>
+    <string name="history_map_options_pin_clustering">Pin clustering</string>
+    <string name="history_map_options_show_pins">Location pins</string>
+    <string name="history_map_options_show_path">Travel path</string>
+    <string name="history_map_no_locations_placeholder">☹\nNo history for this period</string>
+    <string name="history_entry_clustered_count">Entries: %s</string>
     <string name="history_entry_delete_alert_message">Delete location history entry:\n%s</string>
     <string name="history_entry_range_delete_notice_title">Entries to delete: %d</string>
     <string name="history_entry_range_delete_alert_title">Delete location history?</string>
