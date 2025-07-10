@@ -68,6 +68,13 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
             }
             .store(in: &cancellables)
         
+        mapState?.$historyPinMarkers
+            .receive(on: RunLoop.main)
+            .sink { [weak self] updatedMarkers in
+                self?.updateHistoryPoints(updatedMarkers)
+            }
+            .store(in: &cancellables)
+        
         mapState?.$polylinePoints
             .receive(on: RunLoop.main)
             .sink { [weak self] updatedPolyline in
@@ -112,6 +119,27 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
     func setMapStyle(satellite: Bool) {
         mapView.mapType = satellite ? .hybrid : .standard
+        
+        // Refresh annotations to update their appearance based on new map style
+        refreshAnnotations()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // Check if the user interface style changed (dark/light mode)
+        if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
+            refreshAnnotations()
+        }
+    }
+    
+    private func refreshAnnotations() {
+        // Get current annotations
+        let currentAnnotations = mapView.annotations
+        
+        // Remove and re-add all annotations to force refresh
+        mapView.removeAnnotations(currentAnnotations)
+        mapView.addAnnotations(currentAnnotations)
     }
     
     func updateSafeArea(bottomOffset: CGFloat) {
@@ -145,7 +173,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     private func updateMarkers(_ newMarkers: [MapAnnotatedItem]) {
         
         let existingOverlays = mapView.overlays.filter { $0 is MKCircle }
-        let existingAnnotations = mapView.annotations
+        let existingAnnotations = mapView.annotations.filter { $0 is MapAnnotatedItem }
         
         for marker in newMarkers {
             if let currentMarker = existingAnnotations.first(where: { marker.id == ($0 as? MapAnnotatedItem)?.id }) as? MapAnnotatedItem {
@@ -194,6 +222,30 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
+    private func updateHistoryPoints(_ newMarkers: [HistoryMapMarkerData]) {
+        
+        let existingAnnotations = mapView.annotations.filter { $0 is HistoryMapMarkerData }
+        
+        for marker in newMarkers {
+            if let currentMarker = existingAnnotations.first(where: { marker.id == ($0 as? HistoryMapMarkerData)?.id }) as? HistoryMapMarkerData {
+                currentMarker.data = marker.data
+            } else {
+                let annotation = marker
+                mapView.addAnnotation(annotation)
+            }
+        }
+        
+        let toRemove = existingAnnotations.filter { current in
+            !newMarkers.contains(where: { $0.id == (current as? HistoryMapMarkerData)?.id })
+        }
+        mapView.removeAnnotations(toRemove)
+        
+        // Animate changes
+        UIView.animate(withDuration: 0.3) {
+            self.mapView.layoutIfNeeded()
+        }
+    }
+    
     @objc private func handleMapTap(_ gesture: UITapGestureRecognizer) {
         let point = gesture.location(in: mapView)
         let coordinate = mapView.convert(point, toCoordinateFrom: mapView)
@@ -221,24 +273,49 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
 // MARK: - MKMapViewDelegate
 extension MapComponentVC: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard let customAnnotation = annotation as? MapAnnotatedItem else {return nil}
-        
-        let identifier = customAnnotation.id
-        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? SwiftUIMapMarkerView
-        
-        if annotationView == nil {
-            annotationView = SwiftUIMapMarkerView(annotation: customAnnotation, reuseIdentifier: identifier)
+        // Handle history map markers
+        if let historyAnnotation = annotation as? HistoryMapMarkerData {
+            let identifier = historyAnnotation.id
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? SwiftUIHistoryMapMarkerView
+            
+            if annotationView == nil {
+                annotationView = SwiftUIHistoryMapMarkerView(annotation: historyAnnotation, reuseIdentifier: identifier)
+            }
+            
+            // Setup SwiftUI content for history marker
+            annotationView?.setupSwiftUIView(data: historyAnnotation, isDarkMode: mapView.mapType == .hybrid || traitCollection.userInterfaceStyle == .dark)
+            
+            return annotationView
         }
         
-        // Setup SwiftUI content
-        annotationView?.setupSwiftUIView(data: customAnnotation)
+        // Handle regular map annotations
+        if let customAnnotation = annotation as? MapAnnotatedItem {
+            let identifier = customAnnotation.id
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? SwiftUIMapMarkerView
+            
+            if annotationView == nil {
+                annotationView = SwiftUIMapMarkerView(annotation: customAnnotation, reuseIdentifier: identifier)
+            }
+            
+            // Setup SwiftUI content
+            annotationView?.setupSwiftUIView(data: customAnnotation)
+            
+            return annotationView
+        }
         
-        return annotationView
+        return nil
     }
     
     func mapView(_ mapView: MKMapView, didSelect annotation: MKAnnotation) {
-        guard let customAnnotation = annotation as? MapAnnotatedItem else { return }
-        mapState?.onMarkerTap(markerData: customAnnotation.data)
+        if let customAnnotation = annotation as? MapAnnotatedItem {
+            mapState?.onMarkerTap(markerData: customAnnotation.data)
+            return
+        }
+        
+        if let historyAnnotation = annotation as? HistoryMapMarkerData {
+            mapState?.onHistoryMarkerTap(markerData: historyAnnotation)
+            return
+        }
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -254,7 +331,7 @@ extension MapComponentVC: MKMapViewDelegate {
             : UIColor(withAlphaRGB: AppColors.Raw.lightThemePrimary)
             
             renderer.strokeColor = color
-            renderer.lineWidth = 6.0
+            renderer.lineWidth = 5.0
             renderer.lineCap = .round
             renderer.lineJoin = .round
             return renderer

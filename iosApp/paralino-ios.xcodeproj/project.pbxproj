@@ -31,6 +31,7 @@
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
 		25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */; };
 		25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */; };
+		255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */; };
 		2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */; };
 		2568AF5E2CB5342B007EE00F /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5D2CB5342B007EE00F /* NIO */; };
 		2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */; };
@@ -194,6 +195,7 @@
 		2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionHandler.swift; sourceTree = "<group>"; };
 		25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRatingPresenter.swift; sourceTree = "<group>"; };
 		25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeOnboardingScreen.swift; sourceTree = "<group>"; };
+		255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryMapMarker.swift; sourceTree = "<group>"; };
 		2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicencesScreen.swift; sourceTree = "<group>"; };
 		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSettingsScreen.swift; sourceTree = "<group>"; };
@@ -532,6 +534,7 @@
 				25EFDE272A5AF6DF00522293 /* GroupStatusTag.swift */,
 				25EFDE292A5B0DCA00522293 /* GroupListItem.swift */,
 				25EFDE2F2A5B45C300522293 /* MapMarker.swift */,
+				255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */,
 				25395C1E2B630042000394DA /* BaseMapObservableObject.swift */,
 			);
 			path = Map;
@@ -1020,6 +1023,7 @@
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
 				25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */,
+				255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */,
 				25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */,
 				25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */,
 				25F8DB902DB91268007AECEB /* AppSettingsScreen.swift in Sources */,

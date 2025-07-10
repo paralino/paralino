@@ -27,15 +27,32 @@ class LocationHistoryMapState : BaseMapObservableObject {
         vm.observe(flow: vm.uiState) { [weak self] state in
             if let state = state as? LocationHistoryScreenState {
                 self?.uiState = state
-                
-                self?.polylinePoints = state.selectedLocations
-                    .compactMap {
-                        if let lat = $0.lat, let lng = $0.lng {
-                            CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lng.doubleValue)
-                        } else {
-                            nil
+            
+                if state.showPolyline {
+                    self?.polylinePoints = state.selectedLocations
+                        .compactMap {
+                            if let lat = $0.lat, let lng = $0.lng {
+                                CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lng.doubleValue)
+                            } else {
+                                nil
+                            }
                         }
-                    }
+                } else {
+                    self?.polylinePoints = []
+                }
+                
+                if state.showPins {
+                    self?.historyPinMarkers = state.selectedLocations
+                        .compactMap {
+                            if let lat = $0.lat, let lng = $0.lng {
+                                HistoryMapMarkerData(id: $0.pointId, point: $0)
+                            } else {
+                                nil
+                            }
+                        }
+                } else {
+                    self?.historyPinMarkers = []
+                }
                 
                 if state.mapFocusType is LocationHistoryDataViewTypeStats {
                     if let region = self?.getFocusRegion(state.selectedLocations) {
@@ -90,6 +107,10 @@ class LocationHistoryMapState : BaseMapObservableObject {
     
     override func onMarkerTap(markerData: MapPinData) {
         
+    }
+    
+    override func onHistoryMarkerTap(markerData: HistoryMapMarkerData) {
+        vm.onEvent(event: LocationHistoryUiEventOnPointClicked(point: markerData.data))
     }
     
     deinit {
