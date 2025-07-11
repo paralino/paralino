@@ -21,6 +21,7 @@ class BaseMapObservableObject : ObservableObject {
     
     @Published var isUpdatingRegion: Bool = false
     @Published var isSatelliteMode: Bool = false
+    @Published var clusterHistoryPins: Bool = true
     
     @Published var bottomSafeArea: CGFloat = 0
     @Published var previousBottomSafeArea: CGFloat = 0

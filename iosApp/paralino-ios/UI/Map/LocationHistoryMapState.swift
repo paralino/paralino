@@ -44,7 +44,7 @@ class LocationHistoryMapState : BaseMapObservableObject {
                 if state.showPins {
                     self?.historyPinMarkers = state.selectedLocations
                         .compactMap {
-                            if let lat = $0.lat, let lng = $0.lng {
+                            if $0.lat != nil, $0.lng != nil {
                                 HistoryMapMarkerData(id: $0.pointId, point: $0)
                             } else {
                                 nil
@@ -53,6 +53,8 @@ class LocationHistoryMapState : BaseMapObservableObject {
                 } else {
                     self?.historyPinMarkers = []
                 }
+                
+                self?.clusterHistoryPins = state.clusterPins
                 
                 if state.mapFocusType is LocationHistoryDataViewTypeStats {
                     if let region = self?.getFocusRegion(state.selectedLocations) {
