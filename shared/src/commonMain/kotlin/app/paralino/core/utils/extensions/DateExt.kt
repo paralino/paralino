@@ -1,6 +1,7 @@
 package app.paralino.core.utils.extensions
 
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -10,6 +11,7 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlin.time.Duration
 
@@ -70,4 +72,14 @@ fun LocalDateTime.stripNanoseconds(): LocalDateTime {
 
 fun LocalDate.dateForApi(): String {
     return this.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
+}
+
+fun LocalDate.listOfDatesUntil(date: LocalDate): List<LocalDate> {
+    var currentDate = this
+    val dateList = mutableListOf<LocalDate>()
+    while (currentDate <= date) {
+        dateList.add(currentDate)
+        currentDate = currentDate.plus(DatePeriod(days = 1))
+    }
+    return dateList
 }

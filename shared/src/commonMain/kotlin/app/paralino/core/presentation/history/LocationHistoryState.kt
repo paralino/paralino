@@ -50,6 +50,7 @@ data class LocationHistoryScreenState(
     val mapFocusType: LocationHistoryDataViewType,
     val selectedLocationId: String?,
     val days: List<LocationHistoryDayState>,
+    val daysInLoading: List<LocalDate>,
     val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
 ) {
@@ -57,7 +58,7 @@ data class LocationHistoryScreenState(
 
     val startDate: LocalDate = selectedDate.minus(DatePeriod(days = dateRangeDays - 1))
     val endDate: LocalDate = selectedDate
-    val displayedDays = days.reversed()
+    val displayedDays = days.reversed().map { it.copy(isLoading = daysInLoading.contains(it.date)) }
 
     val deviceType: DeviceType = DeviceType.current
     private val displayLocations = when (viewMode) {
@@ -205,6 +206,7 @@ data class LocationHistoryScreenState(
                 mapFocusType = LocationHistoryDataViewType.Stats,
                 selectedLocationId = null,
                 days = emptyList(),
+                daysInLoading = emptyList(),
                 isSatelliteMode = false,
                 alertDialog = null
             )
@@ -297,6 +299,7 @@ enum class LocationHistoryPathViewMode {
 
 data class LocationHistoryDayState(
     val isSelected: Boolean,
+    val isLoading: Boolean,
     val isWeekend: Boolean,
     val date: LocalDate,
     val formattedDay: String,

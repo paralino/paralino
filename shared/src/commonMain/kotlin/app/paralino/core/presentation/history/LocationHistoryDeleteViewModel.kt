@@ -267,6 +267,7 @@ class LocationHistoryDeleteViewModel(
             days.add(
                 LocationHistoryDayState(
                     isSelected = currentDate == selectedDate,
+                    isLoading = false,
                     date = currentDate,
                     formattedMonth = null,
                     formattedDay = valueFormatter.formatWithPattern(

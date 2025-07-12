@@ -90,6 +90,7 @@ class LocationHistoryViewModelDataController(
             dates.add(
                 LocationHistoryDayState(
                     isSelected = selectedDates.contains(currentDate),
+                    isLoading = false,
                     date = currentDate,
                     formattedMonth = valueFormatter.formatWithPattern(
                         timeUTC = currentDate.atTime(0, 0),
@@ -121,8 +122,8 @@ class LocationHistoryViewModelDataController(
         // Get the previous month
         val previousMonth = oldestDate.minus(DatePeriod(months = 1))
         val previousMonthStart = LocalDate(previousMonth.year, previousMonth.month, 1)
-        val previousMonthEnd =
-            LocalDate(oldestDate.year, oldestDate.month, 1).minus(DatePeriod(days = 1))
+        val previousMonthEnd = LocalDate(oldestDate.year, oldestDate.month, 1)
+            .minus(DatePeriod(days = 1))
 
         // Calculate which days are selected based on current selection
         val selectedDates = mutableSetOf<LocalDate>()
@@ -139,6 +140,7 @@ class LocationHistoryViewModelDataController(
             newDays.add(
                 LocationHistoryDayState(
                     isSelected = selectedDates.contains(currentDate),
+                    isLoading = false,
                     date = currentDate,
                     formattedMonth = valueFormatter.formatWithPattern(
                         timeUTC = currentDate.atTime(0, 0),
@@ -158,9 +160,7 @@ class LocationHistoryViewModelDataController(
         // Prepend new days to existing days and update state
         val updatedDays = newDays + currentDays
         _uiState.update {
-            it.copy(
-                days = updatedDays
-            )
+            it.copy(days = updatedDays)
         }
     }
 
@@ -208,7 +208,8 @@ class LocationHistoryViewModelDataController(
                 selectedDate = selectedDate,
                 days = updatedDays,
                 isRefreshingData = true,
-                isLoadingLocations = true
+                isLoadingLocations = true,
+                daysInLoading = state.daysInLoading.plus(updatedDays.filter { it.isSelected }.map { it.date }).distinct()
             )
         }
 

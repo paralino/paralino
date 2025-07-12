@@ -11,16 +11,21 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.extensions.dateForApi
+import app.paralino.core.utils.extensions.listOfDatesUntil
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format
-import kotlinx.datetime.format.byUnicodePattern
+import kotlin.time.Duration.Companion.minutes
 
 class RefreshLocationHistoryUseCase(
     private val database: MainDatabaseHelper,
     private val mapper: LocationHistoryMapper,
     private val functionsApi: IFunctionsApi,
 ): BaseRepository() {
+
+    private val mutex = Mutex()
 
     suspend fun refreshLocationHistory(
         groupId: String,
@@ -29,20 +34,22 @@ class RefreshLocationHistoryUseCase(
         startDate: LocalDate,
         endDate: LocalDate,
     ) {
-        if (groupId == UserGroup.groupPersonalDevicesId) {
-            refreshPersonalLocationHistory(
-                locationId = locationId,
-                startDate = startDate,
-                endDate = endDate
-            )
-        } else {
-            refreshGroupLocationHistory(
-                groupId = groupId,
-                memberUserId = memberUserId,
-                locationId = locationId,
-                startDate = startDate,
-                endDate = endDate
-            )
+        mutex.withLock {
+            if (groupId == UserGroup.groupPersonalDevicesId) {
+                refreshPersonalLocationHistory(
+                    locationId = locationId,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+            } else {
+                refreshGroupLocationHistory(
+                    groupId = groupId,
+                    memberUserId = memberUserId,
+                    locationId = locationId,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+            }
         }
     }
 
@@ -52,8 +59,14 @@ class RefreshLocationHistoryUseCase(
         locationId: String?,
         startDate: LocalDate,
         endDate: LocalDate,
-    ): GroupLocationHistoryReadResponse {
-        return triggerRemoteOnly {
+    ): GroupLocationHistoryReadResponse? {
+        val key = startDate.listOfDatesUntil(endDate).joinToString { it.dateForApi() }
+        return triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(
+                key = "${groupId}_${memberUserId}_${key}",
+                timeMillis = 2.minutes.inWholeMilliseconds
+            )
+        ) {
             val payload = GroupLocationHistoryReadPayload(
                 groupId = groupId,
                 memberUserId = memberUserId,
@@ -71,8 +84,8 @@ class RefreshLocationHistoryUseCase(
                 throw response.remoteException
             }
 
-            return@triggerRemoteOnly response.response<GroupLocationHistoryReadResponse>().data
-        }.also { response ->
+            return@triggerRemoteMaybe response.response<GroupLocationHistoryReadResponse>().data
+        }?.also { response ->
             val keys = response.keys.map {
                 mapper.remote2LocalGroup(groupId = groupId, memberUserId = memberUserId, model = it)
             }
@@ -95,8 +108,14 @@ class RefreshLocationHistoryUseCase(
         locationId: String?,
         startDate: LocalDate,
         endDate: LocalDate,
-    ): PersonalLocationHistoryReadResponse {
-        return triggerRemoteOnly {
+    ): PersonalLocationHistoryReadResponse? {
+        val key = startDate.listOfDatesUntil(endDate).joinToString { it.dateForApi() }
+        return triggerRemoteMaybe(
+            remotePreference = RemotePreference.CACHE(
+                key = "personal_history_${key}",
+                timeMillis = 2.minutes.inWholeMilliseconds
+            )
+        ) {
             val payload = PersonalLocationHistoryReadPayload(
                 locationId = locationId,
                 startDateKey = startDate.dateForApi(),
@@ -112,8 +131,8 @@ class RefreshLocationHistoryUseCase(
                 throw response.remoteException
             }
 
-            return@triggerRemoteOnly response.response<PersonalLocationHistoryReadResponse>().data
-        }.also { response ->
+            return@triggerRemoteMaybe response.response<PersonalLocationHistoryReadResponse>().data
+        }?.also { response ->
             val keys = response.keys.map {
                 mapper.remote2LocalPersonal(model = it)
             }

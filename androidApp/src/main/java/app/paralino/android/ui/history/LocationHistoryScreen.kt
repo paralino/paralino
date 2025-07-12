@@ -146,6 +146,7 @@ private fun LocationHistoryDateSelectorPreview() {
     val sampleDays = listOf(
         LocationHistoryDayState(
             isSelected = false,
+            isLoading = false,
             date = LocalDate(2024, 1, 15),
             formattedDay = "Mon",
             formattedMonth = "Jan",
@@ -154,6 +155,7 @@ private fun LocationHistoryDateSelectorPreview() {
         ),
         LocationHistoryDayState(
             isSelected = true,
+            isLoading = false,
             date = LocalDate(2024, 1, 16),
             formattedDay = "Tue",
             formattedMonth = "Jan",
@@ -162,6 +164,7 @@ private fun LocationHistoryDateSelectorPreview() {
         ),
         LocationHistoryDayState(
             isSelected = true,
+            isLoading = false,
             date = LocalDate(2024, 1, 17),
             formattedDay = "Wed",
             formattedMonth = "Jan",
@@ -170,6 +173,7 @@ private fun LocationHistoryDateSelectorPreview() {
         ),
         LocationHistoryDayState(
             isSelected = true,
+            isLoading = false,
             date = LocalDate(2024, 1, 18),
             formattedDay = "Thu",
             formattedMonth = "Jan",
@@ -178,6 +182,7 @@ private fun LocationHistoryDateSelectorPreview() {
         ),
         LocationHistoryDayState(
             isSelected = false,
+            isLoading = false,
             date = LocalDate(2024, 1, 19),
             formattedDay = "Fri",
             formattedMonth = "Jan",
@@ -186,6 +191,7 @@ private fun LocationHistoryDateSelectorPreview() {
         ),
         LocationHistoryDayState(
             isSelected = false,
+            isLoading = false,
             date = LocalDate(2024, 1, 20),
             formattedDay = "Sat",
             formattedMonth = "Jan",
@@ -194,6 +200,7 @@ private fun LocationHistoryDateSelectorPreview() {
         ),
         LocationHistoryDayState(
             isSelected = false,
+            isLoading = false,
             date = LocalDate(2024, 1, 21),
             formattedDay = "Sun",
             formattedMonth = "Jan",
@@ -202,6 +209,7 @@ private fun LocationHistoryDateSelectorPreview() {
         ),
         LocationHistoryDayState(
             isSelected = true,
+            isLoading = false,
             date = LocalDate(2024, 1, 22),
             formattedDay = "Mon",
             formattedMonth = "Jan",

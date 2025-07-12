@@ -1,6 +1,10 @@
 package app.paralino.core.ui.history
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +21,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -25,9 +30,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -71,7 +78,11 @@ fun LocationHistoryDateSelector(
             LaunchedEffect(days, dayRange) {
                 val selectedItemIndex = days.indexOfFirst { it.isSelected }.takeIf { it >= 0 }
                 if (selectedItemIndex != null) {
-                    scope.launch { scrollState.animateScrollToItem(index = (selectedItemIndex - 1).coerceAtLeast(0)) }
+                    scope.launch {
+                        scrollState.animateScrollToItem(
+                            index = (selectedItemIndex - 1).coerceAtLeast(0)
+                        )
+                    }
                 }
             }
 
@@ -91,7 +102,11 @@ fun LocationHistoryDateSelector(
                     DayCell(
                         dayState = dayState,
                         onDaySelected = {
-                            scope.launch { scrollState.animateScrollToItem(index = (index - 1).coerceAtLeast(0)) }
+                            scope.launch {
+                                scrollState.animateScrollToItem(
+                                    index = (index - 1).coerceAtLeast(0)
+                                )
+                            }
                             onEvent(LocationHistoryUiEvent.OnSelectDay(it))
                         }
                     )
@@ -175,7 +190,7 @@ private fun DayCell(
         LocationHistorySelectedDayPosition.SOLO -> RoundedCornerShape(cornerRadius)
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .defaultMinSize(minWidth = 40.dp, minHeight = 42.dp)
             .clip(shape)
@@ -183,53 +198,74 @@ private fun DayCell(
                 if (dayState.isSelected) MaterialTheme.colors.primary else Color.Transparent
             )
             .clickable { onDaySelected(dayState.date) },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            style = MaterialTheme.typography.caption,
-            text = dayState.formattedDay,
-            color = if (dayState.isSelected) {
-                MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
-            } else {
-                if (dayState.isWeekend) {
-                    AppColors.redMain
-                } else {
-                    MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
-                }
-            },
-            fontSize = 10.sp,
-            lineHeight = 12.sp,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            style = MaterialTheme.typography.subtitle1,
-            text = dayState.day.toString(),
-            color = if (dayState.isSelected)
-                MaterialTheme.colors.onPrimary
-            else
-                MaterialTheme.colors.onSurface,
-            fontSize = 14.sp,
-            lineHeight = 10.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+        AnimatedVisibility(
+            visible = dayState.isLoading &&
+                    (dayState.position == LocationHistorySelectedDayPosition.SOLO || dayState.position == LocationHistorySelectedDayPosition.CENTER),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(modifier = Modifier.size(18.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    strokeWidth = 2.dp,
+                    strokeCap = StrokeCap.Round,
+                    color = if (dayState.isSelected) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onSurface
+                )
+            }
+        }
 
-        if (dayState.formattedMonth != null) {
+        Column(
+            modifier = Modifier
+                .alpha(animateFloatAsState(if (dayState.isLoading) 0f else 1f).value),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
                 style = MaterialTheme.typography.caption,
-                text = dayState.formattedMonth ?: "",
+                text = dayState.formattedDay,
                 color = if (dayState.isSelected) {
                     MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
                 } else {
-                    MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                    if (dayState.isWeekend) {
+                        AppColors.redMain
+                    } else {
+                        MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                    }
                 },
-                fontSize = 8.sp,
-                lineHeight = 10.sp,
+                fontSize = 10.sp,
+                lineHeight = 12.sp,
                 fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                style = MaterialTheme.typography.subtitle1,
+                text = dayState.day.toString(),
+                color = if (dayState.isSelected)
+                    MaterialTheme.colors.onPrimary
+                else
+                    MaterialTheme.colors.onSurface,
+                fontSize = 14.sp,
+                lineHeight = 10.sp,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
+
+            if (dayState.formattedMonth != null) {
+                Text(
+                    style = MaterialTheme.typography.caption,
+                    text = dayState.formattedMonth ?: "",
+                    color = if (dayState.isSelected) {
+                        MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
+                    } else {
+                        MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                    },
+                    fontSize = 8.sp,
+                    lineHeight = 10.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

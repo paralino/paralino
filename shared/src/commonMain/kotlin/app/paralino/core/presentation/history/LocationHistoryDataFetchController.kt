@@ -21,10 +21,12 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.listOfDatesUntil
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.stripNanoseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -81,7 +83,8 @@ class LocationHistoryDataFetchController(
                 days = dataController.generateDates(
                     dateRangeDays = 1,
                     startDate = selectedDate
-                )
+                ),
+                daysInLoading = listOf(selectedDate)
             )
         }
 
@@ -129,7 +132,12 @@ class LocationHistoryDataFetchController(
                 dataController.viewModel.showSnackbar(text = e.errorString())
             }
 
-            _uiState.update { it.copy(isRefreshingData = false) }
+            _uiState.update {
+                it.copy(
+                    isRefreshingData = false,
+                    daysInLoading = it.daysInLoading - startDate.listOfDatesUntil(endDate)
+                )
+            }
         }
 
         return job
