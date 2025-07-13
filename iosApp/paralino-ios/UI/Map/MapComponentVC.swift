@@ -76,9 +76,25 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
             .store(in: &cancellables)
         
         mapState?.$historyPinMarkers
+            .removeDuplicates(by: { oldArray, newArray in
+                guard oldArray.count == newArray.count else { return false }
+                for (old, new) in zip(oldArray, newArray) {
+                    if old.id != new.id {
+                        return false
+                    }
+                }
+                return true
+            })
             .receive(on: RunLoop.main)
             .sink { [weak self] updatedMarkers in
                 self?.updateHistoryPoints(updatedMarkers)
+            }
+            .store(in: &cancellables)
+        
+        mapState?.$clusterHistoryPins
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.updateHistoryPoints(self?.mapState?.historyPinMarkers ?? [])
             }
             .store(in: &cancellables)
         
@@ -104,11 +120,31 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
             }
             .store(in: &cancellables)
         
+        
+        mapState?.$pendingFocusedMarker
+            .debounce(for: .milliseconds(30), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] marker in
+                if let marker = marker {
+                    self?.mapState?.focusToMarker(
+                        data: marker.marker,
+                        forceZoom: marker.forceZoom,
+                        animate: marker.animate,
+                        canInteruptAnimation: true
+                    )
+                }
+            }
+            .store(in: &cancellables)
+        
         mapState?.$cameraPosition
             .receive(on: RunLoop.main)
             .sink { [weak self] cameraPosition in
                 if let rect = cameraPosition.cameraRect {
-                    self?.mapView.setRegion(.init(rect), animated: cameraPosition.animate)
+                    if cameraPosition.animate {
+                        self?.mapView.setRegion(.init(rect), animated: true)
+                    } else {
+                        self?.mapView.setRegion(.init(rect), animated: false)
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -150,15 +186,15 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func updateSafeArea(bottomOffset: CGFloat) {
-//        positionAnimator.animate(
-//            from: mapState!.previousBottomSafeArea,
-//            to: bottomOffset,
-//            duration: 0.3,
-//            timingFunction: .easeOut,
-//            onUpdate: { [weak self] value in
-//                self?.mapView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: value, right: 0)
-//            }
-//        )
+        //        positionAnimator.animate(
+        //            from: mapState!.previousBottomSafeArea,
+        //            to: bottomOffset,
+        //            duration: 0.3,
+        //            timingFunction: .easeOut,
+        //            onUpdate: { [weak self] value in
+        //                self?.mapView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: value, right: 0)
+        //            }
+        //        )
         mapView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: bottomOffset, right: 0)
         mapState!.previousBottomSafeArea = bottomOffset
     }
@@ -261,7 +297,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-       return true
+        return true
     }
 }
 

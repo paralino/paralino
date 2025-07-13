@@ -26,8 +26,9 @@ class LocationHistoryMapState : BaseMapObservableObject {
         
         vm.observe(flow: vm.uiState) { [weak self] state in
             if let state = state as? LocationHistoryScreenState {
+                let previousState = self?.uiState ?? LocationHistoryScreenState.companion.emptyState()
                 self?.uiState = state
-            
+                
                 if state.showPolyline {
                     self?.polylinePoints = state.selectedLocations
                         .compactMap {
@@ -56,15 +57,30 @@ class LocationHistoryMapState : BaseMapObservableObject {
                 
                 self?.clusterHistoryPins = state.clusterPins
                 
-                if state.mapFocusType is LocationHistoryDataViewTypeStats {
+                if state.focusType is LocationHistoryScreenFocusTypeOVERVIEW {
                     if let region = self?.getFocusRegion(state.selectedLocations) {
-                        self?.focusCamera(rect: region, animate: true, canInteruptAnimation: true)
+                        let areLocationsChanged: Bool = previousState.selectedLocations.map({ $0.pointId }) != state.selectedLocations.map({ $0.pointId })
+                        self?.focusCamera(
+                            rect: region,
+                            animate: true,
+                            canInteruptAnimation: areLocationsChanged
+                        )
                     }
+                } else if state.focusType.isMember {
+                    if let pin = state.selectedMapPinData {
+                        self?.pendingFocusedMarker = PendingFocusedMarkerData(
+                            marker: pin.asFocusedMarker(),
+                            animate: true,
+                            forceZoom: state.focusType is LocationHistoryScreenFocusTypeMEMBER_FOCUSED
+                        )
+                    }
+                }
+                
+                if state.dataViewType is LocationHistoryDataViewTypeStats {
                     self?.markers = []
-                } else if state.mapFocusType is LocationHistoryDataViewTypeLocationPoint {
+                } else if state.dataViewType is LocationHistoryDataViewTypeLocationPoint {
                     if let pin = state.selectedMapPinData {
                         self?.markers = [MapAnnotatedItem(marker: pin)]
-                        self?.focusToMarker(data: pin.asFocusedMarker(), forceZoom: false)
                     } else {
                         self?.markers = []
                     }
@@ -75,9 +91,9 @@ class LocationHistoryMapState : BaseMapObservableObject {
         }
     }
     
-    func getFocusRegion(_ points: [LocationHistoryPointState]) -> MKMapRect? {
+    private func getFocusRegion(_ points: [LocationHistoryPointState]) -> MKMapRect? {
         
-        if markers.isEmpty {
+        if points.isEmpty {
             return nil
         }
         
@@ -108,7 +124,7 @@ class LocationHistoryMapState : BaseMapObservableObject {
     }
     
     override func onMarkerTap(markerData: MapPinData) {
-        
+        vm.onEvent(event: LocationHistoryUiEventOnMarkerClick(pin: markerData))
     }
     
     override func onHistoryMarkerTap(markerData: HistoryMapMarkerData) {
