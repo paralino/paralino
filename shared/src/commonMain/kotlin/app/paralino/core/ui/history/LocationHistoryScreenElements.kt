@@ -2,6 +2,7 @@ package app.paralino.core.ui.history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,17 +13,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
@@ -31,9 +31,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPathViewMode
+import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
@@ -218,7 +217,7 @@ fun LocationHistoryScreenElements(
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(horizontal = 8.dp)
-                        .padding(bottom = 4.dp),
+                        .padding(bottom = 8.dp),
                     horizontalAlignment = Alignment.End
                 ) {
                     AnimatedVisibility(uiState.showPins) {
@@ -243,7 +242,7 @@ fun LocationHistoryScreenElements(
                         modifier = Modifier.padding(top = 4.dp),
                         selected = uiState.showPolyline,
                         name = stringResource(MR.strings.history_map_options_show_path),
-                        icon = CoreAppIcons.Timeline.asPainterResource(),
+                        icon = CoreAppIcons.PolylineWithDots.asPainterResource(),
                         onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPolyline) }
                     )
 
@@ -257,20 +256,49 @@ fun LocationHistoryScreenElements(
                 }
             }
 
-            Icon(
+            Row(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(end = 16.dp, bottom = 8.dp)
-                    .size(32.dp)
-                    .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
-                    .shadow(elevation = 4.dp, RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colors.background)
-                    .padding(4.dp)
-                    .rotate(animateFloatAsState(if (uiState.isFilterOpened) 90f else -90f).value),
-                painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                contentDescription = null
-            )
+                    .fillMaxWidth()
+                    .padding(end = 16.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                FocusTypeIcon(
+                    isVisible = uiState.focusType != LocationHistoryScreenFocusType.OVERVIEW,
+                    type = LocationHistoryScreenFocusType.OVERVIEW,
+                    icon = CoreAppIcons.ZoomOutFocusMap.asPainterResource(),
+                    onEvent = onEvent
+                )
+
+                FocusTypeIcon(
+                    isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && uiState.focusType == LocationHistoryScreenFocusType.NONE,
+                    type = LocationHistoryScreenFocusType.MEMBER_DEFAULT,
+                    icon = CoreAppIcons.ZoomFocusSmall.asPainterResource(),
+                    onEvent = onEvent
+                )
+
+                FocusTypeIcon(
+                    isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && (uiState.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT || uiState.focusType == LocationHistoryScreenFocusType.OVERVIEW),
+                    type = LocationHistoryScreenFocusType.MEMBER_FOCUSED,
+                    icon = CoreAppIcons.ZoomFocusFull.asPainterResource(),
+                    onEvent = onEvent
+                )
+
+                Icon(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(32.dp)
+                        .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
+                        .shadow(elevation = animateDpAsState(if (uiState.isFilterOpened) 4.dp else 0.dp).value, RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colors.background)
+                        .padding(4.dp)
+                        .rotate(animateFloatAsState(if (uiState.isFilterOpened) 90f else -90f).value),
+                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                    contentDescription = null
+                )
+            }
 
             Column(
                 modifier = Modifier.onGloballyPositioned { coordinates ->
@@ -310,6 +338,35 @@ fun LocationHistoryScreenElements(
 }
 
 @Composable
+private fun RowScope.FocusTypeIcon(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean,
+    type: LocationHistoryScreenFocusType,
+    icon: Painter,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = isVisible
+    ) {
+        Icon(
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .size(32.dp)
+                .clickable(onClick = {
+                    onEvent(LocationHistoryUiEvent.OnSelectFocusType(type))
+                })
+//                .shadow(elevation = 4.dp, RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colors.background)
+                .padding(4.dp),
+            painter = icon,
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
 private fun HistoryMapOptionChip(
     modifier: Modifier = Modifier,
     selected: Boolean,
@@ -327,7 +384,9 @@ private fun HistoryMapOptionChip(
     )
 
     DataInfoChip(
-        modifier = modifier.shadow(elevation = 4.dp, RoundedCornerShape(50)),
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .shadow(elevation = 4.dp, RoundedCornerShape(50)),
         backgroundColor = backgroundColor,
         shape = RoundedCornerShape(50),
         imageOrIcon = {
@@ -349,7 +408,6 @@ private fun HistoryMapOptionChip(
                 style = MaterialTheme.typography.body2,
                 color = contentColor
             )
-        },
-        onClick = onClick
+        }
     )
 }

@@ -439,7 +439,7 @@ fun SharingStartScreenCore(
                     Spacer(modifier = Modifier.size(10.dp))
                     LargeSeekbarSwitch(
                         modifier = Modifier.fillMaxWidth(),
-                        icon = CoreAppIcons.TimelinePath.asPainterResource(),
+                        icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                         title = stringResource(MR.strings.groups_sharing_setting_timeline_title),
                         description = stringResource(MR.strings.groups_sharing_setting_timeline_description),
                         state = rememberSeekbarState(

@@ -38,6 +38,7 @@ import app.paralino.android.ui.map.defaultMapUiSettings
 import app.paralino.android.ui.map.refocus
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
+import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
@@ -80,8 +81,52 @@ fun LocationHistoryMapContent(
         shouldAnimateMapFocus = true
     }
 
-//    LaunchedEffect(stateData.selectedLocations) {
-//        snapshotFlow { stateData.mapFocusType }
+    LaunchedEffect(stateData.selectedLocations, stateData.dataViewType) {
+        snapshotFlow { stateData.focusType }
+            .distinctUntilChanged()
+            .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
+            .collectLatest {
+                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
+                    delay(20)
+                }
+                cameraPositionState.refocus(
+                    scope = scope,
+                    markers = stateData.selectedLocations.mapNotNull {
+                        when (it) {
+                            is LocationHistoryPointState.Cluster -> {
+                                MapPinData(
+                                    id = "",
+                                    groupId = stateData.groupId,
+                                    cluster = it,
+                                    name = null,
+                                    image = null,
+                                    timeInfo = null
+                                )
+                            }
+                            is LocationHistoryPointState.Point -> {
+                                it.point.loc?.let { location ->
+                                    MapPinData(
+                                        id = it.point.properID,
+                                        groupId = stateData.groupId,
+                                        location = location,
+                                        name = null,
+                                        image = null,
+                                        timeInfo = null
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    forceZoom = true,
+                    ignoreAccuracy = false,
+                    durationMs = if (canAnimateMapFocus) 1000 else 0,
+                    padding = 200
+                )
+            }
+    }
+
+//    LaunchedEffect(uiState.dataViewType) {
+//        snapshotFlow { stateData.dataViewType }
 //            .distinctUntilChanged()
 //            .collectLatest {
 //                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
@@ -115,67 +160,28 @@ fun LocationHistoryMapContent(
 //                            }
 //                        }
 //                    },
-//                    ignoreAccuracy = it != LocationHistoryMapFocusType.LocationPoint,
-//                    durationMs = if (canAnimateMapFocus) 1000 else 0
+//                    ignoreAccuracy = it != LocationHistoryDataViewType.LocationPoint,
+//                    durationMs = if (canAnimateMapFocus) 500 else 0
 //                )
 //            }
 //    }
 
-    LaunchedEffect(uiState.dataViewType) {
-        snapshotFlow { stateData.dataViewType }
-            .distinctUntilChanged()
-            .collectLatest {
-                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
-                    delay(20)
-                }
-                cameraPositionState.refocus(
-                    scope = scope,
-                    markers = stateData.selectedLocations.mapNotNull {
-                        when (it) {
-                            is LocationHistoryPointState.Cluster -> {
-                                MapPinData(
-                                    id = "",
-                                    groupId = stateData.groupId,
-                                    cluster = it,
-                                    name = null,
-                                    image = null,
-                                    timeInfo = null
-                                )
-                            }
-                            is LocationHistoryPointState.Point -> {
-                                it.point.loc?.let { location ->
-                                    MapPinData(
-                                        id = it.point.properID,
-                                        groupId = stateData.groupId,
-                                        location = location,
-                                        name = null,
-                                        image = null,
-                                        timeInfo = null
-                                    )
-                                }
-                            }
-                        }
-                    },
-                    ignoreAccuracy = it != LocationHistoryDataViewType.LocationPoint,
-                    durationMs = if (canAnimateMapFocus) 500 else 0
-                )
-            }
-    }
-
-    LaunchedEffect(uiState.selectedMapPinData) {
-        snapshotFlow { stateData.selectedMapPinData }
+    LaunchedEffect(uiState.selectedMapPinData, uiState.focusType) {
+        snapshotFlow { stateData.focusType }
             .filterNotNull()
             .distinctUntilChanged()
+            .filter { it.isMember }
             .collectLatest {
                 if (!canAnimateMapFocus && shouldAnimateMapFocus) {
                     delay(20)
                 }
                 cameraPositionState.refocus(
                     scope = scope,
-                    markers = listOf(it),
+                    markers = listOfNotNull(uiState.selectedMapPinData),
                     ignoreAccuracy = false,
                     durationMs = if (canAnimateMapFocus) 300 else 0,
-                    forceZoom = false
+                    forceZoom = it == LocationHistoryScreenFocusType.MEMBER_FOCUSED,
+                    padding = 60
                 )
             }
     }
@@ -209,18 +215,6 @@ fun LocationHistoryMapContent(
         },
         onMapClick = { onEvent(LocationHistoryUiEvent.OnMapTouch) }
     ) {
-//        stateData.locations.mapNotNull { it.point.loc }?.forEach { model ->
-//            Circle(
-//                center = LatLng(model.lat, model.lng),
-//                clickable = true,
-//                fillColor = AppColors.accentDark.copy(alpha = 0.5f),
-//                radius = model.acc.toDouble(),
-//                strokeColor = Color.Blue,
-//                strokeWidth = 4f,
-//                zIndex = 10f
-//            )
-//        }
-
         when (uiState.dataViewType) {
             LocationHistoryDataViewType.LocationPoint -> {
                 uiState.selectedMapPinData?.let { point ->

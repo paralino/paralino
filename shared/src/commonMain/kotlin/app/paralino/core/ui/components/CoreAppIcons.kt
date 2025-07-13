@@ -38,6 +38,8 @@ import paralino.shared.generated.resources.ic_elevation_2
 import paralino.shared.generated.resources.ic_expand_less
 import paralino.shared.generated.resources.ic_expand_more
 import paralino.shared.generated.resources.ic_family_star
+import paralino.shared.generated.resources.ic_focus_person_off
+import paralino.shared.generated.resources.ic_focus_person_on
 import paralino.shared.generated.resources.ic_group
 import paralino.shared.generated.resources.ic_groups
 import paralino.shared.generated.resources.ic_home
@@ -103,6 +105,11 @@ import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
 import paralino.shared.generated.resources.paralino_start_background
 import paralino.shared.generated.resources.ic_route_dots
+import paralino.shared.generated.resources.ic_zoom_focus_full
+import paralino.shared.generated.resources.ic_zoom_focus_large
+import paralino.shared.generated.resources.ic_zoom_focus_small
+import paralino.shared.generated.resources.ic_zoom_in_map
+import paralino.shared.generated.resources.ic_zoom_out_map
 
 object CoreAppIcons {
     val LauncherLogo get() = Res.drawable.ic_launcher_foreground
@@ -184,14 +191,22 @@ object CoreAppIcons {
     val Groups get() = Res.drawable.ic_groups
 
     val Elevation get() = Res.drawable.ic_elevation_2
-    val Timeline get() = Res.drawable.ic_timeline
-    val TimelinePath get() = Res.drawable.ic_timeline_path
+    val PolylineWithDots get() = Res.drawable.ic_timeline
+    val TimelinePathWithPins get() = Res.drawable.ic_timeline_path
     val Directions get() = Res.drawable.ic_directions
     val BarChartStats get() = Res.drawable.ic_bar_chart_stats
     val CircleCluster get() = Res.drawable.ic_circle_cluster_dots
-    val Polyline get() = Res.drawable.ic_polyline
+    val PolylineWithCircles get() = Res.drawable.ic_polyline
     val TargetCircles get() = Res.drawable.ic_target_circles
-    val RouteWithDots get() = Res.drawable.ic_route_dots
+    val RouteLineWithDotsOnEnds get() = Res.drawable.ic_route_dots
+
+    val FocusPersonOn get() = Res.drawable.ic_focus_person_on
+    val FocusPersonOff get() = Res.drawable.ic_focus_person_off
+    val ZoomInFocusMap get() = Res.drawable.ic_zoom_in_map
+    val ZoomOutFocusMap get() = Res.drawable.ic_zoom_out_map
+    val ZoomFocusSmall get() = Res.drawable.ic_zoom_focus_small
+    val ZoomFocusLarge get() = Res.drawable.ic_zoom_focus_large
+    val ZoomFocusFull get() = Res.drawable.ic_zoom_focus_full
 
     val SignalWifi3 get() = Res.drawable.ic_wifi_3
     val SignalWifi2 get() = Res.drawable.ic_wifi_2

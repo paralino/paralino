@@ -37,7 +37,7 @@ fun LocationHistoryStatsTable(
 ) {
     val statsList = remember(stats) {
         listOf(
-            StatInfo("Distance", stats?.formattedDistance ?: "-", CoreAppIcons.Timeline),
+            StatInfo("Distance", stats?.formattedDistance ?: "-", CoreAppIcons.PolylineWithDots),
             StatInfo(
                 "Entries",
                 stats?.locationEntriesCount?.toString() ?: "-",

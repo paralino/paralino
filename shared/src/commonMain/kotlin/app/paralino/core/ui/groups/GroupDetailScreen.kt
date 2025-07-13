@@ -660,7 +660,7 @@ fun GroupDetailSharingStatusElement(
 
             if (contract.saveToHistory) {
                 Icon(
-                    painter = CoreAppIcons.TimelinePath.asPainterResource(),
+                    painter = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(5.dp)

@@ -80,8 +80,6 @@ class LocationHistoryViewModel(
                 }
             }
 
-            LocationHistoryUiEvent.OnCloseFocusedItemClick -> TODO()
-
             LocationHistoryUiEvent.OnMapModeSwitch -> {
                 dataController._uiState.update {
                     it.copy(
@@ -92,7 +90,12 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.OnMapTouch -> {
-                dataController._uiState.update { it.copy(isFilterOpened = false) }
+                dataController._uiState.update {
+                    it.copy(
+                        isFilterOpened = false,
+                        focusType = LocationHistoryScreenFocusType.NONE
+                    )
+                }
             }
 
             LocationHistoryUiEvent.ToggleMapFilter -> {
@@ -100,7 +103,16 @@ class LocationHistoryViewModel(
             }
 
             is LocationHistoryUiEvent.OnMarkerClick -> {
-                dataController._uiState.update { it.copy(isFilterOpened = false) }
+                dataController._uiState.update {
+                    it.copy(
+                        isFilterOpened = false,
+                        focusType = if (it.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT) {
+                            LocationHistoryScreenFocusType.MEMBER_FOCUSED
+                        } else {
+                            LocationHistoryScreenFocusType.MEMBER_DEFAULT
+                        }
+                    )
+                }
             }
 
             is LocationHistoryUiEvent.OnPointClicked -> {
@@ -112,7 +124,15 @@ class LocationHistoryViewModel(
                 }
             }
 
-            LocationHistoryUiEvent.OnRefocusClick -> TODO()
+            is LocationHistoryUiEvent.OnSelectFocusType -> {
+                dataController._uiState.update {
+                    it.copy(
+                        focusType = event.type,
+                        isFilterOpened = false
+                    )
+                }
+            }
+
             is LocationHistoryUiEvent.SetHistoryProgress -> {
                 val newId = dataController._uiState.value.selectedLocations.getOrNull(
                     index = event.progress
@@ -154,6 +174,10 @@ class LocationHistoryViewModel(
                 dataController._uiState.update {
                     it.copy(
                         dataViewType = event.type,
+                        focusType = when (event.type) {
+                            LocationHistoryDataViewType.LocationPoint -> LocationHistoryScreenFocusType.OVERVIEW
+                            LocationHistoryDataViewType.Stats -> LocationHistoryScreenFocusType.OVERVIEW
+                        },
                         isFilterOpened = false
                     )
                 }

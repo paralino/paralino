@@ -103,7 +103,7 @@ fun GroupSettingsScreenCore(
 
                     SettingsActionItem(
                         name = stringResource(MR.strings.history_delete_screen_title),
-                        icon = CoreAppIcons.TimelinePath.asPainterResource(),
+                        icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                         iconTint = AppColors.errorBackground
                     ) {
                         openLocationHistorySettings()
@@ -119,7 +119,7 @@ fun GroupSettingsScreenCore(
                 } else {
                     SettingsActionItem(
                         name = stringResource(MR.strings.history_delete_screen_title),
-                        icon = CoreAppIcons.TimelinePath.asPainterResource(),
+                        icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                         iconTint = AppColors.errorBackground
                     ) {
                         openLocationHistorySettings()

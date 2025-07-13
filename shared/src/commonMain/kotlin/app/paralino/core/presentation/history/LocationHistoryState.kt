@@ -46,9 +46,10 @@ data class LocationHistoryScreenState(
     val isFilterOpened: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
-    val viewMode: LocationHistoryPathViewMode,
     val stats: LocationHistoryStats?,
+    val viewMode: LocationHistoryPathViewMode,
     val dataViewType: LocationHistoryDataViewType,
+    val focusType: LocationHistoryScreenFocusType,
     val selectedLocationId: String?,
     val days: List<LocationHistoryDayState>,
     val daysInLoading: List<LocalDate>,
@@ -202,10 +203,11 @@ data class LocationHistoryScreenState(
                 clusterPins = true,
                 isFilterOpened = false,
                 locations = emptyList(),
-                viewMode = LocationHistoryPathViewMode.OVERVIEW,
                 devices = emptyList(),
                 stats = null,
+                viewMode = LocationHistoryPathViewMode.OVERVIEW,
                 dataViewType = LocationHistoryDataViewType.Stats,
+                focusType = LocationHistoryScreenFocusType.OVERVIEW,
                 selectedLocationId = null,
                 days = emptyList(),
                 daysInLoading = emptyList(),
@@ -299,6 +301,16 @@ enum class LocationHistoryPathViewMode {
     DETAILED
 }
 
+sealed interface LocationHistoryScreenFocusType {
+    data object NONE : LocationHistoryScreenFocusType
+    data object OVERVIEW : LocationHistoryScreenFocusType
+    data object MEMBER_DEFAULT : LocationHistoryScreenFocusType
+    data object MEMBER_FOCUSED : LocationHistoryScreenFocusType
+
+    val isMember: Boolean get() = this is MEMBER_DEFAULT || this is MEMBER_FOCUSED
+    val isInOverview: Boolean get() = this == OVERVIEW
+}
+
 data class LocationHistoryDayState(
     val isSelected: Boolean,
     val isLoading: Boolean,
@@ -332,9 +344,8 @@ sealed interface LocationHistoryUiEvent {
     data object ToggleShowPolyline : LocationHistoryUiEvent
     data object ToggleClusterPins : LocationHistoryUiEvent
     data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
-    data object OnRefocusClick : LocationHistoryUiEvent
+    data class OnSelectFocusType(val type: LocationHistoryScreenFocusType) : LocationHistoryUiEvent
     data object OnMapModeSwitch : LocationHistoryUiEvent
-    data object OnCloseFocusedItemClick : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
     data object ToggleMapFilter : LocationHistoryUiEvent
     data object OnPreviousMonth : LocationHistoryUiEvent

@@ -158,7 +158,7 @@ fun LocationHistoryDetailCard(
                             .weight(1f)
                             .fillMaxHeight(),
                         selected = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
-                        icon = CoreAppIcons.RouteWithDots.asPainterResource(),
+                        icon = CoreAppIcons.RouteLineWithDotsOnEnds.asPainterResource(),
                         onClick = {
                             onEvent(
                                 LocationHistoryUiEvent.ChangeMapDataViewType(

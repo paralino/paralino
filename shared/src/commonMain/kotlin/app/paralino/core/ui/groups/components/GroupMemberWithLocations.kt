@@ -68,7 +68,6 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
-import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -546,7 +545,7 @@ private fun ColumnScope.GroupMemberActions(
         if (state.actions.history != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                startIcon = CoreAppIcons.TimelinePath.asPainterResource(),
+                startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
                 text = stringResource(MR.strings.groups_sharing_setting_timeline_title),
                 onClick = {
@@ -982,7 +981,7 @@ val MemberActionType.actionIcon: Painter
         MemberActionType.DELETE_LOCATION -> CoreAppIcons.Delete.asPainterResource()
         MemberActionType.BLOCK_USER -> CoreAppIcons.Block.asPainterResource()
         MemberActionType.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
-        MemberActionType.LOCATION_HISTORY -> CoreAppIcons.TimelinePath.asPainterResource()
+        MemberActionType.LOCATION_HISTORY -> CoreAppIcons.TimelinePathWithPins.asPainterResource()
     }
 
 val MemberActionType.actionText: StringResource
