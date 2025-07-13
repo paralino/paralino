@@ -6,6 +6,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,8 +36,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +53,6 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
-import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -138,7 +142,7 @@ fun LocationHistoryDetailCard(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
-                        selected = uiState.mapFocusType == LocationHistoryDataViewType.Stats,
+                        selected = uiState.dataViewType == LocationHistoryDataViewType.Stats,
                         icon = CoreAppIcons.BarChartStats.asPainterResource(),
                         onClick = {
                             onEvent(
@@ -153,7 +157,7 @@ fun LocationHistoryDetailCard(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight(),
-                        selected = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint,
+                        selected = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
                         icon = CoreAppIcons.RouteWithDots.asPainterResource(),
                         onClick = {
                             onEvent(
@@ -187,12 +191,16 @@ fun LocationHistoryDetailCard(
                     Row(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(vertical = 10.dp)
-                            .padding(horizontal = 10.dp),
+                            .padding(vertical = 6.dp)
+                            .padding(horizontal = 6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         // image
-                        Box(modifier = Modifier.width(IntrinsicSize.Min)) {
+                        Box(
+                            modifier = Modifier
+                                .width(IntrinsicSize.Min)
+                                .align(Alignment.Top)
+                        ) {
                             Column(
                                 modifier = Modifier
                                     .width(50.dp)
@@ -225,6 +233,7 @@ fun LocationHistoryDetailCard(
                         Column(
                             modifier = Modifier
                                 .weight(1f)
+                                .defaultMinSize(minHeight = 50.dp)
                                 .padding(start = 12.dp, end = 8.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -234,14 +243,12 @@ fun LocationHistoryDetailCard(
                                 modifier = Modifier
                             )
 
-                            when (uiState.mapFocusType) {
+                            when (uiState.dataViewType) {
                                 LocationHistoryDataViewType.LocationPoint -> {
                                     uiState.selectedPoint?.let { point ->
                                         LocationTime(time = point.locationTime)
 
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            SpeedAndElevationData(point = point)
-                                        }
+                                        SpeedAndElevationData(point = point)
 
                                         AnimatedVisibility(
                                             visible = point is LocationHistoryPointState.Point && point.point.loc != null && point.point.loc!!.acc > 300
@@ -278,7 +285,7 @@ fun LocationHistoryDetailCard(
                     }
                 }
 
-                AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint) {
+                AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint) {
                     Column {
                         AnimatedVisibility(uiState.selectedPoint?.statusTime != null) {
                             FlowRow(
@@ -330,7 +337,11 @@ fun LocationHistoryDetailCard(
                                     startIcon = CoreAppIcons.Directions.asPainterResource(),
                                     endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
                                     text = stringResource(MR.strings.group_members_item_directions_button),
-                                    backgroundColor = MaterialTheme.colors.primary,
+                                    backgroundColor = if (isSystemInDarkTheme()) {
+                                        AppColors.accentLight.copy(alpha = 0.2f)
+                                    } else {
+                                        AppColors.accent.copy(alpha = 0.2f)
+                                    },
                                     onClick = {
                                         onEvent(
                                             LocationHistoryUiEvent.OnDirectionsRequest(action = uiState.navigateAction!!)
@@ -357,7 +368,7 @@ fun LocationHistoryDetailCard(
                 }
             }
 
-            AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryDataViewType.Stats) {
+            AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.Stats) {
                 uiState.stats?.let {
                     LocationHistoryStatsTable(
                         modifier = Modifier
@@ -368,7 +379,7 @@ fun LocationHistoryDetailCard(
                 }
             }
 
-            AnimatedVisibility(visible = uiState.mapFocusType == LocationHistoryDataViewType.LocationPoint) {
+            AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -522,37 +533,63 @@ fun UserDeviceChip(
 }
 
 @Composable
-private fun RowScope.SpeedAndElevationData(
+private fun ColumnScope.SpeedAndElevationData(
     point: LocationHistoryPointState
 ) {
-    if (point.formattedSpeed != null) {
-        Icon(
-            painter = CoreAppIcons.Speed.asPainterResource(),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(end = 2.dp)
-                .size(18.dp)
-        )
-        Text(
-            text = point.formattedSpeed!!,
-            style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-        )
-        Spacer(modifier = Modifier.size(8.dp))
+    var speed: String by remember {
+        mutableStateOf(point.formattedSpeed ?: "")
     }
 
-    if (point.formattedElevation != null) {
-        Icon(
-            painter = CoreAppIcons.Elevation.asPainterResource(),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(end = 2.dp)
-                .size(18.dp)
-        )
-        Text(
-            text = point.formattedElevation!!,
-            style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-        )
-        Spacer(modifier = Modifier.size(8.dp))
+    var elevation: String by remember {
+        mutableStateOf(point.formattedElevation ?: "")
+    }
+
+    LaunchedEffect(point.formattedSpeed, point.formattedElevation) {
+        if (!point.formattedSpeed.isNullOrBlank()) {
+            speed = point.formattedSpeed ?: ""
+        }
+
+        if (!point.formattedElevation.isNullOrBlank()) {
+            elevation = point.formattedElevation ?: ""
+        }
+    }
+
+    AnimatedVisibility(point.formattedSpeed != null || point.formattedElevation != null) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AnimatedVisibility(point.formattedSpeed != null) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = CoreAppIcons.Speed.asPainterResource(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 2.dp)
+                            .size(18.dp)
+                    )
+                    Text(
+                        text = speed,
+                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
+            }
+
+            AnimatedVisibility(point.formattedElevation != null) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = CoreAppIcons.Elevation.asPainterResource(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 2.dp)
+                            .size(18.dp)
+                    )
+                    Text(
+                        text = elevation,
+                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
+            }
+        }
     }
 }
 

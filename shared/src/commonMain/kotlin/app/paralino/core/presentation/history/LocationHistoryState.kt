@@ -43,11 +43,12 @@ data class LocationHistoryScreenState(
     val showPolyline: Boolean,
     val showPins: Boolean,
     val clusterPins: Boolean,
+    val isFilterOpened: Boolean,
     val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
     val viewMode: LocationHistoryPathViewMode,
     val stats: LocationHistoryStats?,
-    val mapFocusType: LocationHistoryDataViewType,
+    val dataViewType: LocationHistoryDataViewType,
     val selectedLocationId: String?,
     val days: List<LocationHistoryDayState>,
     val daysInLoading: List<LocalDate>,
@@ -100,7 +101,7 @@ data class LocationHistoryScreenState(
     } ?: selectedLocations.lastIndex
 
     val selectedPoint: LocationHistoryPointState? =
-        if (mapFocusType is LocationHistoryDataViewType.LocationPoint) {
+        if (dataViewType is LocationHistoryDataViewType.LocationPoint) {
             selectedLocations.withIndex().firstOrNull {
                 it.index == locationIndex
             }?.value ?: selectedLocations.firstOrNull()
@@ -199,11 +200,12 @@ data class LocationHistoryScreenState(
                 showPolyline = true,
                 showPins = true,
                 clusterPins = true,
+                isFilterOpened = false,
                 locations = emptyList(),
                 viewMode = LocationHistoryPathViewMode.OVERVIEW,
                 devices = emptyList(),
                 stats = null,
-                mapFocusType = LocationHistoryDataViewType.Stats,
+                dataViewType = LocationHistoryDataViewType.Stats,
                 selectedLocationId = null,
                 days = emptyList(),
                 daysInLoading = emptyList(),
@@ -325,6 +327,7 @@ sealed interface LocationHistoryUiEvent {
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
     data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
+    data object ToggleClusterLocations : LocationHistoryUiEvent
     data object ToggleShowPins : LocationHistoryUiEvent
     data object ToggleShowPolyline : LocationHistoryUiEvent
     data object ToggleClusterPins : LocationHistoryUiEvent
@@ -333,10 +336,10 @@ sealed interface LocationHistoryUiEvent {
     data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnCloseFocusedItemClick : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
+    data object ToggleMapFilter : LocationHistoryUiEvent
     data object OnPreviousMonth : LocationHistoryUiEvent
     data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent
     data object ToggleDayRange : LocationHistoryUiEvent
-    data object ToggleViewMode : LocationHistoryUiEvent
     data object OnCloseScreen : LocationHistoryUiEvent
     data object OpenLocationSettings : LocationHistoryUiEvent
 }

@@ -17,6 +17,7 @@ import app.paralino.core.utils.extensions.listOfDatesUntil
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 class RefreshLocationHistoryUseCase(
@@ -33,13 +34,15 @@ class RefreshLocationHistoryUseCase(
         locationId: String?,
         startDate: LocalDate,
         endDate: LocalDate,
+        requestCacheDuration: Duration
     ) {
         mutex.withLock {
             if (groupId == UserGroup.groupPersonalDevicesId) {
                 refreshPersonalLocationHistory(
                     locationId = locationId,
                     startDate = startDate,
-                    endDate = endDate
+                    endDate = endDate,
+                    requestCacheDuration = requestCacheDuration
                 )
             } else {
                 refreshGroupLocationHistory(
@@ -47,7 +50,8 @@ class RefreshLocationHistoryUseCase(
                     memberUserId = memberUserId,
                     locationId = locationId,
                     startDate = startDate,
-                    endDate = endDate
+                    endDate = endDate,
+                    requestCacheDuration = requestCacheDuration
                 )
             }
         }
@@ -59,12 +63,13 @@ class RefreshLocationHistoryUseCase(
         locationId: String?,
         startDate: LocalDate,
         endDate: LocalDate,
+        requestCacheDuration: Duration
     ): GroupLocationHistoryReadResponse? {
         val key = startDate.listOfDatesUntil(endDate).joinToString { it.dateForApi() }
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "${groupId}_${memberUserId}_${key}",
-                timeMillis = 2.minutes.inWholeMilliseconds
+                timeMillis = requestCacheDuration.inWholeMilliseconds
             )
         ) {
             val payload = GroupLocationHistoryReadPayload(
@@ -108,12 +113,13 @@ class RefreshLocationHistoryUseCase(
         locationId: String?,
         startDate: LocalDate,
         endDate: LocalDate,
+        requestCacheDuration: Duration
     ): PersonalLocationHistoryReadResponse? {
         val key = startDate.listOfDatesUntil(endDate).joinToString { it.dateForApi() }
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "personal_history_${key}",
-                timeMillis = 2.minutes.inWholeMilliseconds
+                timeMillis = requestCacheDuration.inWholeMilliseconds
             )
         ) {
             val payload = PersonalLocationHistoryReadPayload(

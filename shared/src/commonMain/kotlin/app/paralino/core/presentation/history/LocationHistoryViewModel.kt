@@ -12,7 +12,6 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog.*
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,6 +55,7 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.LoadHistory -> {
                 dataController.loadHistory(groupId = event.groupId, memberUserId = event.memberUserId)
             }
+
             is LocationHistoryUiEvent.DialogAction -> {
                 when (event.action.dialog) {
                     is DeleteLocationHistoryEntry -> {
@@ -79,17 +79,36 @@ class LocationHistoryViewModel(
                     else -> {}
                 }
             }
+
             LocationHistoryUiEvent.OnCloseFocusedItemClick -> TODO()
+
             LocationHistoryUiEvent.OnMapModeSwitch -> {
-                dataController._uiState.update { it.copy(isSatelliteMode = !it.isSatelliteMode) }
+                dataController._uiState.update {
+                    it.copy(
+                        isSatelliteMode = !it.isSatelliteMode,
+                        isFilterOpened = false
+                    )
+                }
             }
 
-            LocationHistoryUiEvent.OnMapTouch -> {}
-            is LocationHistoryUiEvent.OnMarkerClick -> {}
+            LocationHistoryUiEvent.OnMapTouch -> {
+                dataController._uiState.update { it.copy(isFilterOpened = false) }
+            }
+
+            LocationHistoryUiEvent.ToggleMapFilter -> {
+                dataController._uiState.update { it.copy(isFilterOpened = !it.isFilterOpened) }
+            }
+
+            is LocationHistoryUiEvent.OnMarkerClick -> {
+                dataController._uiState.update { it.copy(isFilterOpened = false) }
+            }
 
             is LocationHistoryUiEvent.OnPointClicked -> {
                 dataController._uiState.update {
-                    it.copy(selectedLocationId = event.point.pointId)
+                    it.copy(
+                        selectedLocationId = event.point.pointId,
+                        isFilterOpened = false
+                    )
                 }
             }
 
@@ -100,7 +119,10 @@ class LocationHistoryViewModel(
                 )?.pointId
 
                 dataController._uiState.update {
-                    it.copy(selectedLocationId = newId)
+                    it.copy(
+                        selectedLocationId = newId,
+                        isFilterOpened = false
+                    )
                 }
             }
 
@@ -110,19 +132,8 @@ class LocationHistoryViewModel(
                         1 -> 3
                         else -> 1
                     },
-                    selectedDate = uiState.value.selectedDate
+                    selectedDate = uiState.value.selectedDate,
                 )
-            }
-
-            LocationHistoryUiEvent.ToggleViewMode -> {
-                dataController._uiState.update {
-                    it.copy(
-                        viewMode = when (it.viewMode) {
-                            LocationHistoryPathViewMode.OVERVIEW -> LocationHistoryPathViewMode.DETAILED
-                            LocationHistoryPathViewMode.DETAILED -> LocationHistoryPathViewMode.OVERVIEW
-                        }
-                    )
-                }
             }
 
             is LocationHistoryUiEvent.OnMapLongPress -> {}
@@ -141,7 +152,10 @@ class LocationHistoryViewModel(
 
             is LocationHistoryUiEvent.ChangeMapDataViewType -> {
                 dataController._uiState.update {
-                    it.copy(mapFocusType = event.type)
+                    it.copy(
+                        dataViewType = event.type,
+                        isFilterOpened = false
+                    )
                 }
             }
 
@@ -173,7 +187,8 @@ class LocationHistoryViewModel(
                                 startInfo = startTime,
                                 endInfo = endTime,
                                 count = uiState.value.locationsToDelete.size.toString().let { "**$it**" }
-                            )
+                            ),
+                            isFilterOpened = false
                         )
                     }
                 } else {
@@ -183,7 +198,8 @@ class LocationHistoryViewModel(
                             alertDialog = DeleteLocationHistoryEntry(
                                 info = time,
                                 canDeleteRange = uiState.value.selectedLocations.size > 1
-                            )
+                            ),
+                            isFilterOpened = false
                         )
                     }
                 }
@@ -217,6 +233,17 @@ class LocationHistoryViewModel(
 
             LocationHistoryUiEvent.OpenLocationSettings -> {
                 dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenHistorySettings)
+            }
+
+            LocationHistoryUiEvent.ToggleClusterLocations -> {
+                dataController._uiState.update {
+                    it.copy(
+                        viewMode = when (it.viewMode) {
+                            LocationHistoryPathViewMode.OVERVIEW -> LocationHistoryPathViewMode.DETAILED
+                            LocationHistoryPathViewMode.DETAILED -> LocationHistoryPathViewMode.OVERVIEW
+                        }
+                    )
+                }
             }
 
             LocationHistoryUiEvent.ToggleClusterPins -> {

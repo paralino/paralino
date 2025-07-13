@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -156,7 +157,17 @@ fun LocationHistoryDeleteScreenCore(
 
                 Spacer(modifier = Modifier.size(20.dp))
 
-                DateRangeIndicator(text = uiState.deleteInfoContent)
+                AnimatedVisibility(uiState.deleteInfoContent != null) {
+                    Text(
+                        text = (uiState.deleteInfoContent ?: "").annotatedBoldCompose(
+                            textColor = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                        ),
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
                 Spacer(modifier = Modifier.size(20.dp))
             }
@@ -276,13 +287,21 @@ private fun DateOptionItem(
                     .align(Alignment.CenterVertically)
                     .size(24.dp)
                     .background(
-                        MaterialTheme.colors.primary,
+                        color = if (isSystemInDarkTheme()) {
+                            MaterialTheme.colors.onPrimary
+                        } else {
+                            MaterialTheme.colors.primary
+                        },
                         shape = CircleShape
                     )
                     .padding(1.dp),
                 painter = CoreAppIcons.CheckCircle.asPainterResource(),
                 contentDescription = null,
-                tint = MaterialTheme.colors.onPrimary
+                tint = if (isSystemInDarkTheme()) {
+                    MaterialTheme.colors.primary
+                } else {
+                    MaterialTheme.colors.onPrimary
+                }
             )
         } else {
             Icon(
@@ -418,22 +437,5 @@ private fun YearMonthSelector(
                 tint = MaterialTheme.colors.primary
             )
         }
-    }
-}
-
-@Composable
-private fun DateRangeIndicator(
-    text: String?
-) {
-    AnimatedVisibility(text != null) {
-        Text(
-            text = (text ?: "").annotatedBoldCompose(
-                textColor = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
-            ),
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }

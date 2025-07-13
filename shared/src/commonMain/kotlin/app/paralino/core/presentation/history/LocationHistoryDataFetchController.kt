@@ -26,7 +26,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.stripNanoseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -39,6 +38,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class LocationHistoryDataFetchController(
     val dataController: LocationHistoryViewModelDataController,
@@ -124,7 +124,8 @@ class LocationHistoryDataFetchController(
                     memberUserId = memberUserId,
                     locationId = null,
                     startDate = startDate,
-                    endDate = endDate
+                    endDate = endDate,
+                    requestCacheDuration = 2.minutes
                 )
             } catch (e: Exception) {
                 // TODO handle error
@@ -178,7 +179,7 @@ class LocationHistoryDataFetchController(
                     locations = processedLocations,
                     devices = emptyList(),
                     stats = null,
-                    mapFocusType = LocationHistoryDataViewType.Stats
+                    dataViewType = LocationHistoryDataViewType.Stats
                 )
             }
         }
@@ -305,7 +306,7 @@ class LocationHistoryDataFetchController(
                     devices = devices,
                     stats = null,
                     // TODO adjust focused item
-                    mapFocusType = _uiState.value.mapFocusType,
+                    dataViewType = _uiState.value.dataViewType,
                 )
 
                 val stats = LocationHistoryStats.calculateStats(

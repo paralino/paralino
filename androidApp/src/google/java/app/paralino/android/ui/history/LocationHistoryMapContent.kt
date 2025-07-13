@@ -4,7 +4,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,9 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -35,12 +32,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.android.ui.map.MapMarkerComposable
 import app.paralino.android.ui.map.defaultMapProperties
 import app.paralino.android.ui.map.defaultMapUiSettings
 import app.paralino.android.ui.map.refocus
-import app.paralino.core.MR
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenState
@@ -58,7 +53,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
-import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -127,8 +121,8 @@ fun LocationHistoryMapContent(
 //            }
 //    }
 
-    LaunchedEffect(uiState.mapFocusType) {
-        snapshotFlow { stateData.mapFocusType }
+    LaunchedEffect(uiState.dataViewType) {
+        snapshotFlow { stateData.dataViewType }
             .distinctUntilChanged()
             .collectLatest {
                 if (!canAnimateMapFocus && shouldAnimateMapFocus) {
@@ -227,7 +221,7 @@ fun LocationHistoryMapContent(
 //            )
 //        }
 
-        when (uiState.mapFocusType) {
+        when (uiState.dataViewType) {
             LocationHistoryDataViewType.LocationPoint -> {
                 uiState.selectedMapPinData?.let { point ->
 

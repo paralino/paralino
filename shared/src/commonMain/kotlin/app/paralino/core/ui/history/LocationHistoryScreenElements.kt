@@ -154,20 +154,22 @@ fun LocationHistoryScreenElements(
                     }
                 },
                 actions = {
-                    Icon(
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .size(40.dp)
-                            .clickable { onEvent(LocationHistoryUiEvent.OpenLocationSettings) }
-                            .background(
-                                color = MaterialTheme.colors.surface,
-                                shape = CircleShape
-                            )
-                            .padding(10.dp),
-                        painter = CoreAppIcons.Edit.asPainterResource(),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.onSurface
-                    )
+                    if (uiState.isCurrentUser) {
+                        Icon(
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .size(40.dp)
+                                .clickable { onEvent(LocationHistoryUiEvent.OpenLocationSettings) }
+                                .background(
+                                    color = MaterialTheme.colors.surface,
+                                    shape = CircleShape
+                                )
+                                .padding(10.dp),
+                            painter = CoreAppIcons.Edit.asPainterResource(),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.onSurface
+                        )
+                    }
                 }
             )
         }
@@ -208,11 +210,9 @@ fun LocationHistoryScreenElements(
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
             )
         ) {
-            var optionsExpanded by remember { mutableStateOf(false) }
-
             AnimatedVisibility(
                 modifier = Modifier.align(alignment = Alignment.End),
-                visible = optionsExpanded
+                visible = uiState.isFilterOpened
             ) {
                 Column(
                     modifier = Modifier
@@ -252,7 +252,7 @@ fun LocationHistoryScreenElements(
                         selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
                         name = stringResource(MR.strings.history_map_options_location_clustering),
                         icon = CoreAppIcons.TargetCircles.asPainterResource(),
-                        onClick = { onEvent(LocationHistoryUiEvent.ToggleViewMode) }
+                        onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterLocations) }
                     )
                 }
             }
@@ -262,12 +262,12 @@ fun LocationHistoryScreenElements(
                     .align(Alignment.End)
                     .padding(end = 16.dp, bottom = 8.dp)
                     .size(32.dp)
-                    .clickable(onClick = { optionsExpanded = !optionsExpanded })
+                    .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
                     .shadow(elevation = 4.dp, RoundedCornerShape(8.dp))
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colors.background)
                     .padding(4.dp)
-                    .rotate(animateFloatAsState(if (optionsExpanded) 90f else -90f).value),
+                    .rotate(animateFloatAsState(if (uiState.isFilterOpened) 90f else -90f).value),
                 painter = CoreAppIcons.ChevronRight.asPainterResource(),
                 contentDescription = null
             )

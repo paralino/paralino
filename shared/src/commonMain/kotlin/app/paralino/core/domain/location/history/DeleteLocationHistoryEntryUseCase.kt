@@ -22,6 +22,7 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.PermissionDeniedException
 import kotlinx.datetime.LocalDate
+import kotlin.time.Duration.Companion.seconds
 
 class DeleteLocationHistoryEntryUseCase(
     private val database: MainDatabaseHelper,
@@ -64,7 +65,8 @@ class DeleteLocationHistoryEntryUseCase(
             memberUserId = memberUserId,
             locationId = null,
             startDate = startDate,
-            endDate = endDate
+            endDate = endDate,
+            requestCacheDuration = 0.seconds
         )
     }
 

@@ -209,7 +209,8 @@ class LocationHistoryViewModelDataController(
                 days = updatedDays,
                 isRefreshingData = true,
                 isLoadingLocations = true,
-                daysInLoading = state.daysInLoading.plus(updatedDays.filter { it.isSelected }.map { it.date }).distinct()
+                daysInLoading = state.daysInLoading.plus(updatedDays.filter { it.isSelected }.map { it.date }).distinct(),
+                isFilterOpened = false
             )
         }
 
