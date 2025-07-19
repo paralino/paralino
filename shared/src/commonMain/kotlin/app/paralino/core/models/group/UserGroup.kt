@@ -15,7 +15,7 @@ import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.hours

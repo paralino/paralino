@@ -6,15 +6,10 @@ import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
-import app.paralino.core.utils.extensions.stripNanoseconds
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -191,7 +186,7 @@ abstract class IValueFormatter {
     fun fromUTCtoMapSharingTime(timeUTC: String, splitTimeToOneLine: Boolean = true): String? {
         val dateTimeUTC = timeUTC.isoToLocalDateTime() ?: return null
         val local = dateTimeUTC.fromUTCtoLocal()
-        val now = Clock.System.now()
+        val now = nowUTC()
         val timeZone = TimeZone.currentSystemDefault()
         val nowDate = now.toLocalDateTime(TimeZone.currentSystemDefault())
         val sameYear = local.year == nowDate.year
@@ -263,7 +258,7 @@ abstract class IValueFormatter {
 
         val localEnd = endTimeCorrect.fromUTCtoLocal()
 
-        val now = Clock.System.now()
+        val now = nowUTC()
         val timeZone = TimeZone.currentSystemDefault()
         val nowDate = now.toLocalDateTime(timeZone)
         val currentYear = nowDate.year

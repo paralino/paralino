@@ -2,7 +2,7 @@ package app.paralino.core.models.raw
 
 import app.paralino.core.models.user.UserMe.Companion.guestUserEmail
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

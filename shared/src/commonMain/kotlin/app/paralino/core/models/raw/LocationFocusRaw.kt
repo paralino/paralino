@@ -4,7 +4,7 @@ import app.paralino.core.domain.notifications.processors.LocationRequestNotifica
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.utils.extensions.toJson
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.SerialName
 import kotlin.time.Duration.Companion.minutes
 

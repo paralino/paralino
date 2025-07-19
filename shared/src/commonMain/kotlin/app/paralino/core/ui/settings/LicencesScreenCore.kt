@@ -41,9 +41,12 @@ import androidx.compose.ui.window.DialogProperties
 import app.paralino.core.ui.CoreUiState
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
+import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.LibrariesScaffold
 import com.mikepenz.aboutlibraries.ui.compose.LibraryColors
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.LibraryPadding
+import com.mikepenz.aboutlibraries.ui.compose.libraryColors
 import com.mikepenz.aboutlibraries.ui.compose.rememberLibraries
 import com.mikepenz.aboutlibraries.ui.compose.util.author
 import com.mikepenz.aboutlibraries.ui.compose.util.htmlReadyLicenseContent
@@ -87,7 +90,7 @@ private fun LibrariesContainer(
     showLicenseBadges: Boolean = true,
     colors: LibraryColors = LibraryDefaults.libraryColors(),
     padding: LibraryPadding = LibraryDefaults.libraryPadding(),
-    itemContentPadding: PaddingValues = LibraryDefaults.ContentPadding,
+    itemContentPadding: PaddingValues = PaddingValues(0.dp),
     itemSpacing: Dp = 0.dp,
     header: (LazyListScope.() -> Unit)? = null,
     onLibraryClick: ((Library) -> Unit)? = null,
@@ -196,7 +199,7 @@ private fun Libraries(
     showLicenseBadges: Boolean = true,
     colors: LibraryColors = LibraryDefaults.libraryColors(),
     padding: LibraryPadding = LibraryDefaults.libraryPadding(),
-    itemContentPadding: PaddingValues = LibraryDefaults.ContentPadding,
+    itemContentPadding: PaddingValues = PaddingValues(0.dp),
     itemSpacing: Dp = 0.dp,
     header: (LazyListScope.() -> Unit)? = null,
     onLibraryClick: ((Library) -> Unit)? = null,
@@ -242,7 +245,7 @@ private inline fun LazyListScope.libraryItems(
     showLicenseBadges: Boolean = true,
     colors: LibraryColors,
     padding: LibraryPadding,
-    itemContentPadding: PaddingValues = LibraryDefaults.ContentPadding,
+    itemContentPadding: PaddingValues = PaddingValues(0.dp),
     crossinline onLibraryClick: ((Library) -> Unit),
 ) {
     items(libraries) { library ->
@@ -269,7 +272,7 @@ private fun Library(
     showLicenseBadges: Boolean = true,
     colors: LibraryColors = LibraryDefaults.libraryColors(),
     padding: LibraryPadding = LibraryDefaults.libraryPadding(),
-    contentPadding: PaddingValues = LibraryDefaults.ContentPadding,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     typography: Typography = MaterialTheme.typography,
     onClick: () -> Unit,
 ) {
@@ -298,7 +301,7 @@ private fun Library(
             if (version != null && showVersion) {
                 Text(
                     version,
-                    modifier = Modifier.padding(padding.versionPadding),
+                    modifier = Modifier.padding(padding.versionPadding.contentPadding),
                     style = typography.body2,
                     color = colors.contentColor,
                     textAlign = TextAlign.Center
@@ -317,7 +320,7 @@ private fun Library(
             FlowRow {
                 library.licenses.forEach {
                     Text(
-                        modifier = Modifier.padding(padding.badgeContentPadding),
+                        modifier = Modifier.padding(padding.licensePadding.contentPadding),
                         text = it.name
                     )
                 }

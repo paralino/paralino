@@ -1,8 +1,7 @@
 package app.paralino.core.utils.extensions
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -13,6 +12,7 @@ import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
+import kotlin.time.Clock
 import kotlin.time.Duration
 
 fun nowUTC(): Instant = Clock.System.now()
@@ -40,7 +40,7 @@ fun String.fromUTCtoInstant(): Instant? {
 
 fun String.isoWithOffsetToInstant(): Instant? {
     return try {
-        Instant.parse(input = this, format = DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+        Instant.parse(input = this)
     } catch (e: Exception) {
         null
     }

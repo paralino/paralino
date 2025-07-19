@@ -8,7 +8,7 @@ import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 expect class AppPrefsProvider {
     val userSettings: Settings

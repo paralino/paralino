@@ -12,7 +12,7 @@ import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isOlderThan
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.time.Duration.Companion.minutes
 
 sealed interface GroupMemberItemState {

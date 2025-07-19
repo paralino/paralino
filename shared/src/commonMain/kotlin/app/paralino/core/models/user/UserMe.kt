@@ -1,7 +1,7 @@
 package app.paralino.core.models.user
 
 import app.paralino.core.models.base.ImageModel
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

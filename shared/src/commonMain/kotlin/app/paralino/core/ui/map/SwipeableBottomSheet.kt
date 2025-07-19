@@ -176,9 +176,15 @@ class SwipeableSheetState internal constructor(
 ) {
 
     val maxSheetContentSizePercent = 0.95f
+    private var anchors: Map<BottomSheetPosition, Float> = emptyMap()
+        private set
+
+    var screenHeightPixels: Float = 0f
+        private set
 
     val progress: Float
         get() {
+            val offset = state.offset.takeIf { it.isFinite() } ?: return 1f
             val topAnchor = state.anchors.closestAnchor(offset, searchUpwards = true) ?: return 1f
             val bottomAnchor =
                 state.anchors.closestAnchor(offset, searchUpwards = false) ?: return 1f
@@ -200,12 +206,6 @@ class SwipeableSheetState internal constructor(
         get() {
             return offset > state.anchors.positionOf(BottomSheetPosition.COLLAPSED)
         }
-
-    private var anchors: Map<BottomSheetPosition, Float> = emptyMap()
-        private set
-
-    var screenHeightPixels: Float = 0f
-        private set
 
     val contentBottomPadding: Dp
         get() {

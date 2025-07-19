@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Entity(tableName = "localLocationHistoryKeyEntity")
 data class LocalLocationHistoryKeyEntity(
