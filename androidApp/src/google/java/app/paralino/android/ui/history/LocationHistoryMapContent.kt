@@ -81,7 +81,7 @@ fun LocationHistoryMapContent(
         shouldAnimateMapFocus = true
     }
 
-    LaunchedEffect(stateData.selectedLocations, stateData.dataViewType) {
+    LaunchedEffect(stateData.selectedLocations, stateData.dataViewType, mapContentPadding) {
         snapshotFlow { stateData.focusType }
             .distinctUntilChanged()
             .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
@@ -124,47 +124,6 @@ fun LocationHistoryMapContent(
                 )
             }
     }
-
-//    LaunchedEffect(uiState.dataViewType) {
-//        snapshotFlow { stateData.dataViewType }
-//            .distinctUntilChanged()
-//            .collectLatest {
-//                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
-//                    delay(20)
-//                }
-//                cameraPositionState.refocus(
-//                    scope = scope,
-//                    markers = stateData.selectedLocations.mapNotNull {
-//                        when (it) {
-//                            is LocationHistoryPointState.Cluster -> {
-//                                MapPinData(
-//                                    id = "",
-//                                    groupId = stateData.groupId,
-//                                    cluster = it,
-//                                    name = null,
-//                                    image = null,
-//                                    timeInfo = null
-//                                )
-//                            }
-//                            is LocationHistoryPointState.Point -> {
-//                                it.point.loc?.let { location ->
-//                                    MapPinData(
-//                                        id = it.point.properID,
-//                                        groupId = stateData.groupId,
-//                                        location = location,
-//                                        name = null,
-//                                        image = null,
-//                                        timeInfo = null
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    },
-//                    ignoreAccuracy = it != LocationHistoryDataViewType.LocationPoint,
-//                    durationMs = if (canAnimateMapFocus) 500 else 0
-//                )
-//            }
-//    }
 
     LaunchedEffect(uiState.selectedMapPinData, uiState.focusType) {
         snapshotFlow { stateData.focusType }

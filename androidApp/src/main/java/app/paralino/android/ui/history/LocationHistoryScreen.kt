@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryScreenState
@@ -42,6 +43,7 @@ import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryDateSelector
 import app.paralino.core.ui.history.LocationHistoryScreenElements
 import app.paralino.core.ui.history.LocationHistoryStatsTable
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.openNavigation
 import kotlinx.coroutines.flow.collectLatest
@@ -81,6 +83,14 @@ fun LocationHistoryScreen(
                 LocationHistoryScreenEvent.OpenHistorySettings -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.LocationHistoryDelete.route(groupId = uiState.groupId)
+                    )
+                }
+
+                LocationHistoryScreenEvent.OpenPaywall -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.BillingPaywall.route(
+                            type = BillingScreenSourceType.UPGRADE
+                        )
                     )
                 }
 
@@ -222,10 +232,11 @@ private fun LocationHistoryDateSelectorPreview() {
         Surface {
             LocationHistoryDateSelector(
                 modifier = Modifier.padding(16.dp),
-                dayRange = 7,
                 elevation = 8.dp,
-                canNavigate = true,
-                days = sampleDays.reversed(),
+                state = LocationHistoryDateSelectorState(
+                    days = sampleDays.reversed(),
+                    dateRangeDays = 7
+                ),
                 onEvent = { },
             )
         }

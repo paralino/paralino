@@ -1,11 +1,13 @@
 package app.paralino.core.presentation.history
 
+import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
@@ -15,6 +17,7 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.Logr
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
@@ -29,16 +32,22 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 class LocationHistoryDataFetchController(
     val dataController: LocationHistoryViewModelDataController,
@@ -54,54 +63,57 @@ class LocationHistoryDataFetchController(
     private val remoteConfig: RemoteConfigRepository = dataController.remoteConfig
     private val _uiState = dataController._uiState
     
-    private val _clusteringService = LocationClusteringService(valueFormatter)
-    val clusteringService: LocationClusteringService get() = _clusteringService
+    private val clusteringService = LocationClusteringService(valueFormatter)
 
     fun loadHistory(
         groupId: String,
         memberUserId: String
     ): Flow<Unit> {
-        _uiState.update {
+        return flow {
             val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
-            it.copy(
+            val isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId
+            val isCurrentUser = memberUserId == appPrefs.userId
+
+            val newState = _uiState.value.copy(
                 groupId = groupId,
                 memberUserId = memberUserId,
-                isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId,
-                isCurrentUser = memberUserId == appPrefs.userId,
-                historyDaysLimit = null,
+                isPersonalHistory = isPersonalHistory,
+                isCurrentUser = isCurrentUser,
                 isGroupOwner = false,
-                dateRangeDays = 1,
                 selectedDate = selectedDate,
                 locations = emptyList(),
                 devices = emptyList(),
                 isDeletingEntry = false,
                 deletionRangeStartIndex = null,
-                isRefreshingData = true,
                 isLoadingLocations = true,
+                isLoadingData = true,
                 stats = null,
-                selectedLocationId = null,
-                days = dataController.generateDates(
+                daySelectorState = createDateSelector(
+                    groupId = groupId,
+                    selectedDate = selectedDate,
                     dateRangeDays = 1,
-                    startDate = selectedDate
+                    daysInLoading = listOf(selectedDate)
                 ),
-                daysInLoading = listOf(selectedDate)
+                selectedLocationId = null,
+            )
+
+            _uiState.value = newState
+
+            emitAll(
+                reload(
+                    startDate = newState.startDate,
+                    endDate = newState.endDate
+                )
             )
         }
-
-        return reload(
-            dateRangeDays = _uiState.value.dateRangeDays,
-            selectedDate = _uiState.value.selectedDate
-        )
     }
 
     fun reload(
-        dateRangeDays: Int,
-        selectedDate: LocalDate
+        startDate: LocalDate,
+        endDate: LocalDate
     ): Flow<Unit> {
         val groupId = _uiState.value.groupId
         val memberUserId = _uiState.value.memberUserId
-        val startDate = _uiState.value.startDate
-        val endDate = _uiState.value.endDate
 
         val job = if (groupId == UserGroup.groupPersonalDevicesId) {
             fetchPersonalLocationHistory(
@@ -135,8 +147,9 @@ class LocationHistoryDataFetchController(
 
             _uiState.update {
                 it.copy(
-                    isRefreshingData = false,
-                    daysInLoading = it.daysInLoading - startDate.listOfDatesUntil(endDate)
+                    daySelectorState = it.daySelectorState.copy(
+                        daysInLoading = it.daySelectorState.daysInLoading - startDate.listOfDatesUntil(endDate)
+                    )
                 )
             }
         }
@@ -146,7 +159,7 @@ class LocationHistoryDataFetchController(
 
     private fun fetchPersonalLocationHistory(startDate: LocalDate, endDate: LocalDate): Flow<Unit> {
         return combine(
-            userRepo.localUser,
+            userRepo.localUser.mapNotNull { it.data },
             userRepo.userPlans,
             getLocationHistory.getLocationHistory(
                 groupId = UserGroup.groupPersonalDevicesId,
@@ -161,7 +174,7 @@ class LocationHistoryDataFetchController(
                 mapLocationPoints(entry = it)
             }
             
-            val processedLocations = _clusteringService.processLocations(
+            val processedLocations = clusteringService.processLocations(
                 points = locations,
                 rangeStart = _uiState.value.startDate,
                 rangeEnd = _uiState.value.endDate
@@ -171,14 +184,14 @@ class LocationHistoryDataFetchController(
                 it.copy(
                     groupName = null,
                     groupImage = null,
-                    historyDaysLimit = plans.highestValidPlanConfig.personalHistoryDaysLimit,
                     isGroupOwner = true,
-                    userName = user.data?.name ?: "",
-                    userImage = user.data?.data?.userImage,
+                    userName = user.data?.userName ?: "",
+                    userImage = user.data?.userImage,
                     isLoadingLocations = false,
                     locations = processedLocations,
                     devices = emptyList(),
                     stats = null,
+                    planConfig = plans.highestValidPlanConfig,
                     dataViewType = LocationHistoryDataViewType.Stats
                 )
             }
@@ -219,7 +232,7 @@ class LocationHistoryDataFetchController(
                     ?.let {
                         UserActiveLocationDeviceState.Unknown(
                             ids = it.map { it.locationId }.distinct(),
-                            deviceName = "Unknown",
+                            deviceName = MR.strings.history_map_device_name_unknown.localizedString(),
                             isSelected = _uiState.value.devices.firstOrNull { it.isSelected } is UserActiveLocationDeviceState.Unknown,
                         )
                     }
@@ -287,7 +300,7 @@ class LocationHistoryDataFetchController(
                     .sortedByDescending { it.point.status.startTime }
                     .distinctBy { it.point.properID }
 
-                val processedLocations = _clusteringService.processLocations(
+                val processedLocations = clusteringService.processLocations(
                     points = locations,
                     rangeStart = _uiState.value.startDate,
                     rangeEnd = _uiState.value.endDate
@@ -296,17 +309,18 @@ class LocationHistoryDataFetchController(
                 val newState = _uiState.value.copy(
                     groupName = group.name,
                     groupImage = group.image,
-                    historyDaysLimit = group.group.historyDaysLimit(remoteConfig.getConfigOnce()),
                     isGroupOwner = group.isCurrentUserOwner,
                     userName = currentMember.member.name,
                     userImage = currentMember.member.image
                         ?: ImageModel.emoji(Emojis.robot),
                     isLoadingLocations = false,
+                    isLoadingData = false,
                     locations = processedLocations,
                     devices = devices,
                     stats = null,
+                    planConfig = group.group.planConfig(remoteConfig.getConfigOnce()),
                     // TODO adjust focused item
-                    dataViewType = _uiState.value.dataViewType,
+                    dataViewType = _uiState.value.dataViewType
                 )
 
                 val stats = LocationHistoryStats.calculateStats(
@@ -331,6 +345,72 @@ class LocationHistoryDataFetchController(
                 Logr.d("Error loading history", it)
             }
             .flowOn(Dispatchers.IO)
+    }
+
+    private suspend fun createDateSelector(
+        groupId: String,
+        selectedDate: LocalDate,
+        dateRangeDays: Int,
+        daysInLoading: List<LocalDate>,
+    ): LocationHistoryDateSelectorState {
+        val today = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId
+        val isGroupOwner = if (isPersonalHistory) {
+            true
+        } else {
+            userGroupRepo.allGroupsState.value.data?.firstOrNull { it.id == groupId }
+                ?.group?.isCurrentUserOwner ?: false
+        }
+
+        val planConfig = if (isPersonalHistory) {
+            userRepo.userPlans.value.highestValidPlanConfig
+        } else {
+            userGroupRepo.allGroupsState.value.data?.firstOrNull { it.id == groupId }
+                ?.group?.planConfig(remoteConfig.getConfigOnce())
+                ?: PlanConfig.default
+        }
+
+        val earliestDate = if (isPersonalHistory) {
+            if (planConfig.personalHistoryDaysLimit >= 0) {
+                today.minus(DatePeriod(days = planConfig.personalHistoryDaysLimit))
+            } else {
+                null
+            }
+        } else {
+            if (planConfig.historyDaysLimit >= 0) {
+                today.minus(DatePeriod(days = planConfig.historyDaysLimit))
+            } else {
+                null
+            }
+        }
+
+        val highestPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order } ?: PlanConfig.default
+        val upgradeAvailable = highestPlan.planTypeEnum.order > planConfig.planTypeEnum.order
+        val couldLoadMore = earliestDate == null
+
+        val startAction = if (couldLoadMore) {
+            LocationHistoryDateSelectionAction.LOAD_MODE
+        } else if (upgradeAvailable) {
+            if (isGroupOwner) {
+                LocationHistoryDateSelectionAction.UPGRADE
+            } else {
+                LocationHistoryDateSelectionAction.ASK_FOR_UPGRADE
+            }
+        } else {
+            LocationHistoryDateSelectionAction.END
+        }
+
+        return LocationHistoryDateSelectorState(
+            days = generateDates(
+                dateRangeDays = dateRangeDays,
+                startDate = selectedDate,
+                earliestDate = earliestDate
+            ),
+            daysInLoading = daysInLoading,
+            dateRangeDays = dateRangeDays,
+            startAction = startAction,
+            earliestDate = earliestDate
+        )
     }
 
     private fun mapLocationPoints(entry: LocationHistoryModelForDevice): List<LocationHistoryPointState.Point> {
@@ -385,146 +465,87 @@ class LocationHistoryDataFetchController(
             }
             ?: emptyList()
     }
-}
 
-class LocationClusteringService(
-    private val valueFormatter: IValueFormatter
-) {
-    
-    fun processLocations(
-        points: List<LocationHistoryPointState.Point>,
-        rangeStart: LocalDate,
-        rangeEnd: LocalDate,
-    ): List<LocationHistoryPointState> {
-        return clusterLocations(
-            points = points,
-            maxRadius = 100.0,
-            minDwellTime = 5.minutes,
-            rangeStart = rangeStart,
-            rangeEnd = rangeEnd
-        )
-    }
-    
-    private fun clusterLocations(
-        points: List<LocationHistoryPointState.Point>,
-        maxRadius: Double,
-        minDwellTime: Duration,
-        rangeStart: LocalDate,
-        rangeEnd: LocalDate,
-    ): List<LocationHistoryPointState> {
-        val clusters = mutableListOf<LocationHistoryPointState>()
-        val sortedPoints = points.sortedBy { it.point.status.startTime }
-        
-        var currentCluster = mutableListOf<LocationHistoryPointState.Point>()
-        
-        for (point in sortedPoints) {
-            if (point.point.loc == null) continue
-            
-            if (currentCluster.isEmpty()) {
-                currentCluster.add(point)
-            } else {
-                val clusterCenter = calculateCenter(currentCluster)
-                val distance = calculateDistance(point, clusterCenter)
-                
-                if (distance <= maxRadius) {
-                    currentCluster.add(point)
+    fun generateDates(
+        dateRangeDays: Int,
+        startDate: LocalDate,
+        earliestDate: LocalDate?,
+    ): List<LocationHistoryDayState> {
+        val dates = mutableListOf<LocationHistoryDayState>()
+        val today = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+        // Calculate which days are selected (dateRangeDays going back from startDate)
+        val selectedDates = mutableSetOf<LocalDate>()
+        repeat(dateRangeDays) {
+            startDate.minus(DatePeriod(days = it)).takeIf {
+                if (earliestDate != null) {
+                    it >= earliestDate
                 } else {
-                    // Finalize current cluster and start new one
-                    finalizeCluster(
-                        points = currentCluster,
-                        rangeStart = rangeStart,
-                        rangeEnd = rangeEnd
-                    )?.let {
-                        clusters.add(it) 
-                    }
-                    currentCluster = mutableListOf(point)
+                    true
                 }
+            }?.let {
+                selectedDates.add(it)
             }
         }
-        
-        // Last cluster
-        finalizeCluster(
-            points = currentCluster,
-            rangeStart = rangeStart,
-            rangeEnd = rangeEnd
-        )?.let {
-            clusters.add(it) 
-        }
-        
-        return clusters
-    }
-    
-    private fun finalizeCluster(
-        points: List<LocationHistoryPointState.Point>,
-        rangeStart: LocalDate,
-        rangeEnd: LocalDate,
-    ): LocationHistoryPointState? {
-        if (points.size >= 2) {
-            val startTime = points.first().point.status.startTime
-            val endTime = points.last().point.status.endTime
 
-            val center = calculateCenter(points)
-            val radius = calculateRadius(points, center)
+        // Sort selected dates to calculate positions correctly
+        val sortedSelectedDates = selectedDates.sorted()
 
-            return LocationHistoryPointState.Cluster(
-                locationId = points.first().locationId,
-                points = points,
-                lat = center.lat,
-                lng = center.lng,
-                accuracy = radius.toFloat(),
-                locationTime = valueFormatter.formatTimeRangeForLocationHistory(
-                    startTimeUTC = startTime.isoToLocalDateTime(),
-                    endTimeUTC = endTime.isoToLocalDateTime(),
-                    rangeStart = rangeStart,
-                    rangeEnd = rangeEnd
-                ),
-                battery = points.mapNotNull { it.point.status.bat }
-                    .sorted()
-                    .takeIf { it.isNotEmpty() }
-                    ?.let {
-                        listOf(it.first(), it.last())
-                            .distinct()
-                            .joinToString(separator = " - ") { "$it%" }
-                }
-            )
-
-        } else if (points.size == 1) {
-            return points.first()
+        // Determine the earliest date to generate
+        // Minimum: previous month start, but could be earlier if startDate is older
+        val earliestDate = if (earliestDate == null) {
+            val previousMonth = today.minus(DatePeriod(months = 1))
+            val previousMonthStart = LocalDate(previousMonth.year, previousMonth.month, 1)
+            minOf(startDate, previousMonthStart)
         } else {
-            return null
+            earliestDate
         }
-    }
-    
-    private fun calculateCenter(points: List<LocationHistoryPointState.Point>): LatLng {
-        val validPoints = points.mapNotNull { it.point.loc }
-        return LatLng(
-            lat = validPoints.map { it.lat }.average(),
-            lng = validPoints.map { it.lng }.average()
-        )
-    }
-    
-    private fun calculateRadius(points: List<LocationHistoryPointState.Point>, center: LatLng): Double {
-        return points.mapNotNull { it.point.loc }
-            .maxOfOrNull { calculateDistance(it, center) }
-            ?: 50.0
-    }
-    
-    private fun calculateDistance(point: LocationHistoryPointState.Point, center: LatLng): Double {
-        val loc = point.point.loc ?: return Double.MAX_VALUE
-        return calculateDistance(loc, center)
-    }
-    
-    private fun calculateDistance(loc: app.paralino.core.models.location.LocationHistoryPointLocationModel, center: LatLng): Double {
-        // Simple distance calculation using Pythagorean theorem (flat earth approximation)
-        val avgLat = (loc.lat + center.lat) / 2
-        val metersPerDegreeLat = 111320.0
-        val metersPerDegreeLng = 111320.0 * kotlin.math.cos(avgLat * 0.01745329252)
 
-        val deltaLat = (center.lat - loc.lat) * metersPerDegreeLat
-        val deltaLng = (center.lng - loc.lng) * metersPerDegreeLng
+        // Generate all days from earliest date to today
+        var currentDate = earliestDate
+        while (currentDate <= today) {
+            dates.add(
+                LocationHistoryDayState(
+                    isSelected = selectedDates.contains(currentDate),
+                    isLoading = false,
+                    date = currentDate,
+                    formattedMonth = valueFormatter.formatWithPattern(
+                        timeUTC = currentDate.atTime(0, 0),
+                        pattern = "MMM"
+                    ),
+                    formattedDay = valueFormatter.formatWithPattern(
+                        timeUTC = currentDate.atTime(0, 0),
+                        pattern = "EEE"
+                    ),
+                    isWeekend = currentDate.dayOfWeek == DayOfWeek.SATURDAY || currentDate.dayOfWeek == DayOfWeek.SUNDAY,
+                    position = calculatePosition(currentDate, sortedSelectedDates)
+                )
+            )
+            currentDate = currentDate.plus(DatePeriod(days = 1))
+        }
 
-        return kotlin.math.sqrt(deltaLat * deltaLat + deltaLng * deltaLng)
+        return dates
+    }
+
+    fun calculatePosition(
+        date: LocalDate,
+        sortedSelectedDates: List<LocalDate>
+    ): LocationHistorySelectedDayPosition {
+        if (!sortedSelectedDates.contains(date)) {
+            return LocationHistorySelectedDayPosition.SOLO
+        }
+
+        // If only one day is selected, it's SOLO
+        if (sortedSelectedDates.size == 1) {
+            return LocationHistorySelectedDayPosition.SOLO
+        }
+
+        val index = sortedSelectedDates.indexOf(date)
+
+        return when {
+            index == 0 -> LocationHistorySelectedDayPosition.START
+            index == sortedSelectedDates.size - 1 -> LocationHistorySelectedDayPosition.END
+            else -> LocationHistorySelectedDayPosition.CENTER
+        }
     }
 }
-
-private data class LatLng(val lat: Double, val lng: Double)

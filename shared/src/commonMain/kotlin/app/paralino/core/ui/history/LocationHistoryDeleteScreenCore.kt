@@ -368,10 +368,8 @@ private fun DatePickerSection(
         // Date selector using existing LocationHistoryDateSelector
         LocationHistoryDateSelector(
             modifier = Modifier.fillMaxWidth(),
-            dayRange = null,
-            days = dateState.days,
+            state = dateState.selectorState,
             elevation = 0.dp,
-            canNavigate = false,
             onEvent = { event ->
                 when (event) {
                     is LocationHistoryUiEvent.OnSelectDay -> onSelectDay(event.day)

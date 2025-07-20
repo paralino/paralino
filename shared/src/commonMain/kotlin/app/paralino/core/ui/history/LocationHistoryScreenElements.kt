@@ -4,6 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -207,7 +211,8 @@ fun LocationHistoryScreenElements(
         Column(
             modifier = Modifier.padding(
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-            )
+            ),
+            verticalArrangement = Arrangement.Bottom
         ) {
             AnimatedVisibility(
                 modifier = Modifier.align(alignment = Alignment.End),
@@ -305,30 +310,31 @@ fun LocationHistoryScreenElements(
                     cardHeight(with(density) { coordinates.size.height.toDp() })
                 }
             ) {
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .padding(bottom = 12.dp)
+                AnimatedVisibility(
+                    visible = uiState.daySelectorState.displayedDays.isNotEmpty(),
+                    enter = fadeIn() + slideInVertically(),
+                    exit = fadeOut() + slideOutVertically()
                 ) {
                     LocationHistoryDetailCard(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .padding(bottom = 12.dp),
                         uiState = uiState,
                         onEvent = onEvent
                     )
                 }
 
-                Row(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                AnimatedVisibility(
+                    visible = uiState.daySelectorState.displayedDays.isNotEmpty(),
+                    enter = fadeIn() + slideInVertically { it },
+                    exit = fadeOut() + slideOutVertically { it }
                 ) {
                     LocationHistoryDateSelector(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = 8.dp)
+                            .padding(bottom = 8.dp),
                         elevation = 4.dp,
-                        canNavigate = true,
-                        dayRange = uiState.dateRangeDays,
-                        days = uiState.displayedDays,
+                        state = uiState.daySelectorState,
                         onEvent = onEvent
                     )
                 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -40,13 +41,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.paralino.core.MR
+import app.paralino.core.presentation.history.LocationHistoryDateSelectionAction
+import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState
 import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.onboarding.onboardingContentTransitionSpec
 import app.paralino.core.ui.theme.AppColors
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -54,20 +60,19 @@ import kotlinx.datetime.LocalDate
 fun LocationHistoryDateSelector(
     modifier: Modifier = Modifier,
     elevation: Dp,
-    canNavigate: Boolean,
-    dayRange: Int?,
-    days: List<LocationHistoryDayState>,
+    state: LocationHistoryDateSelectorState,
     onEvent: (LocationHistoryUiEvent) -> Unit,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Scrollable days container
         Card(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f, fill = false)
+                .wrapContentWidth(),
             shape = RoundedCornerShape(12.dp),
             backgroundColor = MaterialTheme.colors.background,
             elevation = elevation
@@ -75,19 +80,22 @@ fun LocationHistoryDateSelector(
             val scrollState = rememberLazyListState(0)
             val scope = rememberCoroutineScope()
 
-            LaunchedEffect(days, dayRange) {
-                val selectedItemIndex = days.indexOfFirst { it.isSelected }.takeIf { it >= 0 }
-                if (selectedItemIndex != null) {
-                    scope.launch {
-                        scrollState.animateScrollToItem(
-                            index = (selectedItemIndex - 1).coerceAtLeast(0)
-                        )
+            LaunchedEffect(state.displayedDays, state.dateRangeDays) {
+                if (state.forceFocusOnSelectedDay) {
+                    val selectedItemIndex =
+                        state.displayedDays.indexOfFirst { it.isSelected }.takeIf { it >= 0 }
+                    if (selectedItemIndex != null) {
+                        scope.launch {
+                            scrollState.animateScrollToItem(
+                                index = (selectedItemIndex - 1).coerceAtLeast(0)
+                            )
+                        }
                     }
                 }
             }
 
             LazyRow(
-                modifier = Modifier,
+                modifier = Modifier.wrapContentWidth(),
                 contentPadding = PaddingValues(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End,
@@ -96,7 +104,7 @@ fun LocationHistoryDateSelector(
             ) {
                 // Day cells
                 itemsIndexed(
-                    items = days,
+                    items = state.displayedDays,
                     key = { index, item -> item.date.toString() }
                 ) { index, dayState ->
                     DayCell(
@@ -112,27 +120,75 @@ fun LocationHistoryDateSelector(
                     )
                 }
 
-                if (canNavigate) {
-                    // Load previous month arrow
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .clickable { onEvent(LocationHistoryUiEvent.OnPreviousMonth) }
-                                .padding(8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = CoreAppIcons.ChevronLeft.asPainterResource(),
-                                contentDescription = "Load previous dates",
-                                tint = MaterialTheme.colors.primary
+                when (state.startAction) {
+                    LocationHistoryDateSelectionAction.LOAD_MODE -> {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .clickable { onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction)) }
+                                    .padding(8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = CoreAppIcons.ChevronLeft.asPainterResource(),
+                                    contentDescription = "Load previous dates",
+                                    tint = MaterialTheme.colors.primary
+                                )
+                            }
+                        }
+                    }
+
+                    LocationHistoryDateSelectionAction.UPGRADE -> {
+                        item {
+                            SmallActionButton(
+                                modifier = Modifier.padding(start = 6.dp, end = 12.dp),
+                                icon = CoreAppIcons.Add.asPainterResource(),
+                                text = {
+                                    Text(
+                                        modifier = Modifier.padding(end = 2.dp),
+                                        text = stringResource(MR.strings.history_map_date_add_more_button)
+                                    )
+                                },
+                                hasEndArrow = false,
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = MaterialTheme.colors.onPrimary,
+                                onClick = {
+                                    onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction))
+                                }
                             )
                         }
+                    }
+
+                    LocationHistoryDateSelectionAction.ASK_FOR_UPGRADE -> {
+                        item {
+                            SmallActionButton(
+                                modifier = Modifier.padding(start = 6.dp, end = 12.dp),
+                                icon = null,
+                                text = {
+                                    Text(
+                                        modifier = Modifier.padding(end = 2.dp),
+                                        text = stringResource(MR.strings.history_map_date_need_more_button)
+                                    )
+                                },
+                                hasEndArrow = true,
+                                backgroundColor = MaterialTheme.colors.primary,
+                                contentColor = MaterialTheme.colors.onPrimary,
+                                onClick = {
+                                    onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction))
+                                }
+                            )
+                        }
+                    }
+
+                    LocationHistoryDateSelectionAction.END,
+                    LocationHistoryDateSelectionAction.NONE -> {
+
                     }
                 }
             }
         }
 
-        if (dayRange != null) {
+        if (state.dateRangeDays != null) {
             // Day range button
             Column(
                 modifier = Modifier
@@ -145,7 +201,7 @@ fun LocationHistoryDateSelector(
                 verticalArrangement = Arrangement.Center
             ) {
                 AnimatedContent(
-                    targetState = dayRange,
+                    targetState = state.dateRangeDays,
                     label = "animated count",
                     transitionSpec = onboardingContentTransitionSpec()
                 ) {

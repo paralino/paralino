@@ -84,7 +84,7 @@ fun LocationHistoryDetailCard(
             .fillMaxWidth()
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
 //            .clickable { }
                 .shadow(6.dp, RoundedCornerShape(16.dp))

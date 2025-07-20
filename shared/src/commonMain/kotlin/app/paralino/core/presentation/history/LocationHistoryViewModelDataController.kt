@@ -1,10 +1,12 @@
 package app.paralino.core.presentation.history
 
+import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
@@ -62,57 +64,9 @@ class LocationHistoryViewModelDataController(
             .launchIn(viewModel.coroutineScope)
     }
 
-    fun generateDates(
-        dateRangeDays: Int,
-        startDate: LocalDate
-    ): List<LocationHistoryDayState> {
-        val dates = mutableListOf<LocationHistoryDayState>()
-        val today = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-        // Calculate which days are selected (dateRangeDays going back from startDate)
-        val selectedDates = mutableSetOf<LocalDate>()
-        repeat(dateRangeDays) {
-            selectedDates.add(startDate.minus(DatePeriod(days = it)))
-        }
-
-        // Sort selected dates to calculate positions correctly
-        val sortedSelectedDates = selectedDates.sorted()
-
-        // Determine the earliest date to generate
-        // Minimum: previous month start, but could be earlier if startDate is older
-        val previousMonth = today.minus(DatePeriod(months = 1))
-        val previousMonthStart = LocalDate(previousMonth.year, previousMonth.month, 1)
-        val earliestDate = minOf(startDate, previousMonthStart)
-
-        // Generate all days from earliest date to today
-        var currentDate = earliestDate
-        while (currentDate <= today) {
-            dates.add(
-                LocationHistoryDayState(
-                    isSelected = selectedDates.contains(currentDate),
-                    isLoading = false,
-                    date = currentDate,
-                    formattedMonth = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
-                        pattern = "MMM"
-                    ),
-                    formattedDay = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
-                        pattern = "EEE"
-                    ),
-                    isWeekend = currentDate.dayOfWeek == DayOfWeek.SATURDAY || currentDate.dayOfWeek == DayOfWeek.SUNDAY,
-                    position = calculatePosition(currentDate, sortedSelectedDates)
-                )
-            )
-            currentDate = currentDate.plus(DatePeriod(days = 1))
-        }
-
-        return dates
-    }
-
     fun addPreviousMonth() {
         val currentState = _uiState.value
-        val currentDays = currentState.days
+        val currentDays = currentState.daySelectorState.days
 
         if (currentDays.isEmpty()) return
 
@@ -128,7 +82,7 @@ class LocationHistoryViewModelDataController(
         // Calculate which days are selected based on current selection
         val selectedDates = mutableSetOf<LocalDate>()
         // TODO check if selection == 1
-        repeat(currentState.dateRangeDays) {
+        repeat(currentState.daySelectorState.dateRangeDays ?: 0) {
             selectedDates.add(currentState.selectedDate.minus(DatePeriod(days = it)))
         }
         val sortedSelectedDates = selectedDates.sorted()
@@ -151,7 +105,7 @@ class LocationHistoryViewModelDataController(
                         pattern = "EEE"
                     ),
                     isWeekend = currentDate.dayOfWeek == DayOfWeek.SATURDAY || currentDate.dayOfWeek == DayOfWeek.SUNDAY,
-                    position = calculatePosition(currentDate, sortedSelectedDates)
+                    position = dataFetchController.calculatePosition(currentDate, sortedSelectedDates)
                 )
             )
             currentDate = currentDate.plus(DatePeriod(days = 1))
@@ -160,7 +114,7 @@ class LocationHistoryViewModelDataController(
         // Prepend new days to existing days and update state
         val updatedDays = newDays + currentDays
         _uiState.update {
-            it.copy(days = updatedDays)
+            it.copy(daySelectorState = it.daySelectorState.copy(days = updatedDays))
         }
     }
 
@@ -173,23 +127,34 @@ class LocationHistoryViewModelDataController(
         }
 
         val currentState = _uiState.value
-        val currentRange = dateRangeDays
+
+        if (!currentState.canSelectDate(selectedDate)) {
+            viewModel.showSnackbar(text = MR.strings.history_map_date_unselectable_error.localizedString())
+            return
+        }
 
         // Calculate new start and end dates based on selected day and range
-        val newStartDate = when (currentRange) {
+        val newStartDate = when (dateRangeDays) {
             1 -> selectedDate
             2 -> selectedDate.minus(DatePeriod(days = 1))
             3 -> selectedDate.minus(DatePeriod(days = 2))
             5 -> selectedDate.minus(DatePeriod(days = 4))
             else -> selectedDate
+        }.let {
+            if (currentState.daySelectorState.earliestDate != null) {
+                it.coerceAtLeast(currentState.daySelectorState.earliestDate)
+            } else {
+                it
+            }
         }
 
         // Update days with new selection
-        val updatedDays = currentState.days.map { day ->
+        val updatedDays = currentState.daySelectorState.days.map { day ->
             val isInRange = day.date >= newStartDate && day.date <= selectedDate
+            val currentRange = (selectedDate - newStartDate).days + 1
             val position = when {
                 !isInRange -> LocationHistorySelectedDayPosition.SOLO
-                currentRange == 1 -> LocationHistorySelectedDayPosition.SOLO
+                currentRange <= 1 -> LocationHistorySelectedDayPosition.SOLO
                 day.date == newStartDate -> LocationHistorySelectedDayPosition.START
                 day.date == selectedDate -> LocationHistorySelectedDayPosition.END
                 else -> LocationHistorySelectedDayPosition.CENTER
@@ -204,12 +169,15 @@ class LocationHistoryViewModelDataController(
         // Update state with new selection
         _uiState.update { state ->
             state.copy(
-                dateRangeDays = dateRangeDays,
+                daySelectorState = state.daySelectorState.copy(
+                    days = updatedDays,
+                    daysInLoading = state.daySelectorState.daysInLoading
+                        .plus(updatedDays.filter { it.isSelected }.map { it.date })
+                        .distinct(),
+                    dateRangeDays = dateRangeDays,
+                ),
                 selectedDate = selectedDate,
-                days = updatedDays,
-                isRefreshingData = true,
                 isLoadingLocations = true,
-                daysInLoading = state.daysInLoading.plus(updatedDays.filter { it.isSelected }.map { it.date }).distinct(),
                 isFilterOpened = false
             )
         }
@@ -217,32 +185,10 @@ class LocationHistoryViewModelDataController(
         // Reload history for the new date range
         historySubscriptionJob?.cancel()
         historySubscriptionJob = dataFetchController.reload(
-            dateRangeDays = dateRangeDays,
-            selectedDate = selectedDate
+            startDate = _uiState.value.startDate,
+            endDate = _uiState.value.endDate
         )
             .launchIn(viewModel.coroutineScope)
-    }
-
-    private fun calculatePosition(
-        date: LocalDate,
-        sortedSelectedDates: List<LocalDate>
-    ): LocationHistorySelectedDayPosition {
-        if (!sortedSelectedDates.contains(date)) {
-            return LocationHistorySelectedDayPosition.SOLO
-        }
-
-        // If only one day is selected, it's SOLO
-        if (sortedSelectedDates.size == 1) {
-            return LocationHistorySelectedDayPosition.SOLO
-        }
-
-        val index = sortedSelectedDates.indexOf(date)
-
-        return when {
-            index == 0 -> LocationHistorySelectedDayPosition.START
-            index == sortedSelectedDates.size - 1 -> LocationHistorySelectedDayPosition.END
-            else -> LocationHistorySelectedDayPosition.CENTER
-        }
     }
 
     fun selectDevice(device: UserActiveLocationDeviceState) {
@@ -336,32 +282,4 @@ class LocationHistoryViewModelDataController(
     fun clear() {
         historySubscriptionJob?.cancel()
     }
-    
-//    fun processLocationHistory() {
-//        val currentState = _uiState.value
-//        val locations = currentState.locations
-//
-//        if (locations.isEmpty()) return
-//
-//        // Use the clustering service from the data fetch controller
-//        val processedHistory = dataFetchController.clusteringService.processLocations(
-//            points = locations,
-//            mode = currentState.viewMode,
-//            rangeStart = _uiState.value.startDate,
-//            rangeEnd = _uiState.value.endDate
-//        )
-//
-//        val newState = currentState.copy(processedHistory = processedHistory)
-//
-//        // Recalculate stats with the new processed history
-//        val stats = LocationHistoryStats.calculateStats(
-//            state = newState,
-//            valueFormatter = valueFormatter,
-//            geofenceManager = geofenceManager
-//        )
-//
-//        _uiState.update {
-//            newState.copy(stats = stats)
-//        }
-//    }
 }

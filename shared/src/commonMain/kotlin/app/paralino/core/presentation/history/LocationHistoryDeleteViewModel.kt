@@ -250,7 +250,7 @@ class LocationHistoryDeleteViewModel(
                 timeUTC = selectedDate.atTime(0, 0),
                 pattern = "MMMM"
             ),
-            days = days.reversed()
+            days = days
         )
     }
 

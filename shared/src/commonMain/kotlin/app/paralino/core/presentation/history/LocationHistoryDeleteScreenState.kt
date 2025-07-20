@@ -54,8 +54,14 @@ data class LocationHistoryDeleteDateState(
     val formattedMonth: String,
     val days: List<LocationHistoryDayState>
 ) {
+    val selectorState = LocationHistoryDateSelectorState(
+        days = days,
+        startAction = LocationHistoryDateSelectionAction.NONE,
+        dateRangeDays = null,
+        forceFocusOnSelectedDay = true
+    )
     val year: Int = date.year
-    val day = date.dayOfMonth
+    val day = date.day
 }
 
 sealed interface LocationHistoryDeleteUiEvent {

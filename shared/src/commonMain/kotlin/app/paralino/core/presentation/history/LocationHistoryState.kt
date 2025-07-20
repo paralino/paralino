@@ -2,6 +2,7 @@ package app.paralino.core.presentation.history
 
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -28,17 +29,15 @@ data class LocationHistoryScreenState(
     val memberUserId: String,
     val groupName: String?,
     val groupImage: ImageModel?,
-    val historyDaysLimit: Int?,
     val isGroupOwner: Boolean,
     val userName: String?,
     val userImage: ImageModel?,
     val isCurrentUser: Boolean,
     val isPersonalHistory: Boolean,
-    val dateRangeDays: Int,
     val selectedDate: LocalDate,
     val isDeletingEntry: Boolean,
     val deletionRangeStartIndex: Int?,
-    val isRefreshingData: Boolean,
+    val isLoadingData: Boolean,
     val isLoadingLocations: Boolean,
     val showPolyline: Boolean,
     val showPins: Boolean,
@@ -51,16 +50,22 @@ data class LocationHistoryScreenState(
     val dataViewType: LocationHistoryDataViewType,
     val focusType: LocationHistoryScreenFocusType,
     val selectedLocationId: String?,
-    val days: List<LocationHistoryDayState>,
-    val daysInLoading: List<LocalDate>,
+    val daySelectorState: LocationHistoryDateSelectorState,
+    val planConfig: PlanConfig?,
     val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
 ) {
     val isDataMissing: Boolean = groupId.isBlank() || memberUserId.isBlank()
 
-    val startDate: LocalDate = selectedDate.minus(DatePeriod(days = dateRangeDays - 1))
+    val startDate: LocalDate = selectedDate.minus(DatePeriod(days = daySelectorState.dateRangeDays?.minus(1) ?: 0))
+        .let {
+            if (daySelectorState.earliestDate != null) {
+                it.coerceAtLeast(daySelectorState.earliestDate)
+            } else {
+                it
+            }
+        }
     val endDate: LocalDate = selectedDate
-    val displayedDays = days.reversed().map { it.copy(isLoading = daysInLoading.contains(it.date)) }
 
     val deviceType: DeviceType = DeviceType.current
     private val displayLocations = when (viewMode) {
@@ -178,6 +183,17 @@ data class LocationHistoryScreenState(
         emptyList()
     }
 
+    fun canSelectDate(date: LocalDate): Boolean {
+        val now = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+        if (date > now) return false
+        if (daySelectorState.earliestDate == null) return true
+        if (daySelectorState.earliestDate > now) return false
+        if (date >= daySelectorState.earliestDate) return true
+
+        return false
+    }
+
     companion object {
         fun emptyState(): LocationHistoryScreenState {
             val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -190,14 +206,12 @@ data class LocationHistoryScreenState(
                 userImage = null,
                 isCurrentUser = false,
                 isPersonalHistory = false,
-                historyDaysLimit = null,
                 isGroupOwner = false,
-                dateRangeDays = 1,
                 selectedDate = selectedDate,
                 isDeletingEntry = false,
                 deletionRangeStartIndex = null,
-                isRefreshingData = true,
                 isLoadingLocations = true,
+                isLoadingData = true,
                 showPolyline = true,
                 showPins = true,
                 clusterPins = true,
@@ -209,8 +223,8 @@ data class LocationHistoryScreenState(
                 dataViewType = LocationHistoryDataViewType.Stats,
                 focusType = LocationHistoryScreenFocusType.OVERVIEW,
                 selectedLocationId = null,
-                days = emptyList(),
-                daysInLoading = emptyList(),
+                daySelectorState = LocationHistoryDateSelectorState(),
+                planConfig = null,
                 isSatelliteMode = false,
                 alertDialog = null
             )
@@ -311,6 +325,21 @@ sealed interface LocationHistoryScreenFocusType {
     val isInOverview: Boolean get() = this == OVERVIEW
 }
 
+data class LocationHistoryDateSelectorState(
+    val days: List<LocationHistoryDayState> = emptyList(),
+    val daysInLoading: List<LocalDate> = emptyList(),
+    val startAction: LocationHistoryDateSelectionAction = LocationHistoryDateSelectionAction.NONE,
+    val dateRangeDays: Int? = null,
+    val forceFocusOnSelectedDay: Boolean = false,
+    val earliestDate: LocalDate? = null,
+) {
+    val displayedDays = days.reversed().map { it.copy(isLoading = daysInLoading.contains(it.date)) }
+}
+
+enum class LocationHistoryDateSelectionAction {
+    END, LOAD_MODE, UPGRADE, ASK_FOR_UPGRADE, NONE
+}
+
 data class LocationHistoryDayState(
     val isSelected: Boolean,
     val isLoading: Boolean,
@@ -348,7 +377,7 @@ sealed interface LocationHistoryUiEvent {
     data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
     data object ToggleMapFilter : LocationHistoryUiEvent
-    data object OnPreviousMonth : LocationHistoryUiEvent
+    data class OnDateSelectorAction(val action: LocationHistoryDateSelectionAction) : LocationHistoryUiEvent
     data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent
     data object ToggleDayRange : LocationHistoryUiEvent
     data object OnCloseScreen : LocationHistoryUiEvent
@@ -362,4 +391,5 @@ sealed interface LocationHistoryScreenEvent {
 
     data object NavigateBack : LocationHistoryScreenEvent
     data object OpenHistorySettings : LocationHistoryScreenEvent
+    data object OpenPaywall : LocationHistoryScreenEvent
 }

@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.history
 
+import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
@@ -8,16 +9,21 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog.*
+import app.paralino.core.ui.components.onAction
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LocationHistoryViewModel(
     private val getLocationHistory: GetLocationHistoryUseCase,
@@ -53,7 +59,10 @@ class LocationHistoryViewModel(
     fun onEvent(event: LocationHistoryUiEvent) {
         when (event) {
             is LocationHistoryUiEvent.LoadHistory -> {
-                dataController.loadHistory(groupId = event.groupId, memberUserId = event.memberUserId)
+                dataController.loadHistory(
+                    groupId = event.groupId,
+                    memberUserId = event.memberUserId
+                )
             }
 
             is LocationHistoryUiEvent.DialogAction -> {
@@ -62,7 +71,7 @@ class LocationHistoryViewModel(
                         dataController._uiState.update { it.copy(alertDialog = null) }
                         if (event.action.action == Buttons.buttonOk) {
                             dataController.deleteSelectedEntry()
-                        } else if (event.action.action == DeleteLocationHistoryEntry.buttonMarkAsRangeId){
+                        } else if (event.action.action == DeleteLocationHistoryEntry.buttonMarkAsRangeId) {
                             dataController.markForRangeDeletion()
                         }
                     }
@@ -148,7 +157,7 @@ class LocationHistoryViewModel(
 
             LocationHistoryUiEvent.ToggleDayRange -> {
                 dataController.handleDaySelection(
-                    dateRangeDays = when (uiState.value.dateRangeDays) {
+                    dateRangeDays = when (uiState.value.daySelectorState.dateRangeDays) {
                         1 -> 3
                         else -> 1
                     },
@@ -210,13 +219,16 @@ class LocationHistoryViewModel(
                             alertDialog = DeleteLocationHistoryRange(
                                 startInfo = startTime,
                                 endInfo = endTime,
-                                count = uiState.value.locationsToDelete.size.toString().let { "**$it**" }
+                                count = uiState.value.locationsToDelete.size.toString()
+                                    .let { "**$it**" }
                             ),
                             isFilterOpened = false
                         )
                     }
                 } else {
-                    val time = dataController._uiState.value.selectedPoint?.locationTime?.let { "**$it**" } ?: "-"
+                    val time =
+                        dataController._uiState.value.selectedPoint?.locationTime?.let { "**$it**" }
+                            ?: "-"
                     dataController._uiState.update {
                         it.copy(
                             alertDialog = DeleteLocationHistoryEntry(
@@ -244,13 +256,54 @@ class LocationHistoryViewModel(
                 }
             }
 
-            LocationHistoryUiEvent.OnPreviousMonth -> {
-                dataController.addPreviousMonth()
+            is LocationHistoryUiEvent.OnDateSelectorAction -> {
+                when (event.action) {
+                    LocationHistoryDateSelectionAction.LOAD_MODE -> {
+                        dataController.addPreviousMonth()
+                    }
+
+                    LocationHistoryDateSelectionAction.UPGRADE -> {
+                        coroutineScope.launch {
+                            messageDispatcher.showSnackbarForResult(
+                                data = AppSnackbarData(
+                                    text = if (uiState.value.isPersonalHistory) {
+                                        MR.strings.history_map_plan_limit_message_personal.localizedString(
+                                            uiState.value.planConfig?.personalHistoryDaysLimit ?: 1
+                                        )
+                                    } else {
+                                        MR.strings.history_map_plan_limit_message_owner.localizedString()
+                                    },
+                                    actionText = MR.strings.button_continue.localizedString(),
+                                    duration = SnackbarDuration.Long
+                                )
+                            )?.result?.onAction {
+                                dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenPaywall)
+                            }
+                        }
+                    }
+
+                    LocationHistoryDateSelectionAction.ASK_FOR_UPGRADE -> {
+                        coroutineScope.launch {
+                            // ignore result, this will just show a button that will dismiss snackbar
+                            messageDispatcher.showSnackbarForResult(
+                                data = AppSnackbarData(
+                                    text = MR.strings.history_map_plan_limit_message_member.localizedString(),
+                                    actionText = MR.strings.button_ok.localizedString(),
+                                    duration = SnackbarDuration.Long
+                                )
+                            )
+                        }
+                    }
+
+                    LocationHistoryDateSelectionAction.END,
+                    LocationHistoryDateSelectionAction.NONE -> {
+                    }
+                }
             }
 
             is LocationHistoryUiEvent.OnSelectDay -> {
                 dataController.handleDaySelection(
-                    dateRangeDays = uiState.value.dateRangeDays,
+                    dateRangeDays = uiState.value.daySelectorState.dateRangeDays ?: 1,
                     selectedDate = event.day
                 )
             }
