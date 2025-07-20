@@ -47,6 +47,8 @@ import app.paralino.core.db.main.user.SubscriptionPlanEntity
 import app.paralino.core.db.main.user.UserConfigDao
 import app.paralino.core.db.main.user.UserConfigEntity
 import app.paralino.core.db.main.user.UserDao
+import app.paralino.core.db.main.user.UserDeviceDao
+import app.paralino.core.db.main.user.UserDeviceEntity
 import app.paralino.core.db.main.user.UserEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -55,6 +57,7 @@ import kotlinx.coroutines.IO
     entities = [
         SubscriptionPlanEntity::class,
         UserEntity::class,
+        UserDeviceEntity::class,
         BlocklistEntity::class,
         SharingContractEntity::class,
         UserConfigEntity::class,
@@ -83,12 +86,13 @@ import kotlinx.coroutines.IO
         LocalLocationHistoryKeyEntity::class,
         UnconfirmedLocationHistoryEntity::class
     ],
-    version = 14,
+    version = 15,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
 abstract class AppMainDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun userDeviceDao(): UserDeviceDao
     abstract fun blocklistDao(): BlocklistDao
     abstract fun sharingContractsDao(): SharingContractDao
     abstract fun userConfigDao(): UserConfigDao

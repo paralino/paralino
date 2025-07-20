@@ -6,6 +6,7 @@ import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.math.absoluteValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -30,6 +31,7 @@ data class LocationDataModel constructor(
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
     val isAccurate get() = accuracy < 50f
+    @Transient
     val timeUTCInstant: Instant? = timeUTC?.fromUTCtoInstant()
 
     fun isOlderThan(duration: Duration): Boolean {

@@ -101,6 +101,29 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_14_15 = object : Migration(14, 15) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("""
+                CREATE TABLE IF NOT EXISTS `userDeviceEntity` (
+                    `id` TEXT NOT NULL,
+                    `pushTargetId` TEXT,
+                    `sessionId` TEXT,
+                    `deviceType` TEXT NOT NULL,
+                    `ownerUserId` TEXT NOT NULL,
+                    `deviceId` TEXT NOT NULL,
+                    `locationPushToken` TEXT,
+                    `encryptedSenderKey` TEXT,
+                    `userKeyVersion` INTEGER,
+                    `deviceData` TEXT,
+                    `locationData` TEXT,
+                    `status` TEXT,
+                    `locationHistory` TEXT,
+                    PRIMARY KEY(`id`)
+                )
+            """.trimIndent())
+        }
+    }
+
 
 
     val migrations: List<Migration> = listOf(
@@ -117,5 +140,6 @@ object MainDatabaseMigrations {
         MIGRATION_11_12,
         MIGRATION_12_13,
         MIGRATION_13_14,
+        MIGRATION_14_15,
     )
 }

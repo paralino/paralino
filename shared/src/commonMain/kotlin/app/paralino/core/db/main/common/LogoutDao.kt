@@ -11,6 +11,7 @@ interface LogoutDao {
     suspend fun logout() {
         clearUser()
         clearAllPlans()
+        clearAllUserDevices()
         clearAllUserConfig()
         clearAllPersonalCodes()
         clearAllUserKeys()
@@ -44,6 +45,9 @@ interface LogoutDao {
 
     @Query("DELETE FROM subscriptionPlanEntity")
     suspend fun clearAllPlans()
+
+    @Query("DELETE FROM userDeviceEntity")
+    suspend fun clearAllUserDevices()
 
     @Query("DELETE FROM userConfigEntity")
     suspend fun clearAllUserConfig()
