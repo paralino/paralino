@@ -81,7 +81,6 @@ class LocationHistoryViewModelDataController(
 
         // Calculate which days are selected based on current selection
         val selectedDates = mutableSetOf<LocalDate>()
-        // TODO check if selection == 1
         repeat(currentState.daySelectorState.dateRangeDays ?: 0) {
             selectedDates.add(currentState.selectedDate.minus(DatePeriod(days = it)))
         }

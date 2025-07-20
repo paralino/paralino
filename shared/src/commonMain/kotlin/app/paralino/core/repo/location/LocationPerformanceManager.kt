@@ -120,7 +120,6 @@ class LocationPerformanceManager constructor(
     private fun preparePerformanceReset(
         request: LocationPerformanceRequest
     ) {
-        // TODO check if someone is requesting location multiple times and don't reset performance in that case
         // if locations is not yet resolved and someone requests location multiple times, cancel or increase reset
         // that way device will get more time to fetch high quality location
 

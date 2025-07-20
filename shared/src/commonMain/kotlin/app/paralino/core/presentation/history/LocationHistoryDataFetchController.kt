@@ -140,7 +140,6 @@ class LocationHistoryDataFetchController(
                     requestCacheDuration = 2.minutes
                 )
             } catch (e: Exception) {
-                // TODO handle error
                 logg.e(message = "Error refreshing location history: ${e.message}", t = e)
                 dataController.viewModel.showSnackbar(text = e.errorString())
             }
@@ -319,7 +318,6 @@ class LocationHistoryDataFetchController(
                     devices = devices,
                     stats = null,
                     planConfig = group.group.planConfig(remoteConfig.getConfigOnce()),
-                    // TODO adjust focused item
                     dataViewType = _uiState.value.dataViewType
                 )
 
