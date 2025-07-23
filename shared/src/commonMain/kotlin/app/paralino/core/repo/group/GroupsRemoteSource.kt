@@ -23,6 +23,10 @@ import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
 import app.paralino.core.models.raw.UpdateGroupPayload
+import app.paralino.core.models.raw.UserDeviceLocationRaw
+import app.paralino.core.models.raw.UserDeviceRaw
+import app.paralino.core.models.raw.UserDeviceWithLocationRaw
+import app.paralino.core.models.raw.UserDevicesWithLocationsAndPlacesRaw
 import app.paralino.core.models.user.BlockListModelData
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
@@ -123,7 +127,7 @@ class GroupsRemoteSource constructor(
         }
     }
 
-    suspend fun getAllGroups(): List<GroupWithMembersAndPlacesRaw> {
+    suspend fun getAllGroupsWithMembers(): List<GroupWithMembersRaw> {
         return blocking {
             val groups = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
@@ -163,33 +167,126 @@ class GroupsRemoteSource constructor(
                 ).map { it.parseMemberLocation() }
             }
 
-            val placesAsync = async {
-                placesRemote.getAllPlaces()
-            }
-
             val members = membersAsync.await()
             val settings = settingsAsync.await()
             val locations = locationsAsync.await()
-            val places = placesAsync.await()
 
             groups.map { group ->
-                GroupWithMembersAndPlacesRaw(
-                    group = GroupWithMembersRaw(
-                        group = group,
-                        members = members
-                            .filter { it.groupId == group.id }
-                            .map { member ->
-                                MemberWithLocationsRaw(
-                                    member = member.copy(settingsRaw = settings.firstOrNull { it.id == member.id && it.groupId == group.id }),
-                                    locations = locations.filter { location ->
-                                        member.locationIds.contains(location.id)
-                                    }
-                                )
-                            },
-                    ),
-                    places = places.filter { it.place.groupId == group.id }
+                GroupWithMembersRaw(
+                    group = group,
+                    members = members
+                        .filter { it.groupId == group.id }
+                        .map { member ->
+                            MemberWithLocationsRaw(
+                                member = member.copy(settingsRaw = settings.firstOrNull { it.id == member.id && it.groupId == group.id }),
+                                locations = locations.filter { location ->
+                                    member.locationIds.contains(location.id)
+                                }
+                            )
+                        }
                 )
             }
+        }
+    }
+
+    suspend fun getAllLocationResources(): GroupsMembersLocationsPlacesRaw {
+        return blocking {
+            val groups = api.listAllDocuments(
+                databaseType = BackendDatabaseType.DATA,
+                collectionId = appBuildConfig.resourceIds.collectionGroupsID
+            )
+                .map { it.parseGroup() }
+                .filter {
+                    AppPrefs.isEncryptionSchemeSupported(
+                        schemeVersion = it.schemeVersion,
+                        supportedEncryptionScheme = AppPrefs.supportedGroupEncryptionScheme
+                    )
+                }
+
+            val places = placesRemote.getAllPlaces()
+
+            val groupsData = if (groups.isEmpty()) {
+                // no need to fetch other resources if there are no groups
+                emptyList()
+            } else {
+                val membersAsync = async {
+                    api.listAllDocuments(
+                        databaseType = BackendDatabaseType.DATA,
+                        collectionId = appBuildConfig.resourceIds.collectionGroupMembersID
+                    ).map { it.parseGroupMember() }
+                }
+
+                val settingsAsync = async {
+                    api.listAllDocuments(
+                        databaseType = BackendDatabaseType.DATA,
+                        collectionId = appBuildConfig.resourceIds.collectionGroupSettingsID
+                    ).map { it.parseGroupSettings() }
+                }
+
+                val locationsAsync = async {
+                    api.listAllDocuments(
+                        databaseType = BackendDatabaseType.DATA,
+                        collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
+                    ).map { it.parseMemberLocation() }
+                }
+
+                val members = membersAsync.await()
+                val settings = settingsAsync.await()
+                val locations = locationsAsync.await()
+
+                groups.map { group ->
+                    GroupWithMembersAndPlacesRaw(
+                        group = GroupWithMembersRaw(
+                            group = group,
+                            members = members
+                                .filter { it.groupId == group.id }
+                                .map { member ->
+                                    MemberWithLocationsRaw(
+                                        member = member.copy(settingsRaw = settings.firstOrNull { it.id == member.id && it.groupId == group.id }),
+                                        locations = locations.filter { location ->
+                                            member.locationIds.contains(location.id)
+                                        }
+                                    )
+                                },
+                        ),
+                        places = places.filter {
+                            it.place.isInPersonalSpace != true && it.place.groupId == group.id
+                        }
+                    )
+                }
+            }
+
+            val personalDevicesAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = appBuildConfig.resourceIds.collectionUserDevicesID,
+                ).map { it.parsePersonalDevice() }
+            }
+
+            val personalLocationsAsync = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = appBuildConfig.resourceIds.collectionPersonalLocationsID,
+                ).map { it.parsePersonalDeviceLocation() }
+            }
+
+            val personalDevices = personalDevicesAsync.await()
+            val personalLocations = personalLocationsAsync.await()
+
+            GroupsMembersLocationsPlacesRaw(
+                groups = groupsData,
+                personal = UserDevicesWithLocationsAndPlacesRaw(
+                    devices = personalDevices.map { device ->
+                        UserDeviceWithLocationRaw(
+                            device = device,
+                            location = personalLocations.firstOrNull { it.id == device.id }
+                        )
+                    },
+                    places = places.filter {
+                        it.place.isInPersonalSpace == true
+                    }
+                )
+            )
         }
     }
 
@@ -379,4 +476,17 @@ class GroupsRemoteSource constructor(
     private fun Map<String, Any>.parseMemberLocation(): MemberLocationRaw {
         return MemberLocationRaw.from(this)
     }
+
+    private fun Map<String, Any>.parsePersonalDeviceLocation(): UserDeviceLocationRaw {
+        return UserDeviceLocationRaw.from(this)
+    }
+
+    private fun Map<String, Any>.parsePersonalDevice(): UserDeviceRaw {
+        return UserDeviceRaw.from(this)
+    }
 }
+
+data class GroupsMembersLocationsPlacesRaw(
+    val groups: List<GroupWithMembersAndPlacesRaw>,
+    val personal: UserDevicesWithLocationsAndPlacesRaw
+)

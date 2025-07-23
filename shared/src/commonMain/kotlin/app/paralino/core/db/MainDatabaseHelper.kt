@@ -26,4 +26,5 @@ class MainDatabaseHelper(
     val pendingLocationHistoryDao by lazy { roomDatabase.pendingLocationHistoryDao() }
     val locationHistoryDao by lazy { roomDatabase.locationHistoryDao() }
     val logoutDao by lazy { roomDatabase.logoutDao() }
+    val userDeviceDao by lazy { roomDatabase.userDeviceDao() }
 }

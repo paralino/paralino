@@ -170,6 +170,8 @@ class CreatePlaceViewModel(
                     placesRepo.createPlace(
                         groupId = groupId,
                         private = data.private,
+                        // TODO add personal place creation
+                        isInPersonalSpace = false,
                         data = placeData
                     ).processPlaceFlow()
                 }

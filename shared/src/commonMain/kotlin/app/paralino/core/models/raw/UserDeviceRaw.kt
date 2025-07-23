@@ -32,3 +32,13 @@ data class UserDeviceRaw constructor(
         }
     }
 }
+
+data class UserDeviceWithLocationRaw(
+    val device: UserDeviceRaw,
+    val location: UserDeviceLocationRaw?
+)
+
+data class UserDevicesWithLocationsAndPlacesRaw(
+    val devices: List<UserDeviceWithLocationRaw>,
+    val places: List<GroupPlaceWithSettingsRaw>
+)

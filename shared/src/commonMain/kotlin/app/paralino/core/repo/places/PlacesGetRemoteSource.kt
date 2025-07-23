@@ -1,5 +1,6 @@
 package app.paralino.core.repo.places
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
@@ -14,6 +15,7 @@ import kotlinx.coroutines.async
 class PlacesGetRemoteSource(
     private val api: IDocumentsApi,
     private val appBuildConfig: AppBuildConfig,
+    private val appPrefs: AppPrefs
 ) {
     suspend fun getPlaceWithSettings(placeId: String): GroupPlaceWithSettingsRaw {
         return blocking {
@@ -71,12 +73,46 @@ class PlacesGetRemoteSource(
         }
     }
 
+    suspend fun getPersonalPlaces(): List<GroupPlaceWithSettingsRaw> {
+        return blocking {
+            val places = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = BackendResourceIDs.collectionPlacesID,
+                    queries = listOf(
+                        BackendQuery.Equals(key = "groupId", value = appPrefs.userId),
+                        BackendQuery.Equals(key = "ownerUserId", value = appPrefs.userId),
+                    )
+                ).map { it.parsePlace() }
+            }
+
+            val settings = async {
+                api.listAllDocuments(
+                    databaseType = BackendDatabaseType.DATA,
+                    collectionId = BackendResourceIDs.collectionPlacesSettingsID,
+                    queries = listOf(
+                        BackendQuery.Equals(key = "groupId", value = appPrefs.userId),
+                        BackendQuery.Equals(key = "ownerUserId", value = appPrefs.userId),
+                    )
+                ).map { it.parsePlaceSettings() }
+            }.await()
+
+            places.await().map { place ->
+                GroupPlaceWithSettingsRaw(
+                    place = place,
+                    settings = settings.firstOrNull { it.placeId == place.id }
+                )
+            }
+        }
+    }
+
     suspend fun getAllPlaces(): List<GroupPlaceWithSettingsRaw> {
         return blocking {
             val places = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionPlacesID
+                    collectionId = appBuildConfig.resourceIds.collectionPlacesID,
+                    queries = listOf()
                 ).map { it.parsePlace() }
             }
 

@@ -151,6 +151,7 @@ data class CreatePlacePayload(
     val keyVersion: Long,
     val private: Boolean,
     val data: String,
+    val isInPersonalSpace: Boolean,
     val eventKeys: List<String>
 )
 
@@ -158,7 +159,8 @@ data class CreatePlacePayload(
 data class UpdatePlacePayload constructor(
     val placeId: String,
     val placeData: String,
-    val groupKeyVersion: Long,
+    val groupKeyVersion: Long?,
+    val userKeyVersion: Long?,
     val eventKeys: List<String>?
 )
 

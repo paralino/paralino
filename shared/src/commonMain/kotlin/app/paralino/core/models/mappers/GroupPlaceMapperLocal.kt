@@ -25,6 +25,7 @@ class GroupPlaceMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             private = model.privatePlace,
+            isInPersonalSpace = model.isInPersonalSpace,
             data = model.data,
             eventKeys = try {
                 BaseRemoteModule.formatter.decodeFromString(model.eventKeys)
@@ -41,6 +42,7 @@ class GroupPlaceMapperLocal(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             privatePlace = model.private,
+            isInPersonalSpace = model.isInPersonalSpace ?: false,
             data = model.data,
             eventKeys = BaseRemoteModule.formatter.encodeToString(model.eventKeys)
         )

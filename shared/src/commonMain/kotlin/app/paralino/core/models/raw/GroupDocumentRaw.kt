@@ -5,7 +5,6 @@ import kotlin.time.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
 data class GroupDocumentRaw constructor(
     @SerialName("\$id")
     val id: String,
@@ -44,13 +43,11 @@ data class GroupDocumentRaw constructor(
     }
 }
 
-@Serializable
 data class GroupWithMembersRaw constructor(
     val group: GroupDocumentRaw,
     val members: List<MemberWithLocationsRaw>
 )
 
-@Serializable
 data class GroupWithMembersAndPlacesRaw constructor(
     val group: GroupWithMembersRaw,
     val places: List<GroupPlaceWithSettingsRaw>

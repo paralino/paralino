@@ -18,16 +18,19 @@ import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityUploadEngine
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import kotlin.time.Duration.Companion.minutes
 
 class RefreshEverythingUseCase(
     private val remote: GroupsRemoteSource,
-    private val local: UserGroupLocalDataSource,
+    private val groupLocal: UserGroupLocalDataSource,
+    private val deviceLocal: UserPersonalSpaceLocalDataSource,
     private val userRepository: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
     private val cryptoKEKRefreshUseCase: CryptoKEKRefreshUseCase,
     private val groupRefreshUseCase: GroupRefreshUseCase,
+    private val personalSpaceRefreshUseCase: PersonalSpaceRefreshUseCase,
     private val configRepo: RemoteConfigRepository,
     private val userConfigRepo: UserConfigRepository,
     private val revokeDeviceStatusUseCase: RevokeDeviceActiveStatusUseCase,
@@ -71,13 +74,13 @@ class RefreshEverythingUseCase(
                     logg.tag("full_refresh").v("Start full refresh")
                     userRepository.refreshUserIfAvailable()
                     personalCodesRepo.refreshPersonalCodes()
-                    userRepository.refreshBlocklist(cacheTimeMillis = 2.minutes.inWholeMilliseconds)
                     configRepo.refreshConfig()
                     userConfigRepo.refreshAndGetConfig()
                     scheduleRefreshAllGroupsWithPlaces(
                         cacheTimeMillis = if (forceGroupRefresh) 0 else 60_000
                     )
                     pushProviderManager.syncPushNotifications()
+                    userRepository.refreshBlocklist(cacheTimeMillis = 2.minutes.inWholeMilliseconds)
                     personalCodesRepo.tryToRestockPreKeys(5.minutes.inWholeMilliseconds)
                     revokeDeviceStatusUseCase.revokeActiveStatus()
                     clearUserLocationUseCase.deleteOldLocations()
@@ -106,7 +109,9 @@ class RefreshEverythingUseCase(
         try {
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(key = groupRefreshExecutionKey, timeMillis = cacheTimeMillis),
-                remote = { refreshAllGroupsWithPlaces() }
+                remote = {
+                    refreshAllGroupsWithPlaces()
+                }
             )
             placeActivityUploadEngine.syncPendingEventsNow()
         } catch (e: Exception) {
@@ -118,27 +123,36 @@ class RefreshEverythingUseCase(
 
     private suspend fun refreshAllGroupsWithPlaces() {
         triggerRemoteOnly {
-            logg.tag("full_refresh").d("refreshing all groups")
-            remote.getAllGroups()
+            logg.tag("full_refresh").d("refreshing all groups and user devices")
+            val allData = remote.getAllLocationResources()
+
+            val newPersonalData = allData.personal
+                .also {
+                    // TODO refresh user personal keys if needed
+                }
+                .let { personalSpaceRefreshUseCase.handleGroupKeysUpdate(it) }
+
+            deviceLocal.recreateDevicesWithPlaces(data = newPersonalData)
+
+            val newGroups = allData.groups
                 .also { cryptoKEKRefreshUseCase.refreshAllKeys(it, force = false) }
                 .let { it.map { groupRefreshUseCase.handleGroupKeysUpdate(it) } }
-        }
-            .also { newGroups ->
-                logg.tag("full_refresh").d("group and keys ready, updating groups (${newGroups.size})")
-                val removedGroups = local.allGroupsState.value.data
-                    ?.map { it.group.id }
-                    ?.filter { groupId -> newGroups.none { it.group.group.id == groupId } }
-                    ?: emptyList()
 
-                if (removedGroups.isNotEmpty()) {
-                    logg.tag("full_refresh").d("Found (${removedGroups.size}) removed groups, will clear data")
-                }
+            logg.tag("full_refresh").d("group and keys ready, updating groups (${newGroups.size})")
+            val removedGroups = groupLocal.allGroupsState.value.data
+                ?.map { it.group.id }
+                ?.filter { groupId -> newGroups.none { it.group.group.id == groupId } }
+                ?: emptyList()
 
-                local.recreateGroups(newGroups)
-
-                removedGroups.forEach {
-                    groupRemoveUseCase.clearGroupLocally(groupId = it)
-                }
+            if (removedGroups.isNotEmpty()) {
+                logg.tag("full_refresh").d("Found (${removedGroups.size}) removed groups, will clear data")
             }
+
+            groupLocal.recreateGroups(newGroups)
+
+            removedGroups.forEach {
+                groupRemoveUseCase.clearGroupLocally(groupId = it)
+            }
+        }
     }
 }

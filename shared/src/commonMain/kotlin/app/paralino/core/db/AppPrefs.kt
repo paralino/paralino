@@ -442,10 +442,10 @@ class AppPrefs(
     }
 
     fun invalidateGuestAccount() {
-        appPrefs.guestEmailV1 = ""
-        appPrefs.guestPasswordV1 = ""
-        appPrefs.guestEmailV2 = ""
-        appPrefs.guestPasswordV2 = ""
+        guestEmailV1 = ""
+        guestPasswordV1 = ""
+        guestEmailV2 = ""
+        guestPasswordV2 = ""
     }
 
     fun clearPushTokens() {

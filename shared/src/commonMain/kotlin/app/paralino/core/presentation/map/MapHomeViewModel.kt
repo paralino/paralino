@@ -654,6 +654,14 @@ class MapHomeViewModel constructor(
             onlyShowGroups = false,
             userPlan = userRepository.userPlans.value.highestValidPlanConfig,
             groupsLimit = userRepository.userPlans.value.groupsLimit,
+            personalSpace = GroupItemState(
+                user = userRepository.cachedUser!!,
+                deviceCount = 1,
+                config = remoteConfig.getCachedConfigOnce(),
+                uiType = GroupItemState.GroupUiType.ACTIVE,
+                isSelected = false,
+                isLarge = true
+            ),
             createdGroups = allGroups.filter { it.isCurrentUserOwner },
             joinedGroups = allGroups.filter { !it.isCurrentUserOwner }
         )

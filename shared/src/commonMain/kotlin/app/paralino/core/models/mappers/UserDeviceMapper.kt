@@ -12,8 +12,7 @@ import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberDeviceStatus
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.UserDeviceModel
-import app.paralino.core.models.raw.UserDeviceLocationRaw
-import app.paralino.core.models.raw.UserDeviceRaw
+import app.paralino.core.models.raw.UserDeviceWithLocationRaw
 import app.paralino.core.utils.BaseRemoteModule
 
 class UserDeviceMapper(
@@ -25,23 +24,22 @@ class UserDeviceMapper(
      * Combines device raw and device location raw into entity
      */
     fun remote2Local(
-        deviceRaw: UserDeviceRaw,
-        locationRaw: UserDeviceLocationRaw
+        deviceRaw: UserDeviceWithLocationRaw
     ): UserDeviceEntity {
         return UserDeviceEntity(
-            id = deviceRaw.id,
-            pushTargetId = deviceRaw.pushTargetId,
-            sessionId = deviceRaw.sessionId,
-            deviceType = deviceRaw.deviceType,
-            ownerUserId = deviceRaw.ownerUserId,
-            deviceId = deviceRaw.deviceId,
-            locationPushToken = deviceRaw.locationPushToken,
-            encryptedSenderKey = deviceRaw.encryptedSenderKey,
-            userKeyVersion = deviceRaw.userKeyVersion,
-            deviceData = locationRaw.deviceData,
-            locationData = locationRaw.locationData,
-            status = locationRaw.status,
-            locationHistory = locationRaw.locationHistory
+            id = deviceRaw.device.id,
+            pushTargetId = deviceRaw.device.pushTargetId,
+            sessionId = deviceRaw.device.sessionId,
+            deviceType = deviceRaw.device.deviceType,
+            ownerUserId = deviceRaw.device.ownerUserId,
+            deviceId = deviceRaw.device.deviceId,
+            locationPushToken = deviceRaw.device.locationPushToken,
+            encryptedSenderKey = deviceRaw.device.encryptedSenderKey,
+            userKeyVersion = deviceRaw.device.userKeyVersion,
+            deviceData = deviceRaw.location?.deviceData,
+            locationData = deviceRaw.location?.locationData,
+            status = deviceRaw.location?.status,
+            locationHistory = deviceRaw.location?.locationHistory
         )
     }
 

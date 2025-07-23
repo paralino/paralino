@@ -9,6 +9,7 @@ sealed interface BottomSheetPickerType {
         val onlyShowGroups: Boolean,
         val userPlan: PlanConfig?,
         val groupsLimit: Int? = userPlan?.groupsLimit,
+        val personalSpace: GroupItemState?,
         val createdGroups: List<GroupItemState>,
         val joinedGroups: List<GroupItemState>
     ) : BottomSheetPickerType {

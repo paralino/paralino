@@ -3,10 +3,12 @@ package app.paralino.core.presentation.groups
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.dataIfReady
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.models.user.UserMe
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
@@ -49,6 +51,21 @@ data class GroupMemberState constructor(
         paralinoId = member.paralinoId.dataIfReady?.formattedCode,
         isCurrentUser = isCurrentUser,
         isVerified = member.isVerified,
+        canHaveExpandButton = canHaveExpandButton
+    )
+
+    constructor(
+        user: UserMe,
+        canHaveExpandButton: Boolean
+    ) : this(
+        groupId = UserGroup.groupPersonalDevicesId,
+        memberId = user.id,
+        userId = user.id,
+        name = user.name,
+        image = user.data?.userImage,
+        paralinoId = null,
+        isCurrentUser = true,
+        isVerified = true,
         canHaveExpandButton = canHaveExpandButton
     )
 }

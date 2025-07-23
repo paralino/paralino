@@ -198,6 +198,7 @@ class SharingStartViewModel(
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
             userPlan = null,
+            personalSpace = null,
             createdGroups = allGroups.filter { it.group.isCurrentUserOwner }
                 .map { GroupItemState(it, remoteConfigRepo.getConfigOnce()) },
             joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }

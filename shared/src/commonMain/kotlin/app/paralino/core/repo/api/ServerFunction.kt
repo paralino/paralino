@@ -20,7 +20,8 @@ enum class ServerFunction constructor(
     MEMBER_UPDATE(method = "PATCH", path = "/members"),
     MEMBER_BLOCK(method = "PUT", path = "/members/block"),
 
-    LOCATION_CREATE(method = "POST", path = "/location"),
+    LOCATION_CREATE_GROUP(method = "POST", path = "/location"),
+    LOCATION_CREATE_PERSONAL(method = "POST", path = "/personal_location"),
     LOCATION_DELETE(method = "DELETE", path = "/location"),
 
     LOCATION_FOCUS_MEMBER(method = "POST", path = "/focus/member", functionId = "ping"),

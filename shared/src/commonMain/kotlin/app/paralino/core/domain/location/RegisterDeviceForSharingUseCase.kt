@@ -125,7 +125,7 @@ class RegisterDeviceForSharingUseCase constructor(
 
                 logg.tag("sharing_start").d("Send register device request")
                 val response = functionsApi.runAndWait(
-                    function = ServerFunction.LOCATION_CREATE,
+                    function = ServerFunction.LOCATION_CREATE_GROUP,
                     data = payload
                 )
 

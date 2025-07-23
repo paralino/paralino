@@ -13,6 +13,7 @@ data class GroupPlace constructor(
     val ownerUserId: String,
     val groupKeyVersion: Long,
     val private: Boolean,
+    val isInPersonalSpace: Boolean,
     @Contextual
     val data: CryptoResource<GroupPlaceData>,
     val eventKeys: List<String>

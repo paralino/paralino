@@ -54,12 +54,18 @@ class PlacesRepository constructor(
         )
     }
 
-    fun createPlace(groupId: String, private: Boolean, data: GroupPlaceData): Flow<Unit> {
+    fun createPlace(
+        groupId: String,
+        private: Boolean,
+        isInPersonalSpace: Boolean,
+        data: GroupPlaceData
+    ): Flow<Unit> {
         return getDataOnce(
             remote = {
                 remote.createPlace(
                     groupId = groupId,
                     data = data,
+                    isInPersonalSpace = isInPersonalSpace,
                     private = private
                 )
             },

@@ -189,6 +189,7 @@ class MemberInviteViewModel(
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
             userPlan = null,
+            personalSpace = null,
             createdGroups = getAllUserCreatedGroups(),
             joinedGroups = emptyList()
         )

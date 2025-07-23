@@ -57,6 +57,7 @@ class PlaceMapperCore constructor(
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
             private = model.private,
+            isInPersonalSpace = model.isInPersonalSpace ?: false,
             data = placeData,
             eventKeys = model.eventKeys
         )

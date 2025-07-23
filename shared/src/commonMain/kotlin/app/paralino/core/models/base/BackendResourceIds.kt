@@ -33,6 +33,7 @@ object BackendResourceIDs {
     const val collectionGroupMembersID: String = "group_members"
     const val collectionGroupSettingsID: String = "group_settings"
     const val collectionMemberLocationsID: String = "locations"
+    const val collectionPersonalLocationsID = "personal_locations"
     const val collectionPersonalCodeID: String = "personal_ids"
     const val collectionLocationFocusID: String = "location_focus"
     const val collectionPlacesID: String = "places"

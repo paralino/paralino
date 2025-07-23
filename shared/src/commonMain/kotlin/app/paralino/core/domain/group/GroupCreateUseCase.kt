@@ -192,16 +192,16 @@ class GroupCreateUseCase(
             )
         } catch (e: Exception) {
             if (e.isSocketTimeout()) {
-                val allGroups = remote.getAllGroups()
+                val allGroups = remote.getAllGroupsWithMembers()
                 val match = allGroups.firstOrNull {
-                    val memberMe = it.group.members.first { it.member.ownerUserId == user.id }
-                    it.group.group.ownerUserId == user.id &&
-                    it.group.group.data == encryptedGroupData &&
+                    val memberMe = it.members.first { it.member.ownerUserId == user.id }
+                    it.group.ownerUserId == user.id &&
+                    it.group.data == encryptedGroupData &&
                             memberMe.member.data == encryptedMemberData &&
                             memberMe.member.settingsRaw!!.groupIntegrity == groupIntegrity
                 }
                 if (match != null) {
-                    return match.group.group.id
+                    return match.group.id
                 } else {
                     throw e
                 }

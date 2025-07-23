@@ -10,7 +10,9 @@ import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
@@ -302,6 +304,40 @@ class GroupValidityVerification(
         }
     }
 
+    suspend fun checkIntegrityForPersonalSpace(space: UserPersonalSpaceModel): IntegrityResult {
+        val groupId = UserGroup.groupPersonalDevicesId
+        val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = groupId)
+        val currentDevice = space.currentDevice ?: return IntegrityResult.CORRUPTED
+
+        if (keyIntegrity?.integrity.isNullOrBlank()) {
+            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${groupId} (missing)")
+            return IntegrityResult.VALID_EXPIRED
+        }
+
+        // INFO: not using safetySignature here since it is only used for groups
+
+        val integrity = getIntegrity(
+            groupId = groupId,
+            serverIntegrity = currentDevice.sessionId ?: "",
+            myIntegrity = keyIntegrity.integrity,
+            userKeyVersion = keyIntegrity.userKeyVersion,
+            memberVerifications = listOf(userKeyRepo.signatureKeyPair().publicKey),
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForDevice(integrity.second)) {
+            logg.tag("integrity_check_device").v("VALID for ${groupId}")
+            return IntegrityResult.VALID
+        } else if (integrity.first.signature != integrity.second) {
+            logg.tag("integrity_check_device").v("VALID_CHANGED for ${groupId}")
+            return IntegrityResult.VALID_CHANGED
+        } else {
+            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${groupId}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
     private suspend fun getIntegrity(
         groupId: String,
         serverIntegrity: String,
@@ -331,9 +367,11 @@ class GroupValidityVerification(
                 hashProvider = cryptoCore.hashProvider,
                 serverIntegrity = serverIntegrity,
                 memberVerifications = memberVerifications,
-                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
-                    groupId = groupId
-                )
+                encryptedMemberPublicKeys = if (groupId == UserGroup.groupPersonalDevicesId) {
+                    listOf(userKeyRepo.signatureKeyPair().publicKey)
+                } else {
+                    cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(groupId = groupId)
+                }
             )
         } catch (e: Exception) {
             logg.tag(tag).w("CORRUPTED for $groupId - Generic error: ${e.message}")
@@ -367,12 +405,12 @@ sealed interface VerificationResult {
                 if (includeMemberVerification) {
                     return false
                 } else {
-                    return errors.filter {
+                    return errors.none {
                         it != VerificationResultError.MEMBER_VERIFICATION_MISSING
                                 && it != VerificationResultError.WRONG_OWNER_VERIFICATION
                                 && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_SIGNATURE
                                 && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_FORM
-                    }.isEmpty()
+                    }
                 }
             }
             Verified -> return true

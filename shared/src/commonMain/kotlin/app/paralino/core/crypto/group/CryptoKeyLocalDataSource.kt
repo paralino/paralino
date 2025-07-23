@@ -1,12 +1,10 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.appPrefs
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
