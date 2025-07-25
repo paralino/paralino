@@ -17,6 +17,7 @@ class PersonalSpaceRefreshUseCase(
     private val local: UserPersonalSpaceLocalDataSource,
     private val deviceKeyRotation: IPersonalDeviceCryptoKeyRotation
 ): BaseRepository() {
+
     suspend fun refreshPersonalSpace(cacheTimeMillis: Long): UserDevicesWithLocationsAndPlacesRaw? {
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(key = "personal_space_refresh", timeMillis = cacheTimeMillis),

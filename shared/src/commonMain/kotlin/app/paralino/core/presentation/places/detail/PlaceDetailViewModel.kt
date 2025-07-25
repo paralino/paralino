@@ -8,6 +8,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.mapSuccess
@@ -86,7 +87,7 @@ class PlaceDetailViewModel(
             }.sortedSettings()
 
             PlaceDetailScreenState(
-                groupId = groupId,
+                groupOrSpaceId = groupId.asGroupOrSpaceId(),
                 placeId = placeId,
                 groupName = group.name,
                 name = place.place.data.data?.name ?: "---",

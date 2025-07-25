@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
@@ -96,141 +97,139 @@ fun GroupStatusTag(
     status: GroupStatusTagType?
 ) {
     if (status != null) {
-
-        val tagColor = when (status) {
-            GroupStatusTagType.SHARING_ACTIVE,
-            GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
-            GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> AppColors.accent
-
-            GroupStatusTagType.UNVERIFIED,
-            GroupStatusTagType.GPS_OFF,
-            GroupStatusTagType.OVER_LIMITS,
-            GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.error
-
-            GroupStatusTagType.TOO_MANY_REQUESTS,
-            GroupStatusTagType.IDLE,
-            GroupStatusTagType.IDLE_NO_LOCATION,
-            GroupStatusTagType.IDLE_NOT_ACCURATE,
-            GroupStatusTagType.INACTIVE_NOT_ACCURATE,
-            GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
-
-            GroupStatusTagType.INACTIVE,
-            GroupStatusTagType.NOT_SHARING,
-            GroupStatusTagType.OFFLINE,
-            null -> MaterialTheme.colors.secondary
-        }
-        val tagTextColor = MaterialTheme.colors.contentColorFor(tagColor)
-            .takeOrElse { MaterialTheme.colors.onPrimary }
-        val tagText = when (status) {
-            GroupStatusTagType.SHARING_ACTIVE -> stringResource(resource = MR.strings.group_members_status_active)
-            GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> ""
-
-            GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> ""
-            GroupStatusTagType.IDLE_NOT_ACCURATE -> ""
-            GroupStatusTagType.INACTIVE_NOT_ACCURATE -> ""
-
-            GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title)
-            GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
-            GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
-            GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_not_sharing)
-
-            GroupStatusTagType.GPS_OFF -> stringResource(resource = MR.strings.group_members_status_gps_off)
-            GroupStatusTagType.MISSING_PERMISSION -> stringResource(resource = MR.strings.group_members_status_missing_permissions)
-            GroupStatusTagType.BATTERY_SAVING -> stringResource(resource = MR.strings.group_members_status_battery_saver)
-            GroupStatusTagType.OFFLINE -> stringResource(resource = MR.strings.group_members_status_offline)
-            GroupStatusTagType.TOO_MANY_REQUESTS -> stringResource(resource = MR.strings.group_members_status_too_many_requests)
-            GroupStatusTagType.IDLE,
-            GroupStatusTagType.IDLE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_throttle)
-
-            null -> ""
-        }
-
-        val inaccurateLocationText = when (status) {
-            GroupStatusTagType.INACTIVE_NOT_ACCURATE,
-            GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
-            GroupStatusTagType.IDLE_NOT_ACCURATE -> stringResource(resource = MR.strings.group_members_status_location_inaccurate)
-
-            else -> ""
-        }
-
-        val tagIcon = when (status) {
-            GroupStatusTagType.SHARING_ACTIVE,
-            GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
-            GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
-            GroupStatusTagType.IDLE_NOT_ACCURATE,
-            GroupStatusTagType.INACTIVE_NOT_ACCURATE,
-            GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
-
-            GroupStatusTagType.GPS_OFF,
-            GroupStatusTagType.MISSING_PERMISSION,
-            GroupStatusTagType.TOO_MANY_REQUESTS -> CoreAppIcons.LocationOff.asPainterResource()
-
-            GroupStatusTagType.OVER_LIMITS,
-            GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
-
-            GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()
-
-            GroupStatusTagType.INACTIVE,
-            GroupStatusTagType.IDLE_NO_LOCATION,
-            GroupStatusTagType.OFFLINE,
-            GroupStatusTagType.NOT_SHARING -> null
-
-            null -> null
-        }
-
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
         ) {
-            if (tagIcon != null) {
-                Icon(
-                    painter = tagIcon,
-                    modifier = Modifier.size(16.dp).align(Alignment.CenterVertically),
-                    tint = tagColor,
-                    contentDescription = null
-                )
-            }
-
-            if (status == GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION ||
-                status == GroupStatusTagType.IDLE_NOT_ACCURATE ||
-                status == GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp).align(Alignment.CenterVertically),
-                    strokeWidth = 2.dp,
-                    color = tagColor
-                )
-            }
-
-            if (tagText.isNotBlank()) {
-                Text(
-                    text = tagText,
-                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
-                    color = tagTextColor.copy(alpha = 0.8f),
-                    modifier = Modifier
-                        .background(
-                            tagColor,
-                            MaterialTheme.shapes.medium
-                        )
-                        .padding(horizontal = 6.dp, vertical = 1.dp)
-                        .align(Alignment.CenterVertically)
-                )
-            }
-
-            if (inaccurateLocationText.isNotBlank()) {
-                Text(
-                    text = inaccurateLocationText,
-                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
-                    color = AppColors.darkBackground.copy(alpha = 0.8f),
-                    modifier = Modifier
-                        .background(
-                            AppColors.highlightGold,
-                            MaterialTheme.shapes.medium
-                        )
-                        .padding(horizontal = 6.dp, vertical = 1.dp)
-                        .align(Alignment.CenterVertically)
-                )
-            }
+            GroupStatusTagContent(status)
         }
+    }
+}
+
+@Composable
+fun FlowRowScope.GroupStatusTagContent(
+    status: GroupStatusTagType
+) {
+    val tagIconColor = when (status) {
+        GroupStatusTagType.SHARING_ACTIVE,
+        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE -> AppColors.accent
+
+        GroupStatusTagType.UNVERIFIED,
+        GroupStatusTagType.GPS_OFF,
+        GroupStatusTagType.OVER_LIMITS,
+        GroupStatusTagType.MISSING_PERMISSION -> MaterialTheme.colors.error
+
+        GroupStatusTagType.TOO_MANY_REQUESTS,
+        GroupStatusTagType.IDLE,
+        GroupStatusTagType.IDLE_NO_LOCATION,
+        GroupStatusTagType.IDLE_NOT_ACCURATE,
+        GroupStatusTagType.INACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.BATTERY_SAVING -> AppColors.highlightGold
+
+        GroupStatusTagType.INACTIVE,
+        GroupStatusTagType.NOT_SHARING,
+        GroupStatusTagType.OFFLINE,
+        null -> MaterialTheme.colors.secondary
+    }
+
+    val tagBackgroundColor = when (status) {
+        GroupStatusTagType.INACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.IDLE_NOT_ACCURATE -> AppColors.highlightGold
+        else -> tagIconColor
+    }
+
+    val tagTextColor = when (status) {
+        GroupStatusTagType.INACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.IDLE_NOT_ACCURATE -> AppColors.darkBackground
+
+        else -> MaterialTheme.colors.contentColorFor(tagIconColor)
+            .takeOrElse { MaterialTheme.colors.onPrimary }
+    }
+
+    val tagText = when (status) {
+        GroupStatusTagType.SHARING_ACTIVE -> stringResource(resource = MR.strings.group_members_status_active)
+        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION -> ""
+
+        GroupStatusTagType.INACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.IDLE_NOT_ACCURATE -> stringResource(resource = MR.strings.group_members_status_location_inaccurate)
+
+        GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title)
+        GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
+        GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
+        GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_not_sharing)
+
+        GroupStatusTagType.GPS_OFF -> stringResource(resource = MR.strings.group_members_status_gps_off)
+        GroupStatusTagType.MISSING_PERMISSION -> stringResource(resource = MR.strings.group_members_status_missing_permissions)
+        GroupStatusTagType.BATTERY_SAVING -> stringResource(resource = MR.strings.group_members_status_battery_saver)
+        GroupStatusTagType.OFFLINE -> stringResource(resource = MR.strings.group_members_status_offline)
+        GroupStatusTagType.TOO_MANY_REQUESTS -> stringResource(resource = MR.strings.group_members_status_too_many_requests)
+        GroupStatusTagType.IDLE,
+        GroupStatusTagType.IDLE_NO_LOCATION -> stringResource(resource = MR.strings.group_members_status_throttle)
+
+        null -> ""
+    }
+
+    val tagIcon = when (status) {
+        GroupStatusTagType.SHARING_ACTIVE,
+        GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.IDLE_NOT_ACCURATE,
+        GroupStatusTagType.INACTIVE_NOT_ACCURATE,
+        GroupStatusTagType.IDLE -> CoreAppIcons.LocationOn.asPainterResource()
+
+        GroupStatusTagType.GPS_OFF,
+        GroupStatusTagType.MISSING_PERMISSION,
+        GroupStatusTagType.TOO_MANY_REQUESTS -> CoreAppIcons.LocationOff.asPainterResource()
+
+        GroupStatusTagType.OVER_LIMITS,
+        GroupStatusTagType.UNVERIFIED -> CoreAppIcons.Warning.asPainterResource()
+
+        GroupStatusTagType.BATTERY_SAVING -> CoreAppIcons.BatteryChargingFull.asPainterResource()
+
+        GroupStatusTagType.INACTIVE,
+        GroupStatusTagType.IDLE_NO_LOCATION,
+        GroupStatusTagType.OFFLINE,
+        GroupStatusTagType.NOT_SHARING -> null
+
+        null -> null
+    }
+
+    if (tagIcon != null) {
+        Icon(
+            painter = tagIcon,
+            modifier = Modifier.size(16.dp).align(Alignment.CenterVertically),
+            tint = tagIconColor,
+            contentDescription = null
+        )
+    }
+
+    if (status == GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION ||
+        status == GroupStatusTagType.IDLE_NOT_ACCURATE ||
+        status == GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(16.dp).align(Alignment.CenterVertically),
+            strokeWidth = 2.dp,
+            color = tagIconColor
+        )
+    }
+
+    if (tagText.isNotBlank()) {
+        Text(
+            text = tagText,
+            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
+            color = tagTextColor.copy(alpha = 0.8f),
+            modifier = Modifier
+                .background(
+                    tagBackgroundColor,
+                    MaterialTheme.shapes.medium
+                )
+                .padding(horizontal = 6.dp, vertical = 1.dp)
+                .align(Alignment.CenterVertically)
+        )
     }
 }

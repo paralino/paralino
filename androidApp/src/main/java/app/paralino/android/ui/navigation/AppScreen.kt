@@ -103,6 +103,13 @@ sealed class AppScreen {
             }
         }
 
+        object PersonalSpace : AppScreen() {
+            override val routeSignature: String = "home-personal-space"
+            fun route(): String {
+                return "home-personal-space"
+            }
+        }
+
         object GroupDetails : AppScreen() {
             override val routeSignature: String = "home-group/{$argumentGroupId}"
             fun route(groupId: String): String {

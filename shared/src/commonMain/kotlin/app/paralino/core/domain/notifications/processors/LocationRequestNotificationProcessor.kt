@@ -4,6 +4,8 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.PushNotificationImportance
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -53,7 +55,7 @@ class LocationRequestNotificationProcessor(
                 )
                 try {
                     updateStatusAndPerformance(
-                        groupId = payload.groupId,
+                        groupId = payload.groupId.asGroupOrSpaceId(),
                         performanceType = performanceType
                     )
                 } finally {
@@ -68,7 +70,7 @@ class LocationRequestNotificationProcessor(
     }
 
     private suspend fun updateStatusAndPerformance(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         performanceType: LocationPerformanceType
     ) {
         logg.v("Update location status and performance for group $groupId")

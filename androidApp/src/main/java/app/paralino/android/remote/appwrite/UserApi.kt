@@ -83,8 +83,12 @@ class UserApi constructor(
         return remoteModule.execute { account.updateStatus() }
     }
 
-    override suspend fun logout() {
-        return remoteModule.execute { account.deleteSession("current") }
+    override suspend fun logoutSession(sessionId: String) {
+        return remoteModule.execute { account.deleteSession(sessionId = sessionId) }
+    }
+
+    override suspend fun logoutCurrentSession() {
+        return remoteModule.execute { account.deleteSession(sessionId = "current") }
     }
 
     private fun User<Map<String, Any>>.parseUser(): UserMeRaw {
@@ -101,9 +105,27 @@ class UserApi constructor(
     private fun Session.parseSession(): UserSession {
         return UserSession(
             id = this.id,
+            createdAt = this.createdAt,
+            updatedAt = this.updatedAt,
             expire = this.expire,
-            deviceType = "android"
+            provider = this.provider,
+            ip = this.ip,
+            osCode = this.osCode,
+            osName = this.osName,
+            osVersion = this.osVersion,
+            clientType = this.clientType,
+            clientCode = this.clientCode,
+            clientName = this.clientName,
+            clientVersion = this.clientVersion,
+            clientEngine = this.clientEngine,
+            clientEngineVersion = this.clientEngineVersion,
+            deviceType = "android",
+            deviceName = this.deviceName,
+            deviceBrand = this.deviceBrand,
+            deviceModel = this.deviceModel,
+            countryCode = this.countryCode,
+            countryName = this.countryName,
+            current = this.current
         )
     }
-
 }

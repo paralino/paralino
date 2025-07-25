@@ -180,7 +180,11 @@ class UserRemoteSource constructor(
         return response.response<LoginDetailsRaw>().data
     }
 
-    suspend fun logout() {
-        api.logout()
+    suspend fun logoutSession(sessionId: String) {
+        api.logoutSession(sessionId = sessionId)
+    }
+
+    suspend fun logoutCurrentSession() {
+        api.logoutCurrentSession()
     }
 }

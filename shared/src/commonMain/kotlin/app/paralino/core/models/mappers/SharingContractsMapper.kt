@@ -1,12 +1,13 @@
 package app.paralino.core.models.mappers
 
 import app.paralino.core.db.main.common.SharingContractEntity
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.location.LocationSharingContract
 
 object SharingContractsMapper {
     fun local2Remote(model: SharingContractEntity): LocationSharingContract {
         return LocationSharingContract(
-            groupId = model.groupId,
+            groupOrSpaceId = model.groupId.asGroupOrSpaceId(),
             endTimeUTC = model.endTimeUTC,
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,
@@ -21,7 +22,7 @@ object SharingContractsMapper {
 
     fun remote2Local(model: LocationSharingContract): SharingContractEntity {
         return SharingContractEntity(
-            groupId = model.groupId,
+            groupId = model.groupOrSpaceId.id,
             endTimeUTC = model.endTimeUTC,
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,

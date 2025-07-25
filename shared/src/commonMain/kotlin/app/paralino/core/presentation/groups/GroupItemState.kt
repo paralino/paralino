@@ -1,14 +1,17 @@
 package app.paralino.core.presentation.groups
 
 import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.utils.Emojis
 
 data class GroupItemState constructor(
-    val id: String,
+    val id: GroupOrSpaceId,
     val name: String,
     val image: ImageModel,
     val membersCount: Int?,
@@ -30,7 +33,7 @@ data class GroupItemState constructor(
         isSelected: Boolean = false,
         isLarge: Boolean = true
     ) : this(
-        id = group.group.id,
+        id = group.group.id.asGroupOrSpaceId(),
         name = group.name,
         image = group.image,
         membersCount = group.memberCount,
@@ -49,25 +52,24 @@ data class GroupItemState constructor(
     )
 
     constructor(
-        user: UserMe,
-        deviceCount: Int,
+        space: UserPersonalSpaceModel,
         config: ConfigData? = null,
         uiType: GroupUiType? = null,
-        isSelected: Boolean,
-        isLarge: Boolean
+        canEdit: Boolean = false,
+        isSelected: Boolean = false
     ) : this(
-        id = UserGroup.groupPersonalDevicesId,
+        id = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
         name = "Personal space",
-        image = user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+        image = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
         membersCount = null,
-        placesCount = 0,
-        devicesCount = deviceCount,
+        placesCount = space.placesCount,
+        devicesCount = space.activeDeviceCount,
         isPersonalSpace = true,
         uiType = uiType ?: GroupUiType.INACTIVE,
         canEdit = true,
         isCurrentUserOwner = true,
         isSelected = isSelected,
-        isLarge = isLarge
+        isLarge = true
     )
 
     enum class GroupUiType {

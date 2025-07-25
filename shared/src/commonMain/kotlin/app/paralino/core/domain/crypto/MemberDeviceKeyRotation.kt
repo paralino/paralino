@@ -13,6 +13,7 @@ import app.paralino.core.domain.crypto.MemberDeviceKeyRotation.GroupDeviceSender
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -259,7 +260,7 @@ class MemberDeviceKeyRotation(
         }
 
         val senderKeys = if (locationDataValid || forceSenderKeyCreation) {
-            getNewSenderKeys(group = group, contract = locationSharingManager.currentSharingContractForGroup(id = group.id))
+            getNewSenderKeys(group = group, contract = locationSharingManager.currentSharingContractForGroup(id = group.id.asGroupOrSpaceId()))
         } else {
             null
         }
@@ -280,7 +281,7 @@ class MemberDeviceKeyRotation(
         val status = senderKeys?.plainTextSenderKey?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(
-                    deviceStatusProvider.getStatus(group.id)
+                    deviceStatusProvider.getStatus(groupId = group.id.asGroupOrSpaceId())
                 ),
                 key = it
             )

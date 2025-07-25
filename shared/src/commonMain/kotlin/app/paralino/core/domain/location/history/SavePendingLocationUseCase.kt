@@ -30,7 +30,7 @@ class SavePendingLocationUseCase(
         val entries = data.mapNotNull { entry ->
             if (entry.locationHistory != null) {
                 val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(
-                    groupId = entry.groupId
+                    groupOrSpaceId = entry.groupId.id
                 )
 
                 if (historyKey != null) {
@@ -45,7 +45,7 @@ class SavePendingLocationUseCase(
                     } else {
                         PendingLocationHistoryEntity(
                             id = 0,
-                            groupId = entry.groupId,
+                            groupId = entry.groupId.id,
                             locationId = entry.locationId,
                             locationHistoryData = cryptoCore.encryptDataWithKey(
                                 data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
@@ -81,7 +81,7 @@ class SavePendingLocationUseCase(
         }
 
         val lastPendingEntry = database.pendingLocationHistoryDao.getLatestPendingEntryOnce(
-            groupId = entry.groupId
+            groupOrSpaceId = entry.groupId.id
         )
 
         val lastEntryPoint =
@@ -131,7 +131,7 @@ class SavePendingLocationUseCase(
         return if (updatedEntry != null && lastPendingEntry != null) {
             PendingLocationHistoryEntity(
                 id = lastPendingEntry.id,
-                groupId = entry.groupId,
+                groupId = entry.groupId.id,
                 locationId = entry.locationId,
                 locationHistoryData = cryptoCore.encryptDataWithKey(
                     data = BaseRemoteModule.locationHistoryFormatter.encodeToString(

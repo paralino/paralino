@@ -3,6 +3,7 @@ package app.paralino.core.repo.user
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.models.Resource
+import app.paralino.core.models.data
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 
 class UserPersonalSpaceLocalDataSource constructor(
@@ -45,10 +47,14 @@ class UserPersonalSpaceLocalDataSource constructor(
                 initialValue = Resource.NotInitialized
             )
 
-    suspend fun recreateDevicesWithPlaces(data: UserDevicesWithLocationsAndPlacesRaw) {
+    suspend fun recreateDevices(devices: List<UserDeviceWithLocationRaw>) {
         database.userDeviceDao.recreateUserDevices(
-            devices = data.devices.map { deviceMapper.remote2Local(it) }
+            devices = devices.map { deviceMapper.remote2Local(it) }
         )
+    }
+
+    suspend fun recreateDevicesWithPlaces(data: UserDevicesWithLocationsAndPlacesRaw) {
+        recreateDevices(devices = data.devices)
         recreatePersonalPlaces(places = data.places)
     }
 
@@ -81,13 +87,21 @@ class UserPersonalSpaceLocalDataSource constructor(
 
     fun getPersonalSpaceWithDevices(): Flow<UserPersonalSpaceModel?> {
         return combine(
+            userRepo.localUser.map { it.data }.distinctUntilChanged(),
             getAllUserDevices(),
-            userRepo.userPlans
-        ) { devices, plan ->
-            UserPersonalSpaceModel(
-                devices = devices,
-                plan = plan.highestValidPlanConfig
-            )
+            userRepo.userPlans,
+            database.groupRelatedDao.getPlacesCountForPersonalSpace()
+        ) { user, devices, plan, placesCount ->
+            if (user != null) {
+                UserPersonalSpaceModel(
+                    user = user,
+                    plan = plan.highestValidPlanConfig,
+                    devices = devices,
+                    placesCount = placesCount ?: 0
+                )
+            } else {
+                null
+            }
         }
     }
 
@@ -132,8 +146,8 @@ class UserPersonalSpaceLocalDataSource constructor(
             }
     }
 
-    suspend fun getUserDeviceOnce(deviceId: String): UserDeviceModel? {
-        return database.userDeviceDao.getUserDeviceOnce(deviceId)?.let { entity ->
+    suspend fun getUserDeviceByIdOnce(id: String): UserDeviceModel? {
+        return database.userDeviceDao.getUserDeviceOnce(id = id)?.let { entity ->
             try {
                 deviceMapper.local2Core(entity)
             } catch (e: Exception) {

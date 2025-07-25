@@ -7,6 +7,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.RealtimeResponse
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -72,11 +73,11 @@ class RealtimeEventsProcessor constructor(
 
         if (isPaused(groupId)) return
 
-        if (locationSharingManager.isSharingActiveForGroup(groupId)) {
+        if (locationSharingManager.isSharingActiveForGroup(groupId.asGroupOrSpaceId())) {
             logg.tag("location_performance").v("Boosting location from location focus realtime event")
             locationPerformanceManager.locationBoostRequested(
                 performanceType = LocationPerformanceType.MEDIUM_HIGH,
-                groupId = groupId,
+                groupId = groupId.asGroupOrSpaceId(),
                 from = "realtime location focus event"
             )
         }

@@ -203,7 +203,7 @@ data class AccountResetCryptoKeyPayload constructor(
 )
 
 @Serializable
-data class LocationCreatePayload constructor(
+data class LocationCreateGroupPayload constructor(
     val groupId: String,
     val deviceId: String,
     val deviceData: String?,
@@ -212,6 +212,19 @@ data class LocationCreatePayload constructor(
     val groupKeyVersion: Long,
     val notify: Boolean,
     val keys: List<GroupSenderKeyPayload>
+)
+
+@Serializable
+data class LocationCreatePersonalPayload(
+    val deviceId: String,
+    val sessionId: String,
+    val deviceData: String?,
+    val deviceType: String,
+    val locationData: String?,
+    val status: String,
+    val notify: Boolean,
+    val encryptedSenderKey: String,
+    val userKeyVersion: Long,
 )
 
 @Serializable
@@ -268,16 +281,26 @@ data class PersonalCodeResponse constructor(
 )
 
 @Serializable
-data class LocationRequestPayload constructor(
+data class LocationRequestGroupPayload constructor(
     val groupId: String,
     val userId: String,
     val locationId: String,
 )
 
 @Serializable
-data class LocationFocusPayload constructor(
+data class LocationFocusGroupPayload constructor(
     val groupId: String,
     val userId: String?,
+    val locationId: String?
+)
+
+@Serializable
+data class LocationRequestSpacePayload constructor(
+    val locationId: String,
+)
+
+@Serializable
+data class LocationFocusSpacePayload constructor(
     val locationId: String?
 )
 

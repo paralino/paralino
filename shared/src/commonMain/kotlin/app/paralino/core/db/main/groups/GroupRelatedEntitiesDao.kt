@@ -168,6 +168,9 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT COUNT(id) FROM placeEntity WHERE groupId = :groupId")
     fun getPlacesCountForGroup(groupId: String): Flow<Int?>
 
+    @Query("SELECT COUNT(id) FROM placeEntity WHERE isInPersonalSpace = 1")
+    fun getPlacesCountForPersonalSpace(): Flow<Int?>
+
     @Query("SELECT * FROM placeEntity")
     suspend fun getAllPlacesOnce(): List<PlaceEntity>
 
@@ -302,9 +305,6 @@ interface GroupRelatedEntitiesDao {
 
     @Query("DELETE FROM batteryAlertEvent WHERE groupId = :groupId")
     suspend fun deleteBatteryAlertEvent(groupId: String)
-
-    @Query("DELETE FROM batteryAlertEvent")
-    suspend fun clearAllBatteryAlertEvents()
 
 
 

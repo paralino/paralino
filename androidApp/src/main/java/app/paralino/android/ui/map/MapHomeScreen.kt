@@ -28,6 +28,7 @@ import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.groups.edit.GroupInitViewModel
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
@@ -191,13 +192,20 @@ private fun MapHomeContent(
                     )
                 }
 
+                MapHomeScreenEvent.OpenPersonalSpace -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PersonalSpace.route()
+                    )
+                }
+
                 null -> {}
             }
         }
     }
 
     rememberSaveable(startGroupId) {
-        vm.switchGroup(groupId = startGroupId ?: "")
+        vm.switchGroup(groupId = startGroupId?.asGroupOrSpaceId())
+        // have to keep empty state so it keeps it saved and only executed this once
         ""
     }
 
@@ -242,9 +250,7 @@ private fun MapHomeContent(
                     }
 
                     is GroupPickerAction.GroupEditPicked -> {
-                        appState.navController.navigate(
-                            AppScreen.MainHome.GroupDetails.route(it.group.id)
-                        )
+                        vm.onEvent(MapHomeScreenUiEvent.OpenGroupDetails(it.group.id))
                     }
 
                     GroupPickerAction.NewGroup -> {

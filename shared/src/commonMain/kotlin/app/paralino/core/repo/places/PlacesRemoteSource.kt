@@ -8,6 +8,7 @@ import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceSettingsData
@@ -127,12 +128,15 @@ class PlacesRemoteSource(
                 userKeyRepo.activePersonalKeyWithVersion()
             } else {
                 val groupKey = cryptoKEKRepo.getGroupKey(
-                    groupId = place.groupId,
+                    groupId = place.groupOrSpaceId.id,
                     keyVersion = null
                 )
 
                 if (groupKey !is GroupMasterKey.Valid)
-                    throw MissingGroupKeyException(place.groupId, null)
+                    throw MissingGroupKeyException(
+                        groupId = place.groupOrSpaceId.id,
+                        keyVersion = null
+                    )
 
                 SymmetricCryptoKeyData(key = groupKey.key, version = groupKey.version)
             }
@@ -191,14 +195,14 @@ class PlacesRemoteSource(
     }
 
     suspend fun updatePlaceSettings(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         placeId: String,
         placeSettingsId: String?,
         alertData: GroupPlaceSettingsData
     ): GroupPlaceSettingRaw {
         return blocking {
             val payload = PlaceNotificationsUpdatePayload(
-                groupId = groupId,
+                groupId = groupId.id,
                 placeId = placeId,
                 placeSettingsId = placeSettingsId,
                 alertData = BaseRemoteModule.formatter.encodeToString(alertData)
@@ -240,7 +244,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
-                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupId),
+                locationId = groupLocal.getCurrentLocationIdForGroup(groupId = place.groupOrSpaceId),
                 // TODO remove flag since we are using events in newer versions
                 enter = true,
                 event = enterEvent,
@@ -259,7 +263,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
-                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupId),
+                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupOrSpaceId),
                 // TODO remove flag since we are using events in newer versions
                 enter = false,
                 event = exitEvent,

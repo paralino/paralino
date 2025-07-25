@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
@@ -319,7 +320,7 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
 
 data class PlacesEmptyStateMarkers(
     val peter: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "peter",
         pinType = MapPinType.MEMBER,
         markerStyle = MapMarkerStyle.PIN,
@@ -335,7 +336,7 @@ data class PlacesEmptyStateMarkers(
         shouldShowApproximateCircle = false
     ),
     val heidi: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "heidi",
         pinType = MapPinType.MEMBER,
         markerStyle = MapMarkerStyle.PIN,
@@ -351,7 +352,7 @@ data class PlacesEmptyStateMarkers(
         shouldShowApproximateCircle = false
     ),
     val home: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "home",
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -367,7 +368,7 @@ data class PlacesEmptyStateMarkers(
         shouldShowApproximateCircle = true
     ),
     val school: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "school",
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,

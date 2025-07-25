@@ -16,7 +16,7 @@ abstract class IPersonalDeviceCryptoKeyRotation: LimitedExecution() {
 
 class PersonalDeviceCryptoKeyRotation: IPersonalDeviceCryptoKeyRotation() {
     override suspend fun rotateDeviceKeys(force: Boolean): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override suspend fun getNewSenderKeys(contract: LocationSharingContract?): GroupDeviceSenderKeyData {

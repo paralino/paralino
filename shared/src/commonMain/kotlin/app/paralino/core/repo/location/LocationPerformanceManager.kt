@@ -2,6 +2,7 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -63,7 +64,7 @@ class LocationPerformanceManager constructor(
 
     fun locationBoostRequested(
         performanceType: LocationPerformanceType,
-        groupId: String?,
+        groupId: GroupOrSpaceId?,
         from: String?,
     ) {
         locationBoostRequested(
@@ -78,7 +79,7 @@ class LocationPerformanceManager constructor(
 
     fun locationBoostRequested(
         request: LocationPerformanceRequest,
-        groupId: String?,
+        groupId: GroupOrSpaceId?,
         from: String?,
     ) {
         logg.tag("location_performance")

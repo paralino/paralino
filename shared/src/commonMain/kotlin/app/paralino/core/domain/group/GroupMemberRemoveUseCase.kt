@@ -45,10 +45,13 @@ class GroupMemberRemoveUseCase(
             .startProcessing(groupId)
     }
 
-    fun deleteLocation(memberId: String, locationId: String): Flow<Unit> {
+    fun deleteLocation(
+        memberId: String,
+        locationId: String
+    ): Flow<Unit> {
         return getDataOnce(
             remote = {
-                memberRemote.deleteLocation(memberId = memberId, locationId = locationId)
+                memberRemote.deleteLocationInGroup(memberId = memberId, locationId = locationId)
                 memberRemote.getMember(memberId)
             },
             localUpdate = {

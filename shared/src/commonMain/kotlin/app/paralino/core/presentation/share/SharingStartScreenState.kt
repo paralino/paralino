@@ -2,7 +2,10 @@ package app.paralino.core.presentation.share
 
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -57,6 +60,16 @@ data class SharingStartScreenState constructor(
     val isLongTerm: Boolean get() = LocationSharingContract.isLongTerm(sharingTimeMillis)
     val canShare: Boolean =
         errors.isEmpty() && groupState.data != null && groupState.data?.uiType != GroupItemState.GroupUiType.UNVERIFIED
+}
+
+sealed interface GroupOrUserSpace {
+    val id: String
+    data class Group(val group: UserGroupWithMetadata): GroupOrUserSpace {
+        override val id: String = group.id
+    }
+    data class PersonalSpace(val space: UserPersonalSpaceModel): GroupOrUserSpace {
+        override val id: String = UserGroup.groupPersonalDevicesId
+    }
 }
 
 sealed class SharingStartScreenEvent() {

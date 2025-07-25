@@ -3,6 +3,7 @@ package app.paralino.core.domain.group
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -62,9 +63,9 @@ class GroupRemoveUseCase(
     }
 
     suspend fun clearGroupLocally(groupId: String) {
-        locationSharingManager.stopSharing(groupId = groupId, deleteContract = true)
-        local.deleteGroup(groupId)
-        placeActivityRepo.clearForGroup(groupId)
-        cryptoKEKRepo.deleteAllKeysForGroup(groupId)
+        locationSharingManager.stopSharing(groupId = groupId.asGroupOrSpaceId(), deleteContract = true)
+        local.deleteGroup(groupId = groupId)
+        placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
+        cryptoKEKRepo.deleteAllKeysForGroup(groupId = groupId)
     }
 }

@@ -20,13 +20,19 @@ enum class ServerFunction constructor(
     MEMBER_UPDATE(method = "PATCH", path = "/members"),
     MEMBER_BLOCK(method = "PUT", path = "/members/block"),
 
-    LOCATION_CREATE_GROUP(method = "POST", path = "/location"),
-    LOCATION_CREATE_PERSONAL(method = "POST", path = "/personal_location"),
-    LOCATION_DELETE(method = "DELETE", path = "/location"),
+    LOCATION_CREATE_GROUP(method = "POST", path = "/location/group"),
+    LOCATION_CREATE_PERSONAL(method = "POST", path = "/location/personal"),
+
+    LOCATION_DELETE_GROUP(method = "DELETE", path = "/location/group"),
+    LOCATION_DELETE_PERSONAL(method = "DELETE", path = "/location/personal"),
 
     LOCATION_FOCUS_MEMBER(method = "POST", path = "/focus/member", functionId = "ping"),
     LOCATION_FOCUS_GROUP(method = "POST", path = "/focus/group", functionId = "ping"),
     LOCATION_REQUEST_MEMBER(method = "POST", path = "/refresh/member", functionId = "ping"),
+
+    LOCATION_FOCUS_DEVICE(method = "POST", path = "/focus/device", functionId = "ping"),
+    LOCATION_FOCUS_SPACE(method = "POST", path = "/focus/space", functionId = "ping"),
+    LOCATION_REQUEST_DEVICE(method = "POST", path = "/refresh/device", functionId = "ping"),
 
     HISTORY_CREATE(method = "POST", path = "/history"),
     HISTORY_READ_GROUP(method = "POST", path = "/history/group/read"),
@@ -57,7 +63,8 @@ enum class ServerFunction constructor(
     PERSONAL_CODE_UPDATE(method = "PATCH", path = "/personal_code"),
     PERSONAL_CODE_DELETE(method = "DELETE", path = "/personal_code"),
 
-    DEVICE_UPDATE(method = "PUT", path = "/user/devices"),
+    USER_DEVICE_UPDATE(method = "PUT", path = "/user/devices"),
+    USER_DEVICE_DELETE(method = "DELETE", path = "/user/devices"),
 
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),

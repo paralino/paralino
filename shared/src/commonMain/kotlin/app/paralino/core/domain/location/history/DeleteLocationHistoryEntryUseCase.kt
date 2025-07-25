@@ -6,6 +6,8 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
@@ -37,7 +39,7 @@ class DeleteLocationHistoryEntryUseCase(
 ) {
 
     suspend fun deleteEntries(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         memberUserId: String,
         entries: List<LocationHistoryPointState>,
         startDate: LocalDate,
@@ -54,10 +56,10 @@ class DeleteLocationHistoryEntryUseCase(
             }
         }
 
-        if (groupId == UserGroup.groupPersonalDevicesId) {
+        if (groupId.isPersonalSpace) {
             deletePersonalHistoryEntry(mappedEntries)
         } else {
-            deleteGroupHistoryEntry(groupId = groupId, memberUserId = memberUserId, entries = mappedEntries)
+            deleteGroupHistoryEntry(groupId = groupId.id, memberUserId = memberUserId, entries = mappedEntries)
         }
 
         refreshLocationHistoryUseCase.refreshLocationHistory(
@@ -146,7 +148,7 @@ class DeleteLocationHistoryEntryUseCase(
         entries: List<LocationHistoryPointState.Point>,
     ) {
         // handle cached entries
-        val toDeletePending = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = groupId)
+        val toDeletePending = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = groupId)
             .let { pendingHistoryMapper.pendingLocationToCore(it) }
             .filter { pending ->
                 entries.any { it.point.properID == pending.history.properID }
@@ -155,7 +157,7 @@ class DeleteLocationHistoryEntryUseCase(
 
         if (toDeletePending.isNotEmpty()) {
             database.pendingLocationHistoryDao.deletePendingEntries(ids = toDeletePending)
-            deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
+            deviceStatusProcessor.pushDeviceStatus(groupId = groupId.asGroupOrSpaceId())
         }
 
         val result = entries

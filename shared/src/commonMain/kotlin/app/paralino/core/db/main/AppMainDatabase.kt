@@ -86,7 +86,7 @@ import kotlinx.coroutines.IO
         LocalLocationHistoryKeyEntity::class,
         UnconfirmedLocationHistoryEntity::class
     ],
-    version = 16,
+    version = 17,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)

@@ -6,6 +6,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
@@ -67,7 +68,7 @@ class CreatePlaceViewModel(
                 when {
                     placeId.isNullOrBlank() -> Payload.Success(
                         CreatePlaceScreenState.empty(
-                            groupId = groupId,
+                            groupId = groupId.asGroupOrSpaceId(),
                             hintText = hintText(),
                             lat = lat,
                             lng = lng,
@@ -78,7 +79,7 @@ class CreatePlaceViewModel(
 
                     else -> value.mapSuccess { place ->
                         CreatePlaceScreenState(
-                            groupId = groupId,
+                            groupId = groupId.asGroupOrSpaceId(),
                             isNewPlace = false,
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),

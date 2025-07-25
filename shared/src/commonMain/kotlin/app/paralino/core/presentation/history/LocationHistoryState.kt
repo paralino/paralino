@@ -1,8 +1,10 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -25,7 +27,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 data class LocationHistoryScreenState(
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val memberUserId: String,
     val groupName: String?,
     val groupImage: ImageModel?,
@@ -55,8 +57,6 @@ data class LocationHistoryScreenState(
     val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
 ) {
-    val isDataMissing: Boolean = groupId.isBlank() || memberUserId.isBlank()
-
     val startDate: LocalDate = selectedDate.minus(DatePeriod(days = daySelectorState.dateRangeDays?.minus(1) ?: 0))
         .let {
             if (daySelectorState.earliestDate != null) {
@@ -120,7 +120,7 @@ data class LocationHistoryScreenState(
             is LocationHistoryPointState.Cluster -> {
                 MapPinData(
                     id = memberUserId,
-                    groupId = groupId,
+                    groupId = groupOrSpaceId,
                     cluster = it,
                     name = userName,
                     image = userImage,
@@ -131,7 +131,7 @@ data class LocationHistoryScreenState(
                 it.point.loc?.let {
                     MapPinData(
                         id = memberUserId,
-                        groupId = groupId,
+                        groupId = groupOrSpaceId,
                         location = it,
                         name = userName,
                         image = userImage,
@@ -198,7 +198,7 @@ data class LocationHistoryScreenState(
         fun emptyState(): LocationHistoryScreenState {
             val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
             return LocationHistoryScreenState(
-                groupId = "",
+                groupOrSpaceId = "".asGroupOrSpaceId(),
                 memberUserId = "",
                 groupName = null,
                 groupImage = null,

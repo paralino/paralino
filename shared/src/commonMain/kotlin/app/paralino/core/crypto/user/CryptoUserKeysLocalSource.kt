@@ -1,8 +1,10 @@
 package app.paralino.core.crypto.user
 
+import app.paralino.core.crypto.PersonalSpaceDeviceKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.user.UserDeviceEntity
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -116,10 +118,46 @@ class CryptoUserKeysLocalSource(
             .distinctUntilChanged()
     }
 
+    suspend fun getDeviceSenderKeyForDevice(deviceId: String): PersonalSpaceDeviceKey {
+        val device = database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId = deviceId)
+        if (device == null) {
+            return PersonalSpaceDeviceKey.Error.Missing
+        }
+
+        return getDeviceSenderKeyForDevice(device = device)
+    }
+
+    suspend fun getDeviceSenderKeyForDevice(device: UserDeviceEntity): PersonalSpaceDeviceKey {
+
+        if (device.userKeyVersion == null || device.encryptedSenderKey.isNullOrBlank()) {
+            return PersonalSpaceDeviceKey.Error.Missing
+        }
+
+        val personalKey = try {
+            personalKey(version = device.userKeyVersion)
+        } catch (e: Exception) {
+            if (e is MissingUserKeyException) {
+                return PersonalSpaceDeviceKey.Error.MissingMainKey
+            } else {
+                return PersonalSpaceDeviceKey.Error.InvalidMainKey
+            }
+        }
+
+        return try {
+            PersonalSpaceDeviceKey.Valid(
+                key = userKeyMapper.unwrapDeviceSenderKey(
+                    encryptedSenderKey = device.encryptedSenderKey,
+                    userKey = personalKey.key
+                )
+            )
+        } catch (e: Exception) {
+            PersonalSpaceDeviceKey.Error.Invalid
+        }
+    }
+
     suspend fun clearAllKeys() {
         appPrefs.encryptedUserMasterKey = ""
         appPrefs.sessionMasterKey = ""
         appPrefs.userMasterKeyVersion = 0
-        database.userKeysDao.clearAll()
     }
 }

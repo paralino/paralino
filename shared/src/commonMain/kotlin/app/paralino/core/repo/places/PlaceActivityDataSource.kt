@@ -2,6 +2,8 @@ package app.paralino.core.repo.places
 
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.places.PlaceActivityEntity
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,7 @@ class PlaceActivityDataSource(
                 .mapValues {
                     PlaceActivityState(
                         placeId = it.value.placeId,
-                        groupId = it.value.groupId,
+                        groupId = it.value.groupId.asGroupOrSpaceId(),
                         isEnter = it.value.isEnter,
                         stateChangeTrigger = PlaceActivityTriggerType.fromKey(key = it.value.stateChangeTrigger),
                         stateChangeTimeMillis = it.value.stateChangeTimeMillis,
@@ -61,7 +63,7 @@ class PlaceActivityDataSource(
             database.placeActivityDao.createPlaceActivity(
                 PlaceActivityEntity(
                     placeId = placeId,
-                    groupId = state.groupId,
+                    groupId = state.groupId.id,
                     isEnter = state.isEnter,
                     stateChangeTrigger = state.stateChangeTrigger.key,
                     stateChangeTimeMillis = state.stateChangeTimeMillis,
@@ -93,7 +95,7 @@ class PlaceActivityDataSource(
     }
 
     suspend fun recreatePlacesForGroup(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         places: List<GroupPlaceWithSettingsRaw>
     ) {
         _placeActivityCache.update {
@@ -107,10 +109,10 @@ class PlaceActivityDataSource(
                 }
             }
         }
-        database.placeActivityDao.clearMissing(groupId = groupId, placeIds = places.map { it.place.id })
+        database.placeActivityDao.clearMissing(groupId = groupId.id, placeIds = places.map { it.place.id })
     }
 
-    suspend fun clearForGroup(groupId: String) {
+    suspend fun clearForGroup(groupId: GroupOrSpaceId) {
         _placeActivityCache.update {
             it.toMutableMap().apply {
                 this.filter { it.value.groupId == groupId }.forEach { entry ->
@@ -120,7 +122,7 @@ class PlaceActivityDataSource(
                 }
             }
         }
-        database.placeActivityDao.deleteForGroup(groupId = groupId)
+        database.placeActivityDao.deleteForGroup(groupId = groupId.id)
     }
 
     suspend fun clearCache() {

@@ -1,11 +1,12 @@
 package app.paralino.core.models.places
 
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.repo.places.PlaceActivityTriggerType
 import kotlinx.coroutines.Job
 
 data class PlaceActivityState(
     val placeId: String,
-    val groupId: String,
+    val groupId: GroupOrSpaceId,
     val isEnter: Boolean,
     val stateChangeTrigger: PlaceActivityTriggerType,
     val stateChangeTimeMillis: Long,

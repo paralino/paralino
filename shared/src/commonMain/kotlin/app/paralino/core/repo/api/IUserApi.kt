@@ -17,5 +17,6 @@ interface IUserApi {
     suspend fun confirmEmail(userId: String, secret: String)
     suspend fun updateEmail(email: String, password: String): UserMeRaw
     suspend fun deleteAccount()
-    suspend fun logout()
+    suspend fun logoutSession(sessionId: String)
+    suspend fun logoutCurrentSession()
 }

@@ -27,6 +27,7 @@ import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.android.tracking.geofence.GeofenceManager
+import app.paralino.android.ui.personal_space.PersonalSpaceViewModel
 import app.paralino.core.appPrefs
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
@@ -39,8 +40,10 @@ import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.PersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
@@ -159,6 +162,7 @@ object KoinSetup {
 
         single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
         single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
+        single { PersonalDeviceCryptoKeyRotation() } bind IPersonalDeviceCryptoKeyRotation::class
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
         single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
@@ -189,12 +193,12 @@ object KoinSetup {
         }
 
         viewModel { GroupInitViewModel(get(), get(), get(), get(), get()) }
-        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get()) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { (groupId: String?, isOnboarding: Boolean) ->
-            SharingStartViewModel(initialGroupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
+            SharingStartViewModel(initialGroupId = groupId, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get(), get()) }
         viewModel { PersonalCodeViewModel(get(), get(), get()) }
@@ -236,5 +240,6 @@ object KoinSetup {
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId, get(), get(), get(), get()) }
+        viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     }
 }

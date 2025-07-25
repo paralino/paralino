@@ -36,7 +36,7 @@ class PlaceAlertsSettingsUpdateUseCase(
                     )
                 }
                 remote.updatePlaceSettings(
-                    groupId = place.place.groupId,
+                    groupId = place.place.groupOrSpaceId,
                     placeId = place.place.id,
                     placeSettingsId = place.settings?.id,
                     alertData = settings
@@ -80,7 +80,7 @@ class PlaceAlertsSettingsUpdateUseCase(
                     )
                 }
                 remote.updatePlaceSettings(
-                    groupId = place.place.groupId,
+                    groupId = place.place.groupOrSpaceId,
                     placeId = place.place.id,
                     placeSettingsId = place.settings?.id,
                     alertData = settings

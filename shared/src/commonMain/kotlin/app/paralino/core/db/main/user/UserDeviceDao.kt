@@ -26,8 +26,8 @@ interface UserDeviceDao {
     @Query("SELECT * FROM userDeviceEntity WHERE id = :deviceId")
     fun getUserDevice(deviceId: String): Flow<UserDeviceEntity?>
 
-    @Query("SELECT * FROM userDeviceEntity WHERE id = :deviceId")
-    suspend fun getUserDeviceOnce(deviceId: String): UserDeviceEntity?
+    @Query("SELECT * FROM userDeviceEntity WHERE id = :id")
+    suspend fun getUserDeviceOnce(id: String): UserDeviceEntity?
 
     @Query("SELECT * FROM userDeviceEntity WHERE deviceId = :deviceId")
     suspend fun getUserDeviceByDeviceIdOnce(deviceId: String): UserDeviceEntity?
@@ -53,11 +53,11 @@ interface UserDeviceDao {
     @Query("DELETE FROM userDeviceEntity")
     suspend fun clearAllUserDevices()
 
-    @Query("UPDATE OR IGNORE userDeviceEntity SET locationData = NULL WHERE id = :deviceId")
-    suspend fun clearLocationDataForDevice(deviceId: String)
+    @Query("UPDATE OR IGNORE userDeviceEntity SET locationData = NULL WHERE id = :locationId")
+    suspend fun clearLocationDataForDevice(locationId: String)
 
-    @Query("UPDATE OR IGNORE userDeviceEntity SET status = NULL WHERE id = :deviceId")
-    suspend fun clearStatusForDevice(deviceId: String)
+    @Query("UPDATE OR IGNORE userDeviceEntity SET status = NULL WHERE id = :locationId")
+    suspend fun clearStatusForDevice(locationId: String)
 }
 
 data class UserDeviceLocationDataUpdate(

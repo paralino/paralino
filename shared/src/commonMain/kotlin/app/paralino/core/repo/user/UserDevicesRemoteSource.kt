@@ -25,12 +25,8 @@ class UserDevicesRemoteSource constructor(
     private val placesRemote: PlacesRemoteSource,
     private val appPrefs: AppPrefs
 ) {
-
-    suspend fun getAllPersonalSpaceData(): UserDevicesWithLocationsAndPlacesRaw {
+    suspend fun getUserDevices(): List<UserDeviceWithLocationRaw> {
         return blocking {
-
-            val placesAsync = async { placesRemote.getAllPersonalPlaces() }
-
             val personalDevicesAsync = async {
                 documentApi.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
@@ -47,15 +43,26 @@ class UserDevicesRemoteSource constructor(
 
             val personalDevices = personalDevicesAsync.await()
             val personalLocations = personalLocationsAsync.await()
+
+            personalDevices.map { device ->
+                UserDeviceWithLocationRaw(
+                    device = device,
+                    location = personalLocations.firstOrNull { it.id == device.id }
+                )
+            }
+        }
+    }
+
+    suspend fun getAllPersonalSpaceData(): UserDevicesWithLocationsAndPlacesRaw {
+        return blocking {
+
+            val placesAsync = async { placesRemote.getAllPersonalPlaces() }
+            val devicesAsync = async { getUserDevices() }
             val places = placesAsync.await()
+            val devices = devicesAsync.await()
 
             UserDevicesWithLocationsAndPlacesRaw(
-                devices = personalDevices.map { device ->
-                    UserDeviceWithLocationRaw(
-                        device = device,
-                        location = personalLocations.firstOrNull { it.id == device.id }
-                    )
-                },
+                devices = devices,
                 places = places.filter {
                     it.place.isInPersonalSpace == true
                 }
@@ -73,7 +80,7 @@ class UserDevicesRemoteSource constructor(
         )
 
         val response = functionsApi.runAndWait(
-            function = ServerFunction.DEVICE_UPDATE,
+            function = ServerFunction.USER_DEVICE_UPDATE,
             data = payload
         )
 

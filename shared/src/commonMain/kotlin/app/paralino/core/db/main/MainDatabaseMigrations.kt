@@ -130,6 +130,11 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_16_17 = object : Migration(16, 17) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE placeEntity ADD COLUMN `userKeyVersion` INTEGER DEFAULT NULL")
+        }
+    }
 
 
     val migrations: List<Migration> = listOf(
@@ -148,5 +153,6 @@ object MainDatabaseMigrations {
         MIGRATION_13_14,
         MIGRATION_14_15,
         MIGRATION_15_16,
+        MIGRATION_16_17,
     )
 }

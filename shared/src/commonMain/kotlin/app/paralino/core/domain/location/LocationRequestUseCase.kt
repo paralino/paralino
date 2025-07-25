@@ -1,9 +1,12 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationPerformanceType
-import app.paralino.core.models.raw.LocationFocusPayload
-import app.paralino.core.models.raw.LocationRequestPayload
+import app.paralino.core.models.raw.LocationFocusGroupPayload
+import app.paralino.core.models.raw.LocationFocusSpacePayload
+import app.paralino.core.models.raw.LocationRequestGroupPayload
+import app.paralino.core.models.raw.LocationRequestSpacePayload
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
@@ -27,7 +30,7 @@ class LocationRequestUseCase constructor(
 ) : BaseRepository() {
 
     fun keepLocationBoost(
-        groupId: String
+        groupId: GroupOrSpaceId
     ): Flow<Unit> {
         return flow {
             do {
@@ -43,7 +46,7 @@ class LocationRequestUseCase constructor(
     }
 
     fun keepLocationFocus(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         focusType: MapHomeScreenFocusType
     ): Flow<String> {
         return flow {
@@ -59,7 +62,7 @@ class LocationRequestUseCase constructor(
         }.catch { emit("Error while boosting location") }
     }
 
-    private suspend fun sendLocationFocusEvent(groupId: String, focusType: MapHomeScreenFocusType) {
+    private suspend fun sendLocationFocusEvent(groupId: GroupOrSpaceId, focusType: MapHomeScreenFocusType) {
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "location_performance_location_focus_${groupId}_${(focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId}",
@@ -76,16 +79,28 @@ class LocationRequestUseCase constructor(
                         if (focusType.isIdleActive) {
                             logg.tag("location_performance")
                                 .v("Map is active (${focusType::class.simpleName}), sending ping")
-                            val requestPayload = LocationFocusPayload(
-                                groupId = groupId,
-                                userId = focusType.memberUserId,
-                                locationId = focusType.memberLocationId
-                            )
 
-                            functionsApi.runAsync(
-                                function = ServerFunction.LOCATION_FOCUS_MEMBER,
-                                data = requestPayload
-                            )
+                            if (groupId.isPersonalSpace) {
+                                val requestPayload = LocationFocusSpacePayload(
+                                    locationId = focusType.memberLocationId
+                                )
+
+                                functionsApi.runAndWait(
+                                    function = ServerFunction.LOCATION_FOCUS_DEVICE,
+                                    data = requestPayload
+                                )
+                            } else {
+                                val requestPayload = LocationFocusGroupPayload(
+                                    groupId = groupId.id,
+                                    userId = focusType.memberUserId,
+                                    locationId = focusType.memberLocationId
+                                )
+
+                                functionsApi.runAsync(
+                                    function = ServerFunction.LOCATION_FOCUS_MEMBER,
+                                    data = requestPayload
+                                )
+                            }
                         } else {
                             logg.tag("location_performance")
                                 .v("User not sharing, skip ping")
@@ -94,16 +109,28 @@ class LocationRequestUseCase constructor(
                     else -> {
                         logg.tag("location_performance")
                             .v("Map is active (${focusType::class.simpleName}), sending ping")
-                        val requestPayload = LocationFocusPayload(
-                            groupId = groupId,
-                            userId = null,
-                            locationId = null
-                        )
 
-                        functionsApi.runAsync(
-                            function = ServerFunction.LOCATION_FOCUS_GROUP,
-                            data = requestPayload
-                        )
+                        if (groupId.isPersonalSpace) {
+                            val requestPayload = LocationFocusSpacePayload(
+                                locationId = null
+                            )
+
+                            functionsApi.runAndWait(
+                                function = ServerFunction.LOCATION_FOCUS_SPACE,
+                                data = requestPayload
+                            )
+                        } else {
+                            val requestPayload = LocationFocusGroupPayload(
+                                groupId = groupId.id,
+                                userId = null,
+                                locationId = null
+                            )
+
+                            functionsApi.runAsync(
+                                function = ServerFunction.LOCATION_FOCUS_GROUP,
+                                data = requestPayload
+                            )
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -115,21 +142,32 @@ class LocationRequestUseCase constructor(
     }
 
     suspend fun requestMemberDeviceLocation(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         memberUserId: String,
         locationId: String
     ) {
         triggerRemoteOnly {
-            val requestPayload = LocationRequestPayload(
-                groupId = groupId,
-                userId = memberUserId,
-                locationId = locationId
-            )
+            val response = if (groupId.isPersonalSpace) {
+                val requestPayload = LocationRequestSpacePayload(
+                    locationId = locationId
+                )
 
-            val response = functionsApi.runAndWait(
-                function = ServerFunction.LOCATION_REQUEST_MEMBER,
-                data = requestPayload
-            )
+                functionsApi.runAndWait(
+                    function = ServerFunction.LOCATION_REQUEST_DEVICE,
+                    data = requestPayload
+                )
+            } else {
+                val requestPayload = LocationRequestGroupPayload(
+                    groupId = groupId.id,
+                    userId = memberUserId,
+                    locationId = locationId
+                )
+
+                functionsApi.runAndWait(
+                    function = ServerFunction.LOCATION_REQUEST_MEMBER,
+                    data = requestPayload
+                )
+            }
 
             if (!response.isSuccess) {
                 throw BaseRemoteException.fromRemote(

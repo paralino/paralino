@@ -1,5 +1,6 @@
 package app.paralino.core.models.location
 
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.extensions.fromUTCtoInstant
@@ -11,7 +12,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 
 data class LocationSharingContract constructor(
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val endTimeUTC: String?,
     val shareBattery: Boolean,
     val shareSpeed: Boolean,
@@ -44,7 +45,7 @@ data class LocationSharingContract constructor(
                 return this.copy(endTimeUTC = maxSharing.toLocalDateTime(TimeZone.UTC).toString())
             }
             // invalid public sharing contract
-            else if(this.groupId == UserGroup.groupPublicSharingId) return null
+            else if(this.groupOrSpaceId.isPublicSharing) return null
             // endless sharing for other groups
             else return this
         } else {
@@ -53,7 +54,7 @@ data class LocationSharingContract constructor(
             if(date <= now) {
                 // expired
                 return null
-            } else if (this.groupId == UserGroup.groupPublicSharingId) {
+            } else if (this.groupOrSpaceId.isPublicSharing) {
                 // limit public sharing if needed
                 val maxPublic = now.plus(SharingDurationPreset.publicSharingMaxDurationMillis, DateTimeUnit.MILLISECOND)
                 if(date > maxPublic) {

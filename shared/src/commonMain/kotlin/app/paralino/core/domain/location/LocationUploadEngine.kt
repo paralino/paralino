@@ -5,6 +5,7 @@ import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
@@ -178,7 +179,7 @@ class LocationUploadEngine constructor(
             val contracts = locationSharingManager.allValidContracts()
             contracts.mapNotNull { contract ->
                 getLocationPayload(
-                    groupId = contract.groupId,
+                    groupId = contract.groupOrSpaceId,
                     data = data,
                     contract = contract
                 )
@@ -230,7 +231,7 @@ class LocationUploadEngine constructor(
     }
 
     private suspend fun getLocationPayload(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         contract: LocationSharingContract,
     ): MemberGroupId? {

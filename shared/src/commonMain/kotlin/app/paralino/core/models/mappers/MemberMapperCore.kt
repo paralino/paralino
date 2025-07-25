@@ -9,6 +9,7 @@ import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.GroupSettings
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationDataModel
@@ -270,7 +271,7 @@ class MemberMapperCore constructor(
 
             MemberLocation(
                 id = location.id,
-                groupId = model.member.groupId,
+                groupOrSpaceId = model.member.groupId.asGroupOrSpaceId(),
                 memberId = model.member.id,
                 userId = model.member.ownerUserId,
                 deviceId = location.deviceId,

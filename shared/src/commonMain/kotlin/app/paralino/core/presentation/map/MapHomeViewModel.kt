@@ -8,10 +8,14 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.RealtimeEventsMaker
+import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
@@ -20,7 +24,6 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
 import app.paralino.core.presentation.groups.LocationRequestItemState
@@ -29,6 +32,12 @@ import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePlace
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenGroupDetails
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaceDetails
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaces
+import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenSharingStart
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
@@ -37,6 +46,7 @@ import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -78,19 +88,21 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.time.Instant
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class MapHomeViewModel constructor(
     private val sharingManager: LocationSharingManager,
     private val groupRepo: UserGroupLocalDataSource,
     private val placesRepo: PlacesRepository,
     private val groupPreRefresh: GroupPreRefreshUseCase,
+    private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
     private val clearUserLocation: ClearUserLocationUseCase,
     private val realtimeEvents: RealtimeEventsMaker,
     private val userRepository: UserRepository,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs,
     private val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
@@ -109,7 +121,7 @@ class MapHomeViewModel constructor(
     val events = _eventChannel.receiveAsFlow()
 
     private val uiFocusedStatus = MutableStateFlow(false)
-    private val groupIdData = MutableStateFlow("")
+    private val groupIdData = MutableStateFlow("".asGroupOrSpaceId())
     private val uiRefreshPingFlow = MutableStateFlow<Instant?>(null)
 
     private var uiRefreshPingSubscriptionJob: Job? = null
@@ -128,11 +140,11 @@ class MapHomeViewModel constructor(
         appRatingManager.tryShowingAppRating(source = AppRatingSource.MAIN_MAP)
 
         allGroups.onEach { groupsData ->
-            val selectedGroup = groupIdData.value.takeIf { it.isNotBlank() }
-                ?: appPrefs.selectedGroupId
-            if (groupsData is Resource.Ready && groupsData.data.isNotEmpty() && !selectedGroup.isNullOrBlank()) {
-                if (groupsData.data.none { it.id == selectedGroup }) {
-                    switchGroup(groupsData.data.firstOrNull()?.id ?: "")
+            val selectedGroup = groupIdData.value.takeIf { it.id.isNotBlank() }
+                ?: appPrefs.selectedGroupId?.asGroupOrSpaceId()
+            if (groupsData is Resource.Ready && groupsData.data.isNotEmpty() && !selectedGroup?.id.isNullOrBlank() && selectedGroup.isGroup) {
+                if (groupsData.data.none { it.id == selectedGroup.id }) {
+                    switchGroup(groupsData.data.firstOrNull()?.id?.asGroupOrSpaceId())
                 }
             }
         }.launchIn(coroutineScope)
@@ -143,15 +155,19 @@ class MapHomeViewModel constructor(
         ) { appLifecycleState, uiFocused ->
             keepUiRefreshPing()
             if (appLifecycleState.comingFromBackground && uiFocused) {
-                if (groupIdData.value.isNotBlank()) {
+                if (groupIdData.value.id.isNotBlank()) {
                     delay(2000)
                     logg.v("home_screen", "App in foreground, try to refresh selected group ${groupIdData.value}")
                     coroutineScope.launch(Dispatchers.IO) {
-                        groupPreRefresh.refreshGroupWithMembers(groupIdData.value)
+                        if (groupIdData.value.isPersonalSpace) {
+                            personalSpaceRefresh.refreshPersonalSpace(10.seconds.inWholeMilliseconds)
+                        } else {
+                            groupPreRefresh.refreshGroupWithMembers(groupIdData.value.id)
+                        }
                     }
                 } else {
                     logg.v("home_screen", "App in foreground but no selected group - try to select default group")
-                    switchGroup(groupId = "")
+                    switchGroup(groupId = null)
                 }
             }
         }
@@ -186,15 +202,19 @@ class MapHomeViewModel constructor(
 
         groupIdData
             .onEach {
-                if (it.isNotBlank()) {
+                if (it.id.isNotBlank()) {
                     logg.v("home_screen", "Selected group changed, try to refresh group $it")
                     coroutineScope.launch(Dispatchers.IO) {
-                        groupPreRefresh.refreshGroupWithMembers(it)
+                        if (it.isPersonalSpace) {
+                            personalSpaceRefresh.refreshPersonalSpace(10.seconds.inWholeMilliseconds)
+                        } else {
+                            groupPreRefresh.refreshGroupWithMembers(it.id)
+                        }
                     }
                 }
             }
             .flatMapLatest {
-                if (it.isBlank()) {
+                if (it.id.isBlank()) {
                     userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                         .map {
                             MapHomeScreenState.Empty(
@@ -204,8 +224,9 @@ class MapHomeViewModel constructor(
                 } else {
                     combine(
                         uiRefreshPingFlow.filterNotNull(),
-                        groupRepo.getGroupWithMembers(it),
-                        placesRepo.getPlacesForGroupLocally(it),
+                        // TODO handle personal space
+                        groupRepo.getGroupWithMembers(it.id),
+                        placesRepo.getPlacesForGroupLocally(it.id),
                         getSharingContract(),
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                     ) { _, group, places, sharingStatus, userData ->
@@ -267,7 +288,7 @@ class MapHomeViewModel constructor(
                                             },
                                             deleteLocation = takeIf {
                                                 canDeleteLocation(
-                                                    groupId = group.id,
+                                                    groupId = group.id.asGroupOrSpaceId(),
                                                     isCurrentUser = member.member.userId == appPrefs.userId,
                                                     isCurrentDevice = location.deviceId == appPrefs.deviceId,
                                                     hasLocation = locationVisibility.isVisible()
@@ -452,7 +473,7 @@ class MapHomeViewModel constructor(
     }
 
     private fun canDeleteLocation(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         isCurrentUser: Boolean,
         isCurrentDevice: Boolean,
         hasLocation: Boolean
@@ -462,37 +483,62 @@ class MapHomeViewModel constructor(
                 && (!isCurrentDevice || !sharingManager.isSharingActiveForGroupMaybe(groupId))
     }
 
-    fun switchGroup(groupId: String) {
+    fun switchGroup(groupId: GroupOrSpaceId?) {
         coroutineScope.launch {
-            val allGroups = allGroups.mapNotNull { it.data }
-                .firstOrNull()
-                ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
-                ?: emptyList()
+            if (groupId?.isPersonalSpace == true) {
+                selectPersonalSpace()
+            } else {
+                val allGroups = allGroups.mapNotNull { it.data }
+                    .firstOrNull()
+                    ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
+                    ?: emptyList()
 
-            val newGroup = allGroups.firstOrNull { it.id == groupId }
-                ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }
-                ?: allGroups.firstOrNull()
+                val matchingGroup = allGroups.firstOrNull { it.id == groupId?.id }
+                    ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }
 
-            val newGroupId = newGroup?.id ?: ""
+                if (matchingGroup != null || allGroups.isNotEmpty()) {
+                    val newGroup = matchingGroup
+                        ?: allGroups.firstOrNull()
 
-            appPrefs.selectedGroupId = newGroupId
-            groupIdData.update { newGroupId }
+                    val newGroupId = newGroup?.id ?: ""
 
-            if (newGroup != null && newGroup.isGroupOverLimits(remoteConfig.getConfigOnce())) {
-                if (newGroup.group.isCurrentUserOwner) {
-                    showSnackbar(
-                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
-                        duration = SnackbarDuration.Forever
-                    )
-                    delay(1000)
-                    _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                    appPrefs.selectedGroupId = newGroupId
+                    groupIdData.update { newGroupId.asGroupOrSpaceId() }
+
+                    if (newGroup != null && newGroup.isGroupOverLimits(remoteConfig.getConfigOnce())) {
+                        if (newGroup.group.isCurrentUserOwner) {
+                            showSnackbar(
+                                text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                                duration = SnackbarDuration.Forever
+                            )
+                            delay(1000)
+                            _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                        } else {
+                            showSnackbar(
+                                text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                                duration = SnackbarDuration.Forever
+                            )
+                        }
+                    }
                 } else {
-                    showSnackbar(
-                        text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
-                        duration = SnackbarDuration.Forever
-                    )
+                    selectPersonalSpace()
                 }
             }
+        }
+    }
+
+    private suspend fun selectPersonalSpace() {
+        appPrefs.selectedGroupId = UserGroup.groupPersonalDevicesId
+        groupIdData.update { UserGroup.groupPersonalDevicesId.asGroupOrSpaceId() }
+        val personalSpace = personalSpaceRepo.personalSpaceState.value.data
+        if (personalSpace?.isSpaceOverLimits() == true) {
+            // TODO change text
+            showSnackbar(
+                text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                duration = SnackbarDuration.Forever
+            )
+            delay(1000)
+            _eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
         }
     }
 
@@ -644,7 +690,7 @@ class MapHomeViewModel constructor(
 
     private fun getSharingContract(): Flow<LocationSharingContract?> {
         return sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
-            contracts.data?.firstOrNull { it.groupId == group }?.asValidContract()
+            contracts.data?.firstOrNull { it.groupOrSpaceId == group }?.asValidContract()
         }
     }
 
@@ -654,14 +700,15 @@ class MapHomeViewModel constructor(
             onlyShowGroups = false,
             userPlan = userRepository.userPlans.value.highestValidPlanConfig,
             groupsLimit = userRepository.userPlans.value.groupsLimit,
-            personalSpace = GroupItemState(
-                user = userRepository.cachedUser!!,
-                deviceCount = 1,
-                config = remoteConfig.getCachedConfigOnce(),
-                uiType = GroupItemState.GroupUiType.ACTIVE,
-                isSelected = false,
-                isLarge = true
-            ),
+            personalSpace = personalSpaceRepo.personalSpaceState.value.data?.let {
+                GroupItemState(
+                    space = it,
+                    config = remoteConfig.getCachedConfigOnce(),
+                    uiType = GroupItemState.GroupUiType.ACTIVE,
+                    canEdit = true,
+                    isSelected = false,
+                )
+            },
             createdGroups = allGroups.filter { it.isCurrentUserOwner },
             joinedGroups = allGroups.filter { !it.isCurrentUserOwner }
         )
@@ -672,10 +719,10 @@ class MapHomeViewModel constructor(
             val uiType = when {
                 !group.isVerified -> GroupItemState.GroupUiType.UNVERIFIED
                 group.isGroupOverLimits(remoteConfig.getCachedConfigOnce()) -> GroupItemState.GroupUiType.OVER_LIMITS
-                sharingManager.isSharingActiveForGroupMaybe(group.id) -> GroupItemState.GroupUiType.ACTIVE
+                sharingManager.isSharingActiveForGroupMaybe(group.id.asGroupOrSpaceId()) -> GroupItemState.GroupUiType.ACTIVE
                 else -> GroupItemState.GroupUiType.INACTIVE
             }
-            val isSelected = group.id == groupIdData.value
+            val isSelected = group.id == groupIdData.value.id
             GroupItemState(
                 group = group,
                 config = remoteConfig.getCachedConfigOnce(),
@@ -707,7 +754,7 @@ class MapHomeViewModel constructor(
 
         val groupId = groupIdData.value
 
-        if (groupId.isNullOrBlank()) {
+        if (groupId.id.isNullOrBlank()) {
             logg.v("location_performance", "Group id not valid, ignore active ping")
             return
         }
@@ -775,7 +822,10 @@ class MapHomeViewModel constructor(
             return
         }
 
-        clearUserLocation.clearLocation(groupId = state.memberState.groupId, locationId = stateWithLocation.location.locationId)
+        clearUserLocation.clearLocation(
+            groupId = state.memberState.groupId.asGroupOrSpaceId(),
+            locationId = stateWithLocation.location.locationId
+        )
             .onStart {
                 updateReadyState { readyState ->
                     readyState.copy(
@@ -804,7 +854,7 @@ class MapHomeViewModel constructor(
                                         deleteLocation = memberState.actions.deleteLocation
                                             ?.takeIf { action ->
                                                 canDeleteLocation(
-                                                    groupId = memberState.memberState.groupId,
+                                                    groupId = memberState.memberState.groupId.asGroupOrSpaceId(),
                                                     isCurrentUser = memberState.memberState.userId == appPrefs.userId,
                                                     isCurrentDevice = memberState.location?.currentDevice == true,
                                                     hasLocation = memberState.location?.visibility?.isVisible() == true
@@ -854,7 +904,7 @@ class MapHomeViewModel constructor(
 
         if (!stateWithLocation.actions.locationRequest.isPremiumFeatureEnabled) {
             coroutineScope.launch {
-                val group = getAllGroupsItemState().firstOrNull { it.id == stateWithLocation.memberState.groupId }
+                val group = getAllGroupsItemState().firstOrNull { it.id == stateWithLocation.memberState.groupId.asGroupOrSpaceId() }
                 if (group != null) {
                     if (group.isCurrentUserOwner) {
                         messageDispatcher.showSnackbarForResult(
@@ -876,7 +926,7 @@ class MapHomeViewModel constructor(
 
         flow {
             locationRequestUseCase.requestMemberDeviceLocation(
-                groupId = stateWithLocation.memberState.groupId,
+                groupId = stateWithLocation.memberState.groupId.asGroupOrSpaceId(),
                 memberUserId = stateWithLocation.memberState.userId,
                 locationId = stateWithLocation.location.locationId
             )
@@ -1040,7 +1090,7 @@ class MapHomeViewModel constructor(
                     is GroupMemberItemEvent.onDirectionsRequest -> {
                         _uiState.value.asReady()?.let {
                             _eventChannel.trySend(
-                                MapHomeScreenEvent.OpenExternalNavigation(
+                                OpenExternalNavigation(
                                     lat = event.event.action.lat,
                                     lng = event.event.action.lng,
                                     name = event.event.action.title,
@@ -1053,7 +1103,7 @@ class MapHomeViewModel constructor(
             }
             MapHomeScreenUiEvent.OnGroupDetailsClick -> {
                 _uiState.value.asReady()?.let {
-                    _eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = it.groupId))
+                    _eventChannel.trySend(OpenGroupDetails(groupId = it.groupId))
                 }
             }
             MapHomeScreenUiEvent.OnGroupPickerClick -> {
@@ -1061,19 +1111,19 @@ class MapHomeViewModel constructor(
             }
             MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
                 _uiState.value.asReady()?.let {
-                    _eventChannel.trySend(MapHomeScreenEvent.OpenCreatePlace(groupId = it.groupId))
+                    _eventChannel.trySend(OpenCreatePlace(groupId = it.groupId))
                 }
             }
             MapHomeScreenUiEvent.OnOpenPlacesScreen -> {
                 _uiState.value.asReady()?.let {
-                    _eventChannel.trySend(MapHomeScreenEvent.OpenPlaces(groupId = it.groupId))
+                    _eventChannel.trySend(OpenPlaces(groupId = it.groupId))
                 }
             }
             is MapHomeScreenUiEvent.OnPlaceClick -> {
                 _uiState.value.asReady()?.let {
                     if (it.focusedPlace?.id == event.place.id) {
                         _eventChannel.trySend(
-                            MapHomeScreenEvent.OpenPlaceDetails(
+                            OpenPlaceDetails(
                                 groupId = it.groupId,
                                 placeId = event.place.id
                             )
@@ -1088,7 +1138,15 @@ class MapHomeViewModel constructor(
             }
             MapHomeScreenUiEvent.OnSharingStartClick -> {
                 _uiState.value.asReady()?.let {
-                    _eventChannel.trySend(MapHomeScreenEvent.OpenSharingStart(groupId = it.groupId))
+                    _eventChannel.trySend(OpenSharingStart(groupId = it.groupId))
+                }
+            }
+
+            is MapHomeScreenUiEvent.OpenGroupDetails -> {
+                if (event.groupId.isPersonalSpace) {
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
+                } else {
+                    _eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = event.groupId.id))
                 }
             }
         }

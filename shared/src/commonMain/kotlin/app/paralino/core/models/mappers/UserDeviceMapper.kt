@@ -3,8 +3,10 @@ package app.paralino.core.models.mappers
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.main.user.UserDeviceEntity
+import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationHistoryModel
@@ -54,11 +56,7 @@ class UserDeviceMapper(
         } else {
             try {
                 // First, decrypt the encrypted sender key using the user key
-                val userKey = userKeyRepo.personalKey(version = entity.userKeyVersion)
-                val senderKey = cryptoCore.decryptDataWithKey(
-                    data = entity.encryptedSenderKey,
-                    key = userKey.key
-                )
+                val senderKey = userKeyRepo.getDeviceSenderKeyForDevice(device = entity).key
 
                 // Now use the sender key to decrypt the location data
                 val deviceData = decryptDeviceData(entity.deviceData, senderKey)
@@ -68,7 +66,7 @@ class UserDeviceMapper(
 
                 MemberLocation(
                     id = entity.id,
-                    groupId = UserGroup.groupPersonalDevicesId,
+                    groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
                     memberId = "", // User devices don't have a member ID
                     userId = entity.ownerUserId,
                     deviceId = entity.deviceId,
@@ -104,10 +102,14 @@ class UserDeviceMapper(
 
     private suspend fun decryptDeviceData(
         encryptedData: String?,
-        senderKey: String
+        senderKey: String?
     ): CryptoResource<MemberDeviceData> {
         if (encryptedData.isNullOrBlank()) {
             return CryptoResource.NotInitialized
+        }
+
+        if (senderKey.isNullOrBlank()) {
+            return CryptoResource.MissingKey
         }
 
         return try {
@@ -124,10 +126,14 @@ class UserDeviceMapper(
 
     private suspend fun decryptLocationData(
         encryptedData: String?,
-        senderKey: String
+        senderKey: String?
     ): CryptoResource<LocationDataModel> {
         if (encryptedData.isNullOrBlank()) {
             return CryptoResource.NotInitialized
+        }
+
+        if (senderKey.isNullOrBlank()) {
+            return CryptoResource.MissingKey
         }
 
         return try {
@@ -144,10 +150,14 @@ class UserDeviceMapper(
 
     private suspend fun decryptStatusData(
         encryptedData: String?,
-        senderKey: String
+        senderKey: String?
     ): CryptoResource<MemberDeviceStatus> {
         if (encryptedData.isNullOrBlank()) {
             return CryptoResource.NotInitialized
+        }
+
+        if (senderKey.isNullOrBlank()) {
+            return CryptoResource.MissingKey
         }
 
         return try {
@@ -164,10 +174,14 @@ class UserDeviceMapper(
 
     private suspend fun decryptLocationHistory(
         encryptedData: String?,
-        senderKey: String
+        senderKey: String?
     ): CryptoResource<LocationHistoryModel> {
         if (encryptedData.isNullOrBlank()) {
             return CryptoResource.NotInitialized
+        }
+
+        if (senderKey.isNullOrBlank()) {
+            return CryptoResource.MissingKey
         }
 
         return try {

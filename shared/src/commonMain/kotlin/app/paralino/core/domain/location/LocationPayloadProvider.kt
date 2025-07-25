@@ -9,6 +9,7 @@ import app.paralino.core.db.main.groups.MemberLocationEntity
 import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
@@ -30,7 +31,7 @@ class LocationPayloadProvider(
 ) {
 
     suspend fun getLocationPayload(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         /**
          * if there is no contract, location data is ignored

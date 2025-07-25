@@ -10,6 +10,7 @@ import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.mappers.PendingLocationHistoryMapper
@@ -40,7 +41,7 @@ class SaveLocationUseCase(
             locationId = data.locationId
         )
         if (memberKey !is GroupMemberSenderKey.Valid)
-            throw MissingMemberKeyException(data.groupId, appPrefs.userId)
+            throw MissingMemberKeyException(groupId = data.groupId, memberId = appPrefs.userId)
 
         val locationData = data.locationData?.let {
             cryptoCore.encryptDataWithKey(
@@ -50,10 +51,10 @@ class SaveLocationUseCase(
         }
 
         val historyEntries = if (data.locationHistory != null) {
-            val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupId = data.groupId)
+            val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupOrSpaceId = data.groupId.id)
                 ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
 
-            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupId = data.groupId)
+            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
                 .filter { it.localHistoryKeyId == historyKey?.id }
                 .sortedByDescending { it.id }
                 .take(100)

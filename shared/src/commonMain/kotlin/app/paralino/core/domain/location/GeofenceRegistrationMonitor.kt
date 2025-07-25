@@ -52,7 +52,7 @@ class GeofenceRegistrationMonitor(
                     if (place.canSendAlert) {
                         place.data.data?.let {
                             GroupPlaceGeofenceData(
-                                groupId = place.groupId,
+                                groupId = place.groupOrSpaceId,
                                 placeId = place.id,
                                 lat = it.lat,
                                 lng = it.lng,
@@ -80,7 +80,7 @@ class GeofenceRegistrationMonitor(
             timer
         ) { geofences, locationStatus, sharingContracts, _ ->
 
-            val filteredContractsIds = sharingContracts.mapNotNull { it.asValidContract()?.groupId }
+            val filteredContractsIds = sharingContracts.mapNotNull { it.asValidContract()?.groupOrSpaceId }
             val filteredGeofences = geofences.filter { it.groupId in filteredContractsIds }
 
             if (locationStatus && filteredContractsIds.isNotEmpty() && filteredGeofences.isNotEmpty()) {

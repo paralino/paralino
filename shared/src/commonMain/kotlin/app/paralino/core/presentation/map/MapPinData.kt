@@ -1,7 +1,9 @@
 package app.paralino.core.presentation.map
 
 import androidx.compose.runtime.Stable
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.MemberLocation
@@ -13,7 +15,7 @@ import app.paralino.core.presentation.places.list.PlaceListItemData
 
 @Stable
 data class MapPinData constructor(
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val markerId: String,
     val pinType: MapPinType,
     val markerStyle: MapMarkerStyle,
@@ -31,7 +33,7 @@ data class MapPinData constructor(
 ) {
 
     constructor(state: CreatePlaceScreenState) : this(
-        groupId = state.groupId,
+        groupOrSpaceId = state.groupId,
         markerId = "place_marker",
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -48,7 +50,7 @@ data class MapPinData constructor(
     )
 
     constructor(state: PlaceDetailScreenState) : this(
-        groupId = state.groupId,
+        groupOrSpaceId = state.groupOrSpaceId,
         markerId = state.placeId,
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -65,7 +67,7 @@ data class MapPinData constructor(
     )
 
     constructor(groupId: String, state: PlaceListItemData) : this(
-        groupId = groupId,
+        groupOrSpaceId = groupId.asGroupOrSpaceId(),
         markerId = state.id,
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -87,7 +89,7 @@ data class MapPinData constructor(
         image: ImageModel?,
         timeInfo: String?
     ) : this(
-        groupId = location.groupId,
+        groupOrSpaceId = location.groupOrSpaceId,
         markerId = location.id,
         pinType = MapPinType.MEMBER,
         markerStyle = if(location.locationData.data?.isAccurate == true) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
@@ -106,13 +108,13 @@ data class MapPinData constructor(
 
     constructor(
         id: String,
-        groupId: String,
+        groupId: GroupOrSpaceId,
         location: LocationHistoryPointLocationModel,
         name: String?,
         image: ImageModel?,
         timeInfo: String?
     ) : this(
-        groupId = groupId,
+        groupOrSpaceId = groupId,
         markerId = id,
         pinType = MapPinType.MEMBER,
         markerStyle = if(location.acc < 100) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
@@ -131,13 +133,13 @@ data class MapPinData constructor(
 
     constructor(
         id: String,
-        groupId: String,
+        groupId: GroupOrSpaceId,
         cluster: LocationHistoryPointState.Cluster,
         name: String?,
         image: ImageModel?,
         timeInfo: String?
     ) : this(
-        groupId = groupId,
+        groupOrSpaceId = groupId,
         markerId = id,
         pinType = MapPinType.MEMBER,
         markerStyle = MapMarkerStyle.CIRCLE,

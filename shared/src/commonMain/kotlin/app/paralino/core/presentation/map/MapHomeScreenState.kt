@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.LocationSharingContract
@@ -79,6 +80,7 @@ sealed class MapHomeScreenEvent {
     data object OpenPaywall : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
     data object OpenGroupPicker : MapHomeScreenEvent()
+    data object OpenPersonalSpace : MapHomeScreenEvent()
     data class OpenSharingStart(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaces(val groupId: String) : MapHomeScreenEvent()
     data class OpenCreatePlace(val groupId: String) : MapHomeScreenEvent()
@@ -99,6 +101,7 @@ sealed interface MapHomeScreenUiEvent {
     data class OnMarkerClick(val pin: MapPinData) : MapHomeScreenUiEvent
     data class OnPlaceClick(val place: PlaceListItemData) : MapHomeScreenUiEvent
     data class OnMemberItemEvent(val event: GroupMemberItemEvent) : MapHomeScreenUiEvent
+    data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
     data object OnFocusOnMembersClick : MapHomeScreenUiEvent
     data object OnFocusOnPlacesClick : MapHomeScreenUiEvent
     data object OnOpenPlacesScreen : MapHomeScreenUiEvent
@@ -144,7 +147,7 @@ sealed interface MapHomeScreenFocusType {
 }
 
 data class MapScreenLifecycleData(
-    val groupId: String,
+    val groupId: GroupOrSpaceId,
     val isAppFocused: Boolean,
     val isUiFocused: Boolean,
     val mapFocusType: MapHomeScreenFocusType,

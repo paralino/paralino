@@ -10,6 +10,7 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
@@ -83,7 +84,7 @@ class GroupDetailViewModel(
         combine(
             deviceApiProvider.deviceStatus,
             groupRefresh.getAndRefreshGroupWithMembers(groupId),
-            sharingManager.sharingContractForGroup(groupId),
+            sharingManager.sharingContractForGroup(groupId.asGroupOrSpaceId()),
             userRepo.getBlocklistLocally()
         ) { deviceStatus, group, sharingStatus, blocklist ->
             groupData.update { group }
@@ -273,7 +274,7 @@ class GroupDetailViewModel(
     }
 
     fun removeMember(memberUserId: String) {
-        groupMemberRemove.removeMember(groupId, memberUserId)
+        groupMemberRemove.removeMember(groupId = groupId, memberUserId = memberUserId)
             .mapToPayload { Unit }
             .onEach { result ->
                 _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
@@ -292,7 +293,7 @@ class GroupDetailViewModel(
     }
 
     fun removeMemberLocation(memberId: String, locationId: String) {
-        groupMemberRemove.deleteLocation(memberId, locationId)
+        groupMemberRemove.deleteLocation(memberId = memberId, locationId = locationId)
             .mapToPayload { Unit }
             .onEach { result ->
                 _uiState.update { it.mapSuccess { it.copy(loadingAction = result is Payload.Loading) } }
@@ -322,10 +323,10 @@ class GroupDetailViewModel(
 
     fun stopSharing() {
         coroutineScope.launch {
-            sharingManager.stopSharing(groupId = groupId, deleteContract = false)
-            placeActivityRepo.clearForGroup(groupId = groupId)
+            sharingManager.stopSharing(groupId = groupId.asGroupOrSpaceId(), deleteContract = false)
+            placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
             try {
-                deviceStatusProcessor.pushDeviceStatus(groupId = groupId)
+                deviceStatusProcessor.pushDeviceStatus(groupId = groupId.asGroupOrSpaceId())
             } catch (e: Exception) {
                 logg.w("Error while updating user status", e)
             }

@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.groups.GroupListItem
@@ -102,7 +103,7 @@ fun AccountOnboardingGroupCreate(
 private fun GroupContent1(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
-            id = "",
+            id = "".asGroupOrSpaceId(),
             name = MR.strings.onboarding_step_groupCreate_group_home.localizedString(),
             image = ImageModel.emoji(Emojis.heart),
             membersCount = 6,
@@ -131,7 +132,7 @@ private fun GroupContent1(modifier: Modifier = Modifier) {
 private fun GroupContent2(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
-            id = "",
+            id = "".asGroupOrSpaceId(),
             name = MR.strings.onboarding_step_groupCreate_group_friends.localizedString(),
             image = ImageModel.emoji(Emojis.star),
             membersCount = 8,
@@ -160,7 +161,7 @@ private fun GroupContent2(modifier: Modifier = Modifier) {
 private fun GroupContent3(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
-            id = "",
+            id = "".asGroupOrSpaceId(),
             name = MR.strings.onboarding_step_groupCreate_group_work.localizedString(),
             image = ImageModel.emoji(Emojis.suitecase),
             membersCount = 10,

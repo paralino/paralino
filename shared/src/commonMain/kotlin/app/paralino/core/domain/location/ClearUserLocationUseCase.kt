@@ -2,11 +2,14 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration.Companion.hours
@@ -15,17 +18,18 @@ class ClearUserLocationUseCase(
     private val groupLocal: GetMemberWithLocationsUseCase,
     private val local: LocationLocalDataSource,
     private val remote: LocationRemoteSource,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val locationSharingManager: LocationSharingManager,
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
     fun clearLocation(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         locationId: String
     ): Flow<Unit> {
         return getDataOnce(
             remote = { remote.clearLocation(groupId = groupId, locationId = locationId) },
-            localUpdate = { local.clearMemberLocationData(locationId = locationId) }
+            localUpdate = { local.clearMemberLocationData(groupOrSpaceId = groupId, locationId = locationId) }
         )
     }
 
@@ -38,8 +42,18 @@ class ClearUserLocationUseCase(
         ) {
             val memberModels = groupLocal.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation }
+                .let {
+                    val personalSpaceLocation = personalSpaceRepo.getUserDeviceByDeviceIdOnce(
+                        deviceId = appPrefs.deviceId
+                    )?.location
+                    if (personalSpaceLocation != null) {
+                        it.plus(personalSpaceLocation)
+                    } else {
+                        it
+                    }
+                }
                 .filter {
-                    val sharingActive = locationSharingManager.isSharingActiveForGroup(it.groupId)
+                    val sharingActive = locationSharingManager.isSharingActiveForGroup(it.groupOrSpaceId)
                     val canClear = it.canAutomaticallyClearLocation
                     !sharingActive && canClear
                 }
@@ -47,7 +61,7 @@ class ClearUserLocationUseCase(
             logg.d("Clearing old locations for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
-                    remote.clearLocation(groupId = it.groupId, locationId = it.id)
+                    remote.clearLocation(groupId = it.groupOrSpaceId, locationId = it.id)
                 } catch (e: Exception) {
                     logg.w("Error while clearing old location", e)
                 }

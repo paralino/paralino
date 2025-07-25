@@ -2,15 +2,18 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.minutes
 
 class RevokeDeviceActiveStatusUseCase(
     private val local: GetMemberWithLocationsUseCase,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val sharingManager: LocationSharingManager,
     private val memberDeviceStatusProcessor: MemberDeviceStatusProcessor,
     private val appPrefs: AppPrefs
@@ -24,8 +27,18 @@ class RevokeDeviceActiveStatusUseCase(
         ) {
             val memberModels = local.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation }
+                .let {
+                    val personalSpaceLocation = personalSpaceRepo.getUserDeviceByDeviceIdOnce(
+                        deviceId = appPrefs.deviceId
+                    )?.location
+                    if (personalSpaceLocation != null) {
+                        it.plus(personalSpaceLocation)
+                    } else {
+                        it
+                    }
+                }
                 .filter { location ->
-                    val sharingContract = sharingManager.unfilteredContractForGroup(id = location.groupId)
+                    val sharingContract = sharingManager.unfilteredContractForGroup(id = location.groupOrSpaceId)
                     val sharingActive = sharingContract?.asValidContract() != null
 
                     val statusActive = location.locationAwareStatusType?.let {
@@ -46,7 +59,7 @@ class RevokeDeviceActiveStatusUseCase(
             logg.d("Revoking device status for ${memberModels.size} groups")
             memberModels.forEach {
                 try {
-                    memberDeviceStatusProcessor.pushDeviceStatus(groupId = it.groupId)
+                    memberDeviceStatusProcessor.pushDeviceStatus(groupId = it.groupOrSpaceId)
                 } catch (e: Exception) {
                     logg.w("Error while resetting device status", e)
                 }

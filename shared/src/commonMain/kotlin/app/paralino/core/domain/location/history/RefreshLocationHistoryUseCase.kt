@@ -1,6 +1,7 @@
 package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.raw.GroupLocationHistoryReadPayload
@@ -29,7 +30,7 @@ class RefreshLocationHistoryUseCase(
     private val mutex = Mutex()
 
     suspend fun refreshLocationHistory(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         memberUserId: String,
         locationId: String?,
         startDate: LocalDate,
@@ -37,7 +38,7 @@ class RefreshLocationHistoryUseCase(
         requestCacheDuration: Duration
     ) {
         mutex.withLock {
-            if (groupId == UserGroup.groupPersonalDevicesId) {
+            if (groupId.isPersonalSpace) {
                 refreshPersonalLocationHistory(
                     locationId = locationId,
                     startDate = startDate,
@@ -46,7 +47,7 @@ class RefreshLocationHistoryUseCase(
                 )
             } else {
                 refreshGroupLocationHistory(
-                    groupId = groupId,
+                    groupId = groupId.id,
                     memberUserId = memberUserId,
                     locationId = locationId,
                     startDate = startDate,

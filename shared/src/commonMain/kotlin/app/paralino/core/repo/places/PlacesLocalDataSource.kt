@@ -1,6 +1,7 @@
 package app.paralino.core.repo.places
 
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.places.GroupPlace
@@ -85,8 +86,8 @@ class PlacesLocalDataSource(
             ?.let { mapper.local2Core(it) }
     }
 
-    suspend fun getGroupId(placeId: String): String? {
-        return database.groupRelatedDao.getGroupIdForPlace(placeId = placeId)
+    suspend fun getGroupIdFromPlaceId(placeId: String): GroupOrSpaceId? {
+        return database.groupRelatedDao.getPlaceOnce(placeId = placeId)?.groupOrSpaceId
     }
 
     suspend fun getPlacesCountForGroupOnce(groupId: String): Int? {

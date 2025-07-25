@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.places.list
 
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
@@ -30,7 +31,7 @@ data class PlacesListScreenState constructor(
 
 data class PlaceListItemData constructor(
     val id: String,
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val name: String,
     val image: ImageModel,
     val private: Boolean,
@@ -40,7 +41,7 @@ data class PlaceListItemData constructor(
 ) {
     constructor(place: GroupPlace) : this(
         id = place.id,
-        groupId = place.groupId,
+        groupOrSpaceId = place.groupOrSpaceId,
         name = place.data.data?.name ?: "---",
         image = place.data.data?.image ?: ImageModel.emoji(Emojis.robot),
         private = place.private,

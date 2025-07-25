@@ -1,5 +1,6 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatus
@@ -17,11 +18,11 @@ class MemberDeviceStatusProvider(
 ) {
 
     private suspend fun getStatusType(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         contract: LocationSharingContract?
     ): MemberDeviceStatusType {
         val locationStatus = deviceApiProvider.locationStatusProvider.currentStatus
-        val isSharingActive = contract?.asValidContract()?.groupId == groupId ||
+        val isSharingActive = contract?.asValidContract()?.groupOrSpaceId == groupId ||
                 locationSharingManager.isSharingActiveForGroup(groupId)
         val shareDeviceStatus = contract?.shareDeviceStatus ?: false
 
@@ -64,7 +65,7 @@ class MemberDeviceStatusProvider(
     }
 
     suspend fun getStatus(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         contract: LocationSharingContract? = null
     ): MemberDeviceStatus {
         val sharingContract = contract ?: locationSharingManager.unfilteredContractForGroup(groupId)

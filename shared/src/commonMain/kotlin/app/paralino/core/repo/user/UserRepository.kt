@@ -281,8 +281,12 @@ class UserRepository constructor(
         local.clearUserAndPlans()
     }
 
+    suspend fun remoteLogout(sessionId: String) {
+        triggerRemoteOnly { remote.logoutSession(sessionId = sessionId) }
+    }
+
     suspend fun remoteLogout() {
-        triggerRemoteOnly { remote.logout() }
+        triggerRemoteOnly { remote.logoutCurrentSession() }
     }
 
     suspend fun deleteAccount() {

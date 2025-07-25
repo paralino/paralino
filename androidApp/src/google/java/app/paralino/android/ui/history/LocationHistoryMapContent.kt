@@ -96,7 +96,7 @@ fun LocationHistoryMapContent(
                             is LocationHistoryPointState.Cluster -> {
                                 MapPinData(
                                     id = "",
-                                    groupId = stateData.groupId,
+                                    groupId = stateData.groupOrSpaceId,
                                     cluster = it,
                                     name = null,
                                     image = null,
@@ -107,7 +107,7 @@ fun LocationHistoryMapContent(
                                 it.point.loc?.let { location ->
                                     MapPinData(
                                         id = it.point.properID,
-                                        groupId = stateData.groupId,
+                                        groupId = stateData.groupOrSpaceId,
                                         location = location,
                                         name = null,
                                         image = null,

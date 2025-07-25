@@ -66,6 +66,7 @@ import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.LogoutUseCase
+import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -208,7 +209,7 @@ val mappersModule = module {
     single { PersonalCodeMapperCore(get(), get(), get()) }
     single { PersonalCodeMapperLocal(get()) }
     single { PlaceSettingsMapperCore() }
-    single { PlaceMapperCore(get(), get(), get()) }
+    single { PlaceMapperCore(get(), get(), get(), get()) }
     single { GroupPlaceMapperLocal(get(), get()) }
     single { PendingLocationHistoryMapper(get(), get()) }
     single { LocationHistoryMapper(get(), get(), get()) }
@@ -227,7 +228,7 @@ val dataSourceModule = module {
     single { PlacesLocalDataSource(get(), get()) }
 
     single { UserRemoteSource(get(), get(), get(), get(), get()) }
-    single { UserDevicesRemoteSource(get(), get(), get(), get(), get()) }
+    single { UserDevicesRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { LocationRemoteSource(get(), get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
@@ -255,18 +256,18 @@ val coreModule = module {
     factory { LocationRequestUseCase(get(), get()) }
     factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }
-    factory { ClearUserLocationUseCase(get(), get(), get(), get(), get()) }
+    factory { ClearUserLocationUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
-    factory { UserMemberIdUseCase(get(), get(), get()) }
+    factory { UserMemberIdUseCase(get(), get(), get(), get()) }
     factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { PlaceActivityUploadEngine(get(), get(), get(), get(), get(), get()) }
+    single { PlaceActivityUploadEngine(get(), get(), get(), get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -275,12 +276,13 @@ val coreModule = module {
     single { GroupPreRefreshUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupRemoveUseCase(get(), get(), get(), get(), get(), get()) }
     single { GroupCreateUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
     single { RefreshLocationHistoryUseCase(get(), get(), get()) }
     single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { DeleteLocationHistoryPeriodUseCase(get(), get(), get()) }
+    single { PersonalSpaceRefreshUseCase(get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -290,7 +292,7 @@ val coreModule = module {
     single { PlacesRepository(get(), get(), get(), get()) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
     single { UserConfigRepository(get(), get(), get(), get()) }
-    single { PremiumStatusManager(get(), get(), get(), get(), get()) }
+    single { PremiumStatusManager(get(), get(), get(), get(), get(), get()) }
 
     single { GroupValidityVerification(get(), get(), get(), get()) }
     single { LocationSharingManager(get(), get()) }
@@ -300,7 +302,7 @@ val coreModule = module {
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
-    single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get()) }
+    single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get(), get()) }
 
     single { CryptoCore(get()) }
     single { CryptoAccountOperationV1(get()) }

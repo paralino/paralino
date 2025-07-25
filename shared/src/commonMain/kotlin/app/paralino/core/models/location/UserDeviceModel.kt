@@ -1,8 +1,10 @@
 package app.paralino.core.models.location
 
 import app.paralino.core.appPrefs
+import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.user.UserMe
 
 data class UserDeviceModel(
     val id: String,
@@ -15,9 +17,12 @@ data class UserDeviceModel(
 )
 
 data class UserPersonalSpaceModel(
-    val devices: List<UserDeviceModel>,
+    val user: UserMe,
     val plan: PlanConfig,
+    val devices: List<UserDeviceModel>,
+    val placesCount: Int
 ) {
+    val activeDeviceCount: Int = devices.count { it.location != null }
     val currentDevice: UserDeviceModel? get() {
         val userId = appPrefs.userId
         val deviceId = appPrefs.deviceId
@@ -28,5 +33,17 @@ data class UserPersonalSpaceModel(
 
         val device = devices.firstOrNull { it.deviceId == deviceId }
         return device
+    }
+
+    fun arePlacesOverLimits(): Boolean {
+        return placesCount > plan.placesLimit
+    }
+
+    fun areDevicesOverLimits(): Boolean {
+        return activeDeviceCount > plan.personalDevicesLimit
+    }
+
+    fun isSpaceOverLimits(): Boolean {
+        return arePlacesOverLimits() || areDevicesOverLimits()
     }
 }

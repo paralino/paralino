@@ -4,6 +4,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -83,7 +84,7 @@ class UserGroupLocalDataSource constructor(
             places = group.places.map { placeMapper.remote2Local(it.place) },
             placeSettings = group.places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } }
         )
-        placeActivity.recreatePlacesForGroup(groupId = group.group.group.id, places = group.places)
+        placeActivity.recreatePlacesForGroup(groupId = group.group.group.id.asGroupOrSpaceId(), places = group.places)
     }
 
     suspend fun updateOrCreateMember(member: MemberWithLocationsRaw) {
@@ -120,7 +121,7 @@ class UserGroupLocalDataSource constructor(
             placeEntity = places.map { placeMapper.remote2Local(it.place) },
             placeSettings = places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } }
         )
-        placeActivity.recreatePlacesForGroup(groupId = groupId, places = places)
+        placeActivity.recreatePlacesForGroup(groupId = groupId.asGroupOrSpaceId(), places = places)
     }
 
     // TODO if group is deleted, changes are not propagated because of filterNotNull()

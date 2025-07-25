@@ -250,6 +250,19 @@ sealed class UserGroupPersonalKeyPair {
     ) : UserGroupPersonalKeyPair()
 }
 
+sealed class PersonalSpaceDeviceKey {
+    open val key: String? = null
+
+    sealed class Error : PersonalSpaceDeviceKey() {
+        object Missing : Error()
+        object Invalid : Error()
+        object InvalidMainKey : Error()
+        object MissingMainKey : Error()
+    }
+
+    data class Valid(override val key: String) : PersonalSpaceDeviceKey()
+}
+
 sealed class LocationHistoryKey {
     sealed class Error : LocationHistoryKey() {
         object MissingKeys : Error()

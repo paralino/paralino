@@ -8,6 +8,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
@@ -75,7 +76,7 @@ class LocationHistoryDataFetchController(
             val isCurrentUser = memberUserId == appPrefs.userId
 
             val newState = _uiState.value.copy(
-                groupId = groupId,
+                groupOrSpaceId = groupId.asGroupOrSpaceId(),
                 memberUserId = memberUserId,
                 isPersonalHistory = isPersonalHistory,
                 isCurrentUser = isCurrentUser,
@@ -112,17 +113,17 @@ class LocationHistoryDataFetchController(
         startDate: LocalDate,
         endDate: LocalDate
     ): Flow<Unit> {
-        val groupId = _uiState.value.groupId
+        val groupId = _uiState.value.groupOrSpaceId
         val memberUserId = _uiState.value.memberUserId
 
-        val job = if (groupId == UserGroup.groupPersonalDevicesId) {
+        val job = if (groupId.isPersonalSpace) {
             fetchPersonalLocationHistory(
                 startDate = startDate,
                 endDate = endDate
             )
         } else {
             fetchGroupLocationHistory(
-                groupId = groupId,
+                groupId = groupId.id,
                 memberUserId = memberUserId,
                 startDate = startDate,
                 endDate = endDate

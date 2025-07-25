@@ -221,7 +221,7 @@ class LocationHistoryViewModelDataController(
                         _uiState.update { it.copy(isDeletingEntry = true) }
                         try {
                             deleteLocationHistory.deleteEntries(
-                                groupId = _uiState.value.groupId,
+                                groupId = _uiState.value.groupOrSpaceId,
                                 memberUserId = _uiState.value.memberUserId,
                                 entries = listOf(it),
                                 startDate = _uiState.value.startDate,
@@ -260,7 +260,7 @@ class LocationHistoryViewModelDataController(
                         _uiState.update { it.copy(isDeletingEntry = true) }
                         try {
                             deleteLocationHistory.deleteEntries(
-                                groupId = _uiState.value.groupId,
+                                groupId = _uiState.value.groupOrSpaceId,
                                 memberUserId = _uiState.value.memberUserId,
                                 entries = locations,
                                 startDate = _uiState.value.startDate,

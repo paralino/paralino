@@ -2,6 +2,7 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
@@ -18,7 +19,7 @@ class MemberDeviceStatusProcessor(
     private val placeActivityUploadEngine: PlaceActivityUploadEngine,
 ) : BaseRepository() {
 
-    suspend fun pushDeviceStatus(groupId: String) {
+    suspend fun pushDeviceStatus(groupId: GroupOrSpaceId) {
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "device_status",

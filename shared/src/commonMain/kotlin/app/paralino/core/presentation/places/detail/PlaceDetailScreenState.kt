@@ -1,9 +1,10 @@
 package app.paralino.core.presentation.places.detail
 
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 
 data class PlaceDetailScreenState constructor(
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val placeId: String,
     val groupName: String,
     val name: String,

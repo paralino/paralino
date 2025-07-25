@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
@@ -40,13 +41,20 @@ class PlaceActivityNotificationProcessor(
         var placeName: String? = null
         var userName: String? = null
         var eventSeed: String? = null
-        var groupId: String? = null
+        var groupId: GroupOrSpaceId? = null
 
         try {
             val place = placeRepo.getPlaceWithoutSettingsOnce(payload.placeId)
-            groupId = place?.groupId
+            groupId = place?.groupOrSpaceId
             placeName = place?.data?.data?.name
-            userName = groupRepo.getMemberNameOnce(place!!.groupId, payload.memberUserId)
+            if (groupId?.isPersonalSpace == true) {
+                userName = "You"
+            } else {
+                userName = groupRepo.getMemberNameOnce(
+                    groupId = groupId!!.id,
+                    userId = payload.memberUserId
+                )
+            }
             eventSeed = place.eventSeed
         } catch (_: Exception) {
         }
@@ -91,7 +99,7 @@ class PlaceActivityNotificationProcessor(
             NotificationGroupingType.NONE -> null
             NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
             NotificationGroupingType.TYPE -> "place_activity"
-            NotificationGroupingType.GROUP -> groupId ?: payload.placeId
+            NotificationGroupingType.GROUP -> groupId?.id ?: payload.placeId
             NotificationGroupingType.PERSON -> payload.memberUserId
         }
 

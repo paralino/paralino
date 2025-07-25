@@ -31,11 +31,11 @@ interface PendingLocationHistoryDao {
     @Query("SELECT * FROM unconfirmedLocationHistoryEntity")
     suspend fun getAllUnconfirmedEntriesOnce(): List<UnconfirmedLocationHistoryEntity>
 
-    @Query("SELECT * FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
-    suspend fun getAllEntriesForGroupOnce(groupId: String): List<PendingLocationHistoryEntity>
+    @Query("SELECT * FROM pendingLocationHistoryEntity WHERE groupId = :groupOrSpaceId")
+    suspend fun getAllEntriesForGroupOnce(groupOrSpaceId: String): List<PendingLocationHistoryEntity>
 
-    @Query("SELECT * FROM pendingLocationHistoryEntity WHERE groupId = :groupId ORDER BY id DESC")
-    suspend fun getLatestPendingEntryOnce(groupId: String): PendingLocationHistoryEntity?
+    @Query("SELECT * FROM pendingLocationHistoryEntity WHERE groupId = :groupOrSpaceId ORDER BY id DESC")
+    suspend fun getLatestPendingEntryOnce(groupOrSpaceId: String): PendingLocationHistoryEntity?
 
     @Query("SELECT * FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
     suspend fun getAllUnconfirmedEntriesForGroupOnce(groupId: String): List<UnconfirmedLocationHistoryEntity>
@@ -46,8 +46,8 @@ interface PendingLocationHistoryDao {
     @Query("DELETE FROM pendingLocationHistoryEntity WHERE id IN (:ids)")
     suspend fun deletePendingEntries(ids: List<Long>)
 
-    @Query("DELETE FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
-    suspend fun deleteAllPendingEntriesForGroup(groupId: String)
+    @Query("DELETE FROM pendingLocationHistoryEntity WHERE groupId = :groupOrSpaceId")
+    suspend fun deleteAllPendingEntriesForGroup(groupOrSpaceId: String)
 
     @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
     suspend fun deleteAllUnconfirmedEntriesForGroup(groupId: String)
@@ -57,8 +57,8 @@ interface PendingLocationHistoryDao {
 
 
 
-    @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId ORDER BY id DESC")
-    suspend fun getLatestHistoryKey(groupId: String): LocalLocationHistoryKeyEntity?
+    @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupOrSpaceId ORDER BY id DESC")
+    suspend fun getLatestHistoryKey(groupOrSpaceId: String): LocalLocationHistoryKeyEntity?
 
     @Query("SELECT * FROM localLocationHistoryKeyEntity WHERE groupId = :groupId ORDER BY id DESC")
     suspend fun getHistoryKeys(groupId: String): List<LocalLocationHistoryKeyEntity>

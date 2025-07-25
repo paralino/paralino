@@ -166,7 +166,7 @@ class LocationHistoryUploadEngine(
 
         val result = if (personalHistoryNodes.isNotEmpty()) {
             val historyKeyEntity =
-                database.pendingLocationHistoryDao.getLatestHistoryKey(groupId = UserGroup.groupPersonalDevicesId)
+                database.pendingLocationHistoryDao.getLatestHistoryKey(groupOrSpaceId = UserGroup.groupPersonalDevicesId)
                     ?.takeIf { key -> key.createdAtInstant?.isOlderThan(30.days) == false }
 
             val historyKeyData = if (historyKeyEntity == null) {
@@ -316,7 +316,7 @@ class LocationHistoryUploadEngine(
         val result = validityVerification.checkIntegrityForDeviceKey(group = group)
         if (result == IntegrityResult.CORRUPTED) {
             logg.tag(executionKey).v("Group device integrity is corrupted, clear pending location history for (${groupId})")
-            database.pendingLocationHistoryDao.deleteAllPendingEntriesForGroup(groupId = groupId)
+            database.pendingLocationHistoryDao.deleteAllPendingEntriesForGroup(groupOrSpaceId = groupId)
             database.pendingLocationHistoryDao.deleteAllUnconfirmedEntriesForGroup(groupId = groupId)
             return null
         }

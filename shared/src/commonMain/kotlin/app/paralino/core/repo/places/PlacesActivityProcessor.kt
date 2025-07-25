@@ -3,6 +3,8 @@ package app.paralino.core.repo.places
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceRequest
@@ -51,14 +53,14 @@ class PlacesActivityProcessor(
         placeActivityUploadEngine.syncPendingEventsInBackground()
 
         val places = local.getAllPlacesOnce().filter {
-            locationSharingManager.isSharingActiveForGroup(it.groupId) && it.canSendAlert
+            locationSharingManager.isSharingActiveForGroup(it.groupOrSpaceId) && it.canSendAlert
         }
         places.forEach { place ->
             place.data.data?.let { placeData ->
                 val distance = geofenceManager.distanceBetweenPoints(
                     data = data,
                     geofence = GroupPlaceGeofenceData(
-                        groupId = place.groupId,
+                        groupId = place.groupOrSpaceId,
                         placeId = place.id,
                         lat = placeData.lat,
                         lng = placeData.lng,
@@ -111,14 +113,14 @@ class PlacesActivityProcessor(
                 if (isEnter) {
                     startPlaceNotifySchedule(
                         placeId = place.id,
-                        groupId = place.groupId,
+                        groupId = place.groupOrSpaceId,
                         enter = true,
                         trigger = PlaceActivityTriggerType.LOCATION
                     )
                 } else if (isExit) {
                     startPlaceNotifySchedule(
                         placeId = place.id,
-                        groupId = place.groupId,
+                        groupId = place.groupOrSpaceId,
                         enter = false,
                         trigger = PlaceActivityTriggerType.LOCATION
                     )
@@ -127,14 +129,14 @@ class PlacesActivityProcessor(
                     if (previousState?.isEnter == true) {
                         startPlaceNotifySchedule(
                             placeId = place.id,
-                            groupId = place.groupId,
+                            groupId = place.groupOrSpaceId,
                             enter = true,
                             trigger = PlaceActivityTriggerType.LOCATION
                         )
                     } else if (previousState?.isEnter == false) {
                         startPlaceNotifySchedule(
                             placeId = place.id,
-                            groupId = place.groupId,
+                            groupId = place.groupOrSpaceId,
                             enter = false,
                             trigger = PlaceActivityTriggerType.LOCATION
                         )
@@ -149,7 +151,7 @@ class PlacesActivityProcessor(
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
-                    val groupId = local.getGroupId(placeId = placeId)!!
+                    val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
                     startPlaceNotifySchedule(
                         placeId = placeId,
                         groupId = groupId,
@@ -168,7 +170,7 @@ class PlacesActivityProcessor(
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
-                    val groupId = local.getGroupId(placeId = placeId)!!
+                    val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
                     startPlaceNotifySchedule(
                         placeId = placeId,
                         groupId = groupId,
@@ -184,7 +186,7 @@ class PlacesActivityProcessor(
 
     private suspend fun startPlaceNotifySchedule(
         placeId: String,
-        groupId: String,
+        groupId: GroupOrSpaceId,
         enter: Boolean,
         trigger: PlaceActivityTriggerType
     ) {
@@ -369,7 +371,7 @@ class PlacesActivityProcessor(
             return
         }
 
-        if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
+        if (!locationSharingManager.isSharingActiveForGroup(place.groupOrSpaceId)) {
             // reset place activity if sharing stops
             placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
             logg.tag("place_activity")
@@ -424,10 +426,10 @@ class PlacesActivityProcessor(
         scopeProvider.userSessionIOScope.launch {
             // update device status with last location if place activity came from geofence
             try {
-                deviceStatusProcessor.pushDeviceStatus(groupId = place.groupId)
+                deviceStatusProcessor.pushDeviceStatus(groupId = place.groupOrSpaceId)
             } catch (e: Exception) {
                 logg.tag("place_activity")
-                    .w("Error updating member status in ${place.groupId} from $activityTag - ${place.id}: ${e.message}")
+                    .w("Error updating member status in ${place.groupOrSpaceId} from $activityTag - ${place.id}: ${e.message}")
             }
         }
         locationPerformanceManager.locationBoostRequested(
@@ -435,7 +437,7 @@ class PlacesActivityProcessor(
                 type = LocationPerformanceType.HIGH,
                 durationMillis = 12.seconds.inWholeMilliseconds
             ),
-            groupId = place.groupId,
+            groupId = place.groupOrSpaceId,
             from = "place $activityTag"
         )
     }
