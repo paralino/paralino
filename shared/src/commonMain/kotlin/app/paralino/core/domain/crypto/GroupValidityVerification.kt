@@ -12,6 +12,7 @@ import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
@@ -304,10 +305,10 @@ class GroupValidityVerification(
         }
     }
 
-    suspend fun checkIntegrityForPersonalSpace(space: UserPersonalSpaceModel): IntegrityResult {
+    suspend fun checkIntegrityForPersonalSpace(currentDevice: UserDeviceModel?): IntegrityResult {
         val groupId = UserGroup.groupPersonalDevicesId
+        val currentDevice = currentDevice ?: return IntegrityResult.CORRUPTED
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = groupId)
-        val currentDevice = space.currentDevice ?: return IntegrityResult.CORRUPTED
 
         if (keyIntegrity?.integrity.isNullOrBlank()) {
             logg.tag("integrity_check_device").v("VALID_EXPIRED for ${groupId} (missing)")

@@ -2,6 +2,7 @@ package app.paralino.core.repo.user
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.user.UserDeviceEntityDeviceUpdate
 import app.paralino.core.models.Resource
 import app.paralino.core.models.data
 import app.paralino.core.models.location.UserDeviceModel
@@ -9,6 +10,7 @@ import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.mappers.UserDeviceMapper
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
+import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.models.raw.UserDeviceWithLocationRaw
 import app.paralino.core.models.raw.UserDevicesWithLocationsAndPlacesRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -22,7 +24,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 
 class UserPersonalSpaceLocalDataSource constructor(
@@ -177,6 +178,22 @@ class UserPersonalSpaceLocalDataSource constructor(
                 null
             }
         }
+    }
+
+    suspend fun updateUserDeviceData(device: UserDeviceRaw) {
+        database.userDeviceDao.updateUserDeviceData(
+            dataUpdate = UserDeviceEntityDeviceUpdate(
+                id = device.id,
+                deviceId = device.deviceId,
+                pushTargetId = device.pushTargetId,
+                sessionId = device.sessionId,
+                ownerUserId = device.ownerUserId,
+                locationPushToken = device.locationPushToken,
+                deviceType = device.deviceType,
+                encryptedSenderKey = device.encryptedSenderKey,
+                userKeyVersion = device.userKeyVersion
+            )
+        )
     }
 
     suspend fun deleteUserDevice(deviceId: String) {

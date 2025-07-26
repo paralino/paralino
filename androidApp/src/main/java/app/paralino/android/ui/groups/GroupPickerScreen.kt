@@ -372,7 +372,7 @@ private fun LazyListScope.groupSection(
         }
     }
 
-    items(groups, key = { it.id }) { group ->
+    items(groups, key = { it.id.id }) { group ->
         GroupListItem(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 4.dp)

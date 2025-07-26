@@ -370,7 +370,8 @@ class MapHomeViewModel constructor(
 
                         val memberMarkers = group.members
                             .flatMap { member ->
-                                member.locations.filter { it.locationData.data != null }
+                                member.locations
+                                    .filter { it.locationData.data != null }
                                     .map { location ->
                                         val memberLocationState =
                                             membersData.first { it.location?.locationId == location.id }

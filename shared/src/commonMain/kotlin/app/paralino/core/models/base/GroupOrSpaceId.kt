@@ -8,7 +8,7 @@ import kotlin.jvm.JvmInline
 @JvmInline
 @Serializable
 value class GroupOrSpaceId(val id: String) {
-    val isPersonalSpace: Boolean get() = id == UserGroup.groupPrivateGroupId
+    val isPersonalSpace: Boolean get() = id == UserGroup.groupPersonalDevicesId
     val isPublicSharing: Boolean get() = id == UserGroup.groupPublicSharingId
     val isGroup: Boolean get() = !isPersonalSpace && !isPublicSharing
 }

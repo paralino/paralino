@@ -20,6 +20,7 @@ import app.paralino.android.ui.map.SimplePlaceMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.ui.components.DefaultToolbar
@@ -90,7 +91,7 @@ fun PlacesScreen(
             openPlaceDetails = { place ->
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceDetail.route(
-                        groupId = place.groupId,
+                        groupId = place.groupOrSpaceId.id,
                         placeId = place.id
                     )
                 )
@@ -121,7 +122,7 @@ private fun PlaceListItemPreview() {
         PlaceListItem(
             state = PlaceListItemData(
                 id = "",
-                groupId = "",
+                groupOrSpaceId = "".asGroupOrSpaceId(),
                 name = "Home",
                 image = ImageModel.emoji(Emojis.lightBulb),
                 private = false,

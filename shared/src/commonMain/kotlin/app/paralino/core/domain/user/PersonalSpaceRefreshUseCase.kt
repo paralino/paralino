@@ -1,9 +1,11 @@
 package app.paralino.core.domain.user
 
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.logg
+import app.paralino.core.models.mappers.UserDeviceMapper
 import app.paralino.core.models.raw.UserDevicesWithLocationsAndPlacesRaw
-import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
@@ -15,8 +17,10 @@ class PersonalSpaceRefreshUseCase(
     private val userRepository: UserRepository,
     private val remote: UserDevicesRemoteSource,
     private val local: UserPersonalSpaceLocalDataSource,
-    private val deviceKeyRotation: IPersonalDeviceCryptoKeyRotation
-): BaseRepository() {
+    private val mapper: UserDeviceMapper,
+    private val deviceKeyRotation: IPersonalDeviceCryptoKeyRotation,
+    private val appPrefs: AppPrefs,
+): LimitedExecutionRepository() {
 
     suspend fun refreshPersonalSpace(cacheTimeMillis: Long): UserDevicesWithLocationsAndPlacesRaw? {
         return triggerRemoteMaybe(
@@ -56,7 +60,15 @@ class PersonalSpaceRefreshUseCase(
 
         logg.tag("tag_crypto_key_personal").d("Got new personal space data from remote, handle key rotation | retry #$retry")
 
-        if (deviceKeyRotation.rotateDeviceKeys(force = false)) {
+        val device = space.devices.firstOrNull {
+            it.device.deviceId == appPrefs.deviceId
+        }?.let {
+            mapper.local2Core(
+                entity = mapper.remote2Local(deviceRaw = it)
+            )
+        }
+
+        if (deviceKeyRotation.rotateDeviceKeys(device = device, force = false)) {
             logg.tag("tag_crypto_key_group").d("Key rotation finished, refresh group and keys")
             return getPersonalSpaceData(retry + 1)
         } else {

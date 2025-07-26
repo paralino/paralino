@@ -42,7 +42,10 @@ interface UserDeviceDao {
     suspend fun getAllUserDevicesOnce(): List<UserDeviceEntity>
 
     @Update(entity = UserDeviceEntity::class)
-    suspend fun updateUserDeviceLocationData(dataUpdate: UserDeviceLocationDataUpdate)
+    suspend fun updateUserDeviceLocationData(dataUpdate: UserDeviceEntityLocationDataUpdate)
+
+    @Update(entity = UserDeviceEntity::class)
+    suspend fun updateUserDeviceData(dataUpdate: UserDeviceEntityDeviceUpdate)
 
     @Query("DELETE FROM userDeviceEntity WHERE id = :deviceId")
     suspend fun deleteUserDevice(deviceId: String)
@@ -59,11 +62,3 @@ interface UserDeviceDao {
     @Query("UPDATE OR IGNORE userDeviceEntity SET status = NULL WHERE id = :locationId")
     suspend fun clearStatusForDevice(locationId: String)
 }
-
-data class UserDeviceLocationDataUpdate(
-    val id: String,
-    val deviceData: String?,
-    val locationData: String?,
-    val status: String?,
-    val locationHistory: String?
-) 

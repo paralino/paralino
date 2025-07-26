@@ -82,7 +82,7 @@ fun LocationHistoryScreen(
 
                 LocationHistoryScreenEvent.OpenHistorySettings -> {
                     appState.navController.navigate(
-                        AppScreen.MainHome.LocationHistoryDelete.route(groupId = uiState.groupId)
+                        AppScreen.MainHome.LocationHistoryDelete.route(groupId = uiState.groupOrSpaceId.id)
                     )
                 }
 

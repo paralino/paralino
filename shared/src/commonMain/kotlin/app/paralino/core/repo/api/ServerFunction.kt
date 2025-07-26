@@ -51,6 +51,7 @@ enum class ServerFunction constructor(
     KEYS_UPDATE_LOCATIONS(method = "POST", path = "/keys/location"),
     KEYS_UPDATE_CODE(method = "POST", path = "/keys/personal_code"),
     KEYS_UPDATE_USER(method = "POST", path = "/keys/user"),
+    KEYS_UPDATE_SPACE(method = "POST", path = "/keys/space"),
 
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),

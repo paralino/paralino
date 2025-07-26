@@ -228,9 +228,14 @@ data class LocationCreatePersonalPayload(
 )
 
 @Serializable
-data class LocationDeletePayload constructor(
+data class GroupLocationDeletePayload constructor(
     val memberId: String,
     val locationId: String,
+)
+
+@Serializable
+data class PersonalLocationDeletePayload(
+    val deviceId: String
 )
 
 @Serializable
@@ -453,4 +458,20 @@ data class LocationHistoryDeletePeriodGroupPayload(
 data class LocationHistoryDeletePeriodPersonalPayload(
     val startDateKey: String?,
     val endDateKey: String?
+)
+
+@Serializable
+data class PersonalDeviceDeletePayload(
+    val deviceId: String
+)
+
+@Serializable
+data class PersonalDeviceKeyUpdatePayload(
+    val deviceId: String,
+    val userKeyVersion: Long,
+    val encryptedSenderKey: String,
+    val deviceData: String,
+    val locationData: String,
+    val status: String,
+    val locationHistory: String?
 )

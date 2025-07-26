@@ -10,17 +10,17 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.raw.GroupLocationDeletePayload
 import app.paralino.core.models.raw.GroupSettingsRaw
-import app.paralino.core.models.raw.LocationDeletePayload
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
+import app.paralino.core.models.raw.PersonalLocationDeletePayload
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
-import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
@@ -32,13 +32,12 @@ class LocationRemoteSource constructor(
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
-    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs
 ) {
 
     suspend fun deleteLocationInGroup(memberId: String, locationId: String) {
         blocking {
-            val payload = LocationDeletePayload(
+            val payload = GroupLocationDeletePayload(
                 memberId = memberId,
                 locationId = locationId
             )
@@ -72,7 +71,7 @@ class LocationRemoteSource constructor(
             )
 
             if (groupId.isPersonalSpace) {
-                val deviceKey = userKeyRepo.getDeviceSenderKeyForDevice(deviceId = locationId)
+                val deviceKey = userKeyRepo.getDeviceSenderKeyForLocationId(locationId = locationId)
                 if (deviceKey !is PersonalSpaceDeviceKey.Valid) {
                     throw MissingMemberKeyException(groupId = groupId.id, memberId = appPrefs.userId)
                 }

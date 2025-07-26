@@ -28,7 +28,6 @@ import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.location.BatteryAlertUploadEngine
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.GeofenceRegistrationMonitor
-import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.location.LocationPayloadProvider
@@ -38,14 +37,15 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.domain.location.RealtimeEventsProcessor
-import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.domain.location.SaveLocationUseCase
-import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryPeriodUseCase
+import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
+import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
+import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.domain.notifications.PushNotificationDeleteUseCase
 import app.paralino.core.domain.notifications.PushNotificationHandler
 import app.paralino.core.domain.notifications.processors.GroupMemberAddedNotificationProcessor
@@ -62,6 +62,8 @@ import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
+import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
+import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
 import app.paralino.core.domain.user.LoginUseCase
@@ -82,9 +84,9 @@ import app.paralino.core.models.mappers.GroupsMapperLocal
 import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.mappers.MemberMapperCore
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
+import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
 import app.paralino.core.models.mappers.PersonalCodeMapperLocal
-import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.mappers.PlaceMapperCore
 import app.paralino.core.models.mappers.PlaceSettingsMapperCore
 import app.paralino.core.models.mappers.SharingContractsMapper
@@ -229,7 +231,7 @@ val dataSourceModule = module {
 
     single { UserRemoteSource(get(), get(), get(), get(), get()) }
     single { UserDevicesRemoteSource(get(), get(), get(), get(), get(), get()) }
-    single { LocationRemoteSource(get(), get(), get(), get(), get(), get()) }
+    single { LocationRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
     single { GroupsRemoteSource(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesRemoteSource(get(), get(), get(), get(), get(), get(), get()) }
     single { PlacesGetRemoteSource(get(), get(), get()) }
@@ -254,7 +256,7 @@ val coreModule = module {
     factory { ConvertAccountUseCase(get(), get(), get()) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get()) }
-    factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }
     factory { ClearUserLocationUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
@@ -268,7 +270,7 @@ val coreModule = module {
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -282,7 +284,9 @@ val coreModule = module {
     single { RefreshLocationHistoryUseCase(get(), get(), get()) }
     single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { DeleteLocationHistoryPeriodUseCase(get(), get(), get()) }
-    single { PersonalSpaceRefreshUseCase(get(), get(), get(), get()) }
+    single { PersonalSpaceRefreshUseCase(get(), get(), get(), get(), get(), get()) }
+    single { DeletePersonalDeviceUseCase(get(), get()) }
+    single { DeactivatePersonalDeviceUseCase(get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -300,7 +304,7 @@ val coreModule = module {
     single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
-    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
     single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get(), get()) }
 

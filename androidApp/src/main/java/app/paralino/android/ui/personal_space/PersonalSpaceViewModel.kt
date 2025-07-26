@@ -4,6 +4,8 @@ import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
+import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -45,6 +47,8 @@ class PersonalSpaceViewModel(
     private val userRepo: UserRepository,
     private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
     private val remoteConfigRepo: RemoteConfigRepository,
+    private val deletePersonalDevice: DeletePersonalDeviceUseCase,
+    private val deactivatePersonalDevice: DeactivatePersonalDeviceUseCase,
     private val personalSpaceRefreshUseCase: PersonalSpaceRefreshUseCase,
     private val deviceStatusProcessor: MemberDeviceStatusProcessor,
     private val sharingManager: LocationSharingManager,
@@ -85,7 +89,7 @@ class PersonalSpaceViewModel(
         combine(
             deviceApiProvider.deviceStatus,
             personalSpaceLocal.personalSpaceState.mapNotNull { it.data },
-            sharingManager.sharingContractForGroup(UserGroup.groupPersonalDevicesId),
+            sharingManager.sharingContractForGroup(UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()),
             userRepo.userPlans
         ) { deviceStatus, personalSpaceData, sharingStatus, userPlans ->
 
@@ -364,7 +368,7 @@ class PersonalSpaceViewModel(
 
                     is MainAlertDialog.DeactivateUserOwnDevice -> {
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
-                            // TODO deactivate
+                            deactivateDevice(device = dialog.device)
                         }
                         _uiState.update { it.copy(alertDialog = null) }
                     }
@@ -401,12 +405,23 @@ class PersonalSpaceViewModel(
         coroutineScope.launch {
             try {
                 _uiState.update { it.copy(loadingAction = true) }
-
-                // TODO add dialog
-                personalSpaceLocal.deleteUserDevice(device.deviceId)
-
+                deletePersonalDevice.deletePersonalDevice(deviceId = device.deviceId)
                 _uiState.update { it.copy(loadingAction = false) }
+//                showSnackbar(MR.strings.group_members_item_clear_location_success.localizedString())
+            } catch (e: Exception) {
+                _uiState.update { it.copy(loadingAction = false) }
+                logg.e("Error deleting device", e)
+                showSnackbar(e.toString())
+            }
+        }
+    }
 
+    private fun deactivateDevice(device: UserDeviceModel) {
+        coroutineScope.launch {
+            try {
+                _uiState.update { it.copy(loadingAction = true) }
+                deactivatePersonalDevice.deactivateLocationInPersonalSpace(deviceId = device.deviceId)
+                _uiState.update { it.copy(loadingAction = false) }
 //                showSnackbar(MR.strings.group_members_item_clear_location_success.localizedString())
             } catch (e: Exception) {
                 _uiState.update { it.copy(loadingAction = false) }
@@ -419,10 +434,10 @@ class PersonalSpaceViewModel(
     fun stopSharing() {
         coroutineScope.launch {
             sharingManager.stopSharing(
-                groupId = UserGroup.groupPersonalDevicesId,
+                groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
                 deleteContract = false
             )
-            placeActivityRepo.clearForGroup(groupId = UserGroup.groupPersonalDevicesId)
+            placeActivityRepo.clearForGroup(groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
             try {
                 deviceStatusProcessor.pushDeviceStatus(groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
             } catch (e: Exception) {
