@@ -53,7 +53,7 @@ fun MainHomeMapComposable(
         state = uiState.asReady(),
         mapContentPadding = mapContentPadding,
         onMapLongPress = { lat, lng ->
-            val groupId = uiState.asReady()?.groupId
+            val groupId = uiState.asReady()?.groupOrSpaceId?.id
             if (groupId != null) {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(

@@ -196,6 +196,7 @@ data class MemberActionsState(
         blockUser,
         unblockUser,
         locationRequest,
+        history,
         navigate,
         securityAction.takeIf { it }
     ).isNotEmpty()

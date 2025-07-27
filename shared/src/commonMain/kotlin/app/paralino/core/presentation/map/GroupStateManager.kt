@@ -130,7 +130,7 @@ class GroupStateManager(
                     config = remoteConfig.getCachedConfigOnce(),
                     uiType = GroupItemState.GroupUiType.ACTIVE,
                     canEdit = true,
-                    isSelected = false,
+                    isSelected = groupIdData.value.isPersonalSpace,
                 )
             },
             createdGroups = allGroups.filter { it.isCurrentUserOwner },

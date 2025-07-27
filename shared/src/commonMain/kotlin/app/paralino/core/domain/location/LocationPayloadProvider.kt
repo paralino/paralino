@@ -155,12 +155,12 @@ class LocationPayloadProvider(
         }
 
         val device = database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId = appPrefs.deviceId)
-        val locationId = device?.id
+        val locationId = device?.locationId
 
         if (device != null && locationId.isNullOrBlank()) {
             logg.d("Location is null for personal space")
             return LocationPayloadStatus.MissingLocationDocument
-        } else if (device?.encryptedSenderKey.isNullOrBlank() || device.userKeyVersion == null || locationId.isNullOrBlank()) {
+        } else if (device?.hasValidLocation != true || locationId.isNullOrBlank()) {
             return LocationPayloadStatus.MissingData
         }
 

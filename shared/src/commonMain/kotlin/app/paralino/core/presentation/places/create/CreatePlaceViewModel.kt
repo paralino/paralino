@@ -2,6 +2,8 @@ package app.paralino.core.presentation.places.create
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
+import app.paralino.core.domain.user.LimitCheckState
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.DeviceType
@@ -15,8 +17,6 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -40,9 +40,8 @@ class CreatePlaceViewModel(
     lng: Double? = null,
     private val placesRepo: PlacesRepository,
     private val placesLocalDataSource: PlacesLocalDataSource,
-    private val groupLocal: UserGroupLocalDataSource,
-    private val remoteConfig: RemoteConfigRepository,
     private val deviceApiProvider: IDeviceApiProvider,
+    private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
@@ -171,8 +170,7 @@ class CreatePlaceViewModel(
                     placesRepo.createPlace(
                         groupId = groupId,
                         private = data.private,
-                        // TODO add personal place creation
-                        isInPersonalSpace = false,
+                        isInPersonalSpace = groupId.asGroupOrSpaceId().isPersonalSpace,
                         data = placeData
                     ).processPlaceFlow()
                 }
@@ -181,44 +179,43 @@ class CreatePlaceViewModel(
     }
 
     private suspend fun checkPlaceLimits(): Boolean {
-        val group = groupLocal.getGroupOnce(groupId) ?: return false
-        val limit = group.placesLimit(remoteConfig.getConfigOnce())
-        val placeCount = placesLocalDataSource.getPlacesCountForGroupOnce(groupId) ?: 0
-        val isGroupOwner = group.isCurrentUserOwner
-        val maxPlaceLimit =
-            remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.placesLimit
-
-        if (maxPlaceLimit != null && isGroupOwner && placeCount >= maxPlaceLimit) {
-            _uiState.update {
-                it.mapSuccess {
-                    it.copy(
-                        alertDialog = MainAlertDialog.PlanLimit(
-                            content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                            limit = limit
-                        )
-                    )
-                }
-            }
-            return false
-        } else if (limit in 0..placeCount) {
-            if (isGroupOwner) {
-                messageDispatcher.showSnackbar(MR.strings.places_create_plan_limit_info.localizedString())
-            } else {
+        val result = premiumStatusManager.checkPlaceCountLimits(groupId.asGroupOrSpaceId())
+        when (result) {
+            is LimitCheckState.MaxLimitReached -> {
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
-                            alertDialog = MainAlertDialog.PlanLimitForMembers(
+                            alertDialog = MainAlertDialog.PlanLimit(
                                 content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                                limit = limit
+                                limit = result.limit
                             )
                         )
                     }
                 }
+                return false
             }
-            return false
-        } else {
-            return true
+            is LimitCheckState.OverLimits -> {
+                if (result.isOwner) {
+                    messageDispatcher.showSnackbar(MR.strings.places_create_plan_limit_info.localizedString())
+                } else {
+                    _uiState.update {
+                        it.mapSuccess {
+                            it.copy(
+                                alertDialog = MainAlertDialog.PlanLimitForMembers(
+                                    content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                                    limit = result.limit
+                                )
+                            )
+                        }
+                    }
+                }
+                return false
+            }
+            LimitCheckState.WithinLimits,
+            LimitCheckState.Unknown -> {}
         }
+
+        return result == LimitCheckState.WithinLimits
     }
 
     private fun Flow<Unit>.processPlaceFlow() {

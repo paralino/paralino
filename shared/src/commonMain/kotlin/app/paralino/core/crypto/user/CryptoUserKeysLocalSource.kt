@@ -138,7 +138,7 @@ class CryptoUserKeysLocalSource(
 
     suspend fun getDeviceSenderKeyForDevice(device: UserDeviceEntity): PersonalSpaceDeviceKey {
 
-        if (device.userKeyVersion == null || device.encryptedSenderKey.isNullOrBlank()) {
+        if (!device.hasValidLocation || device.locationId.isNullOrBlank() || device.userKeyVersion == null || device.encryptedSenderKey.isNullOrBlank()) {
             return PersonalSpaceDeviceKey.Error.Missing
         }
 

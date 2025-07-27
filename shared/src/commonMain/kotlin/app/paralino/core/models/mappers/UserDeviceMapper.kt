@@ -3,6 +3,7 @@ package app.paralino.core.models.mappers
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.main.user.UserDeviceEntity
+import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.DeviceType
@@ -38,6 +39,7 @@ class UserDeviceMapper(
             locationPushToken = deviceRaw.device.locationPushToken,
             encryptedSenderKey = deviceRaw.device.encryptedSenderKey,
             userKeyVersion = deviceRaw.device.userKeyVersion,
+            locationId = deviceRaw.location?.id,
             deviceData = deviceRaw.location?.deviceData,
             locationData = deviceRaw.location?.locationData,
             status = deviceRaw.location?.status,
@@ -51,7 +53,7 @@ class UserDeviceMapper(
     suspend fun local2Core(entity: UserDeviceEntity): UserDeviceModel {
         val deviceType = parseDeviceType(entity.deviceType)
         
-        val location = if (entity.encryptedSenderKey.isNullOrBlank() || entity.userKeyVersion == null) {
+        val location = if (!entity.hasValidLocation) {
             null
         } else {
             try {
@@ -142,7 +144,11 @@ class UserDeviceMapper(
                 key = senderKey
             )
             val locationData = BaseRemoteModule.formatter.decodeFromString<LocationDataModel>(decryptedData)
-            CryptoResource.Ready(locationData)
+            if (locationData.isMasked) {
+                CryptoResource.NotInitialized
+            }  else {
+                CryptoResource.Ready(locationData)
+            }
         } catch (e: Exception) {
             CryptoResource.WrongKeyOrData
         }

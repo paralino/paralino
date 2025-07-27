@@ -286,7 +286,7 @@ val coreModule = module {
     single { DeleteLocationHistoryPeriodUseCase(get(), get(), get()) }
     single { PersonalSpaceRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { DeletePersonalDeviceUseCase(get(), get()) }
-    single { DeactivatePersonalDeviceUseCase(get(), get()) }
+    single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }

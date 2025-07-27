@@ -4,7 +4,11 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
@@ -23,7 +27,7 @@ sealed class MapHomeScreenState {
     val deviceType: DeviceType = DeviceType.current
 
     data class Ready constructor(
-        val groupId: String,
+        val groupOrSpaceId: GroupOrSpaceId,
         val groupName: String,
         val groupImage: ImageModel,
         val userCount: Int,
@@ -155,3 +159,13 @@ data class MapScreenLifecycleData(
     val isUiFocused: Boolean,
     val mapFocusType: MapHomeScreenFocusType,
 )
+
+sealed interface GroupWithMembersOrUserSpace {
+    val id: String
+    data class Group(val group: UserGroupWithMembers): GroupWithMembersOrUserSpace {
+        override val id: String = group.id
+    }
+    data class PersonalSpace(val space: UserPersonalSpaceModel): GroupWithMembersOrUserSpace {
+        override val id: String = UserGroup.groupPersonalDevicesId
+    }
+}

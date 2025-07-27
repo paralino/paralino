@@ -131,7 +131,7 @@ private fun MapHomeContent(
                 is MapHomeScreenEvent.OpenCreatePlace -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.PlaceCreate.route(
-                            groupId = readyState?.groupId ?: "",
+                            groupId = readyState?.groupOrSpaceId?.id ?: "",
                             placeId = null
                         )
                     )

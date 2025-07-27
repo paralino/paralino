@@ -55,7 +55,7 @@ class GetMemberWithLocationsUseCase(
         if (groupId.isPersonalSpace) {
             return database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId = appPrefs.deviceId)
                 ?.takeIf { entity ->
-                    entity.encryptedSenderKey.isNullOrBlank() || entity.userKeyVersion == null
+                    entity.hasValidLocation
                 }?.id
         } else {
             return database.groupRelatedDao.getSingleLocationForMemberAndDeviceOnce(

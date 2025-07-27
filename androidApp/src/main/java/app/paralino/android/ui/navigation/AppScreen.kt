@@ -164,7 +164,7 @@ sealed class AppScreen {
         object PlacesList : AppScreen() {
             val argumentOnboarding: String = "onboarding"
             override val routeSignature: String = "places-list?$argumentGroupId={$argumentGroupId}&${argumentOnboarding}={$argumentOnboarding}"
-            fun route(groupId: String? = null, isOnboarding: Boolean = false): String {
+            fun route(groupId: String, isOnboarding: Boolean = false): String {
                 val args = arrayOf(
                     groupId?.let { "$argumentGroupId=$groupId" },
                     "${argumentOnboarding}=$isOnboarding",

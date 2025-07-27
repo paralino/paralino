@@ -212,6 +212,7 @@ class SaveLocationUseCase(
         database.userDeviceDao.updateUserDeviceLocationData(
             UserDeviceEntityLocationDataUpdate(
                 id = data.id,
+                locationId = data.id,
                 deviceData = data.deviceData,
                 locationData = data.locationData,
                 status = data.status,

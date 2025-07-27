@@ -5,11 +5,12 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
@@ -40,7 +41,7 @@ class MapStateMapper(
 ) {
 
     suspend fun buildReadyState(
-        groupData: UserGroupWithMembers,
+        groupOrSpace: GroupWithMembersOrUserSpace,
         places: List<GroupPlace>,
         sharingStatus: LocationSharingContract?,
         userData: UserMeData,
@@ -49,12 +50,43 @@ class MapStateMapper(
         alertDialog: MainAlertDialog?
     ): MapHomeScreenState.Ready {
 
-        val groupPlanConfig = groupData.group.planConfig(remoteConfig.getConfigOnce())
+        // Extract common data based on type
+        val groupId = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.id
+            is GroupWithMembersOrUserSpace.PersonalSpace -> UserGroup.groupPersonalDevicesId
+        }
+
+        val groupName = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.name
+            is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.user.name + "'s Devices"
+        }
+
+        val groupImage = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.image
+            is GroupWithMembersOrUserSpace.PersonalSpace -> userData.userImage ?: ImageModel.emoji(
+                Emojis.robot
+            )
+        }
+
+        val userCount = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.memberCount
+            is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.devices.size
+        }
+
+        val planConfig = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.group.planConfig(remoteConfig.getConfigOnce())
+            is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.plan
+        }
+
+        val isVerified = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.isGroupVerified
+            is GroupWithMembersOrUserSpace.PersonalSpace -> true // Personal space is always verified
+        }
 
         val membersData = buildMembersData(
-            groupMembers = groupData.members,
-            groupId = groupData.id,
-            groupPlanConfig = groupPlanConfig,
+            groupOrSpace = groupOrSpace,
+            groupId = groupId,
+            groupPlanConfig = planConfig,
             previousState = previousState
         )
 
@@ -63,8 +95,8 @@ class MapStateMapper(
             .map { PlaceListItemData(it) }
 
         val markers = buildMarkers(
-            groupId = groupData.id,
-            members = groupData.members,
+            groupId = groupId,
+            groupOrSpace = groupOrSpace,
             membersData = membersData,
             placesData = placesData,
             previousFocusedMarker = previousState?.markers?.firstOrNull { it.focused }
@@ -85,13 +117,32 @@ class MapStateMapper(
             markers.any { it.markerId == oldMarker.markerId }
         }
 
+        // Calculate active and idle counts
+        val (activeCount, idleCount) = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> {
+                val members = groupOrSpace.group.members
+                Pair(
+                    members.filter { it.isActive }.size,
+                    members.filter { it.hasLocation && !it.isActive }.size
+                )
+            }
+
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                val devices = groupOrSpace.space.devices
+                Pair(
+                    devices.count { it.location != null },
+                    0 // Personal space doesn't have idle concept
+                )
+            }
+        }
+
         return MapHomeScreenState.Ready(
-            groupId = groupData.id,
-            groupName = groupData.name,
-            groupImage = groupData.image,
-            userCount = groupData.memberCount,
-            activeUserCount = groupData.members.filter { it.isActive }.size,
-            idleUserCount = groupData.members.filter { it.hasLocation && !it.isActive }.size,
+            groupOrSpaceId = groupId.asGroupOrSpaceId(),
+            groupName = groupName,
+            groupImage = groupImage,
+            userCount = userCount,
+            activeUserCount = activeCount,
+            idleUserCount = idleCount,
             currentUserImage = userData.userImage ?: ImageModel.emoji(Emojis.robot),
             members = membersData,
             places = placesData,
@@ -106,14 +157,42 @@ class MapStateMapper(
                     splitTimeToOneLine = true
                 )
             },
-            verified = groupData.isGroupVerified,
+            verified = isVerified,
             alertDialog = alertDialog,
             isSatelliteMode = isSatelliteMode,
-            groupPlanConfig = groupPlanConfig
+            groupPlanConfig = planConfig
         )
     }
 
     private fun buildMembersData(
+        groupOrSpace: GroupWithMembersOrUserSpace,
+        groupId: String,
+        groupPlanConfig: PlanConfig,
+        previousState: MapHomeScreenState.Ready?
+    ): List<GroupMemberItemStateWithOneLocation> {
+
+        return when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> {
+                buildGroupMembersData(
+                    groupMembers = groupOrSpace.group.members,
+                    groupId = groupId,
+                    groupPlanConfig = groupPlanConfig,
+                    previousState = previousState
+                )
+            }
+
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                buildPersonalSpaceDevicesData(
+                    space = groupOrSpace.space,
+                    groupId = groupId,
+                    groupPlanConfig = groupPlanConfig,
+                    previousState = previousState
+                )
+            }
+        }
+    }
+
+    private fun buildGroupMembersData(
         groupMembers: List<MemberModelWithLocations>,
         groupId: String,
         groupPlanConfig: PlanConfig,
@@ -176,6 +255,73 @@ class MapStateMapper(
                     )
                 }
             }
+        }
+            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE }
+            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE_NO_LOCATION }
+            .sortedByDescending { it.location?.deviceStatus?.isIdlingOrActive }
+            .sortedByDescending { it.location?.visibility?.isVisible() }
+    }
+
+    private fun buildPersonalSpaceDevicesData(
+        space: UserPersonalSpaceModel,
+        groupId: String,
+        groupPlanConfig: PlanConfig,
+        previousState: MapHomeScreenState.Ready?
+    ): List<GroupMemberItemStateWithOneLocation> {
+
+        return space.devices.map { device ->
+            val memberState = GroupMemberState(
+                groupId = groupId,
+                memberId = device.deviceId, // Use device ID as member ID to make it unique
+                userId = device.ownerUserId,
+                name = space.user.name,
+                image = space.user.data?.userImage,
+                paralinoId = null,
+                isCurrentUser = device.ownerUserId == appPrefs.userId,
+                isVerified = true,
+                canHaveExpandButton = false
+            )
+
+            val location = device.location
+            val previousStateForLocation = previousState?.members?.firstOrNull {
+                it.memberState.memberId == memberState.memberId && it.location?.locationId == location?.id
+            }
+
+            val locationVisibility = location?.let {
+                determineLocationVisibility(
+                    location = it,
+                    previousState = previousStateForLocation
+                )
+            } ?: MemberLocationVisibilityType.MISSING
+
+            val actions = location?.let {
+                buildMemberActions(
+                    memberName = space.user.name,
+                    memberUserId = space.user.id,
+                    location = it,
+                    locationVisibility = locationVisibility,
+                    groupId = groupId,
+                    groupPlanConfig = groupPlanConfig,
+                    previousState = previousStateForLocation
+                )
+            } ?: MemberActionsState()
+
+            GroupMemberItemStateWithOneLocation(
+                memberState = memberState,
+                actions = actions,
+                location = location?.let {
+                    GroupMemberItemLocationState(
+                        memberLocation = it,
+                        name = it.name,
+                        image = space.user.data?.userImage,
+                        canEdit = false,
+                        currentDevice = it.deviceId == appPrefs.deviceId,
+                        showSpeedAndElevation = true,
+                        visibility = locationVisibility,
+                        formatter = valueFormatter
+                    )
+                }
+            )
         }
             .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE }
             .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE_NO_LOCATION }
@@ -303,41 +449,79 @@ class MapStateMapper(
 
     private fun buildMarkers(
         groupId: String,
-        members: List<MemberModelWithLocations>,
+        groupOrSpace: GroupWithMembersOrUserSpace,
         membersData: List<GroupMemberItemStateWithOneLocation>,
         placesData: List<PlaceListItemData>,
         previousFocusedMarker: MapPinData?
     ): List<MapPinData> {
 
-        val memberMarkers = members.flatMap { member ->
-            member.locations
-                .filter { it.locationData.data != null }
-                .map { location ->
-                    val memberLocationState = membersData.first {
-                        it.location?.locationId == location.id
-                    }
-                    val oldCurrentMarker = previousFocusedMarker?.takeIf {
-                        it.markerId == memberLocationState.keyId
-                    }
+        val memberMarkers = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> {
+                groupOrSpace.group.members.flatMap { member ->
+                    member.locations
+                        .filter { it.locationData.data != null }
+                        .map { location ->
+                            val memberLocationState = membersData.first {
+                                it.location?.locationId == location.id
+                            }
+                            val oldCurrentMarker = previousFocusedMarker?.takeIf {
+                                it.markerId == memberLocationState.keyId
+                            }
 
-                    val marker = MapPinData(
-                        location = location,
-                        name = listOfNotNull(
-                            member.member.name,
-                            location.nameOrNull
-                                ?.takeIf { it.isNotBlank() }
-                                ?.let { "($it)" }
-                        ).joinToString(" "),
-                        image = member.member.image,
-                        timeInfo = valueFormatter.getLastLocationPing(location)
-                    )
+                            val marker = MapPinData(
+                                location = location,
+                                name = listOfNotNull(
+                                    member.member.name,
+                                    location.nameOrNull
+                                        ?.takeIf { it.isNotBlank() }
+                                        ?.let { "($it)" }
+                                ).joinToString(" "),
+                                image = member.member.image,
+                                timeInfo = valueFormatter.getLastLocationPing(location)
+                            )
 
-                    marker.copy(
-                        markerId = memberLocationState.keyId,
-                        focused = oldCurrentMarker != null,
-                        hidden = oldCurrentMarker?.hidden ?: marker.hidden
-                    )
+                            marker.copy(
+                                markerId = memberLocationState.keyId,
+                                focused = oldCurrentMarker != null,
+                                hidden = oldCurrentMarker?.hidden ?: marker.hidden
+                            )
+                        }
                 }
+            }
+
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                groupOrSpace.space.devices.mapNotNull { device ->
+                    device.location
+                        ?.takeIf { it.locationData.data != null }
+                        ?.let { location ->
+                            val memberLocationState = membersData.firstOrNull {
+                                it.memberState.memberId == device.deviceId && it.location?.locationId == location.id
+                            } ?: return@mapNotNull null
+
+                            val oldCurrentMarker = previousFocusedMarker?.takeIf {
+                                it.markerId == memberLocationState.keyId
+                            }
+
+                            val deviceName = location.deviceData.data?.deviceName
+                                ?: "Device ${device.deviceType ?: "--"}"
+                            val marker = MapPinData(
+                                location = location,
+                                name = location.nameOrNull?.takeIf { it.isNotBlank() }
+                                    ?: deviceName,
+                                image = groupOrSpace.space.user.data?.userImage ?: ImageModel.emoji(
+                                    Emojis.robot
+                                ),
+                                timeInfo = valueFormatter.getLastLocationPing(location)
+                            )
+
+                            marker.copy(
+                                markerId = memberLocationState.keyId,
+                                focused = oldCurrentMarker != null,
+                                hidden = oldCurrentMarker?.hidden ?: marker.hidden
+                            )
+                        }
+                }
+            }
         }
 
         val placeMarkers = placesData.map { place ->

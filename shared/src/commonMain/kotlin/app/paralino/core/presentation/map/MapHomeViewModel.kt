@@ -31,6 +31,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -254,41 +256,77 @@ class MapHomeViewModel constructor(
                                 currentUserImage = it?.userImage ?: ImageModel.emoji(Emojis.robot)
                             )
                         }
+                } else if (it.isPersonalSpace){
+                    loadPersonalSpaceContent()
                 } else {
-                    combine(
-                        uiRefreshPingFlow.filterNotNull(),
-                        // TODO handle personal space
-                        groupRepo.getGroupWithMembers(it.id),
-                        placesRepo.getPlacesForGroupLocally(it.id),
-                        locationFocusManager.getSharingContract(),
-                        userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-                    ) { _, group, places, sharingStatus, userData ->
-
-                        if (group == null || userData == null) {
-                            return@combine MapHomeScreenState.Empty(
-                                currentUserImage = ImageModel.emoji(
-                                    Emojis.robot
-                                )
-                            )
-                        }
-
-                        mapStateMapper.buildReadyState(
-                            groupData = group,
-                            places = places,
-                            sharingStatus = sharingStatus,
-                            userData = userData,
-                            previousState = _uiState.value.asReady()
-                                ?.takeIf { it.groupId == group.id },
-                            isSatelliteMode = _uiState.value.isSatelliteMode,
-                            alertDialog = _uiState.value.alertDialog
-                        )
-                    }
-                        .flowOn(Dispatchers.IO)
+                    loadGroupContent(groupId = it.id)
                 }
             }
             .onEach { _uiState.value = it }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
+    }
+
+    private fun loadPersonalSpaceContent(): Flow<MapHomeScreenState> {
+        return combine(
+            uiRefreshPingFlow.filterNotNull(),
+            personalSpaceRepo.personalSpaceState.map { it.data },
+            placesRepo.getPlacesForGroupLocally(groupId = appPrefs.userId),
+            locationFocusManager.getSharingContract(),
+            userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
+        ) { _, space, places, sharingStatus, userData ->
+
+            if (space == null || userData == null) {
+                return@combine MapHomeScreenState.Empty(
+                    currentUserImage = ImageModel.emoji(
+                        Emojis.robot
+                    )
+                )
+            }
+
+            mapStateMapper.buildReadyState(
+                groupOrSpace = GroupWithMembersOrUserSpace.PersonalSpace(space),
+                places = places,
+                sharingStatus = sharingStatus,
+                userData = userData,
+                previousState = _uiState.value.asReady()
+                    ?.takeIf { it.groupOrSpaceId.isPersonalSpace },
+                isSatelliteMode = _uiState.value.isSatelliteMode,
+                alertDialog = _uiState.value.alertDialog
+            )
+        }
+            .flowOn(Dispatchers.IO)
+    }
+
+    private fun loadGroupContent(groupId: String): Flow<MapHomeScreenState> {
+        return combine(
+            uiRefreshPingFlow.filterNotNull(),
+            groupRepo.getGroupWithMembers(groupId = groupId),
+            placesRepo.getPlacesForGroupLocally(groupId = groupId),
+            locationFocusManager.getSharingContract(),
+            userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
+        ) { _, group, places, sharingStatus, userData ->
+
+            if (group == null || userData == null) {
+                return@combine MapHomeScreenState.Empty(
+                    currentUserImage = ImageModel.emoji(
+                        Emojis.robot
+                    )
+                )
+            }
+
+            mapStateMapper.buildReadyState(
+                groupOrSpace = GroupWithMembersOrUserSpace.Group(group),
+                places = places,
+                sharingStatus = sharingStatus,
+                userData = userData,
+                previousState = _uiState.value.asReady()
+                    ?.takeIf { it.groupOrSpaceId.id == group.id },
+                isSatelliteMode = _uiState.value.isSatelliteMode,
+                alertDialog = _uiState.value.alertDialog
+            )
+        }
+            .flowOn(Dispatchers.IO)
     }
 
     fun onEvent(event: MapHomeScreenUiEvent) {

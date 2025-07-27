@@ -88,7 +88,11 @@ class MapEventHandler(
 
             MapHomeScreenUiEvent.OnGroupDetailsClick -> {
                 uiState.value.asReady()?.let {
-                    eventChannel.trySend(OpenGroupDetails(groupId = it.groupId))
+                    if (it.groupOrSpaceId.isPersonalSpace) {
+                        eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
+                    } else {
+                        eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = it.groupOrSpaceId.id))
+                    }
                 }
             }
 
@@ -98,13 +102,13 @@ class MapEventHandler(
 
             MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
                 uiState.value.asReady()?.let {
-                    eventChannel.trySend(OpenCreatePlace(groupId = it.groupId))
+                    eventChannel.trySend(OpenCreatePlace(groupId = it.groupOrSpaceId.id))
                 }
             }
 
             MapHomeScreenUiEvent.OnOpenPlacesScreen -> {
                 uiState.value.asReady()?.let {
-                    eventChannel.trySend(OpenPlaces(groupId = it.groupId))
+                    eventChannel.trySend(OpenPlaces(groupId = it.groupOrSpaceId.id))
                 }
             }
 
@@ -118,7 +122,7 @@ class MapEventHandler(
 
             MapHomeScreenUiEvent.OnSharingStartClick -> {
                 uiState.value.asReady()?.let {
-                    eventChannel.trySend(OpenSharingStart(groupId = it.groupId))
+                    eventChannel.trySend(OpenSharingStart(groupId = it.groupOrSpaceId.id))
                 }
             }
 
@@ -206,7 +210,7 @@ class MapEventHandler(
             if (readyState.focusedPlace?.id == event.place.id) {
                 eventChannel.trySend(
                     OpenPlaceDetails(
-                        groupId = readyState.groupId,
+                        groupId = readyState.groupOrSpaceId.id,
                         placeId = event.place.id
                     )
                 )
