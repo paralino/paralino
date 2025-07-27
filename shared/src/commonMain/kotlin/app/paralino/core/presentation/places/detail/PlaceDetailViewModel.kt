@@ -11,18 +11,22 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlaceSettingsEntry
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.map.GroupWithMembersOrUserSpace
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -30,6 +34,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -41,6 +46,7 @@ class PlaceDetailViewModel(
     private val placesRepo: PlacesRepository,
     private val updatePlaceAlerts: PlaceAlertsSettingsUpdateUseCase,
     private val groupRepo: UserGroupLocalDataSource,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
@@ -48,7 +54,7 @@ class PlaceDetailViewModel(
     private val placeFlow =
         MutableStateFlow<Resource<GroupPlaceWithSettings>>(Resource.NotInitialized)
     private val groupFlow =
-        MutableStateFlow<Resource<UserGroupWithMembers>>(Resource.NotInitialized)
+        MutableStateFlow<Resource<GroupWithMembersOrUserSpace>>(Resource.NotInitialized)
     private val _uiState = MutableStateFlow<Payload<PlaceDetailScreenState>>(Payload.Loading)
     val uiState: StateFlow<Payload<PlaceDetailScreenState>> = _uiState
 
@@ -57,13 +63,62 @@ class PlaceDetailViewModel(
 
 
     init {
-        combine(
+        if (groupId.asGroupOrSpaceId().isPersonalSpace) {
+            loadPersonalSpacePlace(placeId = placeId)
+        } else {
+            loadGroupPlace(groupId = groupId, placeId = placeId)
+        }
+            .mapToPayload { it }
+            .onEach { result -> _uiState.update { result } }
+            .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        coroutineScope.launch {
+            try {
+                placesRepo.refreshPlaceWithSettingsMaybe(placeId = placeId)
+            } catch (e: Exception) {
+                logg.w("places", "Failed to refresh place: ${e.message}")
+            }
+        }
+    }
+
+    private fun loadPersonalSpacePlace(placeId: String): Flow<PlaceDetailScreenState> {
+        return combine(
+            personalSpaceRepo.personalSpaceState.mapNotNull { it.data },
+            placesRepo.getPlaceWithSettingsLocally(placeId)
+        ) { space, place ->
+
+            placeFlow.update { Resource.Ready(place) }
+            groupFlow.update { Resource.Ready(GroupWithMembersOrUserSpace.PersonalSpace(space)) }
+
+            PlaceDetailScreenState(
+                groupOrSpaceId = groupId.asGroupOrSpaceId(),
+                placeId = placeId,
+                groupName = space.user.name,
+                name = place.place.data.data?.name ?: "---",
+                image = place.place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
+                private = place.place.private,
+                lat = place.place.data.data?.lat,
+                lng = place.place.data.data?.lng,
+                radiusMeters = place.place.data.data?.radiusMeters ?: 0,
+                canHaveAlerts = place.place.canSendAlert,
+                canEdit = canEditPlace(),
+                fullLoading = false,
+                arePlaceAlertsActive = place.settings?.alertData?.isActive != false,
+                isPlaceAlertsSwitchLoading = false,
+                settings = emptyList()
+            )
+        }
+    }
+
+    private fun loadGroupPlace(groupId: String, placeId: String): Flow<PlaceDetailScreenState> {
+        return combine(
             groupRepo.getGroupWithMembers(groupId).filterNotNull(),
             placesRepo.getPlaceWithSettingsLocally(placeId)
         ) { group, place ->
 
             placeFlow.update { Resource.Ready(place) }
-            groupFlow.update { Resource.Ready(group) }
+            groupFlow.update { Resource.Ready(GroupWithMembersOrUserSpace.Group(group)) }
 
             val settings = group.members.map { member ->
                 val memberSetting = place.settings?.alertData?.settings?.firstOrNull {
@@ -104,18 +159,6 @@ class PlaceDetailViewModel(
                 settings = settings
             )
         }
-            .mapToPayload { it }
-            .onEach { result -> _uiState.update { result } }
-            .flowOn(Dispatchers.IO)
-            .launchIn(coroutineScope)
-
-        coroutineScope.launch {
-            try {
-                placesRepo.refreshPlaceWithSettingsMaybe(placeId = placeId)
-            } catch (e: Exception) {
-                logg.w("places", "Failed to refresh place: ${e.message}")
-            }
-        }
     }
 
     fun deletePlace() {
@@ -151,9 +194,13 @@ class PlaceDetailViewModel(
     }
 
     private fun canEditPlace(): Boolean {
-        val place = placeFlow.value.data ?: return false
-        val group = groupFlow.value.data ?: return false
-        return group.isCurrentUserOwner || place.place.ownerUserId == appPrefs.userId
+        val isPlaceOwner = placeFlow.value.data?.place?.ownerUserId == appPrefs.userId
+        val isGroupOwner = when (val data = groupFlow.value.data) {
+            is GroupWithMembersOrUserSpace.Group -> data.group.isCurrentUserOwner
+            is GroupWithMembersOrUserSpace.PersonalSpace -> true
+            null -> return false
+        }
+        return isGroupOwner || isPlaceOwner
     }
 
     fun togglePlaceAlertsSettings(revokeItemState: Boolean) {

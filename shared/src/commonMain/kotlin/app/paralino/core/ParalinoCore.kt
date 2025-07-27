@@ -293,7 +293,7 @@ val coreModule = module {
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { BatteryAlertUploadEngine(get(), get(), get(), get()) }
     single { LocationCacheRepository() }
-    single { PlacesRepository(get(), get(), get(), get()) }
+    single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
     single { UserConfigRepository(get(), get(), get(), get()) }
     single { PremiumStatusManager(get(), get(), get(), get(), get(), get()) }

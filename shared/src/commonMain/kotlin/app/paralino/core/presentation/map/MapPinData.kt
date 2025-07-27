@@ -66,8 +66,8 @@ data class MapPinData constructor(
         shouldShowApproximateCircle = true
     )
 
-    constructor(groupId: String, state: PlaceListItemData) : this(
-        groupOrSpaceId = groupId.asGroupOrSpaceId(),
+    constructor(groupId: GroupOrSpaceId, state: PlaceListItemData) : this(
+        groupOrSpaceId = groupId,
         markerId = state.id,
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,

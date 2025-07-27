@@ -4,6 +4,7 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
@@ -161,11 +162,11 @@ data class MapScreenLifecycleData(
 )
 
 sealed interface GroupWithMembersOrUserSpace {
-    val id: String
+    val id: GroupOrSpaceId
     data class Group(val group: UserGroupWithMembers): GroupWithMembersOrUserSpace {
-        override val id: String = group.id
+        override val id: GroupOrSpaceId = group.id.asGroupOrSpaceId()
     }
     data class PersonalSpace(val space: UserPersonalSpaceModel): GroupWithMembersOrUserSpace {
-        override val id: String = UserGroup.groupPersonalDevicesId
+        override val id: GroupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
     }
 }

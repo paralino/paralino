@@ -49,13 +49,6 @@ class MapStateMapper(
         isSatelliteMode: Boolean,
         alertDialog: MainAlertDialog?
     ): MapHomeScreenState.Ready {
-
-        // Extract common data based on type
-        val groupId = when (groupOrSpace) {
-            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.id
-            is GroupWithMembersOrUserSpace.PersonalSpace -> UserGroup.groupPersonalDevicesId
-        }
-
         val groupName = when (groupOrSpace) {
             is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.name
             is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.user.name + "'s Devices"
@@ -85,7 +78,6 @@ class MapStateMapper(
 
         val membersData = buildMembersData(
             groupOrSpace = groupOrSpace,
-            groupId = groupId,
             groupPlanConfig = planConfig,
             previousState = previousState
         )
@@ -95,7 +87,6 @@ class MapStateMapper(
             .map { PlaceListItemData(it) }
 
         val markers = buildMarkers(
-            groupId = groupId,
             groupOrSpace = groupOrSpace,
             membersData = membersData,
             placesData = placesData,
@@ -137,7 +128,7 @@ class MapStateMapper(
         }
 
         return MapHomeScreenState.Ready(
-            groupOrSpaceId = groupId.asGroupOrSpaceId(),
+            groupOrSpaceId = groupOrSpace.id,
             groupName = groupName,
             groupImage = groupImage,
             userCount = userCount,
@@ -166,7 +157,6 @@ class MapStateMapper(
 
     private fun buildMembersData(
         groupOrSpace: GroupWithMembersOrUserSpace,
-        groupId: String,
         groupPlanConfig: PlanConfig,
         previousState: MapHomeScreenState.Ready?
     ): List<GroupMemberItemStateWithOneLocation> {
@@ -175,7 +165,7 @@ class MapStateMapper(
             is GroupWithMembersOrUserSpace.Group -> {
                 buildGroupMembersData(
                     groupMembers = groupOrSpace.group.members,
-                    groupId = groupId,
+                    groupId = groupOrSpace.group.id,
                     groupPlanConfig = groupPlanConfig,
                     previousState = previousState
                 )
@@ -184,7 +174,6 @@ class MapStateMapper(
             is GroupWithMembersOrUserSpace.PersonalSpace -> {
                 buildPersonalSpaceDevicesData(
                     space = groupOrSpace.space,
-                    groupId = groupId,
                     groupPlanConfig = groupPlanConfig,
                     previousState = previousState
                 )
@@ -264,14 +253,13 @@ class MapStateMapper(
 
     private fun buildPersonalSpaceDevicesData(
         space: UserPersonalSpaceModel,
-        groupId: String,
         groupPlanConfig: PlanConfig,
         previousState: MapHomeScreenState.Ready?
     ): List<GroupMemberItemStateWithOneLocation> {
 
         return space.devices.map { device ->
             val memberState = GroupMemberState(
-                groupId = groupId,
+                groupId = UserGroup.groupPersonalDevicesId,
                 memberId = device.deviceId, // Use device ID as member ID to make it unique
                 userId = device.ownerUserId,
                 name = space.user.name,
@@ -300,7 +288,7 @@ class MapStateMapper(
                     memberUserId = space.user.id,
                     location = it,
                     locationVisibility = locationVisibility,
-                    groupId = groupId,
+                    groupId = UserGroup.groupPersonalDevicesId,
                     groupPlanConfig = groupPlanConfig,
                     previousState = previousStateForLocation
                 )
@@ -448,7 +436,6 @@ class MapStateMapper(
     }
 
     private fun buildMarkers(
-        groupId: String,
         groupOrSpace: GroupWithMembersOrUserSpace,
         membersData: List<GroupMemberItemStateWithOneLocation>,
         placesData: List<PlaceListItemData>,
@@ -526,7 +513,7 @@ class MapStateMapper(
 
         val placeMarkers = placesData.map { place ->
             MapPinData(
-                groupId = groupId,
+                groupId = groupOrSpace.id,
                 state = place
             ).copy(
                 active = true,
