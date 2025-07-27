@@ -192,6 +192,12 @@ private fun MapHomeContent(
                     )
                 }
 
+                is MapHomeScreenEvent.ShowPlanLimitAlert -> {
+                    // This would need to be handled by showing an alert dialog
+                    // For now, we'll just navigate to paywall
+                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                }
+
                 MapHomeScreenEvent.OpenPersonalSpace -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.PersonalSpace.route()
@@ -204,7 +210,7 @@ private fun MapHomeContent(
     }
 
     rememberSaveable(startGroupId) {
-        vm.switchGroup(groupId = startGroupId?.asGroupOrSpaceId())
+        vm.onEvent(MapHomeScreenUiEvent.SwitchGroup(groupId = startGroupId?.asGroupOrSpaceId()))
         // have to keep empty state so it keeps it saved and only executed this once
         ""
     }
@@ -246,7 +252,7 @@ private fun MapHomeContent(
                 pickerState.hide()
                 when (it) {
                     is GroupPickerAction.GroupPicked -> {
-                        vm.switchGroup(it.group.id)
+                        vm.onEvent(MapHomeScreenUiEvent.SwitchGroup(it.group.id))
                     }
 
                     is GroupPickerAction.GroupEditPicked -> {
@@ -254,7 +260,7 @@ private fun MapHomeContent(
                     }
 
                     GroupPickerAction.NewGroup -> {
-                        vm.tryCreateGroup()
+                        vm.onEvent(MapHomeScreenUiEvent.TryCreateGroup)
                     }
 
                     GroupPickerAction.JoinGroup -> {

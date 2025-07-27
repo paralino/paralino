@@ -81,6 +81,7 @@ sealed class MapHomeScreenEvent {
     data object OpenSettings : MapHomeScreenEvent()
     data object OpenGroupPicker : MapHomeScreenEvent()
     data object OpenPersonalSpace : MapHomeScreenEvent()
+    data class ShowPlanLimitAlert(val limit: Int?) : MapHomeScreenEvent()
     data class OpenSharingStart(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaces(val groupId: String) : MapHomeScreenEvent()
     data class OpenCreatePlace(val groupId: String) : MapHomeScreenEvent()
@@ -102,6 +103,8 @@ sealed interface MapHomeScreenUiEvent {
     data class OnPlaceClick(val place: PlaceListItemData) : MapHomeScreenUiEvent
     data class OnMemberItemEvent(val event: GroupMemberItemEvent) : MapHomeScreenUiEvent
     data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
+    data class SwitchGroup(val groupId: GroupOrSpaceId?) : MapHomeScreenUiEvent
+    data object TryCreateGroup : MapHomeScreenUiEvent
     data object OnFocusOnMembersClick : MapHomeScreenUiEvent
     data object OnFocusOnPlacesClick : MapHomeScreenUiEvent
     data object OnOpenPlacesScreen : MapHomeScreenUiEvent
