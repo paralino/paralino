@@ -119,7 +119,6 @@ class UserApi constructor(
             clientVersion = this.clientVersion,
             clientEngine = this.clientEngine,
             clientEngineVersion = this.clientEngineVersion,
-            deviceType = "android",
             deviceName = this.deviceName,
             deviceBrand = this.deviceBrand,
             deviceModel = this.deviceModel,

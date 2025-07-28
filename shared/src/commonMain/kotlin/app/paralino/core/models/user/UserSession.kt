@@ -23,7 +23,6 @@ data class UserSession constructor(
     val clientEngine: String,
     val clientEngineVersion: String,
 
-    val deviceType: String,
     val deviceName: String,
     val deviceBrand: String,
     val deviceModel: String,

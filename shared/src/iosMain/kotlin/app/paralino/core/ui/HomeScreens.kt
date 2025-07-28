@@ -260,6 +260,7 @@ object HomeScreens {
         onCreateGroup: () -> Unit,
         openFreePlanInfo: () -> Unit,
         openPaywall: () -> Unit,
+        openPersonalSpace: () -> Unit,
         openLocationHistory: (MapHomeScreenEvent.OpenLocationHistory) -> Unit,
         mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
@@ -312,6 +313,8 @@ object HomeScreens {
                             is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
                             is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)
                             is MapHomeScreenEvent.OpenLocationHistory -> openLocationHistory(event)
+                            MapHomeScreenEvent.OpenPersonalSpace -> openPersonalSpace()
+                            is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall()
                             null -> {}
                         }
                     }
@@ -372,6 +375,7 @@ object HomeScreens {
         onCardHeightChange: (Float) -> Unit,
         onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
         openHistorySettings: () -> Unit,
+        openPaywall: () -> Unit,
         onNavigateBack: () -> Unit,
         mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
@@ -386,6 +390,7 @@ object HomeScreens {
                             LocationHistoryScreenEvent.NavigateBack -> onNavigateBack()
                             LocationHistoryScreenEvent.OpenHistorySettings -> openHistorySettings()
                             is LocationHistoryScreenEvent.OpenNavigation -> onDirectionsRequest(event.event)
+                            LocationHistoryScreenEvent.OpenPaywall -> openPaywall()
                             null -> {}
                         }
                     }

@@ -1,4 +1,4 @@
-package app.paralino.android.ui.personal_space
+package app.paralino.core.presentation.personal_space
 
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
@@ -28,8 +28,8 @@ import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

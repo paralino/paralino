@@ -14,10 +14,13 @@ import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.NoOpPersonalDeviceKeyRotation
+import app.paralino.core.domain.crypto.PersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.domain.location.history.IOSLocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
@@ -54,6 +57,7 @@ import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
+import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
@@ -174,6 +178,7 @@ object KoinIOS {
                         AppHost.MAIN_APP -> {
                             single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
                             single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
+                            single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
                             single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
                             single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
@@ -181,6 +186,7 @@ object KoinIOS {
                         else -> {
                             single { NoOpMemberCryptoKeyRotation() } bind IMemberCryptoKeyRotation::class
                             single { NoOpMemberDeviceKeyRotation() } bind IMemberDeviceKeyRotation::class
+                            single { NoOpPersonalDeviceKeyRotation() } bind IPersonalDeviceCryptoKeyRotation::class
                             single { NoOpReRegisterDeviceUseCase() } bind IReRegisterDeviceUseCase::class
                             single { IOSLSEPlacesActivityProcessor() } bind IPlacesActivityProcessor::class
                             single { IOSLocationHistoryUploadEngine() } bind ILocationHistoryUploadEngine::class
@@ -199,7 +205,7 @@ object KoinIOS {
         return module {
             factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
@@ -207,7 +213,7 @@ object KoinIOS {
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { (groupID: String?, isOnboarding: Boolean) ->
-                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get(), get()) }
             factory { PersonalCodeViewModel(get(), get(), get()) }
@@ -242,7 +248,7 @@ object KoinIOS {
                     resetPassword = get()
                 )
             }
-            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get()) }
+            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get()) }
             factory { (groupID: String, placeId: String) ->
                 PlaceDetailViewModel(
                     groupId = groupID,
@@ -250,6 +256,7 @@ object KoinIOS {
                     placesRepo = get(),
                     updatePlaceAlerts = get(),
                     groupRepo = get(),
+                    personalSpaceRepo = get(),
                     cryptoCore = get(),
                     appPrefs = get()
                 )
@@ -262,8 +269,7 @@ object KoinIOS {
                     lng = lng,
                     placesRepo = get(),
                     placesLocalDataSource = get(),
-                    groupLocal = get(),
-                    remoteConfig = get(),
+                    premiumStatusManager = get(),
                     deviceApiProvider = get(),
                     valueFormatter = get()
                 )
@@ -287,8 +293,9 @@ object KoinIOS {
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
             factory { DefaultNavigationAppViewModel(get()) }
-            factory { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId, get(), get(), get(), get()) }
+            factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         }
     }
 
@@ -366,5 +373,6 @@ object KoinIOS {
         val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
         val locationHistoryVM get() = get<LocationHistoryViewModel>()
         fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
+        val personalSpaceVM = get<PersonalSpaceViewModel>()
     }
 }

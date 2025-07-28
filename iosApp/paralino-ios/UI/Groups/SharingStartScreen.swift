@@ -65,7 +65,7 @@ struct SharingStartScreen: View {
             $groupPicker,
             onSelectGroup: { state in
                 groupPicker = nil
-                appState.vm.setSelectedGroup(groupId: state.id)
+                appState.vm.setSelectedGroup(groupOrSpaceId: state.id)
             },
             onEditGroup: { group in },
             onCreateGroup: {},

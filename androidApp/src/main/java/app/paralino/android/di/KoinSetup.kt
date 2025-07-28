@@ -27,8 +27,7 @@ import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.android.tracking.geofence.GeofenceManager
-import app.paralino.android.ui.personal_space.PersonalSpaceViewModel
-import app.paralino.core.appPrefs
+import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider

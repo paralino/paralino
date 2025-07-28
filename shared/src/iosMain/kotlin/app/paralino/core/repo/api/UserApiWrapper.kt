@@ -60,8 +60,12 @@ class UserApiWrapperIOS(
         userApi.deleteAccount().getOrThrow()
     }
 
-    override suspend fun logout() {
-        userApi.logout().getOrThrow()
+    override suspend fun logoutSession(sessionId: String) {
+        userApi.logoutSession(sessionId = sessionId).getOrThrow()
+    }
+
+    override suspend fun logoutCurrentSession() {
+        userApi.logoutCurrentSession().getOrThrow()
     }
 }
 
@@ -79,5 +83,6 @@ interface IUserApiIOS {
     suspend fun confirmEmail(userId: String, secret: String): Payload<Unit>
     suspend fun updateEmail(email: String, password: String): Payload<UserMeRaw>
     suspend fun deleteAccount(): Payload<Unit>
-    suspend fun logout(): Payload<Unit>
+    suspend fun logoutSession(sessionId: String): Payload<Unit>
+    suspend fun logoutCurrentSession(): Payload<Unit>
 }

@@ -65,6 +65,9 @@ struct MapHomeScreen: View {
                         openPaywall: {
                             path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
                         },
+                        openPersonalSpace: {
+                            
+                        },
                         openLocationHistory: { event in
                             path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId)))
                         },
@@ -77,7 +80,7 @@ struct MapHomeScreen: View {
                             }
                             controller.onMapLongPress = { point in
                                 if let readyState = mapState.uiState.asReady() {
-                                    path.append(.home(.placeCreate(groupId: readyState.groupId, placeId: nil, lat: point.latitude, lng: point.longitude)))
+                                    path.append(.home(.placeCreate(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: readyState.groupOrSpaceId)!, placeId: nil, lat: point.latitude, lng: point.longitude)))
                                 }
                             }
                             return controller
@@ -110,7 +113,7 @@ struct MapHomeScreen: View {
         }
         .onAppear {
             Logr.d(tag:"home_screen", message: "Home screen appear")
-            mapState.vm.switchGroup(groupId: "")
+            mapState.vm.onEvent(event: MapHomeScreenUiEventSwitchGroup(groupId: nil))
         }
         .onDisappear {
             Logr.d(tag:"home_screen", message: "Home screen disappear")
@@ -134,15 +137,15 @@ struct MapHomeScreen: View {
             $groupPicker,
             onSelectGroup: { state in
                 groupPicker = nil
-                mapState.vm.switchGroup(groupId: state.id)
+                mapState.vm.onEvent(event: MapHomeScreenUiEventSwitchGroup(groupId: state.id))
             },
             onEditGroup: { state in
                 groupPicker = nil
-                path.append(.home(.groupDetail(groupId: state.id)))
+                mapState.vm.onEvent(event: MapHomeScreenUiEventOpenGroupDetails(groupId: state.id))
             },
             onCreateGroup: {
                 groupPicker = nil
-                mapState.vm.tryCreateGroup()
+                mapState.vm.onEvent(event: MapHomeScreenUiEventTryCreateGroup())
             },
             onJoinGroup: {
                 groupPicker = nil

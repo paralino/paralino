@@ -1,4 +1,4 @@
-package app.paralino.android.ui.personal_space
+package app.paralino.core.presentation.personal_space
 
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.UserDeviceModel

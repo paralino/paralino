@@ -125,7 +125,7 @@ fun SharingStartScreen(
             when (it) {
                 is GroupPickerAction.GroupPicked -> {
                     appState.uiScope.launch { pickerState.hide() }
-                    vm.setSelectedGroup(it.group.id.id)
+                    vm.setSelectedGroup(it.group.id)
                 }
 
                 GroupPickerAction.Close -> {

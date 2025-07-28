@@ -6,6 +6,7 @@ import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -98,7 +99,7 @@ class SharingStartViewModel(
 
     init {
 
-        initialGroupId?.let { setSelectedGroup(it) }
+        initialGroupId?.let { setSelectedGroup(it.asGroupOrSpaceId()) }
 
         coroutineScope.launch(Dispatchers.IO) {
             _uiState.update {
@@ -240,14 +241,14 @@ class SharingStartViewModel(
         )
     }
 
-    fun setSelectedGroup(groupId: String) {
+    fun setSelectedGroup(groupOrSpaceId: GroupOrSpaceId) {
         coroutineScope.launch(Dispatchers.IO) {
-            if (groupId == UserGroup.groupPersonalDevicesId) {
+            if (groupOrSpaceId.isPersonalSpace) {
                 personalSpaceRepo.personalSpaceState.value.data.let { space ->
                     setSelectedGroup(space?.let { GroupOrUserSpace.PersonalSpace(it) })
                 }
             } else {
-                groupRepo.getGroupWithMetadata(groupId = groupId).firstOrNull().let { group ->
+                groupRepo.getGroupWithMetadata(groupId = groupOrSpaceId.id).firstOrNull().let { group ->
                     setSelectedGroup(group?.let { GroupOrUserSpace.Group(it) })
                 }
             }

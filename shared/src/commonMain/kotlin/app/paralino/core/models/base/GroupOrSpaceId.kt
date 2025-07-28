@@ -13,4 +13,17 @@ value class GroupOrSpaceId(val id: String) {
     val isGroup: Boolean get() = !isPersonalSpace && !isPublicSharing
 }
 
+object GroupOrSpaceIdHelper {
+    fun wrap(id: String): GroupOrSpaceId {
+        return GroupOrSpaceId(id = id)
+    }
+
+    fun unwrap(id: Any?): String? {
+        return when (id) {
+            is GroupOrSpaceId -> id.id
+            else -> null
+        }
+    }
+}
+
 fun String.asGroupOrSpaceId() = GroupOrSpaceId(this)

@@ -77,13 +77,6 @@ class UserApi: IUserApiIOS {
         }
     }
     
-    func logout() async throws -> Payload<KotlinUnit> {
-        await remoteModule.executeUserApi { module in
-            let _ = try await module.account.deleteSession(sessionId: "current")
-            return KotlinUnit()
-        }
-    }
-    
     func resetPassword(userId: String, secret: String, password: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
             let _ = try await module.account.updateRecovery(userId: userId, secret: secret, password: password)
@@ -110,6 +103,20 @@ class UserApi: IUserApiIOS {
             try await module.account.updatePrefs(prefs: data).parseUser()
         }
     }
+    
+    func logoutCurrentSession() async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let _ = try await module.account.deleteSession(sessionId: "current")
+            return KotlinUnit()
+        }
+    }
+    
+    func logoutSession(sessionId: String) async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let _ = try await module.account.deleteSession(sessionId: sessionId)
+            return KotlinUnit()
+        }
+    }
 }
 
 extension AppwriteModels.User {
@@ -122,6 +129,28 @@ extension AppwriteModels.User {
 
 extension AppwriteModels.Session {
     func parseSession() -> UserSession {
-        return UserSession(id: self.id, expire: self.expire, deviceType: "ios")
+        return UserSession(
+            id: self.id,
+            createdAt: self.createdAt,
+            updatedAt: self.updatedAt,
+            expire: self.expire,
+            provider: self.provider,
+            ip: self.ip,
+            osCode: self.osCode,
+            osName: self.osName,
+            osVersion: self.osVersion,
+            clientType: self.clientType,
+            clientCode: self.clientCode,
+            clientName: self.clientName,
+            clientVersion: self.clientVersion,
+            clientEngine: self.clientEngine,
+            clientEngineVersion: self.clientEngineVersion,
+            deviceName: self.deviceName,
+            deviceBrand: self.deviceBrand,
+            deviceModel: self.deviceModel,
+            countryCode: self.countryCode,
+            countryName: self.countryName,
+            current: self.current
+        )
     }
 }

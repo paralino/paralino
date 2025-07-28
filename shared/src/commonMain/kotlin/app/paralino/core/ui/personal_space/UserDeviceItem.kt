@@ -1,4 +1,4 @@
-package app.paralino.android.ui.personal_space
+package app.paralino.core.ui.personal_space
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -44,17 +44,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
-import app.paralino.core.models.location.MemberDeviceStatus
 import app.paralino.core.models.location.MemberDeviceStatusType
-import app.paralino.core.presentation.groups.MemberActionType
+import app.paralino.core.presentation.personal_space.UserDeviceItemEvent
+import app.paralino.core.presentation.personal_space.UserDeviceOrSessionItemState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
-import app.paralino.core.ui.groups.GroupStatusTag
 import app.paralino.core.ui.groups.GroupStatusTagContent
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.groups.components.NetworkTypeIcon
-import app.paralino.core.ui.groups.components.actionIcon
-import app.paralino.core.ui.groups.components.actionText
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -215,7 +212,7 @@ fun UserDeviceItem(
                         text = when {
                             state.device?.isCurrentDevice == true -> "This device"
                             !state.device?.location?.name.isNullOrBlank() -> state.device?.location?.name ?: ""
-                            state.device == null -> state.session?.session?.deviceType ?: "-"
+                            state.device == null -> state.session?.session?.deviceName ?: "-"
                             else -> stringResource(MR.strings.group_members_device_name_default)
                         },
                         style = MaterialTheme.typography.subtitle1,
