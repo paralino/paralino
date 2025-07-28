@@ -98,19 +98,23 @@ class DeleteLocationHistoryEntryUseCase(
                         )
 
                         val newHistory = history.history.mapSuccess {
-                            it.history.filter { point -> entry.value.any { it.point.properID == point.properID } }
+                            it.history.filter { point -> entry.value.none { it.point.properID == point.properID } }
                         }.data
 
                         if (newHistory != null) {
                             LocationHistoryDeletePayloadEntry(
                                 id = entry.key,
                                 dateIdentifier = databaseEntry.dateIdentifier,
-                                historyData = cryptoCore.encryptDataWithKey(
-                                    data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
-                                        LocationHistoryModel(newHistory)
-                                    ),
-                                    key = key.key
-                                ),
+                                historyData = if (newHistory.isNotEmpty()) {
+                                    cryptoCore.encryptDataWithKey(
+                                        data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
+                                            LocationHistoryModel(history = newHistory)
+                                        ),
+                                        key = key.key
+                                    )
+                                } else {
+                                    ""
+                                },
                                 historyKeyVersion = key.historyKeyVersion
                             )
                         } else {
@@ -189,12 +193,16 @@ class DeleteLocationHistoryEntryUseCase(
                             LocationHistoryDeletePayloadEntry(
                                 id = entry.key,
                                 dateIdentifier = databaseEntry.dateIdentifier,
-                                historyData = cryptoCore.encryptDataWithKey(
-                                    data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
-                                        LocationHistoryModel(newHistory)
-                                    ),
-                                    key = key.key
-                                ),
+                                historyData = if (newHistory.isNotEmpty()) {
+                                    cryptoCore.encryptDataWithKey(
+                                        data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
+                                            LocationHistoryModel(history = newHistory)
+                                        ),
+                                        key = key.key
+                                    )
+                                } else {
+                                    ""
+                                },
                                 historyKeyVersion = key.historyKeyVersion
                             )
                         } else {

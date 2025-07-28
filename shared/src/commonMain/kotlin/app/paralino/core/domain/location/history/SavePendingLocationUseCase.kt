@@ -7,6 +7,7 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
 import app.paralino.core.db.main.location.PendingLocationHistoryEntity
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.user.SymmetricCryptoKeyData
@@ -33,7 +34,7 @@ class SavePendingLocationUseCase(
                     groupOrSpaceId = entry.groupId.id
                 )
 
-                if (historyKey != null) {
+                if (historyKey != null || entry.groupId.isPersonalSpace) {
                     val updatedEntry = getPossibleUpdatedEntry(
                         entry = entry,
                         userKey = userKey,
@@ -54,7 +55,7 @@ class SavePendingLocationUseCase(
                                 key = userKey.key
                             ),
                             userKeyVersion = userKey.version,
-                            localHistoryKeyId = historyKey.id
+                            localGroupHistoryKeyId = historyKey?.id
                         )
                     }
                 } else {
@@ -74,7 +75,7 @@ class SavePendingLocationUseCase(
     private suspend fun getPossibleUpdatedEntry(
         entry: MemberGroupId,
         userKey: SymmetricCryptoKeyData,
-        historyKey: LocalLocationHistoryKeyEntity
+        historyKey: LocalLocationHistoryKeyEntity?
     ): PendingLocationHistoryEntity? {
         if (entry.locationHistory == null) {
             return null
@@ -83,9 +84,15 @@ class SavePendingLocationUseCase(
         val lastPendingEntry = database.pendingLocationHistoryDao.getLatestPendingEntryOnce(
             groupOrSpaceId = entry.groupId.id
         )
+        val isHistoryKeyValid = if (entry.groupId.isPersonalSpace) {
+            // For personal space, no need to track history key since there is only one member
+            true
+        } else {
+            lastPendingEntry?.localGroupHistoryKeyId == historyKey?.id
+        }
 
         val lastEntryPoint =
-            if (lastPendingEntry?.userKeyVersion == userKey.version && lastPendingEntry.localHistoryKeyId == historyKey.id) {
+            if (lastPendingEntry?.userKeyVersion == userKey.version && isHistoryKeyValid) {
                 try {
                     cryptoCore.decryptDataWithKey(
                         data = lastPendingEntry.locationHistoryData,
@@ -140,7 +147,7 @@ class SavePendingLocationUseCase(
                     key = userKey.key
                 ),
                 userKeyVersion = userKey.version,
-                localHistoryKeyId = historyKey.id
+                localGroupHistoryKeyId = historyKey?.id
             )
         } else {
             null

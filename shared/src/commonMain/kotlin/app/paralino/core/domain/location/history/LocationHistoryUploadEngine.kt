@@ -35,7 +35,6 @@ import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 
 interface ILocationHistoryUploadEngine {
     abstract fun syncPendingEntriesInBackground(cacheTime: Duration)
@@ -328,7 +327,10 @@ class LocationHistoryUploadEngine(
         val groupHistory = if (groupHistoryNodes.isNotEmpty()) {
             groupHistoryNodes
                 .groupBy { it.history.dayKey }
-                .mapValues { it.value.groupBy { entry -> entry.localHistoryKeyId } }
+                .mapValues {
+                    it.value
+                        .filter { it.localGroupHistoryKeyId != null }
+                        .groupBy { entry -> entry.localGroupHistoryKeyId } }
                 .flatMap { entryPerDay ->
                     val dateKey = entryPerDay.key
                     if (!dateKey.isNullOrBlank()) {

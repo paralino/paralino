@@ -6,7 +6,6 @@ import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlin.math.PI
 import kotlin.math.cos
 
 @Serializable
@@ -36,7 +35,7 @@ data class LocationHistoryModelForDevice(
 data class LocationHistoryPointModelForMember(
     val groupId: String,
     val entryId: Long,
-    val localHistoryKeyId: Long,
+    val localGroupHistoryKeyId: Long?,
     val history: LocationHistoryPointModel
 )
 

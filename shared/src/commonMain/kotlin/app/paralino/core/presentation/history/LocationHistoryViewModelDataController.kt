@@ -10,6 +10,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC
@@ -33,6 +34,7 @@ class LocationHistoryViewModelDataController(
     val refreshLocationHistory: RefreshLocationHistoryUseCase,
     val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
     val userRepo: UserRepository,
+    val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     val userGroupRepo: UserGroupLocalDataSource,
     val valueFormatter: IValueFormatter,
     val appPrefs: AppPrefs,

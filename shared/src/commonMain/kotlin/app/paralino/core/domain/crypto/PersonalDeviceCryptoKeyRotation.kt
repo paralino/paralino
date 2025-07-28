@@ -5,12 +5,15 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation.GroupDeviceSenderKeyData
 import app.paralino.core.domain.location.MemberDeviceStatusProvider
 import app.paralino.core.logg
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.raw.PersonalDeviceKeyUpdatePayload
 import app.paralino.core.repo.LocationSharingManager
@@ -26,6 +29,14 @@ abstract class IPersonalDeviceCryptoKeyRotation : LimitedExecution() {
         device: UserDeviceModel?,
         force: Boolean = false
     ): Boolean
+}
+
+class NoOpPersonalDeviceKeyRotation: IPersonalDeviceCryptoKeyRotation() {
+    override suspend fun rotateDeviceKeys(device: UserDeviceModel?, force: Boolean): Boolean {
+        logg.tag("tag_crypto_key_personal_device_rotation")
+            .w("Personal space NOOP operation")
+        return false
+    }
 }
 
 class PersonalDeviceCryptoKeyRotation(

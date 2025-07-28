@@ -11,6 +11,7 @@ data class GroupLocationHistoryReadResponse(
 
 @Serializable
 data class PersonalLocationHistoryReadResponse(
+    val dateKeys: List<String>,
     val entries: List<LocationHistoryReadEntry>,
     val keys: List<LocationHistoryReadKey>,
 )

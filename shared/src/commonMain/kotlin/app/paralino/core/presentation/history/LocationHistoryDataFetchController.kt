@@ -21,6 +21,7 @@ import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
@@ -58,6 +59,7 @@ class LocationHistoryDataFetchController(
     private val refreshLocationHistory: RefreshLocationHistoryUseCase =
         dataController.refreshLocationHistory
     private val userRepo: UserRepository = dataController.userRepo
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource = dataController.personalSpaceRepo
     private val userGroupRepo: UserGroupLocalDataSource = dataController.userGroupRepo
     private val valueFormatter: IValueFormatter = dataController.valueFormatter
     private val appPrefs: AppPrefs = dataController.appPrefs
@@ -158,45 +160,145 @@ class LocationHistoryDataFetchController(
     }
 
     private fun fetchPersonalLocationHistory(startDate: LocalDate, endDate: LocalDate): Flow<Unit> {
-        return combine(
-            userRepo.localUser.mapNotNull { it.data },
-            userRepo.userPlans,
-            getLocationHistory.getLocationHistory(
-                groupId = UserGroup.groupPersonalDevicesId,
-                memberUserId = appPrefs.userId,
-                startDate = startDate,
-                endDate = endDate
-            )
-        ) { user, plans, history ->
-            // TODO add actual devices and locations
-            // TODO handle user missing
-            val locations = history.history.flatMap {
-                mapLocationPoints(entry = it)
-            }
-            
-            val processedLocations = clusteringService.processLocations(
-                points = locations,
-                rangeStart = _uiState.value.startDate,
-                rangeEnd = _uiState.value.endDate
-            )
-            
-            _uiState.update {
-                it.copy(
-                    groupName = null,
-                    groupImage = null,
-                    isGroupOwner = true,
-                    userName = user.data?.userName ?: "",
-                    userImage = user.data?.userImage,
-                    isLoadingLocations = false,
-                    locations = processedLocations,
-                    devices = emptyList(),
-                    stats = null,
-                    planConfig = plans.highestValidPlanConfig,
-                    dataViewType = LocationHistoryDataViewType.Stats
+        return getLocationHistory.getLocationHistory(
+            groupId = UserGroup.groupPersonalDevicesId,
+            memberUserId = appPrefs.userId,
+            startDate = startDate,
+            endDate = endDate
+        ).map { history ->
+            val space = personalSpaceRepo.personalSpaceState.value.data
+            if (space != null) {
+                val user = space.user
+
+                val knownDevices = space.devices.map {
+                    UserActiveLocationDeviceState.Known(
+                        locationId = it.id,
+                        deviceId = it.deviceId,
+                        deviceName = it.location?.nameOrNull ?: it.deviceType?.toString() ?: "Unknown",
+                        isSelected = it.id == _uiState.value.devices.firstOrNull { it.isSelected }?.locationId,
+                        isCurrent = it.deviceId == space.currentDevice?.deviceId
+                    )
+                }
+
+                val unknownDevices = history.history.filter { entry ->
+                    knownDevices.none { it.locationId == entry.locationId } || entry.locationId == null
+                }
+                    .takeIf { it.isNotEmpty() }
+                    ?.let {
+                        UserActiveLocationDeviceState.Unknown(
+                            ids = it.map { it.locationId }.distinct(),
+                            deviceName = MR.strings.history_map_device_name_unknown.localizedString(),
+                            isSelected = _uiState.value.devices.firstOrNull { it.isSelected } is UserActiveLocationDeviceState.Unknown,
+                        )
+                    }
+
+                val devices = buildList {
+                    addAll(knownDevices)
+
+                    if (unknownDevices != null) {
+                        add(unknownDevices)
+                    }
+                }.let { list ->
+                    if (list.count { it.isSelected } != 1) {
+                        val firstSelected = list.firstOrNull()
+                        list.map {
+                            when (it) {
+                                is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == firstSelected?.locationId)
+                                is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == firstSelected?.locationId)
+                            }
+                        }
+                    } else {
+                        list
+                    }
+                }
+
+                val selectedKnownLocation = space.devices
+                    .firstOrNull { device ->
+                        devices
+                            .filter { it.isSelected && it is UserActiveLocationDeviceState.Known }
+                            .any { it.locationId == device.location?.id }
+                    }
+
+                val cachedHistory = selectedKnownLocation?.location?.locationHistory?.data?.let {
+                    it.history
+                        .filter {
+                            val date = it.status.tA.isoToLocalDateTime()?.date
+                            if (date == null) {
+                                false
+                            } else {
+                                date in _uiState.value.startDate.._uiState.value.endDate
+                            }
+                        }
+                        .groupBy { it.dayKey }
+                        .mapNotNull { entry ->
+                            entry.key?.let {
+                                LocationHistoryModelForDevice(
+                                    locationId = selectedKnownLocation.id,
+                                    entryId = selectedKnownLocation.id,
+                                    dateKey = it,
+                                    historyKeyVersion = "",
+                                    isCachedLocation = true,
+                                    history = CryptoResource.Ready(LocationHistoryModel(history = entry.value))
+                                )
+                            }
+                        }
+                }
+
+                val locations = history.history
+                    .run {
+                        if (cachedHistory != null) plus(cachedHistory)
+                        else this
+                    }
+                    .flatMap { entry ->
+                        mapLocationPoints(entry = entry)
+                    }
+                    .sortedByDescending { it.point.status.startTime }
+                    .distinctBy { it.point.properID }
+
+                val processedLocations = clusteringService.processLocations(
+                    points = locations,
+                    rangeStart = _uiState.value.startDate,
+                    rangeEnd = _uiState.value.endDate
                 )
+
+                val newState = _uiState.value.copy(
+                    groupName = "Personal Space",
+                    groupImage = user.data?.userImage,
+                    isGroupOwner = true,
+                    userName = user.name,
+                    userImage = user.data?.userImage
+                        ?: ImageModel.emoji(Emojis.robot),
+                    isLoadingLocations = false,
+                    isLoadingData = false,
+                    locations = processedLocations,
+                    devices = devices,
+                    stats = null,
+                    planConfig = space.plan,
+                    dataViewType = _uiState.value.dataViewType
+                )
+
+                val stats = LocationHistoryStats.calculateStats(
+                    state = newState,
+                    valueFormatter = dataController.valueFormatter,
+                    geofenceManager = dataController.geofenceManager,
+                )
+
+                _uiState.update {
+                    newState.copy(stats = stats)
+                }
+            } else {
+                // TODO handle data missing
+                _uiState.update {
+                    it.copy(
+                        isLoadingLocations = false
+                    )
+                }
             }
         }
-            .catch { }
+            .catch {
+                Logr.d("Error loading history", it)
+            }
+            .flowOn(Dispatchers.IO)
     }
 
     private fun fetchGroupLocationHistory(

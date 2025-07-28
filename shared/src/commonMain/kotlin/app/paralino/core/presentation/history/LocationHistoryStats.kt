@@ -34,7 +34,7 @@ data class LocationHistoryStats(
                     }
                 }
 
-            if (state.locations.isEmpty()) {
+            if (locations.isEmpty()) {
                 return null
             }
 

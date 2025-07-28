@@ -12,8 +12,22 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocationHistoryDao {
 
+    @Transaction
+    suspend fun recreatePersonalHistory(
+        dates: List<String>,
+        entries: List<PersonalHistoryEntity>,
+        keys: List<PersonalHistoryKeyEntity>
+    ) {
+        deleteOldPersonalHistory(dates = dates)
+        deleteUnusedPersonalHistoryKeys(
+            usedIds = getAllPersonalHistoryKeysVersions()
+        )
+        createPersonalHistory(entries = entries)
+        createPersonalKeys(keys = keys)
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createPersonalKeys(entries: List<PersonalHistoryKeyEntity>)
+    suspend fun createPersonalKeys(keys: List<PersonalHistoryKeyEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createPersonalHistory(entries: List<PersonalHistoryEntity>)
@@ -31,10 +45,10 @@ interface LocationHistoryDao {
         keys: List<GroupHistoryKeyEntity>
     ) {
         deleteOldGroupHistory(groupId = groupId, memberUserId = memberUserId, dates = dates)
-        deleteUnusedHistoryKeys(
+        deleteUnusedGroupHistoryKeys(
             groupId = groupId,
             memberUserId = memberUserId,
-            usedIds = getAllHistoryKeysVersions(groupId = groupId, memberUserId = memberUserId)
+            usedIds = getAllGroupHistoryKeysVersions(groupId = groupId, memberUserId = memberUserId)
         )
         createGroupHistory(entries = entries)
         createGroupKeys(keys = keys)
@@ -45,10 +59,10 @@ interface LocationHistoryDao {
 
 
     @Query("SELECT historyKeyVersion FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId")
-    suspend fun getAllHistoryKeysVersions(groupId: String, memberUserId: String): List<String>
+    suspend fun getAllGroupHistoryKeysVersions(groupId: String, memberUserId: String): List<String>
 
     @Query("DELETE FROM groupHistoryKeysEntity WHERE groupId = :groupId AND ownerUserId = :memberUserId AND historyKeyVersion NOT IN (:usedIds)")
-    suspend fun deleteUnusedHistoryKeys(groupId: String, memberUserId: String, usedIds: List<String>)
+    suspend fun deleteUnusedGroupHistoryKeys(groupId: String, memberUserId: String, usedIds: List<String>)
 
 
 
@@ -94,6 +108,12 @@ interface LocationHistoryDao {
     suspend fun getPersonalHistoryKeysOnce(
         keys: List<String>
     ): List<PersonalHistoryKeyEntity>
+
+    @Query("SELECT historyKeyVersion FROM personalHistoryEntity")
+    suspend fun getAllPersonalHistoryKeysVersions(): List<String>
+
+    @Query("DELETE FROM personalHistoryEntity WHERE historyKeyVersion NOT IN (:usedIds)")
+    suspend fun deleteUnusedPersonalHistoryKeys(usedIds: List<String>)
 
     @Query("DELETE FROM personalHistoryEntity WHERE dateIdentifier BETWEEN :startDate AND :endDate")
     suspend fun deletePersonalHistoryBetweenDates(startDate: String, endDate: String)

@@ -13,6 +13,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
@@ -30,6 +31,7 @@ class LocationHistoryViewModel(
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
     private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
     private val userRepo: UserRepository,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val userGroupRepo: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs,
@@ -42,6 +44,7 @@ class LocationHistoryViewModel(
         refreshLocationHistory = refreshLocationHistory,
         deleteLocationHistory = deleteLocationHistory,
         userRepo = userRepo,
+        personalSpaceRepo = personalSpaceRepo,
         userGroupRepo = userGroupRepo,
         valueFormatter = valueFormatter,
         appPrefs = appPrefs,

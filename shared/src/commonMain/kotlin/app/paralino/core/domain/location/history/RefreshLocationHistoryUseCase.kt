@@ -148,8 +148,11 @@ class RefreshLocationHistoryUseCase(
                 mapper.remote2LocalPersonal(model = it)
             }
 
-            database.locationHistoryDao.createPersonalHistory(entries = entries)
-            database.locationHistoryDao.createPersonalKeys(entries = keys)
+            database.locationHistoryDao.recreatePersonalHistory(
+                dates = response.dateKeys,
+                entries = entries,
+                keys = keys
+            )
         }
     }
 }

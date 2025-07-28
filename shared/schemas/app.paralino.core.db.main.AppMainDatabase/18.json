@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 18,
-    "identityHash": "3adb2951c046d983b7c3ed82067307c0",
+    "identityHash": "7e74458034e21628bdb62a991c5a1702",
     "entities": [
       {
         "tableName": "subscriptionPlanEntity",
@@ -1308,7 +1308,7 @@
       },
       {
         "tableName": "pendingLocationHistoryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyId` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1341,10 +1341,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "localHistoryKeyId",
+            "fieldPath": "localGroupHistoryKeyId",
             "columnName": "historyKeyId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -1641,7 +1640,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3adb2951c046d983b7c3ed82067307c0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7e74458034e21628bdb62a991c5a1702')"
     ]
   }
 }

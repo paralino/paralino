@@ -130,13 +130,15 @@ data class PlanConfig(
     val historyDaysLimit: Int,
     val paralinoIdsLimit: Int,
     val personalDevicesLimit: Int,
-    val personalHistoryDaysLimit: Int = 2,
     val isActive: Boolean = true,
     val productIds: List<String> = emptyList(),
     val productPlanIds: List<String> = emptyList(),
 ) {
 
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
+
+    // TODO move to constructor when ready
+    val personalHistoryDaysLimit: Int = historyDaysLimit
 
     val adjustedPlanName: String = when (planTypeEnum) {
         PlanType.SILVER -> MR.strings.paywall_silver_plan_name.localizedString()
@@ -205,7 +207,6 @@ data class PlanConfig(
             historyDaysLimit = 2,
             paralinoIdsLimit = 1,
             personalDevicesLimit = 1,
-            personalHistoryDaysLimit = 2,
             isActive = true,
             productIds = listOf("free"),
             productPlanIds = listOf("free")

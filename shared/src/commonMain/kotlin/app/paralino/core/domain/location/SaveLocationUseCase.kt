@@ -168,7 +168,7 @@ class SaveLocationUseCase(
                 ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
 
             database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-                .filter { it.localHistoryKeyId == historyKey?.id }
+                .filter { it.localGroupHistoryKeyId == historyKey?.id }
                 .sortedByDescending { it.id }
                 .take(100)
                 .let { historyMapper.pendingLocationToCore(it) }
