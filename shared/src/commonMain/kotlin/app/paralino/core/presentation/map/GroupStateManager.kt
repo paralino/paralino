@@ -42,7 +42,12 @@ class GroupStateManager(
 ) {
 
     suspend fun switchGroup(groupId: GroupOrSpaceId?) {
-        if (groupId?.isPersonalSpace == true) {
+        val currentlySelectedGroup = appPrefs.selectedGroupId
+        if (currentlySelectedGroup.isNullOrBlank() && groupId == null) {
+            selectPersonalSpace()
+        } else if (currentlySelectedGroup?.asGroupOrSpaceId()?.isPersonalSpace == true && groupId == null) {
+            selectPersonalSpace()
+        } else if (groupId?.isPersonalSpace == true) {
             selectPersonalSpace()
         } else {
             val allGroups = allGroups.mapNotNull { it.data }
@@ -124,11 +129,15 @@ class GroupStateManager(
             onlyShowGroups = false,
             userPlan = userRepository.userPlans.value.highestValidPlanConfig,
             groupsLimit = userRepository.userPlans.value.groupsLimit,
-            personalSpace = personalSpaceRepo.personalSpaceState.value.data?.let {
+            personalSpace = personalSpaceRepo.personalSpaceState.value.data?.let { space ->
                 GroupItemState(
-                    space = it,
+                    space = space,
                     config = remoteConfig.getCachedConfigOnce(),
-                    uiType = GroupItemState.GroupUiType.ACTIVE,
+                    uiType = when {
+                        space.isSpaceOverLimits() -> GroupItemState.GroupUiType.OVER_LIMITS
+                        sharingManager.isSharingActiveForGroupMaybe(UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()) -> GroupItemState.GroupUiType.ACTIVE
+                        else -> GroupItemState.GroupUiType.INACTIVE
+                    },
                     canEdit = true,
                     isSelected = groupIdData.value.isPersonalSpace,
                 )
