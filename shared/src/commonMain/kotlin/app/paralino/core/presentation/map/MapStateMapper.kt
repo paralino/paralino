@@ -282,17 +282,15 @@ class MapStateMapper(
                 )
             } ?: MemberLocationVisibilityType.MISSING
 
-            val actions = location?.let {
-                buildMemberActions(
-                    memberName = space.user.name,
-                    memberUserId = space.user.id,
-                    location = it,
-                    locationVisibility = locationVisibility,
-                    groupId = UserGroup.groupPersonalDevicesId,
-                    groupPlanConfig = groupPlanConfig,
-                    previousState = previousStateForLocation
-                )
-            } ?: MemberActionsState()
+            val actions = buildMemberActions(
+                memberName = space.user.name,
+                memberUserId = space.user.id,
+                location = location,
+                locationVisibility = locationVisibility,
+                groupId = UserGroup.groupPersonalDevicesId,
+                groupPlanConfig = groupPlanConfig,
+                previousState = previousStateForLocation
+            )
 
             GroupMemberItemStateWithOneLocation(
                 memberState = memberState,
@@ -335,14 +333,14 @@ class MapStateMapper(
     private fun buildMemberActions(
         memberName: String,
         memberUserId: String,
-        location: MemberLocation,
+        location: MemberLocation?,
         locationVisibility: MemberLocationVisibilityType,
         groupId: String,
         groupPlanConfig: PlanConfig,
         previousState: GroupMemberItemStateWithOneLocation?
     ): MemberActionsState {
 
-        val navigate = location.locationData.data?.takeIf {
+        val navigate = location?.locationData?.data?.takeIf {
             locationVisibility.isVisible()
         }?.let {
             MemberNavigateItemState(
@@ -354,6 +352,7 @@ class MapStateMapper(
         }
 
         val deleteLocation = takeIf {
+            location != null &&
             memberActionHandler.canDeleteLocation(
                 groupId = groupId.asGroupOrSpaceId(),
                 isCurrentUser = memberUserId == appPrefs.userId,
@@ -372,11 +371,13 @@ class MapStateMapper(
             isLoading = false,
         )
 
-        val locationRequest = buildLocationRequestAction(
-            location = location,
-            groupPlanConfig = groupPlanConfig,
-            previousState = previousState
-        )
+        val locationRequest = location?.let { location ->
+            buildLocationRequestAction(
+                location = location,
+                groupPlanConfig = groupPlanConfig,
+                previousState = previousState
+            )
+        }
 
         return MemberActionsState(
             navigate = navigate,
