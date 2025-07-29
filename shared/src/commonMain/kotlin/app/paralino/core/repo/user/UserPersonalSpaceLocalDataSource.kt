@@ -4,7 +4,9 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.user.UserDeviceEntityDeviceUpdate
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
@@ -74,7 +76,7 @@ class UserPersonalSpaceLocalDataSource constructor(
             placeEntity = personalPlaces.map { placeMapper.remote2Local(it.place) },
             placeSettings = personalPlaces.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } }
         )
-        placeActivity.recreatePlaces(places = personalPlaces)
+        placeActivity.recreatePlacesForGroup(groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(), places = personalPlaces)
     }
 
     suspend fun updateOrCreatePlace(place: GroupPlaceWithSettingsRaw) {
