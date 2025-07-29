@@ -38,14 +38,35 @@ struct GroupPickerSheet: ViewModifier {
                 VStack {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text(MR.shared.strings.title_dashboard.localizedString())
-                                    .font(.system(size: 24, weight: .bold))
-                                Spacer().frame(width: 8)
-                                PlanLimitCount(count: groupsCount, limit: nil)
+                            if bottomSheet?.personalSpace == nil {
+                                HStack {
+                                    Text(MR.shared.strings.title_dashboard.localizedString())
+                                        .font(.system(size: 24, weight: .bold))
+                                    Spacer().frame(width: 8)
+                                    PlanLimitCount(count: groupsCount, limit: nil)
+                                }
                             }
                             
                             Spacer().frame(height: 8)
+                            
+                            // Show personal space at the top if it exists
+                            if let personalSpace = bottomSheet?.personalSpace {
+                                GroupListItem(
+                                    data: personalSpace,
+                                    onClick: { onSelectGroup?(personalSpace) },
+                                    onEdit: { onEditGroup?(personalSpace) }
+                                )
+                                
+                                // Add "Groups" section header when personal space exists
+                                HStack {
+                                    Text(MR.shared.strings.title_dashboard.localizedString())
+                                        .font(.system(size: 24, weight: .bold))
+                                    Spacer().frame(width: 8)
+                                    PlanLimitCount(count: groupsCount, limit: nil)
+                                }
+                                .padding(.top, 20)
+                                .padding(.bottom, 8)
+                            }
                             
                             ForEach(allGroups.indices, id: \.self) { index in
                                 GroupListItem(data: allGroups[index], onClick: { onSelectGroup?(allGroups[index]) }, onEdit: { onEditGroup?(allGroups[index]) })

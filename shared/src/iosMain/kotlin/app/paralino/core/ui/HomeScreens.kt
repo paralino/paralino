@@ -40,6 +40,7 @@ import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asReady
+import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -65,6 +66,7 @@ import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
 import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
+import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
@@ -212,6 +214,35 @@ object HomeScreens {
                 openPaywall = openPaywall,
                 onMemberAdded = onMemberAdded,
                 onSkipOnboarding = onSkipOnboarding
+            )
+        }
+    }
+
+    fun PersonalSpaceScreenVC(
+        vm: PersonalSpaceViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        openMap: () -> Unit,
+        openPlaces: () -> Unit,
+        openSharing: () -> Unit,
+        openPaywall: () -> Unit,
+        askNotificationPermission: () -> Unit,
+        askLocationService: () -> Unit,
+        askLocationPermission: () -> Unit,
+        askBackgroundLocationPermission: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            PersonalSpaceScreenCore(
+                appState = it,
+                vm = vm,
+                contentPadding = paddingValues.toComposePaddingValues(),
+                openMap = openMap,
+                openPlaces = openPlaces,
+                openSharing = openSharing,
+                openPaywall = openPaywall,
+                askNotificationPermission = askNotificationPermission,
+                askLocationService = askLocationService,
+                askLocationPermission = askLocationPermission,
+                askBackgroundLocationPermission = askBackgroundLocationPermission
             )
         }
     }

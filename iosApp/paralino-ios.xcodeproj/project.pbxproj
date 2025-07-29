@@ -19,6 +19,7 @@
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
 		25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25395C1E2B630042000394DA /* BaseMapObservableObject.swift */; };
+		253D77632E38B002006E38C6 /* PersonalSpaceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253D77622E38B002006E38C6 /* PersonalSpaceScreen.swift */; };
 		254729E62CB5967000172F55 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 254729E52CB5967000172F55 /* Sentry */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
@@ -187,6 +188,7 @@
 		252EA00629DD89C800338956 /* KoinSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinSetup.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		25395C1E2B630042000394DA /* BaseMapObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMapObservableObject.swift; sourceTree = "<group>"; };
+		253D77622E38B002006E38C6 /* PersonalSpaceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalSpaceScreen.swift; sourceTree = "<group>"; };
 		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		254B6F2729EC7C50008B1458 /* Image+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
 		254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginScreenObject.swift; sourceTree = "<group>"; };
@@ -624,6 +626,7 @@
 			children = (
 				25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */,
 				25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */,
+				253D77622E38B002006E38C6 /* PersonalSpaceScreen.swift */,
 				25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */,
 				2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */,
 				2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */,
@@ -1059,6 +1062,7 @@
 				25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */,
 				25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,
+				253D77632E38B002006E38C6 /* PersonalSpaceScreen.swift in Sources */,
 				259AEF9C2A3DB1C70083FF4B /* MapRootScreen.swift in Sources */,
 				25C91A2F2A57EFC600A49F06 /* PhotoPickerSheet.swift in Sources */,
 				259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */,

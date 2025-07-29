@@ -16,11 +16,18 @@ struct GroupListItem: View {
     var body: some View {
         HStack(alignment: .center) {
             ImageModelImage(imageModel: data.image, useBackgroundForEmoji: true)
-                .frame(width: 72, height: 72)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .frame(width: data.isPersonalSpace ? 72 : 72, height: data.isPersonalSpace ? 72 : 72)
+                .clipShape(data.isPersonalSpace ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 12)))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.themeSecondary, lineWidth: 1)
+                    Group {
+                        if data.isPersonalSpace {
+                            Circle()
+                                .stroke(Color.accent.opacity(0.3), lineWidth: 3)
+                        } else {
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.themeSecondary, lineWidth: 1)
+                        }
+                    }
                 )
             
             Spacer().frame(width: 16)
@@ -30,15 +37,46 @@ struct GroupListItem: View {
                     .font(.headline)
                     .lineLimit(3)
                 
-                HStack(alignment: .center) {
-                    Image(systemName: "person.2.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(.secondary)
-                    Text("\(data.userCount)")
-                        .font(.caption)
-                        .fontWeight(.bold)
+                HStack(alignment: .center, spacing: 10) {
+                    if let membersCount = data.membersCount {
+                        HStack(alignment: .center, spacing: 2) {
+                            Image(systemName: "person.2.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(.secondary)
+                            Text("\(membersCount)")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    if let devicesCount = data.devicesCount {
+                        HStack(alignment: .center, spacing: 2) {
+                            Image(systemName: "iphone")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(.secondary)
+                            Text("\(devicesCount)")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    HStack(alignment: .center, spacing: 2) {
+                        Image(systemName: "building.2.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(.secondary)
+                        Text("\(data.placesCount)")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 if let status = getStatus(for: data.uiType) {
@@ -62,7 +100,7 @@ struct GroupListItem: View {
         }
         .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
         .frame(maxWidth: .infinity)
-        .background(Color.themeSurface)
+        .background(data.isPersonalSpace ? Color.accent.opacity(0.1) : Color.themeSurface)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             data.isSelected ?
@@ -83,6 +121,19 @@ struct GroupListItem: View {
         default:
             return nil
         }
+    }
+}
+
+// Helper to use different shapes
+struct AnyShape: Shape {
+    private let path: (CGRect) -> Path
+    
+    init<S: Shape>(_ shape: S) {
+        self.path = shape.path(in:)
+    }
+    
+    func path(in rect: CGRect) -> Path {
+        return path(rect)
     }
 }
 

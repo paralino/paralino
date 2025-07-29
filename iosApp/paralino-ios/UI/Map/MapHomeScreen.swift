@@ -66,7 +66,7 @@ struct MapHomeScreen: View {
                             path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
                         },
                         openPersonalSpace: {
-                            
+                            path.append(.home(.personalSpace))
                         },
                         openLocationHistory: { event in
                             path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId)))

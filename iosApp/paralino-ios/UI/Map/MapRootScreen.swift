@@ -82,6 +82,7 @@ struct MapRootScreen: View {
                             case .locationHistorySettings(groupId: let groupId): LocationHistoryDeleteScreen(path: $mainAppState.userReadyGraph, appState: LocationHistoryDeleteScreen.createState(groupId: groupId))
                             case .locationHistory(groupId: let groupId, memberUserId: let memberUserId):
                                 LocationHistoryMapScreen(path: $mainAppState.userReadyGraph, mapState: LocationHistoryMapState(groupId: groupId, memberUserId: memberUserId))
+                            case .personalSpace: PersonalSpaceScreen(path: $mainAppState.userReadyGraph, appState: PersonalSpaceScreen.createState())
                             }
                         }
                     }.onAppear {
