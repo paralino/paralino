@@ -26,10 +26,10 @@ interface PlaceActivityDao {
     }
 
     @Transaction
-    suspend fun clearMissing(placeIds: List<String>) {
+    suspend fun clearMissingForGroups(placeIds: List<String>) {
         val current = getAll()
         current.forEach { activity ->
-            if (placeIds.none { it == activity.placeId }) {
+            if (!activity.isInPersonalSpace && placeIds.none { it == activity.placeId }) {
                 deletePlaceActivity(placeId = activity.placeId)
             }
         }

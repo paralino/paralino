@@ -67,6 +67,7 @@ class PlaceActivityDataSource(
                 PlaceActivityEntity(
                     placeId = placeId,
                     groupId = state.groupId.id,
+                    isInPersonalSpace = state.groupId.isPersonalSpace,
                     isEnter = state.isEnter,
                     stateChangeTrigger = state.stateChangeTrigger.key,
                     stateChangeTimeMillis = state.stateChangeTimeMillis,
@@ -95,7 +96,7 @@ class PlaceActivityDataSource(
                     }
                 }
             }
-            database.placeActivityDao.clearMissing(placeIds = places.map { it.place.id })
+            database.placeActivityDao.clearMissingForGroups(placeIds = places.map { it.place.id })
         }
     }
 

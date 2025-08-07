@@ -15,5 +15,6 @@ data class PlaceActivityEntity(
     @ColumnInfo(name = "isLastNotifyStateEnter") val isLastNotifyStateEnter: Boolean?,
     @ColumnInfo(name = "notifyTrigger") val notifyTrigger: String?,
     @ColumnInfo(name = "scheduleTrigger") val scheduleTrigger: String?,
-    @ColumnInfo(name = "notifyTimeMillis") val notifyTimeMillis: Long?
+    @ColumnInfo(name = "notifyTimeMillis") val notifyTimeMillis: Long?,
+    @ColumnInfo(name = "isInPersonalSpace") val isInPersonalSpace: Boolean,
 )

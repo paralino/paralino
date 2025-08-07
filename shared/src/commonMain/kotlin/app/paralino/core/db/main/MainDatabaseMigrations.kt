@@ -149,6 +149,12 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_19_20 = object : Migration(19, 20) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE placeActivityEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -168,6 +174,7 @@ object MainDatabaseMigrations {
         MIGRATION_15_16,
         MIGRATION_16_17,
         MIGRATION_17_18,
-        MIGRATION_18_19
+        MIGRATION_18_19,
+        MIGRATION_19_20
     )
 }
