@@ -673,4 +673,20 @@
     <string name="history_delete_on_date">Deleting location history on **%s**</string>
     <string name="history_delete_irreversible_action_notice">This action is irreversible.</string>
     <string name="history_delete_screen_title">Delete location history</string>
+    <string name="personalSpace_spaceTitle">Personal space</string>
+    <string name="personalSpace_session_createdAt">Created at</string>
+    <string name="personalSpace_session_title">Session</string>
+    <string name="personalSpace_sharing_start">Activate</string>
+    <string name="personalSpace_device_tag_loggedOut">Logged out</string>
+    <string name="personalSpace_device_tag_unknownSession">Session missing a device</string>
+    <string name="personalSpace_device_deactivate_action">Deactivate</string>
+    <string name="personalSpace_device_logout_titleConfirm">Confirm logout</string>
+    <string name="personalSpace_device_logout_actionConfirm">Delete session</string>
+    <string name="personalSpace_device_deactivate_dialogMessage">Location tracking from this device will stop.\nDevice will stay logged in.</string>
+    <string name="personalSpace_device_delete_dialogMessage">Deleting this device will remove it from the list and will also log out active session if available.</string>
+    <string name="personalSpace_current_device">This device</string>
+    <string name="personalSpace_section_activated">Activated devices</string>
+    <string name="personalSpace_section_activated_empty">None of your devices are actively sharing their location.</string>
+    <string name="personalSpace_section_other">Other devices &amp; sessions</string>
+    <string name="personalSpace_section_empty">No devices found</string>
 </resources>

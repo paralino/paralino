@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.personal_space
 
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.UserSession
@@ -12,6 +13,8 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 
 data class PersonalSpaceScreenState(
+    val userName: String,
+    val userImage: ImageModel?,
     val isLoadingData: Boolean,
     val loadingAction: Boolean,
     val sharingStatus: LocationSharingState?,
@@ -28,6 +31,10 @@ data class PersonalSpaceScreenState(
 
     val otherDevices: List<UserDeviceOrSessionItemState> = devicesWithSessions
         .filter { it.device?.location == null }
+
+    val isCurrentDeviceActivated: Boolean = activeDevices.any {
+        it.device?.isCurrentDevice == true
+    }
 }
 
 sealed interface UserDeviceOrSessionItemState {

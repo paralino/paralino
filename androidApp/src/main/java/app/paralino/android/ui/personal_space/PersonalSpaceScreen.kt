@@ -11,11 +11,13 @@ import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.core.MR
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
+import dev.icerock.moko.resources.compose.stringResource
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -40,7 +42,7 @@ fun PersonalSpaceScreen(
         modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
-                title = null,
+                title = stringResource(MR.strings.personalSpace_spaceTitle),
                 navigationIcon = { ToolbarButtons.Close { appState.navController.popBackStack() } }
             )
         }
@@ -50,10 +52,20 @@ fun PersonalSpaceScreen(
             vm = vm,
             contentPadding = padding,
             openMap = {
-                appState.navController.navigate(AppScreen.MainHome.MainMap.route()) {
+                appState.navController.navigate(
+                    AppScreen.MainHome.MainMap.route(groupId = UserGroup.groupPersonalDevicesId)
+                ) {
                     popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
                     this.launchSingleTop = true
                 }
+            },
+            openTimeline = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.LocationHistory.route(
+                        groupId = UserGroup.groupPersonalDevicesId,
+                        memberUserId = ""
+                    )
+                )
             },
             openPlaces = {
                 appState.navController.navigate(

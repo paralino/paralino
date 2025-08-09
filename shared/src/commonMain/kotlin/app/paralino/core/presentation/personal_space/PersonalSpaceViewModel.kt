@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.personal_space
 
+import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
@@ -14,10 +15,12 @@ import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.UserDeviceModel
+import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
@@ -26,6 +29,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -41,6 +45,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.seconds
 
 class PersonalSpaceViewModel(
@@ -61,6 +67,8 @@ class PersonalSpaceViewModel(
 
     private val _uiState = MutableStateFlow<PersonalSpaceScreenState>(
         PersonalSpaceScreenState(
+            userName = userRepo.localUser.value.data?.name ?: "",
+            userImage = userRepo.localUser.value.data?.data?.userImage,
             isLoadingData = true,
             loadingAction = false,
             sharingStatus = null,
@@ -90,8 +98,9 @@ class PersonalSpaceViewModel(
             deviceApiProvider.deviceStatus,
             personalSpaceLocal.personalSpaceState.mapNotNull { it.data },
             sharingManager.sharingContractForGroup(UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()),
+            userRepo.localUser.mapNotNull { it.data },
             userRepo.userPlans
-        ) { deviceStatus, personalSpaceData, sharingStatus, userPlans ->
+        ) { deviceStatus, personalSpaceData, sharingStatus, user, userPlans ->
 
             val errors = buildList {
                 sharingStatus?.let {
@@ -135,8 +144,8 @@ class PersonalSpaceViewModel(
                     UserDeviceItemState(
                         device = device,
                         isCurrentDevice = device.deviceId == appPrefs.deviceId,
-                        deleteAction = if(device.location == null) UserDeviceAction.DeleteDevice() else null,
-                        deactivateAction = if(device.location != null) UserDeviceAction.DeactivateDevice() else null,
+                        deleteAction = if (device.location == null) UserDeviceAction.DeleteDevice() else null,
+                        deactivateAction = if (device.location != null) UserDeviceAction.DeactivateDevice() else null,
                         formatter = valueFormatter
                     )
                 }
@@ -145,6 +154,8 @@ class PersonalSpaceViewModel(
 
             _uiState.update { state ->
                 val newState = state.copy(
+                    userName = user.name,
+                    userImage = user.data?.userImage,
                     isLoadingData = false,
                     sharingStatus = sharingState,
                     devicesLimit = devicesLimit,
@@ -228,18 +239,21 @@ class PersonalSpaceViewModel(
                     UserDeviceOrSessionItemState.DeviceWithSession(
                         device = device.copy(
                             deactivateAction = if (device.location != null) {
-                                previousDeviceState?.device?.deactivateAction ?: UserDeviceAction.DeactivateDevice()
+                                previousDeviceState?.device?.deactivateAction
+                                    ?: UserDeviceAction.DeactivateDevice()
                             } else {
                                 null
                             },
                             deleteAction = if (device.location == null && session == null) {
-                                previousDeviceState?.device?.deleteAction ?: UserDeviceAction.DeleteDevice()
+                                previousDeviceState?.device?.deleteAction
+                                    ?: UserDeviceAction.DeleteDevice()
                             } else {
                                 null
                             }
                         ),
                         session = session?.copy(
-                            deleteSessionAction = previousSessionState?.session?.deleteSessionAction ?: session.deleteSessionAction
+                            deleteSessionAction = previousSessionState?.session?.deleteSessionAction
+                                ?: session.deleteSessionAction
                         )
                     )
                 }
@@ -253,7 +267,8 @@ class PersonalSpaceViewModel(
                         }
                         UserDeviceOrSessionItemState.SessionWithoutDevice(
                             session = session.copy(
-                                deleteSessionAction = previousSessionState?.session?.deleteSessionAction ?: session.deleteSessionAction
+                                deleteSessionAction = previousSessionState?.session?.deleteSessionAction
+                                    ?: session.deleteSessionAction
                             )
                         )
                     } else {
@@ -298,10 +313,11 @@ class PersonalSpaceViewModel(
                     }
 
                     is UserDeviceItemEvent.onOpenSessionClick -> {
+                        val sessionInfo = getSessionInfo(event.event.item)
                         _uiState.update {
                             it.copy(
                                 alertDialog = MainAlertDialog.SessionInfo(
-                                    content = "${event.event.item.countryName} - ${event.event.item.deviceModel}",
+                                    content = sessionInfo,
                                     canDelete = !event.event.item.current,
                                     session = event.event.item
                                 )
@@ -339,10 +355,11 @@ class PersonalSpaceViewModel(
                 when (val dialog = event.action.dialog) {
                     is MainAlertDialog.SessionInfo -> {
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
+                            val sessionInfo = getSessionInfo(dialog.session)
                             _uiState.update {
                                 it.copy(
                                     alertDialog = MainAlertDialog.SessionDeleteConfirmation(
-                                        content = "${dialog.session.countryName} - ${dialog.session.deviceModel}",
+                                        content = sessionInfo,
                                         session = dialog.session
                                     )
                                 )
@@ -382,6 +399,33 @@ class PersonalSpaceViewModel(
                     _eventChannel.send(PersonalSpaceScreenEvent.OpenPaywall)
                 }
             }
+        }
+    }
+
+    private fun getSessionInfo(session: UserSession): String {
+        return buildString {
+            append(session.deviceOrClientName)
+            append("\n")
+
+            append(session.osName)
+            append(" ")
+            append(session.osVersion)
+            append("\n")
+
+            session.createdAt.isoWithOffsetToInstant()?.let {
+                valueFormatter.formatRelativeDateTime(
+                    timeUTC = it.toLocalDateTime(TimeZone.UTC)
+                )
+            }?.let {
+                append(MR.strings.personalSpace_session_createdAt.localizedString())
+                append(" ")
+                append(it)
+                append("\n")
+            }
+
+            append(session.countryName)
+            append(", ")
+            append(session.ip)
         }
     }
 

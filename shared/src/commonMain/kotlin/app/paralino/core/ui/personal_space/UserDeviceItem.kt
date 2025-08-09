@@ -93,11 +93,11 @@ fun UserDeviceItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Device icon with status indicator
-                if (state.device != null) {
-                    Box(modifier = Modifier.width(IntrinsicSize.Min)) {
-                        Column(
-                            modifier = Modifier.width(50.dp)
-                        ) {
+                Box(modifier = Modifier.width(IntrinsicSize.Min)) {
+                    Column(
+                        modifier = Modifier.width(50.dp)
+                    ) {
+                        if (state.device != null) {
                             Icon(
                                 modifier = Modifier
                                     .size(50.dp)
@@ -114,91 +114,113 @@ fun UserDeviceItem(
                                 painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
                                 contentDescription = null
                             )
-
-                            // Battery level
-                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                                if (state.device?.visibleBatteryLevel != null) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 2.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Box(
-                                            modifier = Modifier.size(width = 16.dp, height = 16.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Icon(
-                                                modifier = Modifier
-                                                    .requiredSize(16.dp)
-                                                    .rotate(90f),
-                                                painter = if (state.device?.location?.isBatteryCharging == true) {
-                                                    CoreAppIcons.BatteryChargingFull.asPainterResource()
-                                                } else {
-                                                    CoreAppIcons.BatteryFull.asPainterResource()
-                                                },
-                                                tint = when {
-                                                    state.device?.visibleBatteryLevel!! > 85 -> AppColors.accent
-                                                    state.device?.visibleBatteryLevel!! < 15 -> AppColors.redMain
-                                                    state.device?.visibleBatteryLevel!! < 30 -> AppColors.highlightGold
-                                                    else -> MaterialTheme.colors.onSurface
-                                                },
-                                                contentDescription = null
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.size(2.dp))
-                                        Text(
-                                            text = "${state.device?.visibleBatteryLevel}%",
-                                            style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium),
-                                            color = when {
-                                                state.device?.visibleBatteryLevel!! < 15 -> AppColors.redMain
-                                                state.device?.visibleBatteryLevel!! < 30 -> AppColors.highlightGold
-                                                else -> MaterialTheme.colors.onSurface
-                                            }
-                                        )
-                                    }
-                                }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .border(
+                                        width = if (state.device?.isCurrentDevice == true) 2.dp else 0.5.dp,
+                                        color = if (state.device?.isCurrentDevice == true) {
+                                            MaterialTheme.colors.primary
+                                        } else {
+                                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
+                                        },
+                                        shape = RoundedCornerShape(8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "?",
+                                    fontWeight = FontWeight.SemiBold,
+                                    style = MaterialTheme.typography.h5,
+                                    color = MaterialTheme.colors.onSurface
+                                )
                             }
                         }
 
-                        // Online status indicator
-                        Box(
-                            modifier = Modifier
-                                .size(14.dp)
-                                .conditional(
-                                    value = state.device?.location?.onlineStatus == MemberDeviceOnlineStatusType.ONLINE
+                        // Battery level
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                            if (state.device?.visibleBatteryLevel != null) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 2.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    pulsate()
+                                    Box(
+                                        modifier = Modifier.size(width = 16.dp, height = 16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier
+                                                .requiredSize(16.dp)
+                                                .rotate(90f),
+                                            painter = if (state.device?.location?.isBatteryCharging == true) {
+                                                CoreAppIcons.BatteryChargingFull.asPainterResource()
+                                            } else {
+                                                CoreAppIcons.BatteryFull.asPainterResource()
+                                            },
+                                            tint = when {
+                                                state.device?.visibleBatteryLevel!! > 85 -> AppColors.accent
+                                                state.device?.visibleBatteryLevel!! < 15 -> AppColors.redMain
+                                                state.device?.visibleBatteryLevel!! < 30 -> AppColors.highlightGold
+                                                else -> MaterialTheme.colors.onSurface
+                                            },
+                                            contentDescription = null
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.size(2.dp))
+                                    Text(
+                                        text = "${state.device?.visibleBatteryLevel}%",
+                                        style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium),
+                                        color = when {
+                                            state.device?.visibleBatteryLevel!! < 15 -> AppColors.redMain
+                                            state.device?.visibleBatteryLevel!! < 30 -> AppColors.highlightGold
+                                            else -> MaterialTheme.colors.onSurface
+                                        }
+                                    )
                                 }
-                                .align(Alignment.TopStart)
-                                .offset(x = (-4).dp, y = (-4).dp)
-                                .clip(CircleShape)
-                                .border(
-                                    border = BorderStroke(
-                                        width = 2.dp,
-                                        color = when (state.device?.location?.onlineStatus) {
-                                            MemberDeviceOnlineStatusType.UNKNOWN,
-                                            null -> Color.Transparent
+                            }
+                        }
+                    }
 
-                                            else -> MaterialTheme.colors.surface
-                                        },
-                                    ),
-                                    shape = CircleShape
-                                )
-                                .padding(1.dp)
-                                .background(
+                    // Online status indicator
+                    Box(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .conditional(
+                                value = state.device?.location?.onlineStatus == MemberDeviceOnlineStatusType.ONLINE
+                            ) {
+                                pulsate()
+                            }
+                            .align(Alignment.TopStart)
+                            .offset(x = (-4).dp, y = (-4).dp)
+                            .clip(CircleShape)
+                            .border(
+                                border = BorderStroke(
+                                    width = 2.dp,
                                     color = when (state.device?.location?.onlineStatus) {
-                                        MemberDeviceOnlineStatusType.ONLINE -> AppColors.accent
-                                        MemberDeviceOnlineStatusType.BUSY -> AppColors.highlightGold
-                                        MemberDeviceOnlineStatusType.OFFLINE -> Color.Gray
                                         MemberDeviceOnlineStatusType.UNKNOWN,
                                         null -> Color.Transparent
+
+                                        else -> MaterialTheme.colors.surface
                                     },
-                                    shape = CircleShape
-                                )
-                        )
-                    }
+                                ),
+                                shape = CircleShape
+                            )
+                            .padding(1.dp)
+                            .background(
+                                color = when (state.device?.location?.onlineStatus) {
+                                    MemberDeviceOnlineStatusType.ONLINE -> AppColors.accent
+                                    MemberDeviceOnlineStatusType.BUSY -> AppColors.highlightGold
+                                    MemberDeviceOnlineStatusType.OFFLINE -> Color.Gray
+                                    MemberDeviceOnlineStatusType.UNKNOWN,
+                                    null -> Color.Transparent
+                                },
+                                shape = CircleShape
+                            )
+                    )
                 }
 
                 // Device info
@@ -210,9 +232,9 @@ fun UserDeviceItem(
                 ) {
                     Text(
                         text = when {
-                            state.device?.isCurrentDevice == true -> "This device"
+                            state.device?.isCurrentDevice == true -> stringResource(MR.strings.personalSpace_current_device)
                             !state.device?.location?.name.isNullOrBlank() -> state.device?.location?.name ?: ""
-                            state.device == null -> state.session?.session?.deviceName ?: "-"
+                            state.session != null -> state.session?.session?.deviceOrClientName ?: "-"
                             else -> stringResource(MR.strings.group_members_device_name_default)
                         },
                         style = MaterialTheme.typography.subtitle1,
@@ -229,7 +251,7 @@ fun UserDeviceItem(
 
                         if (state.session == null) {
                             Text(
-                                text = "Logged out",
+                                text = stringResource(MR.strings.personalSpace_device_tag_loggedOut),
                                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
                                 color = AppColors.darkBackground.copy(alpha = 0.8f),
                                 modifier = Modifier
@@ -244,7 +266,7 @@ fun UserDeviceItem(
 
                         if (state.device == null) {
                             Text(
-                                text = "Unknown session",
+                                text = stringResource(MR.strings.personalSpace_device_tag_unknownSession),
                                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
                                 color = AppColors.darkBackground.copy(alpha = 0.8f),
                                 modifier = Modifier
@@ -309,7 +331,7 @@ fun UserDeviceItem(
                         startIcon = CoreAppIcons.Delete.asPainterResource(),
                         endIcon = null,
                         isLoading = false,
-                        text = stringResource(MR.strings.group_members_item_remove_button),
+                        text = stringResource(MR.strings.button_delete),
                         backgroundColor = AppColors.errorBackground,
                         contentColor = AppColors.redMain,
                         onClick = {
@@ -321,10 +343,10 @@ fun UserDeviceItem(
                 if (state.device?.deactivateAction != null) {
                     GroupMemberActionButton(
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        startIcon = CoreAppIcons.Delete.asPainterResource(),
+                        startIcon = CoreAppIcons.LocationOff.asPainterResource(),
                         endIcon = null,
                         isLoading = false,
-                        text = "Deactivate",
+                        text = stringResource(MR.strings.personalSpace_device_deactivate_action),
                         backgroundColor = AppColors.errorBackground,
                         contentColor = AppColors.redMain,
                         onClick = {
@@ -338,7 +360,7 @@ fun UserDeviceItem(
                         modifier = Modifier.align(Alignment.CenterVertically),
                         startIcon = CoreAppIcons.PrivacyTip.asPainterResource(),
                         endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                        text = "Session",
+                        text = stringResource(MR.strings.personalSpace_session_title),
                         backgroundColor = if (isSystemInDarkTheme()) {
                             AppColors.accentLight.copy(alpha = 0.2f)
                         } else {

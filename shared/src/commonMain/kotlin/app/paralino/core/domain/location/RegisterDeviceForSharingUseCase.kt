@@ -56,7 +56,7 @@ class RegisterDeviceForSharingUseCase constructor(
 
     suspend fun isDeviceAlreadyRegistered(groupId: GroupOrSpaceId): Boolean {
         if (groupId.isPersonalSpace) {
-            return personalSpaceRepo.personalSpaceState.value.data?.currentDevice != null
+            return personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.location != null
         } else {
             return userMemberId.hasCurrentLocationIdForGroup(groupId.id)
         }

@@ -882,7 +882,7 @@ sealed interface MainAlertDialog {
 
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
-            title = "Session",
+            title = stringResource(MR.strings.personalSpace_session_title),
             message = buildString {
                 append(content)
             },
@@ -922,14 +922,14 @@ sealed interface MainAlertDialog {
 
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
-            title = stringResource(resource = MR.strings.settings_account_logout_alert_title),
+            title = stringResource(resource = MR.strings.personalSpace_device_logout_titleConfirm),
             message = buildString {
                 append(content)
             },
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(MR.strings.button_delete),
+                    text = stringResource(MR.strings.personalSpace_device_logout_actionConfirm),
                     color = AlertDialogButtonData.destructiveColor,
                     needsLongConfirmation = true
                 ),
@@ -949,7 +949,7 @@ sealed interface MainAlertDialog {
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(MR.strings.alert_title_confirm),
-            message = "Deleting this device will remote it.",
+            message = stringResource(MR.strings.personalSpace_device_delete_dialogMessage),
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
@@ -974,11 +974,11 @@ sealed interface MainAlertDialog {
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(MR.strings.alert_title_confirm),
-            message = "Location tracking from this device will stop. Device will stay logged in.",
+            message = stringResource(MR.strings.personalSpace_device_deactivate_dialogMessage),
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(MR.strings.button_delete),
+                    text = stringResource(MR.strings.personalSpace_device_deactivate_action),
                     color = AlertDialogButtonData.destructiveColor,
                     needsLongConfirmation = true
                 ),

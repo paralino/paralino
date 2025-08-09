@@ -147,7 +147,9 @@ data class LocationHistoryScreenState(
             isCurrentUser &&
             selectedPoint != null &&
             (
+                    // for current device we can delete any location
                     devices.firstOrNull { it.locationId == selectedPoint.locationId }?.isCurrent == true ||
+                            // for other devices we can only delete fully synced locations
                             (selectedPoint is LocationHistoryPointState.Point && !selectedPoint.isCachedLocation))
             )
         {

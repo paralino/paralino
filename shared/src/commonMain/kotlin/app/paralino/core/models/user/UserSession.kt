@@ -30,4 +30,16 @@ data class UserSession constructor(
     val countryCode: String,
     val countryName: String,
     val current: Boolean
-)
+) {
+    val deviceWithBrandName: String? = listOf(deviceBrand, deviceModel)
+        .filter { it.isNotBlank() }
+        .joinToString(" ")
+        .takeIf { it.isNotBlank() }
+
+    val deviceOrClientName: String = listOfNotNull(
+        deviceWithBrandName,
+        clientName
+    )
+        .firstOrNull { it.isNotBlank() }
+        ?: ""
+}

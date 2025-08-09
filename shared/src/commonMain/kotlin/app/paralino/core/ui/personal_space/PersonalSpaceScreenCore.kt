@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
+import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceScreenEvent
 import app.paralino.core.presentation.personal_space.PersonalSpaceScreenUiEvent
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
@@ -42,6 +45,7 @@ import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.MessageDispatcherEffect
@@ -64,6 +68,7 @@ fun PersonalSpaceScreenCore(
     vm: PersonalSpaceViewModel,
     contentPadding: PaddingValues,
     openMap: () -> Unit,
+    openTimeline: () -> Unit,
     openPlaces: () -> Unit,
     openSharing: () -> Unit,
     openPaywall: () -> Unit,
@@ -85,7 +90,7 @@ fun PersonalSpaceScreenCore(
                 PersonalSpaceScreenEvent.OpenPlaces -> openPlaces()
                 PersonalSpaceScreenEvent.OpenRawDataScreen -> {}
                 PersonalSpaceScreenEvent.OpenSharingScreen -> openSharing()
-                PersonalSpaceScreenEvent.OpenTimeline -> openMap()
+                PersonalSpaceScreenEvent.OpenTimeline -> openTimeline()
 
                 null -> {
                     /* do nothing */
@@ -152,7 +157,11 @@ fun PersonalSpaceScreenCore(
                         ),
                         onClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
                     ) {
-                        Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                        if (uiState.isCurrentDeviceActivated) {
+                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                        } else {
+                            Text(text = stringResource(MR.strings.personalSpace_sharing_start))
+                        }
                     }
                 }
             },
@@ -215,8 +224,11 @@ fun PersonalSpaceScreenCore(
 
                 this.item(key = "main_header") {
                     PersonalSpaceHeader(
+                        userName = uiState.userName,
+                        userImage = uiState.userImage,
                         onMapClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenLocation) },
                         onPlacesClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlaces) },
+                        onTimeline = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenTimeline) },
                         onSharingClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
                     )
                 }
@@ -235,7 +247,7 @@ fun PersonalSpaceScreenCore(
                 this.stickyHeader(key = "active_devices_list_header") {
                     SettingsSectionHeader(
                         modifier = Modifier.fillParentMaxWidth().zIndex(0f),
-                        name = "Active device",
+                        name = stringResource(MR.strings.personalSpace_section_activated),
                         count = uiState.activeDevices.size,
                         limit = uiState.devicesLimit
                     )
@@ -268,7 +280,7 @@ fun PersonalSpaceScreenCore(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "None of your devices are actively sharing location.",
+                                text = stringResource(MR.strings.personalSpace_section_activated_empty),
                                 style = MaterialTheme.typography.body2,
                                 color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
                             )
@@ -280,7 +292,7 @@ fun PersonalSpaceScreenCore(
                     this.stickyHeader(key = "other_devices_list_header") {
                         SettingsSectionHeader(
                             modifier = Modifier.fillParentMaxWidth().zIndex(0f),
-                            name = "Other devices & sessions"
+                            name = stringResource(MR.strings.personalSpace_section_other)
                         )
                         Spacer(modifier = Modifier.size(4.dp))
                     }
@@ -312,7 +324,7 @@ fun PersonalSpaceScreenCore(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "No devices found",
+                                text = stringResource(MR.strings.personalSpace_section_empty),
                                 style = MaterialTheme.typography.body2,
                                 color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
                             )
@@ -331,26 +343,41 @@ fun PersonalSpaceScreenCore(
 @Composable
 fun PersonalSpaceHeader(
     modifier: Modifier = Modifier,
+    userName: String,
+    userImage: ImageModel?,
     onMapClick: () -> Unit,
     onPlacesClick: () -> Unit,
+    onTimeline: () -> Unit,
     onSharingClick: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (userImage != null) {
+                ImageModelImage(
+                    imageModel = userImage,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .border(
+                            0.5.dp,
+                            MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                            RoundedCornerShape(10.dp)
+                        )
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
 
-        Text(
-            text = "Personal Space",
-            style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+            Text(
+                text = userName,
+                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.weight(1f)
+            )
+        }
 
-        Text(
-            text = "Manage your devices and location sharing",
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
-            modifier = Modifier.padding(bottom = 30.dp)
-        )
+        Spacer(modifier = Modifier.size(30.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -394,22 +421,45 @@ fun PersonalSpaceHeader(
 
         Spacer(modifier = Modifier.size(10.dp))
 
-        LargeSeekbarSwitch(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            icon = CoreAppIcons.ShareLocation.asPainterResource(),
-            title = stringResource(MR.strings.group_details_sharing_action),
-            description = null,
-            state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                switchState = LargeSeekbarSwitchState.Switch(
-                    checkState = false,
-                    unCheckedIconRes = CoreAppIcons.ChevronRight
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LargeSeekbarSwitch(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .fillMaxWidth(0.5f),
+                icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                title = stringResource(MR.strings.groups_sharing_setting_timeline_title),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIconRes = CoreAppIcons.ChevronRight
+                    ),
+                    seekbarState = null
                 ),
-                seekbarState = null
-            ),
-            onStateChange = {
-                onSharingClick()
-            }
-        )
+                onStateChange = {
+                    onTimeline()
+                }
+            )
+            LargeSeekbarSwitch(
+                modifier = Modifier.fillMaxWidth(),
+                icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                title = stringResource(MR.strings.group_details_sharing_action),
+                description = null,
+                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                    switchState = LargeSeekbarSwitchState.Switch(
+                        checkState = false,
+                        unCheckedIconRes = CoreAppIcons.ChevronRight
+                    ),
+                    seekbarState = null
+                ),
+                onStateChange = {
+                    onSharingClick()
+                }
+            )
+        }
 
         Spacer(modifier = Modifier.size(20.dp))
     }

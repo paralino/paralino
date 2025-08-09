@@ -75,11 +75,11 @@ class LocationHistoryDataFetchController(
         return flow {
             val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
             val isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId
-            val isCurrentUser = memberUserId == appPrefs.userId
+            val isCurrentUser = memberUserId.isBlank() || memberUserId == appPrefs.userId
 
             val newState = _uiState.value.copy(
                 groupOrSpaceId = groupId.asGroupOrSpaceId(),
-                memberUserId = memberUserId,
+                memberUserId = memberUserId.takeIf { it.isNotBlank() } ?: appPrefs.userId,
                 isPersonalHistory = isPersonalHistory,
                 isCurrentUser = isCurrentUser,
                 isGroupOwner = false,
@@ -174,7 +174,10 @@ class LocationHistoryDataFetchController(
                     UserActiveLocationDeviceState.Known(
                         locationId = it.id,
                         deviceId = it.deviceId,
-                        deviceName = it.location?.nameOrNull ?: it.deviceType?.toString() ?: "Unknown",
+                        deviceName = it.location?.nameOrNull
+                            // TODO read device name
+                            ?: it.deviceType?.toString()
+                            ?: MR.strings.history_map_device_name_unknown.localizedString(),
                         isSelected = it.id == _uiState.value.devices.firstOrNull { it.isSelected }?.locationId,
                         isCurrent = it.deviceId == space.currentDevice?.deviceId
                     )
@@ -262,7 +265,7 @@ class LocationHistoryDataFetchController(
                 )
 
                 val newState = _uiState.value.copy(
-                    groupName = "Personal Space",
+                    groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
                     groupImage = user.data?.userImage,
                     isGroupOwner = true,
                     userName = user.name,
