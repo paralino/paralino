@@ -40,7 +40,7 @@ class UserDeviceMapper(
             encryptedSenderKey = deviceRaw.device.encryptedSenderKey,
             userKeyVersion = deviceRaw.device.userKeyVersion,
             locationId = deviceRaw.location?.id,
-            deviceData = deviceRaw.location?.deviceData,
+            deviceData = deviceRaw.device.deviceData,
             locationData = deviceRaw.location?.locationData,
             status = deviceRaw.location?.status,
             locationHistory = deviceRaw.location?.locationHistory
@@ -52,6 +52,9 @@ class UserDeviceMapper(
      */
     suspend fun local2Core(entity: UserDeviceEntity): UserDeviceModel {
         val deviceType = parseDeviceType(entity.deviceType)
+
+        val userKey = userKeyRepo.personalKey(version = entity.userKeyVersion)
+        val deviceData = decryptDeviceData(encryptedData = entity.deviceData, userKey = userKey.key)
         
         val location = if (!entity.hasValidLocation) {
             null
@@ -61,7 +64,6 @@ class UserDeviceMapper(
                 val senderKey = userKeyRepo.getDeviceSenderKeyForDevice(device = entity).key
 
                 // Now use the sender key to decrypt the location data
-                val deviceData = decryptDeviceData(entity.deviceData, senderKey)
                 val locationData = decryptLocationData(entity.locationData, senderKey)
                 val status = decryptStatusData(entity.status, senderKey)
                 val locationHistory = decryptLocationHistory(entity.locationHistory, senderKey)
@@ -90,7 +92,8 @@ class UserDeviceMapper(
             ownerUserId = entity.ownerUserId,
             deviceId = entity.deviceId,
             userKeyVersion = entity.userKeyVersion,
-            location = location
+            location = location,
+            deviceData = deviceData
         )
     }
 
@@ -104,20 +107,20 @@ class UserDeviceMapper(
 
     private suspend fun decryptDeviceData(
         encryptedData: String?,
-        senderKey: String?
+        userKey: String?
     ): CryptoResource<MemberDeviceData> {
         if (encryptedData.isNullOrBlank()) {
             return CryptoResource.NotInitialized
         }
 
-        if (senderKey.isNullOrBlank()) {
+        if (userKey.isNullOrBlank()) {
             return CryptoResource.MissingKey
         }
 
         return try {
             val decryptedData = cryptoCore.decryptDataWithKey(
                 data = encryptedData,
-                key = senderKey
+                key = userKey
             )
             val deviceData = BaseRemoteModule.formatter.decodeFromString<MemberDeviceData>(decryptedData)
             CryptoResource.Ready(deviceData)

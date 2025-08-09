@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -232,13 +233,20 @@ fun UserDeviceItem(
                 ) {
                     Text(
                         text = when {
-                            state.device?.isCurrentDevice == true -> stringResource(MR.strings.personalSpace_current_device)
-                            !state.device?.location?.name.isNullOrBlank() -> state.device?.location?.name ?: ""
+                            state.device?.isCurrentDevice == true -> {
+                                if (!state.device?.name.isNullOrBlank()) {
+                                    stringResource(MR.strings.personalSpace_current_device_withName, state.device?.name ?: "")
+                                } else {
+                                    stringResource(MR.strings.personalSpace_current_device)
+                                }
+                            }
+                            !state.device?.name.isNullOrBlank() -> state.device?.name ?: ""
                             state.session != null -> state.session?.session?.deviceOrClientName ?: "-"
                             else -> stringResource(MR.strings.group_members_device_name_default)
-                        },
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = if (state.device?.isCurrentDevice == true) FontWeight.Bold else FontWeight.Normal
+                        }.annotatedBoldCompose(
+                            textColor = MaterialTheme.colors.onSurface
+                        ),
+                        style = MaterialTheme.typography.subtitle1
                     )
 
                     FlowRow(

@@ -123,7 +123,7 @@ class PersonalDeviceCryptoKeyRotation(
         val deviceData = device.location?.deviceData?.data?.let {
             cryptoCore.encryptDataWithKey(
                 data = BaseRemoteModule.formatter.encodeToString(it),
-                key = newKey
+                key = userKey.key
             )
         }
 

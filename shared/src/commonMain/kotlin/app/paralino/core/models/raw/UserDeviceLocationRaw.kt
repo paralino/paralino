@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 data class UserDeviceLocationRaw constructor(
     @SerialName("\$id")
     val id: String,
-    val deviceData: String?,
     val locationData: String?,
     val status: String?,
     val locationHistory: String?
@@ -17,7 +16,6 @@ data class UserDeviceLocationRaw constructor(
         fun from(map: Map<String, Any?>): UserDeviceLocationRaw {
             return UserDeviceLocationRaw(
                 id = map["\$id"] as String,
-                deviceData = map["deviceData"] as? String,
                 locationData = map["locationData"] as? String,
                 status = map["status"] as? String,
                 locationHistory = map["locationHistory"] as? String

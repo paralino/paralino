@@ -213,7 +213,6 @@ class SaveLocationUseCase(
             UserDeviceEntityLocationDataUpdate(
                 id = data.id,
                 locationId = data.id,
-                deviceData = data.deviceData,
                 locationData = data.locationData,
                 status = data.status,
                 locationHistory = data.locationHistory,

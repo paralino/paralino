@@ -298,7 +298,7 @@ class MapStateMapper(
                 location = location?.let {
                     GroupMemberItemLocationState(
                         memberLocation = it,
-                        name = it.name,
+                        name = device.deviceNameOrNull ?: it.name,
                         image = space.user.data?.userImage,
                         canEdit = false,
                         currentDevice = it.deviceId == appPrefs.deviceId,

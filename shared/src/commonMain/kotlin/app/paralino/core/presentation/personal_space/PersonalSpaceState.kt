@@ -80,7 +80,7 @@ data class UserDeviceItemState(
         location = device.location?.let { location ->
             GroupMemberItemLocationState(
                 memberLocation = location,
-                name = location.name,
+                name = device.deviceNameOrNull ?: location.name,
                 image = null,
                 canEdit = true,
                 showSpeedAndElevation = false,
@@ -99,6 +99,7 @@ data class UserDeviceItemState(
 
     val visibleBatteryLevel: Int? = location?.adjustedBatteryLevel
     val keyId: String get() = deviceId
+    val name: String? = device.deviceNameOrNull ?: location?.name
 }
 
 sealed interface UserDeviceAction {

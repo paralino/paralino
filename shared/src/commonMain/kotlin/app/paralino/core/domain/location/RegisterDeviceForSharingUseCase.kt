@@ -114,7 +114,7 @@ class RegisterDeviceForSharingUseCase constructor(
                             deviceType = userMemberId.getCurrentDeviceType().key
                         )
                     ),
-                    key = newKey
+                    key = userKey.key
                 )
 
                 val status = cryptoCore.encryptDataWithKey(

@@ -190,6 +190,7 @@ class UserPersonalSpaceLocalDataSource constructor(
                 pushTargetId = device.pushTargetId,
                 sessionId = device.sessionId,
                 ownerUserId = device.ownerUserId,
+                deviceData = device.deviceData,
                 locationPushToken = device.locationPushToken,
                 deviceType = device.deviceType,
                 encryptedSenderKey = device.encryptedSenderKey,

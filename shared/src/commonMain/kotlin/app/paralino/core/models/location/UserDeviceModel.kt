@@ -1,10 +1,13 @@
 package app.paralino.core.models.location
 
 import app.paralino.core.appPrefs
+import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.data
 import app.paralino.core.models.user.UserMe
+import kotlinx.serialization.Contextual
 
 data class UserDeviceModel(
     val id: String,
@@ -13,8 +16,12 @@ data class UserDeviceModel(
     val ownerUserId: String,
     val deviceId: String,
     val userKeyVersion: Long?,
-    val location: MemberLocation?
-)
+    val location: MemberLocation?,
+    @Contextual
+    val deviceData: CryptoResource<MemberDeviceData>,
+) {
+    val deviceNameOrNull: String? = deviceData.data?.deviceName
+}
 
 data class UserPersonalSpaceModel(
     val user: UserMe,

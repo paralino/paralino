@@ -684,7 +684,8 @@
     <string name="personalSpace_device_logout_actionConfirm">Delete session</string>
     <string name="personalSpace_device_deactivate_dialogMessage">Location tracking from this device will stop.\nDevice will stay logged in.</string>
     <string name="personalSpace_device_delete_dialogMessage">Deleting this device will remove it from the list and will also log out active session if available.</string>
-    <string name="personalSpace_current_device">This device</string>
+    <string name="personalSpace_current_device">**This device**</string>
+    <string name="personalSpace_current_device_withName">**This device** (%s)</string>
     <string name="personalSpace_section_activated">Activated devices</string>
     <string name="personalSpace_section_activated_empty">None of your devices are actively sharing their location.</string>
     <string name="personalSpace_section_other">Other devices &amp; sessions</string>
