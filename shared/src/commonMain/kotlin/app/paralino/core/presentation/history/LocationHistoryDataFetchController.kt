@@ -174,8 +174,8 @@ class LocationHistoryDataFetchController(
                     UserActiveLocationDeviceState.Known(
                         locationId = it.id,
                         deviceId = it.deviceId,
-                        deviceName = it.location?.nameOrNull
-                            ?: it.deviceData.data?.deviceName
+                        deviceName = it.deviceNameOrNull
+                            ?: it.deviceType?.toString()
                             ?: MR.strings.history_map_device_name_unknown.localizedString(),
                         isSelected = it.id == _uiState.value.devices.firstOrNull { it.isSelected }?.locationId,
                         isCurrent = it.deviceId == space.currentDevice?.deviceId

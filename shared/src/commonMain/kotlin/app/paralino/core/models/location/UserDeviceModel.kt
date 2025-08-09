@@ -20,7 +20,7 @@ data class UserDeviceModel(
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,
 ) {
-    val deviceNameOrNull: String? = deviceData.data?.deviceName
+    val deviceNameOrNull: String? = deviceData.data?.deviceName?.takeIf { it.isNotBlank() }
 }
 
 data class UserPersonalSpaceModel(

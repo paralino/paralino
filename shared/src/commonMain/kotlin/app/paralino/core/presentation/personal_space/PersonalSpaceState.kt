@@ -99,7 +99,7 @@ data class UserDeviceItemState(
 
     val visibleBatteryLevel: Int? = location?.adjustedBatteryLevel
     val keyId: String get() = deviceId
-    val name: String? = device.deviceNameOrNull ?: location?.name
+    val name: String? = device.deviceNameOrNull
 }
 
 sealed interface UserDeviceAction {
