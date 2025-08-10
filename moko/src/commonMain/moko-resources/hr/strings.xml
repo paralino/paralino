@@ -58,7 +58,7 @@
     <string name="notifications_channel_push_sync">Sinkronizacija obavijesti</string>
     <string name="notifications_channel_data_sync">Sinkronizacija podataka</string>
     <string name="notifications_channel_info_message">Informacije sistema</string>
-    <string name="location_banner_info_stop">Zaustavite dijeljenje</string>
+    <string name="location_sharing_button_stop_groups">Zaustavite dijeljenje</string>
     <string name="location_banner_fix">Ispravite</string>
     <string name="dashboard_groups_section_unverified">NEPOTVRĐENO</string>
     <string name="dashboard_groups_add_button">Kreirajte novu grupu</string>
@@ -419,7 +419,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Ako je omogućeno, vaš status će prikazivati je li vaša lokacija isključena, nedostaju li dozvole za lokaciju ili ste prestali dijeliti lokaciju. Ako je onemogućeno, vaš status će u tim slučajevima biti prikazan kao **%s**.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Obavijestite članove</string>
     <string name="groups_sharing_setting_notifyOthers_description">Ukoliko je opcija uključena, članovi grupe će biti obaviješteni da dijelite Vašu lokaciju.</string>
-    <string name="groups_sharing_button_start">Započnite dijeljenje</string>
+    <string name="location_sharing_button_start_groups">Započnite dijeljenje</string>
     <string name="groups_sharing_title">Podijelite lokaciju</string>
     <string name="groups_sharing_device_name_placeholder">Naziv uređaja (nije obavezno)</string>
     <string name="groups_sharing_devices">Uređaji</string>

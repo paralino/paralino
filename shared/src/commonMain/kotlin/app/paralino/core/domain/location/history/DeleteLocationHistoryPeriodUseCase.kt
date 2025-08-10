@@ -2,6 +2,7 @@ package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.LocationHistoryDeletePeriodGroupPayload
 import app.paralino.core.models.raw.LocationHistoryDeletePeriodPersonalPayload
@@ -18,7 +19,7 @@ class DeleteLocationHistoryPeriodUseCase (
 ) {
 
     suspend fun deleteHistory(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         startDate: LocalDate?,
         endDate: LocalDate?
     ) {
@@ -29,7 +30,7 @@ class DeleteLocationHistoryPeriodUseCase (
         val startDateKey = startDate?.dateForApi()
         val endDateKey = endDate?.dateForApi()
 
-        if (groupId == UserGroup.groupPersonalDevicesId) {
+        if (groupId.isPersonalSpace) {
             val payload = LocationHistoryDeletePeriodPersonalPayload(
                 startDateKey = startDateKey,
                 endDateKey = endDateKey
@@ -50,7 +51,7 @@ class DeleteLocationHistoryPeriodUseCase (
             )
         } else {
             val payload = LocationHistoryDeletePeriodGroupPayload(
-                groupId = groupId,
+                groupId = groupId.id,
                 startDateKey = startDateKey,
                 endDateKey = endDateKey
             )
@@ -65,7 +66,7 @@ class DeleteLocationHistoryPeriodUseCase (
             }
 
             database.locationHistoryDao.deleteGroupHistoryByDateRange(
-                groupId = groupId,
+                groupId = groupId.id,
                 memberUserId = appPrefs.userId,
                 startDate = startDateKey,
                 endDate = endDateKey

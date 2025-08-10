@@ -54,6 +54,7 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.conditional
@@ -217,6 +218,7 @@ private fun PlacesScreen(
         if (state.places.isEmpty()) {
             PlacesEmptyState(
                 modifier = Modifier.padding(it),
+                isPersonalSpace = state.isPersonalSpace,
                 permissionError = state.error,
                 onErrorItemClick = onErrorItemClick,
                 onPostSampleNotification = onPostSampleNotification
@@ -237,7 +239,12 @@ private fun PlacesScreen(
                         DataInfoChip(
                             modifier = Modifier,
                             image = state.groupImage,
-                            text = state.groupName
+                            text = state.groupName,
+                            backgroundColor = if (state.isPersonalSpace) {
+                                AppColors.accent.copy(0.1f)
+                            } else {
+                                MaterialTheme.colors.surface
+                            }
                         )
                     }
 

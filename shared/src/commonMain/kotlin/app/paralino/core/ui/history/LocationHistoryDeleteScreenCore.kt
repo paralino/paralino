@@ -124,9 +124,14 @@ fun LocationHistoryDeleteScreenCore(
                 verticalArrangement = Arrangement.Top
             ) {
                 DataInfoChip(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     image = uiState.groupImage,
-                    text = uiState.groupName
+                    text = uiState.groupName,
+                    backgroundColor = if (uiState.isPersonalSpace) {
+                        AppColors.accent.copy(0.1f)
+                    } else {
+                        MaterialTheme.colors.surface
+                    }
                 )
 
                 NoticeInfoChip(

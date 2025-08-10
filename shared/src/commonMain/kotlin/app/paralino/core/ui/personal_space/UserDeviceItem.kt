@@ -255,6 +255,21 @@ fun UserDeviceItem(
                     ) {
                         if (state.device != null) {
                             GroupStatusTagContent((state.device?.location?.deviceStatus ?: MemberDeviceStatusType.INACTIVE).toStatusTagType())
+
+                            if (state.device?.device?.deviceType != null) {
+                                Text(
+                                    text = state.device?.device?.deviceType?.toString() ?: "",
+                                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
+                                    color = MaterialTheme.colors.onSecondary,
+                                    modifier = Modifier
+                                        .background(
+                                            color = MaterialTheme.colors.secondary,
+                                            shape = MaterialTheme.shapes.medium
+                                        )
+                                        .padding(horizontal = 6.dp, vertical = 1.dp)
+                                        .align(Alignment.CenterVertically)
+                                )
+                            }
                         }
 
                         if (state.session == null) {

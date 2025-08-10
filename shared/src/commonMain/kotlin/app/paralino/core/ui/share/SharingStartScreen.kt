@@ -210,7 +210,13 @@ fun SharingStartScreenCore(
                 },
                 onClick = { vm.startSharing() }
             ) {
-                Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                Text(
+                    text = if (state.isPersonalSpace) {
+                        stringResource(MR.strings.location_sharing_button_start_personal)
+                    } else {
+                        stringResource(MR.strings.location_sharing_button_start_groups)
+                    }
+                )
             }
         },
         skipButton = if (vm.isOnboarding) {
@@ -244,7 +250,12 @@ fun SharingStartScreenCore(
                 DataInfoChip(
                     modifier = Modifier.padding(top = 20.dp),
                     image = state.groupState.data?.image,
-                    text = state.groupState.data?.name ?: ""
+                    text = state.groupState.data?.name ?: "",
+                    backgroundColor = if (state.isPersonalSpace) {
+                        AppColors.accent.copy(0.1f)
+                    } else {
+                        MaterialTheme.colors.surface
+                    }
                 )
             }
 
@@ -275,7 +286,11 @@ fun SharingStartScreenCore(
 
             NoticeInfoChip(
                 modifier = Modifier.padding(top = 20.dp),
-                text = stringResource(MR.strings.groups_sharing_encryption_info)
+                text = if (state.isPersonalSpace) {
+                    stringResource(MR.strings.personalSpace_tracking_encryption_info)
+                } else {
+                    stringResource(MR.strings.groups_sharing_encryption_info)
+                }
             )
 
             AnimatedVisibility(visible = state.groupState.data != null && state.canChangeGroup) {
@@ -454,23 +469,28 @@ fun SharingStartScreenCore(
                         }
                     )
 
-                    Spacer(modifier = Modifier.size(10.dp))
-                    LargeSeekbarSwitch(
-                        modifier = Modifier.fillMaxWidth(),
-                        icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                        title = stringResource(MR.strings.groups_sharing_setting_deviceStatus_title),
-                        description = stringResource(MR.strings.groups_sharing_setting_deviceStatus_description, stringResource(MR.strings.group_members_status_inactive)),
-                        state = rememberSeekbarState(
-                            key = state,
-                            state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                                seekbarState = null,
-                                switchState = LargeSeekbarSwitchState.Switch(state.shareDeviceStatus)
-                            )
-                        ).value,
-                        onStateChange = {
-                            vm.turnOnDeviceStatusSharing(it)
-                        }
-                    )
+                    if (state.showDeviceStatus) {
+                        Spacer(modifier = Modifier.size(10.dp))
+                        LargeSeekbarSwitch(
+                            modifier = Modifier.fillMaxWidth(),
+                            icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                            title = stringResource(MR.strings.groups_sharing_setting_deviceStatus_title),
+                            description = stringResource(
+                                MR.strings.groups_sharing_setting_deviceStatus_description,
+                                stringResource(MR.strings.group_members_status_inactive)
+                            ),
+                            state = rememberSeekbarState(
+                                key = state,
+                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                    seekbarState = null,
+                                    switchState = LargeSeekbarSwitchState.Switch(state.shareDeviceStatus)
+                                )
+                            ).value,
+                            onStateChange = {
+                                vm.turnOnDeviceStatusSharing(it)
+                            }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.size(10.dp))
                     if (state.isPremiumSectionVisible) {

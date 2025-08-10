@@ -83,7 +83,11 @@ fun SharingStartScreen(
         modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
-                title = stringResource(resource = MR.strings.groups_sharing_title),
+                title = if(vm.initialGroupId?.isPersonalSpace == true) {
+                    stringResource(resource = MR.strings.personalSpace_tracking_title)
+                } else {
+                    stringResource(resource = MR.strings.groups_sharing_title)
+                },
                 navigationIcon = if (isOnboarding) {
                     null
                 } else {

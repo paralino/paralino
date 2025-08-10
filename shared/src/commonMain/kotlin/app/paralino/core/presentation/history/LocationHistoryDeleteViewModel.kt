@@ -1,11 +1,14 @@
 package app.paralino.core.presentation.history
 
+import app.paralino.core.MR
 import app.paralino.core.domain.location.history.DeleteLocationHistoryPeriodUseCase
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -30,7 +33,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 class LocationHistoryDeleteViewModel(
-    private val groupId: String,
+    private val groupId: GroupOrSpaceId,
     private val userRepo: UserRepository,
     private val userGroupRepo: UserGroupLocalDataSource,
     private val deleteHistoryUseCase: DeleteLocationHistoryPeriodUseCase,
@@ -39,7 +42,7 @@ class LocationHistoryDeleteViewModel(
 
     private val _uiState = MutableStateFlow<LocationHistoryDeleteScreenState>(
         LocationHistoryDeleteScreenState(
-            groupId = "",
+            groupId = groupId,
             groupName = "",
             groupImage = ImageModel.emoji(Emojis.lock),
             isContentLoading = true,
@@ -68,14 +71,14 @@ class LocationHistoryDeleteViewModel(
         _uiState.update { it.copy(isContentLoading = true) }
 
         try {
-            if (groupId == UserGroup.groupPersonalDevicesId) {
+            if (groupId.isPersonalSpace) {
                 // Personal history
                 userRepo.localUser
                     .onEach { user ->
                         _uiState.update { currentState ->
                             currentState.copy(
                                 groupId = groupId,
-                                groupName = "Personal History",
+                                groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
                                 groupImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                                 isContentLoading = false,
                             )
@@ -85,7 +88,7 @@ class LocationHistoryDeleteViewModel(
             } else {
                 // Group history
                 combine(
-                    userGroupRepo.getGroupWithoutMembers(groupId),
+                    userGroupRepo.getGroupWithoutMembers(groupId.id),
                     userRepo.localUser
                 ) { group, user ->
                     _uiState.update { currentState ->

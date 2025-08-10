@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.MR
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -8,7 +9,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import kotlinx.datetime.LocalDate
 
 data class LocationHistoryDeleteScreenState(
-    val groupId: String,
+    val groupId: GroupOrSpaceId,
     val groupName: String,
     val groupImage: ImageModel,
     val isContentLoading: Boolean,
@@ -45,6 +46,7 @@ data class LocationHistoryDeleteScreenState(
             }
         }
     }
+    val isPersonalSpace = groupId.isPersonalSpace
 }
 
 data class LocationHistoryDeleteDateState(

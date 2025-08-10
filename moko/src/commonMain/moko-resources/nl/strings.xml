@@ -69,7 +69,7 @@
     <string name="notifications_channel_push_sync">Melding synchronisatie</string>
     <string name="notifications_channel_data_sync">Gegevens synchronisatie</string>
     <string name="notifications_channel_info_message">Systeeminformatie</string>
-    <string name="location_banner_info_stop">Stop met delen</string>
+    <string name="location_sharing_button_stop_groups">Stop met delen</string>
     <string name="dashboard_groups_section_unverified">ONBEVESTIGD</string>
     <string name="dashboard_groups_add_button">Maak een nieuwe groep aan</string>
     <string name="dashboard_groups_join_button">Sluit je aan bij een groep</string>
@@ -626,7 +626,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Als ingeschakeld, zal je status aangeven of je locatie is uitgeschakeld, je locatiepermissies mist, of je stopt met het delen van je locatie. Als uitgeschakeld, zal je status **%s** in die gevallen tonen.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Stel leden op de hoogte</string>
     <string name="groups_sharing_setting_notifyOthers_description">Als ingeschakeld, zullen groepsleden een melding ontvangen dat je bent begonnen met het delen van je locatie.</string>
-    <string name="groups_sharing_button_start">Begin met delen</string>
+    <string name="location_sharing_button_start_groups">Begin met delen</string>
     <string name="setting_navigationApp_settings_title">Standaard navigatie-app</string>
     <string name="setting_navigationApp_title">Navigatie-app</string>
     <string name="setting_navigationApp_info">Kies de standaard navigatie-app die u wilt gebruiken voor routebeschrijvingen.</string>

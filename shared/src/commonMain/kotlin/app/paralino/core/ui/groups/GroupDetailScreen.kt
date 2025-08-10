@@ -221,7 +221,7 @@ fun GroupDetailScreenCore(
                             ),
                             onClick = { vm.stopSharing() }
                         ) {
-                            Text(text = stringResource(MR.strings.location_banner_info_stop))
+                            Text(text = stringResource(MR.strings.location_sharing_button_stop_groups))
                         }
                     } else {
                         FilledButton(
@@ -236,7 +236,7 @@ fun GroupDetailScreenCore(
                             ),
                             onClick = { openSharing() }
                         ) {
-                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                            Text(text = stringResource(MR.strings.location_sharing_button_start_groups))
                         }
                     }
                 },

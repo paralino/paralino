@@ -115,7 +115,7 @@ class PlacesViewModel(
             val state = PlacesListScreenState(
                 groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
                 groupImage = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
-                groupName = space.user.name,
+                groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
                 placesLimit = placesLimit,
                 isGroupOwner = true,
                 places = placesState,

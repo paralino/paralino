@@ -52,7 +52,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
-    val initialGroupId: String?,
+    val initialGroupId: GroupOrSpaceId?,
     val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
@@ -69,12 +69,12 @@ class SharingStartViewModel(
     private val _uiState =
         MutableStateFlow(
             SharingStartScreenState(
-                groupState = if (initialGroupId.isNullOrBlank()) {
+                groupState = if (initialGroupId?.id.isNullOrBlank()) {
                     Payload.Success(null)
                 } else {
                     Payload.Loading
                 },
-                canChangeGroup = initialGroupId.isNullOrBlank()
+                canChangeGroup = initialGroupId?.id.isNullOrBlank()
             )
         )
     val uiState: StateFlow<SharingStartScreenState> = _uiState
@@ -99,7 +99,7 @@ class SharingStartViewModel(
 
     init {
 
-        initialGroupId?.let { setSelectedGroup(it.asGroupOrSpaceId()) }
+        initialGroupId?.let { setSelectedGroup(it) }
 
         coroutineScope.launch(Dispatchers.IO) {
             _uiState.update {
@@ -268,6 +268,7 @@ class SharingStartViewModel(
                         groupState = Payload.Success(GroupItemState(group.group, remoteConfigRepo.getConfigOnce())),
                         devicesLimit = group.group.group.devicesLimit(remoteConfigRepo.getConfigOnce()),
                         showNotifyOthers = isGroupPremium || group.group.group.isCurrentUserOwner,
+                        showDeviceStatus = true,
                         isPremiumSectionVisible = !isGroupPremium && group.group.group.isCurrentUserOwner,
                         notifyOthers = if (isGroupPremium) it.notifyOthers else false,
                         sharingPresetsMillis = presets,
@@ -287,9 +288,11 @@ class SharingStartViewModel(
                     it.copy(
                         groupState = Payload.Success(GroupItemState(group.space, remoteConfigRepo.getConfigOnce())),
                         devicesLimit = group.space.plan.personalDevicesLimit,
-                        showNotifyOthers = true,
-                        isPremiumSectionVisible = !isGroupPremium,
-                        notifyOthers = if (isGroupPremium) it.notifyOthers else false,
+                        showNotifyOthers = false,
+                        showDeviceStatus = false,
+                        // nothing premium for personal space
+                        isPremiumSectionVisible = false,
+                        notifyOthers = false,
                         sharingPresetsMillis = presets,
                         sharingTimeMillis = it.sharingTimeMillis.let {
                             if (!isGroupOverLimits) it
@@ -305,6 +308,7 @@ class SharingStartViewModel(
                         groupState = Payload.Success(null),
                         devicesLimit = 0,
                         showNotifyOthers = false,
+                        showDeviceStatus = false,
                         isPremiumSectionVisible = false,
                         notifyOthers = false,
                         sharingPresetsMillis = presets,

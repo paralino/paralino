@@ -59,7 +59,6 @@
     <string name="notifications_channel_push_sync">Notification sync</string>
     <string name="notifications_channel_data_sync">Data sync</string>
     <string name="notifications_channel_info_message">System information</string>
-    <string name="location_banner_info_stop">Stop sharing</string>
     <string name="location_banner_fix">Fix</string>
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create a new group</string>
@@ -442,7 +441,10 @@
     <string name="groups_sharing_setting_notifyOthers_description">If enabled, group members will receive notification that you started sharing your location.</string>
     <string name="groups_sharing_setting_timeline_title">Timeline</string>
     <string name="groups_sharing_setting_timeline_description">If enabled, your location updates will be saved to location history.</string>
-    <string name="groups_sharing_button_start">Start sharing</string>
+    <string name="location_sharing_button_start_groups">Start sharing</string>
+    <string name="location_sharing_button_start_personal">Start tracking</string>
+    <string name="location_sharing_button_stop_groups">Stop sharing</string>
+    <string name="location_sharing_button_stop_personal">Stop tracking</string>
     <string name="groups_sharing_title">Share location</string>
     <string name="groups_sharing_device_name_placeholder">Device name (optional)</string>
     <string name="groups_sharing_devices">Devices</string>
@@ -557,10 +559,13 @@
     <string name="group_members_status_location_inaccurate">Location not accurate</string>
     <string name="places_list_add_button">New place</string>
     <string name="places_list_screen_title">Places</string>
-    <string name="places_list_screen_empty_info">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
-    <string name="places_list_screen_encryption_info">The information you enter about your places is **end-to-end encrypted** and only readable to group members.</string>
+    <string name="places_list_screen_empty_info_group">Create a place and **get notified** when someone enters or leaves predefined area like home, work or school.</string>
+    <string name="places_list_screen_empty_info_personal">Create a place and **get notified** when one of your devices enters or leaves predefined area like home, work or school.</string>
+    <string name="places_list_screen_encryption_info_group">The information you enter about your places is **end-to-end encrypted** and only readable to group members.</string>
+    <string name="places_list_screen_encryption_info_personal">The information you enter about your places is **end-to-end encrypted** and only readable to you.</string>
     <string name="places_notification_demo_home">Home</string>
     <string name="places_notification_demo_school">School</string>
+    <string name="places_notification_personalDevice">Your device</string>
     <string name="places_create_screen_title">Create a new place</string>
     <string name="places_edit_screen_title">Edit place</string>
     <string name="places_create_seekbar_info">Radius</string>
@@ -574,7 +579,8 @@
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
     <string name="place_detail_notification_settings_title">Place alerts</string>
-    <string name="place_detail_notification_settings_info">Choose whether to receive notifications when each group member enters or exits this place.</string>
+    <string name="place_detail_notification_settings_info_group">Choose whether to receive notifications when each group member enters or exits this place.</string>
+    <string name="place_detail_notification_settings_info_personal">Choose whether to receive notifications when one of your devices enters or exits this place.</string>
     <string name="place_notification_enter">%s arrived at %s</string>
     <string name="place_notification_exit">%s left %s</string>
     <string name="place_notification_default">Your place have activity</string>
@@ -676,7 +682,8 @@
     <string name="personalSpace_spaceTitle">Personal space</string>
     <string name="personalSpace_session_createdAt">Created at</string>
     <string name="personalSpace_session_title">Session</string>
-    <string name="personalSpace_sharing_start">Activate</string>
+    <string name="personalSpace_tracking_title">Location tracking</string>
+    <string name="personalSpace_tracking_activate">Activate</string>
     <string name="personalSpace_device_tag_loggedOut">Logged out</string>
     <string name="personalSpace_device_tag_unknownSession">Session missing a device</string>
     <string name="personalSpace_device_deactivate_action">Deactivate</string>
@@ -690,4 +697,5 @@
     <string name="personalSpace_section_activated_empty">None of your devices are actively sharing their location.</string>
     <string name="personalSpace_section_other">Other devices &amp; sessions</string>
     <string name="personalSpace_section_empty">No devices found</string>
+    <string name="personalSpace_tracking_encryption_info">Your location and related data are always **end-to-end encrypted** and only accessible to you on your devices.</string>
 </resources>

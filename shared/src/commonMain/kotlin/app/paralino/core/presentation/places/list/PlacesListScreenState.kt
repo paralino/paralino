@@ -27,6 +27,7 @@ data class PlacesListScreenState constructor(
 
     val placesLimitReached: Boolean = placesLimit <= places.size
     val isOverLimit: Boolean = places.size > placesLimit
+    val isPersonalSpace = groupId.isPersonalSpace
 }
 
 data class PlaceListItemData constructor(

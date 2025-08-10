@@ -215,6 +215,7 @@ fun MapHomeSheetContent(
             when (readyState?.mapSheetSelectedContentType) {
                 MapSheetSelectedContentType.PLACES -> {
                     placesList(
+                        isPersonalSpace = readyState.isPersonalSpace,
                         places = places,
                         onCreatePlace = {
                             onEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen)
@@ -263,6 +264,7 @@ private fun LazyListScope.membersList(
 }
 
 private fun LazyListScope.placesList(
+    isPersonalSpace: Boolean,
     places: List<PlaceListItemData>,
     onCreatePlace: () -> Unit,
     onOpenPlaces: () -> Unit,
@@ -271,7 +273,11 @@ private fun LazyListScope.placesList(
     if (places.isEmpty()) {
         this.item {
             DefaultEmptyState(
-                content = stringResource(MR.strings.places_list_screen_empty_info),
+                content = if (isPersonalSpace) {
+                    stringResource(MR.strings.places_list_screen_empty_info_personal)
+                } else {
+                    stringResource(MR.strings.places_list_screen_empty_info_group)
+                },
                 icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
                 buttonText = stringResource(MR.strings.places_create_button_create),
                 buttonIcon = CoreAppIcons.Add.asPainterResource()

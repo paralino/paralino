@@ -58,7 +58,7 @@
     <string name="notifications_channel_push_sync">Benachrichtigungssynchronisierung</string>
     <string name="notifications_channel_data_sync">Datensynchronisierung</string>
     <string name="notifications_channel_info_message">Systeminformationen</string>
-    <string name="location_banner_info_stop">Freigabe beenden</string>
+    <string name="location_sharing_button_stop_groups">Freigabe beenden</string>
     <string name="location_banner_fix">Beheben</string>
     <string name="dashboard_groups_section_unverified">UNBESTÄTIGT</string>
     <string name="dashboard_groups_add_button">Neue Gruppe erstellen</string>
@@ -419,7 +419,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Wenn aktiviert, wird dein Status anzeigen, ob dein Standort deaktiviert ist, du keine Standortberechtigungen hast oder du das Teilen deines Standorts beendet hast. Wenn deaktiviert, wird dein Status in diesen Fällen als **%s** angezeigt.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Mitglieder benachrichtigen</string>
     <string name="groups_sharing_setting_notifyOthers_description">Wenn aktiviert, erhalten Gruppenmitglieder eine Benachrichtigung, dass Sie begonnen haben, Ihren Standort freizugeben.</string>
-    <string name="groups_sharing_button_start">Freigabe starten</string>
+    <string name="location_sharing_button_start_groups">Freigabe starten</string>
     <string name="groups_sharing_title">Standort freigeben</string>
     <string name="groups_sharing_device_name_placeholder">Gerätename (optional)</string>
     <string name="groups_sharing_devices">Geräte</string>

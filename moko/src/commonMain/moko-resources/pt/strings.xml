@@ -58,7 +58,7 @@
     <string name="notifications_channel_push_sync">Sincronização de notificações</string>
     <string name="notifications_channel_data_sync">Sincronização de dados</string>
     <string name="notifications_channel_info_message">Informação do sistema</string>
-    <string name="location_banner_info_stop">Parar compartilhamento</string>
+    <string name="location_sharing_button_stop_groups">Parar compartilhamento</string>
     <string name="location_banner_fix">Corrigir</string>
     <string name="dashboard_groups_section_unverified">NÃO VERIFICADO</string>
     <string name="dashboard_groups_add_button">Criar novo grupo</string>
@@ -419,7 +419,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Se ativado, seu estado mostrará se sua localização está desativada, você está sem permissões de localização ou para de compartilhar sua localização. Se desativado, seu estado mostrará **%s** nesses casos.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notificar membros</string>
     <string name="groups_sharing_setting_notifyOthers_description">Se ativado, os membros do grupo receberão uma notificação de que você começou a compartilhar sua localização.</string>
-    <string name="groups_sharing_button_start">Começar a compartilhar</string>
+    <string name="location_sharing_button_start_groups">Começar a compartilhar</string>
     <string name="groups_sharing_title">Compartilhar localização</string>
     <string name="groups_sharing_device_name_placeholder">Nome do dispositivo (opcional)</string>
     <string name="groups_sharing_devices">Dispositivos</string>

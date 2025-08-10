@@ -142,7 +142,7 @@ fun PersonalSpaceScreenCore(
                         ),
                         onClick = { vm.stopSharing() }
                     ) {
-                        Text(text = stringResource(MR.strings.location_banner_info_stop))
+                        Text(text = stringResource(MR.strings.location_sharing_button_stop_personal))
                     }
                 } else {
                     FilledButton(
@@ -158,9 +158,9 @@ fun PersonalSpaceScreenCore(
                         onClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
                     ) {
                         if (uiState.isCurrentDeviceActivated) {
-                            Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                            Text(text = stringResource(MR.strings.location_sharing_button_start_personal))
                         } else {
-                            Text(text = stringResource(MR.strings.personalSpace_sharing_start))
+                            Text(text = stringResource(MR.strings.personalSpace_tracking_activate))
                         }
                     }
                 }
@@ -446,7 +446,7 @@ fun PersonalSpaceHeader(
             LargeSeekbarSwitch(
                 modifier = Modifier.fillMaxWidth(),
                 icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                title = stringResource(MR.strings.group_details_sharing_action),
+                title = stringResource(MR.strings.personalSpace_tracking_title),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(

@@ -354,7 +354,7 @@ private fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: B
     if (itemState) {
         ExtendedFloatingActionButton(
             modifier = modifier,
-            text = { Text(text = stringResource(MR.strings.location_banner_info_stop)) },
+            text = { Text(text = stringResource(MR.strings.location_sharing_button_stop_groups)) },
             icon = {
                 Icon(
                     painter = CoreAppIcons.StopCircle.asPainterResource(),
@@ -371,7 +371,7 @@ private fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: B
     } else {
         ExtendedFloatingActionButton(
             modifier = modifier,
-            text = { Text(text = stringResource(MR.strings.groups_sharing_button_start)) },
+            text = { Text(text = stringResource(MR.strings.location_sharing_button_start_groups)) },
             icon = {
                 Icon(
                     painter = CoreAppIcons.ShareLocation.asPainterResource(),

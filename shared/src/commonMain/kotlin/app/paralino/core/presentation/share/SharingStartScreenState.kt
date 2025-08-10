@@ -31,6 +31,7 @@ data class SharingStartScreenState constructor(
     val notifyOthers: Boolean = true,
     val saveToHistory: Boolean = true,
     val showNotifyOthers: Boolean = false,
+    val showDeviceStatus: Boolean = false,
     val isPremiumSectionVisible: Boolean = false,
     val devicesLimit: Int = 0,
     val devicesCount: Int? = null,
@@ -60,6 +61,7 @@ data class SharingStartScreenState constructor(
     val isLongTerm: Boolean get() = LocationSharingContract.isLongTerm(sharingTimeMillis)
     val canShare: Boolean =
         errors.isEmpty() && groupState.data != null && groupState.data?.uiType != GroupItemState.GroupUiType.UNVERIFIED
+    val isPersonalSpace = groupState.data?.isPersonalSpace == true
 }
 
 sealed interface GroupOrUserSpace {

@@ -19,7 +19,9 @@ data class PlaceDetailScreenState constructor(
     val isPlaceAlertsSwitchLoading: Boolean,
     val arePlaceAlertsActive: Boolean,
     val settings: List<PlaceSettingsState>
-)
+) {
+    val isPersonalSpace = groupOrSpaceId.isPersonalSpace
+}
 
 data class PlaceSettingsState constructor(
     val groupId: String,

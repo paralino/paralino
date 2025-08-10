@@ -225,7 +225,7 @@ fun MapHomeScreenElements(
                             onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
                         }
                     ) {
-                        Text(text = stringResource(MR.strings.groups_sharing_button_start))
+                        Text(text = stringResource(MR.strings.location_sharing_button_start_groups))
                     }
                 }
             }

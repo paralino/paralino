@@ -143,7 +143,7 @@
     <string name="notifications_channel_group_activity">Activité de groupe</string>
     <string name="notifications_channel_data_sync">Synchronisation des données</string>
     <string name="notifications_channel_info_message">Informations système</string>
-    <string name="location_banner_info_stop">Arrêter le partage</string>
+    <string name="location_sharing_button_stop_groups">Arrêter le partage</string>
     <string name="location_banner_fix">Réparer</string>
     <string name="dashboard_groups_section_unverified">NON VÉRIFIÉ</string>
     <string name="dashboard_groups_add_button">Créer un nouveau groupe</string>
@@ -503,7 +503,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Si activé, votre statut indiquera si votre emplacement est désactivé, si vous manquez de permissions de localisation, ou si vous arrêtez de partager votre emplacement. Si désactivé, votre statut affichera **%s** dans ces cas.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notifier les membres</string>
     <string name="groups_sharing_setting_notifyOthers_description">Si activé, les membres du groupe recevront une notification que vous avez commencé à partager votre emplacement.</string>
-    <string name="groups_sharing_button_start">Commencer à partager</string>
+    <string name="location_sharing_button_start_groups">Commencer à partager</string>
     <string name="groups_sharing_title">Partager l\'emplacement</string>
     <string name="groups_sharing_device_name_placeholder">Nom de l\'appareil (facultatif)</string>
     <string name="groups_sharing_devices">Appareils</string>

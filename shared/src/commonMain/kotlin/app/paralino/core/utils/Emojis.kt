@@ -20,6 +20,7 @@ object Emojis {
     val artMasks = "emoji_u1f3ad"
     val airplane = "emoji_u2708"
     val globe = "emoji_u1f30d"
+    val mobilePhone = "emoji_u1f4f1"
 
     private val userSpecific = listOf(
 //        "emoji_u1f4a9",

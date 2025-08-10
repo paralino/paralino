@@ -59,7 +59,7 @@
     <string name="notifications_channel_push_sync">Sincronizzazione delle notifiche</string>
     <string name="notifications_channel_data_sync">Sincronizzazione dei dati</string>
     <string name="notifications_channel_info_message">Informazioni di sistema</string>
-    <string name="location_banner_info_stop">Interrompi condivisione</string>
+    <string name="location_sharing_button_stop_groups">Interrompi condivisione</string>
     <string name="location_banner_fix">Correggi</string>
     <string name="dashboard_groups_section_unverified">NON VERIFICATO</string>
     <string name="dashboard_groups_add_button">Crea un nuovo gruppo</string>
@@ -419,7 +419,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Se abilitato, il tuo stato mostrerà se la tua posizione è disattivata, se mancano le autorizzazioni per la posizione o se smetti di condividere la tua posizione. Se disabilitato, il tuo stato mostrerà **%s** in quei casi.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notifica ai membri</string>
     <string name="groups_sharing_setting_notifyOthers_description">Se abilitato, i membri del gruppo riceveranno una notifica che hai iniziato a condividere la tua posizione.</string>
-    <string name="groups_sharing_button_start">Inizia a condividere</string>
+    <string name="location_sharing_button_start_groups">Inizia a condividere</string>
     <string name="groups_sharing_title">Condividi posizione</string>
     <string name="groups_sharing_device_name_placeholder">Nome dispositivo (opzionale)</string>
     <string name="groups_sharing_devices">Dispositivi</string>
