@@ -54,7 +54,7 @@ class LocationPayloadProvider(
                 val locationData = safeLet(data, contract) { data, contract ->
                     LocationDataModel(
                         timeUTC = data.timeUTC,
-                        endTimeUTC = contract.endTimeUTC,
+                        endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
                         lat = data.lat,
                         lng = data.lng,
                         accuracy = data.accuracy,
