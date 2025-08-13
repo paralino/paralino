@@ -290,7 +290,8 @@ fun GroupDetailScreenCore(
                                 contentAlignment = Alignment.Center
                             ) {
                                 GroupDetailSharingStatusElement(
-                                    contract = state.data.sharingStatus!!
+                                    contract = state.data.sharingStatus!!,
+                                    isPersonalSpace = false
                                 )
                             }
                         }
@@ -573,6 +574,7 @@ fun GroupDetailsHeader(
 fun GroupDetailSharingStatusElement(
     modifier: Modifier = Modifier,
     contract: LocationSharingState,
+    isPersonalSpace: Boolean
 ) {
     val backgroundColor = MaterialTheme.colors.surface
     val contentColor = contentColorFor(backgroundColor = backgroundColor)
@@ -591,7 +593,13 @@ fun GroupDetailSharingStatusElement(
         ) {
             val sharingTime = contract.endTime
                 ?.let { stringResource(MR.strings.group_details_sharing_status_time, it) }
-                ?: stringResource(MR.strings.group_details_sharing_status_infinite)
+                ?: let {
+                    if (isPersonalSpace) {
+                        stringResource(MR.strings.personalSpace_tracking_status_infinite)
+                    } else {
+                        stringResource(MR.strings.group_details_sharing_status_infinite)
+                    }
+                }
 
             Icon(
                 painter = CoreAppIcons.Timer.asPainterResource(),

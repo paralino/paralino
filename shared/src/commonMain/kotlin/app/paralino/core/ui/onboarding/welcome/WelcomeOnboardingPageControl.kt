@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -31,7 +30,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.LargeSeekbarSwitch
@@ -39,7 +37,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.settings.GenericSettingsOptionItem
-import app.paralino.core.ui.share.getTime
+import app.paralino.core.ui.share.getSharingTimeString
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.SharingDurationPreset
 import dev.icerock.moko.resources.compose.stringResource
@@ -417,7 +415,7 @@ private fun DurationSwitch(modifier: Modifier = Modifier) {
         ).value,
         icon = CoreAppIcons.AccessTime.asPainterResource(),
         title = stringResource(MR.strings.groups_sharing_section_title_duration),
-        description = getTime(itemState),
+        description = getSharingTimeString(itemState),
         focusDescription = true,
         onProgressChange = {
             itemState =

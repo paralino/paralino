@@ -16,6 +16,8 @@ data class SharingStartScreenState constructor(
     val groupState: Payload<GroupItemState?> = Payload.Loading,
     val canChangeGroup: Boolean,
     val deviceName: String? = null,
+    val initialDeviceName: String? = null,
+    val formattedEndTime: String? = null,
     val sharingTimeMillis: Long = SharingDurationPreset.premiumPresets.last(),
     val sharingPresetsMillis: List<Long> = SharingDurationPreset.premiumPresets,
     val approximateLocationMeters: Int = 200,
@@ -32,14 +34,19 @@ data class SharingStartScreenState constructor(
     val saveToHistory: Boolean = true,
     val showNotifyOthers: Boolean = false,
     val showDeviceStatus: Boolean = false,
+    val showDuration: Boolean = false,
+    val showMetadata: Boolean = false,
     val isPremiumSectionVisible: Boolean = false,
     val devicesLimit: Int = 0,
     val devicesCount: Int? = null,
+    val currentContract: LocationSharingContract? = null,
     val errors: List<ConditionErrorType> = emptyList(),
     val warnings: List<ConditionErrorType> = emptyList(),
     val loadingAction: Boolean = false,
     val alertDialog: MainAlertDialog? = null
 ) {
+    val isNewContract: Boolean = currentContract == null
+    val isNameChanged: Boolean = deviceName != initialDeviceName
     val canShowContent: Boolean = groupState is Payload.Loading || groupState.data != null
     val sharingTimeIndex: Int
         get() {
@@ -62,20 +69,22 @@ data class SharingStartScreenState constructor(
     val canShare: Boolean =
         errors.isEmpty() && groupState.data != null && groupState.data?.uiType != GroupItemState.GroupUiType.UNVERIFIED
     val isPersonalSpace = groupState.data?.isPersonalSpace == true
-}
 
-sealed interface GroupOrUserSpace {
-    val id: String
-    data class Group(val group: UserGroupWithMetadata): GroupOrUserSpace {
-        override val id: String = group.id
-    }
-    data class PersonalSpace(val space: UserPersonalSpaceModel): GroupOrUserSpace {
-        override val id: String = UserGroup.groupPersonalDevicesId
-    }
+    val isDifferentThanContract: Boolean = currentContract?.let { contract ->
+        contract.shareSpeed != shareSpeed ||
+                contract.shareElevation != shareElevation ||
+                contract.shareBattery != shareBattery ||
+                contract.shareNetwork != shareNetwork ||
+                contract.shareDeviceStatus != shareDeviceStatus ||
+                contract.saveToHistory != saveToHistory ||
+                isNameChanged
+//                || contract.approximateLocationInMeters != approximateLocationMeters
+    } ?: true
 }
 
 sealed class SharingStartScreenEvent() {
     object Started : SharingStartScreenEvent()
+    object Updated : SharingStartScreenEvent()
     object OpenPaywall : SharingStartScreenEvent()
     object AdjustScrollPosition : SharingStartScreenEvent()
     data class AskForPermission(val error: ConditionErrorType) : SharingStartScreenEvent()
@@ -83,4 +92,6 @@ sealed class SharingStartScreenEvent() {
 
 sealed interface SharingStartScreenUiEvent {
     data class DialogAction(val action: AlertDialogAction) : SharingStartScreenUiEvent
+    data object StopSharing : SharingStartScreenUiEvent
+    data object StartSharing : SharingStartScreenUiEvent
 }

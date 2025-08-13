@@ -2,24 +2,27 @@ package app.paralino.core.presentation.share
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.GroupOrUserSpace
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.share.SharingStartScreenEvent.AskForPermission
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -38,9 +41,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -57,12 +60,15 @@ class SharingStartViewModel(
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
+    private val placeActivityRepo: PlaceActivityDataSource,
     val deviceApiProvider: IDeviceApiProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
     private val locationRepo: LocationLocalDataSource,
     private val userRepo: UserRepository,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
@@ -103,8 +109,10 @@ class SharingStartViewModel(
 
         coroutineScope.launch(Dispatchers.IO) {
             _uiState.update {
+                val deviceName = userMemberIdUseCase.getDefaultDeviceName(currentGroup.value?.id?.asGroupOrSpaceId())
                 it.copy(
-                    deviceName = userMemberIdUseCase.getDefaultDeviceName(currentGroup.value?.id?.asGroupOrSpaceId())
+                    deviceName = deviceName,
+                    initialDeviceName = deviceName
                 )
             }
         }
@@ -176,6 +184,22 @@ class SharingStartViewModel(
                     }
                 }
             }
+            .flatMapLatest {
+                sharingManager.sharingContractForGroup(id = it.id.asGroupOrSpaceId())
+                    .onEach { currentContract ->
+                        _uiState.update { state ->
+                            state.copy(
+                                currentContract = currentContract,
+                                saveToHistory = currentContract?.saveToHistory ?: state.saveToHistory,
+                                shareSpeed = currentContract?.shareSpeed ?: state.shareSpeed,
+                                shareElevation = currentContract?.shareElevation ?: state.shareElevation,
+                                shareBattery = currentContract?.shareBattery ?: state.shareBattery,
+                                shareNetwork = currentContract?.shareNetwork ?: state.shareNetwork,
+                                shareDeviceStatus = currentContract?.shareDeviceStatus ?: state.shareDeviceStatus,
+                            )
+                        }
+                    }
+            }
             .launchIn(coroutineScope)
     }
 
@@ -192,7 +216,7 @@ class SharingStartViewModel(
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             coroutineScope.launch {
                                 _eventChannel.send(
-                                    SharingStartScreenEvent.AskForPermission(
+                                    AskForPermission(
                                         ConditionErrorType.PermissionLocationBackground
                                     )
                                 )
@@ -210,7 +234,7 @@ class SharingStartViewModel(
                             _eventChannel.send(SharingStartScreenEvent.AdjustScrollPosition)
                             if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                                 uiState.value.errors.firstOrNull()?.let {
-                                    _eventChannel.send(SharingStartScreenEvent.AskForPermission(it))
+                                    _eventChannel.send(AskForPermission(it))
                                 }
                             }
                         }
@@ -218,6 +242,14 @@ class SharingStartViewModel(
 
                     else -> {}
                 }
+            }
+
+            SharingStartScreenUiEvent.StopSharing -> {
+                stopSharing()
+            }
+
+            SharingStartScreenUiEvent.StartSharing -> {
+                startSharing()
             }
         }
     }
@@ -257,22 +289,51 @@ class SharingStartViewModel(
 
     private suspend fun setSelectedGroup(group: GroupOrUserSpace?) {
         currentGroup.update { group }
+
+        val currentContract = group?.let {
+            sharingManager.currentSharingContractForGroup(it.id.asGroupOrSpaceId())
+        }
+        val isSharingActive = currentContract != null
+        val endTime = currentContract?.let {
+            if (it.isAlwaysOn) {
+                if (group is GroupOrUserSpace.PersonalSpace) {
+                    MR.strings.personalSpace_tracking_status_infinite.localizedString()
+                } else {
+                    MR.strings.group_details_sharing_status_infinite.localizedString()
+                }
+            } else {
+                valueFormatter.fromUTCtoMapSharingTime(
+                    timeUTC = it.endTimeUTC ?: "",
+                    splitTimeToOneLine = false
+                )?.let {
+                    MR.strings.group_details_sharing_status_time.localizedString(it)
+                }
+            }
+        }
+
         when (group) {
             is GroupOrUserSpace.Group -> {
                 val isGroupPremium = group.group.group
                     .hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce())
                 val isGroupOverLimits = group.group.isGroupOverLimits(remoteConfigRepo.getConfigOnce())
                 val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
-                _uiState.update {
-                    it.copy(
+
+                _uiState.update { state ->
+                    state.copy(
                         groupState = Payload.Success(GroupItemState(group.group, remoteConfigRepo.getConfigOnce())),
                         devicesLimit = group.group.group.devicesLimit(remoteConfigRepo.getConfigOnce()),
-                        showNotifyOthers = isGroupPremium || group.group.group.isCurrentUserOwner,
+
+                        showNotifyOthers = !isSharingActive && (isGroupPremium || group.group.group.isCurrentUserOwner),
                         showDeviceStatus = true,
-                        isPremiumSectionVisible = !isGroupPremium && group.group.group.isCurrentUserOwner,
-                        notifyOthers = if (isGroupPremium) it.notifyOthers else false,
+                        showDuration = !isSharingActive,
+                        showMetadata = true,
+
+                        formattedEndTime = endTime,
+                        isPremiumSectionVisible = !isSharingActive && !isGroupPremium && group.group.group.isCurrentUserOwner,
+                        notifyOthers = if (isGroupPremium) state.notifyOthers else false,
+
                         sharingPresetsMillis = presets,
-                        sharingTimeMillis = it.sharingTimeMillis.let {
+                        sharingTimeMillis = state.sharingTimeMillis.let {
                             if (!isGroupOverLimits) it
                             else it.coerceIn(presets.first(), presets.last())
                         }
@@ -284,17 +345,20 @@ class SharingStartViewModel(
                 val isGroupPremium = group.space.plan.planTypeEnum.isSilverOrMore
                 val isGroupOverLimits = false
                 val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
-                _uiState.update {
-                    it.copy(
+                _uiState.update { state ->
+                    state.copy(
                         groupState = Payload.Success(GroupItemState(group.space, remoteConfigRepo.getConfigOnce())),
                         devicesLimit = group.space.plan.personalDevicesLimit,
                         showNotifyOthers = false,
                         showDeviceStatus = false,
+                        showDuration = false,
+                        showMetadata = false,
+                        formattedEndTime = endTime,
                         // nothing premium for personal space
                         isPremiumSectionVisible = false,
                         notifyOthers = false,
                         sharingPresetsMillis = presets,
-                        sharingTimeMillis = it.sharingTimeMillis.let {
+                        sharingTimeMillis = state.sharingTimeMillis.let {
                             if (!isGroupOverLimits) it
                             else it.coerceIn(presets.first(), presets.last())
                         }
@@ -303,26 +367,50 @@ class SharingStartViewModel(
             }
             null -> {
                 val presets = SharingDurationPreset.presets(isWithLimits = false)
-                _uiState.update {
-                    it.copy(
+                _uiState.update { state ->
+                    state.copy(
                         groupState = Payload.Success(null),
                         devicesLimit = 0,
                         showNotifyOthers = false,
                         showDeviceStatus = false,
                         isPremiumSectionVisible = false,
                         notifyOthers = false,
-                        sharingPresetsMillis = presets,
-                        sharingTimeMillis = it.sharingTimeMillis
+                        sharingPresetsMillis = presets
                     )
                 }
             }
         }
     }
 
-    fun startSharing() {
+    private fun startSharing() {
 
-        if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty() && _uiState.value.canShare) {
-            proceedWithSharing()
+        if (_uiState.value.isNewContract || _uiState.value.isNameChanged) {
+            if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty() && _uiState.value.canShare) {
+                proceedWithSharing()
+                return
+            }
+        } else {
+            // update
+            coroutineScope.launch {
+                val currentGroup = currentGroup.value
+                if (currentGroup != null) {
+                    val contract = sharingManager.currentSharingContractForGroup(id = currentGroup.id.asGroupOrSpaceId())
+                    val newContract = contract?.copy(
+                        shareBattery = _uiState.value.shareBattery,
+                        shareSpeed = _uiState.value.shareSpeed,
+                        shareElevation = _uiState.value.shareElevation,
+                        shareNetwork = _uiState.value.shareNetwork,
+                        shareDeviceStatus = _uiState.value.shareDeviceStatus,
+                        approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
+                        saveToHistory = _uiState.value.saveToHistory,
+                    )
+
+                    if (newContract != null) {
+                        sharingManager.startSharing(newContract)
+                        _eventChannel.send(SharingStartScreenEvent.Updated)
+                    }
+                }
+            }
             return
         }
 
@@ -564,6 +652,20 @@ class SharingStartViewModel(
             if (!deviceStatus.networkStatus.isOnline) {
                 add(ConditionErrorType.Network)
             }
+        }
+    }
+
+    private fun stopSharing() {
+        val groupId = currentGroupId ?: return
+        coroutineScope.launch {
+            sharingManager.stopSharing(groupId = groupId.asGroupOrSpaceId(), deleteContract = false)
+            placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
+            try {
+                deviceStatusProcessor.pushDeviceStatus(groupId = groupId.asGroupOrSpaceId())
+            } catch (e: Exception) {
+                logg.w("Error while updating user status", e)
+            }
+            setSelectedGroup(currentGroup.value)
         }
     }
 }

@@ -698,4 +698,5 @@
     <string name="personalSpace_section_other">Other devices &amp; sessions</string>
     <string name="personalSpace_section_empty">No devices found</string>
     <string name="personalSpace_tracking_encryption_info">Your location and related data are always **end-to-end encrypted** and only accessible to you on your devices.</string>
+    <string name="personalSpace_tracking_status_infinite">**Always on** tracking is active</string>
 </resources>

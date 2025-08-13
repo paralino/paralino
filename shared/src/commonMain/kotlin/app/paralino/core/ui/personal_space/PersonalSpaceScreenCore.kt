@@ -215,7 +215,8 @@ fun PersonalSpaceScreenCore(
                             contentAlignment = Alignment.Center
                         ) {
                             GroupDetailSharingStatusElement(
-                                contract = uiState.sharingStatus!!
+                                contract = uiState.sharingStatus!!,
+                                isPersonalSpace = true
                             )
                         }
                     }

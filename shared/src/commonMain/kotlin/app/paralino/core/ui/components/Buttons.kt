@@ -54,7 +54,8 @@ fun FilledButton(
     modifier: Modifier = Modifier,
     style: ButtonStyle,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
-    elevation: Dp = 4.dp,
+    enabled: Boolean = true,
+    elevation: Dp = if (enabled) 4.dp else 0.dp,
     icon: Painter? = null,
     state: AppButtonState = AppButtonState.CONTENT,
     onClick: () -> Unit,
@@ -97,7 +98,8 @@ fun FilledButton(
             })
             .shadow(elevation = elevation, shape = style.shape, spotColor = Color.DarkGray)
             .clip(style.shape)
-            .background(color = colors.backgroundColor(enabled = true).value)
+            .background(color = colors.backgroundColor(enabled = enabled).value)
+            .alpha(if (enabled) 1f else 0.4f)
             .padding(style.paddingValues),
         contentAlignment = Alignment.Center
     ) {
@@ -114,7 +116,7 @@ fun FilledButton(
             animationSpec = tween(durationMillis = 300)
         )
 
-        CompositionLocalProvider(LocalContentColor provides colors.contentColor(enabled = true).value) {
+        CompositionLocalProvider(LocalContentColor provides colors.contentColor(enabled = enabled).value) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -139,7 +141,7 @@ fun FilledButton(
 
             if (newState == AppButtonState.LOADING || loadingAlpha > 0f) {
                 CircularProgressIndicator(
-                    color = colors.contentColor(enabled = true).value,
+                    color = colors.contentColor(enabled = enabled).value,
                     strokeWidth = 2.dp,
                     modifier = Modifier
                         .size(style.minContentHeight)
@@ -151,7 +153,7 @@ fun FilledButton(
                 Icon(
                     painter = CoreAppIcons.Check.asPainterResource(),
                     contentDescription = null,
-                    tint = colors.contentColor(enabled = true).value,
+                    tint = colors.contentColor(enabled = enabled).value,
                     modifier = Modifier
                         .size(style.minContentHeight)
                         .alpha(checkAlpha)
