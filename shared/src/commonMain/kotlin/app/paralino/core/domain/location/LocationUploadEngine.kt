@@ -175,15 +175,13 @@ class LocationUploadEngine constructor(
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {
-        val payloads = triggerRemoteOnly {
-            val contracts = locationSharingManager.allValidContracts()
-            contracts.mapNotNull { contract ->
-                getLocationPayload(
-                    groupId = contract.groupOrSpaceId,
-                    data = data,
-                    contract = contract
-                )
-            }
+        val contracts = locationSharingManager.allValidContracts()
+        val payloads = contracts.mapNotNull { contract ->
+            getLocationPayload(
+                groupId = contract.groupOrSpaceId,
+                data = data,
+                contract = contract
+            )
         }
 
         // save location to history locally
