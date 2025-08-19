@@ -76,7 +76,10 @@ class UserPersonalSpaceLocalDataSource constructor(
             placeEntity = personalPlaces.map { placeMapper.remote2Local(it.place) },
             placeSettings = personalPlaces.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } }
         )
-        placeActivity.recreatePlacesForGroup(groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(), places = personalPlaces)
+        placeActivity.recreatePlacesForGroup(
+            groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+            places = personalPlaces
+        )
     }
 
     suspend fun updateOrCreatePlace(place: GroupPlaceWithSettingsRaw) {

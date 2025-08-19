@@ -123,18 +123,6 @@ interface GroupRelatedEntitiesDao {
 
     @Transaction
     suspend fun recreateAllPlacesWithSettings(
-        placeEntity: List<PlaceEntity>,
-        placeSettings: List<PlaceSettingsEntity>
-    ) {
-        clearAllPlaces()
-        clearAllPlaceSettings()
-
-        createPlaces(placeEntity)
-        createPlaceSettings(placeSettings)
-    }
-
-    @Transaction
-    suspend fun recreateAllPlacesWithSettings(
         groupId: String,
         placeEntity: List<PlaceEntity>,
         placeSettings: List<PlaceSettingsEntity>
@@ -192,8 +180,8 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM placeEntity WHERE groupId = :groupId")
     suspend fun deletePlacesForGroup(groupId: String)
 
-    @Query("DELETE FROM placeEntity")
-    suspend fun clearAllPlaces()
+    @Query("DELETE FROM placeEntity WHERE isInPersonalSpace = 0")
+    suspend fun clearAllGroupPlaces()
 
 
 
@@ -213,8 +201,8 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM placeSettingsEntity WHERE groupId = :groupId")
     suspend fun deleteSettingsForGroup(groupId: String)
 
-    @Query("DELETE FROM placeSettingsEntity")
-    suspend fun clearAllPlaceSettings()
+    @Query("DELETE FROM placeSettingsEntity WHERE isInPersonalSpace = 0")
+    suspend fun clearAllGroupPlaceSettings()
 
 
 
@@ -336,8 +324,8 @@ interface GroupRelatedEntitiesDao {
         clearAllGroupsObject()
         clearAllMembers()
         clearAllMemberLocations()
-        clearAllPlaces()
-        clearAllPlaceSettings()
+        clearAllGroupPlaces()
+        clearAllGroupPlaceSettings()
 
         createGroups(groups)
         createMembers(members)

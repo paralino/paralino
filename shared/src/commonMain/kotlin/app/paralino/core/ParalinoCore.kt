@@ -212,7 +212,7 @@ val mappersModule = module {
     single { PersonalCodeMapperLocal(get()) }
     single { PlaceSettingsMapperCore() }
     single { PlaceMapperCore(get(), get(), get(), get()) }
-    single { GroupPlaceMapperLocal(get(), get()) }
+    single { GroupPlaceMapperLocal(get(), get(), get()) }
     single { PendingLocationHistoryMapper(get(), get()) }
     single { LocationHistoryMapper(get(), get(), get()) }
 }
