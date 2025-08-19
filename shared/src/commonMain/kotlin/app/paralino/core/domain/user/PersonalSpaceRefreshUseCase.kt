@@ -26,6 +26,7 @@ class PersonalSpaceRefreshUseCase(
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(key = "personal_space_refresh", timeMillis = cacheTimeMillis),
             remote = {
+                userRepository.refreshUserMaybe(timeDelayMillis = cacheTimeMillis)
                 getPersonalSpaceData()
                     .also { local.recreateDevicesWithPlaces(it) }
             }

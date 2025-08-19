@@ -25,7 +25,7 @@ import kotlin.time.Duration.Companion.minutes
 class RefreshEverythingUseCase(
     private val remote: GroupsRemoteSource,
     private val groupLocal: UserGroupLocalDataSource,
-    private val deviceLocal: UserPersonalSpaceLocalDataSource,
+    private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
     private val userRepository: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
     private val cryptoKEKRefreshUseCase: CryptoKEKRefreshUseCase,
@@ -113,6 +113,7 @@ class RefreshEverythingUseCase(
                     refreshAllGroupsWithPlaces()
                 }
             )
+            userRepository.refreshUserMaybe(timeDelayMillis = cacheTimeMillis)
             placeActivityUploadEngine.syncPendingEventsNow()
         } catch (e: Exception) {
             logg.tag("full_refresh").w("Error refreshing all groups - ${e.message}")
@@ -132,7 +133,7 @@ class RefreshEverythingUseCase(
                 }
                 .let { personalSpaceRefreshUseCase.handleGroupKeysUpdate(it) }
 
-            deviceLocal.recreateDevicesWithPlaces(data = newPersonalData)
+            personalSpaceLocal.recreateDevicesWithPlaces(data = newPersonalData)
 
             val newGroups = allData.groups
                 .also { cryptoKEKRefreshUseCase.refreshAllKeys(it, force = false) }
