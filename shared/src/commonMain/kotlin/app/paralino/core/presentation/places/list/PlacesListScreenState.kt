@@ -14,7 +14,7 @@ data class PlacesListScreenState constructor(
     val groupId: GroupOrSpaceId,
     val groupImage: ImageModel,
     val groupName: String,
-    val placesLimit: Int,
+    val placesLimit: Int?,
     val isGroupOwner: Boolean,
     val canShowPlacesLimit: Boolean,
     val shouldShowPlanBanner: Boolean,
@@ -25,8 +25,8 @@ data class PlacesListScreenState constructor(
     val markers: List<MapPinData> = places.filter { it.lat != null && it.lng != null }
         .map { MapPinData(groupId, it) }
 
-    val placesLimitReached: Boolean = placesLimit <= places.size
-    val isOverLimit: Boolean = places.size > placesLimit
+    val placesLimitReached: Boolean = placesLimit != null && placesLimit <= places.size
+    val isOverLimit: Boolean = placesLimit != null && places.size > placesLimit
     val isPersonalSpace = groupId.isPersonalSpace
 }
 

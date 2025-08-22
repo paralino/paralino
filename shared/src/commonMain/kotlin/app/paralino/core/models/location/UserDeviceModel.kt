@@ -43,7 +43,11 @@ data class UserPersonalSpaceModel(
     }
 
     fun arePlacesOverLimits(): Boolean {
-        return placesCount > plan.placesLimit
+        return if (plan.personalPlacesLimit >= 0) {
+            placesCount > plan.personalPlacesLimit
+        } else {
+            false
+        }
     }
 
     fun areDevicesOverLimits(): Boolean {

@@ -73,7 +73,7 @@ class GroupStateManager(
                             text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
                             duration = SnackbarDuration.Forever
                         )
-                        delay(1000)
+                        delay(2000)
                         eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
                     } else {
                         messageDispatcher.showSnackbar(
@@ -93,12 +93,11 @@ class GroupStateManager(
         groupIdData.update { UserGroup.groupPersonalDevicesId.asGroupOrSpaceId() }
         val personalSpace = personalSpaceRepo.personalSpaceState.value.data
         if (personalSpace?.isSpaceOverLimits() == true) {
-            // TODO change text
             messageDispatcher.showSnackbar(
-                text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
                 duration = SnackbarDuration.Forever
             )
-            delay(1000)
+            delay(2000)
             eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
         }
     }

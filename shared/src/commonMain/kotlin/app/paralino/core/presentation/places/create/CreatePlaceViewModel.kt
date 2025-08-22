@@ -2,8 +2,9 @@ package app.paralino.core.presentation.places.create
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
-import app.paralino.core.domain.user.LimitCheckState
+import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.DeviceType
@@ -23,6 +24,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +44,7 @@ class CreatePlaceViewModel(
     private val placesLocalDataSource: PlacesLocalDataSource,
     private val deviceApiProvider: IDeviceApiProvider,
     private val premiumStatusManager: PremiumStatusManager,
+    private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
@@ -109,7 +112,9 @@ class CreatePlaceViewModel(
 
             is CreatePlaceScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
-                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                    is MainAlertDialog.ServiceMaxLimit,
+                    is MainAlertDialog.PlanLimitForOwner,
+                    is MainAlertDialog.PlanLimitForMembers -> {
                         _uiState.update {
                             it.mapSuccess { it.copy(alertDialog = null) }
                         }
@@ -179,31 +184,42 @@ class CreatePlaceViewModel(
     }
 
     private suspend fun checkPlaceLimits(): Boolean {
-        val result = premiumStatusManager.checkPlaceCountLimits(groupId.asGroupOrSpaceId())
-        when (result) {
-            is LimitCheckState.MaxLimitReached -> {
+        val premiumStatus = premiumStatusManager.checkPlaceCountLimits(groupId.asGroupOrSpaceId())
+        when (premiumStatus) {
+            is PremiumStatusLimitState.ServiceLimitReached -> {
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
-                            alertDialog = MainAlertDialog.PlanLimit(
+                            alertDialog = MainAlertDialog.ServiceMaxLimit(
                                 content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                                limit = result.limit
+                                limit = premiumStatus.payload.limit ?: -1
                             )
                         )
                     }
                 }
                 return false
             }
-            is LimitCheckState.OverLimits -> {
-                if (result.isOwner) {
+
+            is PremiumStatusLimitState.PlanLimitReached -> {
+                if (premiumStatus.payload.isOwner) {
                     messageDispatcher.showSnackbar(MR.strings.places_create_plan_limit_info.localizedString())
+                    _uiState.update {
+                        it.mapSuccess {
+                            it.copy(
+                                alertDialog = MainAlertDialog.PlanLimitForOwner(
+                                    content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                                    limit = premiumStatus.payload.limit ?: -1
+                                )
+                            )
+                        }
+                    }
                 } else {
                     _uiState.update {
                         it.mapSuccess {
                             it.copy(
                                 alertDialog = MainAlertDialog.PlanLimitForMembers(
                                     content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                                    limit = result.limit
+                                    limit = premiumStatus.payload.limit ?: -1
                                 )
                             )
                         }
@@ -211,11 +227,13 @@ class CreatePlaceViewModel(
                 }
                 return false
             }
-            LimitCheckState.WithinLimits,
-            LimitCheckState.Unknown -> {}
+
+            is PremiumStatusLimitState.WithinLimits,
+            null -> {
+            }
         }
 
-        return result == LimitCheckState.WithinLimits
+        return premiumStatus is PremiumStatusLimitState.WithinLimits
     }
 
     private fun Flow<Unit>.processPlaceFlow() {
@@ -234,10 +252,12 @@ class CreatePlaceViewModel(
                     is Payload.Error -> {
                         if (data.exception.asRemoteException()?.code == 402) {
                             if (checkPlaceLimits()) {
-                                _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
+                                refreshEverythingUseCase.scheduleRefreshAllGroupsWithPlaces()
+                                showSnackbar(data.exception.errorString())
+                                checkPlaceLimits()
                             }
                         } else {
-                            _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
+                            showSnackbar(data.exception.errorString())
                         }
                     }
 

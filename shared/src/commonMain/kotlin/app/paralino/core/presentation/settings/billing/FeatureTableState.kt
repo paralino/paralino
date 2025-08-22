@@ -127,7 +127,13 @@ data class FeatureTableState(
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_ALWAYS,
                         values = plans.map {
                             FeatureTableItemValue(
-                                name = it.config.placesLimit.toString(),
+                                name = it.config.placesLimit.let {
+                                    if (it >= 0) {
+                                        it.toString()
+                                    } else {
+                                        MR.strings.paywall_feature_value_unlimited.localizedString()
+                                    }
+                                },
                                 planType = it.type,
                                 highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL

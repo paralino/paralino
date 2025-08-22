@@ -22,6 +22,7 @@ data class PersonalSpaceScreenState(
     val devicesLimit: Int,
     val shouldShowPlanBanner: Boolean,
     val arePlacesOverLimit: Boolean?,
+    val isSpaceOverLimit: Boolean?,
     val errors: List<ConditionErrorType>,
     val plan: PlanConfig,
     val alertDialog: MainAlertDialog?

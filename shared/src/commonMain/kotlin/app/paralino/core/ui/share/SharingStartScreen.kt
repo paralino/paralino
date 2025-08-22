@@ -60,6 +60,7 @@ import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.OnboardingSkipButton
+import app.paralino.core.ui.components.PlanLimitSmallUpgradeButton
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
@@ -209,7 +210,7 @@ fun SharingStartScreenCore(
                 modifier = Modifier,
                 style = ButtonStyle.BIG,
                 state = AppButtonState.loadingState(state.loadingAction),
-                enabled = state.isDifferentThanContract,
+                enabled = state.isStartButtonEnabled,
                 icon = if (!state.isNewContract) {
                     null
                 } else if (state.canShare) {
@@ -245,6 +246,22 @@ fun SharingStartScreenCore(
                     onSkip = { vm.onEvent(SharingStartScreenUiEvent.StopSharing) }
                 )
             }
+        } else if (state.shouldUpgradePlan) {
+            @Composable {
+                PlanLimitSmallUpgradeButton(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(MR.strings.groups_sharing_plan_limit_chip_owner),
+                    onClick = { openSubscriptions() }
+                )
+            }
+        } else if (state.needsPlanUpgrade) {
+            @Composable {
+                PlanLimitSmallUpgradeButton(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(MR.strings.groups_sharing_plan_limit_chip_member),
+                    onClick = { vm.onEvent(SharingStartScreenUiEvent.StartSharing) }
+                )
+            }
         } else {
             null
         }
@@ -267,6 +284,21 @@ fun SharingStartScreenCore(
                     bottom = it.calculateBottomPadding() + 40.dp
                 ),
         ) {
+            AnimatedVisibility(visible = state.areLimitsExceeded) {
+                NoticeInfoChip(
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 12.dp),
+                    text = if (state.isPersonalSpace) {
+                        stringResource(MR.strings.plan_limit_overLimit_tracking_banner_title)
+                    } else {
+                        stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title)
+                    },
+                    icon = CoreAppIcons.Warning.asPainterResource(),
+                    backgroundColor = MaterialTheme.colors.error,
+                    textColor = MaterialTheme.colors.onError,
+                    iconTint = MaterialTheme.colors.onError
+                )
+            }
+
             AnimatedVisibility(visible = state.errorsAndWarnings.isNotEmpty()) {
                 Column(modifier = Modifier.animateContentSize()) {
                     Spacer(

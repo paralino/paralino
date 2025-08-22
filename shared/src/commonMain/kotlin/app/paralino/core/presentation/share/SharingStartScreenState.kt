@@ -1,11 +1,9 @@
 package app.paralino.core.presentation.share
 
+import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
-import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -39,6 +37,9 @@ data class SharingStartScreenState constructor(
     val isPremiumSectionVisible: Boolean = false,
     val devicesLimit: Int = 0,
     val devicesCount: Int? = null,
+    val premiumStatus: PremiumStatusLimitState? = null,
+    val areLimitsExceeded: Boolean = false,
+    val isDeviceRegistered: Boolean = true,
     val currentContract: LocationSharingContract? = null,
     val errors: List<ConditionErrorType> = emptyList(),
     val warnings: List<ConditionErrorType> = emptyList(),
@@ -68,7 +69,9 @@ data class SharingStartScreenState constructor(
     val isLongTerm: Boolean get() = LocationSharingContract.isLongTerm(sharingTimeMillis)
     val canShare: Boolean =
         errors.isEmpty() && groupState.data != null && groupState.data?.uiType != GroupItemState.GroupUiType.UNVERIFIED
+
     val isPersonalSpace = groupState.data?.isPersonalSpace == true
+    val isOwner = groupState.data?.isCurrentUserOwner == true
 
     val isDifferentThanContract: Boolean = currentContract?.let { contract ->
         contract.shareSpeed != shareSpeed ||
@@ -80,6 +83,10 @@ data class SharingStartScreenState constructor(
                 isNameChanged
 //                || contract.approximateLocationInMeters != approximateLocationMeters
     } ?: true
+
+    val isStartButtonEnabled = isDifferentThanContract && (premiumStatus is PremiumStatusLimitState.WithinLimits || isDeviceRegistered)
+    val needsPlanUpgrade = premiumStatus is PremiumStatusLimitState.PlanLimitReached && !isDeviceRegistered
+    val shouldUpgradePlan = isOwner && needsPlanUpgrade
 }
 
 sealed class SharingStartScreenEvent() {

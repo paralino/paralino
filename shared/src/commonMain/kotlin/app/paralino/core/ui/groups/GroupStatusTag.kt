@@ -134,16 +134,12 @@ fun FlowRowScope.GroupStatusTagContent(
     }
 
     val tagBackgroundColor = when (status) {
-        GroupStatusTagType.INACTIVE_NOT_ACCURATE,
-        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
-        GroupStatusTagType.IDLE_NOT_ACCURATE -> AppColors.highlightGold
+        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE-> AppColors.highlightGold
         else -> tagIconColor
     }
 
-    val tagTextColor = when (status) {
-        GroupStatusTagType.INACTIVE_NOT_ACCURATE,
-        GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
-        GroupStatusTagType.IDLE_NOT_ACCURATE -> AppColors.darkBackground
+    val tagTextColor = when (tagIconColor) {
+        AppColors.highlightGold -> AppColors.darkBackground
 
         else -> MaterialTheme.colors.contentColorFor(tagIconColor)
             .takeOrElse { MaterialTheme.colors.onPrimary }
@@ -157,7 +153,7 @@ fun FlowRowScope.GroupStatusTagContent(
         GroupStatusTagType.SHARING_ACTIVE_NOT_ACCURATE,
         GroupStatusTagType.IDLE_NOT_ACCURATE -> stringResource(resource = MR.strings.group_members_status_location_inaccurate)
 
-        GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title)
+        GroupStatusTagType.OVER_LIMITS -> stringResource(resource = MR.strings.plan_limit_alert_title)
         GroupStatusTagType.UNVERIFIED -> stringResource(resource = MR.strings.dashboard_groups_section_unverified)
         GroupStatusTagType.INACTIVE -> stringResource(resource = MR.strings.group_members_status_inactive)
         GroupStatusTagType.NOT_SHARING -> stringResource(resource = MR.strings.group_members_status_not_sharing)

@@ -3,7 +3,6 @@ package app.paralino.core.ui.components.dialogs
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import app.paralino.core.MR
-import app.paralino.core.domain.user.UserSessionState
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.models.user.UserSession
@@ -613,7 +612,7 @@ sealed interface MainAlertDialog {
         )
     }
 
-    data class PlanLimit(
+    data class ServiceMaxLimit(
         val content: String,
         val limit: Int
     ) : MainAlertDialog {
@@ -622,7 +621,27 @@ sealed interface MainAlertDialog {
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(resource = MR.strings.plan_limit_alert_title),
-            message = MR.strings.plan_limit_alert_message.localizedString(content, limit),
+            message = MR.strings.plan_limit_serviceMax_alert_message.localizedString(content, limit),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+            ),
+        )
+    }
+
+    data class PlanLimitForOwner(
+        val content: String,
+        val limit: Int
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.plan_limit_alert_title),
+            message = MR.strings.plan_limit_info_alert_message.localizedString(content, limit),
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
@@ -641,7 +660,7 @@ sealed interface MainAlertDialog {
 
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
-            title = stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title),
+            title = stringResource(resource = MR.strings.plan_limit_alert_title),
             message = MR.strings.plan_limit_contact_owner_alert_message.localizedString(content, limit),
             buttons = listOf(
                 AlertDialogButtonData(

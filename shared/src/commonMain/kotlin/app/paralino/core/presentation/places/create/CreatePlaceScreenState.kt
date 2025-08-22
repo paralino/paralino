@@ -68,7 +68,6 @@ data class CreatePlaceScreenState constructor(
 }
 
 sealed class CreatePlaceScreenEvent() {
-    data class Error(val error: Throwable): CreatePlaceScreenEvent()
     object MissingInfo: CreatePlaceScreenEvent()
     object MissingLocation: CreatePlaceScreenEvent()
     object PlaceUpdated: CreatePlaceScreenEvent()

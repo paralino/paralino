@@ -2,6 +2,7 @@ package app.paralino.core.domain.user
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -87,35 +88,98 @@ class PremiumStatusManager(
         hasGroupOverLimits.update { false }
     }
 
-    suspend fun checkPlaceCountLimits(groupId: GroupOrSpaceId): LimitCheckState {
-        val (limit, placeCount, isGroupOwner) = if (groupId.isPersonalSpace) {
-            val space = personalSpaceRepo.personalSpaceState.value.data ?: return LimitCheckState.Unknown
-            Triple(space.plan.placesLimit, space.placesCount, true)
+    suspend fun checkPlaceCountLimits(groupId: GroupOrSpaceId): PremiumStatusLimitState? {
+        val payload = if (groupId.isPersonalSpace) {
+            val space = personalSpaceRepo.personalSpaceState.value.data ?: return null
+            PremiumStatusLimitPayload(
+                plan = space.plan,
+                limit = space.plan.personalPlacesLimit.takeIf { it >= 0 },
+                count = space.placesCount,
+                isOwner = true
+            )
         } else {
             val group = groupLocalDataSource.allGroupsState.value.data
-                ?.firstOrNull { it.group.id == groupId.id } ?: return LimitCheckState.Unknown
-            val limit = group.group.placesLimit(remoteConfigRepo.getConfigOnce())
-            Triple(limit, group.placesCount, group.group.isCurrentUserOwner)
+                ?.firstOrNull { it.group.id == groupId.id } ?: return null
+            PremiumStatusLimitPayload(
+                plan = group.group.planConfig(remoteConfigRepo.getConfigOnce()),
+                limit = group.group.placesLimit(remoteConfigRepo.getConfigOnce()),
+                count = group.placesCount,
+                isOwner = group.group.isCurrentUserOwner
+            )
+
         }
 
         val maxPlaceLimit = remoteConfigRepo.getConfigOnce()
             .plans
             .maxByOrNull { it.planTypeEnum.order }
-            ?.placesLimit
+            ?.let {
+                if (groupId.isPersonalSpace) it.personalPlacesLimit
+                else it.placesLimit
+            }?.takeIf { it >= 0 }
 
-        if (maxPlaceLimit != null && isGroupOwner && placeCount >= maxPlaceLimit) {
-            return LimitCheckState.MaxLimitReached(limit = limit, isOwner = isGroupOwner)
-        } else if (limit in 0..placeCount) {
-            return LimitCheckState.OverLimits(limit = limit, isOwner = isGroupOwner)
+        if (maxPlaceLimit != null && payload.isOwner && payload.count >= maxPlaceLimit) {
+            return PremiumStatusLimitState.ServiceLimitReached(payload)
+        } else if (payload.limit != null && payload.limit in 0..payload.count) {
+            return PremiumStatusLimitState.PlanLimitReached(payload)
         } else {
-            return LimitCheckState.WithinLimits
+            return PremiumStatusLimitState.WithinLimits(payload)
+        }
+    }
+
+    suspend fun checkDeviceCountLimits(groupId: GroupOrSpaceId): PremiumStatusLimitState? {
+        val payload = if (groupId.isPersonalSpace) {
+            val space = personalSpaceRepo.personalSpaceState.value.data ?: return null
+            PremiumStatusLimitPayload(
+                plan = space.plan,
+                limit = space.plan.personalDevicesLimit,
+                count = space.activeDeviceCount,
+                isOwner = true
+            )
+        } else {
+            val group = groupLocalDataSource.allGroupsState.value.data
+                ?.firstOrNull { it.group.id == groupId.id } ?: return null
+            val limit = group.group.devicesLimit(remoteConfigRepo.getConfigOnce())
+            PremiumStatusLimitPayload(
+                plan = group.group.planConfig(remoteConfigRepo.getConfigOnce()),
+                limit = limit,
+                count = group.devicesCount,
+                isOwner = group.group.isCurrentUserOwner
+            )
+        }
+
+        val maxDeviceLimit = remoteConfigRepo.getConfigOnce()
+            .plans
+            .maxByOrNull { it.planTypeEnum.order }
+            ?.let {
+                if (groupId.isPersonalSpace) {
+                    it.personalDevicesLimit
+                } else {
+                    it.devicesLimit
+                }
+            }
+
+        if (maxDeviceLimit != null && payload.isOwner && payload.count >= maxDeviceLimit) {
+            return PremiumStatusLimitState.ServiceLimitReached(payload)
+        } else if (payload.limit in 0..payload.count) {
+            return PremiumStatusLimitState.PlanLimitReached(payload)
+        } else {
+            return PremiumStatusLimitState.WithinLimits(payload)
         }
     }
 }
 
-sealed interface LimitCheckState {
-    data class MaxLimitReached(val limit: Int, val isOwner: Boolean): LimitCheckState
-    data class OverLimits(val limit: Int, val isOwner: Boolean): LimitCheckState
-    data object WithinLimits: LimitCheckState
-    data object Unknown: LimitCheckState
+data class PremiumStatusLimitPayload(
+    val plan: PlanConfig,
+    val limit: Int?,
+    val count: Int,
+    val isOwner: Boolean
+) {
+    val isOverLimit = if (limit == null || limit < 0) false else count > limit
+}
+
+sealed interface PremiumStatusLimitState {
+    val payload: PremiumStatusLimitPayload
+    data class ServiceLimitReached(override val  payload: PremiumStatusLimitPayload): PremiumStatusLimitState
+    data class PlanLimitReached(override val  payload: PremiumStatusLimitPayload): PremiumStatusLimitState
+    data class WithinLimits(override val  payload: PremiumStatusLimitPayload): PremiumStatusLimitState
 }

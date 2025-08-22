@@ -183,9 +183,9 @@ fun GroupListItem(
                 contentDescription = null,
                 tint = MaterialTheme.colors.onPrimary,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.TopEnd)
                     .size(width = 42.dp, height = 16.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, bottomEnd = 16.dp))
+                    .clip(RoundedCornerShape(bottomStart = 16.dp, topEnd = 16.dp))
                     .background(MaterialTheme.colors.primary)
                     .padding(1.dp)
             )

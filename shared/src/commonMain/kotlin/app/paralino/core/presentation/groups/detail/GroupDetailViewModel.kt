@@ -184,7 +184,8 @@ class GroupDetailViewModel(
                     remoteConfigRepo.getConfigOnce()
                 ),
                 errors = errors,
-                arePlacesOverLimit = groupWithMetadata.value?.isGroupOverLimits(remoteConfigRepo.getConfigOnce())
+                arePlacesOverLimit = groupWithMetadata.value?.arePlacesOverLimits(remoteConfigRepo.getConfigOnce()),
+                isGroupOverLimit = groupWithMetadata.value?.isGroupOverLimits(remoteConfigRepo.getConfigOnce()),
             )
         }
             .mapToPayload { it }
@@ -208,7 +209,8 @@ class GroupDetailViewModel(
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
-                            arePlacesOverLimit = group.arePlacesOverLimits(remoteConfigRepo.getConfigOnce())
+                            arePlacesOverLimit = group.arePlacesOverLimits(remoteConfigRepo.getConfigOnce()),
+                            isGroupOverLimit = group.isGroupOverLimits(remoteConfigRepo.getConfigOnce()),
                         )
                     }
                 }

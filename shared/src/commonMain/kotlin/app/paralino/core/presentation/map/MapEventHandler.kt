@@ -4,7 +4,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePlace
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
-import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenGroupDetails
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaceDetails
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaces
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenSharingStart
@@ -138,7 +137,7 @@ class MapEventHandler(
 
     private fun handleDialogAction(event: MapHomeScreenUiEvent.DialogAction) {
         when (event.action.dialog) {
-            is MainAlertDialog.PlanLimit -> {
+            is MainAlertDialog.ServiceMaxLimit -> {
                 updateUiState(
                     when (val currentState = uiState.value) {
                         is MapHomeScreenState.Empty -> currentState.copy(alertDialog = null)

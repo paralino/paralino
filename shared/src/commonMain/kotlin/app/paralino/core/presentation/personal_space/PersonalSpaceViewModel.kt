@@ -26,6 +26,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.errorString
@@ -34,12 +35,16 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -75,7 +80,8 @@ class PersonalSpaceViewModel(
             devicesWithSessions = emptyList(),
             devicesLimit = 0,
             shouldShowPlanBanner = false,
-            arePlacesOverLimit = false,
+            arePlacesOverLimit = null,
+            isSpaceOverLimit = null,
             errors = emptyList(),
             plan = userRepo.userPlans.value.highestValidPlanConfig,
             alertDialog = null
@@ -160,8 +166,8 @@ class PersonalSpaceViewModel(
                     sharingStatus = sharingState,
                     devicesLimit = devicesLimit,
                     shouldShowPlanBanner = !userPlans.highestValidPlanConfig.planTypeEnum.isPremium,
-                    // TODO check place limit when it is done
-                    arePlacesOverLimit = false,
+                    arePlacesOverLimit = personalSpaceData.arePlacesOverLimits(),
+                    isSpaceOverLimit = personalSpaceData.isSpaceOverLimits(),
                     errors = errors,
                     plan = personalSpaceData.plan
                 )
@@ -178,10 +184,25 @@ class PersonalSpaceViewModel(
             .mapToPayload { it }
             .onEach { result ->
                 if (result is Payload.Error) {
-                    showSnackbar(result.exception.toString())
+                    showSnackbar(result.exception.errorString())
                 }
             }
             .flowOn(Dispatchers.IO)
+            .launchIn(coroutineScope)
+
+        _uiState
+            .filter { it.isSpaceOverLimit == true }
+            .map { it.isSpaceOverLimit == true }
+            .distinctUntilChanged()
+            .onEach {
+                showSnackbar(
+                    text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
+                    duration = SnackbarDuration.Forever
+                )
+
+                delay(1000)
+                _eventChannel.trySend(PersonalSpaceScreenEvent.OpenPaywall)
+            }
             .launchIn(coroutineScope)
     }
 
@@ -196,7 +217,7 @@ class PersonalSpaceViewModel(
                         )
                     }
             } catch (e: Exception) {
-                showSnackbar(e.toString())
+                showSnackbar(e.errorString())
                 emptyList()
             }
 

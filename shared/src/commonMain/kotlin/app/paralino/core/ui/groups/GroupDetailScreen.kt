@@ -180,7 +180,7 @@ fun GroupDetailScreenCore(
             }
         }
 
-        is MainAlertDialog.PlanLimit -> {
+        is MainAlertDialog.ServiceMaxLimit -> {
             dialog.Show {
                 showDialog = null
             }
@@ -256,6 +256,17 @@ fun GroupDetailScreenCore(
                             NoticeInfoChip(
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                                 text = stringResource(MR.strings.plan_limit_overLimit_places_banner_title),
+                                icon = CoreAppIcons.Warning.asPainterResource(),
+                                backgroundColor = MaterialTheme.colors.error,
+                                textColor = MaterialTheme.colors.onError,
+                                iconTint = MaterialTheme.colors.onError
+                            )
+                        }
+                    } else if (state.data.isGroupOverLimit == true) {
+                        this.item(key = "over_limit_notice") {
+                            NoticeInfoChip(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                text = stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title),
                                 icon = CoreAppIcons.Warning.asPainterResource(),
                                 backgroundColor = MaterialTheme.colors.error,
                                 textColor = MaterialTheme.colors.onError,

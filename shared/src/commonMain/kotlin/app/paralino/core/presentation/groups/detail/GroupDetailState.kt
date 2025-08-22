@@ -16,6 +16,7 @@ data class GroupDetailScreenState(
     val canShowMembersLimit: Boolean,
     val shouldShowPlanBanner: Boolean,
     val arePlacesOverLimit: Boolean?,
+    val isGroupOverLimit: Boolean?,
     val errors: List<ConditionErrorType>
 )
 

@@ -87,13 +87,13 @@ data class UserGroup constructor(
         }
     }
 
-    fun placesLimit(config: ConfigData): Int {
-        if (isPlanExpired) {
-            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).placesLimit
+    fun placesLimit(config: ConfigData): Int? {
+        return if (isPlanExpired) {
+            config.planConfigForPlanTypeOrDefault(fallbackPlanType).placesLimit
         } else {
-            return placesLimitOverride?.toInt()
+            placesLimitOverride?.toInt()
                 ?: config.planConfigForPlanTypeOrDefault(planType).placesLimit
-        }
+        }.takeIf { it >= 0 }
     }
 
     fun historyDaysLimit(config: ConfigData): Int {
@@ -134,7 +134,8 @@ data class UserGroupWithMetadata constructor(
     val image: ImageModel get() = group.image
 
     fun arePlacesOverLimits(config: ConfigData): Boolean {
-        return placesCount > group.placesLimit(config)
+        val limit = group.placesLimit(config) ?: return true
+        return placesCount > limit
     }
 
     fun isGroupOverLimits(config: ConfigData): Boolean {

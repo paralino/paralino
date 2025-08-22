@@ -187,6 +187,17 @@ fun PersonalSpaceScreenCore(
                             iconTint = MaterialTheme.colors.onError
                         )
                     }
+                } else if (uiState.isSpaceOverLimit == true) {
+                    this.item(key = "over_limit_notice") {
+                        NoticeInfoChip(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                            text = stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title),
+                            icon = CoreAppIcons.Warning.asPainterResource(),
+                            backgroundColor = MaterialTheme.colors.error,
+                            textColor = MaterialTheme.colors.onError,
+                            iconTint = MaterialTheme.colors.onError
+                        )
+                    }
                 }
 
                 this.items(items = uiState.errors, key = { "error_$it" }) {
