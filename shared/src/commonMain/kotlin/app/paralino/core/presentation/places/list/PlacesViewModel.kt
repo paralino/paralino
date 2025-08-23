@@ -24,6 +24,7 @@ import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -70,7 +71,7 @@ class PlacesViewModel(
             loadGroupPlaces(groupId = groupId)
         }
             .onEach { state -> _uiState.update { Payload.Success(state) } }
-            .catch { _eventChannel.send(PlacesScreenEvent.Error(it)) }
+            .catch { showSnackbar(it.errorString()) }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
@@ -124,7 +125,7 @@ class PlacesViewModel(
                 isGroupOwner = true,
                 places = placesState,
                 canShowPlacesLimit = placesLimit != null,
-                 shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
+                shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
                     // in onboarding only show upgrade banner if places limit is reached
                     canShowPlanBanner && placesState.size >= placesLimit
                 } else {
@@ -210,12 +211,14 @@ class PlacesViewModel(
                         payload = IPushNotificationPresenter.Payload(
                             notificationId = event.content.hashCode(),
                             notificationGroupId = when (appPrefs.notificationGrouping) {
-                            NotificationGroupingType.NONE -> null
-                            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
-                            NotificationGroupingType.TYPE -> "place_activity"
-                            NotificationGroupingType.GROUP -> _uiState.value.data?.groupId?.id ?: "place_activity"
-                            NotificationGroupingType.PERSON -> appPrefs.userId
-                        },
+                                NotificationGroupingType.NONE -> null
+                                NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+                                NotificationGroupingType.TYPE -> "place_activity"
+                                NotificationGroupingType.GROUP -> _uiState.value.data?.groupId?.id
+                                    ?: "place_activity"
+
+                                NotificationGroupingType.PERSON -> appPrefs.userId
+                            },
                             title = event.content,
                             message = null,
                             timeMillis = null,
@@ -235,24 +238,8 @@ class PlacesViewModel(
 
             when (premiumStatus) {
                 is PremiumStatusLimitState.PlanLimitReached -> {
-                    _uiState.update {
-                        it.mapSuccess {
-                            it.copy(
-                                alertDialog = MainAlertDialog.ServiceMaxLimit(
-                                    content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                                    limit = premiumStatus.payload.limit ?: -1
-                                )
-                            )
-                        }
-                    }
-                }
-                is PremiumStatusLimitState.ServiceLimitReached -> {
                     if (premiumStatus.payload.isOwner) {
-                        _eventChannel.send(
-                            PlacesScreenEvent.GroupPlacesLimitReached(
-                                limit = premiumStatus.payload.limit ?: -1
-                            )
-                        )
+                        _eventChannel.send(PlacesScreenEvent.OpenPaywall)
                     } else {
                         _uiState.update {
                             it.mapSuccess {
@@ -266,9 +253,24 @@ class PlacesViewModel(
                         }
                     }
                 }
+
+                is PremiumStatusLimitState.ServiceLimitReached -> {
+                    _uiState.update {
+                        it.mapSuccess {
+                            it.copy(
+                                alertDialog = MainAlertDialog.ServiceMaxLimit(
+                                    content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                                    limit = premiumStatus.payload.limit ?: -1
+                                )
+                            )
+                        }
+                    }
+                }
+
                 is PremiumStatusLimitState.WithinLimits -> {
                     _eventChannel.send(PlacesScreenEvent.AddPlace)
                 }
+
                 null -> {}
             }
         }

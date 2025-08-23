@@ -166,6 +166,31 @@ class PremiumStatusManager(
             return PremiumStatusLimitState.WithinLimits(payload)
         }
     }
+
+    suspend fun checkMemberCountLimits(groupId: String): PremiumStatusLimitState? {
+        val group = groupLocalDataSource.allGroupsState.value.data
+            ?.firstOrNull { it.group.id == groupId } ?: return null
+        val limit = group.group.membersLimit(remoteConfigRepo.getConfigOnce())
+        val payload = PremiumStatusLimitPayload(
+            plan = group.group.planConfig(remoteConfigRepo.getConfigOnce()),
+            limit = limit,
+            count = group.memberCount,
+            isOwner = group.group.isCurrentUserOwner
+        )
+
+        val maxMemberLimit = remoteConfigRepo.getConfigOnce()
+            .plans
+            .maxByOrNull { it.planTypeEnum.order }
+            ?.membersLimit
+
+        if (maxMemberLimit != null && payload.isOwner && payload.count >= maxMemberLimit) {
+            return PremiumStatusLimitState.ServiceLimitReached(payload)
+        } else if (payload.limit in 0..payload.count) {
+            return PremiumStatusLimitState.PlanLimitReached(payload)
+        } else {
+            return PremiumStatusLimitState.WithinLimits(payload)
+        }
+    }
 }
 
 data class PremiumStatusLimitPayload(

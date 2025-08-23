@@ -30,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,10 +42,9 @@ import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
-import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
+import app.paralino.core.presentation.groups.detail.GroupDetailScreenUiEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.detail.LocationSharingState
 import app.paralino.core.provider.localizedString
@@ -64,14 +62,11 @@ import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.extensions.annotatedBoldCompose
-import app.paralino.core.utils.extensions.errorString
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
 
@@ -104,20 +99,10 @@ fun GroupDetailScreenCore(
     }
 
     val uiState by vm.uiState.collectAsState()
-    var showDialog by remember { mutableStateOf<MainAlertDialog?>(null) }
-    val onShowDialog: (MainAlertDialog?) -> Unit = { showDialog = it }
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is GroupDetailScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-
-                GroupDetailScreenEvent.GroupNotFound -> {
-                    vm.showSnackbar(MR.strings.group_load_error.localizedString())
-                }
-
                 GroupDetailScreenEvent.GroupDeleted -> {
                     onNavigateBack()
                 }
@@ -130,6 +115,10 @@ fun GroupDetailScreenCore(
                     openPaywall()
                 }
 
+                is GroupDetailScreenEvent.OpenRawMemberData -> {
+                    openMemberRawData(event.memberId)
+                }
+
                 GroupDetailScreenEvent.UserBlockActionCompleted -> {}
                 GroupDetailScreenEvent.GroupMemberDeleted -> {}
                 GroupDetailScreenEvent.MemberLocationDeleted -> {}
@@ -138,55 +127,6 @@ fun GroupDetailScreenCore(
                 }
             }
         }
-    }
-
-    when (val dialog = showDialog) {
-        is MainAlertDialog.BlockUser -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.blockUser(userId = dialog.userId)
-                }
-            }
-        }
-
-        is MainAlertDialog.UnblockGroupOrUser -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.unblockUser(userId = dialog.id)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteGroupMember -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.removeMember(dialog.memberUserId)
-                }
-            }
-        }
-
-        is MainAlertDialog.DeleteMemberLocation -> {
-            dialog.Show {
-                showDialog = null
-                if (it == MainAlertDialog.Buttons.buttonOk) {
-                    vm.removeMemberLocation(
-                        memberId = dialog.memberId,
-                        locationId = dialog.locationId
-                    )
-                }
-            }
-        }
-
-        is MainAlertDialog.ServiceMaxLimit -> {
-            dialog.Show {
-                showDialog = null
-            }
-        }
-
-        else -> {}
     }
 
     when (val state = uiState) {
@@ -219,7 +159,7 @@ fun GroupDetailScreenCore(
                                 backgroundColor = MaterialTheme.colors.error,
                                 contentColor = MaterialTheme.colors.onError
                             ),
-                            onClick = { vm.stopSharing() }
+                            onClick = { vm.onEvent(GroupDetailScreenUiEvent.StopSharing) }
                         ) {
                             Text(text = stringResource(MR.strings.location_sharing_button_stop_groups))
                         }
@@ -367,7 +307,7 @@ fun GroupDetailScreenCore(
                                     },
                                     backgroundColor = MaterialTheme.colors.primary,
                                     contentColor = MaterialTheme.colors.onPrimary,
-                                    onClick = { vm.tryAddMember() }
+                                    onClick = { vm.onEvent(GroupDetailScreenUiEvent.OnAddNewMember) }
                                 )
                             }
                         }
@@ -393,57 +333,11 @@ fun GroupDetailScreenCore(
                             collapseOnActionClick = false,
                             onEvent = { event ->
                                 when (event) {
-                                    is GroupMemberItemEvent.onActionClick -> {
-                                        when (event.action.type) {
-                                            MemberActionType.DELETE_MEMBER -> {
-                                                onShowDialog(
-                                                    MainAlertDialog.DeleteGroupMember(
-                                                        item.memberState.userId,
-                                                        item.memberState.name
-                                                    )
-                                                )
-                                            }
-
-                                            MemberActionType.BLOCK_USER -> {
-                                                onShowDialog(MainAlertDialog.BlockUser(userId = item.memberState.userId))
-                                            }
-
-                                            MemberActionType.UNBLOCK_USER -> {
-                                                onShowDialog(
-                                                    MainAlertDialog.UnblockGroupOrUser(
-                                                        id = item.memberState.userId,
-                                                        type = BlocklistType.USER
-                                                    )
-                                                )
-                                            }
-
-                                            MemberActionType.DELETE_LOCATION -> {}
-                                            MemberActionType.LOCATION_HISTORY -> {}
-                                        }
-                                    }
-
-                                    is GroupMemberItemEvent.onDeleteDeviceClick -> {
-                                        onShowDialog(
-                                            MainAlertDialog.DeleteMemberLocation(
-                                                memberId = item.memberState.memberId,
-                                                locationId = event.item.locationId,
-                                                isUserOwnDevice = item.memberState.isCurrentUser,
-                                                memberName = item.memberState.name
-                                            )
-                                        )
-                                    }
-
                                     is GroupMemberItemEvent.onItemClick -> {
                                         expanded = !expanded
                                     }
 
-                                    is GroupMemberItemEvent.onDirectionsRequest -> {}
-                                    is GroupMemberItemEvent.onShowLocation -> {}
-                                    is GroupMemberItemEvent.onLocationRequest -> {}
-                                    is GroupMemberItemEvent.onCopyCode -> { vm.copyToClipboard(event.code) }
-                                    is GroupMemberItemEvent.onOpenRawData -> {
-                                        openMemberRawData(item.memberState.memberId)
-                                    }
+                                    else -> {}
                                 }
                             }
                         )
@@ -452,7 +346,10 @@ fun GroupDetailScreenCore(
             }
 
             if (state.data.loadingAction) {
-                LoadingDialog(text = stringResource(MR.strings.login_step_generic_loading), progress = null)
+                LoadingDialog(
+                    text = stringResource(MR.strings.login_step_generic_loading),
+                    progress = null
+                )
             }
         }
     }

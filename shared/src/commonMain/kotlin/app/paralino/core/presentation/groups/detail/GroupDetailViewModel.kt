@@ -7,6 +7,8 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
+import app.paralino.core.domain.user.PremiumStatusLimitState
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
@@ -15,7 +17,9 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.mapSuccess
+import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberState
@@ -23,6 +27,7 @@ import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent.OpenRawMemberData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
@@ -32,15 +37,20 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.BlockUser
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteGroupMember
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteMemberLocation
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.UnblockGroupOrUser
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -64,6 +74,7 @@ class GroupDetailViewModel(
     private val groupMemberRemove: GroupMemberRemoveUseCase,
     private val groupRefresh: GroupPreRefreshUseCase,
     private val groupLocal: UserGroupLocalDataSource,
+    private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
@@ -170,8 +181,9 @@ class GroupDetailViewModel(
             }
 
             val membersLimit = group.group.membersLimit(remoteConfigRepo.getConfigOnce())
+            val currentState = _uiState.value
             GroupDetailScreenState(
-                id = groupId,
+                groupId = groupId,
                 canEdit = group.isCurrentUserOwner,
                 loadingAction = false,
                 name = group.name,
@@ -186,16 +198,18 @@ class GroupDetailViewModel(
                 errors = errors,
                 arePlacesOverLimit = groupWithMetadata.value?.arePlacesOverLimits(remoteConfigRepo.getConfigOnce()),
                 isGroupOverLimit = groupWithMetadata.value?.isGroupOverLimits(remoteConfigRepo.getConfigOnce()),
+                alertDialog = currentState.data?.alertDialog
             )
         }
             .mapToPayload { it }
             .onEach { result ->
                 _uiState.update { result }
                 if (result is Payload.Error) {
-                    if (result.exception.asRemoteException() is NotFoundException)
-                        _eventChannel.send(GroupDetailScreenEvent.GroupNotFound)
-                    else
-                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                    if (result.exception.asRemoteException() is NotFoundException) {
+                        showSnackbar(MR.strings.group_load_error.localizedString())
+                    } else {
+                        showSnackbar(result.exception.errorString())
+                    }
                 }
             }
             .flowOn(Dispatchers.IO)
@@ -233,7 +247,140 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun blockUser(userId: String) {
+    fun onEvent(event: GroupDetailScreenUiEvent) {
+        when (event) {
+            is GroupDetailScreenUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.ServiceMaxLimit,
+                    is MainAlertDialog.PlanLimitForMembers -> {
+                        _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
+                    }
+
+                    is MainAlertDialog.BlockUser -> {
+                        _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
+                        if (event.action.isOk) {
+                            blockUser(event.action.dialog.userId)
+                        }
+                    }
+
+                    is MainAlertDialog.UnblockGroupOrUser -> {
+                        _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
+                        if (event.action.isOk) {
+                            unblockUser(event.action.dialog.id)
+                        }
+                    }
+
+                    is MainAlertDialog.DeleteGroupMember -> {
+                        _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
+                        if (event.action.isOk) {
+                            removeMember(event.action.dialog.memberUserId)
+                        }
+                    }
+
+                    is MainAlertDialog.DeleteMemberLocation -> {
+                        _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
+                        if (event.action.isOk) {
+                            removeMemberLocation(
+                                memberId = event.action.dialog.memberId,
+                                locationId = event.action.dialog.locationId
+                            )
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+
+            is GroupDetailScreenUiEvent.OnMemberItemEvent -> {
+                when (event.event) {
+                    is GroupMemberItemEvent.onActionClick -> {
+                        when (event.event.action.type) {
+                            MemberActionType.DELETE_MEMBER -> {
+                                _uiState.update {
+                                    it.mapSuccess {
+                                        it.copy(
+                                            alertDialog = DeleteGroupMember(
+                                                memberUserId = event.event.item.memberState.userId,
+                                                memberName = event.event.item.memberState.name
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            MemberActionType.BLOCK_USER -> {
+                                _uiState.update {
+                                    it.mapSuccess {
+                                        it.copy(
+                                            alertDialog = BlockUser(
+                                                userId = event.event.item.memberState.userId,
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            MemberActionType.UNBLOCK_USER -> {
+                                _uiState.update {
+                                    it.mapSuccess {
+                                        it.copy(
+                                            alertDialog = UnblockGroupOrUser(
+                                                id = event.event.item.memberState.userId,
+                                                type = BlocklistType.USER
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            MemberActionType.DELETE_LOCATION -> {}
+                            MemberActionType.LOCATION_HISTORY -> {}
+                        }
+                    }
+
+                    is GroupMemberItemEvent.onCopyCode -> {
+                        copyToClipboard(event.event.code)
+                    }
+
+                    is GroupMemberItemEvent.onDeleteDeviceClick -> {
+                        _uiState.update {
+                            it.mapSuccess {
+                                it.copy(
+                                    alertDialog = DeleteMemberLocation(
+                                        memberId = event.event.item.memberState.memberId,
+                                        locationId = event.event.device.locationId,
+                                        isUserOwnDevice = event.event.item.memberState.isCurrentUser,
+                                        memberName = event.event.item.memberState.name
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    is GroupMemberItemEvent.onOpenRawData -> {
+                        coroutineScope.launch {
+                            _eventChannel.send(
+                                OpenRawMemberData(
+                                    memberId = event.event.item.memberState.memberId
+                                )
+                            )
+                        }
+                    }
+
+                    is GroupMemberItemEvent.onDirectionsRequest,
+                    is GroupMemberItemEvent.onItemClick,
+                    is GroupMemberItemEvent.onLocationRequest,
+                    is GroupMemberItemEvent.onShowLocation -> {
+                    }
+                }
+            }
+
+            GroupDetailScreenUiEvent.OnAddNewMember -> tryAddMember()
+            GroupDetailScreenUiEvent.StopSharing -> stopSharing()
+        }
+    }
+
+    private fun blockUser(userId: String) {
         val member = groupData.value?.memberByUserId(userId = userId)?.member ?: return
         groupMemberRemove.blockUser(member)
             .mapToPayload { Unit }
@@ -242,7 +389,7 @@ class GroupDetailViewModel(
                 when (result) {
                     Payload.Loading -> {}
                     is Payload.Error -> {
-                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                     }
 
                     is Payload.Success -> {
@@ -253,7 +400,7 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun unblockUser(userId: String) {
+    private fun unblockUser(userId: String) {
         flow {
             userRepo.removeUserFromBlocklist(userId = userId)
             emit(Unit)
@@ -264,7 +411,7 @@ class GroupDetailViewModel(
                 when (result) {
                     Payload.Loading -> {}
                     is Payload.Error -> {
-                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                     }
 
                     is Payload.Success -> {
@@ -275,7 +422,7 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun removeMember(memberUserId: String) {
+    private fun removeMember(memberUserId: String) {
         groupMemberRemove.removeMember(groupId = groupId, memberUserId = memberUserId)
             .mapToPayload { Unit }
             .onEach { result ->
@@ -283,7 +430,7 @@ class GroupDetailViewModel(
                 when (result) {
                     Payload.Loading -> {}
                     is Payload.Error -> {
-                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                     }
 
                     is Payload.Success -> {
@@ -294,7 +441,7 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun removeMemberLocation(memberId: String, locationId: String) {
+    private fun removeMemberLocation(memberId: String, locationId: String) {
         groupMemberRemove.deleteLocation(memberId = memberId, locationId = locationId)
             .mapToPayload { Unit }
             .onEach { result ->
@@ -302,7 +449,7 @@ class GroupDetailViewModel(
                 when (result) {
                     Payload.Loading -> {}
                     is Payload.Error -> {
-                        _eventChannel.send(GroupDetailScreenEvent.Error(result.exception))
+                        showSnackbar(result.exception.errorString())
                     }
 
                     is Payload.Success -> {
@@ -313,17 +460,38 @@ class GroupDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun tryAddMember() {
+    private fun tryAddMember() {
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
-            if (state.members.size >= state.membersLimit)
-                _eventChannel.send(GroupDetailScreenEvent.OpenPaywall)
-            else
-                _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
+            when (val premiumStatus =
+                premiumStatusManager.checkMemberCountLimits(groupId = state.groupId)) {
+                is PremiumStatusLimitState.PlanLimitReached -> {
+                    _eventChannel.send(GroupDetailScreenEvent.OpenPaywall)
+                }
+
+                is PremiumStatusLimitState.ServiceLimitReached -> {
+                    _uiState.update {
+                        it.mapSuccess {
+                            it.copy(
+                                alertDialog = MainAlertDialog.ServiceMaxLimit(
+                                    content = MR.strings.plan_limit_members_alert_info.localizedString(),
+                                    limit = premiumStatus.payload.limit ?: -1
+                                )
+                            )
+                        }
+                    }
+                }
+
+                is PremiumStatusLimitState.WithinLimits -> {
+                    _eventChannel.send(GroupDetailScreenEvent.GroupMemberAdd)
+                }
+
+                null -> {}
+            }
         }
     }
 
-    fun stopSharing() {
+    private fun stopSharing() {
         coroutineScope.launch {
             sharingManager.stopSharing(groupId = groupId.asGroupOrSpaceId(), deleteContract = false)
             placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
@@ -335,7 +503,7 @@ class GroupDetailViewModel(
         }
     }
 
-    fun copyToClipboard(data: String) {
+    private fun copyToClipboard(data: String) {
         deviceApiProvider.copyToClipboard(data)
     }
 }

@@ -427,22 +427,27 @@ fun GroupMemberWithLocations(
                 }
 
                 state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }
-                    ?.let {
+                    ?.let { devices ->
                         Column(modifier = Modifier.padding(top = 12.dp)) {
                             Text(
                                 modifier = Modifier.padding(start = 8.dp),
                                 text = stringResource(MR.strings.group_member_devices_section_title),
                                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
                             )
-                            it.forEach {
+                            devices.forEach { device ->
                                 GroupMemberLocationChild(
-                                    state = it,
+                                    state = device,
                                     onClick = {
                                         // open device
                                     },
                                     onDelete = {
                                         // delete device
-                                        onEvent?.invoke(GroupMemberItemEvent.onDeleteDeviceClick(it))
+                                        onEvent?.invoke(
+                                            GroupMemberItemEvent.onDeleteDeviceClick(
+                                                item = state,
+                                                device = it
+                                            )
+                                        )
                                     }
                                 )
                             }

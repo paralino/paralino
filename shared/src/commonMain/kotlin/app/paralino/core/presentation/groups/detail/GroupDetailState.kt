@@ -1,11 +1,14 @@
 package app.paralino.core.presentation.groups.detail
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
 
 data class GroupDetailScreenState(
-    val id: String,
+    val groupId: String,
     val canEdit: Boolean,
     val loadingAction: Boolean,
     val name: String,
@@ -17,7 +20,8 @@ data class GroupDetailScreenState(
     val shouldShowPlanBanner: Boolean,
     val arePlacesOverLimit: Boolean?,
     val isGroupOverLimit: Boolean?,
-    val errors: List<ConditionErrorType>
+    val errors: List<ConditionErrorType>,
+    val alertDialog: MainAlertDialog?
 )
 
 data class LocationSharingState(
@@ -31,11 +35,17 @@ data class LocationSharingState(
     val approximateLocation: String?
 )
 
+sealed interface GroupDetailScreenUiEvent {
+    data class DialogAction(val action: AlertDialogAction) : GroupDetailScreenUiEvent
+    data class OnMemberItemEvent(val event: GroupMemberItemEvent) : GroupDetailScreenUiEvent
+    data object OnAddNewMember : GroupDetailScreenUiEvent
+    data object StopSharing : GroupDetailScreenUiEvent
+}
+
 sealed class GroupDetailScreenEvent() {
-    data class Error(val error: Throwable) : GroupDetailScreenEvent()
     object GroupDeleted : GroupDetailScreenEvent()
-    object GroupNotFound : GroupDetailScreenEvent()
     object GroupMemberAdd : GroupDetailScreenEvent()
+    data class OpenRawMemberData(val memberId: String) : GroupDetailScreenEvent()
     data object OpenPaywall : GroupDetailScreenEvent()
     object GroupMemberDeleted : GroupDetailScreenEvent()
     object UserBlockActionCompleted : GroupDetailScreenEvent()

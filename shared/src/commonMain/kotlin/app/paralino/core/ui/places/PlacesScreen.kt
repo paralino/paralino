@@ -82,15 +82,11 @@ fun PlacesScreenCore(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                is PlacesScreenEvent.Error -> {
-                    vm.showSnackbar(event.error.errorString())
-                }
-
                 PlacesScreenEvent.AddPlace -> {
                     addNewPlace()
                 }
 
-                is PlacesScreenEvent.GroupPlacesLimitReached -> {
+                is PlacesScreenEvent.OpenPaywall -> {
                     openPaywall()
                 }
 

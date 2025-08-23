@@ -42,7 +42,10 @@ data class AlertDialogData(
 data class AlertDialogAction(
     val dialog: MainAlertDialog,
     val action: String?,
-)
+) {
+    val isOk = action == MainAlertDialog.Buttons.buttonOk
+    val isCancel = action == MainAlertDialog.Buttons.buttonCancel
+}
 
 @Serializable
 sealed interface MainAlertDialog {

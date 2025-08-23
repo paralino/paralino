@@ -53,9 +53,8 @@ data class PlaceListItemData constructor(
 }
 
 sealed class PlacesScreenEvent() {
-    data class Error(val error: Throwable) : PlacesScreenEvent()
     object AddPlace : PlacesScreenEvent()
-    data class GroupPlacesLimitReached(val limit: Int) : PlacesScreenEvent()
+    data object OpenPaywall : PlacesScreenEvent()
     data object MissingNotificationPermission : PlacesScreenEvent()
 }
 
