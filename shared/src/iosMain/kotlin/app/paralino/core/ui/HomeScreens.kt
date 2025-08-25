@@ -221,7 +221,7 @@ object HomeScreens {
     fun PersonalSpaceScreenVC(
         vm: PersonalSpaceViewModel,
         paddingValues: AppleScreenPaddingValues,
-        openMap: () -> Unit,
+        openRawDataScreen: () -> Unit,
         openTimeline: () -> Unit,
         openPlaces: () -> Unit,
         openSharing: () -> Unit,
@@ -236,7 +236,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 contentPadding = paddingValues.toComposePaddingValues(),
-                openMap = openMap,
+                openRawDataScreen = openRawDataScreen,
                 openTimeline = openTimeline,
                 openPlaces = openPlaces,
                 openSharing = openSharing,

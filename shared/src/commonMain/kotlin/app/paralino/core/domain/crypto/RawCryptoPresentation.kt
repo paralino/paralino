@@ -14,12 +14,12 @@ import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.encodeToString
 
 class RawCryptoPresentation constructor(
     private val placeLocal: PlacesLocalDataSource,
@@ -27,6 +27,7 @@ class RawCryptoPresentation constructor(
     private val memberLocal: LocationLocalDataSource,
     private val userLocal: UserLocalDataSource,
     private val userKeyLocal: CryptoUserKeysLocalSource,
+    private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
     private val userConfigRepo: UserConfigRepository,
     private val appPrefs: AppPrefs,
     private val appBuildConfig: AppBuildConfig
@@ -255,6 +256,81 @@ class RawCryptoPresentation constructor(
                 )
             }
             .map { RawPresentationModel(listOf(it)) }
+    }
+
+    fun getPersonalSpaceRawPresentation(): Flow<RawPresentationModel> {
+
+        fun locationDataPrint(
+            deviceData: String?,
+            locationData: String?,
+            status: String?
+        ): String {
+            return buildString {
+                append("\"deviceData\": ")
+                append(deviceData)
+                append("\n\n")
+                append("\"locationData\": ")
+                append(locationData)
+                append("\n\n")
+                append("\"status\": ")
+                append(status)
+            }
+        }
+
+        return personalSpaceLocal.getAllUserDevicesRawPresentation()
+            .map { devices ->
+                devices.map { rawPair ->
+
+                    val decryptedLocationData = rawPair.second.let {
+                        CryptoResource.Ready(
+                            locationDataPrint(
+                                deviceData = when (it.deviceData) {
+                                    is CryptoResource.Ready -> {
+                                        BaseRemoteModule.prettyPrintFormatter.encodeToString(it.deviceData.data)
+                                    }
+
+                                    else -> it.deviceData.toString()
+                                },
+                                locationData = when (it.location?.locationData) {
+                                    is CryptoResource.Ready -> {
+                                        BaseRemoteModule.prettyPrintFormatter.encodeToString(it.location.locationData.data)
+                                    }
+
+                                    null -> null
+                                    else -> it.location.locationData.toString()
+                                },
+                                status = when (it.location?.status) {
+                                    is CryptoResource.Ready -> {
+                                        BaseRemoteModule.prettyPrintFormatter.encodeToString(it.location.status.data)
+                                    }
+
+                                    null -> null
+                                    else -> it.location.status.toString()
+                                }
+                            )
+                        )
+                    }
+
+                    RawPresentationModelSection(
+                        title = null,
+                        subtitle = rawPair.second.deviceNameOrNull?.let {
+                            MR.strings.group_member_device_title.localizedString()
+                                .plus(": **$it**")
+                        },
+                        contentIdInfo = buildList {
+                            add("Device ID: **${rawPair.first.device.deviceId}**")
+                        }.map { ContentIdItem(it) },
+                        rawData = locationDataPrint(
+                            deviceData = rawPair.first.device.deviceData,
+                            locationData = rawPair.first.location?.locationData,
+                            status = rawPair.first.location?.status
+                        ),
+                        decryptedData = decryptedLocationData,
+                        type = RawPresentationDataType.PersonalSpacePresentation
+                    )
+                }
+            }
+            .map { RawPresentationModel(it) }
     }
 }
 

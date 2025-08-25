@@ -43,6 +43,10 @@ class RawDataPresentationViewModel constructor(
             RawPresentationDataType.UserPresentation -> {
                 rawCryptoPresentation.getUserRawPresentation()
             }
+
+            RawPresentationDataType.PersonalSpacePresentation -> {
+                rawCryptoPresentation.getPersonalSpaceRawPresentation()
+            }
         }
 
         rawFlow

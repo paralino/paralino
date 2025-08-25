@@ -42,6 +42,7 @@ sealed class RawPresentationDataType() {
             is GroupMemberPresentation -> "group_member"
             is GroupPlacePresentation -> "place"
             UserPresentation -> "user"
+            PersonalSpacePresentation -> "space"
         }
 
     companion object {
@@ -51,12 +52,14 @@ sealed class RawPresentationDataType() {
                 "group_member" -> GroupMemberPresentation(payload)
                 "place" -> GroupPlacePresentation(payload)
                 "user" -> UserPresentation
+                "space" -> PersonalSpacePresentation
                 else -> null
             }
         }
     }
 
     object UserPresentation : RawPresentationDataType()
+    object PersonalSpacePresentation : RawPresentationDataType()
     data class GroupPresentation(val groupId: String) : RawPresentationDataType()
     data class GroupMemberPresentation(val memberId: String) : RawPresentationDataType()
     data class GroupPlacePresentation(val placeId: String) : RawPresentationDataType()

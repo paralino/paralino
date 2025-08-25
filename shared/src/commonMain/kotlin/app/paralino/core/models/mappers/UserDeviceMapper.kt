@@ -3,8 +3,6 @@ package app.paralino.core.models.mappers
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.main.user.UserDeviceEntity
-import app.paralino.core.domain.crypto.VerificationResult
-import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.asGroupOrSpaceId
@@ -15,6 +13,8 @@ import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberDeviceStatus
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.UserDeviceModel
+import app.paralino.core.models.raw.UserDeviceLocationRaw
+import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.models.raw.UserDeviceWithLocationRaw
 import app.paralino.core.utils.BaseRemoteModule
 
@@ -44,6 +44,35 @@ class UserDeviceMapper(
             locationData = deviceRaw.location?.locationData,
             status = deviceRaw.location?.status,
             locationHistory = deviceRaw.location?.locationHistory
+        )
+    }
+
+    fun local2Remote(
+        entity: UserDeviceEntity
+    ): UserDeviceWithLocationRaw {
+        return UserDeviceWithLocationRaw(
+            device = UserDeviceRaw(
+                id = entity.id,
+                pushTargetId = entity.pushTargetId,
+                sessionId = entity.sessionId,
+                deviceType = entity.deviceType,
+                ownerUserId = entity.ownerUserId,
+                deviceId = entity.deviceId,
+                locationPushToken = entity.locationPushToken,
+                encryptedSenderKey = entity.encryptedSenderKey,
+                userKeyVersion = entity.userKeyVersion,
+                deviceData = entity.deviceData,
+            ),
+            location = if (entity.locationId != null) {
+                UserDeviceLocationRaw(
+                    id = entity.locationId,
+                    locationData = entity.locationData,
+                    status = entity.status,
+                    locationHistory = entity.locationHistory
+                )
+            } else {
+                null
+            }
         )
     }
 

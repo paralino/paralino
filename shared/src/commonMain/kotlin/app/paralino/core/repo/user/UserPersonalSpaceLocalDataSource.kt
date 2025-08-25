@@ -126,56 +126,23 @@ class UserPersonalSpaceLocalDataSource constructor(
             }
     }
 
-    suspend fun getAllUserDevicesOnce(): List<UserDeviceModel> {
-        return database.userDeviceDao.getAllUserDevicesOnce()
-            .mapNotNull { entity ->
-                try {
-                    deviceMapper.local2Core(entity)
-                } catch (e: Exception) {
-                    // Log error and skip device if decryption fails
-                    null
-                }
-            }
-    }
-
-    fun getUserDevice(deviceId: String): Flow<UserDeviceModel?> {
-        return database.userDeviceDao.getUserDevice(deviceId)
-            .map { entity ->
-                entity?.let {
+    fun getAllUserDevicesRawPresentation(): Flow<List<Pair<UserDeviceWithLocationRaw, UserDeviceModel>>> {
+        return database.userDeviceDao.getAllUserDevices()
+            .distinctFlowOfList()
+            .map { entities ->
+                entities.mapNotNull { entity ->
                     try {
-                        deviceMapper.local2Core(it)
+                        deviceMapper.local2Remote(entity) to deviceMapper.local2Core(entity)
                     } catch (e: Exception) {
-                        // Log error and return null if decryption fails
+                        // Log error and skip device if decryption fails
                         null
                     }
                 }
             }
     }
 
-    suspend fun getUserDeviceByIdOnce(id: String): UserDeviceModel? {
-        return database.userDeviceDao.getUserDeviceOnce(id = id)?.let { entity ->
-            try {
-                deviceMapper.local2Core(entity)
-            } catch (e: Exception) {
-                // Log error and return null if decryption fails
-                null
-            }
-        }
-    }
-
     suspend fun getUserDeviceByDeviceIdOnce(deviceId: String): UserDeviceModel? {
         return database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId)?.let { entity ->
-            try {
-                deviceMapper.local2Core(entity)
-            } catch (e: Exception) {
-                // Log error and return null if decryption fails
-                null
-            }
-        }
-    }
-
-    suspend fun getUserDeviceBySessionIdOnce(sessionId: String): UserDeviceModel? {
-        return database.userDeviceDao.getUserDeviceBySessionIdOnce(sessionId)?.let { entity ->
             try {
                 deviceMapper.local2Core(entity)
             } catch (e: Exception) {
@@ -200,29 +167,5 @@ class UserPersonalSpaceLocalDataSource constructor(
                 userKeyVersion = device.userKeyVersion
             )
         )
-    }
-
-    suspend fun deleteUserDevice(deviceId: String) {
-        database.userDeviceDao.deleteUserDevice(deviceId)
-    }
-
-    suspend fun deleteUserDeviceBySessionId(sessionId: String) {
-        database.userDeviceDao.deleteUserDeviceBySessionId(sessionId)
-    }
-
-    suspend fun clearAllUserDevices() {
-        database.userDeviceDao.clearAllUserDevices()
-    }
-
-    suspend fun clearLocationDataForDevice(deviceId: String) {
-        database.userDeviceDao.clearLocationDataForDevice(deviceId)
-    }
-
-    suspend fun clearStatusForDevice(deviceId: String) {
-        database.userDeviceDao.clearStatusForDevice(deviceId)
-    }
-
-    suspend fun deletePersonalPlace(placeId: String) {
-        database.groupRelatedDao.deletePlaceData(placeId = placeId)
     }
 } 

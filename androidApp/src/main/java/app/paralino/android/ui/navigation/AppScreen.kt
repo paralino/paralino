@@ -326,6 +326,7 @@ sealed class AppScreen {
                     is RawPresentationDataType.GroupPlacePresentation -> type.placeId
                     is RawPresentationDataType.GroupPresentation -> type.groupId
                     RawPresentationDataType.UserPresentation -> ""
+                    RawPresentationDataType.PersonalSpacePresentation -> ""
                 }
 
                 val args = arrayOf(

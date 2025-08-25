@@ -14,6 +14,7 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
@@ -51,13 +52,12 @@ fun PersonalSpaceScreen(
             appState = appState,
             vm = vm,
             contentPadding = padding,
-            openMap = {
+            openRawDataScreen = {
                 appState.navController.navigate(
-                    AppScreen.MainHome.MainMap.route(groupId = UserGroup.groupPersonalDevicesId)
-                ) {
-                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
-                    this.launchSingleTop = true
-                }
+                    AppScreen.Settings.ProfileDetails.RawDataScreen.route(
+                        RawPresentationDataType.PersonalSpacePresentation
+                    )
+                )
             },
             openTimeline = {
                 appState.navController.navigate(

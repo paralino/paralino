@@ -67,7 +67,7 @@ fun PersonalSpaceScreenCore(
     appState: CoreUiState,
     vm: PersonalSpaceViewModel,
     contentPadding: PaddingValues,
-    openMap: () -> Unit,
+    openRawDataScreen: () -> Unit,
     openTimeline: () -> Unit,
     openPlaces: () -> Unit,
     openSharing: () -> Unit,
@@ -86,9 +86,8 @@ fun PersonalSpaceScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 PersonalSpaceScreenEvent.OpenPaywall -> openPaywall()
-                PersonalSpaceScreenEvent.OpenLocation -> openMap()
                 PersonalSpaceScreenEvent.OpenPlaces -> openPlaces()
-                PersonalSpaceScreenEvent.OpenRawDataScreen -> {}
+                PersonalSpaceScreenEvent.OpenRawDataScreen -> openRawDataScreen()
                 PersonalSpaceScreenEvent.OpenSharingScreen -> openSharing()
                 PersonalSpaceScreenEvent.OpenTimeline -> openTimeline()
 
@@ -238,9 +237,9 @@ fun PersonalSpaceScreenCore(
                     PersonalSpaceHeader(
                         userName = uiState.userName,
                         userImage = uiState.userImage,
-                        onMapClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenLocation) },
+                        onRawDataClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenRawDataScreen) },
                         onPlacesClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlaces) },
-                        onTimeline = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenTimeline) },
+                        onTimelineClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenTimeline) },
                         onSharingClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
                     )
                 }
@@ -357,9 +356,9 @@ fun PersonalSpaceHeader(
     modifier: Modifier = Modifier,
     userName: String,
     userImage: ImageModel?,
-    onMapClick: () -> Unit,
+    onRawDataClick: () -> Unit,
     onPlacesClick: () -> Unit,
-    onTimeline: () -> Unit,
+    onTimelineClick: () -> Unit,
     onSharingClick: () -> Unit,
 ) {
     Column(
@@ -399,8 +398,8 @@ fun PersonalSpaceHeader(
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.Map.asPainterResource(),
-                title = stringResource(MR.strings.title_map),
+                icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                title = stringResource(MR.strings.groups_sharing_setting_timeline_title),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
@@ -410,7 +409,7 @@ fun PersonalSpaceHeader(
                     seekbarState = null
                 ),
                 onStateChange = {
-                    onMapClick()
+                    onTimelineClick()
                 }
             )
             LargeSeekbarSwitch(
@@ -441,8 +440,8 @@ fun PersonalSpaceHeader(
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                title = stringResource(MR.strings.groups_sharing_setting_timeline_title),
+                icon = CoreAppIcons.Security.asPainterResource(),
+                title = stringResource(MR.strings.raw_data_screen_title),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
@@ -452,7 +451,7 @@ fun PersonalSpaceHeader(
                     seekbarState = null
                 ),
                 onStateChange = {
-                    onTimeline()
+                    onRawDataClick()
                 }
             )
             LargeSeekbarSwitch(

@@ -348,9 +348,9 @@ class PersonalSpaceViewModel(
                 }
             }
 
-            PersonalSpaceScreenUiEvent.OpenLocation -> {
+            PersonalSpaceScreenUiEvent.OpenRawDataScreen -> {
                 coroutineScope.launch {
-                    _eventChannel.send(PersonalSpaceScreenEvent.OpenLocation)
+                    _eventChannel.send(PersonalSpaceScreenEvent.OpenRawDataScreen)
                 }
             }
 
