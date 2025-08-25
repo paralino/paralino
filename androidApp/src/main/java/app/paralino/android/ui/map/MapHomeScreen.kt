@@ -292,7 +292,7 @@ private fun MapContent(
             uiState = uiState,
             onEvent = onEvent,
             mapContentPadding = PaddingValues(
-                top = 68.dp,
+                top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 68.dp,
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
                     WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                 } else {
