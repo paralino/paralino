@@ -327,7 +327,7 @@ class GroupValidityVerification(
         )
             ?: return IntegrityResult.CORRUPTED
 
-        if (integrity.first.isValidForDevice(integrity.second)) {
+        if (integrity.first.isValidForPersonalSpace(integrity.second)) {
             logg.tag("integrity_check_device").v("VALID for ${groupId}")
             return IntegrityResult.VALID
         } else if (integrity.first.signature != integrity.second) {

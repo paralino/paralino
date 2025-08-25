@@ -36,6 +36,11 @@ data class GroupIntegrity(
         return this.signature == signature && timeValidity
     }
 
+    fun isValidForPersonalSpace(signature: String): Boolean {
+        val timeValidity = isTimeValid(14.days)
+        return this.signature == signature && timeValidity
+    }
+
     companion object {
         fun createSignature(
             hashProvider: ICryptoHashProvider,
