@@ -248,7 +248,7 @@ fun PersonalSpaceScreenCore(
                     this.item(key = "plan_upgrade_banner") {
                         PremiumPlanBannerSmall(
                             modifier = Modifier.zIndex(1f),
-                            description = stringResource(MR.strings.plans_banner_inline_group_detail),
+                            description = stringResource(MR.strings.plans_banner_inline_personal_space),
                             onClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPaywall) }
                         )
                         Spacer(modifier = Modifier.size(30.dp))
