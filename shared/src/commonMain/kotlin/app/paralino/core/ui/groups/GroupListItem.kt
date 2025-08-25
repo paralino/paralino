@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -57,15 +58,33 @@ fun GroupListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 12.dp),
+                .padding(vertical = 12.dp)
+                .padding(
+                    start = if (data.isSelected) 0.dp else 12.dp,
+                    end = 12.dp
+                ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (data.isSelected) {
+                Icon(
+                    painter = CoreAppIcons.Check.asPainterResource(),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier
+                        .padding(end = 2.dp)
+                        .size(width = 16.dp, height = 20.dp)
+                        .clip(RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp))
+                        .background(MaterialTheme.colors.primary)
+                        .padding(1.dp)
+                )
+            }
+
             ImageModelImage(
                 imageModel = data.image,
                 modifier = Modifier
                     .size(if (data.isLarge) 72.dp else 50.dp)
                     .border(
-                        width = if (data.isPersonalSpace) 3.dp else 0.5.dp,
+                        width = if (data.isPersonalSpace) 2.dp else 0.5.dp,
                         color = if (data.isPersonalSpace) {
                             AppColors.accentDark.copy(0.3f)
                         } else {
@@ -85,7 +104,10 @@ fun GroupListItem(
             ) {
                 Text(
                     text = data.name,
-                    style = MaterialTheme.typography.h5.copy(fontSize = if (data.isLarge) 20.sp else 16.sp),
+                    style = MaterialTheme.typography.h5.copy(
+                        fontSize = if (data.isLarge) 20.sp else 16.sp,
+                        fontWeight = if (data.isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                    ),
                     modifier = Modifier
                 )
 
@@ -175,20 +197,6 @@ fun GroupListItem(
                         .padding(8.dp)
                 )
             }
-        }
-
-        if (data.isSelected) {
-            Icon(
-                painter = CoreAppIcons.Check.asPainterResource(),
-                contentDescription = null,
-                tint = MaterialTheme.colors.onPrimary,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(width = 42.dp, height = 16.dp)
-                    .clip(RoundedCornerShape(bottomStart = 16.dp, topEnd = 16.dp))
-                    .background(MaterialTheme.colors.primary)
-                    .padding(1.dp)
-            )
         }
     }
 }
