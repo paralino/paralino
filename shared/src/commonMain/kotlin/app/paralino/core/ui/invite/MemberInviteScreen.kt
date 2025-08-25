@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -31,19 +33,24 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.invite.input.MemberInviteScreenEvent
 import app.paralino.core.presentation.invite.input.MemberInviteScreenState
+import app.paralino.core.presentation.invite.input.MemberInviteScreenUiEvent
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.OnboardingSkipButton
+import app.paralino.core.ui.components.PlanLimitSmallUpgradeButton
 import app.paralino.core.ui.components.SettingsSectionHeader
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.GroupListItem
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
@@ -66,24 +73,38 @@ fun MemberInviteScreenCore(
 ) {
 
     MessageDispatcherEffect(vm, appState)
-    val state by vm.uiState.collectAsState()
+    val uiState by vm.uiState.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
                 MemberInviteScreenEvent.MemberAdded -> onMemberAdded()
-                MemberInviteScreenEvent.OpenPaywall -> openPaywall(BillingScreenSourceType.FREE_PLAN_NEW_USER)
+                is MemberInviteScreenEvent.OpenPaywall -> openPaywall(event.type)
 
                 null -> {
                     /* do nothing */
+                }
+
+                is MemberInviteScreenEvent.ShowGroupPicker -> {
+                   onPickGroup(event.sheetState)
                 }
             }
         }
     }
 
+    uiState.alertDialog?.let { dialog ->
+        dialog.Show { action ->
+            vm.onEvent(
+                MemberInviteScreenUiEvent.DialogAction(
+                    AlertDialogAction(dialog = dialog, action = action)
+                )
+            )
+        }
+    }
+
     MemberInviteScreen(
         modifier = Modifier.padding(contentPadding),
-        state = state,
+        state = uiState,
         isOnboarding = isOnboarding,
         onCodeChange = {
             vm.codeChanged(it)
@@ -97,7 +118,8 @@ fun MemberInviteScreenCore(
                 val groupPickerState = vm.getGroupPickerState()
                 onPickGroup(groupPickerState)
             }
-        }
+        },
+        openPaywall = openPaywall
     )
 }
 
@@ -110,6 +132,7 @@ private fun MemberInviteScreen(
     onConfirm: () -> Unit,
     onSkipOnboarding: () -> Unit,
     onPickGroup: () -> Unit,
+    openPaywall: (BillingScreenSourceType) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -120,7 +143,8 @@ private fun MemberInviteScreen(
                 modifier = Modifier,
                 style = ButtonStyle.BIG,
                 state = AppButtonState.loadingStateWithCheck(state.actionLoading),
-                icon = if (state is MemberInviteScreenState.Loaded) {
+                enabled = state.isNextButtonEnabled,
+                icon = if (state.isLoaded && state.group != null) {
                     CoreAppIcons.PersonAdd.asPainterResource()
                 } else {
                     null
@@ -131,9 +155,10 @@ private fun MemberInviteScreen(
                 }
             ) {
                 Text(
-                    text = when (state) {
-                        is MemberInviteScreenState.Empty -> stringResource(MR.strings.button_next)
-                        is MemberInviteScreenState.Loaded -> stringResource(MR.strings.invite_connect_button_addToGroup)
+                    text = if (state.isLoaded && state.group != null) {
+                        stringResource(MR.strings.invite_connect_button_addToGroup)
+                    } else {
+                        stringResource(MR.strings.button_next)
                     }
                 )
             }
@@ -141,6 +166,14 @@ private fun MemberInviteScreen(
         skipButton = if (isOnboarding) {
             @Composable {
                 OnboardingSkipButton(onSkip = onSkipOnboarding)
+            }
+        }  else if (state.shouldUpgradePlan) {
+            @Composable {
+                PlanLimitSmallUpgradeButton(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(MR.strings.invite_plan_limit_chip_owner),
+                    onClick = { openPaywall(BillingScreenSourceType.UPGRADE) }
+                )
             }
         } else {
             null
@@ -157,72 +190,94 @@ private fun MemberInviteScreen(
                 }
                 .verticalScroll(rememberScrollState())
                 .padding(it)
-                .padding(horizontal = 20.dp)
                 .padding(bottom = 20.dp),
-            verticalArrangement = if (state is MemberInviteScreenState.Empty) Arrangement.Center else Arrangement.Top,
+            verticalArrangement = if (!state.isLoaded || state.group == null) Arrangement.Center else Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-
-            if (state is MemberInviteScreenState.Loaded) {
-                SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_user))
-            } else {
-                Text(
-                    modifier = Modifier.padding(bottom = 40.dp, top = 20.dp),
-                    text = stringResource(MR.strings.invite_connect_title).annotatedBoldCompose(),
-                    style = MaterialTheme.typography.h6
-                )
-            }
-
-            MainInputField(
-                text = state.code,
-                textStyle = MaterialTheme.typography.h4.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center
-                ),
-                hint = stringResource(MR.strings.invite_connect_code_placeholder),
-                hasError = state.hasInputError,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done,
-                focusManager = focusManager,
-                onInputChange = onCodeChange
-            )
-
-            if (state is MemberInviteScreenState.Loaded) {
-
-                Spacer(modifier = Modifier.size(20.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ImageModelImage(
-                        imageModel = state.userImage,
-                        modifier = Modifier.size(70.dp)
-                    )
-                    Spacer(modifier = Modifier.size(10.dp))
-                    Text(text = state.userName, style = MaterialTheme.typography.h5)
-                }
-
-                if (state.group == null && state.canChangeGroup) {
-                    Spacer(modifier = Modifier.size(40.dp))
-                    FilledButton(
-                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-                        style = ButtonStyle.SMALL,
-                        icon = CoreAppIcons.Group.asPainterResource(),
-                        onClick = onPickGroup
-                    ) {
-                        Text(text = stringResource(MR.strings.invite_connect_button_pickGroup))
-                    }
-                } else if (state.group != null) {
+            if (state.loadedState != null) {
+                if (state.group != null) {
                     Spacer(modifier = Modifier.size(20.dp))
-                    SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_group))
+//                    SettingsSectionHeader(name = stringResource(MR.strings.invite_section_title_group))
                     GroupListItem(
                         modifier = Modifier
+                            .padding(horizontal = 20.dp)
                             .clickable {
-                                if (state.canChangeGroup) onPickGroup()
+                                if (state.loadedState.canChangeGroup) onPickGroup()
                             },
                         data = state.group,
                         onEdit = {}
                     )
+
+                    if (state.premiumStatus != null && state.members.isNotEmpty()) {
+                        SettingsSectionHeader(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp),
+                            name = stringResource(MR.strings.group_details_section_members_title),
+                            count = state.premiumStatus.payload.count,
+                            limit = state.premiumStatus.payload.limit
+                        )
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(horizontal = 20.dp)
+                        ) {
+                            this.items(state.members, key = { it.id }) { item ->
+                                DataInfoChip(
+                                    modifier = Modifier,
+                                    image = item.image,
+                                    text = item.name
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+                if (state.isLoaded) {
+                    SettingsSectionHeader(
+                        modifier = Modifier.padding(horizontal = 20.dp).padding(top = 10.dp),
+                        name = stringResource(MR.strings.invite_section_title_user)
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier
+                            .padding(bottom = 40.dp, top = 20.dp)
+                            .padding(horizontal = 20.dp),
+                        text = stringResource(MR.strings.invite_connect_title).annotatedBoldCompose(),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+
+                MainInputField(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    text = state.code,
+                    textStyle = MaterialTheme.typography.h4.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center
+                    ),
+                    hint = stringResource(MR.strings.invite_connect_code_placeholder),
+                    hasError = state.hasInputError,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done,
+                    focusManager = focusManager,
+                    onInputChange = onCodeChange
+                )
+
+            if (state.loadedState != null) {
+                Spacer(modifier = Modifier.size(20.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ImageModelImage(
+                        imageModel = state.loadedState.userImage,
+                        modifier = Modifier.size(70.dp)
+                    )
+                    Spacer(modifier = Modifier.size(10.dp))
+                    Text(text = state.loadedState.userName, style = MaterialTheme.typography.h5)
                 }
 
                 Spacer(modifier = Modifier.size(20.dp))
@@ -230,11 +285,12 @@ private fun MemberInviteScreen(
                 if (state.group != null) {
                     NoticeInfoChip(
                         modifier = Modifier
-                            .padding(vertical = 10.dp),
+                            .padding(vertical = 10.dp)
+                            .padding(horizontal = 20.dp),
                         icon = CoreAppIcons.Person.asPainterResource(),
                         text = stringResource(
                             MR.strings.invite_connect_disclaimer_user,
-                            state.userName,
+                            state.loadedState.userName,
                             state.group.name
                         )
                     )

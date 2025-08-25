@@ -42,6 +42,7 @@ import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenUiEvent
@@ -61,7 +62,9 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.PlanLimitCount
 import app.paralino.core.ui.components.SmallActionButton
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
+import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.settings.billing.PremiumPlanBannerSmall
 import app.paralino.core.ui.theme.ButtonStyle
@@ -126,6 +129,16 @@ fun GroupDetailScreenCore(
                     /* do nothing */
                 }
             }
+        }
+    }
+
+    uiState.data?.alertDialog?.let { dialog ->
+        dialog.Show { action ->
+            vm.onEvent(
+                GroupDetailScreenUiEvent.DialogAction(
+                    AlertDialogAction(dialog = dialog, action = action)
+                )
+            )
         }
     }
 
@@ -337,7 +350,9 @@ fun GroupDetailScreenCore(
                                         expanded = !expanded
                                     }
 
-                                    else -> {}
+                                    else -> {
+                                        vm.onEvent(GroupDetailScreenUiEvent.OnMemberItemEvent(event))
+                                    }
                                 }
                             }
                         )

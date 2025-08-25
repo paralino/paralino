@@ -210,7 +210,8 @@ object KoinSetup {
                 codeRepo = get(),
                 groupRepo = get(),
                 groupMemberAdd = get(),
-                userRepo = get()
+                userRepo = get(),
+                premiumStatusManager = get()
             )
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

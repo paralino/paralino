@@ -38,10 +38,6 @@ import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.BlockUser
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteGroupMember
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteMemberLocation
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.UnblockGroupOrUser
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -299,7 +295,7 @@ class GroupDetailViewModel(
                                 _uiState.update {
                                     it.mapSuccess {
                                         it.copy(
-                                            alertDialog = DeleteGroupMember(
+                                            alertDialog = MainAlertDialog.DeleteGroupMember(
                                                 memberUserId = event.event.item.memberState.userId,
                                                 memberName = event.event.item.memberState.name
                                             )
@@ -312,7 +308,7 @@ class GroupDetailViewModel(
                                 _uiState.update {
                                     it.mapSuccess {
                                         it.copy(
-                                            alertDialog = BlockUser(
+                                            alertDialog = MainAlertDialog.BlockUser(
                                                 userId = event.event.item.memberState.userId,
                                             )
                                         )
@@ -324,7 +320,7 @@ class GroupDetailViewModel(
                                 _uiState.update {
                                     it.mapSuccess {
                                         it.copy(
-                                            alertDialog = UnblockGroupOrUser(
+                                            alertDialog = MainAlertDialog.UnblockGroupOrUser(
                                                 id = event.event.item.memberState.userId,
                                                 type = BlocklistType.USER
                                             )
@@ -346,7 +342,7 @@ class GroupDetailViewModel(
                         _uiState.update {
                             it.mapSuccess {
                                 it.copy(
-                                    alertDialog = DeleteMemberLocation(
+                                    alertDialog = MainAlertDialog.DeleteMemberLocation(
                                         memberId = event.event.item.memberState.memberId,
                                         locationId = event.event.device.locationId,
                                         isUserOwnDevice = event.event.item.memberState.isCurrentUser,
@@ -463,8 +459,9 @@ class GroupDetailViewModel(
     private fun tryAddMember() {
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
-            when (val premiumStatus =
-                premiumStatusManager.checkMemberCountLimits(groupId = state.groupId)) {
+            when (
+                val premiumStatus = premiumStatusManager.checkMemberCountLimits(groupId = state.groupId)
+            ) {
                 is PremiumStatusLimitState.PlanLimitReached -> {
                     _eventChannel.send(GroupDetailScreenEvent.OpenPaywall)
                 }

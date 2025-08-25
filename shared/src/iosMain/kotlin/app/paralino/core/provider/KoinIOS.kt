@@ -113,6 +113,7 @@ import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+@Suppress("unused")
 object KoinIOS {
 
     fun createIOSKoinModules(
@@ -226,11 +227,12 @@ object KoinIOS {
                     codeRepo = get(),
                     groupRepo = get(),
                     groupMemberAdd = get(),
-                    userRepo = get()
+                    userRepo = get(),
+                    premiumStatusManager = get()
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
