@@ -127,7 +127,7 @@ private fun MapContent(
             uiState = uiState,
             onEvent = onEvent,
             mapContentPadding = PaddingValues(
-                top = 68.dp,
+                top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 64.dp,
                 bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues()
                     .calculateBottomPadding()).coerceIn(
                     minimumValue = WindowInsets.navigationBars.asPaddingValues()
@@ -140,7 +140,7 @@ private fun MapContent(
         LocationHistoryScreenElements(
             modifier = Modifier,
             uiState = uiState,
-            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(),
+            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 4.dp,
             cardHeight = { cardHeight = it },
             onEvent = onEvent
         )

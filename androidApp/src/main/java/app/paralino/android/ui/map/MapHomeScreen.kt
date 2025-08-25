@@ -292,7 +292,7 @@ private fun MapContent(
             uiState = uiState,
             onEvent = onEvent,
             mapContentPadding = PaddingValues(
-                top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 68.dp,
+                top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 64.dp,
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
                     WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                 } else {
@@ -307,7 +307,7 @@ private fun MapContent(
         MapHomeScreenElements(
             modifier = Modifier,
             state = uiState,
-            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding(),
+            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 4.dp,
             sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
                 minimumValue = WindowInsets.navigationBars.asPaddingValues()
                     .calculateBottomPadding(),
