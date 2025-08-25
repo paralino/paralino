@@ -131,6 +131,7 @@ fun MapHomeSheetContent(
         if (readyState != null) {
             MapGroupNameAndMemberInfo(
                 modifier = Modifier.padding(start = 16.dp, end = 20.dp),
+                isPersonalSpace = readyState.isPersonalSpace,
                 groupName = readyState.groupName,
                 groupImage = readyState.groupImage,
                 userCount = readyState.userCount,
@@ -159,16 +160,29 @@ fun MapHomeSheetContent(
                     .align(Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MapBottomSheetTab(
-                    modifier = Modifier,
-                    selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
-                    focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
-                    text = MR.strings.group_details_section_members_title.localizedString(),
-                    icon = CoreAppIcons.Group.asPainterResource(),
-                    onClick = {
-                        onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
-                    }
-                )
+                if (readyState.isPersonalSpace) {
+                    MapBottomSheetTab(
+                        modifier = Modifier,
+                        selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                        focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                        text = MR.strings.group_member_devices_section_title.localizedString(),
+                        icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
+                        }
+                    )
+                } else {
+                    MapBottomSheetTab(
+                        modifier = Modifier,
+                        selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                        focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                        text = MR.strings.group_details_section_members_title.localizedString(),
+                        icon = CoreAppIcons.Group.asPainterResource(),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
+                        }
+                    )
+                }
                 Spacer(modifier = Modifier.size(8.dp))
                 MapBottomSheetTab(
                     modifier = Modifier,

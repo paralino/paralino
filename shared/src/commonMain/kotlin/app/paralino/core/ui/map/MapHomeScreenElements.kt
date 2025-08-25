@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
@@ -48,6 +47,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.groups.components.GroupMember
+import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.places.PlaceListItem
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
@@ -171,43 +171,29 @@ fun MapHomeScreenElements(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = sheetPeekHeight)
+                    .padding(bottom = sheetPeekHeight),
+                horizontalArrangement = Arrangement.End
             ) {
                 // sharing time info
                 AnimatedVisibility(
                     visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
                     modifier = Modifier
-                        .padding(start = 6.dp, bottom = 32.dp),
+                        .padding(horizontal = 6.dp)
+                        .padding(bottom = 6.dp),
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable { onEvent(MapHomeScreenUiEvent.OnGroupDetailsClick) }
-                            .background(
-                                MaterialTheme.colors.surface,
-                                MaterialTheme.shapes.medium
-                            )
-                            .clip(RoundedCornerShape(percent = 100))
-                            .padding(vertical = 4.dp)
-                            .padding(start = 4.dp, end = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = CoreAppIcons.Timer.asPainterResource(),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.size(4.dp))
-                        Text(
-                            text = readyState?.sharingEndTime
-                                ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
-                            style = MaterialTheme.typography.caption.copy(fontSize = 10.sp)
-                        )
-                    }
+                    GroupMemberActionButton(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        startIcon = CoreAppIcons.Timer.asPainterResource(),
+                        isLoading = false,
+                        text = readyState?.sharingEndTime
+                            ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
+                        }
+                    )
                 }
-
-                Spacer(modifier = Modifier.weight(1f))
 
                 // sharing start
                 if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {

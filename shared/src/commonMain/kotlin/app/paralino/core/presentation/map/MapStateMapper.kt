@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.map
 
+import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
@@ -24,6 +25,7 @@ import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
@@ -51,7 +53,7 @@ class MapStateMapper(
     ): MapHomeScreenState.Ready {
         val groupName = when (groupOrSpace) {
             is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.name
-            is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.user.name + "'s Devices"
+            is GroupWithMembersOrUserSpace.PersonalSpace -> MR.strings.personalSpace_spaceTitle.localizedString()
         }
 
         val groupImage = when (groupOrSpace) {
@@ -262,8 +264,8 @@ class MapStateMapper(
                 groupId = UserGroup.groupPersonalDevicesId,
                 memberId = device.deviceId, // Use device ID as member ID to make it unique
                 userId = device.ownerUserId,
-                name = space.user.name,
-                image = space.user.data?.userImage,
+                name = device.deviceNameOrNull ?: "?",
+                image = ImageModel.emoji(Emojis.mobilePhone),
                 paralinoId = null,
                 isCurrentUser = device.ownerUserId == appPrefs.userId,
                 isVerified = true,
@@ -298,8 +300,8 @@ class MapStateMapper(
                 location = location?.let {
                     GroupMemberItemLocationState(
                         memberLocation = it,
-                        name = device.deviceNameOrNull ?: it.name,
-                        image = space.user.data?.userImage,
+                        name = null,
+                        image = ImageModel.emoji(Emojis.mobilePhone),
                         canEdit = false,
                         currentDevice = it.deviceId == appPrefs.deviceId,
                         showSpeedAndElevation = true,
@@ -496,9 +498,7 @@ class MapStateMapper(
                                 location = location,
                                 name = location.nameOrNull?.takeIf { it.isNotBlank() }
                                     ?: deviceName,
-                                image = groupOrSpace.space.user.data?.userImage ?: ImageModel.emoji(
-                                    Emojis.robot
-                                ),
+                                image = ImageModel.emoji(Emojis.mobilePhone),
                                 timeInfo = valueFormatter.getLastLocationPing(location)
                             )
 

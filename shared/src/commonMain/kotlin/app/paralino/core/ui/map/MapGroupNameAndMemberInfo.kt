@@ -42,6 +42,7 @@ import app.paralino.core.ui.theme.AppColors
 @Composable
 fun MapGroupNameAndMemberInfo(
     modifier: Modifier = Modifier,
+    isPersonalSpace: Boolean,
     groupName: String,
     groupImage: ImageModel,
     userCount: Int,
@@ -71,6 +72,15 @@ fun MapGroupNameAndMemberInfo(
             useBackgroundForEmoji = false,
             clipShape = CircleShape,
             modifier = Modifier.size(56.dp)
+                .border(
+                    width = if (isPersonalSpace) 2.dp else 0.5.dp,
+                    color = if (isPersonalSpace) {
+                        AppColors.accentDark.copy(0.3f)
+                    } else {
+                        Color.Transparent
+                    },
+                    CircleShape
+                )
         )
 
         Column(
@@ -94,11 +104,19 @@ fun MapGroupNameAndMemberInfo(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                    Icon(
-                        painter = CoreAppIcons.Group.asPainterResource(),
-                        modifier = Modifier.size(14.dp),
-                        contentDescription = null
-                    )
+                    if (isPersonalSpace) {
+                        Icon(
+                            painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                            modifier = Modifier.size(14.dp),
+                            contentDescription = null
+                        )
+                    } else {
+                        Icon(
+                            painter = CoreAppIcons.Group.asPainterResource(),
+                            modifier = Modifier.size(14.dp),
+                            contentDescription = null
+                        )
+                    }
                     Spacer(Modifier.size(2.dp))
                     Text(
                         text = "$userCount",

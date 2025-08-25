@@ -112,7 +112,7 @@ fun GroupListItem(
                     if (data.devicesCount != null) {
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                             Icon(
-                                painter = CoreAppIcons.Devices.asPainterResource(),
+                                painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
                                 modifier = Modifier.size(16.dp),
                                 contentDescription = null
                             )
