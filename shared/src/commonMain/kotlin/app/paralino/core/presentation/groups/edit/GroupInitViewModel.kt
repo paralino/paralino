@@ -130,7 +130,7 @@ class GroupInitViewModel(
                 add(ConditionErrorType.PermissionNotifications)
             }
 
-            user.data?.needsEmailVerification?.takeIf { it }?.let {
+            user.data?.canVerifyEmail?.takeIf { it }?.let {
                 add(ConditionErrorType.EmailVerification(user.data?.email ?: ""))
             }
         }

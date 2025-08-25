@@ -82,7 +82,7 @@ class AppAccountStateMonitor constructor(
                         else -> {
                             try {
                                 val decryptedUser = userMapper.remote2Core(user)
-                                if (decryptedUser.needsEmailVerification) {
+                                if (decryptedUser.needsToVerifyEmail) {
                                     logg.tag("account_state").v("User is ready but needs email verification")
                                     Resource.Ready(data = AppAccountState.EMAIL_VERIFICATION(decryptedUser))
                                 } else if (!decryptedUser.hasValidData) {

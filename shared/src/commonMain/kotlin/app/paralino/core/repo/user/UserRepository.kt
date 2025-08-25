@@ -27,7 +27,6 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
-import app.paralino.core.utils.exceptions.UnverifiedUserException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -135,7 +134,6 @@ class UserRepository constructor(
             encodingType = EncodingType.BASE64_URL
         )
         appPrefs.sessionId = userSession.id
-        appPrefs.emailConfirmed = true
         sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
@@ -148,14 +146,9 @@ class UserRepository constructor(
             )
 
         }.also {
+            appPrefs.emailVerificationSkipTime = null
             refreshUserMaybe(timeDelayMillis = 0)
         }
-    }
-
-    suspend fun updateUserEmail(newEmail: String, password: String) {
-        triggerRemoteOnly {
-            remote.updateEmail(newEmail, password)
-        }.also { updateLocalUser(it) }
     }
 
     suspend fun changePassword(oldPassword: String, newPassword: String) {
@@ -188,8 +181,6 @@ class UserRepository constructor(
             } else if (e is NotFoundException) {
                 logg.v("User does not exist")
             } else {
-                if (e is UnverifiedUserException)
-                    appPrefs.emailConfirmed = false
                 logg.e("Error refreshing user")
             }
             throw e
@@ -225,11 +216,12 @@ class UserRepository constructor(
         appPrefs.email = data.email
         appPrefs.wasUserLoggedIn = true
         local.update(data)
-    }
 
-    private suspend fun updateUserDataBlocking(data: UserMeData) {
-        triggerRemoteOnly { remote.updateUserData(data) }
-            .also { updateLocalUser(it) }
+        if (appPrefs.emailConfirmed != data.emailVerification) {
+            appPrefs.emailVerificationSkipTime = null
+        }
+
+        appPrefs.emailConfirmed = data.emailVerification
     }
 
     suspend fun initEmailVerification() {

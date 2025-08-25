@@ -187,7 +187,7 @@ object CoreAppIcons {
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotificationsOff get() = Res.drawable.ic_notifications_off
-    val Adjust get() = Res.drawable.ic_adjust
+    val CircleWithDot get() = Res.drawable.ic_adjust
     val Groups get() = Res.drawable.ic_groups
 
     val Elevation get() = Res.drawable.ic_elevation_2

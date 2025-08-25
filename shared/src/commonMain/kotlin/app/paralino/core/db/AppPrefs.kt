@@ -97,6 +97,7 @@ class AppPrefs(
         const val keyNavigatioApp = "prefs.device.navigationApp"
         const val keyDeviceTheme = "prefs.device.theme"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
+        const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
     }
 
     val isTokenValid: Boolean
@@ -336,6 +337,16 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyAccountWelcomeOnboardingNotifications, false)
         set(value) {
             provider.userSettings.putBoolean(keyAccountWelcomeOnboardingNotifications, value)
+        }
+
+    var emailVerificationSkipTime: Instant?
+        get() = provider.userSettings.getString(keyEmailVerificationSkipTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keyEmailVerificationSkipTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyEmailVerificationSkipTime)
+            }
         }
 
     var lastShowedAppRatingDialogUTC: Instant

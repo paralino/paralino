@@ -1,6 +1,8 @@
 package app.paralino.core.presentation.login.emailverify
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
@@ -15,6 +17,7 @@ import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.getFormValidationErrorText
 import app.paralino.core.utils.extensions.mapToPayload
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -32,6 +35,8 @@ import kotlin.time.Duration.Companion.seconds
 class VerifyEmailViewModel(
     private val userRepo: UserRepository,
     private val logoutUseCase: LogoutUseCase,
+    private val accountStateMonitor: AppAccountStateMonitor,
+    private val appPrefs: AppPrefs
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -97,9 +102,11 @@ class VerifyEmailViewModel(
 
             VerifyEmailScreenUiEvent.ToggleManualVerificationInput -> {
                 if (!_uiState.value.isLoadingAny) {
-                    _uiState.update { it.copy(isEmailVerificationShown = true) }
+                    _uiState.update { it.copy(isManualEmailVerificationShown = true) }
                 }
             }
+
+            VerifyEmailScreenUiEvent.SkipVerification -> skipEmailVerification()
         }
     }
 
@@ -135,7 +142,7 @@ class VerifyEmailViewModel(
                 } catch (e: Exception) {
                 }
 
-                if (userRepo.cachedUser?.needsEmailVerification == true) {
+                if (userRepo.cachedUser?.canVerifyEmail == true) {
                     checkManualEmailVerification()
                 }
 
@@ -148,11 +155,11 @@ class VerifyEmailViewModel(
     }
 
     private suspend fun checkManualEmailVerification() {
-        val emailVerification = DeeplinkType.parse(deeplink = _uiState.value.emailVerification)
+        val emailVerification = DeeplinkType.parse(deeplink = _uiState.value.emailVerificationLink)
 
         _uiState.update {
             it.copy(
-                hasEmailVerificationError = emailVerification !is DeeplinkType.EmailVerify
+                hasEmailVerificationLinkError = emailVerification !is DeeplinkType.EmailVerify
             )
         }
 
@@ -178,12 +185,21 @@ class VerifyEmailViewModel(
         }
     }
 
+    private fun skipEmailVerification() {
+        if (_uiState.value.isLoadingAny) {
+            return
+        }
+
+        appPrefs.emailVerificationSkipTime = nowUTC()
+        accountStateMonitor.triggerStateCheck()
+    }
+
     private fun onEmailVerificationChange(emailVerification: String) {
         if (_uiState.value.isLoadingAny) return
         _uiState.update {
             it.copy(
-                emailVerification = emailVerification,
-                hasEmailVerificationError = false
+                emailVerificationLink = emailVerification,
+                hasEmailVerificationLinkError = false
             )
         }
     }

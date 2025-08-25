@@ -198,7 +198,7 @@ object ParalinoCore {
 
 val mappersModule = module {
     single { UserMapperLocal(get()) }
-    single { UserMapperCore(get(), get()) }
+    single { UserMapperCore(get(), get(), get()) }
     single { UserDeviceMapper(get(), get()) }
     single { SharingContractsMapper }
     single { GroupsMapperLocal(get()) }

@@ -2,6 +2,7 @@ package app.paralino.core.models.mappers
 
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.asImageModel
 import app.paralino.core.models.raw.BlocklistRaw
@@ -17,7 +18,8 @@ import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 
 class UserMapperCore(
     private val cryptoCore: CryptoCore,
-    private val userKeyRepo: CryptoUserKeysLocalSource
+    private val userKeyRepo: CryptoUserKeysLocalSource,
+    private val appPrefs: AppPrefs,
 ) {
 
     suspend fun remote2Core(model: BlocklistRaw): BlocklistModel {
@@ -49,6 +51,7 @@ class UserMapperCore(
             email = model.email,
             registration = model.registration,
             emailVerification = model.emailVerification,
+            emailVerificationSkipTime = appPrefs.emailVerificationSkipTime,
             passwordUpdate = model.passwordUpdate?.isoWithOffsetToInstant(),
             data = model.data?.let { remote2Core(it) }
         )
@@ -86,5 +89,4 @@ class UserMapperCore(
             userKeyVersion = userKey.version
         )
     }
-
 }

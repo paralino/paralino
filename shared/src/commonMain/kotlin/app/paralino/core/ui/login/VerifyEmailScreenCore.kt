@@ -13,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -109,7 +107,7 @@ fun VerifyEmailScreenCore(
                 navigationIcon = null,
                 actions = {
                     FilledButton(
-                        modifier = Modifier.padding(end =  4.dp).size(28.dp),
+                        modifier = Modifier.padding(end = 4.dp).size(28.dp),
                         onClick = { vm.onEvent(VerifyEmailScreenUiEvent.Logout) },
                         icon = CoreAppIcons.Logout.asPainterResource(),
                         style = ButtonStyle.ICON(
@@ -149,7 +147,10 @@ fun VerifyEmailScreenCore(
             NoticeInfoChip(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 0.dp),
                 icon = CoreAppIcons.PrivacyTip.asPainterResource(),
-                text = stringResource(MR.strings.info_email_check_instructions, uiState.currentEmail)
+                text = stringResource(
+                    MR.strings.info_email_check_instructions,
+                    uiState.currentEmail
+                )
             )
 
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -170,14 +171,14 @@ fun VerifyEmailScreenCore(
                 onClick = { vm.onEvent(VerifyEmailScreenUiEvent.EditCurrentEmail) }
             )
 
-            AnimatedVisibility(uiState.isEmailVerificationShown) {
+            AnimatedVisibility(uiState.isManualEmailVerificationShown) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 20.dp).padding(top = 20.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp).padding(vertical = 20.dp)
                 ) {
                     MainInputField(
-                        text = uiState.emailVerification,
+                        text = uiState.emailVerificationLink,
                         hint = stringResource(MR.strings.info_email_confirm_verification_placeholder),
-                        hasError = uiState.hasEmailVerificationError,
+                        hasError = uiState.hasEmailVerificationLinkError,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done,
                         capitalization = KeyboardCapitalization.Words,
@@ -205,7 +206,7 @@ fun VerifyEmailScreenCore(
                 }
             }
 
-            AnimatedVisibility(!uiState.isEmailVerificationShown) {
+            AnimatedVisibility(!uiState.isManualEmailVerificationShown) {
                 SettingsActionItem(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                     name = stringResource(MR.strings.info_email_confirm_manual_verification_button),
@@ -214,6 +215,15 @@ fun VerifyEmailScreenCore(
                     onClick = { vm.onEvent(VerifyEmailScreenUiEvent.ToggleManualVerificationInput) }
                 )
             }
+
+            SettingsActionItem(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                name = stringResource(MR.strings.info_email_confirm_skip_button),
+                tag = stringResource(MR.strings.info_email_confirm_skip_notice),
+                icon = CoreAppIcons.ChevronRight.asPainterResource(),
+                type = SettingsActionItemType.Action,
+                onClick = { vm.onEvent(VerifyEmailScreenUiEvent.SkipVerification) }
+            )
         }
     }
 

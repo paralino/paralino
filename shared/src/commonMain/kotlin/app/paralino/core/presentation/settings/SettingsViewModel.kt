@@ -122,7 +122,7 @@ class SettingsViewModel(
                                 email = userState.data.email,
                                 personalCode = personalCode?.formattedCode,
                                 isGuestUser = userState.data.isGuestUser,
-                                errorItem = if (userState.data.needsEmailVerification)
+                                errorItem = if (userState.data.canVerifyEmail)
                                     ConditionErrorType.EmailVerification(userState.data.email)
                                 else null
                             ),
