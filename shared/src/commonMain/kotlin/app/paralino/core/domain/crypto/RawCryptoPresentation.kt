@@ -12,9 +12,9 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserLocalDataSource
-import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +27,7 @@ class RawCryptoPresentation constructor(
     private val memberLocal: LocationLocalDataSource,
     private val userLocal: UserLocalDataSource,
     private val userKeyLocal: CryptoUserKeysLocalSource,
-    private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
+    private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val userConfigRepo: UserConfigRepository,
     private val appPrefs: AppPrefs,
     private val appBuildConfig: AppBuildConfig
@@ -277,7 +277,7 @@ class RawCryptoPresentation constructor(
             }
         }
 
-        return personalSpaceLocal.getAllUserDevicesRawPresentation()
+        return personalDevicesLocal.getAllUserDevicesRawPresentation()
             .map { devices ->
                 devices.map { rawPair ->
 

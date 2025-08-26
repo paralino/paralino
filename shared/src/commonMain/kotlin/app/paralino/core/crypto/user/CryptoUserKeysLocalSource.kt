@@ -118,15 +118,6 @@ class CryptoUserKeysLocalSource(
             .distinctUntilChanged()
     }
 
-    suspend fun getDeviceSenderKeyForDeviceId(internalDeviceId: String): PersonalSpaceDeviceKey {
-        val device = database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId = internalDeviceId)
-        if (device == null) {
-            return PersonalSpaceDeviceKey.Error.Missing
-        }
-
-        return getDeviceSenderKeyForDevice(device = device)
-    }
-
     suspend fun getDeviceSenderKeyForLocationId(locationId: String): PersonalSpaceDeviceKey {
         val device = database.userDeviceDao.getUserDeviceOnce(id = locationId)
         if (device == null) {

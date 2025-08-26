@@ -2,18 +2,17 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
-import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.minutes
 
 class RevokeDeviceActiveStatusUseCase(
     private val local: GetMemberWithLocationsUseCase,
-    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val sharingManager: LocationSharingManager,
     private val memberDeviceStatusProcessor: MemberDeviceStatusProcessor,
     private val appPrefs: AppPrefs
@@ -28,7 +27,7 @@ class RevokeDeviceActiveStatusUseCase(
             val memberModels = local.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation }
                 .let {
-                    val personalSpaceLocation = personalSpaceRepo.getUserDeviceByDeviceIdOnce(
+                    val personalSpaceLocation = personalDevicesLocal.getUserDeviceByDeviceIdOnce(
                         deviceId = appPrefs.deviceId
                     )?.location
                     if (personalSpaceLocation != null) {

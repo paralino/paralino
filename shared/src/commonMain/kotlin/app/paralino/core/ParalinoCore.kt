@@ -116,6 +116,7 @@ import app.paralino.core.repo.places.PlacesGetRemoteSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserDevicesRemoteSource
 import app.paralino.core.repo.user.UserLocalDataSource
@@ -223,7 +224,8 @@ val dataSourceModule = module {
     single { LocationLocalDataSource(get(), get()) }
     single { SharingContractsLocalDataSource(get(), get()) }
     single { UserLocalDataSource(get(), get()) }
-    single { UserPersonalSpaceLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { UserPersonalSpaceLocalDataSource(get(), get(), get(), get(), get(), get(), get()) }
+    single { PersonalDevicesLocalDataSource(get(), get()) }
     single { CryptoKeyLocalDataSource(get(), get(), get()) }
     single { UserGroupLocalDataSource(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PersonalCodeLocalDataSource(get(), get()) }
@@ -317,9 +319,9 @@ val coreModule = module {
 
     factory { NotificationPreCheckProcessor(get(), get(), get()) }
     factory { PushNotificationDeleteUseCase(get(), get()) }
-    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { PushNotificationHandler(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    factory { PlaceActivityNotificationProcessor(get(), get(), get(), get(), get(), get()) }
+    factory { PlaceActivityNotificationProcessor(get(), get(), get(), get(), get(), get(), get()) }
     factory { PlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
     factory { PlaceDeletedNotificationProcessor(get()) }
     factory { PlaceUpdatedNotificationProcessor(get()) }

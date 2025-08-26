@@ -23,6 +23,7 @@ import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import kotlin.time.Duration.Companion.seconds
 
@@ -30,7 +31,7 @@ class RealtimeEventsProcessor constructor(
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
     private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
-    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val placesRepo: PlacesRepository,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
@@ -264,7 +265,7 @@ class RealtimeEventsProcessor constructor(
                 }
             }
 
-            personalSpaceRepo.updateUserDeviceData(device)
+            personalDevicesLocal.updateUserDeviceData(device)
         } else {
             if (isPaused(UserGroup.groupPersonalDevicesId)) {
                 return

@@ -3,13 +3,12 @@ package app.paralino.core.domain.location
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
-import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationRemoteSource
-import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration.Companion.hours
@@ -18,7 +17,7 @@ class ClearUserLocationUseCase(
     private val groupLocal: GetMemberWithLocationsUseCase,
     private val local: LocationLocalDataSource,
     private val remote: LocationRemoteSource,
-    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val locationSharingManager: LocationSharingManager,
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
@@ -43,7 +42,7 @@ class ClearUserLocationUseCase(
             val memberModels = groupLocal.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation }
                 .let {
-                    val personalSpaceLocation = personalSpaceRepo.getUserDeviceByDeviceIdOnce(
+                    val personalSpaceLocation = personalDevicesLocal.getUserDeviceByDeviceIdOnce(
                         deviceId = appPrefs.deviceId
                     )?.location
                     if (personalSpaceLocation != null) {

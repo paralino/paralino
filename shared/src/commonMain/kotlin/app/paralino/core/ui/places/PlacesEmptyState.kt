@@ -280,7 +280,7 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
     val notificationContentEnter = remember {
         MR.strings.place_notification_enter.localizedString(
             if (isPersonalSpace) {
-                MR.strings.places_notification_personalDevice.localizedString()
+                MR.strings.places_notification_personalDevice_placeholder.localizedString()
             } else {
                 "Peter"
             },
@@ -290,7 +290,7 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
     val notificationContentExit = remember {
         MR.strings.place_notification_exit.localizedString(
             if (isPersonalSpace) {
-                MR.strings.places_notification_personalDevice.localizedString()
+                MR.strings.places_notification_personalDevice_placeholder.localizedString()
             } else {
                 "Heidi"
             },

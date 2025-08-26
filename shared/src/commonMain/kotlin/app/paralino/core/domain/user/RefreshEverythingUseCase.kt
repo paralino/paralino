@@ -131,7 +131,7 @@ class RefreshEverythingUseCase(
                 .also {
                     // TODO refresh user personal keys if needed
                 }
-                .let { personalSpaceRefreshUseCase.handleGroupKeysUpdate(it) }
+                .let { personalSpaceRefreshUseCase.handleKeysUpdate(it) }
 
             personalSpaceLocal.recreateDevicesWithPlaces(data = newPersonalData)
 

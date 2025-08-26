@@ -40,7 +40,7 @@ class PersonalSpaceRefreshUseCase(
                     .also {
                         // TODO refresh missing user keys, could be rotated
                     }
-                    .let { handleGroupKeysUpdate(it, retry) }
+                    .let { handleKeysUpdate(it, retry) }
             }
         } catch (e: Exception) {
             if (e.asRemoteException() is NotFoundException) {
@@ -52,7 +52,7 @@ class PersonalSpaceRefreshUseCase(
         }
     }
 
-    suspend fun handleGroupKeysUpdate(space: UserDevicesWithLocationsAndPlacesRaw, retry: Int = 1): UserDevicesWithLocationsAndPlacesRaw {
+    suspend fun handleKeysUpdate(space: UserDevicesWithLocationsAndPlacesRaw, retry: Int = 1): UserDevicesWithLocationsAndPlacesRaw {
 
         if(retry > 2) {
             logg.tag("tag_crypto_key_personal").w("Too many retries ($retry) in personal space refresh / key rotation")

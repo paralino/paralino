@@ -1,6 +1,7 @@
 package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.utils.extensions.tryParseFromJson
@@ -19,7 +20,7 @@ class GroupMemberDeletedNotificationProcessor(
             ?: return null
         groupRefreshHook?.invoke(
             GroupRefreshHookPayload(
-                groupId = payload.groupId,
+                groupId = payload.groupId.asGroupOrSpaceId(),
                 cacheTimeDuration = 10.seconds
             )
         )

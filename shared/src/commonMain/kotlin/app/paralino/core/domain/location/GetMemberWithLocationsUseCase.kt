@@ -56,7 +56,7 @@ class GetMemberWithLocationsUseCase(
             return database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId = appPrefs.deviceId)
                 ?.takeIf { entity ->
                     entity.hasValidLocation
-                }?.id
+                }?.locationId
         } else {
             return database.groupRelatedDao.getSingleLocationForMemberAndDeviceOnce(
                 groupId = groupId.id,
