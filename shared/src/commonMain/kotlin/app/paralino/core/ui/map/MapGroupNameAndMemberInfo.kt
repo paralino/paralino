@@ -46,6 +46,7 @@ fun MapGroupNameAndMemberInfo(
     groupName: String,
     groupImage: ImageModel,
     userCount: Int,
+    placesCount: Int,
     activeUserCount: Int,
     idleUserCount: Int,
     inactiveUserCount: Int,
@@ -161,6 +162,22 @@ fun MapGroupNameAndMemberInfo(
                             )
                         }
                     }
+                }
+
+                Spacer(Modifier.size(10.dp))
+
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                    Icon(
+                        painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                        modifier = Modifier.size(16.dp),
+                        contentDescription = null
+                    )
+                    Spacer(Modifier.size(2.dp))
+                    Text(
+                        text = "$placesCount",
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier
+                    )
                 }
             }
         }

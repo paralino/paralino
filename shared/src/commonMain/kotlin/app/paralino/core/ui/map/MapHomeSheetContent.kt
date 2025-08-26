@@ -135,6 +135,7 @@ fun MapHomeSheetContent(
                 groupName = readyState.groupName,
                 groupImage = readyState.groupImage,
                 userCount = readyState.userCount,
+                placesCount = places.size,
                 activeUserCount = readyState.activeUserCount,
                 inactiveUserCount = readyState.inactiveUserCount,
                 idleUserCount = readyState.idleUserCount,
