@@ -15,6 +15,7 @@ data class UserDeviceEntity(
     @ColumnInfo(name = "locationPushToken") val locationPushToken: String?,
     @ColumnInfo(name = "encryptedSenderKey") val encryptedSenderKey: String?,
     @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long?,
+    @ColumnInfo(name = "batteryAlertSettings") val batteryAlertSettings: String?,
     @ColumnInfo(name = "locationId") val locationId: String?,
     @ColumnInfo(name = "deviceData") val deviceData: String?,
     @ColumnInfo(name = "locationData") val locationData: String?,
@@ -35,7 +36,8 @@ data class UserDeviceEntityDeviceUpdate(
     @ColumnInfo(name = "deviceData") val deviceData: String?,
     @ColumnInfo(name = "locationPushToken") val locationPushToken: String?,
     @ColumnInfo(name = "encryptedSenderKey") val encryptedSenderKey: String?,
-    @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long?
+    @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long?,
+    @ColumnInfo(name = "batteryAlertSettings") val batteryAlertSettings: String?
 )
 
 @Entity

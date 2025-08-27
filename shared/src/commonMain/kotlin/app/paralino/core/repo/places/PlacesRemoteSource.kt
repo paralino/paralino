@@ -209,7 +209,7 @@ class PlacesRemoteSource(
             )
 
             val response = functionsApi.runAndWait(
-                function = ServerFunction.SETTINGS_NOTIFICATIONS_PLACES_UPDATE,
+                function = ServerFunction.ALERTS_PLACES_UPDATE,
                 data = payload
             )
 

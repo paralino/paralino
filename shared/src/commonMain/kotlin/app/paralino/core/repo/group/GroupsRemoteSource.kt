@@ -11,10 +11,10 @@ import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.GroupMapperCore
-import app.paralino.core.models.raw.BatteryNotificationsUpdatePayload
 import app.paralino.core.models.raw.BlockGroupFunctionData
 import app.paralino.core.models.raw.BlockGroupMemberFunctionData
 import app.paralino.core.models.raw.DeleteGroupMemberPayload
+import app.paralino.core.models.raw.GroupBatteryNotificationsUpdatePayload
 import app.paralino.core.models.raw.GroupDocumentRaw
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.GroupWithMembersAndPlacesRaw
@@ -83,14 +83,14 @@ class GroupsRemoteSource constructor(
     ): GroupSettingsRaw {
         return blocking {
 
-            val payload = BatteryNotificationsUpdatePayload(
+            val payload = GroupBatteryNotificationsUpdatePayload(
                 groupId = groupId,
                 memberId = memberId,
                 alertData = BaseRemoteModule.formatter.encodeToString(batterySettings)
             )
 
             val response = functionsApi.runAndWait(
-                function = ServerFunction.SETTINGS_NOTIFICATIONS_BATTERY_UPDATE,
+                function = ServerFunction.ALERTS_BATTERY_UPDATE_GROUP,
                 data = payload
             )
 

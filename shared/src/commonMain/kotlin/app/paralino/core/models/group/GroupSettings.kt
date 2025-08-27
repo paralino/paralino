@@ -17,7 +17,7 @@ data class GroupSettings(
 @Serializable
 data class BatteryNotificationsSettingsData constructor(
     val isActive: Boolean = true,
-    val settings: List<BatteryNotificationsSettingsEntry> = emptyList()
+    val settings: List<BatteryNotificationsSettingsUserEntry> = emptyList()
 ) {
     companion object {
         const val LOW_BATTERY_LEVEL: Int = 15
@@ -25,7 +25,8 @@ data class BatteryNotificationsSettingsData constructor(
 }
 
 @Serializable
-data class BatteryNotificationsSettingsEntry constructor(
+data class BatteryNotificationsSettingsUserEntry constructor(
     val memberUserId: String,
+    val deviceId: String? = null,
     val isActive: Boolean
 )

@@ -3,7 +3,7 @@ package app.paralino.core.domain.group
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
-import app.paralino.core.models.group.BatteryNotificationsSettingsEntry
+import app.paralino.core.models.group.BatteryNotificationsSettingsUserEntry
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.location.LocationLocalDataSource
@@ -49,7 +49,7 @@ class GroupBatterySettingsUpdateUseCase(
 
     fun updateBatterySettings(
         group: UserGroup,
-        data: BatteryNotificationsSettingsEntry
+        data: BatteryNotificationsSettingsUserEntry
     ): Flow<Unit> {
         return getDataOnce(
             remote = {
@@ -72,6 +72,7 @@ class GroupBatterySettingsUpdateUseCase(
                     currentSettings.copy(settings = newAlerts)
                 } else {
                     BatteryNotificationsSettingsData(
+                        isActive = true,
                         settings = listOf(data)
                     )
                 }

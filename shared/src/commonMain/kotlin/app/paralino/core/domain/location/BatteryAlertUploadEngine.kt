@@ -1,5 +1,6 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.BatteryAlertEventEntity
 import app.paralino.core.domain.LimitedExecutionRepository
@@ -7,7 +8,8 @@ import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.location.MemberGroupId
-import app.paralino.core.models.raw.BatteryAlertPayload
+import app.paralino.core.models.raw.GroupBatteryAlertPayload
+import app.paralino.core.models.raw.PersonalBatteryAlertPayload
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.api.IFunctionsApi
@@ -22,7 +24,8 @@ class BatteryAlertUploadEngine(
     private val functionsApi: IFunctionsApi,
     private val appDatabase: MainDatabaseHelper,
     private val locationSharingManager: LocationSharingManager,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val appPrefs: AppPrefs
 ) : LimitedExecutionRepository() {
 
     private val executionKey = "batteryAlerts"
@@ -80,8 +83,9 @@ class BatteryAlertUploadEngine(
             // state is valid, we can send event
             val currentEvent = appDatabase.groupRelatedDao.getBatteryAlertEventOnce(groupId = groupId.id)
 
-            if (currentEvent == null || currentEvent.notifyTimeMillis < nowUTC().minus(4.hours)
-                    .toEpochMilliseconds()
+            if (
+                currentEvent == null
+                || currentEvent.notifyTimeMillis < nowUTC().minus(4.hours).toEpochMilliseconds()
             ) {
                 sendBatteryAlertImpl(
                     groupId = groupId,
@@ -111,15 +115,23 @@ class BatteryAlertUploadEngine(
         try {
             blocking {
                 logg.tag(executionKey).v("Sending battery alert event")
-                functionsApi.runAsync(
-                    function = ServerFunction.EVENT_BATTERY,
-                    // TODO handle personal space events
-                    data = BatteryAlertPayload(
-                        groupId = groupId.id,
-                        memberId = memberId,
-                        locationId = locationId
+                if (groupId.isPersonalSpace) {
+                    functionsApi.runAsync(
+                        function = ServerFunction.EVENT_BATTERY_SPACE,
+                        data = PersonalBatteryAlertPayload(
+                            deviceId = appPrefs.deviceId
+                        )
                     )
-                )
+                } else {
+                    functionsApi.runAsync(
+                        function = ServerFunction.EVENT_BATTERY_GROUP,
+                        data = GroupBatteryAlertPayload(
+                            groupId = groupId.id,
+                            memberId = memberId,
+                            locationId = locationId
+                        )
+                    )
+                }
             }
             appDatabase.groupRelatedDao.createBatteryAlertEvent(
                 BatteryAlertEventEntity(

@@ -39,6 +39,7 @@ class UserDeviceMapper(
             locationPushToken = deviceRaw.device.locationPushToken,
             encryptedSenderKey = deviceRaw.device.encryptedSenderKey,
             userKeyVersion = deviceRaw.device.userKeyVersion,
+            batteryAlertSettings = deviceRaw.device.batteryAlertSettings,
             locationId = deviceRaw.location?.id,
             deviceData = deviceRaw.device.deviceData,
             locationData = deviceRaw.location?.locationData,
@@ -61,6 +62,7 @@ class UserDeviceMapper(
                 locationPushToken = entity.locationPushToken,
                 encryptedSenderKey = entity.encryptedSenderKey,
                 userKeyVersion = entity.userKeyVersion,
+                batteryAlertSettings = entity.batteryAlertSettings,
                 deviceData = entity.deviceData,
             ),
             location = if (entity.locationId != null) {
@@ -122,7 +124,14 @@ class UserDeviceMapper(
             deviceId = entity.deviceId,
             userKeyVersion = entity.userKeyVersion,
             location = location,
-            deviceData = deviceData
+            deviceData = deviceData,
+            batteryAlertSettings = entity.batteryAlertSettings?.let {
+                try {
+                    BaseRemoteModule.formatter.decodeFromString(it)
+                } catch (e: Exception) {
+                    null
+                }
+            }
         )
     }
 

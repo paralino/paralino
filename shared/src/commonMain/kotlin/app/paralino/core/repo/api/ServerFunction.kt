@@ -12,8 +12,10 @@ enum class ServerFunction constructor(
     GROUP_DELETE(method = "DELETE", path = "/groups"),
     GROUP_UPDATE(method = "PATCH", path = "/groups"),
     GROUP_BLOCK(method = "PUT", path = "/groups/block"),
-    SETTINGS_NOTIFICATIONS_BATTERY_UPDATE(method = "PATCH", path = "/groups/notifications/battery"),
-    SETTINGS_NOTIFICATIONS_PLACES_UPDATE(method = "PATCH", path = "/groups/notifications/places"),
+
+    ALERTS_PLACES_UPDATE(method = "PATCH", path = "/alerts/place"),
+    ALERTS_BATTERY_UPDATE_GROUP(method = "PATCH", path = "/alerts/battery/group"),
+    ALERTS_BATTERY_UPDATE_SPACE(method = "PATCH", path = "/alerts/battery/space"),
 
     MEMBER_CREATE(method = "PUT", path = "/members"),
     MEMBER_DELETE(method = "DELETE", path = "/members"),
@@ -57,7 +59,8 @@ enum class ServerFunction constructor(
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
 
     EVENT_PLACES(method = "POST", path = "/events/places", functionId = "ping"),
-    EVENT_BATTERY(method = "POST", path = "/events/battery", functionId = "ping"),
+    EVENT_BATTERY_GROUP(method = "POST", path = "/events/battery/group", functionId = "ping"),
+    EVENT_BATTERY_SPACE(method = "POST", path = "/events/battery/space", functionId = "ping"),
 
     PERSONAL_CODE_CREATE(method = "POST", path = "/personal_code"),
     PERSONAL_CODE_READ_V2(method = "POST", path = "/personal_code/read"),

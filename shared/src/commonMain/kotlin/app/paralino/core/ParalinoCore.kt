@@ -68,6 +68,7 @@ import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.LogoutUseCase
+import app.paralino.core.domain.user.PersonalBatterySettingsUpdateUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.RecoverAccountUseCase
@@ -268,6 +269,7 @@ val coreModule = module {
     single { PlaceActivityUploadEngine(get(), get(), get(), get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
+    factory { PersonalBatterySettingsUpdateUseCase(get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -293,7 +295,7 @@ val coreModule = module {
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { BatteryAlertUploadEngine(get(), get(), get(), get()) }
+    single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) }
     single { LocationCacheRepository() }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
@@ -329,7 +331,7 @@ val coreModule = module {
     factory { GroupMemberDeletedNotificationProcessor(get()) }
     factory { LocationSharingStartedNotificationsProcessor(get(), get(), get(), get(), get()) }
     factory { LocationRequestNotificationProcessor(get(), get(), get(), get(), get(), get()) }
-    factory { LowBatteryNotificationProcessor(get(), get(), get()) }
+    factory { LowBatteryNotificationProcessor(get(), get(), get(), get()) }
 
     single { LocationPerformanceManager(get(), get(), get()) }
 

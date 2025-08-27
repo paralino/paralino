@@ -219,7 +219,8 @@ class PushNotificationHandler constructor(
 
     private fun PushNotificationType.processor(): INotificationProcessor<*> {
         return when (this) {
-            PushNotificationType.LOW_BATTERY_ALERT -> lowBatteryNotificationProcessor
+            PushNotificationType.GROUP_LOW_BATTERY_ALERT -> lowBatteryNotificationProcessor
+            PushNotificationType.PERSONAL_LOW_BATTERY_ALERT -> lowBatteryNotificationProcessor
 
             PushNotificationType.GROUP_PLACE_ALERT -> placeActivityNotification
             PushNotificationType.GROUP_PLACE_CREATED -> placeCreatedNotification
@@ -241,7 +242,8 @@ class PushNotificationHandler constructor(
 
     private fun PushNotificationType.presenter(): IPushNotificationPresenter? {
         return when (this) {
-            PushNotificationType.LOW_BATTERY_ALERT -> groupPresenter
+            PushNotificationType.GROUP_LOW_BATTERY_ALERT -> groupPresenter
+            PushNotificationType.PERSONAL_LOW_BATTERY_ALERT -> groupPresenter
 
             PushNotificationType.GROUP_PLACE_ALERT -> placePresenter
             PushNotificationType.GROUP_PLACE_CREATED -> groupPresenter

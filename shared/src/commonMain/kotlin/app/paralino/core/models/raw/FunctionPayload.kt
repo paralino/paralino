@@ -315,9 +315,15 @@ data class PromoCodeRedeemPayload(
 )
 
 @Serializable
-data class BatteryNotificationsUpdatePayload(
+data class GroupBatteryNotificationsUpdatePayload(
     val groupId: String,
     val memberId: String,
+    val alertData: String
+)
+
+@Serializable
+data class PersonalBatteryNotificationsUpdatePayload(
+    val deviceId: String,
     val alertData: String
 )
 
@@ -330,10 +336,15 @@ data class PlaceNotificationsUpdatePayload(
 )
 
 @Serializable
-data class BatteryAlertPayload constructor(
+data class GroupBatteryAlertPayload constructor(
     val groupId: String,
     val memberId: String,
     val locationId: String
+)
+
+@Serializable
+data class PersonalBatteryAlertPayload constructor(
+    val deviceId: String
 )
 
 @Serializable

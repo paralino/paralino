@@ -15,6 +15,7 @@ data class UserDeviceRaw constructor(
     val deviceData: String?,
     val encryptedSenderKey: String?,
     val userKeyVersion: Long?,
+    val batteryAlertSettings: String?,
 ) {
     companion object {
         @Suppress("UNCHECKED_CAST")
@@ -29,7 +30,8 @@ data class UserDeviceRaw constructor(
                 locationPushToken = map["locationPushToken"] as? String,
                 deviceData = map["deviceData"] as? String,
                 encryptedSenderKey = map["encryptedSenderKey"] as? String,
-                userKeyVersion = (map["userKeyVersion"] as? Number?)?.toLong()
+                userKeyVersion = (map["userKeyVersion"] as? Number?)?.toLong(),
+                batteryAlertSettings = map["batteryAlertSettings"] as? String,
             )
         }
     }

@@ -128,7 +128,8 @@ class IOSNSEPushNotificationHandler constructor(
 
     private fun PushNotificationType.processor(): INotificationProcessor<*>? {
         return when (this) {
-            PushNotificationType.LOW_BATTERY_ALERT -> lowBatteryNotification
+            PushNotificationType.GROUP_LOW_BATTERY_ALERT -> lowBatteryNotification
+            PushNotificationType.PERSONAL_LOW_BATTERY_ALERT -> lowBatteryNotification
 
             PushNotificationType.GROUP_PLACE_ALERT -> placeActivityNotification
             PushNotificationType.GROUP_PLACE_CREATED -> placeCreatedNotification

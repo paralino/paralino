@@ -6,6 +6,7 @@ import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
+import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.user.UserMe
 import kotlinx.serialization.Contextual
 
@@ -19,6 +20,7 @@ data class UserDeviceModel(
     val location: MemberLocation?,
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,
+    val batteryAlertSettings: BatteryNotificationsSettingsData?
 ) {
     val deviceNameOrNull: String? = deviceData.data?.deviceName?.takeIf { it.isNotBlank() }
 }

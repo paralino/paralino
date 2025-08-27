@@ -161,6 +161,12 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_21_22 = object : Migration(21, 22) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN batteryAlertSettings TEXT DEFAULT NULL")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -182,6 +188,7 @@ object MainDatabaseMigrations {
         MIGRATION_17_18,
         MIGRATION_18_19,
         MIGRATION_19_20,
-        MIGRATION_20_21
+        MIGRATION_20_21,
+        MIGRATION_21_22,
     )
 }

@@ -522,10 +522,11 @@
     <string name="group_settings_verification_dialog_message_on">Enabling verification will trigger re-verification process for all current members.\n\nMembers will be cryptographically verified and no one else will be able to add new members to this group.</string>
     <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
     <string name="group_settings_battery_notifications_title">Battery Notifications</string>
+    <string name="group_settings_low_battery_alerts_title">Low battery alerts</string>
     <string name="group_settings_battery_notifications_info">Decide if you want to be notified when a group member's battery level is low.</string>
-    <string name="group_settings_battery_notifications_notice">Notifications will only be sent if members choose to share their battery data and their device detects a battery level below 15%.</string>
-    <string name="group_settings_battery_toggle_active">Active</string>
-    <string name="group_settings_battery_toggle_inactive">Inactive</string>
+    <string name="group_settings_battery_notifications_notice">Notifications will only be sent if members choose to share their battery data and their device detects a battery level below **15%**.</string>
+    <string name="personalSpace_settings_battery_notifications_info">Decide if you want to be notified on this device if any of your devices have a low battery level.</string>
+    <string name="personalSpace_settings_battery_notifications_notice">Notifications will only be sent if location tracking is activated on target device and if that device detects a battery level below **15%**.</string>
     <string name="group_create_start_title">Connect</string>
     <string name="group_load_error">Unable to load your group</string>
     <string name="group_create_name_placeholder">Group name</string>
@@ -606,8 +607,10 @@
     <string name="group_member_sharing_started_notification_default">Your friend started sharing their location</string>
     <string name="group_member_sharing_started_notification">%s started location sharing</string>
     <string name="group_member_current_sharing_started_notification">Your device started location sharing</string>
-    <string name="group_low_battery_notification_default">Group member has low battery</string>
+    <string name="group_low_battery_notification_default">Group member has a low battery</string>
     <string name="group_low_battery_notification">%1$s\'s battery is low</string>
+    <string name="personalSpace_low_battery_notification_default">Your device has a low battery</string>
+    <string name="personalSpace_low_battery_notification">Your device (%1$s) has a low battery</string>
     <string name="unit_meter">m</string>
     <string name="unit_km">km</string>
     <string name="placeholder_unit_meter">%s m</string>
