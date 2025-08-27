@@ -215,7 +215,7 @@ object KoinSetup {
             )
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { VerifyEmailViewModel(get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get(), get()) }

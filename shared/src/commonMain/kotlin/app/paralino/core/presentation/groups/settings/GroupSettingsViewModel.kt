@@ -23,7 +23,6 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.update
 
 class GroupSettingsViewModel(
     val groupId: String,
-    private val userRepo: UserRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val groupRemove: GroupRemoveUseCase,
     private val createGroup: GroupCreateUseCase,
@@ -48,24 +46,21 @@ class GroupSettingsViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        combine(
-            groupLocalDataSource.getGroupWithoutMembers(groupId),
-            userRepo.getBlocklistLocally()
-        ) { group, blocklist ->
-            groupData.update { group }
+        groupLocalDataSource.getGroupWithoutMembers(groupId)
+            .mapToPayload { group ->
+                groupData.update { group }
 
-            GroupSettingsScreenState(
-                id = groupId,
-                canEdit = group.isCurrentUserOwner,
-                isMemberVerificationEnabled = group.data.data?.enforceMemberAuthentication != null,
-                isMemberVerificationOn = group.data.data?.enforceMemberAuthentication == true,
-                loadingAction = false,
-                name = group.name,
-                image = group.image,
-                alertDialog = _uiState.value.data?.alertDialog
-            )
-        }
-            .mapToPayload { it }
+                GroupSettingsScreenState(
+                    id = groupId,
+                    canEdit = group.isCurrentUserOwner,
+                    isMemberVerificationEnabled = group.data.data?.enforceMemberAuthentication != null,
+                    isMemberVerificationOn = group.data.data?.enforceMemberAuthentication == true,
+                    loadingAction = false,
+                    name = group.name,
+                    image = group.image,
+                    alertDialog = _uiState.value.data?.alertDialog
+                )
+            }
             .onEach { result ->
                 when (result) {
                     is Payload.Success -> {
