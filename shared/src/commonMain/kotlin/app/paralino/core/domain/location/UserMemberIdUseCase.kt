@@ -4,7 +4,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.asGroupOrSpaceId
-import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
@@ -21,7 +20,14 @@ class UserMemberIdUseCase constructor(
     }
 
     suspend fun getDefaultDeviceName(groupId: GroupOrSpaceId?): String {
-        return groupId?.let { getCurrentLocationForGroup(it)?.deviceData?.data?.deviceName }
+        val defaultInGroup = if (groupId?.isPersonalSpace == true) {
+            personalDevicesLocal.getUserDeviceByDeviceIdOnce(deviceId = appPrefs.deviceId)
+                ?.deviceNameOrNull
+        } else {
+            groupId?.let { getCurrentLocationForGroup(it)?.nameOrNull }
+        }
+
+        return defaultInGroup
             ?: groupLocal.getMemberModelsWithLocationForUser(appPrefs.userId)
                 .mapNotNull { it.currentDeviceLocation?.name }
                 .takeIf { it.size == 1 }

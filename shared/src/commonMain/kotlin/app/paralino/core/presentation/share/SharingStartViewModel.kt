@@ -106,8 +106,9 @@ class SharingStartViewModel(
 
         coroutineScope.launch(Dispatchers.IO) {
             _uiState.update {
-                val deviceName =
-                    userMemberIdUseCase.getDefaultDeviceName(currentGroup.value?.id?.asGroupOrSpaceId())
+                val deviceName = userMemberIdUseCase.getDefaultDeviceName(
+                    groupId = currentGroup.value?.id?.asGroupOrSpaceId()
+                )
                 it.copy(
                     deviceName = deviceName,
                     initialDeviceName = deviceName
@@ -322,8 +323,8 @@ class SharingStartViewModel(
                     state.copy(
                         groupState = Payload.Success(
                             GroupItemState(
-                                group.group,
-                                remoteConfigRepo.getConfigOnce()
+                                group = group.group,
+                                config = remoteConfigRepo.getConfigOnce()
                             )
                         ),
                         devicesCount = premiumStatus?.payload?.count,
