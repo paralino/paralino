@@ -34,7 +34,9 @@ struct LocationHistoryMapScreen: View {
                         }
                     },
                     openHistorySettings: {
-                        path.append(.home(.locationHistorySettings(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: mapState.uiState.groupOrSpaceId)!)))
+                        path.append(.home(.locationHistorySettings(
+                            groupId: GroupOrSpaceIdHelper.shared.unwrap(id: mapState.uiState.groupOrSpaceId)!
+                        )))
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(groupId: nil, type: BillingScreenSourceType.upgrade)))

@@ -33,6 +33,8 @@ object GroupOrSpaceIdHelper {
     fun unwrap(id: Any?): String? {
         return when (id) {
             is GroupOrSpaceId -> id.id
+            is String -> id
+            is CharSequence -> id.toString()
             else -> null
         }
     }
