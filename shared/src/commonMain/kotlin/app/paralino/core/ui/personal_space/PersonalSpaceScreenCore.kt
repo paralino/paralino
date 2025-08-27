@@ -68,6 +68,7 @@ fun PersonalSpaceScreenCore(
     vm: PersonalSpaceViewModel,
     contentPadding: PaddingValues,
     openRawDataScreen: () -> Unit,
+    openSettings: () -> Unit,
     openTimeline: () -> Unit,
     openPlaces: () -> Unit,
     openSharing: () -> Unit,
@@ -237,7 +238,7 @@ fun PersonalSpaceScreenCore(
                     PersonalSpaceHeader(
                         userName = uiState.userName,
                         userImage = uiState.userImage,
-                        onRawDataClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenRawDataScreen) },
+                        onSettingsClick = { openSettings() },
                         onPlacesClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlaces) },
                         onTimelineClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenTimeline) },
                         onSharingClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
@@ -356,7 +357,7 @@ fun PersonalSpaceHeader(
     modifier: Modifier = Modifier,
     userName: String,
     userImage: ImageModel?,
-    onRawDataClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onPlacesClick: () -> Unit,
     onTimelineClick: () -> Unit,
     onSharingClick: () -> Unit,
@@ -440,8 +441,8 @@ fun PersonalSpaceHeader(
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.Security.asPainterResource(),
-                title = stringResource(MR.strings.raw_data_screen_title),
+                icon = CoreAppIcons.Settings.asPainterResource(),
+                title = stringResource(MR.strings.title_settings),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
@@ -451,7 +452,7 @@ fun PersonalSpaceHeader(
                     seekbarState = null
                 ),
                 onStateChange = {
-                    onRawDataClick()
+                    onSettingsClick()
                 }
             )
             LargeSeekbarSwitch(

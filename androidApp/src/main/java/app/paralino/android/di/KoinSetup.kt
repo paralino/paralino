@@ -28,6 +28,7 @@ import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.android.tracking.geofence.GeofenceManager
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
+import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
@@ -242,5 +243,6 @@ object KoinSetup {
         viewModel { LocationHistoryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { PersonalSpaceSettingsViewModel() }
     }
 }

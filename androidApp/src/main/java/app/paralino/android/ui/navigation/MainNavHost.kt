@@ -26,6 +26,7 @@ import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
 import app.paralino.android.ui.onboarding.WelcomeOnboardingScreen
 import app.paralino.android.ui.personal_space.PersonalSpaceScreen
+import app.paralino.android.ui.personal_space.PersonalSpaceSettingsScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
@@ -203,6 +204,9 @@ fun NavGraphBuilder.homeGraph(
         }
         composable(AppScreen.MainHome.PersonalSpace.routeSignature) {
             PersonalSpaceScreen(appState = appState)
+        }
+        composable(AppScreen.MainHome.PersonalSpaceSettings.routeSignature) {
+            PersonalSpaceSettingsScreen(appState = appState)
         }
     }
 }

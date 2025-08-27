@@ -52,6 +52,11 @@ fun PersonalSpaceScreen(
             appState = appState,
             vm = vm,
             contentPadding = padding,
+            openSettings = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PersonalSpaceSettings.route()
+                )
+            },
             openRawDataScreen = {
                 appState.navController.navigate(
                     AppScreen.Settings.ProfileDetails.RawDataScreen.route(
