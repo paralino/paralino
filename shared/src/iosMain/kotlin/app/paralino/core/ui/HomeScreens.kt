@@ -41,6 +41,7 @@ import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
+import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
@@ -67,6 +68,7 @@ import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
 import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
 import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
+import app.paralino.core.ui.personal_space.PersonalSpaceSettingsScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
@@ -221,7 +223,7 @@ object HomeScreens {
     fun PersonalSpaceScreenVC(
         vm: PersonalSpaceViewModel,
         paddingValues: AppleScreenPaddingValues,
-        openRawDataScreen: () -> Unit,
+        openSettings: () -> Unit,
         openTimeline: () -> Unit,
         openPlaces: () -> Unit,
         openSharing: () -> Unit,
@@ -236,7 +238,7 @@ object HomeScreens {
                 appState = it,
                 vm = vm,
                 contentPadding = paddingValues.toComposePaddingValues(),
-                openRawDataScreen = openRawDataScreen,
+                openSettings = openSettings,
                 openTimeline = openTimeline,
                 openPlaces = openPlaces,
                 openSharing = openSharing,
@@ -245,6 +247,23 @@ object HomeScreens {
                 askLocationService = askLocationService,
                 askLocationPermission = askLocationPermission,
                 askBackgroundLocationPermission = askBackgroundLocationPermission
+            )
+        }
+    }
+
+    fun PersonalSpaceSettingsScreenVC(
+        vm: PersonalSpaceSettingsViewModel,
+        openRawDataScreen: () -> Unit,
+        openBatteryNotificationsSettings: () -> Unit,
+        openLocationHistorySettings: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            PersonalSpaceSettingsScreenCore(
+                appState = it,
+                vm = vm,
+                openRawDataScreen = openRawDataScreen,
+                openBatteryNotificationsSettings = openBatteryNotificationsSettings,
+                openLocationHistorySettings = openLocationHistorySettings
             )
         }
     }

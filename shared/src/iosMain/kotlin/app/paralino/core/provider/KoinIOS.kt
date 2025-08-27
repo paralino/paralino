@@ -380,5 +380,6 @@ object KoinIOS {
         val locationHistoryVM get() = get<LocationHistoryViewModel>()
         fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
         val personalSpaceVM = get<PersonalSpaceViewModel>()
+        val personalSpaceSettingsVM = get<PersonalSpaceSettingsViewModel>()
     }
 }

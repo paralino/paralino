@@ -126,7 +126,6 @@ sealed interface UserDeviceAction {
 
 sealed interface PersonalSpaceScreenEvent {
     data object OpenPaywall : PersonalSpaceScreenEvent
-    data object OpenRawDataScreen : PersonalSpaceScreenEvent
     data object OpenPlaces : PersonalSpaceScreenEvent
     data object OpenSharingScreen : PersonalSpaceScreenEvent
     data object OpenTimeline : PersonalSpaceScreenEvent
@@ -135,7 +134,6 @@ sealed interface PersonalSpaceScreenEvent {
 sealed interface PersonalSpaceScreenUiEvent {
     data class DialogAction(val action: AlertDialogAction) : PersonalSpaceScreenUiEvent
     data object OpenPaywall : PersonalSpaceScreenUiEvent
-    data object OpenRawDataScreen : PersonalSpaceScreenUiEvent
     data object OpenPlaces : PersonalSpaceScreenUiEvent
     data object OpenSharingScreen : PersonalSpaceScreenUiEvent
     data object OpenTimeline : PersonalSpaceScreenUiEvent
@@ -146,5 +144,4 @@ sealed interface UserDeviceItemEvent {
     data class onDeactivateDeviceClick(val item: UserDeviceItemState): UserDeviceItemEvent
     data class onDeleteDeviceClick(val item: UserDeviceItemState): UserDeviceItemEvent
     data class onOpenSessionClick(val item: UserSession): UserDeviceItemEvent
-    data class onOpenRawData(val item: UserDeviceItemState): UserDeviceItemEvent
 }

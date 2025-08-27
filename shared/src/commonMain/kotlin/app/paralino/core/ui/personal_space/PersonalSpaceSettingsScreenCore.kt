@@ -25,8 +25,8 @@ import dev.icerock.moko.resources.compose.stringResource
 fun PersonalSpaceSettingsScreenCore(
     appState: CoreUiState,
     vm: PersonalSpaceSettingsViewModel,
-    openEncryption: () -> Unit,
-    openBatteryNotifications: () -> Unit,
+    openRawDataScreen: () -> Unit,
+    openBatteryNotificationsSettings: () -> Unit,
     openLocationHistorySettings: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, appState)
@@ -44,14 +44,14 @@ fun PersonalSpaceSettingsScreenCore(
             name = stringResource(MR.strings.raw_data_screen_title),
             icon = CoreAppIcons.Security.asPainterResource()
         ) {
-            openEncryption()
+            openRawDataScreen()
         }
 
         SettingsActionItem(
             name = stringResource(MR.strings.group_settings_battery_notifications_title),
             icon = CoreAppIcons.NotificationsActive.asPainterResource()
         ) {
-            openBatteryNotifications()
+            openBatteryNotificationsSettings()
         }
 
         SettingsActionItem(

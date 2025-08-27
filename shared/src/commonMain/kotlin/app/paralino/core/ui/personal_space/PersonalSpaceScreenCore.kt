@@ -67,7 +67,6 @@ fun PersonalSpaceScreenCore(
     appState: CoreUiState,
     vm: PersonalSpaceViewModel,
     contentPadding: PaddingValues,
-    openRawDataScreen: () -> Unit,
     openSettings: () -> Unit,
     openTimeline: () -> Unit,
     openPlaces: () -> Unit,
@@ -88,7 +87,6 @@ fun PersonalSpaceScreenCore(
             when (event) {
                 PersonalSpaceScreenEvent.OpenPaywall -> openPaywall()
                 PersonalSpaceScreenEvent.OpenPlaces -> openPlaces()
-                PersonalSpaceScreenEvent.OpenRawDataScreen -> openRawDataScreen()
                 PersonalSpaceScreenEvent.OpenSharingScreen -> openSharing()
                 PersonalSpaceScreenEvent.OpenTimeline -> openTimeline()
 

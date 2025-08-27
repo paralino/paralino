@@ -327,12 +327,6 @@ class PersonalSpaceViewModel(
                         }
                     }
 
-                    is UserDeviceItemEvent.onOpenRawData -> {
-                        coroutineScope.launch {
-                            _eventChannel.send(PersonalSpaceScreenEvent.OpenRawDataScreen)
-                        }
-                    }
-
                     is UserDeviceItemEvent.onOpenSessionClick -> {
                         val sessionInfo = getSessionInfo(event.event.item)
                         _uiState.update {
@@ -345,12 +339,6 @@ class PersonalSpaceViewModel(
                             )
                         }
                     }
-                }
-            }
-
-            PersonalSpaceScreenUiEvent.OpenRawDataScreen -> {
-                coroutineScope.launch {
-                    _eventChannel.send(PersonalSpaceScreenEvent.OpenRawDataScreen)
                 }
             }
 

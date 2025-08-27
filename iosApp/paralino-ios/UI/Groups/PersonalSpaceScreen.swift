@@ -29,9 +29,8 @@ struct PersonalSpaceScreen: View {
                         end: safeAreaInsets.end,
                         bottom: safeAreaInsets.bottom
                     ),
-                    openMap: {
-                        path.removeAll()
-                        path.append(.home(.map))
+                    openSettings: {
+                        path.append(.home(.personalSpaceSettings))
                     },
                     openTimeline: {
                         path.append(.home(.locationHistory(groupId: UserGroup.companion.groupPersonalDevicesId, memberUserId: "")))

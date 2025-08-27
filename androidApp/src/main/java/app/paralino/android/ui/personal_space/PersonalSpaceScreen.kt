@@ -57,13 +57,6 @@ fun PersonalSpaceScreen(
                     AppScreen.MainHome.PersonalSpaceSettings.route()
                 )
             },
-            openRawDataScreen = {
-                appState.navController.navigate(
-                    AppScreen.Settings.ProfileDetails.RawDataScreen.route(
-                        RawPresentationDataType.PersonalSpacePresentation
-                    )
-                )
-            },
             openTimeline = {
                 appState.navController.navigate(
                     AppScreen.MainHome.LocationHistory.route(

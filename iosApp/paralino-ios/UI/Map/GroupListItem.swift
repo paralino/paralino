@@ -15,7 +15,32 @@ struct GroupListItem: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            ImageModelImage(imageModel: data.image, useBackgroundForEmoji: true)
+            if data.isSelected {
+                Image(systemName: "checkmark")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 8, height: 8)
+                    .foregroundColor(.white)
+                    .padding([.leading, .trailing], 4)
+                    .padding([.top, .bottom], 10)
+                    .background(Color.themePrimary)
+                    .clipShape(
+                        .rect(
+                            topLeadingRadius: 0,
+                            bottomLeadingRadius: 0,
+                            bottomTrailingRadius: 20,
+                            topTrailingRadius: 20
+                        )
+                    )
+            }
+            
+            if data.isSelected {
+                Spacer().frame(width: 6)
+            } else {
+                Spacer().frame(width: 16)
+            }
+            
+            ImageModelImage(imageModel: data.image, useBackgroundForEmoji: false)
                 .frame(width: data.isPersonalSpace ? 72 : 72, height: data.isPersonalSpace ? 72 : 72)
                 .clipShape(data.isPersonalSpace ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 12)))
                 .overlay(
@@ -98,7 +123,7 @@ struct GroupListItem: View {
                     .onTapGesture(perform: onEdit)
             }
         }
-        .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
+        .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 16))
         .frame(maxWidth: .infinity)
         .background(data.isPersonalSpace ? Color.accent.opacity(0.1) : Color.themeSurface)
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -106,7 +131,7 @@ struct GroupListItem: View {
             data.isSelected ?
             RoundedRectangle(cornerRadius: 16, style: .circular)
                 .inset(by: 1)
-                .stroke(Color.accent, lineWidth: 2) : nil
+                .stroke(Color.themePrimary, lineWidth: 2) : nil
         )
         .contentShape(RoundedRectangle(cornerRadius: 16))
         .onTapGesture(perform: onClick)

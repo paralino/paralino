@@ -35,14 +35,14 @@ fun PersonalSpaceSettingsScreen(
         PersonalSpaceSettingsScreenCore(
             appState = appState,
             vm = vm,
-            openEncryption = {
+            openRawDataScreen = {
                 appState.navController.navigate(
                     AppScreen.MainHome.RawDataScreen.route(
                         RawPresentationDataType.PersonalSpacePresentation
                     )
                 )
             },
-            openBatteryNotifications = {
+            openBatteryNotificationsSettings = {
                 // Reuse group battery notifications with personal space group id
                 appState.navController.navigate(
                     AppScreen.MainHome.BatteryNotificationSettings.route(UserGroup.groupPersonalDevicesId)
