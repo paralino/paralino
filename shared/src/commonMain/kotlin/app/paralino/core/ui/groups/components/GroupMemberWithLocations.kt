@@ -86,6 +86,7 @@ import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.pulsate
@@ -252,7 +253,7 @@ fun GroupMemberWithLocations(
                         state.allowShowingDevices
                     ) {
                         buildAnnotatedString {
-                            this.append(state.memberState.name)
+                            this.append(state.memberState.name.annotatedBold())
                             if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
                                 this.append(" • ")
                                 appendInlineContent(iconId, "[device]")

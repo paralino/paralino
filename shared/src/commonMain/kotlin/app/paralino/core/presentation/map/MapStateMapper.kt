@@ -264,7 +264,13 @@ class MapStateMapper(
                 groupId = UserGroup.groupPersonalDevicesId,
                 memberId = device.deviceId, // Use device ID as member ID to make it unique
                 userId = device.ownerUserId,
-                name = device.deviceNameOrNull ?: "?",
+                name = device.deviceNameOrNull ?: let {
+                    if (device.deviceId == appPrefs.deviceId) {
+                        MR.strings.personalSpace_current_device.localizedString()
+                    } else {
+                        device.deviceType?.toString() ?: "?"
+                    }
+                },
                 image = ImageModel.emoji(Emojis.mobilePhone),
                 paralinoId = null,
                 isCurrentUser = device.ownerUserId == appPrefs.userId,
