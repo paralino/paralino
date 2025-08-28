@@ -61,6 +61,7 @@ class GroupPlaceMapperLocal(
             id = model.id,
             groupId = model.groupId,
             placeId = model.placeId,
+            deviceId = model.deviceId,
             ownerUserId = model.ownerUserId,
             alertData = model.alertData
         )
@@ -72,6 +73,7 @@ class GroupPlaceMapperLocal(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
+            deviceId = model.deviceId,
             isInPersonalSpace = model.groupId == appPrefs.userId && model.groupId == model.ownerUserId,
             alertData = model.alertData
         )

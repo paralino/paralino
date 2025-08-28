@@ -1,9 +1,8 @@
 package app.paralino.core.models.raw
 
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
-import kotlin.time.Instant
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 data class GroupDocumentRaw constructor(
     @SerialName("\$id")

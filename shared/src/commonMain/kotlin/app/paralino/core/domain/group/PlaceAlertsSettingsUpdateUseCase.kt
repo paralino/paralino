@@ -61,11 +61,15 @@ class PlaceAlertsSettingsUpdateUseCase(
 
                 val settings = if (currentSettings != null) {
                     val currentAlert =
-                        currentSettings.settings.firstOrNull { it.memberUserId == data.memberUserId }
+                        currentSettings.settings.firstOrNull {
+                            it.memberUserId == data.memberUserId && it.deviceId == data.deviceId
+                        }
 
                     val newAlerts = if (currentAlert != null) {
                         currentSettings.settings.toMutableList().apply {
-                            removeAll { it.memberUserId == data.memberUserId }
+                            removeAll {
+                                it.memberUserId == data.memberUserId && it.deviceId == data.deviceId
+                            }
                             add(data)
                         }
                     } else {

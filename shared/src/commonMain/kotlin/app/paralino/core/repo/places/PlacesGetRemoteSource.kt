@@ -19,7 +19,7 @@ class PlacesGetRemoteSource(
 ) {
     suspend fun getPlaceWithSettings(placeId: String): GroupPlaceWithSettingsRaw {
         return blocking {
-            val place = async {
+            val placeAsync = async {
                 api.getDocument(
                     databaseType = BackendDatabaseType.DATA,
                     collectionId = BackendResourceIDs.collectionPlacesID,
@@ -27,21 +27,25 @@ class PlacesGetRemoteSource(
                 ).parsePlace()
             }
 
-            val settings = async {
+            val settingsAsync = async {
                 try {
                     api.listAllDocuments(
                         databaseType = BackendDatabaseType.DATA,
                         collectionId = BackendResourceIDs.collectionPlacesSettingsID,
                         queries = listOf(BackendQuery.Equals(key = "placeId", value = placeId))
-                    ).firstOrNull()?.parsePlaceSettings()
+                    )
+                        .map { it.parsePlaceSettings() }
                 } catch (e: Exception) {
                     null
                 }
             }
 
+            val place = placeAsync.await()
+            val settings = settingsAsync.await()
+
             GroupPlaceWithSettingsRaw(
-                place = place.await(),
-                settings = settings.await()
+                place = place,
+                settings = settings?.mapSettings(place)
             )
         }
     }
@@ -67,7 +71,7 @@ class PlacesGetRemoteSource(
             places.await().map { place ->
                 GroupPlaceWithSettingsRaw(
                     place = place,
-                    settings = settings.firstOrNull { it.placeId == place.id }
+                    settings = settings.mapSettings(place)
                 )
             }
         }
@@ -100,7 +104,7 @@ class PlacesGetRemoteSource(
             places.await().map { place ->
                 GroupPlaceWithSettingsRaw(
                     place = place,
-                    settings = settings.firstOrNull { it.placeId == place.id }
+                    settings = settings.mapSettings(place)
                 )
             }
         }
@@ -126,9 +130,22 @@ class PlacesGetRemoteSource(
             places.await().map { place ->
                 GroupPlaceWithSettingsRaw(
                     place = place,
-                    settings = settings.firstOrNull { it.placeId == place.id }
+                    settings = settings.mapSettings(place)
                 )
             }
+        }
+    }
+
+    private fun List<GroupPlaceSettingRaw>.mapSettings(
+        place: GroupPlaceRaw
+    ): GroupPlaceSettingRaw? {
+        return this.firstOrNull {
+            val deviceIdCheck = if (it.deviceId.isNullOrBlank()) {
+                true
+            } else {
+                it.deviceId == appPrefs.deviceId
+            }
+            it.placeId == place.id && deviceIdCheck
         }
     }
 

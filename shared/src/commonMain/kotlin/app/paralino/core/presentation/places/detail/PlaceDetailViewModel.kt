@@ -10,6 +10,7 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mapSuccess
@@ -91,6 +92,30 @@ class PlaceDetailViewModel(
             placeFlow.update { Resource.Ready(place) }
             groupFlow.update { Resource.Ready(GroupWithMembersOrUserSpace.PersonalSpace(space)) }
 
+            val settings = space.devices.map { device ->
+                val deviceSetting = place.settings?.alertData?.settings?.firstOrNull {
+                    it.deviceId == device.deviceId
+                }
+                PlaceSettingsState(
+                    groupId = groupId,
+                    placeId = placeId,
+                    userId = appPrefs.userId,
+                    deviceId = device.deviceId,
+                    alertItemId = device.deviceId,
+                    isCurrentUserOrDevice = device.deviceId == appPrefs.deviceId,
+                    name = device.deviceNameOrNull ?: device.deviceType?.toString() ?: "?",
+                    image = ImageModel.emoji(Emojis.mobilePhone),
+                    tag = device.deviceType?.toString(),
+                    // default to true for other devices and false to current device
+                    notifyEnter = deviceSetting?.events?.get(enterEvent() ?: "")
+                        ?: (device.deviceId != appPrefs.deviceId),
+                    notifyExit = deviceSetting?.events?.get(exitEvent() ?: "")
+                        ?: (device.deviceId != appPrefs.deviceId),
+                    loadingEnter = false,
+                    loadingExit = false
+                )
+            }.sortedSettings()
+
             PlaceDetailScreenState(
                 groupOrSpaceId = groupId.asGroupOrSpaceId(),
                 placeId = placeId,
@@ -106,7 +131,7 @@ class PlaceDetailViewModel(
                 fullLoading = false,
                 arePlaceAlertsActive = place.settings?.alertData?.isActive != false,
                 isPlaceAlertsSwitchLoading = false,
-                settings = emptyList()
+                settings = settings
             )
         }
     }
@@ -127,10 +152,14 @@ class PlaceDetailViewModel(
                 PlaceSettingsState(
                     groupId = groupId,
                     placeId = placeId,
-                    memberUserId = member.member.userId,
-                    isCurrentUser = member.member.userId == appPrefs.userId,
+                    userId = member.member.userId,
+                    // For groups, settings are per user, not per device
+                    deviceId = null,
+                    alertItemId = member.member.userId,
+                    isCurrentUserOrDevice = member.member.userId == appPrefs.userId,
                     name = member.member.name,
                     image = member.member.image ?: ImageModel.emoji(Emojis.robot),
+                    tag = null,
                     // default to true for other members and false to current user
                     notifyEnter = memberSetting?.events?.get(enterEvent() ?: "")
                         ?: (member.member.userId != appPrefs.userId),
@@ -214,7 +243,8 @@ class PlaceDetailViewModel(
         val newSettings = if (revokeItemState) {
             state.settings.map {
                 GroupPlaceSettingsEntry(
-                    memberUserId = it.memberUserId,
+                    memberUserId = it.userId,
+                    deviceId = it.deviceId,
                     events = buildEvents(
                         enter = newActiveState,
                         exit = newActiveState
@@ -249,26 +279,28 @@ class PlaceDetailViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun toggleEnterSettings(userId: String) {
-        toggleSetting(userId, isEnter = true) { setting ->
+    fun toggleEnterSettings(alertItemId: String) {
+        toggleSetting(alertItemId = alertItemId, isEnter = true) { setting ->
             GroupPlaceSettingsEntry(
-                memberUserId = setting.memberUserId,
+                memberUserId = setting.userId,
+                deviceId = setting.deviceId,
                 events = buildEvents(enter = !setting.notifyEnter, exit = setting.notifyExit)
             )
         }
     }
 
     fun toggleExitSettings(userId: String) {
-        toggleSetting(userId, isEnter = false) { setting ->
+        toggleSetting(alertItemId = userId, isEnter = false) { setting ->
             GroupPlaceSettingsEntry(
-                memberUserId = setting.memberUserId,
+                memberUserId = setting.userId,
+                deviceId = setting.deviceId,
                 events = buildEvents(enter = setting.notifyEnter, exit = !setting.notifyExit)
             )
         }
     }
 
     private fun toggleSetting(
-        userId: String,
+        alertItemId: String,
         isEnter: Boolean,
         updateSetting: (PlaceSettingsState) -> GroupPlaceSettingsEntry
     ) {
@@ -279,7 +311,7 @@ class PlaceDetailViewModel(
         if (state.settings.any { it.loading }) return
         if (updatePlaceAlerts.isProcessingAny()) return
 
-        val setting = state.settings.firstOrNull { it.memberUserId == userId } ?: return
+        val setting = state.settings.firstOrNull { it.alertItemId == alertItemId } ?: return
         val newSetting = updateSetting(setting)
 
         updatePlaceAlerts.updatePlaceAlertsSettings(placeId = placeId, data = newSetting)
@@ -288,16 +320,18 @@ class PlaceDetailViewModel(
             .onEach { result ->
                 _uiState.update {
                     it.mapSuccess {
-                        val newList = it.settings.toMutableList().apply {
-                            removeAll { it.memberUserId == userId }
-                            add(
-                                setting.copy(
-                                    loadingEnter = result is Payload.Loading && isEnter,
-                                    loadingExit = result is Payload.Loading && !isEnter
-                                )
-                            )
-                        }.sortedSettings()
-                        it.copy(settings = newList)
+                        it.copy(
+                            settings = it.settings.map {
+                                if (it.alertItemId == alertItemId) {
+                                    it.copy(
+                                        loadingEnter = result is Payload.Loading && isEnter,
+                                        loadingExit = result is Payload.Loading && !isEnter
+                                    )
+                                } else {
+                                    it
+                                }
+                            }
+                        )
                     }
                 }
                 when (result) {
@@ -312,8 +346,9 @@ class PlaceDetailViewModel(
     }
 
     private fun List<PlaceSettingsState>.sortedSettings(): List<PlaceSettingsState> {
-        return this.sortedBy { it.name }
-            .sortedBy { it.memberUserId == appPrefs.userId }
+        return this
+            .sortedBy { it.name }
+            .sortedBy { it.isCurrentUserOrDevice }
     }
 
     private fun buildEvents(

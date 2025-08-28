@@ -205,6 +205,12 @@ class PlacesRemoteSource(
                 groupId = groupId.id,
                 placeId = placeId,
                 placeSettingsId = placeSettingsId,
+                // for now, personal space allows only per device settings
+                deviceId = if (groupId.isPersonalSpace) {
+                    appPrefs.deviceId
+                } else {
+                    null
+                },
                 alertData = BaseRemoteModule.formatter.encodeToString(alertData)
             )
 

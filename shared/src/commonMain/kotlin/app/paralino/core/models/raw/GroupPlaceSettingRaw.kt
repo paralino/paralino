@@ -10,6 +10,7 @@ data class GroupPlaceSettingRaw(
     val groupId: String,
     val placeId: String,
     val ownerUserId: String,
+    val deviceId: String?,
     val alertData: String
 ) {
     companion object {
@@ -20,6 +21,7 @@ data class GroupPlaceSettingRaw(
                 groupId = map["groupId"] as String,
                 placeId = map["placeId"] as String,
                 ownerUserId = map["ownerUserId"] as String,
+                deviceId = map["deviceId"] as? String,
                 alertData = map["alertData"] as String
             )
         }

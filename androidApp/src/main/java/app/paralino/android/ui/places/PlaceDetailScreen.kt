@@ -107,10 +107,13 @@ private fun PlaceDetailUserItemPreview() {
             val item = PlaceSettingsState(
                 groupId = "",
                 placeId = "",
-                memberUserId = "",
-                isCurrentUser = false,
+                userId = "",
+                deviceId = null,
+                alertItemId = "",
+                isCurrentUserOrDevice = false,
                 name = "Some user",
                 image = ImageModel.emoji(Emojis.lightBulb),
+                tag = null,
                 notifyEnter = false,
                 notifyExit = false,
                 loadingEnter = false,
@@ -132,7 +135,7 @@ private fun PlaceDetailUserItemPreview() {
                 onExitChange = {}
             )
             PlaceDetailUserListItem(
-                state = item.copy(loadingExit = true, isCurrentUser = true),
+                state = item.copy(loadingExit = true, isCurrentUserOrDevice = true),
                 onEnterChange = {},
                 onExitChange = {}
             )

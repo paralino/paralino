@@ -332,6 +332,7 @@ data class PlaceNotificationsUpdatePayload(
     val groupId: String,
     val placeId: String,
     val placeSettingsId: String?,
+    val deviceId: String?,
     val alertData: String
 )
 

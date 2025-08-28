@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
@@ -56,8 +58,8 @@ fun PlaceDetailUserListItem(
                 modifier = Modifier
                     .size(42.dp)
                     .border(
-                        width = if (state.isCurrentUser) 2.dp else 0.5.dp,
-                        color = if (state.isCurrentUser) {
+                        width = if (state.isCurrentUserOrDevice) 2.dp else 0.5.dp,
+                        color = if (state.isCurrentUserOrDevice) {
                             MaterialTheme.colors.primary
                         } else {
                             MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
@@ -67,11 +69,29 @@ fun PlaceDetailUserListItem(
             )
 
             Spacer(modifier = Modifier.size(12.dp))
-            Text(
-                text = state.name,
-                style = MaterialTheme.typography.subtitle1,
+            Column(
                 modifier = Modifier
-            )
+                    .offset(y = if (state.tag.isNullOrBlank()) 0.dp else (-2).dp)
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = state.name,
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                if (!state.tag.isNullOrBlank()) {
+                    Text(
+                        text = state.tag,
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colors.onSecondary,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colors.secondary,
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .padding(horizontal = 6.dp, vertical = 1.dp)
+                    )
+                }
+            }
         }
         Row(
             modifier = Modifier
@@ -84,7 +104,7 @@ fun PlaceDetailUserListItem(
                 text = stringResource(MR.strings.place_detail_setting_button_notify_enter),
                 loading = state.loadingEnter,
             ) {
-                onEnterChange(state.memberUserId)
+                onEnterChange(state.alertItemId)
             }
 
             Spacer(modifier = Modifier.size(4.dp))
@@ -95,7 +115,7 @@ fun PlaceDetailUserListItem(
                 text = stringResource(MR.strings.place_detail_setting_button_notify_exit),
                 loading = state.loadingExit,
             ) {
-                onExitChange(state.memberUserId)
+                onExitChange(state.alertItemId)
             }
         }
     }

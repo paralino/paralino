@@ -156,7 +156,7 @@ private fun PlaceAlertsScreen(
 
         this.itemsIndexed(
             items = state.settings,
-            key = { index, item -> item.memberUserId }
+            key = { index, item -> item.alertItemId }
         ) { index, item ->
             PlaceDetailUserListItem(
                 modifier = Modifier
