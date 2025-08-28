@@ -68,7 +68,7 @@ class PlaceCreatedNotificationProcessor(
             val place = placeRepo.getPlaceWithoutSettingsOnce(placeId)
             placeOwner = place?.ownerUserId
             placeName = place?.nameOrNull
-            if (groupId.isPersonalSpace) {
+            if (!groupId.isPersonalSpace) {
                 groupName = groupRepo.getGroupOnce(groupId.id)?.nameOrNull
             }
         } catch (e: Exception) {
