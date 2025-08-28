@@ -77,7 +77,7 @@ class BatteryNotificationsViewModel(
                                     groupId = groupId,
                                     alertItemId = device.deviceId,
                                     isCurrentUserOrDevice = device.deviceId == appPrefs.deviceId,
-                                    name = device.deviceNameOrNull ?: device.deviceId,
+                                    name = device.deviceNameOrNull ?: device.deviceType?.toString() ?: "?",
                                     image = ImageModel.emoji(Emojis.mobilePhone),
                                     tag = device.deviceType?.toString(),
                                     notify = deviceSettings?.isActive ?: (device.deviceId != appPrefs.deviceId),
