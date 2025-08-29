@@ -66,6 +66,12 @@ class PersonalDeviceCryptoKeyRotation(
             return false
         }
 
+        if (device.location == null) {
+            logg.tag("tag_crypto_key_personal_device_rotation")
+                .v("Current device is not activated, skip key rotation")
+            return false
+        }
+
         try {
             startProcessing(executionKey)
         } catch (e: Exception) {
