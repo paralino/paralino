@@ -285,6 +285,10 @@ class UserRepository constructor(
         triggerRemoteOnly { remote.logoutCurrentSession() }
     }
 
+    suspend fun remoteLogoutForAllButCurrentSession() {
+        triggerRemoteOnly { remote.logoutAllButCurrentSession() }
+    }
+
     suspend fun deleteAccount() {
         triggerRemoteOnly { remote.deleteAccount() }
     }

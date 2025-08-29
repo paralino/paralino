@@ -147,7 +147,9 @@ fun ChangeEmailScreenCore(
 @Composable
 private fun getStepText(step: ChangeCredentialsStep?): String {
     return when (step) {
-        ChangeCredentialsStep.PREPARING, ChangeCredentialsStep.KEY_SETUP -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_prepare)
+        ChangeCredentialsStep.PREPARING,
+        ChangeCredentialsStep.KEY_SETUP,
+        ChangeCredentialsStep.REVOKING_SESSIONS -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_prepare)
         ChangeCredentialsStep.CHANGING_CREDENTIALS -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_change)
         ChangeCredentialsStep.KEY_APPLY -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_verify)
         ChangeCredentialsStep.DONE -> stringResource(resource = MR.strings.settings_account_credentialsChange_step_done)

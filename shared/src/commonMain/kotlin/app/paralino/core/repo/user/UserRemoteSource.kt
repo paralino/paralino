@@ -1,5 +1,6 @@
 package app.paralino.core.repo.user
 
+import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.mappers.UserMapperCore
@@ -186,5 +187,17 @@ class UserRemoteSource constructor(
 
     suspend fun logoutCurrentSession() {
         api.logoutCurrentSession()
+    }
+
+    suspend fun logoutAllButCurrentSession() {
+        val allSessions = getAllSessions()
+        if (allSessions.size <= 1) {
+            logg.v("account_session", "No other sessions to revoke")
+        }
+        allSessions.forEach { session ->
+            if (!session.current) {
+                logoutSession(sessionId = session.id)
+            }
+        }
     }
 }

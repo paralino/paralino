@@ -8,6 +8,7 @@ data class ChangePasswordScreenState(
     val oldPassword: String = "",
     val newPassword: String = "",
     val confirmPassword: String = "",
+    val keepDevicesLoggedIn: Boolean = true,
     val hasOldPasswordError: Boolean = false,
     val hasNewPasswordError: Boolean = false,
     val hasConfirmPasswordError: Boolean = false,

@@ -31,6 +31,7 @@ class ConvertAccountUseCase constructor(
             oldPassword = oldPassword,
             newPassword = password,
             replaceKey = true,
+            keepSessions = false,
             action = { oldLoginKey, newLoginKey ->
 
                 val currentUser = userRepo.refreshUserIfAvailable()
