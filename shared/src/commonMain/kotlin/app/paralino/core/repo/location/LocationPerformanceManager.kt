@@ -182,7 +182,6 @@ class LocationPerformanceManager constructor(
 
     /**
      * will adjust performance flag based on battery and current time spent in performance mode
-     * TODO: when user battery settings are added, take them in account here
      */
     private fun setPerformance(type: LocationPerformanceType, allowDowngrade: Boolean = true) {
 

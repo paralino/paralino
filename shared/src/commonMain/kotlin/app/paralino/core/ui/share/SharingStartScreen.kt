@@ -316,9 +316,7 @@ fun SharingStartScreenCore(
                                     text = MR.strings.error_no_connection_snackbar.localizedString()
                                 )
 
-                                else -> {
-                                    /* TODO review or do nothing */
-                                }
+                                else -> {}
                             }
                         }
                     }
