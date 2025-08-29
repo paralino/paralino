@@ -37,9 +37,6 @@ class PersonalSpaceRefreshUseCase(
         return try {
             triggerRemoteOnly {
                 remote.getAllPersonalSpaceData()
-                    .also {
-                        // TODO refresh missing user keys, could be rotated
-                    }
                     .let { handleKeysUpdate(it, retry) }
             }
         } catch (e: Exception) {
@@ -70,10 +67,10 @@ class PersonalSpaceRefreshUseCase(
         }
 
         if (deviceKeyRotation.rotateDeviceKeys(device = device, force = false)) {
-            logg.tag("tag_crypto_key_group").d("Key rotation finished, refresh group and keys")
+            logg.tag("tag_crypto_key_personal").d("Key rotation finished, refresh group and keys")
             return getPersonalSpaceData(retry + 1)
         } else {
-            logg.tag("tag_crypto_key_group").d("No key rotation, use current group")
+            logg.tag("tag_crypto_key_personal").d("No key rotation, use current space data")
             return space
         }
     }

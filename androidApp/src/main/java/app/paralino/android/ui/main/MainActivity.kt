@@ -143,6 +143,15 @@ fun RootApp(
                         )
                     }
 
+                    is AppAccountState.KEY_EXPIRED -> {
+                        AppStartScreen(
+                            appState = appState,
+                            start = AppScreen.LoggedOut.PasswordConfirmation,
+                            pendingDeeplink = null,
+                            onDeeplinkComplete = { vm.setDeeplink(null) }
+                        )
+                    }
+
                     is AppAccountState.NO_USER -> {
                         AppStartScreen(
                             appState = appState,

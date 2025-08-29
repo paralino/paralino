@@ -67,6 +67,7 @@ import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.emailverify.VerifyEmailViewModel
+import app.paralino.core.presentation.login.password_confirmation.PasswordConfirmationViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
@@ -224,6 +225,7 @@ object KoinSetup {
         viewModel { ConvertAccountViewModel(get(), get(), get()) }
         viewModel { EditProfileViewModel(get(), get()) }
         viewModel { RecoverKeysViewModel(get(), get(), get(), get()) }
+        viewModel { PasswordConfirmationViewModel(get(), get(), get()) }
         viewModel { (userId: String, secret: String) -> ResetPasswordViewModel(userId = userId, secret = secret, get()) }
         viewModel { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String, placeId: String) -> PlaceDetailViewModel(groupID, placeId, get(), get(), get(), get(), get(), get()) }

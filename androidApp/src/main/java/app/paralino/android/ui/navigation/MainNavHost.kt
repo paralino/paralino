@@ -17,6 +17,7 @@ import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
 import app.paralino.android.ui.login.LoggedOutScreen
 import app.paralino.android.ui.login.LoginScreen
+import app.paralino.android.ui.login.PasswordConfirmationScreen
 import app.paralino.android.ui.login.ProfileSetupScreen
 import app.paralino.android.ui.login.RecoverKeysScreen
 import app.paralino.android.ui.login.ResetPasswordScreen
@@ -333,6 +334,9 @@ fun NavGraphBuilder.loggedOutGraph(
         }
         composable(AppScreen.LoggedOut.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
+        }
+        composable(AppScreen.LoggedOut.PasswordConfirmation.routeSignature) {
+            PasswordConfirmationScreen(appState)
         }
         composable(
             route = AppScreen.LoggedOut.EmailVerification.routeSignature,

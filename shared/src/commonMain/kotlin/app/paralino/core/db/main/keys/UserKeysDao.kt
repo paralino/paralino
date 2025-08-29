@@ -16,7 +16,7 @@ interface UserKeysDao {
     suspend fun createUserKey(key: UserKeysEntity)
 
     @Query("SELECT * FROM userKeysEntity")
-    suspend fun getAll(): List<UserKeysEntity>
+    fun getAll(): Flow<List<UserKeysEntity>>
 
     @Query("SELECT * FROM userKeysEntity WHERE isActive = 1 LIMIT 1")
     fun getActive(): Flow<UserKeysEntity?>

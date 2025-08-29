@@ -6,6 +6,7 @@ import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
+import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
@@ -39,6 +40,7 @@ class RealtimeEventsProcessor constructor(
     private val saveLocationUseCase: SaveLocationUseCase,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
+    private val refreshUserKey: UserCryptoKeyRefreshUseCase,
     private val pushProvider: IPushProviderManager
 ) {
 
@@ -261,7 +263,7 @@ class RealtimeEventsProcessor constructor(
                 }
 
                 if (!hasUserKey) {
-                    // TODO refresh user keys
+                    refreshUserKey.checkUserKeyStatus()
                 }
             }
 

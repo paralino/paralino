@@ -86,15 +86,14 @@ class PlaceActivityDataSource(
     suspend fun recreatePlaces(places: List<GroupPlaceWithSettingsRaw>) {
         mutex.withLock {
             _placeActivityCache.update { state ->
-                state.toMutableMap().apply {
-                    this.forEach { entry ->
-                        if (places.none { it.place.id == entry.value.placeId }) {
-                            remove(key = entry.key).also {
-                                it?.tryNotifyJob?.cancel()
-                            }
-                        }
-                    }
+                val toRemove = state.filter { entry ->
+                    places.none { it.place.id == entry.value.placeId }
                 }
+                val newState = state.filter { entry ->
+                    toRemove.none { it.key == entry.key }
+                }
+                toRemove.forEach { it.value.tryNotifyJob?.cancel() }
+                newState
             }
             database.placeActivityDao.clearMissingForGroups(placeIds = places.map { it.place.id })
         }
@@ -105,30 +104,30 @@ class PlaceActivityDataSource(
         places: List<GroupPlaceWithSettingsRaw>
     ) {
         mutex.withLock {
-            _placeActivityCache.update {
-                it.toMutableMap().apply {
-                    this.filter { it.value.groupId == groupId }.forEach { entry ->
-                        if (places.none { it.place.id == entry.value.placeId }) {
-                            remove(key = entry.key).also {
-                                it?.tryNotifyJob?.cancel()
-                            }
-                        }
-                    }
+            _placeActivityCache.update { state ->
+                val toRemove = state.filter { entry ->
+                    entry.value.groupId == groupId && places.none { it.place.id == entry.value.placeId }
                 }
+                val newState = state.filter { entry ->
+                    toRemove.none { it.key == entry.key }
+                }
+                toRemove.forEach { it.value.tryNotifyJob?.cancel() }
+                newState
             }
             database.placeActivityDao.clearMissing(groupId = groupId.id, placeIds = places.map { it.place.id })
         }
     }
 
     suspend fun clearForGroup(groupId: GroupOrSpaceId) {
-        _placeActivityCache.update {
-            it.toMutableMap().apply {
-                this.filter { it.value.groupId == groupId }.forEach { entry ->
-                    remove(key = entry.key).also {
-                        it?.tryNotifyJob?.cancel()
-                    }
-                }
+        _placeActivityCache.update { state ->
+            val toRemove = state.filter { entry ->
+                entry.value.groupId == groupId
             }
+            val newState = state.filter { entry ->
+                toRemove.none { it.key == entry.key }
+            }
+            toRemove.forEach { it.value.tryNotifyJob?.cancel() }
+            newState
         }
         database.placeActivityDao.deleteForGroup(groupId = groupId.id)
     }

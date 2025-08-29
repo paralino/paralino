@@ -1,6 +1,5 @@
 package app.paralino.core.utils.exceptions
 
-import app.paralino.core.appPrefs
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.raw.FunctionErrorBody
 import app.paralino.core.provider.NetworkConnectionInfo

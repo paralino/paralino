@@ -115,7 +115,7 @@ class ChangeCredentialsUseCase(
     ): Flow<ChangeCredentialsStep> {
         return flow {
 
-            val oldKey = userKeyRepo.getLocalRawKey()
+            val oldKey = userKeyRepo.getActiveLocalRawKey()
                 ?: throw MissingUserKeyException(localCache = false)
 
             val oldKeys = GeneratedUserKeys(

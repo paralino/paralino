@@ -5,6 +5,7 @@ import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.user.UserDeviceEntity
+import app.paralino.core.domain.user.UserCryptoKeyState
 import app.paralino.core.logg
 import app.paralino.core.models.mappers.UserKeyMapperCore
 import app.paralino.core.models.raw.UserCryptoKeyRaw
@@ -29,7 +30,7 @@ class CryptoUserKeysLocalSource(
     }
 
     suspend fun personalKey(version: Long? = null): SymmetricCryptoKeyData {
-        val rawKey = getLocalRawKey() ?: throw MissingUserKeyException(localCache = false)
+        val rawKey = getActiveLocalRawKey() ?: throw MissingUserKeyException(localCache = false)
 
         if (version == rawKey.userKeyVersion || version == 0L || version == null) {
             return activePersonalKeyWithVersion()
@@ -70,8 +71,12 @@ class CryptoUserKeysLocalSource(
         database.userKeysDao.recreateUserKeys(userKeyMapper.remote2Local(key, isActive = true))
     }
 
+    suspend fun addNewInactiveUserKey(key: UserCryptoKeyRaw) {
+        database.userKeysDao.createUserKey(userKeyMapper.remote2Local(key, isActive = false))
+    }
+
     private suspend fun getKeyPair(): SimpleKeyPairData? {
-        return getLocalRawKey()?.let {
+        return getActiveLocalRawKey()?.let {
             userKeyMapper.mapKeyPair(
                 model = it,
                 userKey = getCachedUserKey()?.key ?: throw MissingUserKeyException(localCache = true)
@@ -79,7 +84,7 @@ class CryptoUserKeysLocalSource(
         }
     }
 
-    suspend fun getLocalRawKey(): UserCryptoKeyRaw? {
+    suspend fun getActiveLocalRawKey(): UserCryptoKeyRaw? {
         try {
             val activeKey = database.userKeysDao.getActiveOnce() ?: return null
             return userKeyMapper.local2Remote(model = activeKey, userId = appPrefs.userId)
@@ -89,32 +94,41 @@ class CryptoUserKeysLocalSource(
         }
     }
 
-    private fun listenToMyKey(): Flow<UserCryptoKeyRaw?> {
-        return database.userKeysDao.getActive()
-            .map {
-                it?.let { userKeyMapper.local2Remote(it, userId = appPrefs.userId) }
-            }.catch {
-                logg.w("Error mapping user raw keys", it)
-                emit(null)
-            }
-    }
-
-    fun userKeyState(): Flow<Boolean> {
-        return listenToMyKey()
+    fun userKeyState(): Flow<UserCryptoKeyState> {
+        return database.userKeysDao.getAll()
             .distinctUntilChanged()
-            .map {
-                try {
-                    val userKey = getCachedUserKey()?.key
-                    logg.v("User keys changed: master key valid (${userKey != null}), key data valid (${it != null})")
-                    userKeyMapper.mapKeyPair(it!!, userKey!!)
-                    logg.v("User keys can be parsed and decrypted")
-                    true
-                } catch (e: Exception) {
-                    logg.v("User keys can not be parsed or decrypted - ${e::class.simpleName}: ${e.message}")
-                    false
+            .map { keys ->
+                val activeKey = keys.firstOrNull { it.isActive }
+                val activeCount = keys.count { it.isActive }
+
+                if (activeKey == null || activeCount != 1) {
+                    UserCryptoKeyState.INVALID
+                } else {
+                    val model = try {
+                        userKeyMapper.local2Remote(model = activeKey, userId = appPrefs.userId)
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                    val result = try {
+                        val userKey = getCachedUserKey()?.key
+                        logg.v("User keys changed: master key valid (${userKey != null}), key data valid (${model != null})")
+                        userKeyMapper.mapKeyPair(model!!, userKey!!)
+                        logg.v("User keys can be parsed and decrypted")
+                        UserCryptoKeyState.OK
+                    } catch (e: Exception) {
+                        logg.v("User keys can not be parsed or decrypted - ${e::class.simpleName}: ${e.message}")
+                        UserCryptoKeyState.INVALID
+                    }
+
+                    if (result == UserCryptoKeyState.OK && keys.size > 1) {
+                        UserCryptoKeyState.EXPIRED
+                    } else {
+                        result
+                    }
                 }
             }
-            .catch { emit(false) }
+            .catch { emit(UserCryptoKeyState.INVALID) }
             .distinctUntilChanged()
     }
 

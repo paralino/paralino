@@ -631,11 +631,15 @@
     <string name="recover_account_alert_message_recover">Update and recover account?</string>
     <string name="recover_account_step_password_correct">Key can be recovered 🙌</string>
     <string name="recover_account_step_password_wrong">Password does not match</string>
-    <string name="recover_account_header_recover_possible">Your password does not match your decryption keys</string>
+    <string name="recover_account_header_recover_possible">Your password does not match your cryptographic keys</string>
     <string name="recover_account_caption_recover_possible">To recover your account, try recovering the key with old password.</string>
     <string name="recover_account_header_recover_not_possible">Your account does not have matching keys! Please reset your account.</string>
     <string name="recover_account_caption_recover_not_possible">If you can not recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
     <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
+    <string name="password_confirmation_screen_title">Password confirmation</string>
+    <string name="password_confirmation_header">Your encryption keys have been changed</string>
+    <string name="password_confirmation_caption">Please enter your current password to update your local encryption keys and continue using the app.</string>
+    <string name="password_confirmation_button_confirm">Confirm password</string>
     <string name="reset_password_screen_title">Reset password</string>
     <string name="reset_password_success_message">Please sign in again!</string>
     <string name="reset_password_caption_reset">**Resetting your password will delete all your data!**</string>

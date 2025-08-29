@@ -68,6 +68,7 @@ import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.LogoutUseCase
+import app.paralino.core.domain.user.PasswordConfirmationUseCase
 import app.paralino.core.domain.user.PersonalBatterySettingsUpdateUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
@@ -75,6 +76,7 @@ import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
+import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.mappers.GroupKeysMapper
@@ -256,6 +258,7 @@ val coreModule = module {
     factory { ResetPasswordUseCase(get(), get()) }
     factory { ChangeCredentialsUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { RecoverAccountUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { PasswordConfirmationUseCase(get(), get(), get(), get(), get(), get(), get()) }
     factory { ConvertAccountUseCase(get(), get(), get()) }
     factory { ExpiredSessionRecovery(get(), get(), get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get()) }
@@ -274,7 +277,7 @@ val coreModule = module {
     single { ExpiredSessionHandler(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberRemoveUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupMemberAddUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -293,7 +296,7 @@ val coreModule = module {
     single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
-    single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) }
     single { LocationCacheRepository() }
@@ -306,11 +309,12 @@ val coreModule = module {
     single { LocationSharingManager(get(), get()) }
     single { UserSessionMonitor() }
     single { NetworkQualityMonitor() }
-    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
     single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
     single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get(), get()) }
+    single { UserCryptoKeyRefreshUseCase(get(), get(), get(), get()) }
 
     single { CryptoCore(get()) }
     single { CryptoAccountOperationV1(get()) }

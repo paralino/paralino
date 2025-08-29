@@ -53,6 +53,7 @@ import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.emailverify.VerifyEmailViewModel
+import app.paralino.core.presentation.login.password_confirmation.PasswordConfirmationViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
@@ -244,6 +245,7 @@ object KoinIOS {
             factory { ConvertAccountViewModel(get(), get(), get()) }
             factory { EditProfileViewModel(get(), get()) }
             factory { RecoverKeysViewModel(get(), get(), get(), get()) }
+            factory { PasswordConfirmationViewModel(get(), get(), get()) }
             factory { VerifyEmailViewModel(get(), get(), get(), get()) }
             factory { (userId: String, secret: String) ->
                 ResetPasswordViewModel(
@@ -335,6 +337,7 @@ object KoinIOS {
         val editProfileVM get() = get<EditProfileViewModel>()
         val groupInitVM get() = get<GroupInitViewModel>()
         val recoverKeysVM get() = get<RecoverKeysViewModel>()
+        val passwordConfirmationVM get() = get<PasswordConfirmationViewModel>()
         fun resetPasswordVM(userId: String, secret: String) = get<ResetPasswordViewModel> {
             parametersOf(userId, secret)
         }

@@ -5,6 +5,8 @@ import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
+import app.paralino.core.domain.user.UserCryptoKeyState
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.domain.user.UserSessionState
 import app.paralino.core.logg
@@ -47,6 +49,7 @@ class UserRepository constructor(
     private val userMapper: UserMapperCore,
     private val cryptoCore: CryptoCore,
     private val remoteConfigRepo: RemoteConfigRepository,
+    private val refreshUserKeys: UserCryptoKeyRefreshUseCase,
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
@@ -54,7 +57,7 @@ class UserRepository constructor(
         local.getMeRaw(),
         userKeyRepo.userKeyState()
     ) { user, keyState ->
-        if (!keyState) {
+        if (keyState != UserCryptoKeyState.OK) {
             Resource.NotInitialized
         } else {
             try {
@@ -191,6 +194,7 @@ class UserRepository constructor(
         return getUserFromRemote()
             .also { updateLocalUser(it) }
             .also { sessionMonitor.updateSessionState(state = UserSessionState.OK) }
+            .also { refreshUserKeys.checkUserKeyStatus() }
             .also {
                 try {
                     remote.getPlans().also { local.savePlans(it) }

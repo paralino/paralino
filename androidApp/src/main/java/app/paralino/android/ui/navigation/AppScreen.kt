@@ -52,6 +52,10 @@ sealed class AppScreen {
             override val routeSignature: String = "recover-account"
         }
 
+        object PasswordConfirmation : AppScreen() {
+            override val routeSignature: String = "password-confirmation"
+        }
+
         object PasswordReset : AppScreen() {
             val argumentUserId: String = DeeplinkType.PasswordReset.argumentUserId
             val argumentSecret: String = DeeplinkType.PasswordReset.argumentSecret

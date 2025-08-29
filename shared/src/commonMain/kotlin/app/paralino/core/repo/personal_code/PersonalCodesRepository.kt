@@ -2,6 +2,7 @@ package app.paralino.core.repo.personal_code
 
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.UserCryptoKeyState
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -40,8 +41,8 @@ class PersonalCodesRepository constructor(
 ) : BaseRepository() {
 
     val personalCodeLocalState: StateFlow<List<UserPersonalCode>> = userKeyRepo.userKeyState()
-        .flatMapLatest {
-            if (it) {
+        .flatMapLatest { keyState ->
+            if (keyState == UserCryptoKeyState.OK) {
                 local.getPersonalCodes()
                     .catch {
                         logg.w("Personal codes state error: ${it.message}")
