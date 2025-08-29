@@ -10,6 +10,7 @@ import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.data
+import app.paralino.core.models.getOrThrow
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.GroupsRemoteSource
@@ -72,7 +73,7 @@ class RefreshEverythingUseCase(
                 ),
                 remote = {
                     logg.tag("full_refresh").v("Start full refresh")
-                    userRepository.refreshUserIfAvailable()
+                    userRepository.refreshUserMaybe(timeDelayMillis = 0).getOrThrow()
                     personalCodesRepo.refreshPersonalCodes()
                     configRepo.refreshConfig()
                     userConfigRepo.refreshAndGetConfig()
@@ -128,9 +129,6 @@ class RefreshEverythingUseCase(
             val allData = remote.getAllLocationResources()
 
             val newPersonalData = allData.personal
-                .also {
-                    // TODO refresh user personal keys if needed
-                }
                 .let { personalSpaceRefreshUseCase.handleKeysUpdate(it) }
 
             personalSpaceLocal.recreateDevicesWithPlaces(data = newPersonalData)
