@@ -251,8 +251,6 @@ class PlacesRemoteSource(
             PlaceEventPayload(
                 placeId = place.id,
                 locationId = groupLocal.getCurrentLocationIdForGroup(groupId = place.groupOrSpaceId),
-                // TODO remove flag since we are using events in newer versions
-                enter = true,
                 event = enterEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )
@@ -270,8 +268,6 @@ class PlacesRemoteSource(
             PlaceEventPayload(
                 placeId = place.id,
                 locationId = groupLocal.getCurrentLocationIdForGroup(place.groupOrSpaceId),
-                // TODO remove flag since we are using events in newer versions
-                enter = false,
                 event = exitEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )

@@ -168,7 +168,6 @@ data class UpdatePlacePayload constructor(
 data class PlaceEventPayload constructor(
     val placeId: String,
     val locationId: String?,
-    val enter: Boolean?,
     val event: String?,
     val timeDifferenceMillis: Long
 )
