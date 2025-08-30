@@ -202,7 +202,7 @@ class GroupValidityVerification(
         if (ownerSettings.groupIntegrity.isNullOrBlank()) {
             // allow missing integrity for now
             logg.tag("integrity_check_group").v("VALID_CHANGED (empty) for ${group.id}")
-            return IntegrityResult.VALID_CHANGED
+            return IntegrityResult.MISSING
         }
 
         val integrity = getIntegrity(
@@ -255,8 +255,8 @@ class GroupValidityVerification(
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
 
         if (keyIntegrity?.integrity.isNullOrBlank()) {
-            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id} (missing)")
-            return IntegrityResult.VALID_EXPIRED
+            logg.tag("integrity_check_device").v("MISSING for ${group.id} (missing)")
+            return IntegrityResult.MISSING
         }
 
         if (keyIntegrity.safetySignature != null) {
@@ -311,8 +311,8 @@ class GroupValidityVerification(
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = groupId)
 
         if (keyIntegrity?.integrity.isNullOrBlank()) {
-            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${groupId} (missing)")
-            return IntegrityResult.VALID_EXPIRED
+            logg.tag("integrity_check_device").v("MISSING for ${groupId} (missing)")
+            return IntegrityResult.MISSING
         }
 
         // INFO: not using safetySignature here since it is only used for groups
@@ -387,9 +387,21 @@ enum class IntegrityResult {
     VALID,
     VALID_EXPIRED,
     VALID_CHANGED,
+    MISSING,
     CORRUPTED;
 
-    val shouldChange: Boolean get() = this == VALID_EXPIRED || this == VALID_CHANGED
+    fun shouldChange(
+        force: Boolean,
+        isSharingActive: Boolean
+    ): Boolean {
+        return when (this) {
+            IntegrityResult.VALID -> force
+            IntegrityResult.VALID_EXPIRED -> true
+            IntegrityResult.VALID_CHANGED -> true
+            IntegrityResult.MISSING -> isSharingActive
+            IntegrityResult.CORRUPTED -> false
+        }
+    }
 }
 
 sealed interface VerificationResult {

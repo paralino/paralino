@@ -93,7 +93,10 @@ class PersonalDeviceCryptoKeyRotation(
             return false
         }
 
-        val shouldRotate = force || deviceIntegrity.shouldChange
+        val shouldRotate = deviceIntegrity.shouldChange(
+            force = force,
+            isSharingActive = locationSharingManager.isSharingActiveForGroup(id = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
+        )
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_personal_device_rotation")

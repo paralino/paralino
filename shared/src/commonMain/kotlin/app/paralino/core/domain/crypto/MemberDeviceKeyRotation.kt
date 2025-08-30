@@ -122,7 +122,10 @@ class MemberDeviceKeyRotation(
                 .w("Group ${remoteGroup.id} has unverified members with user member key, force rotation")
         }
 
-        val shouldRotate = force || deviceIntegrity.shouldChange || unverifiedMembersRotation
+        val shouldRotate = deviceIntegrity.shouldChange(
+            force = force,
+            isSharingActive = locationSharingManager.isSharingActiveForGroup(id = remoteGroup.id.asGroupOrSpaceId())
+        ) || unverifiedMembersRotation
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_device_rotation")
