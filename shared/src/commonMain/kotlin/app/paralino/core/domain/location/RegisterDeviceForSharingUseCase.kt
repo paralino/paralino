@@ -67,13 +67,14 @@ class RegisterDeviceForSharingUseCase constructor(
         deviceName: String?,
         contract: LocationSharingContract?,
         notifyOthers: Boolean,
-        enforceSafetySignature: Boolean
+        isRetry: Boolean
     ) {
         if (groupId.isPersonalSpace) {
             registerDeviceForPersonalSpace(
                 deviceName = deviceName,
                 contract = contract,
                 notifyOthers = notifyOthers,
+                isRetry = isRetry
             )
         } else {
             registerDeviceForGroupSharing(
@@ -81,7 +82,7 @@ class RegisterDeviceForSharingUseCase constructor(
                 deviceName = deviceName,
                 contract = contract,
                 notifyOthers = notifyOthers,
-                enforceSafetySignature = enforceSafetySignature
+                isRetry = isRetry
             )
         }
     }
@@ -89,7 +90,8 @@ class RegisterDeviceForSharingUseCase constructor(
     private suspend fun registerDeviceForPersonalSpace(
         deviceName: String?,
         contract: LocationSharingContract?,
-        notifyOthers: Boolean
+        notifyOthers: Boolean,
+        isRetry: Boolean
     ) {
         startProcessing(UserGroup.groupPersonalDevicesId)
 
@@ -101,6 +103,13 @@ class RegisterDeviceForSharingUseCase constructor(
                 logg.tag("sharing_start").d("Group refreshed ($result1), fetch group")
                 val space = personalSpaceRepo.getPersonalSpaceWithDevices().firstOrNull()
                     ?: throw IllegalStateException("Personal space not valid")
+
+                if (isRetry) {
+                    if (space.currentDevice?.location == null) {
+                        logg.tag("sharing_start").d("Device not registered anymore")
+                        throw DeviceSafetySignatureCorrupted(groupId = UserGroup.groupPersonalDevicesId)
+                    }
+                }
 
                 val userKey = userKeyRepo.activePersonalKeyWithVersion()
 
@@ -194,7 +203,7 @@ class RegisterDeviceForSharingUseCase constructor(
         deviceName: String?,
         contract: LocationSharingContract?,
         notifyOthers: Boolean,
-        enforceSafetySignature: Boolean
+        isRetry: Boolean
     ) {
         startProcessing(groupId)
 
@@ -208,18 +217,15 @@ class RegisterDeviceForSharingUseCase constructor(
                 val group = groupLocal.getGroupWithMembers(groupId).firstOrNull()
                     ?: throw IllegalStateException("Group does not exist: $groupId")
 
-                val member = groupLocal.getMemberOnce(
-                    groupId = groupId,
-                    userId = appPrefs.userId
-                )
+                val member = group.currentUserMember
                     ?: throw IllegalStateException("Missing member for a group $groupId")
 
-                val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.groupKeyVersion)
+                if (isRetry) {
+                    if (group.currentDeviceLocation == null) {
+                        logg.tag("sharing_start").d("Device not registered anymore")
+                        throw DeviceSafetySignatureCorrupted(groupId = groupId)
+                    }
 
-                if (groupKey !is GroupMasterKey.Valid)
-                    throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
-
-                if (enforceSafetySignature) {
                     // block location sharing if safety signature is enforced
                     // this should be used for all background device registration
                     val integrity = validityVerification.checkIntegrityForDeviceKey(group = group)
@@ -227,6 +233,11 @@ class RegisterDeviceForSharingUseCase constructor(
                         throw DeviceSafetySignatureCorrupted(groupId = groupId)
                     }
                 }
+
+                val groupKey = cryptoKEKRepo.getGroupKey(groupId, member.groupKeyVersion)
+
+                if (groupKey !is GroupMasterKey.Valid)
+                    throw MissingGroupKeyException(member.groupId, member.groupKeyVersion)
 
                 // always rotate keys for every sharing session
                 val keyData = deviceKeyRotation.getNewSenderKeys(

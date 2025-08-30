@@ -70,7 +70,7 @@ class ReRegisterDeviceUseCase(
                     deviceName = null,
                     contract = contract,
                     notifyOthers = false,
-                    enforceSafetySignature = true
+                    isRetry = true
                 )
                 logg.v("location_service", "Device registered, retry payload")
                 return true
@@ -109,6 +109,12 @@ class ReRegisterDeviceUseCase(
             )
 
             if (e is DeviceSafetySignatureCorrupted) {
+                failedRegistrationAttempts.update {
+                    it.toMutableMap().apply { set(groupId, 0) }
+                }
+                deviceRegisterTimeMillis.update {
+                    it.toMutableMap().apply { set(groupId, 0) }
+                }
                 throw e
             }
 
