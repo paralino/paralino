@@ -1,11 +1,25 @@
 package app.paralino.android.ui.map
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,8 +31,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.map.FocusedMarkerData
@@ -28,6 +45,8 @@ import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asReady
+import app.paralino.core.ui.components.CoreAppIcons
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
@@ -82,54 +101,58 @@ fun MainHomeMapComposable(
     val scope = rememberCoroutineScope()
     var canAnimateMapFocus by remember { mutableStateOf(false) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
+    var isMapLoaded by remember { mutableStateOf(false) }
+    var mapOverlayShown by remember { mutableStateOf(true) }
 
     val cameraPositionState = rememberCameraPositionState()
 
-    LaunchedEffect(Unit) {
-        delay(500)
-        canAnimateMapFocus = true
-        shouldAnimateMapFocus = true
-    }
+    if (isMapLoaded) {
+        LaunchedEffect(Unit) {
+            delay(500)
+            canAnimateMapFocus = true
+            shouldAnimateMapFocus = true
+        }
 
-    LaunchedEffect(stateData?.visibleMarkers) {
-        snapshotFlow { stateData?.mapHomeScreenFocusType }
-            .distinctUntilChanged()
-            .collectLatest {
-                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
-                    delay(20)
+        LaunchedEffect(stateData?.visibleMarkers) {
+            snapshotFlow { stateData?.mapHomeScreenFocusType }
+                .distinctUntilChanged()
+                .collectLatest {
+                    if (!canAnimateMapFocus && shouldAnimateMapFocus) {
+                        delay(20)
+                    }
+                    cameraPositionState.focusOnMap(
+                        scope = scope,
+                        focusType = it,
+                        markers = stateData?.visibleMarkers ?: emptyList(),
+                        focusedMarker = stateData?.trackingMarker,
+                        durationMs = if (canAnimateMapFocus) 3000 else 0
+                    )
                 }
-                cameraPositionState.focusOnMap(
-                    scope = scope,
-                    focusType = it,
-                    markers = stateData?.visibleMarkers ?: emptyList(),
-                    focusedMarker = stateData?.trackingMarker,
-                    durationMs = if (canAnimateMapFocus) 3000 else 0
-                )
-            }
-    }
+        }
 
-    LaunchedEffect(state?.trackingMarker, state?.mapHomeScreenFocusType) {
-        snapshotFlow { stateData?.mapHomeScreenFocusType }
-            .distinctUntilChanged()
-            .collectLatest {
-                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
-                    delay(20)
+        LaunchedEffect(state?.trackingMarker, state?.mapHomeScreenFocusType) {
+            snapshotFlow { stateData?.mapHomeScreenFocusType }
+                .distinctUntilChanged()
+                .collectLatest {
+                    if (!canAnimateMapFocus && shouldAnimateMapFocus) {
+                        delay(20)
+                    }
+                    cameraPositionState.focusOnMap(
+                        scope = scope,
+                        focusType = it,
+                        markers = stateData?.visibleMarkers ?: emptyList(),
+                        focusedMarker = stateData?.trackingMarker,
+                        durationMs = if (canAnimateMapFocus) 500 else 0
+                    )
                 }
-                cameraPositionState.focusOnMap(
-                    scope = scope,
-                    focusType = it,
-                    markers = stateData?.visibleMarkers ?: emptyList(),
-                    focusedMarker = stateData?.trackingMarker,
-                    durationMs = if (canAnimateMapFocus) 500 else 0
-                )
-            }
-    }
+        }
 
-    LaunchedEffect(key1 = cameraPositionState) {
-        snapshotFlow { cameraPositionState.isMoving }
-            .distinctUntilChanged()
-            .filter { it && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE }
-            .collectLatest { onEvent(MapHomeScreenUiEvent.OnMapTouch) }
+        LaunchedEffect(key1 = cameraPositionState) {
+            snapshotFlow { cameraPositionState.isMoving }
+                .distinctUntilChanged()
+                .filter { it && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE }
+                .collectLatest { onEvent(MapHomeScreenUiEvent.OnMapTouch) }
+        }
     }
 
     val uiSettings by defaultMapUiSettings()
@@ -148,6 +171,10 @@ fun MainHomeMapComposable(
         properties = properties,
         uiSettings = uiSettings,
         contentPadding = mapContentPadding,
+        onMapLoaded = {
+            isMapLoaded = true
+            mapOverlayShown = false
+        },
         onMapLongClick = { onMapLongPress(it.latitude, it.longitude) },
         onMapClick = { onEvent(MapHomeScreenUiEvent.OnMapTouch) }
     ) {
@@ -156,6 +183,38 @@ fun MainHomeMapComposable(
                 model = model,
                 satelliteMode = satelliteMode,
                 onMarkerClick = markerClick
+            )
+        }
+    }
+
+    AnimatedVisibility(
+        visible = mapOverlayShown,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { mapOverlayShown = false }
+                ),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier.fillMaxHeight(0.3f))
+            Image(
+                painter = CoreAppIcons.LauncherLogo.asPainterResource(),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = MaterialTheme.colors.primary,
+                        shape = RoundedCornerShape(8.dp)
+                    )
             )
         }
     }
