@@ -102,7 +102,7 @@ fun MainHomeMapComposable(
     var canAnimateMapFocus by remember { mutableStateOf(false) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
     var isMapLoaded by remember { mutableStateOf(false) }
-    var mapOverlayShown by remember { mutableStateOf(true) }
+    var mapOverlayShown by rememberSaveable { mutableStateOf(true) }
 
     val cameraPositionState = rememberCameraPositionState()
 
