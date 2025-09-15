@@ -350,6 +350,8 @@ object HomeScreens {
                     }
                 }
 
+                var cardHeight by remember { mutableStateOf(0.dp) }
+
                 LaunchedEffect(key1 = Unit) {
                     vm.events.collectLatest { event ->
                         when (event) {
@@ -372,14 +374,21 @@ object HomeScreens {
                     }
                 }
 
-                LaunchedEffect(bottomOffset) {
-                    snapshotFlow { bottomOffset }
+                LaunchedEffect(bottomOffset, cardHeight) {
+                    snapshotFlow { bottomOffset to cardHeight }
                         .distinctUntilChanged()
                         .collectLatest {
-                            val bottomOffset = (height - bottomOffset).coerceIn(
-                                0.dp,
-                                height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                            )
+                            val bottomOffset = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
+                                (cardHeight + paddingValues.bottom.dp).coerceIn(
+                                    minimumValue = paddingValues.bottom.dp,
+                                    maximumValue = height
+                                )
+                            } else {
+                                (height - bottomOffset).coerceIn(
+                                    minimumValue = 0.dp,
+                                    maximumValue = height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                                )
+                            }
                             onSheetOffsetChange(bottomOffset.value)
                         }
                 }
@@ -412,6 +421,7 @@ object HomeScreens {
                                 minimumValue = if (sheetState.currentValue == BottomSheetPosition.HIDDEN) paddingValues.bottom.dp else 0.dp,
                                 maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
                             ),
+                            cardHeight = { cardHeight = it },
                             onEvent = { vm.onEvent(it) },
                         )
                     }

@@ -27,13 +27,19 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -60,6 +66,7 @@ fun MapHomeScreenElements(
     state: MapHomeScreenState,
     topPadding: Dp,
     sheetPeekHeight: Dp,
+    cardHeight: (Dp) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
     Column(
@@ -68,6 +75,7 @@ fun MapHomeScreenElements(
     ) {
 
         val readyState = rememberUpdatedState(state.asReady()).value
+        val density = LocalDensity.current
 
         val isMemberOrPlaceFocused =
             readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true
@@ -219,6 +227,10 @@ fun MapHomeScreenElements(
             Column(
                 modifier = Modifier
                     .padding(bottom = animateDpAsState(targetValue = sheetPeekHeight).value)
+                    .onGloballyPositioned { coordinates ->
+                        val height = with(density) { coordinates.size.height.toDp() - 20.dp }
+                        cardHeight(height)
+                    }
             ) {
                 // focused item
                 AnimatedVisibility(
@@ -231,7 +243,7 @@ fun MapHomeScreenElements(
                 ) {
                     readyState?.focusedPlace?.let { placeState ->
                         Box(
-                            modifier = Modifier.padding(bottom = 32.dp)
+                            modifier = Modifier.padding(bottom = 8.dp)
                         ) {
                             PlaceListItem(
                                 modifier = Modifier.padding(top = 20.dp),
@@ -261,7 +273,7 @@ fun MapHomeScreenElements(
                 ) {
                     readyState?.focusedMember?.let { memberState ->
                         Box(
-                            modifier = Modifier.padding(bottom = 32.dp)
+                            modifier = Modifier.padding(bottom = 8.dp)
                         ) {
                             GroupMember(
                                 modifier = Modifier.padding(top = 20.dp),

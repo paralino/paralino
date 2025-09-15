@@ -286,6 +286,7 @@ private fun MapContent(
     bottomOffset: Dp,
     onEvent: (MapHomeScreenUiEvent) -> Unit
 ) {
+    var cardHeight by remember { mutableStateOf(0.dp) }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         MainHomeMapComposable(
             appState = appState,
@@ -294,7 +295,12 @@ private fun MapContent(
             mapContentPadding = PaddingValues(
                 top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 64.dp,
                 bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true) {
-                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                    (cardHeight + WindowInsets.navigationBars.asPaddingValues()
+                        .calculateBottomPadding()).coerceIn(
+                        minimumValue = WindowInsets.navigationBars.asPaddingValues()
+                            .calculateBottomPadding(),
+                        maximumValue = this.maxHeight
+                    )
                 } else {
                     (this.maxHeight - bottomOffset).coerceIn(
                         WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
@@ -313,6 +319,7 @@ private fun MapContent(
                     .calculateBottomPadding(),
                 maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
             ),
+            cardHeight = { cardHeight = it },
             onEvent = onEvent
         )
     }
