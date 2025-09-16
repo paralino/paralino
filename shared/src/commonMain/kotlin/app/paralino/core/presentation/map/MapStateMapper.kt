@@ -199,7 +199,12 @@ class MapStateMapper(
                             isCurrentUser = member.member.userId == appPrefs.userId,
                             canHaveExpandButton = false
                         ),
-                        actions = MemberActionsState(),
+                        actions = MemberActionsState(
+                            history = MemberActionItemState(
+                                type = MemberActionType.LOCATION_HISTORY,
+                                isLoading = false,
+                            )
+                        ),
                         location = null
                     )
                 )
