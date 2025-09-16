@@ -12,8 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -44,7 +47,6 @@ import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.utils.extensions.openNavigation
-import app.paralino.core.utils.extensions.openUri
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -90,9 +92,8 @@ private fun MapHomeContent(
     val context = LocalContext.current
 
     val sheetState = rememberSwipeableSheetState(
-        initialValue = BottomSheetPosition.default,
-        collapsedAnchorBottomPaddingPixels = WindowInsets.navigationBars.getBottom(density)
-            .toFloat(),
+        initialValue = BottomSheetPosition.HIDDEN,
+        collapsedAnchorBottomPaddingPixels = 0f,
         confirmValueChange = {
             it != BottomSheetPosition.HIDDEN
         }

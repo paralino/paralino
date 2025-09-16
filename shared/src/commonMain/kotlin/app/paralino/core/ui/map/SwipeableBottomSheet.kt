@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.gestures.animateToWithDecay
@@ -15,17 +14,27 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -47,17 +56,24 @@ import kotlin.math.sign
 @ExperimentalMaterialApi
 @Composable
 fun SwipeableBottomSheet(
+    collapsedInfoHeightPixel: Float,
     swipeableState: SwipeableSheetState,
     screenContent: @Composable () -> Unit,
     body: @Composable () -> Unit
 ) {
-    BoxWithConstraints {
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         val constraintsScope = this
         val screenHeightPixels = with(LocalDensity.current) {
             constraintsScope.maxHeight.toPx()
         }
 
-        swipeableState.createAnchors(screenHeightPixels)
+        swipeableState.createAnchors(
+            screenHeightPixels = screenHeightPixels,
+            collapsedInfoHeightPixel = collapsedInfoHeightPixel
+        )
 
         val connection = rememberBottomSheetNestedScrollConnection(
             swipeableState = swipeableState,
@@ -65,36 +81,67 @@ fun SwipeableBottomSheet(
         )
 
         screenContent()
+
         Box(
             modifier = Modifier
-                .nestedScroll(connection)
-                .offset {
-                    IntOffset(
-                        x = 0,
-                        y = swipeableState.state.requireOffset().roundToInt()
-                    )
-                }
-                .anchoredDraggable(
-                    state = swipeableState.state,
-                    orientation = Orientation.Vertical,
-                    interactionSource = remember { MutableInteractionSource() },
-                    overscrollEffect = ScrollableDefaults.overscrollEffect()
-                )
-
+                .fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Column(
+            Box(
                 Modifier
-                    .fillMaxHeight(swipeableState.maxSheetContentSizePercent)
+                    .padding(horizontal = SwipeableSheetState.sheetHorizontalPadding)
+                    .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + SwipeableSheetState.sheetBottomPadding)
+                    .fillMaxWidth()
+                    .height(
+                        height = with(LocalDensity.current) {
+                            (screenHeightPixels - swipeableState.offset.roundToInt())
+                                .toDp()
+                        }
+                            .minus(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + SwipeableSheetState.sheetBottomPadding)
+                    )
                     .shadow(
                         elevation = 12.dp,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                        shape = RoundedCornerShape(24.dp)
                     )
+                    .clip(RoundedCornerShape(24.dp))
                     .background(
                         color = MaterialTheme.colors.background,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                        shape = RoundedCornerShape(24.dp)
                     )
+            )
+
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = SwipeableSheetState.sheetHorizontalPadding)
+                    .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + SwipeableSheetState.sheetBottomPadding)
+                    .clip(RoundedCornerShape(24.dp))
+                    .nestedScroll(connection)
+                    .offset {
+                        IntOffset(
+                            x = 0,
+                            y = swipeableState.state.requireOffset().roundToInt()
+                        )
+                    }
+                    .anchoredDraggable(
+                        state = swipeableState.state,
+                        orientation = Orientation.Vertical,
+                        interactionSource = remember { MutableInteractionSource() },
+                        overscrollEffect = rememberOverscrollEffect()
+                    ),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                body()
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = MaterialTheme.colors.background,
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                        .clip(RoundedCornerShape(24.dp))
+                        .clipToBounds()
+                ) {
+                    body()
+                }
             }
         }
     }
@@ -217,6 +264,10 @@ class SwipeableSheetState internal constructor(
             return fixedPadding + extraPadding
         }
 
+    fun progress(from: BottomSheetPosition, to: BottomSheetPosition): Float {
+        return state.progress(from, to)
+    }
+
     suspend fun settle(velocity: Float): Float {
         val previousValue = this.currentValue
         val targetValue = computeTarget(
@@ -279,11 +330,12 @@ class SwipeableSheetState internal constructor(
     }
 
     @Composable
-    fun createAnchors(screenHeightPixels: Float) {
-        val anchors = remember(screenHeightPixels) {
+    fun createAnchors(screenHeightPixels: Float, collapsedInfoHeightPixel: Float) {
+        val anchors = remember(screenHeightPixels, collapsedInfoHeightPixel) {
             this.screenHeightPixels = screenHeightPixels
             anchors = BottomSheetPosition.swipeAnchors(
                 screenHeightPixels = screenHeightPixels,
+                collapsedInfoHeightPixel = collapsedInfoHeightPixel,
                 collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels
             )
             DraggableAnchors {
@@ -300,6 +352,11 @@ class SwipeableSheetState internal constructor(
 
     suspend fun animateTo(position: BottomSheetPosition) {
         state.animateTo(position)
+    }
+
+    companion object {
+        val sheetHorizontalPadding = 8.dp
+        val sheetBottomPadding = 6.dp
     }
 }
 
@@ -346,24 +403,6 @@ enum class BottomSheetPosition constructor(val screenHeightPercent: Float) {
     HIDDEN(screenHeightPercent = 0f);
 
     val remainingScreenHeightPercent: Float get() = 1f - screenHeightPercent
-
-    fun nextUp(): BottomSheetPosition? {
-        return when (this) {
-            EXPANDED -> null
-            HALF_EXPANDED -> EXPANDED
-            COLLAPSED -> HALF_EXPANDED
-            HIDDEN -> COLLAPSED
-        }
-    }
-
-    fun nextDown(): BottomSheetPosition? {
-        return when (this) {
-            EXPANDED -> HALF_EXPANDED
-            HALF_EXPANDED -> COLLAPSED
-            COLLAPSED -> null
-            HIDDEN -> null
-        }
-    }
 
     fun computeTarget(
         anchors: Map<BottomSheetPosition, Float>,
@@ -438,12 +477,26 @@ enum class BottomSheetPosition constructor(val screenHeightPercent: Float) {
 
         fun swipeAnchors(
             screenHeightPixels: Float,
+            collapsedInfoHeightPixel: Float,
             collapsedAnchorBottomPaddingPixels: Float
         ): Map<BottomSheetPosition, Float> {
             return entries.associateWith {
-                screenHeightPixels
-                    .times(it.remainingScreenHeightPercent)
-                    .minus(if (it == COLLAPSED) collapsedAnchorBottomPaddingPixels else 0f)
+                when (it) {
+                    BottomSheetPosition.EXPANDED -> {
+                        screenHeightPixels.times(it.remainingScreenHeightPercent)
+                    }
+                    BottomSheetPosition.HALF_EXPANDED -> {
+                        screenHeightPixels.times(it.remainingScreenHeightPercent)
+                    }
+                    BottomSheetPosition.COLLAPSED -> {
+                        screenHeightPixels
+                            .minus(collapsedInfoHeightPixel)
+                            .minus(collapsedAnchorBottomPaddingPixels)
+                    }
+                    BottomSheetPosition.HIDDEN -> {
+                        screenHeightPixels
+                    }
+                }
             }
         }
     }

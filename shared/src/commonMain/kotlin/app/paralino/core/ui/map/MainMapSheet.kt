@@ -3,7 +3,12 @@ package app.paralino.core.ui.map
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Modifier
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.ui.CoreUiState
@@ -22,7 +27,9 @@ fun MainMapSheet(
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     screenContent: @Composable () -> Unit,
 ) {
+    var infoHeight by remember { mutableStateOf(0f) }
     SwipeableBottomSheet(
+        collapsedInfoHeightPixel = infoHeight,
         swipeableState = swipeableState,
         screenContent = screenContent,
         body = {
@@ -30,6 +37,7 @@ fun MainMapSheet(
                 appState = appState,
                 swipeableState = swipeableState,
                 readyState = readyState,
+                onMapGroupInfoHeightChange = { infoHeight = it },
                 onEvent = onEvent
             )
         }
@@ -38,9 +46,11 @@ fun MainMapSheet(
 
 @Composable
 private fun MainMapSheetActiveBody(
+    modifier: Modifier = Modifier,
     appState: CoreUiState,
     swipeableState: SwipeableSheetState,
     readyState: MapHomeScreenState.Ready?,
+    onMapGroupInfoHeightChange: (Float) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
     LaunchedEffect(readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused) {
@@ -62,11 +72,13 @@ private fun MainMapSheetActiveBody(
     }
 
     MapHomeSheetContent(
+        modifier = modifier,
         swipeableState = swipeableState,
         readyState = readyState,
         members = readyState?.members ?: emptyList(),
         places = readyState?.places ?: emptyList(),
         onEvent = onEvent,
+        onMapGroupInfoHeightChange = onMapGroupInfoHeightChange,
         onWholeContentClick = {
             appState.uiScope.launch {
                 if (swipeableState.isCollapsed() || swipeableState.isFullyExpanded()) {

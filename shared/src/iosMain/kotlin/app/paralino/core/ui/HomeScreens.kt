@@ -326,17 +326,13 @@ object HomeScreens {
                 val height = this.maxHeight
                 val density = LocalDensity.current
 
-                val collapsedAnchorBottomPaddingPixels = with(LocalDensity.current) {
-                    15.dp.toPx()
-                }
-
                 val sheetState = rememberSwipeableSheetState(
                     initialValue = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused != false) {
                         BottomSheetPosition.HIDDEN
                     } else {
                         BottomSheetPosition.HIDDEN
                     },
-                    collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
+                    collapsedAnchorBottomPaddingPixels = 0f,
                     confirmValueChange = {
                         it != BottomSheetPosition.HIDDEN
                     }

@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,6 +48,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
@@ -67,18 +72,25 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
+private val dividerHeight = 6.dp
+private val dividerTopPadding = 8.dp
+private val dividerBottomPadding = 6.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MapHomeSheetContent(
+    modifier: Modifier = Modifier,
     swipeableState: SwipeableSheetState,
     readyState: MapHomeScreenState.Ready?,
     members: List<GroupMemberItemState>,
     places: List<PlaceListItemData>,
+    onMapGroupInfoHeightChange: (Float) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     onWholeContentClick: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+
     LaunchedEffect(swipeableState) {
         snapshotFlow { swipeableState.settledValue }
             .distinctUntilChanged()
@@ -92,7 +104,7 @@ fun MapHomeSheetContent(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -104,33 +116,37 @@ fun MapHomeSheetContent(
 
         val contentAlpha by remember {
             derivedStateOf {
-                when (swipeableState.currentValue) {
-                    BottomSheetPosition.HALF_EXPANDED -> {
-                        1f - (swipeableState.progress.takeIf { it < 0.5f } ?: 0f)
-                    }
-
-                    BottomSheetPosition.COLLAPSED -> {
-                        1f - (swipeableState.progress.takeIf { it > 0.5f && !swipeableState.isPastCollapsed }
-                            ?: 1f)
-                    }
-
-                    else -> 1f
-                }
+               1f - swipeableState
+                   .progress(from = BottomSheetPosition.HALF_EXPANDED, to = BottomSheetPosition.COLLAPSED)
+                   .times(1.2f)
+                   .coerceIn(0f, 1f)
             }
         }
 
         Divider(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp, bottom = animateDpAsState(4.plus((1f - contentAlpha) * 8).dp).value)
+                .padding(top = dividerTopPadding, bottom = animateDpAsState(dividerBottomPadding.value.minus((1f - contentAlpha) * dividerBottomPadding.value).dp).value)
+//                .padding(top = 8.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(percent = 50))
                 .width(30.dp),
-            thickness = 6.dp
+            thickness = dividerHeight
         )
 
         if (readyState != null) {
+            val bottomPadding = WindowInsets.navigationBars.asPaddingValues()
             MapGroupNameAndMemberInfo(
-                modifier = Modifier.padding(start = 16.dp, end = 20.dp),
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 20.dp)
+                    .onGloballyPositioned { coordinates ->
+                        val height = with(density) {
+                            bottomPadding.calculateBottomPadding()
+                                .plus(SwipeableSheetState.sheetBottomPadding)
+                                .plus(dividerTopPadding.times(2) + dividerHeight.times(2))
+                                .toPx()
+                        }
+                        onMapGroupInfoHeightChange(coordinates.size.height.plus(height))
+                    },
                 isPersonalSpace = readyState.isPersonalSpace,
                 groupName = readyState.groupName,
                 groupImage = readyState.groupImage,
