@@ -69,6 +69,7 @@ class AppPrefs(
         const val keyDeviceID = "prefs.device.ID"
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
+        const val keyIsPersonalSpaceSelected = "prefs.device.isPersonalSpaceSelected"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
         const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
@@ -225,6 +226,12 @@ class AppPrefs(
         get() = provider.userSettings.getStringOrNull(keySelectedGroupID)
         set(value) {
             provider.userSettings.set(keySelectedGroupID, value)
+        }
+
+    var isPersonalSpaceSelected: Boolean
+        get() = provider.userSettings.getBoolean(keyIsPersonalSpaceSelected, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyIsPersonalSpaceSelected, value)
         }
 
     var dismissedAppVersion: Long

@@ -148,8 +148,8 @@ fun MapHomeSheetContent(
                         onMapGroupInfoHeightChange(coordinates.size.height.plus(height))
                     },
                 isPersonalSpace = readyState.isPersonalSpace,
-                groupName = readyState.groupName,
-                groupImage = readyState.groupImage,
+                groupName = readyState.groupOrSpaceName,
+                groupImage = readyState.groupOrSpaceImage,
                 userCount = readyState.userCount,
                 placesCount = places.size,
                 activeUserCount = readyState.activeUserCount,

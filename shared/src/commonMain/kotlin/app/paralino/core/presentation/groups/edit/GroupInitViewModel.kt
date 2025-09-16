@@ -63,8 +63,7 @@ class GroupInitViewModel(
         .map { state ->
             if (state is Resource.Ready) {
                 Resource.Ready(
-                    data = state.data.groupCount > 0
-                            && state.data.onboardingStep == null
+                    data = state.data.onboardingStep == null
                 )
             } else {
                 Resource.NotInitialized

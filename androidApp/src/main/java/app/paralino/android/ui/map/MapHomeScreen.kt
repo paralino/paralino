@@ -37,6 +37,7 @@ import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.map.MapScreenViewSourceType
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -211,7 +212,11 @@ private fun MapHomeContent(
     }
 
     rememberSaveable(startGroupId) {
-        vm.onEvent(MapHomeScreenUiEvent.SwitchGroup(groupId = startGroupId?.asGroupOrSpaceId()))
+        vm.onEvent(
+            MapHomeScreenUiEvent.SwitchViewSource(
+                viewSource = MapScreenViewSourceType.DefaultGroupOrSpace(startGroupId?.asGroupOrSpaceId())
+            )
+        )
         // have to keep empty state so it keeps it saved and only executed this once
         ""
     }
@@ -253,7 +258,11 @@ private fun MapHomeContent(
                 pickerState.hide()
                 when (it) {
                     is GroupPickerAction.GroupPicked -> {
-                        vm.onEvent(MapHomeScreenUiEvent.SwitchGroup(it.group.id))
+                        vm.onEvent(
+                            MapHomeScreenUiEvent.SwitchViewSource(
+                                MapScreenViewSourceType.DefaultGroup(it.group.id)
+                            )
+                        )
                     }
 
                     is GroupPickerAction.GroupEditPicked -> {

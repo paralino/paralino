@@ -27,6 +27,7 @@ import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
@@ -35,6 +36,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class MapStateMapper(
     private val appPrefs: AppPrefs,
+    private val userGroupLocal: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
     private val memberActionHandler: MemberActionHandler,
@@ -76,6 +78,15 @@ class MapStateMapper(
         val isVerified = when (groupOrSpace) {
             is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.isGroupVerified
             is GroupWithMembersOrUserSpace.PersonalSpace -> true // Personal space is always verified
+        }
+
+        val selectedGroupId: String? = appPrefs.selectedGroupId
+
+        val selectedGroupImage: ImageModel? = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.image
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                userGroupLocal.allGroupsState.value.data?.firstOrNull { it.id == selectedGroupId }?.image
+            }
         }
 
         val membersData = buildMembersData(
@@ -131,8 +142,10 @@ class MapStateMapper(
 
         return MapHomeScreenState.Ready(
             groupOrSpaceId = groupOrSpace.id,
-            groupName = groupName,
-            groupImage = groupImage,
+            groupOrSpaceName = groupName,
+            groupOrSpaceImage = groupImage,
+            selectedGroupId = selectedGroupId,
+            selectedGroupImage = selectedGroupImage,
             userCount = userCount,
             activeUserCount = activeCount,
             idleUserCount = idleCount,

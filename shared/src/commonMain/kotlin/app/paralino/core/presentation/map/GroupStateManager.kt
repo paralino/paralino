@@ -41,55 +41,71 @@ class GroupStateManager(
     private val eventChannel: kotlinx.coroutines.channels.Channel<MapHomeScreenEvent?>
 ) {
 
-    suspend fun switchGroup(groupId: GroupOrSpaceId?) {
-        val currentlySelectedGroup = appPrefs.selectedGroupId
-        if (currentlySelectedGroup.isNullOrBlank() && groupId == null) {
-            selectPersonalSpace()
-        } else if (currentlySelectedGroup?.asGroupOrSpaceId()?.isPersonalSpace == true && groupId == null) {
-            selectPersonalSpace()
-        } else if (groupId?.isPersonalSpace == true) {
-            selectPersonalSpace()
-        } else {
-            val allGroups = allGroups.mapNotNull { it.data }
-                .firstOrNull()
-                ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
-                ?: emptyList()
+    suspend fun switchGroup(viewSource: MapScreenViewSourceType) {
+        when (viewSource) {
+            is MapScreenViewSourceType.DefaultGroup -> {
+                selectGroup(groupId = viewSource.id?.id)
+            }
 
-            val matchingGroup = allGroups.firstOrNull { it.id == groupId?.id }
-                ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }
-
-            if (matchingGroup != null || allGroups.isNotEmpty()) {
-                val newGroup = matchingGroup
-                    ?: allGroups.firstOrNull()
-
-                val newGroupId = newGroup?.id ?: ""
-
-                appPrefs.selectedGroupId = newGroupId
-                groupIdData.update { newGroupId.asGroupOrSpaceId() }
-
-                if (newGroup != null && newGroup.isGroupOverLimits(remoteConfig.getConfigOnce())) {
-                    if (newGroup.group.isCurrentUserOwner) {
-                        messageDispatcher.showSnackbar(
-                            text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
-                            duration = SnackbarDuration.Forever
-                        )
-                        delay(2000)
-                        eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+            is MapScreenViewSourceType.DefaultGroupOrSpace -> {
+                if (viewSource.id?.id.isNullOrBlank()) {
+                    if (appPrefs.isPersonalSpaceSelected) {
+                        selectPersonalSpace()
                     } else {
-                        messageDispatcher.showSnackbar(
-                            text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
-                            duration = SnackbarDuration.Forever
-                        )
+                        selectGroup(groupId = appPrefs.selectedGroupId)
+                    }
+                } else {
+                    if (viewSource.id.isPersonalSpace) {
+                        selectPersonalSpace()
+                    } else {
+                        selectGroup(groupId = viewSource.id.id)
                     }
                 }
-            } else {
+            }
+
+            MapScreenViewSourceType.PersonalSpace -> {
                 selectPersonalSpace()
             }
         }
     }
 
+    private suspend fun selectGroup(groupId: String?) {
+        val allGroups = allGroups.mapNotNull { it.data }
+            .firstOrNull()
+            ?: groupRepo.getAllGroupsWithMetadata().firstOrNull()
+            ?: emptyList()
+
+        val matchingGroup = allGroups.firstOrNull { it.id == groupId }
+            ?: allGroups.firstOrNull { it.id == appPrefs.selectedGroupId }
+
+        val newGroup = matchingGroup
+            ?: allGroups.firstOrNull()
+
+        val newGroupId = newGroup?.id ?: ""
+
+        appPrefs.selectedGroupId = newGroupId
+        appPrefs.isPersonalSpaceSelected = false
+        groupIdData.update { newGroupId.asGroupOrSpaceId() }
+
+        if (newGroup != null && newGroup.isGroupOverLimits(remoteConfig.getConfigOnce())) {
+            if (newGroup.group.isCurrentUserOwner) {
+                messageDispatcher.showSnackbar(
+                    text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                    duration = SnackbarDuration.Forever
+                )
+                delay(2000)
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+            } else {
+                messageDispatcher.showSnackbar(
+                    text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                    duration = SnackbarDuration.Forever
+                )
+            }
+        }
+    }
+
     private suspend fun selectPersonalSpace() {
-        appPrefs.selectedGroupId = UserGroup.groupPersonalDevicesId
+        appPrefs.isPersonalSpaceSelected = true
         groupIdData.update { UserGroup.groupPersonalDevicesId.asGroupOrSpaceId() }
         val personalSpace = personalSpaceRepo.personalSpaceState.value.data
         if (personalSpace?.isSpaceOverLimits() == true) {

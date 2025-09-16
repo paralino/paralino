@@ -1,7 +1,10 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
+import app.paralino.core.presentation.map.MapHomeScreenEvent.*
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePlace
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaceDetails
@@ -39,9 +42,9 @@ class MapEventHandler(
                 uiFocusedStatus.update { event.active }
             }
 
-            is MapHomeScreenUiEvent.SwitchGroup -> {
+            is MapHomeScreenUiEvent.SwitchViewSource -> {
                 coroutineScope.launch {
-                    groupStateManager.switchGroup(event.groupId)
+                    groupStateManager.switchGroup(event.viewSource)
                 }
             }
 
@@ -90,7 +93,7 @@ class MapEventHandler(
                     if (it.groupOrSpaceId.isPersonalSpace) {
                         eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
                     } else {
-                        eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = it.groupOrSpaceId.id))
+                        eventChannel.trySend(OpenGroupDetails(groupId = it.groupOrSpaceId.id))
                     }
                 }
             }
@@ -129,7 +132,23 @@ class MapEventHandler(
                 if (event.groupId.isPersonalSpace) {
                     eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
                 } else {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = event.groupId.id))
+                    eventChannel.trySend(OpenGroupDetails(groupId = event.groupId.id))
+                }
+            }
+
+            MapHomeScreenUiEvent.SwitchToGroups -> {
+                coroutineScope.launch {
+                    groupStateManager.switchGroup(
+                        MapScreenViewSourceType.DefaultGroup(
+                            appPrefs.selectedGroupId?.asGroupOrSpaceId()
+                        )
+                    )
+                }
+            }
+
+            MapHomeScreenUiEvent.SwitchToPersonalSpace -> {
+                coroutineScope.launch {
+                    groupStateManager.switchGroup(MapScreenViewSourceType.PersonalSpace)
                 }
             }
         }

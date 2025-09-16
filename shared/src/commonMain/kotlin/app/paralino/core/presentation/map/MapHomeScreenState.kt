@@ -7,7 +7,6 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
@@ -18,23 +17,29 @@ import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.utils.Emojis
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
     abstract val isSatelliteMode: Boolean
     abstract val alertDialog: MainAlertDialog?
+    abstract val selectedGroupId: String?
+    abstract val selectedGroupImage: ImageModel?
+    abstract val isPersonalSpace: Boolean
 
     val deviceType: DeviceType = DeviceType.current
 
     data class Ready constructor(
         val groupOrSpaceId: GroupOrSpaceId,
-        val groupName: String,
-        val groupImage: ImageModel,
+        val groupOrSpaceName: String,
+        val groupOrSpaceImage: ImageModel,
+
+        override val selectedGroupId: String?,
+        override val selectedGroupImage: ImageModel?,
+        override val currentUserImage: ImageModel,
+
         val userCount: Int,
         val activeUserCount: Int,
         val idleUserCount: Int,
-        override val currentUserImage: ImageModel,
 
         val members: List<GroupMemberItemStateWithOneLocation>,
         val places: List<PlaceListItemData>,
@@ -50,7 +55,7 @@ sealed class MapHomeScreenState {
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
-        val isPersonalSpace = groupOrSpaceId.isPersonalSpace
+        override val isPersonalSpace = groupOrSpaceId.isPersonalSpace
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
@@ -72,7 +77,10 @@ sealed class MapHomeScreenState {
     }
 
     data class Empty(
-        override val currentUserImage: ImageModel = ImageModel.emoji(Emojis.robot),
+        override val selectedGroupId: String?,
+        override val selectedGroupImage: ImageModel?,
+        override val currentUserImage: ImageModel,
+        override val isPersonalSpace: Boolean,
         override val isSatelliteMode: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,
     ) : MapHomeScreenState()
@@ -109,7 +117,9 @@ sealed interface MapHomeScreenUiEvent {
     data class OnPlaceClick(val place: PlaceListItemData) : MapHomeScreenUiEvent
     data class OnMemberItemEvent(val event: GroupMemberItemEvent) : MapHomeScreenUiEvent
     data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
-    data class SwitchGroup(val groupId: GroupOrSpaceId?) : MapHomeScreenUiEvent
+    data class SwitchViewSource(val viewSource: MapScreenViewSourceType) : MapHomeScreenUiEvent
+    data object SwitchToPersonalSpace : MapHomeScreenUiEvent
+    data object SwitchToGroups : MapHomeScreenUiEvent
     data object TryCreateGroup : MapHomeScreenUiEvent
     data object OnFocusOnMembersClick : MapHomeScreenUiEvent
     data object OnFocusOnPlacesClick : MapHomeScreenUiEvent
@@ -152,6 +162,17 @@ sealed interface MapHomeScreenFocusType {
             NONE -> target
             else -> if (target != this) target else NONE
         }
+    }
+}
+
+sealed interface MapScreenViewSourceType {
+    val id: GroupOrSpaceId?
+
+    data class DefaultGroupOrSpace(override val id: GroupOrSpaceId?) : MapScreenViewSourceType
+    data class DefaultGroup(override val id: GroupOrSpaceId?) : MapScreenViewSourceType
+
+    data object PersonalSpace : MapScreenViewSourceType {
+        override val id: GroupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
     }
 }
 
