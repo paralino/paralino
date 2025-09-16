@@ -141,7 +141,7 @@ sealed class DeeplinkType() {
                 }
 
                 path.matches(pathParalinoID) -> {
-                    val segments = cleanDeeplink.pathSegments ?: return null
+                    val segments = cleanDeeplink.rawSegments
                     val pathIndex = segments
                         .indexOfFirst { it == pathParalinoID }
                         .takeIf { it >= 0 }
