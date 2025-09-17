@@ -63,7 +63,7 @@ data class GroupItemState constructor(
         image = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
         membersCount = null,
         placesCount = space.placesCount,
-        devicesCount = space.activeDeviceCount,
+        devicesCount = space.devices.size,
         isPersonalSpace = true,
         uiType = uiType ?: GroupUiType.INACTIVE,
         canEdit = true,

@@ -7,6 +7,7 @@ sealed interface BottomSheetPickerType {
     data class EmojiPickerBottomSheet(val emojis: List<String>) : BottomSheetPickerType
     data class GroupPickerBottomSheet(
         val onlyShowGroups: Boolean,
+        val showPersonalSpace: Boolean,
         val userPlan: PlanConfig?,
         val groupsLimit: Int? = userPlan?.groupsLimit,
         val personalSpace: GroupItemState?,

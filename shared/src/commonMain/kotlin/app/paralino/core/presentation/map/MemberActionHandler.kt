@@ -6,6 +6,7 @@ import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
+import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionType
@@ -136,7 +137,7 @@ class MemberActionHandler(
         state: GroupMemberItemState,
         updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
         uiState: StateFlow<MapHomeScreenState>,
-        getAllGroupsItemState: () -> List<app.paralino.core.presentation.groups.GroupItemState>
+        getAllGroupsItemState: () -> List<GroupItemState>
     ) {
         val stateWithLocation = uiState.value.asReady()?.members?.firstOrNull { it.keyId == state.keyId }
 

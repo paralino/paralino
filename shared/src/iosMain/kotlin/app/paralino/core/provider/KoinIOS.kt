@@ -208,7 +208,7 @@ object KoinIOS {
         return module {
             factory { AccountOnboardingViewModel(get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
@@ -334,7 +334,7 @@ object KoinIOS {
 
         val welcomeVM get() = get<LoggedOutViewModel>()
         val editProfileVM get() = get<EditProfileViewModel>()
-        val groupInitVM get() = get<AccountOnboardingViewModel>()
+        val accountOnboardingVM get() = get<AccountOnboardingViewModel>()
         val recoverKeysVM get() = get<RecoverKeysViewModel>()
         val passwordConfirmationVM get() = get<PasswordConfirmationViewModel>()
         fun resetPasswordVM(userId: String, secret: String) = get<ResetPasswordViewModel> {

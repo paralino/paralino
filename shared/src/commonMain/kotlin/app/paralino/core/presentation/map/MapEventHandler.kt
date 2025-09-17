@@ -101,7 +101,7 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OnGroupPickerClick -> {
-                eventChannel.trySend(OpenGroupPicker)
+                eventChannel.trySend(OpenGroupPicker(showPersonalSpace = false))
             }
 
             MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
@@ -148,13 +148,17 @@ class MapEventHandler(
                         )
                     }
                 } else {
-                    eventChannel.trySend(OpenGroupPicker)
+                    eventChannel.trySend(OpenGroupPicker(showPersonalSpace = false))
                 }
             }
 
             MapHomeScreenUiEvent.SwitchToPersonalSpace -> {
-                coroutineScope.launch {
-                    groupStateManager.switchGroup(MapScreenViewSourceType.PersonalSpace)
+                if (uiState.value.isPersonalSpace) {
+                    eventChannel.trySend(OpenGroupPicker(showPersonalSpace = true))
+                } else {
+                    coroutineScope.launch {
+                        groupStateManager.switchGroup(MapScreenViewSourceType.PersonalSpace)
+                    }
                 }
             }
 
@@ -202,7 +206,7 @@ class MapEventHandler(
                     updateReadyState = updateReadyState,
                     uiState = uiState,
                     getAllGroupsItemState = {
-                        groupStateManager.getGroupPickerState()
+                        groupStateManager.getGroupPickerState(showPersonalSpace = false)
                             .let { it.createdGroups + it.joinedGroups }
                     }
                 )

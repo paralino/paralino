@@ -38,7 +38,7 @@ struct GroupPickerSheet: ViewModifier {
                 VStack {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 8) {
-                            if bottomSheet?.personalSpace == nil {
+                            if bottomSheet?.personalSpace == nil || bottomSheet?.showPersonalSpace != true {
                                 HStack {
                                     Text(MR.shared.strings.title_dashboard.localizedString())
                                         .font(.system(size: 24, weight: .bold))
@@ -50,7 +50,7 @@ struct GroupPickerSheet: ViewModifier {
                             Spacer().frame(height: 8)
                             
                             // Show personal space at the top if it exists
-                            if let personalSpace = bottomSheet?.personalSpace {
+                            if let personalSpace = bottomSheet?.personalSpace, bottomSheet?.showPersonalSpace == true {
                                 GroupListItem(
                                     data: personalSpace,
                                     onClick: { onSelectGroup?(personalSpace) },

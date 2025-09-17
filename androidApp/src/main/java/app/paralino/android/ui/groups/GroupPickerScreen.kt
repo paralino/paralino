@@ -135,7 +135,7 @@ private fun GroupPickerScreen(
                     .padding(bottom = 0.dp, top = 10.dp)
                     .padding(horizontal = 10.dp),
                 elevation = 0.dp,
-                titleComposable = if (state?.personalSpace == null) {
+                titleComposable = if (state?.personalSpace == null || !state.showPersonalSpace) {
                     {
                         GroupTitle(state = state)
                     }
@@ -149,7 +149,7 @@ private fun GroupPickerScreen(
 
         if (state != null) {
 
-            if (state.personalSpace != null) {
+            if (state.personalSpace != null && state.showPersonalSpace) {
                 item(key = "personal_space") {
                     GroupListItem(
                         modifier = Modifier

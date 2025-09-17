@@ -138,10 +138,11 @@ class GroupStateManager(
         }
     }
 
-    fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
+    fun getGroupPickerState(showPersonalSpace: Boolean): BottomSheetPickerType.GroupPickerBottomSheet {
         val allGroups = getAllGroupsItemState()
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = false,
+            showPersonalSpace = showPersonalSpace,
             userPlan = userRepository.userPlans.value.highestValidPlanConfig,
             groupsLimit = userRepository.userPlans.value.groupsLimit,
             personalSpace = personalSpaceRepo.personalSpaceState.value.data?.let { space ->

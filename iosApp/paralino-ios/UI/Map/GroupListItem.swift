@@ -28,8 +28,8 @@ struct GroupListItem: View {
                         .rect(
                             topLeadingRadius: 0,
                             bottomLeadingRadius: 0,
-                            bottomTrailingRadius: 20,
-                            topTrailingRadius: 20
+                            bottomTrailingRadius: 8,
+                            topTrailingRadius: 8
                         )
                     )
             }
@@ -112,6 +112,9 @@ struct GroupListItem: View {
             Spacer()
             
             if data.canEdit {
+                Divider()
+                    .frame(width: 0.5, height: 50)
+                    .background(Color.themeSecondary.opacity(0.4))
                 Image(systemName: "gearshape")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -123,7 +126,7 @@ struct GroupListItem: View {
                     .onTapGesture(perform: onEdit)
             }
         }
-        .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 16))
+        .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 12))
         .frame(maxWidth: .infinity)
         .background(data.isPersonalSpace ? Color.accent.opacity(0.1) : Color.themeSurface)
         .clipShape(RoundedRectangle(cornerRadius: 16))

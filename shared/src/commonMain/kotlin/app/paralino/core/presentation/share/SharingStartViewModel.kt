@@ -240,6 +240,7 @@ class SharingStartViewModel(
         val personalSpace = personalSpaceRepo.personalSpaceState.value.data
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
+            showPersonalSpace = true,
             userPlan = null,
             personalSpace = personalSpace?.let {
                 GroupItemState(

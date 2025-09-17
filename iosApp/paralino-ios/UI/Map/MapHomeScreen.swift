@@ -10,110 +10,101 @@ import shared
 import MapKit
 
 struct MapHomeScreen: View {
-    
+
+    @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var mapState: MapHomeState = MapHomeState()
     @State var groupPicker: BottomSheetPickerTypeGroupPickerBottomSheet? = nil
+    @State var shareText: ShareText?
     
     @Environment(\.safeAreaInsets) private var safeAreaInsets
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         ZStack {
-            if mapState.uiState is MapHomeScreenState.Ready {
-                ComposeRepresentable {
-                    ScreensIOS.shared.home.MapSheet(
-                        vm: mapState.vm,
-                        paddingValues: safeAreaInsets,
-                        initialUiState: mapState.uiState,
-                        onOpenPlacesScreen: { groupId in
-                            path.append(.home(.places(groupId: groupId, isOnboarding: false)))
-                        },
-                        onOpenCreatePlaceScreen: { groupId in
-                            path.append(.home(.placeCreate(groupId: groupId, placeId: nil, lat: nil, lng: nil)))
-                        },
-                        onSheetOffsetChange: { offset in
-                            mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)
-                        },
-                        onGroupPickerClick: {
-                            groupPicker = mapState.vm.getGroupPickerState()
-                        },
-                        onGroupDetailsClick: { groupId in
-                            path.append(.home(.groupDetail(groupId: groupId)))
-                        },
-                        onSharingStartClick: { groupId in
-                            path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
-                        },
-                        onSettingsClick: {
-                            path.append(.settings(.settings))
-                        },
-                        onPlaceClick: { event in
-                            path.append(.home(.placeDetail(groupId: event.groupId, placeId: event.placeId)))
-                        },
-                        onDirectionsRequest: { event in
-                            let url = event.navigationApp.buildLaunchURL(lat: event.lat, lng: event.lng, title: event.name)
-                            if let deeplink = URL(string: url), UIApplication.shared.canOpenURL(deeplink) {
-                                UIApplication.shared.open(deeplink)
-                            }
-                        },
-                        onCreateGroup: {
-                            path.append(.home(.groupCreate(groupId: nil)))
-                        },
-                        openFreePlanInfo: {
-                            path.append(.home(.freePlanInfo))
-                        },
-                        openPaywall: {
-                            path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
-                        },
-                        openPersonalSpace: {
-                            path.append(.home(.personalSpace))
-                        },
-                        openLocationHistory: { event in
-                            path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId)))
-                        },
-                        mapUIView: { () -> UIViewController in
-                            let controller = MapComponentVC()
-                            controller.additionalSafeAreaInsets = .init(top: 65, left: 0, bottom: 0, right: 0)
-                            controller.mapState = mapState
-                            controller.onMapPan = {
-                                mapState.vm.onEvent(event: MapHomeScreenUiEventOnMapTouch())
-                            }
-                            controller.onMapLongPress = { point in
-                                if let readyState = mapState.uiState.asReady() {
-                                    path.append(.home(.placeCreate(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: readyState.groupOrSpaceId)!, placeId: nil, lat: point.latitude, lng: point.longitude)))
-                                }
-                            }
-                            return controller
+            ComposeRepresentable {
+                ScreensIOS.shared.home.MapSheet(
+                    vm: mapState.vm,
+                    paddingValues: safeAreaInsets,
+                    initialUiState: mapState.uiState,
+                    onOpenPlacesScreen: { groupId in
+                        path.append(.home(.places(groupId: groupId, isOnboarding: false)))
+                    },
+                    onOpenCreatePlaceScreen: { groupId in
+                        path.append(.home(.placeCreate(groupId: groupId, placeId: nil, lat: nil, lng: nil)))
+                    },
+                    onSheetOffsetChange: { offset in
+                        mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)
+                    },
+                    onGroupPickerClick: { showPersonalSpace in
+                        groupPicker = mapState.vm.getGroupPickerState(showPersonalSpace: showPersonalSpace.boolValue)
+                    },
+                    onGroupDetailsClick: { groupId in
+                        path.append(.home(.groupDetail(groupId: groupId)))
+                    },
+                    onSharingStartClick: { groupId in
+                        path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
+                    },
+                    onSettingsClick: {
+                        path.append(.settings(.settings))
+                    },
+                    onPlaceClick: { event in
+                        path.append(.home(.placeDetail(groupId: event.groupId, placeId: event.placeId)))
+                    },
+                    onDirectionsRequest: { event in
+                        let url = event.navigationApp.buildLaunchURL(lat: event.lat, lng: event.lng, title: event.name)
+                        if let deeplink = URL(string: url), UIApplication.shared.canOpenURL(deeplink) {
+                            UIApplication.shared.open(deeplink)
                         }
-                    )
-                }
-                .ignoresSafeArea(.all, edges: .vertical)
-                .toolbar(.hidden, for: .navigationBar)
-            } else if mapState.uiState is MapHomeScreenState.Empty {
-                VStack {
-                    Image("paralino_logo")
-                        .resizable()
-                        .scaledToFit()
-                        .colorMultiply(.themePrimary)
-                        .frame(width: 100, height: 100)
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                }
-            } else {
-                VStack {
-                    Image("paralino_logo")
-                        .resizable()
-                        .scaledToFit()
-                        .colorMultiply(.themePrimary)
-                        .frame(width: 60, height: 60)
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                }
+                    },
+                    onCreateGroup: {
+                        path.append(.home(.groupCreate(groupId: nil)))
+                    },
+                    openFreePlanInfo: {
+                        path.append(.home(.freePlanInfo))
+                    },
+                    openPaywall: {
+                        path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
+                    },
+                    openPersonalSpace: {
+                        path.append(.home(.personalSpace))
+                    },
+                    openPersonalCodes: {
+                        path.append(.settings(.personalCodes))
+                    },
+                    onSharePersonalCode: { content in
+                        shareText = ShareText(text: content)
+                    },
+                    askNotificationPermission: {
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
+                            messageDispather: mapState.vm.messageDispatcher
+                        )
+                    },
+                    openLocationHistory: { event in
+                        path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId)))
+                    },
+                    mapUIView: { () -> UIViewController in
+                        let controller = MapComponentVC()
+                        controller.additionalSafeAreaInsets = .init(top: 65, left: 0, bottom: 0, right: 0)
+                        controller.mapState = mapState
+                        controller.onMapPan = {
+                            mapState.vm.onEvent(event: MapHomeScreenUiEventOnMapTouch())
+                        }
+                        controller.onMapLongPress = { point in
+                            if let readyState = mapState.uiState.asReady() {
+                                path.append(.home(.placeCreate(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: readyState.groupOrSpaceId)!, placeId: nil, lat: point.latitude, lng: point.longitude)))
+                            }
+                        }
+                        return controller
+                    }
+                )
             }
+            .ignoresSafeArea(.all, edges: .vertical)
+            .toolbar(.hidden, for: .navigationBar)
         }
         .onAppear {
             Logr.d(tag:"home_screen", message: "Home screen appear")
-            mapState.vm.onEvent(event: MapHomeScreenUiEventSwitchGroup(groupId: nil))
+            mapState.vm.onEvent(event: MapHomeScreenUiEventSwitchViewSource(viewSource: MapScreenViewSourceTypeDefaultGroupOrSpace(id: nil)))
         }
         .onDisappear {
             Logr.d(tag:"home_screen", message: "Home screen disappear")
@@ -137,7 +128,9 @@ struct MapHomeScreen: View {
             $groupPicker,
             onSelectGroup: { state in
                 groupPicker = nil
-                mapState.vm.onEvent(event: MapHomeScreenUiEventSwitchGroup(groupId: state.id))
+                mapState.vm.onEvent(
+                    event: MapHomeScreenUiEventSwitchViewSource(viewSource: MapScreenViewSourceTypeDefaultGroupOrSpace(id: state.id))
+                )
             },
             onEditGroup: { state in
                 groupPicker = nil
@@ -156,6 +149,9 @@ struct MapHomeScreen: View {
                 path.append(.settings(.paywall(groupId: nil, type: .upgrade)))
             }
         )
+        .sheet(item: $shareText) { shareText in
+            ActivityView(text: shareText.text)
+        }
         .navigationBarBackButtonHidden(true)
     }
 }

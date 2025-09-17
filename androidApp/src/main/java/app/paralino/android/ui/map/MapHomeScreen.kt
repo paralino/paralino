@@ -307,8 +307,8 @@ fun MapScreenEventHandler(
                     )
                 }
 
-                MapHomeScreenEvent.OpenGroupPicker -> {
-                    val groupPickerState = vm.getGroupPickerState()
+                is MapHomeScreenEvent.OpenGroupPicker -> {
+                    val groupPickerState = vm.getGroupPickerState(showPersonalSpace = event.showPersonalSpace)
                     showGroupPicker(groupPickerState)
                 }
 

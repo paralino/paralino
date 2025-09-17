@@ -279,6 +279,7 @@ class MemberInviteViewModel(
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
+            showPersonalSpace = false,
             userPlan = null,
             personalSpace = null,
             createdGroups = getAllUserCreatedGroups(),

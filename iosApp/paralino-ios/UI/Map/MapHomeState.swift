@@ -13,7 +13,11 @@ class MapHomeState : BaseMapObservableObject {
     let vm: MapHomeViewModel
     
     @Published var uiState: MapHomeScreenState = MapHomeScreenState.Empty(
+        groupsEmptyState: nil,
+        selectedGroupId: nil,
+        selectedGroupImage: nil,
         currentUserImage: ImageModel.companion.placeholder(),
+        isPersonalSpace: true,
         isSatelliteMode: false,
         alertDialog: nil
     )

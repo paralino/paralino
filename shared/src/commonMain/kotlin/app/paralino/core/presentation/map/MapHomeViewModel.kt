@@ -389,8 +389,8 @@ class MapHomeViewModel constructor(
         mapEventHandler.onEvent(event)
     }
 
-    fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
-        return groupStateManager.getGroupPickerState()
+    fun getGroupPickerState(showPersonalSpace: Boolean): BottomSheetPickerType.GroupPickerBottomSheet {
+        return groupStateManager.getGroupPickerState(showPersonalSpace)
     }
 
     private fun updateReadyState(action: (MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) {

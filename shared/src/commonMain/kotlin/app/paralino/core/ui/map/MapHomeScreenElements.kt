@@ -227,7 +227,11 @@ fun MapHomeScreenElements(
                             onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
                         }
                     ) {
-                        Text(text = stringResource(MR.strings.location_sharing_button_start_groups))
+                        if (state.isPersonalSpace) {
+                            Text(text = stringResource(MR.strings.location_sharing_button_start_personal))
+                        } else {
+                            Text(text = stringResource(MR.strings.location_sharing_button_start_groups))
+                        }
                     }
                 }
             }

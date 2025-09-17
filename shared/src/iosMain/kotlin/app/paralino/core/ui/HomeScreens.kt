@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,9 +82,7 @@ object HomeScreens {
     fun AccountOnboardingScreenVC(
         vm: AccountOnboardingViewModel,
         paddingValues: AppleScreenPaddingValues,
-        openSettings: () -> Unit,
         onCreateGroup: () -> Unit,
-        openFreePlanInfo: () -> Unit,
         openPersonalCodes: () -> Unit,
         openPaywall: (BillingScreenSourceType) -> Unit,
         onSharePersonalCode: (String) -> Unit,
@@ -94,9 +93,7 @@ object HomeScreens {
                 modifier = Modifier.padding(paddingValues.toComposePaddingValues()),
                 appState = it,
                 vm = vm,
-                openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
-                openFreePlanInfo = openFreePlanInfo,
                 openPersonalCodes = openPersonalCodes,
                 openPaywall = openPaywall,
                 onSharePersonalCode = onSharePersonalCode,
@@ -300,7 +297,7 @@ object HomeScreens {
         onOpenPlacesScreen: (String) -> Unit,
         onOpenCreatePlaceScreen: (String) -> Unit,
         onSheetOffsetChange: (Float) -> Unit,
-        onGroupPickerClick: () -> Unit,
+        onGroupPickerClick: (Boolean) -> Unit,
         onGroupDetailsClick: (String) -> Unit,
         onSharingStartClick: (String) -> Unit,
         onSettingsClick: () -> Unit,
@@ -310,6 +307,9 @@ object HomeScreens {
         openFreePlanInfo: () -> Unit,
         openPaywall: () -> Unit,
         openPersonalSpace: () -> Unit,
+        openPersonalCodes: () -> Unit,
+        onSharePersonalCode: (String) -> Unit,
+        askNotificationPermission: () -> Unit,
         openLocationHistory: (MapHomeScreenEvent.OpenLocationHistory) -> Unit,
         mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
@@ -324,22 +324,22 @@ object HomeScreens {
                 val density = LocalDensity.current
 
                 val sheetState = rememberSwipeableSheetState(
-                    initialValue = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused != false) {
-                        BottomSheetPosition.HIDDEN
-                    } else {
-                        BottomSheetPosition.HIDDEN
-                    },
+                    initialValue = BottomSheetPosition.HIDDEN,
                     collapsedAnchorBottomPaddingPixels = 0f,
                     confirmValueChange = {
                         it != BottomSheetPosition.HIDDEN
                     }
                 )
 
-                val bottomOffset = density.run {
-                    try {
-                        sheetState.offset.toDp()
-                    } catch (e: Exception) {
-                        0.dp
+                val bottomOffset by remember {
+                    derivedStateOf {
+                        density.run {
+                            try {
+                                sheetState.offset.toDp()
+                            } catch (e: Exception) {
+                                0.dp
+                            }
+                        }
                     }
                 }
 
@@ -353,7 +353,7 @@ object HomeScreens {
                             MapHomeScreenEvent.OpenPaywall -> openPaywall()
                             is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId)
                             is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
-                            MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick()
+                            is MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick(event.showPersonalSpace)
                             is MapHomeScreenEvent.OpenPlaceDetails -> onPlaceClick(event)
                             is MapHomeScreenEvent.OpenPlaces -> onOpenPlacesScreen(event.groupId)
                             MapHomeScreenEvent.OpenSettings -> onSettingsClick()
@@ -363,6 +363,10 @@ object HomeScreens {
                             MapHomeScreenEvent.OpenPersonalSpace -> openPersonalSpace()
                             is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall()
                             null -> {}
+                            MapHomeScreenEvent.AskNotificationPermission -> askNotificationPermission()
+                            MapHomeScreenEvent.OpenFreePlanInfo -> openFreePlanInfo()
+                            MapHomeScreenEvent.OpenPersonalCodes -> openPersonalCodes()
+                            is MapHomeScreenEvent.SharePersonalCode -> onSharePersonalCode(event.content)
                         }
                     }
                 }
@@ -394,7 +398,7 @@ object HomeScreens {
                 MainMapSheet(
                     appState = it,
                     swipeableState = sheetState,
-                    readyState = readyState,
+                    mapUiState = uiState,
                     onEvent = { vm.onEvent(it) },
                     screenContent = {
                         UIKitViewController(

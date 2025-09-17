@@ -61,7 +61,7 @@ struct MapRootScreen: View {
                                     appState: SharingStartScreen.createState(groupId: groupId, isOnboarding: isOnboarding)
                                 )
                             case .map: MapHomeScreen(path: $mainAppState.userReadyGraph)
-                            case .groupInit: GroupInitScreen(path: $mainAppState.userReadyGraph, appState: initState)
+                            case .groupInit: AccountOnboardingScreen(path: $mainAppState.userReadyGraph, appState: initState)
                             case .memberInvite(let groupId, let code, let isOnboarding):
                                 MemberInviteScreen(
                                     path: $mainAppState.userReadyGraph,

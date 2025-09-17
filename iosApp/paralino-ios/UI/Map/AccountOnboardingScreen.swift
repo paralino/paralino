@@ -8,7 +8,7 @@
 import SwiftUI
 import shared
 
-struct GroupInitScreen: View {
+struct AccountOnboardingScreen: View {
     
     @Binding var path: [NavigationGraph]
 
@@ -21,7 +21,7 @@ struct GroupInitScreen: View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
-                ScreensIOS.shared.home.GroupInitScreenVC(
+                ScreensIOS.shared.home.AccountOnboardingScreenVC(
                     vm: appState.vm,
                     paddingValues:  AppleScreenPaddingValues(
                         start: safeAreaInsets.start,
@@ -29,9 +29,7 @@ struct GroupInitScreen: View {
                         end: safeAreaInsets.end,
                         bottom: safeAreaInsets.bottom
                     ),
-                    openSettings: { path.append(.settings(.settings)) },
                     onCreateGroup: { path.append(.home(.groupCreate(groupId: nil))) },
-                    openFreePlanInfo: { path.append(.home(.freePlanInfo)) },
                     openPersonalCodes: { path.append(.settings(.personalCodes)) },
                     openPaywall: { type in
                         path.append(.settings(.paywall(groupId: nil, type: type)))
@@ -58,10 +56,10 @@ struct GroupInitScreen: View {
 class GroupInitState: ObservableObject {
     
     @Published var groupState: State = .loading
-    let vm: GroupInitViewModel
+    let vm: AccountOnboardingViewModel
     
     init() {
-        self.vm = KoinIOS.ViewModels.shared.groupInitVM
+        self.vm = KoinIOS.ViewModels.shared.accountOnboardingVM
         
         vm.observe(flow: vm.canDisplayMap) { [weak self] value in
             let state = ResourceSwift<KotlinBoolean>(data: value)

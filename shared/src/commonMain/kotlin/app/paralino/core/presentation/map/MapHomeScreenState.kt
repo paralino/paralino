@@ -97,7 +97,7 @@ sealed class MapHomeScreenEvent {
     data object ShowFreePlanInfo : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
-    data object OpenGroupPicker : MapHomeScreenEvent()
+    data class OpenGroupPicker(val showPersonalSpace: Boolean) : MapHomeScreenEvent()
     data object OpenPersonalSpace : MapHomeScreenEvent()
     data class SharePersonalCode(val content: String): MapHomeScreenEvent()
     data class ShowPlanLimitAlert(val limit: Int?) : MapHomeScreenEvent()
