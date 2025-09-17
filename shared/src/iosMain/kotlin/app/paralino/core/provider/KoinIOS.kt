@@ -1,7 +1,6 @@
 package app.paralino.core.provider
 
 import app.paralino.core.CoreAppManager
-import app.paralino.core.appPrefs
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
@@ -42,7 +41,7 @@ import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
-import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
@@ -207,7 +206,7 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
+            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get()) }
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
@@ -335,7 +334,7 @@ object KoinIOS {
 
         val welcomeVM get() = get<LoggedOutViewModel>()
         val editProfileVM get() = get<EditProfileViewModel>()
-        val groupInitVM get() = get<GroupInitViewModel>()
+        val groupInitVM get() = get<AccountOnboardingViewModel>()
         val recoverKeysVM get() = get<RecoverKeysViewModel>()
         val passwordConfirmationVM get() = get<PasswordConfirmationViewModel>()
         fun resetPasswordVM(userId: String, secret: String) = get<ResetPasswordViewModel> {

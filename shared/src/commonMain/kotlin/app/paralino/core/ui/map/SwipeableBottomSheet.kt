@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberOverscrollEffect
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.current
+import app.paralino.core.utils.extensions.conditional
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -56,6 +58,7 @@ import kotlin.math.sign
 @ExperimentalMaterialApi
 @Composable
 fun SwipeableBottomSheet(
+    enabled: Boolean,
     collapsedInfoHeightPixel: Float,
     swipeableState: SwipeableSheetState,
     screenContent: @Composable () -> Unit,
@@ -72,7 +75,10 @@ fun SwipeableBottomSheet(
 
         swipeableState.createAnchors(
             screenHeightPixels = screenHeightPixels,
-            collapsedInfoHeightPixel = collapsedInfoHeightPixel
+            collapsedInfoHeightPixel = collapsedInfoHeightPixel,
+            expandedTopBarHeightPixel = with(LocalDensity.current) {
+                (WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 70.dp).toPx()
+            }
         )
 
         val connection = rememberBottomSheetNestedScrollConnection(
@@ -115,7 +121,9 @@ fun SwipeableBottomSheet(
                     .padding(horizontal = SwipeableSheetState.sheetHorizontalPadding)
                     .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + SwipeableSheetState.sheetBottomPadding)
                     .clip(RoundedCornerShape(24.dp))
-                    .nestedScroll(connection)
+                    .conditional(enabled) {
+                        nestedScroll(connection)
+                    }
                     .offset {
                         IntOffset(
                             x = 0,
@@ -123,6 +131,7 @@ fun SwipeableBottomSheet(
                         )
                     }
                     .anchoredDraggable(
+                        enabled = enabled,
                         state = swipeableState.state,
                         orientation = Orientation.Vertical,
                         interactionSource = remember { MutableInteractionSource() },
@@ -330,13 +339,18 @@ class SwipeableSheetState internal constructor(
     }
 
     @Composable
-    fun createAnchors(screenHeightPixels: Float, collapsedInfoHeightPixel: Float) {
-        val anchors = remember(screenHeightPixels, collapsedInfoHeightPixel) {
+    fun createAnchors(
+        screenHeightPixels: Float,
+        collapsedInfoHeightPixel: Float,
+        expandedTopBarHeightPixel: Float
+    ) {
+        val anchors = remember(screenHeightPixels, collapsedInfoHeightPixel, expandedTopBarHeightPixel) {
             this.screenHeightPixels = screenHeightPixels
             anchors = BottomSheetPosition.swipeAnchors(
                 screenHeightPixels = screenHeightPixels,
                 collapsedInfoHeightPixel = collapsedInfoHeightPixel,
-                collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels
+                expandedTopBarHeightPixel = expandedTopBarHeightPixel,
+                collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
             )
             DraggableAnchors {
                 anchors.forEach {
@@ -478,12 +492,13 @@ enum class BottomSheetPosition constructor(val screenHeightPercent: Float) {
         fun swipeAnchors(
             screenHeightPixels: Float,
             collapsedInfoHeightPixel: Float,
-            collapsedAnchorBottomPaddingPixels: Float
+            collapsedAnchorBottomPaddingPixels: Float,
+            expandedTopBarHeightPixel: Float
         ): Map<BottomSheetPosition, Float> {
             return entries.associateWith {
                 when (it) {
                     BottomSheetPosition.EXPANDED -> {
-                        screenHeightPixels.times(it.remainingScreenHeightPercent)
+                        expandedTopBarHeightPixel
                     }
                     BottomSheetPosition.HALF_EXPANDED -> {
                         screenHeightPixels.times(it.remainingScreenHeightPercent)

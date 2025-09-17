@@ -10,6 +10,7 @@ import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigat
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaceDetails
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaces
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenSharingStart
+import app.paralino.core.presentation.map.MapScreenViewSourceType.*
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -23,6 +24,7 @@ class MapEventHandler(
     private val groupStateManager: GroupStateManager,
     private val memberActionHandler: MemberActionHandler,
     private val locationFocusManager: LocationFocusManager,
+    private val groupEmptyStateManager: GroupsInitEmptyStateManager,
     private val uiState: StateFlow<MapHomeScreenState>,
     private val eventChannel: Channel<MapHomeScreenEvent?>,
     private val appPrefs: AppPrefs,
@@ -91,7 +93,7 @@ class MapEventHandler(
             MapHomeScreenUiEvent.OnGroupDetailsClick -> {
                 uiState.value.asReady()?.let {
                     if (it.groupOrSpaceId.isPersonalSpace) {
-                        eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
+                        eventChannel.trySend(OpenPersonalSpace)
                     } else {
                         eventChannel.trySend(OpenGroupDetails(groupId = it.groupOrSpaceId.id))
                     }
@@ -99,7 +101,7 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OnGroupPickerClick -> {
-                eventChannel.trySend(MapHomeScreenEvent.OpenGroupPicker)
+                eventChannel.trySend(OpenGroupPicker)
             }
 
             MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
@@ -119,7 +121,7 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OnSettingsClick -> {
-                eventChannel.trySend(MapHomeScreenEvent.OpenSettings)
+                eventChannel.trySend(OpenSettings)
             }
 
             MapHomeScreenUiEvent.OnSharingStartClick -> {
@@ -130,19 +132,23 @@ class MapEventHandler(
 
             is MapHomeScreenUiEvent.OpenGroupDetails -> {
                 if (event.groupId.isPersonalSpace) {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
+                    eventChannel.trySend(OpenPersonalSpace)
                 } else {
                     eventChannel.trySend(OpenGroupDetails(groupId = event.groupId.id))
                 }
             }
 
             MapHomeScreenUiEvent.SwitchToGroups -> {
-                coroutineScope.launch {
-                    groupStateManager.switchGroup(
-                        MapScreenViewSourceType.DefaultGroup(
-                            appPrefs.selectedGroupId?.asGroupOrSpaceId()
+                if (uiState.value.isPersonalSpace) {
+                    coroutineScope.launch {
+                        groupStateManager.switchGroup(
+                            DefaultGroup(
+                                appPrefs.selectedGroupId?.asGroupOrSpaceId()
+                            )
                         )
-                    )
+                    }
+                } else {
+                    eventChannel.trySend(OpenGroupPicker)
                 }
             }
 
@@ -150,6 +156,10 @@ class MapEventHandler(
                 coroutineScope.launch {
                     groupStateManager.switchGroup(MapScreenViewSourceType.PersonalSpace)
                 }
+            }
+
+            is MapHomeScreenUiEvent.OnGroupsEmptyStateEvent -> {
+                groupEmptyStateManager.onEvent(event.event)
             }
         }
     }

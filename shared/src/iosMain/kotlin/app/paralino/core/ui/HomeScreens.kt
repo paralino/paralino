@@ -3,11 +3,8 @@ package app.paralino.core.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,7 +24,7 @@ import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
-import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
@@ -66,7 +63,7 @@ import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
-import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
+import app.paralino.core.ui.onboarding.account.AccountOnboardingScreenCore
 import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
 import app.paralino.core.ui.personal_space.PersonalSpaceSettingsScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
@@ -81,8 +78,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import platform.UIKit.UIViewController
 
 object HomeScreens {
-    fun GroupInitScreenVC(
-        vm: GroupInitViewModel,
+    fun AccountOnboardingScreenVC(
+        vm: AccountOnboardingViewModel,
         paddingValues: AppleScreenPaddingValues,
         openSettings: () -> Unit,
         onCreateGroup: () -> Unit,
@@ -93,7 +90,7 @@ object HomeScreens {
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
-            GroupInitScreenCore(
+            AccountOnboardingScreenCore(
                 modifier = Modifier.padding(paddingValues.toComposePaddingValues()),
                 appState = it,
                 vm = vm,
@@ -351,7 +348,7 @@ object HomeScreens {
                 LaunchedEffect(key1 = Unit) {
                     vm.events.collectLatest { event ->
                         when (event) {
-                            MapHomeScreenEvent.AddGroup -> onCreateGroup()
+                            MapHomeScreenEvent.OpenGroupCreateScreen -> onCreateGroup()
                             MapHomeScreenEvent.ShowFreePlanInfo -> openFreePlanInfo()
                             MapHomeScreenEvent.OpenPaywall -> openPaywall()
                             is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId)

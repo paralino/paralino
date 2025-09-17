@@ -133,7 +133,7 @@ class GroupStateManager(
             } else if (shouldShowFreePlanNoticeScreen) {
                 eventChannel.trySend(MapHomeScreenEvent.ShowFreePlanInfo)
             } else {
-                eventChannel.trySend(MapHomeScreenEvent.AddGroup)
+                eventChannel.trySend(MapHomeScreenEvent.OpenGroupCreateScreen)
             }
         }
     }

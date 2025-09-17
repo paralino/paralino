@@ -21,6 +21,7 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
@@ -40,6 +41,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -54,16 +56,17 @@ import kotlin.time.Instant
 class MapHomeViewModel constructor(
     private val sharingManager: LocationSharingManager,
     private val groupRepo: UserGroupLocalDataSource,
+    private val userRepository: UserRepository,
+    private val personalCodeRepo: PersonalCodesRepository,
     private val placesRepo: PlacesRepository,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
     private val clearUserLocation: ClearUserLocationUseCase,
     private val realtimeEvents: RealtimeEventsMaker,
-    private val userRepository: UserRepository,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs,
-    private val deviceApiProvider: IDeviceApiProvider,
+    val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
     private val appRatingManager: AppRatingManager
@@ -71,6 +74,7 @@ class MapHomeViewModel constructor(
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
         MapHomeScreenState.Empty(
+            groupsEmptyState = null,
             selectedGroupId = appPrefs.selectedGroupId,
             selectedGroupImage = null,
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
@@ -144,11 +148,21 @@ class MapHomeViewModel constructor(
         locationRequestDuration = locationRequestDuration,
         locationRequestDelay = locationRequestDelay
     )
+    private val groupsEmptyStateManager = GroupsInitEmptyStateManager(
+        userRepo = userRepository,
+        personalCodesRepo = personalCodeRepo,
+        groupLocalDataSource = groupRepo,
+        deviceApiProvider = deviceApiProvider,
+        messageDispatcher = messageDispatcher,
+        coroutineScope = coroutineScope,
+        eventChannel = _eventChannel
+    )
     private val mapEventHandler = MapEventHandler(
         mapStateManager = mapStateManager,
         groupStateManager = groupStateManager,
         memberActionHandler = memberActionHandler,
         locationFocusManager = locationFocusManager,
+        groupEmptyStateManager = groupsEmptyStateManager,
         uiState = uiState,
         eventChannel = _eventChannel,
         appPrefs = appPrefs,
@@ -177,8 +191,9 @@ class MapHomeViewModel constructor(
                         appPrefs.selectedGroupId?.asGroupOrSpaceId()
                     }
                 }
-            if (groupsData is Resource.Ready && groupsData.data.isNotEmpty() && !selectedGroup?.id.isNullOrBlank() && selectedGroup.isGroup) {
-                if (groupsData.data.none { it.id == selectedGroup.id }) {
+            val shouldChangeSelectedGroup = selectedGroup?.isGroup == true || selectedGroup == null
+            if (groupsData is Resource.Ready && groupsData.data.isNotEmpty() && shouldChangeSelectedGroup) {
+                if (groupsData.data.none { it.id == selectedGroup?.id }) {
                     mapEventHandler.onEvent(
                         MapHomeScreenUiEvent.SwitchViewSource(
                             viewSource = MapScreenViewSourceType.DefaultGroup(groupsData.data.firstOrNull()?.id?.asGroupOrSpaceId())
@@ -260,7 +275,7 @@ class MapHomeViewModel constructor(
                     coroutineScope.launch(Dispatchers.IO) {
                         if (it.isPersonalSpace) {
                             personalSpaceRefresh.refreshPersonalSpace(10.seconds.inWholeMilliseconds)
-                        } else {
+                        } else if (it.id.isNotBlank()) {
                             groupPreRefresh.refreshGroupWithMembers(it.id)
                         }
                     }
@@ -268,15 +283,22 @@ class MapHomeViewModel constructor(
             }
             .flatMapLatest {
                 if (it.id.isBlank()) {
-                    userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-                        .map {
-                            MapHomeScreenState.Empty(
-                                selectedGroupId = null,
-                                selectedGroupImage = null,
-                                isPersonalSpace = appPrefs.isPersonalSpaceSelected,
-                                currentUserImage = it?.userImage ?: ImageModel.emoji(Emojis.robot)
-                            )
-                        }
+                    combine(
+                        if (appPrefs.isPersonalSpaceSelected) {
+                            flowOf(null)
+                        } else {
+                            groupsEmptyStateManager.getUiState()
+                        },
+                        userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
+                    ) { groupsEmptyState, userData ->
+                        MapHomeScreenState.Empty(
+                            groupsEmptyState = groupsEmptyState,
+                            selectedGroupId = null,
+                            selectedGroupImage = null,
+                            isPersonalSpace = appPrefs.isPersonalSpaceSelected,
+                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot)
+                        )
+                    }
                 } else if (it.isPersonalSpace){
                     loadPersonalSpaceContent()
                 } else {
@@ -299,6 +321,7 @@ class MapHomeViewModel constructor(
 
             if (space == null || userData == null) {
                 return@combine MapHomeScreenState.Empty(
+                    groupsEmptyState = null,
                     selectedGroupId = appPrefs.selectedGroupId,
                     selectedGroupImage = _uiState.value.selectedGroupImage,
                     isPersonalSpace = true,
@@ -331,6 +354,7 @@ class MapHomeViewModel constructor(
 
             if (group == null || userData == null) {
                 return@combine MapHomeScreenState.Empty(
+                    groupsEmptyState = null,
                     selectedGroupId = null,
                     selectedGroupImage = null,
                     isPersonalSpace = false,
@@ -349,6 +373,15 @@ class MapHomeViewModel constructor(
                 alertDialog = _uiState.value.alertDialog
             )
         }
+            .flatMapLatest { state ->
+                when (state) {
+                    is MapHomeScreenState.Empty -> {
+                        groupsEmptyStateManager.getUiState()
+                            .map { state.copy(groupsEmptyState = it) }
+                    }
+                    is MapHomeScreenState.Ready -> flowOf(state)
+                }
+            }
             .flowOn(Dispatchers.IO)
     }
 

@@ -1,8 +1,11 @@
 package app.paralino.core.presentation.invite.manage
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.data
+import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.Emojis
 
 data class PersonalCodeScreenState(
     val activeCode: PersonalCodeScreenCodeData?,
@@ -24,7 +27,23 @@ data class PersonalCodeScreenCodeData(
     val canDisable: Boolean,
     val isValid: Boolean,
     val isActionLoading: Boolean
-)
+) {
+    companion object {
+        fun viewOnlyCode(code: UserPersonalCode?): PersonalCodeScreenCodeData? {
+            return code?.let {
+                PersonalCodeScreenCodeData(
+                    id = code.id,
+                    code = it.formattedCode,
+                    userImage = it.codeData.data?.ownerImage ?: ImageModel.emoji(Emojis.robot),
+                    userName = it.codeData.data?.ownerName ?: "---",
+                    canDisable = false,
+                    isValid = true,
+                    isActionLoading = false
+                )
+            }
+        }
+    }
+}
 
 sealed class PersonalCodeScreenEvent() {
     object CodeCreated : PersonalCodeScreenEvent()

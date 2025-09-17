@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,27 +25,31 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.groups.GroupBottomSheetPicker
-import app.paralino.android.ui.groups.GroupInitScreen
+import app.paralino.android.ui.onboarding.AccountOnboardingScreen
 import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.utils.extensions.share
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.asGroupOrSpaceId
-import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapScreenViewSourceType
 import app.paralino.core.presentation.map.asReady
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
+import app.paralino.core.ui.map.SwipeableSheetState
 import app.paralino.core.ui.map.isFullyExpanded
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.utils.extensions.openNavigation
@@ -56,20 +61,20 @@ import org.koin.androidx.compose.koinViewModel
 fun MapHomeScreen(
     appState: MainAppState,
     groupId: String?,
-    vm: GroupInitViewModel = koinViewModel(),
+    vm: AccountOnboardingViewModel = koinViewModel(),
     onClose: () -> Unit,
 ) {
-    val groupState by vm.canDisplayMap.collectAsState(Resource.NotInitialized)
+    val groupState by vm.uiState.collectAsState(Resource.NotInitialized)
     when (val state = groupState) {
         Resource.NotInitialized -> {}
         is Resource.Ready -> {
-            if (state.data) {
+            if (state.data.canDisplayMap) {
                 MapHomeContent(
                     appState = appState,
                     startGroupId = groupId,
                 )
             } else {
-                GroupInitScreen(
+                AccountOnboardingScreen(
                     appState = appState,
                     vm = vm
                 )
@@ -90,7 +95,6 @@ private fun MapHomeContent(
     val readyState by rememberUpdatedState(newValue = uiState.asReady())
     val density = LocalDensity.current
     val pickerState = rememberGroupBottomSheetPickerState()
-    val context = LocalContext.current
 
     val sheetState = rememberSwipeableSheetState(
         initialValue = BottomSheetPosition.HIDDEN,
@@ -100,116 +104,17 @@ private fun MapHomeContent(
         }
     )
 
-    val bottomOffset = density.run {
-        try {
-            sheetState.offset.toDp()
-        } catch (e: Exception) {
-            0.dp
-        }
-    }
-
-    LifecycleStartEffect(Unit) {
-        vm.onEvent(MapHomeScreenUiEvent.UiLifecycleChange(active = true))
-        onStopOrDispose {
-            vm.onEvent(MapHomeScreenUiEvent.UiLifecycleChange(active = false))
-        }
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        vm.events.collectLatest { event ->
-            when (event) {
-                MapHomeScreenEvent.AddGroup -> {
-                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
-                }
-
-                MapHomeScreenEvent.ShowFreePlanInfo -> {
-                    appState.navController.navigate(AppScreen.MainHome.FreePlanNoticeScreen.route())
-                }
-
-                MapHomeScreenEvent.OpenPaywall -> {
-                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
-                }
-
-                is MapHomeScreenEvent.OpenCreatePlace -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.PlaceCreate.route(
-                            groupId = readyState?.groupOrSpaceId?.id ?: "",
-                            placeId = null
-                        )
-                    )
-                }
-
-                is MapHomeScreenEvent.OpenGroupDetails -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.GroupDetails.route(
-                            groupId = event.groupId
-                        )
-                    )
-                }
-
-                MapHomeScreenEvent.OpenGroupPicker -> {
-                    appState.uiScope.launch {
-                        val groupPickerState = vm.getGroupPickerState()
-                        pickerState.show(groupPickerState)
-                    }
-                }
-
-                is MapHomeScreenEvent.OpenPlaceDetails -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.PlaceDetail.route(
-                            groupId = event.groupId,
-                            placeId = event.placeId
-                        )
-                    )
-                }
-
-                is MapHomeScreenEvent.OpenPlaces -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.PlacesList.route(
-                            groupId = event.groupId
-                        )
-                    )
-                }
-
-                MapHomeScreenEvent.OpenSettings -> {
-                    appState.navController.navigate(AppScreen.Settings.routeSignature)
-                }
-
-                is MapHomeScreenEvent.OpenSharingStart -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.SharingStart.route(event.groupId)
-                    )
-                }
-
-                is MapHomeScreenEvent.OpenExternalNavigation -> {
-                    context.openNavigation(event)
-                }
-
-                is MapHomeScreenEvent.OpenLocationHistory -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.LocationHistory.route(
-                            groupId = event.groupId,
-                            memberUserId = event.memberUserId,
-                        )
-                    )
-                }
-
-                is MapHomeScreenEvent.ShowPlanLimitAlert -> {
-                    // This would need to be handled by showing an alert dialog
-                    // For now, we'll just navigate to paywall
-                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
-                }
-
-                MapHomeScreenEvent.OpenPersonalSpace -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.PersonalSpace.route()
-                    )
-                }
-
-                null -> {}
+    MapScreenEventHandler(
+        vm = vm,
+        appState = appState,
+        readyState = readyState,
+        sheetState = sheetState,
+        showGroupPicker = {
+            appState.uiScope.launch {
+                pickerState.show(it)
             }
         }
-    }
+    )
 
     rememberSaveable(startGroupId) {
         vm.onEvent(
@@ -221,24 +126,27 @@ private fun MapHomeContent(
         ""
     }
 
-    BackHandler(
-        enabled = readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true || sheetState.isFullyExpanded()
-    ) {
-        appState.uiScope.launch {
-            sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
-        }
-        vm.onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
-    }
-
     val dialog = uiState.alertDialog
     dialog?.Show {
         vm.onEvent(MapHomeScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 
+    val bottomOffset by remember {
+        derivedStateOf {
+            density.run {
+                try {
+                    sheetState.offset.toDp()
+                } catch (e: Exception) {
+                    0.dp
+                }
+            }
+        }
+    }
+
     MainMapSheet(
         appState = appState,
         swipeableState = sheetState,
-        readyState = readyState,
+        mapUiState = uiState,
         onEvent = { vm.onEvent(it) },
         screenContent = {
             MapContent(
@@ -260,7 +168,7 @@ private fun MapHomeContent(
                     is GroupPickerAction.GroupPicked -> {
                         vm.onEvent(
                             MapHomeScreenUiEvent.SwitchViewSource(
-                                MapScreenViewSourceType.DefaultGroup(it.group.id)
+                                MapScreenViewSourceType.DefaultGroupOrSpace(it.group.id)
                             )
                         )
                     }
@@ -332,5 +240,150 @@ private fun MapContent(
             cardHeight = { cardHeight = it },
             onEvent = onEvent
         )
+    }
+}
+
+@Composable
+fun MapScreenEventHandler(
+    vm: MapHomeViewModel,
+    appState: MainAppState,
+    readyState: MapHomeScreenState.Ready?,
+    sheetState: SwipeableSheetState,
+    showGroupPicker: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
+) {
+    val context = LocalContext.current
+
+    val notificationPermissionHandler = rememberNotificationsPermissionHandler(
+        appState = appState,
+        messageDispatcher = vm,
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
+    )
+
+    BackHandler(
+        enabled = readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true || sheetState.isFullyExpanded()
+    ) {
+        appState.uiScope.launch {
+            sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+        }
+        vm.onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
+    }
+
+    LifecycleStartEffect(Unit) {
+        vm.onEvent(MapHomeScreenUiEvent.UiLifecycleChange(active = true))
+        onStopOrDispose {
+            vm.onEvent(MapHomeScreenUiEvent.UiLifecycleChange(active = false))
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        vm.events.collectLatest { event ->
+            when (event) {
+                MapHomeScreenEvent.OpenGroupCreateScreen -> {
+                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
+                }
+
+                MapHomeScreenEvent.ShowFreePlanInfo -> {
+                    appState.navController.navigate(AppScreen.MainHome.FreePlanNoticeScreen.route())
+                }
+
+                MapHomeScreenEvent.OpenPaywall -> {
+                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                }
+
+                is MapHomeScreenEvent.OpenCreatePlace -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceCreate.route(
+                            groupId = vm.uiState.value.asReady()?.groupOrSpaceId?.id ?: "",
+                            placeId = null
+                        )
+                    )
+                }
+
+                is MapHomeScreenEvent.OpenGroupDetails -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.GroupDetails.route(
+                            groupId = event.groupId
+                        )
+                    )
+                }
+
+                MapHomeScreenEvent.OpenGroupPicker -> {
+                    val groupPickerState = vm.getGroupPickerState()
+                    showGroupPicker(groupPickerState)
+                }
+
+                is MapHomeScreenEvent.OpenPlaceDetails -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlaceDetail.route(
+                            groupId = event.groupId,
+                            placeId = event.placeId
+                        )
+                    )
+                }
+
+                is MapHomeScreenEvent.OpenPlaces -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlacesList.route(
+                            groupId = event.groupId
+                        )
+                    )
+                }
+
+                MapHomeScreenEvent.OpenSettings -> {
+                    appState.navController.navigate(AppScreen.Settings.routeSignature)
+                }
+
+                is MapHomeScreenEvent.OpenSharingStart -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.SharingStart.route(event.groupId)
+                    )
+                }
+
+                is MapHomeScreenEvent.OpenExternalNavigation -> {
+                    context.openNavigation(event)
+                }
+
+                is MapHomeScreenEvent.OpenLocationHistory -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.LocationHistory.route(
+                            groupId = event.groupId,
+                            memberUserId = event.memberUserId,
+                        )
+                    )
+                }
+
+                is MapHomeScreenEvent.ShowPlanLimitAlert -> {
+                    // This would need to be handled by showing an alert dialog
+                    // For now, we'll just navigate to paywall
+                    appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
+                }
+
+                MapHomeScreenEvent.OpenPersonalSpace -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PersonalSpace.route()
+                    )
+                }
+
+                is MapHomeScreenEvent.SharePersonalCode -> {
+                    context.share(event.content)
+                }
+
+                MapHomeScreenEvent.AskNotificationPermission -> {
+                    notificationPermissionHandler.askNotificationPermission()
+                }
+
+                MapHomeScreenEvent.OpenFreePlanInfo -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.FreePlanNoticeScreen.route(groupId = null)
+                    )
+                }
+
+                MapHomeScreenEvent.OpenPersonalCodes -> {
+                    appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature)
+                }
+
+                null -> {}
+            }
+        }
     }
 }

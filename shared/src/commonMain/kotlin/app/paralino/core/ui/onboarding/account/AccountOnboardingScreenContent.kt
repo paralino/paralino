@@ -1,8 +1,6 @@
 package app.paralino.core.ui.onboarding.account
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,7 +17,7 @@ import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
-fun AccountOnboardingScreen(
+fun AccountOnboardingScreenContent(
     coreUiState: CoreUiState,
     modifier: Modifier = Modifier,
     step: AccountOnboardingContent,

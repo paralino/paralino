@@ -1,4 +1,4 @@
-package app.paralino.android.ui.groups
+package app.paralino.android.ui.onboarding
 
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
@@ -8,14 +8,14 @@ import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
-import app.paralino.core.presentation.groups.edit.GroupInitViewModel
-import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
+import app.paralino.core.ui.onboarding.account.AccountOnboardingScreenCore
 
 
 @Composable
-fun GroupInitScreen(
+fun AccountOnboardingScreen(
     appState: MainAppState,
-    vm: GroupInitViewModel
+    vm: AccountOnboardingViewModel
 ) {
     val notificationPermissionHandler = rememberNotificationsPermissionHandler(
         appState = appState,
@@ -24,18 +24,12 @@ fun GroupInitScreen(
     )
 
     val context = LocalContext.current
-    GroupInitScreenCore(
+    AccountOnboardingScreenCore(
         modifier = Modifier.safeDrawingPadding(),
         appState = appState,
         vm = vm,
-        openSettings = { appState.navController.navigate(AppScreen.Settings.routeSignature) },
         onCreateGroup = {
             appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(null))
-        },
-        openFreePlanInfo = {
-            appState.navController.navigate(
-                AppScreen.MainHome.FreePlanNoticeScreen.route(groupId = null)
-            )
         },
         openPaywall = {
             appState.navController.navigate(

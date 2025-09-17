@@ -1,5 +1,9 @@
 package app.paralino.core.ui.map
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,10 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -23,23 +29,49 @@ import kotlinx.coroutines.launch
 fun MainMapSheet(
     appState: CoreUiState,
     swipeableState: SwipeableSheetState,
-    readyState: MapHomeScreenState.Ready?,
+    mapUiState: MapHomeScreenState,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     screenContent: @Composable () -> Unit,
 ) {
+    LaunchedEffect(mapUiState is MapHomeScreenState.Ready) {
+        snapshotFlow { mapUiState is MapHomeScreenState.Ready }
+            .distinctUntilChanged()
+            .collectLatest { isReadyState ->
+                if (isReadyState) {
+                    swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+                } else {
+                    swipeableState.animateTo(BottomSheetPosition.EXPANDED)
+                }
+            }
+    }
+
     var infoHeight by remember { mutableStateOf(0f) }
     SwipeableBottomSheet(
+        enabled = mapUiState is MapHomeScreenState.Ready,
         collapsedInfoHeightPixel = infoHeight,
         swipeableState = swipeableState,
         screenContent = screenContent,
         body = {
-            MainMapSheetActiveBody(
-                appState = appState,
-                swipeableState = swipeableState,
-                readyState = readyState,
-                onMapGroupInfoHeightChange = { infoHeight = it },
-                onEvent = onEvent
-            )
+            if (mapUiState is MapHomeScreenState.Ready) {
+                MainMapSheetActiveBody(
+                    appState = appState,
+                    swipeableState = swipeableState,
+                    readyState = mapUiState,
+                    onMapGroupInfoHeightChange = { infoHeight = it },
+                    onEvent = onEvent
+                )
+            } else if (mapUiState is MapHomeScreenState.Empty && mapUiState.groupsEmptyState != null) {
+                GroupsInitEmptyScreenContent(
+                    modifier = Modifier,
+                    paddingValues = PaddingValues(
+                        bottom = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 40.dp
+                    ),
+                    state = mapUiState.groupsEmptyState,
+                    onEvent = {
+                        onEvent(MapHomeScreenUiEvent.OnGroupsEmptyStateEvent(it))
+                    }
+                )
+            }
         }
     )
 }

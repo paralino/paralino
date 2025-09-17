@@ -77,6 +77,7 @@ sealed class MapHomeScreenState {
     }
 
     data class Empty(
+        val groupsEmptyState: GroupsInitEmptyScreenState?,
         override val selectedGroupId: String?,
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
@@ -89,12 +90,16 @@ sealed class MapHomeScreenState {
 fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeScreenState.Ready?
 
 sealed class MapHomeScreenEvent {
-    data object AddGroup : MapHomeScreenEvent()
+    data object AskNotificationPermission: MapHomeScreenEvent()
+    data object OpenPersonalCodes: MapHomeScreenEvent()
+    data object OpenFreePlanInfo: MapHomeScreenEvent()
+    data object OpenGroupCreateScreen : MapHomeScreenEvent()
     data object ShowFreePlanInfo : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
     data object OpenGroupPicker : MapHomeScreenEvent()
     data object OpenPersonalSpace : MapHomeScreenEvent()
+    data class SharePersonalCode(val content: String): MapHomeScreenEvent()
     data class ShowPlanLimitAlert(val limit: Int?) : MapHomeScreenEvent()
     data class OpenSharingStart(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaces(val groupId: String) : MapHomeScreenEvent()
@@ -116,6 +121,7 @@ sealed interface MapHomeScreenUiEvent {
     data class OnMarkerClick(val pin: MapPinData) : MapHomeScreenUiEvent
     data class OnPlaceClick(val place: PlaceListItemData) : MapHomeScreenUiEvent
     data class OnMemberItemEvent(val event: GroupMemberItemEvent) : MapHomeScreenUiEvent
+    data class OnGroupsEmptyStateEvent(val event: GroupsInitEmptyScreenUiEvent) : MapHomeScreenUiEvent
     data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
     data class SwitchViewSource(val viewSource: MapScreenViewSourceType) : MapHomeScreenUiEvent
     data object SwitchToPersonalSpace : MapHomeScreenUiEvent

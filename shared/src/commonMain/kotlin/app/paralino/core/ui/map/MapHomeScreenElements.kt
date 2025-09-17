@@ -1,7 +1,6 @@
 package app.paralino.core.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -190,23 +189,18 @@ fun MapHomeScreenElements(
         Spacer(modifier = Modifier.weight(1f))
 
         Box {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = sheetPeekHeight),
-                horizontalArrangement = Arrangement.End
+                contentAlignment = Alignment.CenterEnd
             ) {
                 // sharing time info
-                AnimatedVisibility(
-                    visible = readyState?.sharingStatus != null && !isMemberOrPlaceFocused,
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .padding(bottom = 6.dp),
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
+                if (readyState?.sharingStatus != null && !isMemberOrPlaceFocused) {
                     GroupMemberActionButton(
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp)
+                            .padding(bottom = 6.dp),
                         startIcon = CoreAppIcons.Timer.asPainterResource(),
                         isLoading = false,
                         text = readyState?.sharingEndTime
@@ -359,9 +353,7 @@ private fun MapGroupOrSpacePickerTabs(
                 .clip(RoundedCornerShape(100))
                 .background(MaterialTheme.colors.background)
                 .background(
-                    animateColorAsState(
-                        if (!isPersonalSpace) AppColors.accent.copy(alpha = 0.1f) else MaterialTheme.colors.background
-                    ).value
+                    AppColors.accent.copy(alpha = animateFloatAsState(if (isPersonalSpace) 0f else 0.1f).value)
                 )
         )
 
@@ -400,9 +392,7 @@ private fun MapGroupOrSpacePickerTabs(
                     .clip(RoundedCornerShape(100))
                     .background(MaterialTheme.colors.background)
                     .background(
-                        animateColorAsState(
-                            if (isPersonalSpace) AppColors.accent.copy(alpha = 0.1f) else MaterialTheme.colors.background
-                        ).value
+                        AppColors.accent.copy(alpha = animateFloatAsState(if (isPersonalSpace) 0.1f else 0f).value)
                     )
             )
         }
@@ -465,7 +455,7 @@ private fun MapGroupPickerTab(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        Spacer(modifier = Modifier.width(14.dp))
+        Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 14.dp else 10.dp).value))
 
         if (image != null) {
             ImageModelImage(
@@ -485,7 +475,7 @@ private fun MapGroupPickerTab(
             )
         }
 
-        Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 10.dp else 6.dp).value))
+        Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 10.dp else 4.dp).value))
 
         Box(
             modifier = Modifier
@@ -495,6 +485,7 @@ private fun MapGroupPickerTab(
                     color = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
                 )
         )
+
         Row(
             modifier = Modifier
                 .fillMaxHeight()
@@ -508,7 +499,7 @@ private fun MapGroupPickerTab(
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 0.dp else 4.dp).value))
+            Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 0.dp else 2.dp).value))
         }
     }
 }
