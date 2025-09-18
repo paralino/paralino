@@ -88,6 +88,8 @@ class SharingStartViewModel(
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
+    val isPersonalSpace: Boolean get() = currentGroup.value is GroupOrUserSpace.PersonalSpace
+
     val shouldProceedToPaywall: Boolean
         get() {
             val isOwner = when (val item = currentGroup.value) {

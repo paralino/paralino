@@ -59,7 +59,11 @@ struct SharingStartScreen: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .toolbarTitleDisplayMode(.inline)
-        .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
+        .navigationTitle(
+            appState.vm.isPersonalSpace
+            ? MR.shared.strings.personalSpace_spaceTitle.localizedString()
+            : MR.shared.strings.groups_sharing_title.localizedString()
+        )
         .navigationBarBackButtonHidden(appState.isOnboarding)
         .groupPickerSheet(
             $groupPicker,

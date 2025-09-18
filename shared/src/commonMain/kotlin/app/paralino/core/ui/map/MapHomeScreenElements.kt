@@ -199,7 +199,7 @@ fun MapHomeScreenElements(
                 if (readyState?.sharingStatus != null && !isMemberOrPlaceFocused) {
                     GroupMemberActionButton(
                         modifier = Modifier
-                            .padding(horizontal = 6.dp)
+                            .padding(horizontal = 8.dp)
                             .padding(bottom = 6.dp),
                         startIcon = CoreAppIcons.Timer.asPainterResource(),
                         isLoading = false,
@@ -214,7 +214,7 @@ fun MapHomeScreenElements(
                 // sharing start
                 if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {
                     FilledButton(
-                        modifier = Modifier.padding(bottom = 12.dp, end = 8.dp),
+                        modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
                         style = ButtonStyle.SMALL(
                             iconSize = 24.dp
                         ),
@@ -473,8 +473,8 @@ private fun MapGroupPickerTab(
             Icon(
                 modifier = Modifier
                     .size(animateDpAsState(if (isSelected) 56.dp else 40.dp).value)
-                    .padding(animateDpAsState(if (isSelected) 16.dp else 10.dp).value),
-                painter = CoreAppIcons.Group.asPainterResource(),
+                    .padding(animateDpAsState(if (isSelected) 10.dp else 8.dp).value),
+                painter = CoreAppIcons.Communication.asPainterResource(),
                 contentDescription = null
             )
         }

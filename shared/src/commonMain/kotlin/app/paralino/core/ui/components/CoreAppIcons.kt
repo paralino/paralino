@@ -27,6 +27,7 @@ import paralino.shared.generated.resources.ic_circle_only_outline
 import paralino.shared.generated.resources.ic_circle_with_outline
 import paralino.shared.generated.resources.ic_close
 import paralino.shared.generated.resources.ic_code
+import paralino.shared.generated.resources.ic_communication
 import paralino.shared.generated.resources.ic_content_copy
 import paralino.shared.generated.resources.ic_delete
 import paralino.shared.generated.resources.ic_delete_forever
@@ -175,6 +176,7 @@ object CoreAppIcons {
     val PersonAdd get() = Res.drawable.ic_person_add
     val Settings get() = Res.drawable.ic_settings
     val Ruler get() = Res.drawable.ic_ruler
+    val Communication get() = Res.drawable.ic_communication
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay

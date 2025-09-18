@@ -67,6 +67,7 @@ struct PersonalSpaceScreen: View {
                 )
             }
             .ignoresSafeArea(.all, edges: .bottom)
+            .navigationTitle(MR.shared.strings.personalSpace_spaceTitle.localizedString())
         }
     }
     
