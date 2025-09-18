@@ -377,7 +377,7 @@ class SwipeableSheetState internal constructor(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun rememberSwipeableSheetState(
-    initialValue: BottomSheetPosition = BottomSheetPosition.default,
+    initialValue: BottomSheetPosition = BottomSheetPosition.HIDDEN,
     mapContentListState: LazyListState = rememberLazyListState(),
     collapsedAnchorBottomPaddingPixels: Float = 0f,
     confirmValueChange: (BottomSheetPosition) -> Boolean
@@ -487,8 +487,6 @@ enum class BottomSheetPosition constructor(val screenHeightPercent: Float) {
 
 
     companion object {
-        val default: BottomSheetPosition = HALF_EXPANDED
-
         fun swipeAnchors(
             screenHeightPixels: Float,
             collapsedInfoHeightPixel: Float,

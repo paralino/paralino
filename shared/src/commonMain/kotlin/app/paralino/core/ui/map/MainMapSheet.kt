@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
+import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -33,16 +34,26 @@ fun MainMapSheet(
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     screenContent: @Composable () -> Unit,
 ) {
-    LaunchedEffect(mapUiState is MapHomeScreenState.Ready) {
-        snapshotFlow { mapUiState is MapHomeScreenState.Ready }
+    LaunchedEffect(mapUiState.asReady()?.mapHomeScreenFocusType?.isMemberOrPlaceFocused) {
+        snapshotFlow { mapUiState.asReady()?.mapHomeScreenFocusType?.isMemberOrPlaceFocused }
             .distinctUntilChanged()
-            .collectLatest { isReadyState ->
-                if (isReadyState) {
-                    swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
-                } else {
-                    swipeableState.animateTo(BottomSheetPosition.EXPANDED)
+            .onEach {
+                when (it) {
+                    true -> {
+                        swipeableState.animateTo(BottomSheetPosition.HIDDEN)
+                    }
+
+                    false -> {
+                        // TODO use previous value?
+                        swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+                    }
+
+                    else -> {
+                        swipeableState.animateTo(BottomSheetPosition.EXPANDED)
+                    }
                 }
             }
+            .collect()
     }
 
     var infoHeight by remember { mutableStateOf(0f) }
@@ -85,24 +96,6 @@ private fun MainMapSheetActiveBody(
     onMapGroupInfoHeightChange: (Float) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
-    LaunchedEffect(readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused) {
-        snapshotFlow { readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused }
-            .distinctUntilChanged()
-            .onEach {
-                when (it) {
-                    true -> {
-                        swipeableState.animateTo(BottomSheetPosition.HIDDEN)
-                    }
-
-                    else -> {
-                        // TODO use previous value?
-                        swipeableState.animateTo(BottomSheetPosition.default)
-                    }
-                }
-            }
-            .collect()
-    }
-
     MapHomeSheetContent(
         modifier = modifier,
         swipeableState = swipeableState,
