@@ -34,19 +34,8 @@ kotlin {
 }
 
 android {
-    namespace = "app.paralino"
-    compileSdk = 35
-    defaultConfig {
-        minSdk = 29
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
+    namespace = "app.paralino.core"
+    compileSdk = 36
 }
 
 multiplatformResources {

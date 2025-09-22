@@ -91,8 +91,8 @@ kotlin {
 }
 
 android {
-    namespace = "aWpp.paralino"
-    compileSdk = 35
+    namespace = "app.paralino.android"
+    compileSdk = 36
 
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/moko-resources")
