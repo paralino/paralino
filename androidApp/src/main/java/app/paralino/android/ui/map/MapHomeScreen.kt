@@ -146,6 +146,7 @@ private fun MapHomeContent(
     MainMapSheet(
         appState = appState,
         swipeableState = sheetState,
+        screenPaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
         mapUiState = uiState,
         onEvent = { vm.onEvent(it) },
         screenContent = {

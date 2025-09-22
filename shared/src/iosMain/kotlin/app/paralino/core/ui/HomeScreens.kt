@@ -397,6 +397,9 @@ object HomeScreens {
 
                 MainMapSheet(
                     appState = it,
+                    screenPaddingValues = remember(paddingValues) {
+                        paddingValues.copy(bottom = 0f)
+                    }.toComposePaddingValues(),
                     swipeableState = sheetState,
                     mapUiState = uiState,
                     onEvent = { vm.onEvent(it) },

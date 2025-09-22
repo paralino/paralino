@@ -1,9 +1,6 @@
 package app.paralino.core.ui.map
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +16,6 @@ import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -30,6 +26,7 @@ import kotlinx.coroutines.launch
 fun MainMapSheet(
     appState: CoreUiState,
     swipeableState: SwipeableSheetState,
+    screenPaddingValues: PaddingValues,
     mapUiState: MapHomeScreenState,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     screenContent: @Composable () -> Unit,
@@ -59,12 +56,14 @@ fun MainMapSheet(
     var infoHeight by remember { mutableStateOf(0f) }
     SwipeableBottomSheet(
         enabled = mapUiState is MapHomeScreenState.Ready,
+        screenPaddingValues = screenPaddingValues,
         collapsedInfoHeightPixel = infoHeight,
         swipeableState = swipeableState,
         screenContent = screenContent,
         body = {
             if (mapUiState is MapHomeScreenState.Ready) {
                 MainMapSheetActiveBody(
+                    screenPaddingValues = screenPaddingValues,
                     appState = appState,
                     swipeableState = swipeableState,
                     readyState = mapUiState,
@@ -75,7 +74,7 @@ fun MainMapSheet(
                 GroupsInitEmptyScreenContent(
                     modifier = Modifier,
                     paddingValues = PaddingValues(
-                        bottom = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 40.dp
+                        bottom = screenPaddingValues.calculateTopPadding() + 40.dp
                     ),
                     state = mapUiState.groupsEmptyState,
                     onEvent = {
@@ -90,6 +89,7 @@ fun MainMapSheet(
 @Composable
 private fun MainMapSheetActiveBody(
     modifier: Modifier = Modifier,
+    screenPaddingValues: PaddingValues,
     appState: CoreUiState,
     swipeableState: SwipeableSheetState,
     readyState: MapHomeScreenState.Ready?,
@@ -98,6 +98,7 @@ private fun MainMapSheetActiveBody(
 ) {
     MapHomeSheetContent(
         modifier = modifier,
+        screenPaddingValues = screenPaddingValues,
         swipeableState = swipeableState,
         readyState = readyState,
         members = readyState?.members ?: emptyList(),

@@ -43,7 +43,7 @@ data class AppleScreenPaddingValues(
 )
 
 @Composable
-fun AppleScreenPaddingValues.toComposePaddingValues() = remember {
+fun AppleScreenPaddingValues.toComposePaddingValues() = remember (this) {
     PaddingValues(
         start = start.dp,
         top = top.dp,

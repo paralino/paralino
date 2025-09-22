@@ -14,15 +14,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberOverscrollEffect
@@ -31,6 +28,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +58,7 @@ import kotlin.math.sign
 @Composable
 fun SwipeableBottomSheet(
     enabled: Boolean,
+    screenPaddingValues: PaddingValues,
     collapsedInfoHeightPixel: Float,
     swipeableState: SwipeableSheetState,
     screenContent: @Composable () -> Unit,
@@ -77,7 +77,7 @@ fun SwipeableBottomSheet(
             screenHeightPixels = screenHeightPixels,
             collapsedInfoHeightPixel = collapsedInfoHeightPixel,
             expandedTopBarHeightPixel = with(LocalDensity.current) {
-                (WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 70.dp).toPx()
+                (screenPaddingValues.calculateTopPadding() + 70.dp).toPx()
             }
         )
 
@@ -88,6 +88,36 @@ fun SwipeableBottomSheet(
 
         screenContent()
 
+        val shapeProgress by derivedStateOf {
+            swipeableState.progress(
+                from = BottomSheetPosition.EXPANDED,
+                to = BottomSheetPosition.HALF_EXPANDED
+            )
+        }
+        val shapeCorners by derivedStateOf {
+            (50 * shapeProgress.coerceIn(0.5f, 1f)).dp to
+                    // can not be 0, since on android < 12 there is some very weird bug
+                    // that makes the whole content disappear if corners are different
+                    // and sheet is manually set to some position
+                    (50 * shapeProgress.coerceIn(0.01f, 1f)).dp
+        }
+        val fullProgress by derivedStateOf {
+            swipeableState.progress(
+                from = BottomSheetPosition.EXPANDED,
+                to = BottomSheetPosition.COLLAPSED
+            )
+        }
+        val horizontalPadding = SwipeableSheetState.sheetHorizontalPadding.times(fullProgress)
+        val bottomPadding = screenPaddingValues.calculateBottomPadding()
+            .times(shapeProgress) + SwipeableSheetState.sheetHorizontalPadding.times(fullProgress)
+
+        val screenShape = RoundedCornerShape(
+            topStart = shapeCorners.first,
+            topEnd = shapeCorners.first,
+            bottomStart = shapeCorners.second,
+            bottomEnd = shapeCorners.second
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxSize(),
@@ -95,32 +125,32 @@ fun SwipeableBottomSheet(
         ) {
             Box(
                 Modifier
-                    .padding(horizontal = SwipeableSheetState.sheetHorizontalPadding)
-                    .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + SwipeableSheetState.sheetBottomPadding)
+                    .padding(horizontal = horizontalPadding)
+                    .padding(bottom = bottomPadding)
                     .fillMaxWidth()
                     .height(
                         height = with(LocalDensity.current) {
                             (screenHeightPixels - swipeableState.offset.roundToInt())
                                 .toDp()
                         }
-                            .minus(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + SwipeableSheetState.sheetBottomPadding)
+                            .minus(bottomPadding)
                     )
                     .shadow(
                         elevation = 12.dp,
-                        shape = RoundedCornerShape(24.dp)
+                        shape = screenShape
                     )
-                    .clip(RoundedCornerShape(24.dp))
+                    .clip(screenShape)
                     .background(
                         color = MaterialTheme.colors.background,
-                        shape = RoundedCornerShape(24.dp)
+                        shape = screenShape
                     )
             )
 
             Box(
                 modifier = Modifier
-                    .padding(horizontal = SwipeableSheetState.sheetHorizontalPadding)
-                    .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + SwipeableSheetState.sheetBottomPadding)
-                    .clip(RoundedCornerShape(24.dp))
+                    .padding(horizontal = horizontalPadding)
+                    .padding(bottom = bottomPadding)
+                    .clip(screenShape)
                     .conditional(enabled) {
                         nestedScroll(connection)
                     }
@@ -144,9 +174,9 @@ fun SwipeableBottomSheet(
                         .fillMaxSize()
                         .background(
                             color = MaterialTheme.colors.background,
-                            shape = RoundedCornerShape(24.dp)
+                            shape = screenShape
                         )
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(screenShape)
                         .clipToBounds()
                 ) {
                     body()
@@ -266,11 +296,7 @@ class SwipeableSheetState internal constructor(
     val contentBottomPadding: Dp
         get() {
             val fixedPadding = ((1f - maxSheetContentSizePercent) * screenHeightPixels).dp
-            val extraPadding = when (DeviceType.current) {
-                DeviceType.Android -> 0.dp
-                DeviceType.iOS -> 20.dp
-            }
-            return fixedPadding + extraPadding
+            return fixedPadding
         }
 
     fun progress(from: BottomSheetPosition, to: BottomSheetPosition): Float {
@@ -344,20 +370,21 @@ class SwipeableSheetState internal constructor(
         collapsedInfoHeightPixel: Float,
         expandedTopBarHeightPixel: Float
     ) {
-        val anchors = remember(screenHeightPixels, collapsedInfoHeightPixel, expandedTopBarHeightPixel) {
-            this.screenHeightPixels = screenHeightPixels
-            anchors = BottomSheetPosition.swipeAnchors(
-                screenHeightPixels = screenHeightPixels,
-                collapsedInfoHeightPixel = collapsedInfoHeightPixel,
-                expandedTopBarHeightPixel = expandedTopBarHeightPixel,
-                collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
-            )
-            DraggableAnchors {
-                anchors.forEach {
-                    it.key at it.value
+        val anchors =
+            remember(screenHeightPixels, collapsedInfoHeightPixel, expandedTopBarHeightPixel) {
+                this.screenHeightPixels = screenHeightPixels
+                anchors = BottomSheetPosition.swipeAnchors(
+                    screenHeightPixels = screenHeightPixels,
+                    collapsedInfoHeightPixel = collapsedInfoHeightPixel,
+                    expandedTopBarHeightPixel = expandedTopBarHeightPixel,
+                    collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
+                )
+                DraggableAnchors {
+                    anchors.forEach {
+                        it.key at it.value
+                    }
                 }
             }
-        }
 
         SideEffect {
             state.updateAnchors(newAnchors = anchors)
@@ -370,7 +397,7 @@ class SwipeableSheetState internal constructor(
 
     companion object {
         val sheetHorizontalPadding = 8.dp
-        val sheetBottomPadding = 6.dp
+        val sheetBottomPadding = 8.dp
     }
 }
 
@@ -498,14 +525,17 @@ enum class BottomSheetPosition constructor(val screenHeightPercent: Float) {
                     BottomSheetPosition.EXPANDED -> {
                         expandedTopBarHeightPixel
                     }
+
                     BottomSheetPosition.HALF_EXPANDED -> {
                         screenHeightPixels.times(it.remainingScreenHeightPercent)
                     }
+
                     BottomSheetPosition.COLLAPSED -> {
                         screenHeightPixels
                             .minus(collapsedInfoHeightPixel)
                             .minus(collapsedAnchorBottomPaddingPixels)
                     }
+
                     BottomSheetPosition.HIDDEN -> {
                         screenHeightPixels
                     }
