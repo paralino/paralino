@@ -19,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,13 +48,14 @@ import app.paralino.core.utils.extensions.openNavigation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun LocationHistoryScreen(
     appState: MainAppState,
     groupId: String,
     memberUserId: String,
-    vm: LocationHistoryViewModel = koinViewModel(),
+    vm: LocationHistoryViewModel = koinViewModel { parametersOf(groupId, memberUserId) },
 ) {
     MessageDispatcherEffect(vm, appState)
 
@@ -97,11 +97,6 @@ fun LocationHistoryScreen(
                 null -> {}
             }
         }
-    }
-
-    rememberSaveable<String>(groupId, memberUserId) {
-        vm.onEvent(LocationHistoryUiEvent.LoadHistory(groupId = groupId, memberUserId = memberUserId))
-        ""
     }
 
     val dialog = uiState.alertDialog

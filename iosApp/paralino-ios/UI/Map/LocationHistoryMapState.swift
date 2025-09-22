@@ -18,9 +18,7 @@ class LocationHistoryMapState : BaseMapObservableObject {
     @Published var uiState: LocationHistoryScreenState = LocationHistoryScreenState.companion.emptyState()
     
     init(groupId: String, memberUserId: String) {
-        vm = KoinIOS.ViewModels.shared.locationHistoryVM
-        
-        vm.onEvent(event: LocationHistoryUiEventLoadHistory(groupId: groupId, memberUserId: memberUserId))
+        vm = KoinIOS.ViewModels.shared.locationHistoryVM(groupId: groupId, memberUserId: memberUserId)
         
         super.init()
         

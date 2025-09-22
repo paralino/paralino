@@ -412,11 +412,7 @@ private fun MapGroupOrSpacePickerTabs(
             MapPersonalSpacePickerTab(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(
-                        animateDpAsState(
-                            if (isPersonalSpace) 80.dp else 80.dp
-                        ).value
-                    )
+                    .width(80.dp)
                     .clickable(
                         interactionSource = if (isPersonalSpace) interactionSource else remember { MutableInteractionSource() },
                         indication = if (isPersonalSpace) indication else LocalIndication.current,
@@ -429,11 +425,6 @@ private fun MapGroupOrSpacePickerTabs(
             MapGroupPickerTab(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(
-                        animateDpAsState(
-                            if (isPersonalSpace) 100.dp else 120.dp
-                        ).value
-                    )
                     .clickable(
                         interactionSource = if (!isPersonalSpace) interactionSource else remember { MutableInteractionSource() },
                         indication = if (!isPersonalSpace) indication else LocalIndication.current,
@@ -459,7 +450,7 @@ private fun MapGroupPickerTab(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 14.dp else 10.dp).value))
+        Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 14.dp else 16.dp).value))
 
         if (image != null) {
             ImageModelImage(
@@ -483,8 +474,10 @@ private fun MapGroupPickerTab(
 
         Box(
             modifier = Modifier
-                .size(height = 36.dp, width = 0.5.dp)
-                .scale(animateFloatAsState(if (isSelected) 1f else 0.8f).value)
+                .size(
+                    height = animateDpAsState(if (isSelected) 36.dp else 26.dp).value,
+                    width = 0.5.dp
+                )
                 .background(
                     color = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
                 )
@@ -493,17 +486,18 @@ private fun MapGroupPickerTab(
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .width(animateDpAsState(if (isSelected) 40.dp else 36.dp).value)
                 .clickable(onClick = onExpandClick),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 8.dp else 4.dp).value))
             Icon(
                 painter = CoreAppIcons.ExpandMore.asPainterResource(),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
+                    .padding(animateDpAsState(if (isSelected) 0.dp else 2.dp).value),
             )
-            Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 0.dp else 2.dp).value))
+            Spacer(modifier = Modifier.size(animateDpAsState(if (isSelected) 8.dp else 6.dp).value))
         }
     }
 }

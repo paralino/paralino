@@ -218,10 +218,11 @@ class MapHomeViewModel constructor(
                         "App in foreground, try to refresh selected group ${groupIdData.value}"
                     )
                     coroutineScope.launch(Dispatchers.IO) {
-                        if (groupIdData.value.isPersonalSpace) {
+                        val id = groupIdData.value
+                        if (id.isPersonalSpace) {
                             personalSpaceRefresh.refreshPersonalSpace(10.seconds.inWholeMilliseconds)
-                        } else {
-                            groupPreRefresh.refreshGroupWithMembers(groupIdData.value.id)
+                        } else if (id.id.isNotBlank()) {
+                            groupPreRefresh.refreshGroupWithMembers(id.id)
                         }
                     }
                 } else {

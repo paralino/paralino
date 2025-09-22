@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LocationHistoryViewModel(
+    groupId: String,
+    memberUserId: String,
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
     private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
@@ -58,6 +60,9 @@ class LocationHistoryViewModel(
 
     private val uiFocusedStatus = MutableStateFlow(false)
 
+    init {
+        dataController.loadHistory(groupId = groupId, memberUserId = memberUserId)
+    }
 
     fun onEvent(event: LocationHistoryUiEvent) {
         when (event) {
