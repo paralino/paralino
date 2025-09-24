@@ -239,6 +239,7 @@ fun PaywallScreenCore(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(MaterialTheme.colors.background)
                         .background(
                             color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
                         )
@@ -473,6 +474,7 @@ private fun ColumnScope.PaywallScreen(
         PaywallScreenFeatureElements(
             modifier = Modifier
                 .padding(top = 12.dp)
+                .background(MaterialTheme.colors.background)
                 .background(
                     color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
                 )

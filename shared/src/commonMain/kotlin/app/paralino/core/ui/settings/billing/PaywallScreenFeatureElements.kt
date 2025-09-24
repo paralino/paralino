@@ -1,7 +1,11 @@
 package app.paralino.core.ui.settings.billing
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +48,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyMemberState
+import app.paralino.core.ui.onboarding.welcome.HistoryMapOnboardingContent
 import app.paralino.core.ui.settings.GenericSettingsOptionItem
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
@@ -98,13 +104,29 @@ fun PaywallScreenFeatureElements(
             valueFormatter = valueFormatter
         )
 
+        Box(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .height(450.dp)
+                .rotate(-2f)
+                .shadow(8.dp, RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colors.surface)
+                .padding(6.dp)
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            HistoryMapOnboardingContent(
+                modifier = Modifier.fillMaxSize(),
+                animate = false,
+            )
+        }
+
         var itemState1 by remember { mutableStateOf(true) }
         var itemState2 by remember { mutableStateOf(false) }
 
         BatteryPerformance1Switch(
             modifier = Modifier
-                .padding(top = 12.dp)
-                .rotate(-2f),
+                .rotate(2f),
             itemState = itemState1,
             onClick = {
                 itemState1 = true
@@ -114,7 +136,7 @@ fun PaywallScreenFeatureElements(
 
         BatteryPerformance2Switch(
             modifier = Modifier
-                .rotate(3f),
+                .rotate(-3f),
             itemState = itemState2,
             onClick = {
                 itemState1 = false
@@ -125,13 +147,13 @@ fun PaywallScreenFeatureElements(
         NotifyMembersSwitch(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .rotate(-2f),
+                .rotate(2f),
         )
 
         MemberItemWithLocations(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .rotate(2f),
+                .rotate(-2f),
             memberName = memberName,
             memberImageModel = memberImageModel,
             memberDeviceName = memberDeviceName,

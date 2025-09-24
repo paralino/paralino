@@ -77,6 +77,12 @@ fun WelcomeOnboardingScreenCore(
                                 onNewRandomString = { vm.provideRandomString() }
                             )
                         }
+                        
+                        WelcomeOnboardingContent.STEP_LOCATION_HISTORY -> {
+                            WelcomeOnboardingPageLocationHistory(
+                                modifier = Modifier.padding(top = 12.dp)
+                            )
+                        }
                     }
                 }
             )
@@ -114,6 +120,14 @@ enum class WelcomeOnboardingContent(
         titleTag = MR.strings.onboarding_step_places_title_tag,
         title = MR.strings.onboarding_step_places_title,
         info = MR.strings.onboarding_step_places_info,
+        buttonText = MR.strings.button_next
+    ),
+    STEP_LOCATION_HISTORY(
+        parentKey = 250,
+        titleKey = 250,
+        titleTag = MR.strings.onboarding_step_location_history_title_tag,
+        title = MR.strings.onboarding_step_location_history_title,
+        info = MR.strings.onboarding_step_location_history_info,
         buttonText = MR.strings.button_next
     ),
     STEP_OPTIONS(
