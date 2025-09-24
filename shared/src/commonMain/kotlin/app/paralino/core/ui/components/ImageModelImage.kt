@@ -47,7 +47,7 @@ fun ImageModelImage(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f)),
+                    modifier = Modifier.padding(min(minHeight, minWidth).times(0.15f)),
                     painter = painterResource(Emojis.getResourceFromIcon(emoji)),
                     contentDescription = null,
                     colorFilter = colorFilter
@@ -67,7 +67,7 @@ fun ImageModelImage(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    modifier = modifier.padding(min(minHeight, minWidth).times(0.15f)),
+                    modifier = Modifier.padding(min(minHeight, minWidth).times(0.15f)),
                     painter = org.jetbrains.compose.resources.painterResource(resource = Res.drawable.ic_person),
                     contentDescription = null,
                     colorFilter = colorFilter
