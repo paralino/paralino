@@ -25,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.SubscriptionScreenEvent
 import app.paralino.core.presentation.settings.billing.SubscriptionScreenUiEvent
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel

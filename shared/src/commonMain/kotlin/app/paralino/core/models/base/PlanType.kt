@@ -150,7 +150,7 @@ data class PlanConfig(
         return buildList {
             add(
                 PlanBenefit(
-                    content = MR.plurals.plan_benefit_group.localizedString(
+                    content = MR.plurals.plan_benefit_groups.localizedString(
                         planConfig.groupsLimit,
                         planConfig.groupsLimit
                     ),
@@ -168,7 +168,7 @@ data class PlanConfig(
             )
             add(
                 PlanBenefit(
-                    content = MR.plurals.plan_benefit_places.localizedString(
+                    content = MR.plurals.plan_benefit_places_alerts.localizedString(
                         planConfig.placesLimit,
                         planConfig.placesLimit
                     ),
@@ -179,7 +179,7 @@ data class PlanConfig(
             if (planTypeEnum.isPremium) {
                 add(
                     PlanBenefit(
-                        content = "**${MR.strings.plans_benefit_location_requests.localizedString()}**",
+                        content = "**${MR.strings.paywall_feature_locate.localizedString()}**",
                         isHighlighted = true,
                         separateLine = true
                     )

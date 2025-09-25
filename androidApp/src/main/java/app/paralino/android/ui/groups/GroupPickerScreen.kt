@@ -231,7 +231,7 @@ private fun GroupTitle(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(MR.strings.title_dashboard),
+            text = stringResource(MR.strings.title_dashboard_groups),
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.size(8.dp))

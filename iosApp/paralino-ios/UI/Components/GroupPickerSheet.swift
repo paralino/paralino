@@ -40,7 +40,7 @@ struct GroupPickerSheet: ViewModifier {
                         LazyVStack(alignment: .leading, spacing: 8) {
                             if bottomSheet?.personalSpace == nil || bottomSheet?.showPersonalSpace != true {
                                 HStack {
-                                    Text(MR.shared.strings.title_dashboard.localizedString())
+                                    Text(MR.shared.strings.title_dashboard_groups.localizedString())
                                         .font(.system(size: 24, weight: .bold))
                                     Spacer().frame(width: 8)
                                     PlanLimitCount(count: groupsCount, limit: nil)
@@ -59,7 +59,7 @@ struct GroupPickerSheet: ViewModifier {
                                 
                                 // Add "Groups" section header when personal space exists
                                 HStack {
-                                    Text(MR.shared.strings.title_dashboard.localizedString())
+                                    Text(MR.shared.strings.title_dashboard_groups.localizedString())
                                         .font(.system(size: 24, weight: .bold))
                                     Spacer().frame(width: 8)
                                     PlanLimitCount(count: groupsCount, limit: nil)

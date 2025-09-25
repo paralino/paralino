@@ -2,7 +2,6 @@ package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -15,12 +14,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,7 +34,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -66,7 +62,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -76,9 +71,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
@@ -86,10 +79,6 @@ import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.presentation.settings.billing.FaqSectionItem
-import app.paralino.core.presentation.settings.billing.FeatureTableItemHighlightMode
-import app.paralino.core.presentation.settings.billing.FeatureTableItemState
-import app.paralino.core.presentation.settings.billing.FeatureTableItemVisibilityMode
-import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallScreenState
 import app.paralino.core.presentation.settings.billing.PaywallScreenStep
@@ -458,9 +447,9 @@ private fun ColumnScope.PaywallScreen(
             .padding(vertical = 12.dp)
             .padding(horizontal = 20.dp),
         table = if (arePlansExpanded) {
-            state.featureTable
+            state.fullFeatureTable
         } else {
-            state.featureTableForSelectedPlan ?: state.featureTable
+            state.featureTableForSelectedPlan ?: state.fullFeatureTable
         },
         isExpanded = arePlansExpanded,
         onExpandPlans = {
@@ -1097,194 +1086,6 @@ private fun SubscriptionOptionItem(
                 color = contentColor,
                 style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
             )
-        }
-    }
-}
-
-@Composable
-fun FeatureTable(
-    modifier: Modifier = Modifier,
-    table: FeatureTableState,
-    canExpand: Boolean = table.canExpand,
-    isExpanded: Boolean,
-    onExpandPlans: () -> Unit
-) {
-    BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.surface)
-            .padding(4.dp)
-            .clip(RoundedCornerShape(10.dp))
-    ) {
-        val maxWidth = this.maxWidth
-        val scrollState = rememberScrollState()
-        var containerWidth by remember { mutableStateOf(0f) }
-
-        Column() {
-            Column(
-                modifier = Modifier
-                    .animateContentSize()
-                    .horizontalScroll(scrollState)
-                    .onSizeChanged { size ->
-                        containerWidth = size.width.toFloat()
-                    }
-            ) {
-                table.features.forEachIndexed { index, feature ->
-                    if (
-                        feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_ALWAYS
-                        || (isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_EXPANDED)
-                        || (!isExpanded && feature.visibilityMode == FeatureTableItemVisibilityMode.VISIBLE_COLLAPSED)
-                    ) {
-                        Box {
-                            FeatureTableItem(
-                                modifier = Modifier,
-                                featureItem = feature,
-                                nameWidth = if (feature.values.size > 2) {
-                                    maxWidth * 0.5f
-                                } else if (feature.values.size == 2) {
-                                    maxWidth * 0.6f
-                                } else {
-                                    maxWidth * 0.7f
-                                },
-                                valueWidth = if (feature.values.size > 2) {
-                                    maxWidth * 0.19f
-                                } else if (feature.values.size == 2) {
-                                    maxWidth * 0.2f
-                                } else {
-                                    maxWidth * 0.3f
-                                }
-                            )
-
-                            if (index > 0) {
-                                Divider(
-                                    modifier = Modifier
-                                        .width(with(LocalDensity.current) { containerWidth.toDp() })
-                                        .padding(horizontal = 8.dp),
-                                    color = Color.Gray.copy(alpha = 0.2f),
-                                    thickness = 0.5.dp
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            AnimatedVisibility(visible = canExpand) {
-                FilledButton(
-                    modifier = Modifier
-                        .padding(bottom = 14.dp, top = 24.dp)
-                        .padding(horizontal = 14.dp)
-                        .border(
-                            width = 1.dp,
-                            color = Color.Gray.copy(alpha = 0.2f),
-                            shape = RoundedCornerShape(10.dp)
-                        ),
-                    style = remember {
-                        ButtonStyle.BIG(
-                            paddingValues = PaddingValues(horizontal = 4.dp, vertical = 12.dp),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                    },
-                    state = AppButtonState.CONTENT,
-                    icon = null,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = MaterialTheme.colors.surface,
-                        contentColor = MaterialTheme.colors.onBackground
-                    ),
-                    elevation = 0.dp,
-                    onClick = onExpandPlans
-                ) {
-                    Text(text = stringResource(MR.strings.paywall_feature_table_expand_button))
-                    Icon(
-                        modifier = Modifier.padding(start = 4.dp).width(20.dp),
-                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                        tint = MaterialTheme.colors.onSurface,
-                        contentDescription = null
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun FeatureTableItem(
-    modifier: Modifier = Modifier,
-    featureItem: FeatureTableItemState,
-    nameWidth: Dp,
-    valueWidth: Dp
-) {
-    var containerHeight by remember { mutableStateOf(0f) }
-    Row(
-        modifier = modifier
-            .defaultMinSize(minHeight = 40.dp)
-            .onSizeChanged { size ->
-                containerHeight = size.height.toFloat()
-            },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier
-                .width(nameWidth)
-                .padding(start = 8.dp, end = 8.dp)
-                .padding(vertical = 4.dp),
-            text = featureItem.name.annotatedBoldCompose(),
-            textAlign = TextAlign.Start,
-            style = if (featureItem.isTitle) {
-                MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-            } else {
-                MaterialTheme.typography.caption.copy(lineHeight = 14.sp, hyphens = Hyphens.Auto)
-            }
-        )
-
-        featureItem.values.forEach { value ->
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = when (value.highlightMode) {
-                            FeatureTableItemHighlightMode.TOP,
-                            FeatureTableItemHighlightMode.BOTTOM,
-                            FeatureTableItemHighlightMode.FULL -> AppColors.accentDark.copy(alpha = 0.2f)
-
-                            else -> Color.Transparent
-                        },
-                        shape = when (value.highlightMode) {
-                            FeatureTableItemHighlightMode.NONE -> RectangleShape
-                            FeatureTableItemHighlightMode.FULL -> RectangleShape
-                            FeatureTableItemHighlightMode.TOP -> RoundedCornerShape(
-                                topStart = 10.dp,
-                                topEnd = 10.dp
-                            )
-
-                            FeatureTableItemHighlightMode.BOTTOM -> RoundedCornerShape(
-                                bottomStart = 10.dp,
-                                bottomEnd = 10.dp
-                            )
-                        }
-                    )
-                    .width(valueWidth)
-                    .defaultMinSize(minHeight = with(LocalDensity.current) { containerHeight.toDp() }),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    text = value.name,
-                    textAlign = TextAlign.Center,
-                    style = if (featureItem.isTitle) {
-                        MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-                    } else if (value.isPremium) {
-                        MaterialTheme.typography.body2.copy(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    } else {
-                        MaterialTheme.typography.button.copy(fontWeight = FontWeight.Medium)
-                    }
-                )
-            }
         }
     }
 }

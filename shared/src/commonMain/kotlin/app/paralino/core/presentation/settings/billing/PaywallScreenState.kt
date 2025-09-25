@@ -1,16 +1,13 @@
 package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
-import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
-import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
-import app.paralino.core.utils.extensions.annotatedBold
 
 data class PaywallScreenState(
     val freePlanInfo: PlanInfoState,
@@ -34,21 +31,38 @@ data class PaywallScreenState(
     val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
     val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
 
-    val featureTable: FeatureTableState =
-        FeatureTableState.constructFeaturesTable(freeUiPlan = freePlanInfo, uiPlans = plans)
+    val fullFeatureTable: FeatureTableState = FeatureTableState.constructFeaturesTable(
+        freeUiPlan = freePlanInfo,
+        uiPlans = plans
+    )
+
     val featureTableForSelectedPlan: FeatureTableState? = selectedPlan?.let { plan ->
         FeatureTableState(
             canExpand = true,
-            features = featureTable.features.map {
-                it.copy(
-                    values = it.values.mapNotNull {
-                        if (it.planType == plan.type) {
-                            it
-                        } else {
-                            null
+            features = fullFeatureTable.features.map {
+                val newValues = it.values.mapNotNull {
+                    if (it.planType == plan.type) {
+                        when (it) {
+                            is FeatureTableItemValue.Count -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
+                            is FeatureTableItemValue.Emoji -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
+                            is FeatureTableItemValue.Summary -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
+                            is FeatureTableItemValue.Text -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
+                            is FeatureTableItemValue.Title -> null
                         }
+                    } else {
+                        null
                     }
-                )
+                }
+                when (it) {
+                    is FeatureTableItemState.Section -> it
+                    is FeatureTableItemState.Detail -> it.copy(values = newValues)
+                    is FeatureTableItemState.Title -> it.copy(values = newValues)
+                    is FeatureTableItemState.Summary -> {
+                        it.copy(
+                            values = newValues.filterIsInstance<FeatureTableItemValue.Summary>()
+                        )
+                    }
+                }
             }
         )
     }

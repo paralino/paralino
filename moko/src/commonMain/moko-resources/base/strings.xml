@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Paralino</string>
-    <string name="title_dashboard">Groups</string>
+    <string name="title_dashboard_groups">Groups</string>
     <string name="title_map">Location</string>
     <string name="title_settings">Settings</string>
     <string name="date_name_today">Today</string>
@@ -314,13 +314,16 @@
     <string name="paywall_price_per_month">**≈ %1$s** / month</string>
     <string name="paywall_divider_plan_duration">Choose your plan duration</string>
     <string name="paywall_feature_table_header">What you get</string>
-    <string name="paywall_feature_max_privacy">Maximum privacy</string>
+    <string name="paywall_feature_max_privacy">Encryption &amp; all privacy features</string>
     <string name="paywall_feature_groups">Groups</string>
+    <string name="paywall_feature_personalSpace">Personal space</string>
     <string name="paywall_feature_members">Members</string>
-    <string name="paywall_feature_devices">Devices per member</string>
-    <string name="paywall_feature_places">Places with **unlimited alerts**</string>
+    <string name="paywall_feature_devices_member">Devices per member</string>
+    <string name="paywall_feature_devices_personal">Activated devices</string>
+    <string name="paywall_feature_places_group">Places with **unlimited alerts**</string>
+    <string name="paywall_feature_places_personal">Places with **unlimited alerts**</string>
     <string name="paywall_feature_battery">Low battery alerts</string>
-    <string name="paywall_feature_locate">Locate members on demand</string>
+    <string name="paywall_feature_locate">Locate devices on demand</string>
     <string name="paywall_feature_performance">Best location performance and **fast location updates**</string>
     <string name="paywall_feature_multi_device">Share location from multiple devices</string>
     <string name="paywall_feature_notify">Location sharing alerts</string>
@@ -328,7 +331,14 @@
     <string name="paywall_feature_all_premium">All premium features</string>
     <string name="paywall_feature_support_privacy">Support independent &amp; privacy-first app development</string>
     <string name="paywall_feature_table_expand_button">Compare all benefits</string>
-    <string name="paywall_feature_value_unlimited">No limit</string>
+    <string name="paywall_feature_value_unlimited">Unlimited</string>
+    <string name="paywall_feature_history_days_minimum">&lt; 1 day</string>
+    <string name="paywall_feature_summary_groups">Groups</string>
+    <string name="paywall_feature_summary_devices">Devices</string>
+    <string name="paywall_feature_summary_members">Members</string>
+    <string name="paywall_feature_summary_places">Places</string>
+    <string name="paywall_feature_summary_history">Location history</string>
+    <string name="paywall_feature_section_others">Common benefits</string>
     <string name="paywall_review_1_author">Diana</string>
     <string name="paywall_review_1_content">Awesome way to share location with my family. It is so sweet to see them coming home or see the progress of their trip. 😊</string>
     <string name="paywall_review_2_author">Jennifer</string>
@@ -368,7 +378,6 @@
     <string name="plans_gift_screen_box_message">You get a special lifetime **Starter** plan, completely for FREE!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ What you get ⭐️</string>
     <string name="plans_gift_screen_separator_text">Need more?</string>
-    <string name="plans_benefit_location_requests">Locate members on demand</string>
     <string name="plans_benefit_sharing">Unlimited location sharing</string>
     <string name="login_placeholder_user_name">Name*</string>
     <string name="login_placeholder_email">Email*</string>
