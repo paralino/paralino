@@ -10,7 +10,8 @@ data class AccountOnboardingScreenState constructor(
     val userImage: ImageModel,
     val personalCode: PersonalCodeScreenCodeData?,
     val onboardingStep: AccountOnboardingContent?,
-    val groupCount: Int
+    val groupCount: Int,
+    val fullScreenLoading: Boolean,
 ) {
     val canDisplayMap: Boolean = onboardingStep == null
 }

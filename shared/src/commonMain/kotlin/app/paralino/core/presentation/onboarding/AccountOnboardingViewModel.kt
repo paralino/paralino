@@ -2,10 +2,12 @@ package app.paralino.core.presentation.onboarding
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.presentation.CoreViewModel
@@ -15,6 +17,7 @@ import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
@@ -47,6 +50,8 @@ class AccountOnboardingViewModel(
     private val userRepo: UserRepository,
     private val personalCodesRepo: PersonalCodesRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
+    private val locationSharingManager: LocationSharingManager,
+    private val registerDevice: RegisterDeviceForSharingUseCase,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
 ) : CoreViewModel() {
@@ -126,17 +131,33 @@ class AccountOnboardingViewModel(
                 }
             } else {
                 if (appPrefs.didHaveAccountWelcomeOnboarding) {
-                    null
+                    if (!appPrefs.didHaveLocationHistoryIntroOnboarding) {
+                        // only showing history intro to current users with groups
+                        // if there are no groups, history onboarding should not be shown ever
+                        // since if user creates or joins a groups, they will see history elsewhere
+                        if (groupCount > 0) {
+                            AccountOnboardingContent.LocationHistoryIntro(
+                                isSharingActive = locationSharingManager.isSharingActiveMaybe()
+                            )
+                        } else {
+                            appPrefs.didHaveLocationHistoryIntroOnboarding = true
+                            null
+                        }
+                    } else {
+                        null
+                    }
                 } else if (groupCount == 0) {
                     AccountOnboardingContent.ParalinoID(personalCode = personalCode, didShareCode = false)
                 } else if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed && !appPrefs.didAskForNotificationPermissions) {
                     appPrefs.didAskForNotificationPermissions = true
                     AccountOnboardingContent.PushNotifications
                 } else {
+                    appPrefs.didHaveAccountWelcomeOnboarding = true
                     null
                 }
             },
-            groupCount = groupCount
+            groupCount = groupCount,
+            fullScreenLoading = previousState?.fullScreenLoading ?: false,
         )
     }
 
@@ -183,6 +204,10 @@ class AccountOnboardingViewModel(
                 _eventChannel.trySend(AccountOnboardingScreenEvent.AskNotificationPermission)
             }
 
+            is AccountOnboardingContent.LocationHistoryIntro -> {
+                confirmLocationHistoryInit()
+            }
+
             is AccountOnboardingContent.SilverPlan -> {
                 appPrefs.didStartedGroupOnboarding = true
                 openGroupCreate()
@@ -218,11 +243,44 @@ class AccountOnboardingViewModel(
                 startGroupCreateOnboarding()
             }
 
+            is AccountOnboardingContent.LocationHistoryIntro -> {
+                finishOnboarding()
+            }
+
             is AccountOnboardingContent.SilverPlan -> {
                 finishOnboarding()
             }
 
             null -> {}
+        }
+    }
+
+    private fun confirmLocationHistoryInit() {
+        if (registerDevice.isProcessingAny() || uiState.value.data?.fullScreenLoading == true) {
+            return
+        }
+
+        _uiState.update { it.mapReady { it.copy(fullScreenLoading = true) } }
+        coroutineScope.launch {
+            val contracts = locationSharingManager.allValidContracts()
+                .map { it.copy(saveToHistory = true) }
+
+            contracts.forEach { contract ->
+                try {
+                    registerDevice.registerDevice(
+                        groupId = contract.groupOrSpaceId,
+                        contract = contract,
+                        deviceName = null,
+                        notifyOthers = false,
+                        isRetry = false
+                    )
+                    locationSharingManager.startSharing(contract)
+                } catch (e: Exception) {
+                    showSnackbar(e.errorString())
+                }
+            }
+            _uiState.update { it.mapReady { it.copy(fullScreenLoading = false) } }
+            finishOnboarding()
         }
     }
 
@@ -249,6 +307,7 @@ class AccountOnboardingViewModel(
 
     private fun finishOnboarding() {
         appPrefs.didHaveAccountWelcomeOnboarding = true
+        appPrefs.didHaveLocationHistoryIntroOnboarding = true
         _uiState.update { it.mapReady { it.copy(onboardingStep = null) } }
     }
     

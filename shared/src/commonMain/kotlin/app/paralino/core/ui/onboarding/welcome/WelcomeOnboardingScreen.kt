@@ -60,10 +60,6 @@ fun WelcomeOnboardingScreenCore(
                         WelcomeOnboardingContent.STEP_OPTIONS,
                         WelcomeOnboardingContent.STEP_OPTIONS_2 -> {
                             WelcomeOnboardingPageControl(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 20.dp)
-                                    .padding(top = 12.dp),
                                 animationStarted = step.value == WelcomeOnboardingContent.STEP_OPTIONS_2
                             )
                         }
@@ -72,16 +68,13 @@ fun WelcomeOnboardingScreenCore(
                         WelcomeOnboardingContent.STEP_LOCATION_ENCRYPTION,
                         null -> {
                             WelcomeOnboardingPageLocation(
-                                modifier = Modifier.padding(top = 12.dp),
                                 isEncryptionOn = step.value == WelcomeOnboardingContent.STEP_LOCATION_ENCRYPTION,
                                 onNewRandomString = { vm.provideRandomString() }
                             )
                         }
                         
                         WelcomeOnboardingContent.STEP_LOCATION_HISTORY -> {
-                            WelcomeOnboardingPageLocationHistory(
-                                modifier = Modifier.padding(top = 12.dp)
-                            )
+                            WelcomeOnboardingPageLocationHistory()
                         }
                     }
                 }
@@ -125,9 +118,9 @@ enum class WelcomeOnboardingContent(
     STEP_LOCATION_HISTORY(
         parentKey = 250,
         titleKey = 250,
-        titleTag = MR.strings.onboarding_step_location_history_title_tag,
-        title = MR.strings.onboarding_step_location_history_title,
-        info = MR.strings.onboarding_step_location_history_info,
+        titleTag = MR.strings.onboarding_step_locationHistory_title_tag,
+        title = MR.strings.onboarding_step_locationHistory_title,
+        info = MR.strings.onboarding_step_locationHistory_info,
         buttonText = MR.strings.button_next
     ),
     STEP_OPTIONS(

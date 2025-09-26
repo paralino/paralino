@@ -33,6 +33,7 @@ class GeneralInfoViewModel(
 
             GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding -> {
                 appPrefs.didHaveAccountWelcomeOnboarding = false
+                appPrefs.didHaveLocationHistoryIntroOnboarding = false
             }
         }
     }

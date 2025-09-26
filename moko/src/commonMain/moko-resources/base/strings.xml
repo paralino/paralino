@@ -22,6 +22,9 @@
     <string name="button_continue">Continue</string>
     <string name="button_notNow">Not now</string>
     <string name="button_delete">Delete</string>
+    <string name="button_enable">Enable</string>
+    <string name="button_activate">Activate</string>
+    <string name="button_later">Later</string>
     <string name="button_open_settings">Open settings</string>
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -81,9 +84,9 @@
     <string name="onboarding_step_location_encryption_title">With encryption</string>
     <string name="onboarding_step_location_encryption_title_tag">Privacy</string>
     <string name="onboarding_step_location_encryption_info">Your data is always encrypted and never leaves your device unprotected.</string>
-    <string name="onboarding_step_location_history_title">Track your journey</string>
-    <string name="onboarding_step_location_history_title_tag">Power</string>
-    <string name="onboarding_step_location_history_info">Visit your travel history over time with detailed paths, timing, and device status.</string>
+    <string name="onboarding_step_locationHistory_title">Track your journey</string>
+    <string name="onboarding_step_locationHistory_title_tag">Power</string>
+    <string name="onboarding_step_locationHistory_info">Visit your travel history over time with detailed paths, timing, and device status.</string>
     <string name="onboarding_step_places_title">Place alerts</string>
     <string name="onboarding_step_places_title_tag">Simplicity</string>
     <string name="onboarding_step_places_info">Get notified when someone enters or leaves your predefined area.</string>
@@ -105,6 +108,9 @@
     <string name="onboarding_step_groupCreate_group_home">Family</string>
     <string name="onboarding_step_groupCreate_group_friends">Best friends</string>
     <string name="onboarding_step_groupCreate_group_work">Work trip</string>
+    <string name="onboarding_step_locationHistoryIntro_title_active">Enable location history</string>
+    <string name="onboarding_step_locationHistoryIntro_title_inactive">Location history is here</string>
+    <string name="onboarding_step_locationHistoryIntro_info_active">To let other members explore your journey, enable location history sharing for all your groups.</string>
     <string name="settings_section_account_title">Account</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inactive codes</string>

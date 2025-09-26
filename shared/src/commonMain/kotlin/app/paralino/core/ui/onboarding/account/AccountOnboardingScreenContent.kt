@@ -13,8 +13,10 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.onboarding.BaseOnboardingContent
 import app.paralino.core.ui.onboarding.BaseOnboardingHeaderContent
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen
+import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingPageLocationHistory
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
+import org.koin.core.qualifier.qualifier
 
 @Composable
 fun AccountOnboardingScreenContent(
@@ -74,6 +76,10 @@ fun AccountOnboardingScreenContent(
 
                             is AccountOnboardingContent.SilverPlan -> {
                                 AccountOnboardingSilverPlan()
+                            }
+
+                            is AccountOnboardingContent.LocationHistoryIntro -> {
+                                WelcomeOnboardingPageLocationHistory()
                             }
                         }
                     }
@@ -168,6 +174,38 @@ sealed class AccountOnboardingContent(
         @Composable
         override fun infoText(): String {
             return stringResource(MR.strings.onboarding_step_notifications_info)
+        }
+    }
+
+    data class LocationHistoryIntro(
+        val isSharingActive: Boolean
+    ) : AccountOnboardingContent(
+        parentKey = 500,
+        titleKey = 500,
+        titleTag = MR.strings.setting_location_history_section_title,
+        title = if (isSharingActive) {
+            MR.strings.onboarding_step_locationHistoryIntro_title_active
+        } else {
+            MR.strings.onboarding_step_locationHistoryIntro_title_inactive
+        },
+        buttonText = if (isSharingActive) {
+            MR.strings.button_enable
+        } else {
+            MR.strings.button_continue
+        },
+        skipButtonText = if (isSharingActive) {
+            MR.strings.button_notNow
+        } else {
+            null
+        }
+    ) {
+        @Composable
+        override fun infoText(): String {
+            return if (isSharingActive) {
+                stringResource(MR.strings.onboarding_step_locationHistoryIntro_info_active)
+            } else {
+                stringResource(MR.strings.onboarding_step_locationHistory_info)
+            }
         }
     }
 }

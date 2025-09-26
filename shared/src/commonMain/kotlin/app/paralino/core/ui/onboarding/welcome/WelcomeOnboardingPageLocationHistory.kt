@@ -47,7 +47,7 @@ fun WelcomeOnboardingPageLocationHistory(
     Box(
         modifier = modifier
             .padding(horizontal = 20.dp)
-            .padding(bottom = 20.dp)
+            .padding(bottom = 20.dp, top = 12.dp)
             .shadow(8.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
