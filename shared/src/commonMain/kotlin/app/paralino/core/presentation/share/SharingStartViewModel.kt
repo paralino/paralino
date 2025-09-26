@@ -394,7 +394,7 @@ class SharingStartViewModel(
     }
 
     private fun startSharing() {
-        if (_uiState.value.isNewContract || _uiState.value.isNameChanged) {
+        if (_uiState.value.shouldRegisterDevice) {
             if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty() && _uiState.value.canShare) {
                 proceedWithSharing()
                 return

@@ -48,6 +48,7 @@ data class SharingStartScreenState constructor(
 ) {
     val isNewContract: Boolean = currentContract == null
     val isNameChanged: Boolean = deviceName != initialDeviceName
+    val isTimelineReEnabled: Boolean = currentContract?.saveToHistory != true && saveToHistory
     val canShowContent: Boolean = groupState is Payload.Loading || groupState.data != null
     val sharingTimeIndex: Int
         get() {
@@ -87,6 +88,7 @@ data class SharingStartScreenState constructor(
     val isStartButtonEnabled = isDifferentThanContract && (premiumStatus is PremiumStatusLimitState.WithinLimits || isDeviceRegistered)
     val needsPlanUpgrade = premiumStatus is PremiumStatusLimitState.PlanLimitReached && !isDeviceRegistered
     val shouldUpgradePlan = isOwner && needsPlanUpgrade
+    val shouldRegisterDevice = isNameChanged || isTimelineReEnabled || isNewContract
 }
 
 sealed class SharingStartScreenEvent() {
