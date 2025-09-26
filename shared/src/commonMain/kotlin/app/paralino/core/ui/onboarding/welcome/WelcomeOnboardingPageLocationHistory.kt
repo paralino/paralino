@@ -85,30 +85,36 @@ fun HistoryMapOnboardingContent(
     // Street map path coordinates (normalized 0-1)
     val pathPoints = remember {
         listOf(
-            Offset(0.1f, 0.8f),    // Start bottom-left
-            Offset(0.1f, 0.6f),    // Go up
-            Offset(0.3f, 0.6f),    // Turn right
-            Offset(0.3f, 0.3f),    // Go up
-            Offset(0.6f, 0.3f),    // Turn right
-            Offset(0.6f, 0.5f),    // Go down
-            Offset(0.8f, 0.5f),    // Turn right
-            Offset(0.8f, 0.2f),    // Go up to end
-            Offset(0.8f, 0.19f),    // Go up to end
+            Offset(0.1f, 0.8f),  // Start bottom-left
+            Offset(0.1f, 0.6f),
+            Offset(0.3f, 0.6f),
+            Offset(0.3f, 0.5f),
+            Offset(0.3f, 0.2f),
+            Offset(0.5f, 0.2f),
+            Offset(0.5f, 0.3f),
+            Offset(0.6f, 0.3f),
+            Offset(0.6f, 0.5f),
+            Offset(0.8f, 0.5f),
+            Offset(0.8f, 0.3f),
+            Offset(0.8f, 0.29f),
         )
     }
 
     // Pin locations (where the path turns)
     val pinLocations = remember {
         listOf(
-            Offset(0.1f, 0.8f),    // First turn
-            Offset(0.1f, 0.6f),    // First turn
-            Offset(0.3f, 0.6f),    // Second turn
-            Offset(0.3f, 0.3f),    // Third turn
-            Offset(0.6f, 0.3f),    // Fourth turn
-            Offset(0.6f, 0.5f),    // Fifth turn
-            Offset(0.8f, 0.5f),    // Sixth turn
-            Offset(0.8f, 0.2f),    // Go up to end
-            Offset(0.8f, 0.2f),    // Go up to end
+            Offset(0.1f, 0.8f), // Start bottom-left
+            Offset(0.1f, 0.6f),
+            Offset(0.3f, 0.6f),
+            Offset(0.3f, 0.5f),
+            Offset(0.3f, 0.2f),
+            Offset(0.5f, 0.2f),
+            Offset(0.5f, 0.3f),
+            Offset(0.6f, 0.3f),
+            Offset(0.6f, 0.5f),
+            Offset(0.8f, 0.5f),
+            Offset(0.8f, 0.3f),
+            Offset(0.8f, 0.3f),
         )
     }
 
@@ -155,8 +161,9 @@ fun HistoryMapOnboardingContent(
             // Calculate which pins should be visible based on progress
             val totalSegments = pathPoints.size
             val currentSegmentFloat = animationProgress * totalSegments
-            val visiblePinCount =
-                (currentSegmentFloat + 0f).roundToInt().coerceAtMost(pinLocations.size)
+            val visiblePinCount = (currentSegmentFloat + 0f)
+                .roundToInt()
+                .coerceAtMost(pinLocations.size)
 
             pinLocations.take(visiblePinCount).forEach { pinLocation ->
                 val xOffset = (pinLocation.x * maxWidth.value - 10).dp // 10dp is half of icon size
