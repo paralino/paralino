@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,9 +40,13 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -156,30 +161,68 @@ fun AppSnackbar(
                         )
                 )
 
-                Column(
+                val payload = remember(snackbarData.message) {
+                    try {
+                        BaseRemoteModule.formatter.decodeFromString<AppSnackbarPayload>(snackbarData.message)
+                    } catch (e: Exception) {
+                        AppSnackbarPayload(
+                            text = snackbarData.message,
+                            title = null,
+                            hasCloseButton = false
+                        )
+                    }
+                }
+
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .offset(x = offset)
                         .padding(horizontal = 10.dp)
                         .padding(top = 120.dp, bottom = 30.dp)
                         .padding(drawingPaddingValues)
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colors.surface)
-                        .padding(20.dp),
                 ) {
-                    Text(
+                    Column(
                         modifier = Modifier
-                            .padding(4.dp),
-                        text = snackbarData.message.annotatedBoldCompose(),
-                        textAlign = TextAlign.Start,
-                    )
-                    actionComposable?.let {
-                        Spacer(modifier = Modifier.size(20.dp))
-                        it()
+                            .fillMaxWidth()
+                            .padding(
+                                top = if (payload.hasCloseButton) 16.dp else 0.dp,
+                            )
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = RoundedCornerShape(20.dp)
+                            )
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colors.surface)
+                            .padding(20.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(4.dp),
+                            text = payload.text.annotatedBoldCompose(),
+                            textAlign = TextAlign.Start,
+                        )
+                        actionComposable?.let {
+                            Spacer(modifier = Modifier.size(20.dp))
+                            it()
+                        }
+                    }
+
+                    if (payload.hasCloseButton) {
+                        val scope = rememberCoroutineScope()
+                        FilledButton(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(end = 8.dp)
+                                .size(32.dp),
+                            onClick = {
+                                scope.launch {
+                                    swipeableState.animateTo(SwipeDirection.Right)
+                                }
+                            },
+                            icon = CoreAppIcons.Close.asPainterResource(),
+                            style = ButtonStyle.ICON,
+                            content = null
+                        )
                     }
                 }
             }
@@ -204,12 +247,39 @@ data class AppSnackbarResult constructor(
     val result: SnackbarResult
 )
 
-data class AppSnackbarData constructor(
+@Serializable
+data class AppSnackbarPayload(
     val text: String,
+    val title: String?,
+    val hasCloseButton: Boolean,
+//    val iconRes: Int?,
+//    val iconTint: Int?
+)
+
+data class AppSnackbarData constructor(
+    val payload: AppSnackbarPayload,
     val actionText: String? = null,
     val duration: SnackbarDuration = if (actionText.isNullOrBlank()) SnackbarDuration.Short else SnackbarDuration.Forever,
-    val id: String = text,
-)
+    val id: String = payload.text,
+) {
+    constructor(
+        text: String,
+        actionText: String? = null,
+        duration: SnackbarDuration = if (actionText.isNullOrBlank()) {
+            SnackbarDuration.Short
+        } else {
+            SnackbarDuration.Forever
+        },
+    ) : this(
+        payload = AppSnackbarPayload(
+            text = text,
+            title = null,
+            hasCloseButton = false
+        ),
+        actionText = actionText,
+        duration = duration
+    )
+}
 
 enum class SnackbarDuration {
     Short,

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.CoroutineScope
 
 open class CoreUiState(
@@ -16,7 +17,7 @@ open class CoreUiState(
 ) {
     suspend fun showSnackbar(data: AppSnackbarData): SnackbarResult {
         return scaffoldState.snackbarHostState.showSnackbar(
-            message = data.text,
+            message = BaseRemoteModule.formatter.encodeToString(data.payload),
             actionLabel = data.actionText,
             duration = when (data.duration) {
                 SnackbarDuration.Long -> androidx.compose.material.SnackbarDuration.Long
