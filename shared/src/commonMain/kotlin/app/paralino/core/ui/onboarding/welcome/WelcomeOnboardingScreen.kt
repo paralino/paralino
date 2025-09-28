@@ -1,11 +1,8 @@
 package app.paralino.core.ui.onboarding.welcome
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -20,9 +17,7 @@ fun WelcomeOnboardingScreenCore(
     modifier: Modifier = Modifier,
     vm: WelcomeOnboardingViewModel,
     isDemo: Boolean,
-    step: MutableState<WelcomeOnboardingContent> = rememberSaveable {
-        mutableStateOf(WelcomeOnboardingContent.STEP_LOCATION)
-    },
+    step: MutableState<WelcomeOnboardingContent>,
     onFinish: () -> Unit
 ) {
     BaseOnboardingScreen(

@@ -78,6 +78,10 @@ fun AccountOnboardingScreenContent(
                                 AccountOnboardingSilverPlan()
                             }
 
+                            AccountOnboardingContent.PersonalSpaceIntro -> {
+                                AccountOnboardingPersonalSpace()
+                            }
+
                             is AccountOnboardingContent.LocationHistoryIntro -> {
                                 WelcomeOnboardingPageLocationHistory()
                             }
@@ -177,11 +181,25 @@ sealed class AccountOnboardingContent(
         }
     }
 
+    data object PersonalSpaceIntro : AccountOnboardingContent(
+        parentKey = 500,
+        titleKey = 500,
+        titleTag = MR.strings.personalSpace_spaceTitle,
+        title = MR.strings.onboarding_step_personalSpace_title,
+        buttonText = MR.strings.button_continue,
+        skipButtonText = null
+    ) {
+        @Composable
+        override fun infoText(): String {
+            return stringResource(MR.strings.onboarding_step_personalSpace_info)
+        }
+    }
+
     data class LocationHistoryIntro(
         val isSharingActive: Boolean
     ) : AccountOnboardingContent(
-        parentKey = 500,
-        titleKey = 500,
+        parentKey = 600,
+        titleKey = 600,
         titleTag = MR.strings.setting_location_history_section_title,
         title = if (isSharingActive) {
             MR.strings.onboarding_step_locationHistoryIntro_title_active

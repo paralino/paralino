@@ -132,17 +132,7 @@ class AccountOnboardingViewModel(
             } else {
                 if (appPrefs.didHaveAccountWelcomeOnboarding) {
                     if (!appPrefs.didHaveLocationHistoryIntroOnboarding) {
-                        // only showing history intro to current users with groups
-                        // if there are no groups, history onboarding should not be shown ever
-                        // since if user creates or joins a groups, they will see history elsewhere
-                        if (groupCount > 0) {
-                            AccountOnboardingContent.LocationHistoryIntro(
-                                isSharingActive = locationSharingManager.isSharingActiveMaybe()
-                            )
-                        } else {
-                            appPrefs.didHaveLocationHistoryIntroOnboarding = true
-                            null
-                        }
+                        AccountOnboardingContent.PersonalSpaceIntro
                     } else {
                         null
                     }
@@ -204,6 +194,10 @@ class AccountOnboardingViewModel(
                 _eventChannel.trySend(AccountOnboardingScreenEvent.AskNotificationPermission)
             }
 
+            AccountOnboardingContent.PersonalSpaceIntro -> {
+                confirmPersonalSpaceIntro()
+            }
+
             is AccountOnboardingContent.LocationHistoryIntro -> {
                 confirmLocationHistoryInit()
             }
@@ -243,6 +237,10 @@ class AccountOnboardingViewModel(
                 startGroupCreateOnboarding()
             }
 
+            AccountOnboardingContent.PersonalSpaceIntro -> {
+                confirmPersonalSpaceIntro()
+            }
+
             is AccountOnboardingContent.LocationHistoryIntro -> {
                 finishOnboarding()
             }
@@ -252,6 +250,26 @@ class AccountOnboardingViewModel(
             }
 
             null -> {}
+        }
+    }
+
+    private fun confirmPersonalSpaceIntro() {
+        // only showing history intro to current users with groups
+        // if there are no groups, history onboarding should not be shown ever
+        // since if user creates or joins a groups, they will see history elsewhere
+        val groupCount = uiState.value.data?.groupCount ?: 0
+        if (groupCount > 0) {
+            _uiState.update {
+                it.mapReady {
+                    it.copy(
+                        onboardingStep = AccountOnboardingContent.LocationHistoryIntro(
+                            isSharingActive = locationSharingManager.isSharingActiveMaybe()
+                        )
+                    )
+                }
+            }
+        } else {
+            finishOnboarding()
         }
     }
 
@@ -308,7 +326,6 @@ class AccountOnboardingViewModel(
     private fun finishOnboarding() {
         appPrefs.didHaveAccountWelcomeOnboarding = true
         appPrefs.didHaveLocationHistoryIntroOnboarding = true
-//        appPrefs.didHavePersonalSpaceIntroOnboarding = true
         _uiState.update { it.mapReady { it.copy(onboardingStep = null) } }
     }
     
