@@ -165,6 +165,13 @@ class MapEventHandler(
             is MapHomeScreenUiEvent.OnGroupsEmptyStateEvent -> {
                 groupEmptyStateManager.onEvent(event.event)
             }
+
+            MapHomeScreenUiEvent.ConfirmPersonalSpaceIntro -> {
+                appPrefs.didHavePersonalSpaceIntroOnboarding = true
+                updateReadyState {
+                    it.copy(isFirstTimeInPersonalSpace = false)
+                }
+            }
         }
     }
 

@@ -20,12 +20,12 @@ import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.SnackbarDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class GroupStateManager(
     private val groupRepo: UserGroupLocalDataSource,

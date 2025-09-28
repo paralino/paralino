@@ -79,7 +79,7 @@ fun MapHomeSheetContent(
     modifier: Modifier = Modifier,
     screenPaddingValues: PaddingValues,
     swipeableState: SwipeableSheetState,
-    readyState: MapHomeScreenState.Ready?,
+    readyState: MapHomeScreenState.Ready,
     members: List<GroupMemberItemState>,
     places: List<PlaceListItemData>,
     onMapGroupInfoHeightChange: (Float) -> Unit,
@@ -119,6 +119,13 @@ fun MapHomeSheetContent(
                    .times(1.2f)
                    .coerceIn(0f, 1f)
             }
+        }
+
+        if (readyState.hasPersonalSpaceIntroBanner) {
+            PersonalSpaceFeatureIntroContent(
+                modifier = modifier,
+                onEvent = onEvent,
+            )
         }
 
         Divider(

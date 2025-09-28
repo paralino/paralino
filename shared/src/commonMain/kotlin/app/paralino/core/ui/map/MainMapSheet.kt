@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
-import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.CoreUiState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -31,31 +30,18 @@ fun MainMapSheet(
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     screenContent: @Composable () -> Unit,
 ) {
-    LaunchedEffect(mapUiState.asReady()?.mapHomeScreenFocusType?.isMemberOrPlaceFocused) {
-        snapshotFlow { mapUiState.asReady()?.mapHomeScreenFocusType?.isMemberOrPlaceFocused }
+    LaunchedEffect(mapUiState.defaultSheetPosition) {
+        snapshotFlow { mapUiState.defaultSheetPosition }
             .distinctUntilChanged()
             .onEach {
-                when (it) {
-                    true -> {
-                        swipeableState.animateTo(BottomSheetPosition.HIDDEN)
-                    }
-
-                    false -> {
-                        // TODO use previous value?
-                        swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
-                    }
-
-                    else -> {
-                        swipeableState.animateTo(BottomSheetPosition.EXPANDED)
-                    }
-                }
+                swipeableState.animateTo(it)
             }
             .collect()
     }
 
-    var infoHeight by remember { mutableStateOf(0f) }
+    var infoHeight by remember { mutableStateOf(150f) }
     SwipeableBottomSheet(
-        enabled = mapUiState is MapHomeScreenState.Ready,
+        enabled = mapUiState.isSheetEnabled,
         screenPaddingValues = screenPaddingValues,
         collapsedInfoHeightPixel = infoHeight,
         swipeableState = swipeableState,
@@ -92,7 +78,7 @@ private fun MainMapSheetActiveBody(
     screenPaddingValues: PaddingValues,
     appState: CoreUiState,
     swipeableState: SwipeableSheetState,
-    readyState: MapHomeScreenState.Ready?,
+    readyState: MapHomeScreenState.Ready,
     onMapGroupInfoHeightChange: (Float) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
@@ -101,16 +87,18 @@ private fun MainMapSheetActiveBody(
         screenPaddingValues = screenPaddingValues,
         swipeableState = swipeableState,
         readyState = readyState,
-        members = readyState?.members ?: emptyList(),
-        places = readyState?.places ?: emptyList(),
+        members = readyState.members,
+        places = readyState.places,
         onEvent = onEvent,
         onMapGroupInfoHeightChange = onMapGroupInfoHeightChange,
         onWholeContentClick = {
-            appState.uiScope.launch {
-                if (swipeableState.isCollapsed() || swipeableState.isFullyExpanded()) {
-                    swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
-                } else {
-                    swipeableState.animateTo(BottomSheetPosition.COLLAPSED)
+            if (readyState.isSheetEnabled) {
+                appState.uiScope.launch {
+                    if (swipeableState.isCollapsed() || swipeableState.isFullyExpanded()) {
+                        swipeableState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+                    } else {
+                        swipeableState.animateTo(BottomSheetPosition.COLLAPSED)
+                    }
                 }
             }
         }

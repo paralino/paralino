@@ -308,6 +308,7 @@ class AccountOnboardingViewModel(
     private fun finishOnboarding() {
         appPrefs.didHaveAccountWelcomeOnboarding = true
         appPrefs.didHaveLocationHistoryIntroOnboarding = true
+//        appPrefs.didHavePersonalSpaceIntroOnboarding = true
         _uiState.update { it.mapReady { it.copy(onboardingStep = null) } }
     }
     

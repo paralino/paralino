@@ -51,7 +51,8 @@ class MapStateMapper(
         userData: UserMeData,
         previousState: MapHomeScreenState.Ready?,
         isSatelliteMode: Boolean,
-        alertDialog: MainAlertDialog?
+        alertDialog: MainAlertDialog?,
+        isFirstTimeInPersonalSpace: Boolean,
     ): MapHomeScreenState.Ready {
         val groupName = when (groupOrSpace) {
             is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.name
@@ -146,6 +147,7 @@ class MapStateMapper(
             groupOrSpaceImage = groupImage,
             selectedGroupId = selectedGroupId,
             selectedGroupImage = selectedGroupImage,
+            isFirstTimeInPersonalSpace = isFirstTimeInPersonalSpace,
             userCount = userCount,
             activeUserCount = activeCount,
             idleUserCount = idleCount,

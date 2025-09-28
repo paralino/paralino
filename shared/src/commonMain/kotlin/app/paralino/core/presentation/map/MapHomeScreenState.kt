@@ -17,6 +17,7 @@ import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.map.BottomSheetPosition
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
@@ -25,6 +26,8 @@ sealed class MapHomeScreenState {
     abstract val selectedGroupId: String?
     abstract val selectedGroupImage: ImageModel?
     abstract val isPersonalSpace: Boolean
+    abstract val isSheetEnabled: Boolean
+    abstract val defaultSheetPosition: BottomSheetPosition
 
     val deviceType: DeviceType = DeviceType.current
 
@@ -36,6 +39,8 @@ sealed class MapHomeScreenState {
         override val selectedGroupId: String?,
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
+
+        val isFirstTimeInPersonalSpace: Boolean,
 
         val userCount: Int,
         val activeUserCount: Int,
@@ -56,6 +61,8 @@ sealed class MapHomeScreenState {
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
         override val isPersonalSpace = groupOrSpaceId.isPersonalSpace
+        val hasPersonalSpaceIntroBanner = isPersonalSpace && isFirstTimeInPersonalSpace
+
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
@@ -74,6 +81,22 @@ sealed class MapHomeScreenState {
             (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
                 members.firstOrNull { it.keyId == item.memberKeyId }
             }
+
+        override val isSheetEnabled: Boolean = if (isPersonalSpace) {
+            !isFirstTimeInPersonalSpace
+        } else {
+            true
+        }
+
+        override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberOrPlaceFocused) {
+            BottomSheetPosition.HIDDEN
+        } else {
+            if (isPersonalSpace && isFirstTimeInPersonalSpace) {
+                BottomSheetPosition.EXPANDED
+            } else {
+                BottomSheetPosition.HALF_EXPANDED
+            }
+        }
     }
 
     data class Empty(
@@ -84,7 +107,10 @@ sealed class MapHomeScreenState {
         override val isPersonalSpace: Boolean,
         override val isSatelliteMode: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,
-    ) : MapHomeScreenState()
+    ) : MapHomeScreenState() {
+        override val isSheetEnabled: Boolean = false
+        override val defaultSheetPosition: BottomSheetPosition = BottomSheetPosition.EXPANDED
+    }
 }
 
 fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeScreenState.Ready?
@@ -138,6 +164,7 @@ sealed interface MapHomeScreenUiEvent {
     data object OnSettingsClick : MapHomeScreenUiEvent
     data object OnMapModeSwitch : MapHomeScreenUiEvent
     data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
+    data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {

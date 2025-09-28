@@ -34,6 +34,7 @@ class GeneralInfoViewModel(
             GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding -> {
                 appPrefs.didHaveAccountWelcomeOnboarding = false
                 appPrefs.didHaveLocationHistoryIntroOnboarding = false
+                appPrefs.didHavePersonalSpaceIntroOnboarding = false
             }
         }
     }

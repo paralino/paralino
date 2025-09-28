@@ -338,7 +338,8 @@ class MapHomeViewModel constructor(
                 previousState = _uiState.value.asReady()
                     ?.takeIf { it.groupOrSpaceId.isPersonalSpace },
                 isSatelliteMode = _uiState.value.isSatelliteMode,
-                alertDialog = _uiState.value.alertDialog
+                alertDialog = _uiState.value.alertDialog,
+                isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding,
             )
         }
             .flowOn(Dispatchers.IO)
@@ -371,7 +372,8 @@ class MapHomeViewModel constructor(
                 previousState = _uiState.value.asReady()
                     ?.takeIf { it.groupOrSpaceId.id == group.id },
                 isSatelliteMode = _uiState.value.isSatelliteMode,
-                alertDialog = _uiState.value.alertDialog
+                alertDialog = _uiState.value.alertDialog,
+                isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding
             )
         }
             .flatMapLatest { state ->
