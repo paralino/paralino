@@ -35,13 +35,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
@@ -91,7 +94,10 @@ fun SwipeableBottomSheet(
         val shapeProgress by derivedStateOf {
             swipeableState.progress(
                 from = BottomSheetPosition.EXPANDED,
-                to = BottomSheetPosition.HALF_EXPANDED
+                to = when (DeviceType.current) {
+                    DeviceType.Android -> BottomSheetPosition.COLLAPSED
+                    DeviceType.iOS -> BottomSheetPosition.HALF_EXPANDED
+                }
             )
         }
         val shapeCorners by derivedStateOf {
@@ -135,9 +141,14 @@ fun SwipeableBottomSheet(
                         }
                             .minus(bottomPadding)
                     )
-                    .shadow(
-                        elevation = 12.dp,
-                        shape = screenShape
+                    .dropShadow(
+                        shape = screenShape,
+                        shadow = Shadow(
+                            radius = 10.dp,
+                            spread = 4.dp,
+                            color = Color.Black.copy(alpha = 0.2f),
+                            offset = DpOffset(0.dp, 4.dp)
+                        )
                     )
                     .clip(screenShape)
                     .background(

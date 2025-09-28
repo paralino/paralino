@@ -142,7 +142,7 @@ fun MapHomeScreenElements(
                     Icon(
                         painter = CoreAppIcons.Settings.asPainterResource(),
                         contentDescription = null,
-                        tint = MaterialTheme.colors.onSurface,
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
                         modifier = Modifier
                             .size(42.dp)
                             .background(
@@ -173,7 +173,7 @@ fun MapHomeScreenElements(
                             DeviceType.iOS -> Alignment.Start
                         }
                     )
-                    .padding(top = 16.dp, end = 8.dp, start = 8.dp)
+                    .padding(top = 14.dp, end = 8.dp, start = 8.dp)
                     .size(40.dp)
                     .clickable { onEvent(MapHomeScreenUiEvent.OnMapModeSwitch) }
                     .background(

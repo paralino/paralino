@@ -189,7 +189,7 @@ sealed class AccountOnboardingContent(
             MR.strings.onboarding_step_locationHistoryIntro_title_inactive
         },
         buttonText = if (isSharingActive) {
-            MR.strings.button_enable
+            MR.strings.onboarding_step_locationHistoryIntro_button_next
         } else {
             MR.strings.button_continue
         },

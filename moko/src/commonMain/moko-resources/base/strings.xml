@@ -111,6 +111,7 @@
     <string name="onboarding_step_locationHistoryIntro_title_active">Enable location history</string>
     <string name="onboarding_step_locationHistoryIntro_title_inactive">Location history is here</string>
     <string name="onboarding_step_locationHistoryIntro_info_active">To let other members explore your journey, enable location history sharing for all your groups.</string>
+    <string name="onboarding_step_locationHistoryIntro_button_next">Enable for all</string>
     <string name="settings_section_account_title">Account</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inactive codes</string>
