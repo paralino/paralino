@@ -47,7 +47,7 @@ class MapStateMapper(
     suspend fun buildReadyState(
         groupOrSpace: GroupWithMembersOrUserSpace,
         places: List<GroupPlace>,
-        sharingStatus: LocationSharingContract?,
+        activeSharingContracts: List<LocationSharingContract>,
         userData: UserMeData,
         previousState: MapHomeScreenState.Ready?,
         isSatelliteMode: Boolean,
@@ -141,6 +141,17 @@ class MapStateMapper(
             }
         }
 
+        val selectedGroupContract = activeSharingContracts.firstOrNull {
+            it.groupOrSpaceId.isGroup && it.groupOrSpaceId == groupOrSpace.id
+        }
+        val personalSharingContract = activeSharingContracts.firstOrNull {
+            it.groupOrSpaceId.isPersonalSpace
+        }
+        val activeSharingContract = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> selectedGroupContract
+            is GroupWithMembersOrUserSpace.PersonalSpace -> personalSharingContract
+        }
+
         return MapHomeScreenState.Ready(
             groupOrSpaceId = groupOrSpace.id,
             groupOrSpaceName = groupName,
@@ -158,8 +169,9 @@ class MapStateMapper(
             trackingMarker = trackingMarker,
             mapHomeScreenFocusType = focusType,
             mapSheetSelectedContentType = mapSheetSelectedContentType,
-            sharingStatus = sharingStatus,
-            sharingEndTime = sharingStatus?.endTimeUTC?.let {
+            selectedGroupSharingContract = selectedGroupContract,
+            personalSpaceSharingContract = personalSharingContract,
+            sharingEndTime = activeSharingContract?.endTimeUTC?.let {
                 valueFormatter.fromUTCtoMapSharingTime(
                     timeUTC = it,
                     splitTimeToOneLine = true

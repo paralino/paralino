@@ -316,9 +316,9 @@ class MapHomeViewModel constructor(
             uiRefreshPingFlow.filterNotNull(),
             personalSpaceRepo.personalSpaceState.map { it.data },
             placesRepo.getPlacesForGroupLocally(groupId = appPrefs.userId),
-            locationFocusManager.getSharingContract(),
+            locationFocusManager.getSharingContracts(),
             userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-        ) { _, space, places, sharingStatus, userData ->
+        ) { _, space, places, sharingContracts, userData ->
 
             if (space == null || userData == null) {
                 return@combine MapHomeScreenState.Empty(
@@ -333,7 +333,7 @@ class MapHomeViewModel constructor(
             mapStateMapper.buildReadyState(
                 groupOrSpace = GroupWithMembersOrUserSpace.PersonalSpace(space),
                 places = places,
-                sharingStatus = sharingStatus,
+                activeSharingContracts = sharingContracts,
                 userData = userData,
                 previousState = _uiState.value.asReady()
                     ?.takeIf { it.groupOrSpaceId.isPersonalSpace },
@@ -350,9 +350,9 @@ class MapHomeViewModel constructor(
             uiRefreshPingFlow.filterNotNull(),
             groupRepo.getGroupWithMembers(groupId = groupId),
             placesRepo.getPlacesForGroupLocally(groupId = groupId),
-            locationFocusManager.getSharingContract(),
+            locationFocusManager.getSharingContracts(),
             userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
-        ) { _, group, places, sharingStatus, userData ->
+        ) { _, group, places, sharingContracts, userData ->
 
             if (group == null || userData == null) {
                 return@combine MapHomeScreenState.Empty(
@@ -367,7 +367,7 @@ class MapHomeViewModel constructor(
             mapStateMapper.buildReadyState(
                 groupOrSpace = GroupWithMembersOrUserSpace.Group(group),
                 places = places,
-                sharingStatus = sharingStatus,
+                activeSharingContracts = sharingContracts,
                 userData = userData,
                 previousState = _uiState.value.asReady()
                     ?.takeIf { it.groupOrSpaceId.id == group.id },

@@ -41,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -196,7 +195,7 @@ fun MapHomeScreenElements(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 // sharing time info
-                if (readyState?.sharingStatus != null && !isMemberOrPlaceFocused) {
+                if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
                     GroupMemberActionButton(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -212,7 +211,7 @@ fun MapHomeScreenElements(
                 }
 
                 // sharing start
-                if (readyState != null && readyState.sharingStatus == null && !isMemberOrPlaceFocused) {
+                if (readyState != null && readyState.selectedSharingContract == null && !isMemberOrPlaceFocused) {
                     FilledButton(
                         modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
                         style = ButtonStyle.SMALL(

@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.isActive
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -100,10 +102,8 @@ class LocationFocusManager(
         }
     }
 
-    fun getSharingContract(): Flow<LocationSharingContract?> {
-        return sharingManager.allContractsFlow.combine(groupIdData) { contracts, group ->
-            contracts.data?.firstOrNull { it.groupOrSpaceId == group }?.asValidContract()
-        }
+    fun getSharingContracts(): Flow<List<LocationSharingContract>> {
+        return sharingManager.allContractsFlow.mapNotNull { it.data?.mapNotNull { it.asValidContract() } }
     }
 
     fun updateRefreshPing() {

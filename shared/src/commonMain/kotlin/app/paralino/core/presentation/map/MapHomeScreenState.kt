@@ -53,7 +53,9 @@ sealed class MapHomeScreenState {
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
         val mapSheetSelectedContentType: MapSheetSelectedContentType,
 
-        val sharingStatus: LocationSharingContract?,
+        val personalSpaceSharingContract: LocationSharingContract?,
+        val selectedGroupSharingContract: LocationSharingContract?,
+
         val sharingEndTime: String?,
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
@@ -62,6 +64,12 @@ sealed class MapHomeScreenState {
     ) : MapHomeScreenState() {
         override val isPersonalSpace = groupOrSpaceId.isPersonalSpace
         val hasPersonalSpaceIntroBanner = isPersonalSpace && isFirstTimeInPersonalSpace
+
+        val selectedSharingContract = if (isPersonalSpace) {
+            personalSpaceSharingContract
+        } else {
+            selectedGroupSharingContract
+        }
 
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
         val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
