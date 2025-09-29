@@ -113,7 +113,11 @@ sealed class AccountOnboardingContent(
         parentKey = 100,
         titleKey = 100,
         titleTag = MR.strings.onboarding_step_paralinoID_title_tag,
-        title = MR.strings.onboarding_step_paralinoID_title,
+        title = if (didShareCode) {
+            MR.strings.onboarding_step_paralinoID_title_shared
+        } else {
+            MR.strings.onboarding_step_paralinoID_title_intro
+        },
         buttonText = if (didShareCode) {
             MR.strings.button_next
         } else {
@@ -128,7 +132,11 @@ sealed class AccountOnboardingContent(
     ) {
         @Composable
         override fun infoText(): String {
-            return stringResource(MR.strings.onboarding_step_paralinoID_info)
+            return if (didShareCode) {
+                ""
+            } else {
+                stringResource(MR.strings.onboarding_step_paralinoID_info)
+            }
         }
     }
 

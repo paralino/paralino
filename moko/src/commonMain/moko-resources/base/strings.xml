@@ -94,7 +94,8 @@
     <string name="onboarding_step_options_title_tag">Control</string>
     <string name="onboarding_step_options_info">You are always in control of what you share and how you share it.</string>
     <string name="onboarding_step_paralinoID_title_tag">Welcome</string>
-    <string name="onboarding_step_paralinoID_title">Want to be part of a group?</string>
+    <string name="onboarding_step_paralinoID_title_intro">Want to be part of a group?</string>
+    <string name="onboarding_step_paralinoID_title_shared">You will be notified when you are added to a group!</string>
     <string name="onboarding_step_paralinoID_info">Share your code to join your family or friends.</string>
     <string name="onboarding_step_paralinoID_button_next">Share and join</string>
     <string name="onboarding_step_notifications_title_tag">Notifications</string>
