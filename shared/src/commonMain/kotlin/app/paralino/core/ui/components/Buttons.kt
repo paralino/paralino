@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -211,6 +213,51 @@ fun FullWidthActionButton(
         } else {
             Spacer(Modifier.size(8.dp))
         }
+    }
+}
+
+@Composable
+fun CheckButtonIcon(
+    modifier: Modifier = Modifier,
+    isChecked: Boolean,
+    backgroundCheckedColor: Color = if (isSystemInDarkTheme()) {
+        MaterialTheme.colors.onPrimary
+    } else {
+        MaterialTheme.colors.primary
+    },
+    contentCheckedColor: Color = if (isSystemInDarkTheme()) {
+        MaterialTheme.colors.primary
+    } else {
+        MaterialTheme.colors.onPrimary
+    },
+    backgroundUncheckedColor: Color = MaterialTheme.colors.surface,
+    contentUncheckedColor: Color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+    checkedIcon: Painter = CoreAppIcons.CheckCircle.asPainterResource(),
+    uncheckedIcon: Painter = CoreAppIcons.RadioButtonUnchecked.asPainterResource(),
+) {
+    if (isChecked) {
+        Icon(
+            modifier = modifier
+                .size(24.dp)
+                .background(
+                    color = backgroundCheckedColor,
+                    shape = CircleShape
+                )
+                .padding(1.dp),
+            painter = checkedIcon,
+            contentDescription = null,
+            tint = contentCheckedColor
+        )
+    } else {
+        Icon(
+            modifier = modifier
+                .size(24.dp)
+                .background(color = backgroundUncheckedColor, shape = CircleShape)
+                .padding(2.dp),
+            painter = uncheckedIcon,
+            contentDescription = null,
+            tint = contentUncheckedColor
+        )
     }
 }
 

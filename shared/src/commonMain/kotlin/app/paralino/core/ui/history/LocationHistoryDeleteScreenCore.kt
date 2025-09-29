@@ -9,11 +9,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,10 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -53,6 +49,7 @@ import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CheckButtonIcon
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
@@ -286,40 +283,10 @@ private fun DateOptionItem(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isEnabled) {
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(24.dp)
-                    .background(
-                        color = if (isSystemInDarkTheme()) {
-                            MaterialTheme.colors.onPrimary
-                        } else {
-                            MaterialTheme.colors.primary
-                        },
-                        shape = CircleShape
-                    )
-                    .padding(1.dp),
-                painter = CoreAppIcons.CheckCircle.asPainterResource(),
-                contentDescription = null,
-                tint = if (isSystemInDarkTheme()) {
-                    MaterialTheme.colors.primary
-                } else {
-                    MaterialTheme.colors.onPrimary
-                }
-            )
-        } else {
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(24.dp)
-                    .background(MaterialTheme.colors.surface, shape = CircleShape)
-                    .padding(2.dp),
-                painter = CoreAppIcons.RadioButtonUnchecked.asPainterResource(),
-                contentDescription = null,
-                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
-            )
-        }
+        CheckButtonIcon(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            isChecked = isEnabled
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
