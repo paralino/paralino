@@ -57,7 +57,13 @@ fun SharingStartScreen(
                 AppScreen.MainHome.BillingPaywall.route(
                     groupId = vm.currentGroupId,
                     type = when (isOnboarding) {
-                        true -> BillingScreenSourceType.GROUP_ONBOARDING
+                        true -> {
+                            if (vm.isPersonalSpace) {
+                                BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING
+                            } else {
+                                BillingScreenSourceType.GROUP_ONBOARDING
+                            }
+                        }
                         false -> BillingScreenSourceType.UPGRADE
                     }
                 )
@@ -67,11 +73,18 @@ fun SharingStartScreen(
                 }
             }
         } else if(isOnboarding) {
-            appState.navController.navigate(
-                AppScreen.MainHome.GroupDetails.route(groupId = vm.currentGroupId!!)
-            ) {
-                this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                    this.inclusive = false
+            if (vm.isPersonalSpace) {
+                appState.navController.popBackStack(
+                    route = AppScreen.MainHome.MainMap.routeSignature,
+                    inclusive = false
+                )
+            } else {
+                appState.navController.navigate(
+                    AppScreen.MainHome.GroupDetails.route(groupId = vm.currentGroupId!!)
+                ) {
+                    this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
+                        this.inclusive = false
+                    }
                 }
             }
         } else {

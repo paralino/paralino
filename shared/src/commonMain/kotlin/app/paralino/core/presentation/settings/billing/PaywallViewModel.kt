@@ -67,12 +67,13 @@ class PaywallViewModel(
     init {
         when (sourceType) {
             BillingScreenSourceType.GROUP_ONBOARDING,
+            BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING,
             BillingScreenSourceType.SKIPPED_ONBOARDING -> {
                 appRatingManager.tryShowingAppRating(source = AppRatingSource.PAYWALL_ONBOARDING)
             }
-            BillingScreenSourceType.FREE_PLAN_NEW_USER,
+
+            BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
             BillingScreenSourceType.UPGRADE,
-            BillingScreenSourceType.FREE_PLAN_NOTICE,
             BillingScreenSourceType.NORMAL -> {}
         }
 

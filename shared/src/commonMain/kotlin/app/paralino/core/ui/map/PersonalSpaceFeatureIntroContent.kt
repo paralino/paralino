@@ -41,7 +41,7 @@ import kotlin.math.sin
 
 @Composable
 fun PersonalSpaceFeatureIntroContent(
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
     Box(
@@ -52,10 +52,10 @@ fun PersonalSpaceFeatureIntroContent(
                 color = AppColors.accentLight.copy(alpha = 0.2f),
                 shape = RoundedCornerShape(20.dp)
             )
-            .clip(androidx.compose.foundation.shape.RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
     ) {
         WavyDashedLine(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .matchParentSize(),
             lineColor = AppColors.accent.copy(alpha = 0.1f),
             dotColor = AppColors.accent.copy(alpha = 0.1f),
@@ -65,8 +65,8 @@ fun PersonalSpaceFeatureIntroContent(
         Icon(
             painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
             contentDescription = null,
-            modifier = Modifier.Companion
-                .align(Alignment.Companion.TopEnd)
+            modifier = Modifier
+                .align(Alignment.TopEnd)
                 .size(50.dp)
                 .offset(x = (-10).dp, y = (-10).dp)
                 .rotate(160f),
@@ -76,8 +76,8 @@ fun PersonalSpaceFeatureIntroContent(
         Icon(
             painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
             contentDescription = null,
-            modifier = Modifier.Companion
-                .align(Alignment.Companion.CenterEnd)
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
                 .size(80.dp)
                 .rotate(20f)
                 .offset(x = 30.dp, y = (-10).dp),
@@ -87,8 +87,8 @@ fun PersonalSpaceFeatureIntroContent(
         Icon(
             painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
             contentDescription = null,
-            modifier = Modifier.Companion
-                .align(Alignment.Companion.BottomEnd)
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
                 .size(70.dp)
                 .rotate(-10f)
                 .offset(x = (-30).dp, y = 10.dp),
@@ -96,14 +96,14 @@ fun PersonalSpaceFeatureIntroContent(
         )
 
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
         ) {
             DefaultToolbar(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 title = stringResource(MR.strings.personalSpace_sheet_introBanner_title),
                 elevation = 0.dp,
-                color = Color.Companion.Transparent,
+                color = Color.Transparent,
                 contentColor = MaterialTheme.colors.onBackground,
                 navigationIcon = {
                     ToolbarButtons.Close { onEvent(MapHomeScreenUiEvent.ConfirmPersonalSpaceIntro) }
@@ -111,7 +111,7 @@ fun PersonalSpaceFeatureIntroContent(
             )
 
             Text(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 16.dp),
                 text = stringResource(MR.strings.personalSpace_sheet_introBanner_message),
@@ -123,7 +123,7 @@ fun PersonalSpaceFeatureIntroContent(
 }
 
 @Composable
-private fun WavyDashedLine(
+fun WavyDashedLine(
     modifier: Modifier = Modifier,
     lineColor: Color = Color(0xFF2196F3),
     dotColor: Color = Color.White,

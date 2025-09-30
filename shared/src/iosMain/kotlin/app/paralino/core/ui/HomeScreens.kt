@@ -304,7 +304,6 @@ object HomeScreens {
         onPlaceClick: (MapHomeScreenEvent.OpenPlaceDetails) -> Unit,
         onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
         onCreateGroup: () -> Unit,
-        openFreePlanInfo: () -> Unit,
         openPaywall: () -> Unit,
         openPersonalSpace: () -> Unit,
         openPersonalCodes: () -> Unit,
@@ -349,7 +348,6 @@ object HomeScreens {
                     vm.events.collectLatest { event ->
                         when (event) {
                             MapHomeScreenEvent.OpenGroupCreateScreen -> onCreateGroup()
-                            MapHomeScreenEvent.ShowFreePlanInfo -> openFreePlanInfo()
                             MapHomeScreenEvent.OpenPaywall -> openPaywall()
                             is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId)
                             is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
@@ -364,7 +362,6 @@ object HomeScreens {
                             is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall()
                             null -> {}
                             MapHomeScreenEvent.AskNotificationPermission -> askNotificationPermission()
-                            MapHomeScreenEvent.OpenFreePlanInfo -> openFreePlanInfo()
                             MapHomeScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                             is MapHomeScreenEvent.SharePersonalCode -> onSharePersonalCode(event.content)
                         }

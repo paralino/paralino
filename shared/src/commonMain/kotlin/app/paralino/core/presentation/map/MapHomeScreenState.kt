@@ -126,9 +126,7 @@ fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeSc
 sealed class MapHomeScreenEvent {
     data object AskNotificationPermission: MapHomeScreenEvent()
     data object OpenPersonalCodes: MapHomeScreenEvent()
-    data object OpenFreePlanInfo: MapHomeScreenEvent()
     data object OpenGroupCreateScreen : MapHomeScreenEvent()
-    data object ShowFreePlanInfo : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
     data class OpenGroupPicker(val showPersonalSpace: Boolean) : MapHomeScreenEvent()

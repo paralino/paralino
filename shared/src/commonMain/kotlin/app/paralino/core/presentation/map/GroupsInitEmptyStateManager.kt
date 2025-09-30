@@ -157,11 +157,7 @@ class GroupsInitEmptyStateManager(
             }
 
             GroupsInitEmptyScreenUiEvent.TryCreateGroup -> {
-                if (userRepo.shouldShowFreePlanNoticeScreen) {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenFreePlanInfo)
-                } else {
-                    eventChannel.trySend(MapHomeScreenEvent.OpenGroupCreateScreen)
-                }
+                eventChannel.trySend(MapHomeScreenEvent.OpenGroupCreateScreen)
             }
         }
     }

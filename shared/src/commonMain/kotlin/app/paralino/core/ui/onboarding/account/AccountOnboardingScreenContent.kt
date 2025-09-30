@@ -2,12 +2,10 @@ package app.paralino.core.ui.onboarding.account
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.onboarding.BaseOnboardingContent
@@ -16,7 +14,6 @@ import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingPageLocationHistory
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
-import org.koin.core.qualifier.qualifier
 
 @Composable
 fun AccountOnboardingScreenContent(
@@ -27,7 +24,8 @@ fun AccountOnboardingScreenContent(
 ) {
     BaseOnboardingScreen(
         modifier = modifier.fillMaxSize(),
-        buttonText = stringResource(step.buttonText),
+        buttonText = step.buttonText?.let { stringResource(step.buttonText) }
+            ?: "",
         skipButtonText = step.skipButtonText?.let { stringResource(it) }
             ?: stringResource(MR.strings.button_skip),
         onSkip = if (step.skipButtonText != null) {
@@ -35,12 +33,12 @@ fun AccountOnboardingScreenContent(
         } else {
             null
         },
-        onNext = { onEvent(AccountOnboardingUiEvent.ConfirmOnboarding) },
+        onNext = if (step.buttonText != null) {
+            { onEvent(AccountOnboardingUiEvent.ConfirmOnboarding) }
+        } else {
+            null
+        },
     ) {
-        if (step is AccountOnboardingContent.SilverPlan) {
-            AccountOnboardingSilverPlanBackground()
-        }
-
         BaseOnboardingContent(
             order = step.titleKey,
             title = stringResource(step.title),
@@ -66,6 +64,19 @@ fun AccountOnboardingScreenContent(
                                 )
                             }
 
+                            is AccountOnboardingContent.AccountOnboardingStart -> {
+                                AccountOnboardingStartPage(
+                                    isGroupChecked = step.isGroupChecked,
+                                    isPersonalSpaceChecked = step.isPersonalSpaceChecked,
+                                    onGroupModeClick = {
+                                        onEvent(AccountOnboardingUiEvent.GoWithGroupMode)
+                                    },
+                                    onPersonalSpaceModeClick = {
+                                        onEvent(AccountOnboardingUiEvent.GoWithPersonalSpaceMode)
+                                    },
+                                )
+                            }
+
                             AccountOnboardingContent.PushNotifications -> {
                                 AccountOnboardingPushNotifications()
                             }
@@ -74,11 +85,11 @@ fun AccountOnboardingScreenContent(
                                 AccountOnboardingGroupCreate()
                             }
 
-                            is AccountOnboardingContent.SilverPlan -> {
-                                AccountOnboardingSilverPlan()
+                            AccountOnboardingContent.PersonalSpaceCurrentUsersIntro -> {
+                                AccountOnboardingPersonalSpace()
                             }
 
-                            AccountOnboardingContent.PersonalSpaceIntro -> {
+                            AccountOnboardingContent.PersonalSpaceNewUsersIntro -> {
                                 AccountOnboardingPersonalSpace()
                             }
 
@@ -98,7 +109,7 @@ sealed class AccountOnboardingContent(
     val titleKey: Int,
     val titleTag: StringResource?,
     val title: StringResource,
-    val buttonText: StringResource,
+    val buttonText: StringResource?,
     val skipButtonText: StringResource?,
     val contentSizeRatio: Float = 0.3f,
     val minHeaderSize: Dp = 300.dp
@@ -140,6 +151,28 @@ sealed class AccountOnboardingContent(
         }
     }
 
+    data class AccountOnboardingStart(
+        val isGroupChecked: Boolean,
+        val isPersonalSpaceChecked: Boolean
+    ) : AccountOnboardingContent(
+        parentKey = 150,
+        titleKey = 160,
+        titleTag = MR.strings.onboarding_step_accountStart_title_tag,
+        title = MR.strings.onboarding_step_accountStart_title_tag,
+        buttonText = null,
+        skipButtonText = if (isGroupChecked || isPersonalSpaceChecked) {
+            MR.strings.button_skip
+        } else {
+            null
+        },
+        contentSizeRatio = 0f
+    ) {
+        @Composable
+        override fun infoText(): String {
+            return ""
+        }
+    }
+
     data object GroupCreate : AccountOnboardingContent(
         parentKey = 200,
         titleKey = 200,
@@ -151,27 +184,6 @@ sealed class AccountOnboardingContent(
         @Composable
         override fun infoText(): String {
             return stringResource(MR.strings.onboarding_step_groupCreate_info)
-        }
-    }
-
-    data class SilverPlan(
-        val planConfig: PlanConfig
-    ) : AccountOnboardingContent(
-        parentKey = 300,
-        titleKey = 300,
-        titleTag = MR.strings.plans_gift_screen_title,
-        title = MR.strings.plans_gift_screen_benefits_title,
-        buttonText = MR.strings.button_continue,
-        skipButtonText = null,
-        contentSizeRatio = 0.4f
-    ) {
-        @Composable
-        override fun infoText(): String {
-            return remember(planConfig) {
-                planConfig.planBenefits().joinToString(separator = "\n") {
-                    it.content
-                }
-            }
         }
     }
 
@@ -189,17 +201,31 @@ sealed class AccountOnboardingContent(
         }
     }
 
-    data object PersonalSpaceIntro : AccountOnboardingContent(
+    data object PersonalSpaceCurrentUsersIntro : AccountOnboardingContent(
         parentKey = 500,
         titleKey = 500,
         titleTag = MR.strings.personalSpace_spaceTitle,
-        title = MR.strings.onboarding_step_personalSpace_title,
+        title = MR.strings.onboarding_step_personalSpace_title_currentUsers,
         buttonText = MR.strings.button_continue,
         skipButtonText = null
     ) {
         @Composable
         override fun infoText(): String {
-            return stringResource(MR.strings.onboarding_step_personalSpace_info)
+            return stringResource(MR.strings.onboarding_step_personalSpace_info_currentUsers)
+        }
+    }
+
+    data object PersonalSpaceNewUsersIntro : AccountOnboardingContent(
+        parentKey = 550,
+        titleKey = 550,
+        titleTag = MR.strings.personalSpace_spaceTitle,
+        title = MR.strings.onboarding_step_personalSpace_title_newUsers,
+        buttonText = MR.strings.button_continue,
+        skipButtonText = MR.strings.button_notNow
+    ) {
+        @Composable
+        override fun infoText(): String {
+            return stringResource(MR.strings.onboarding_step_personalSpace_info_newUsers)
         }
     }
 
@@ -241,4 +267,6 @@ sealed interface AccountOnboardingUiEvent {
     data object SkipOnboarding : AccountOnboardingUiEvent
     data object CopyPersonalCode : AccountOnboardingUiEvent
     data object SharePersonalCode : AccountOnboardingUiEvent
+    data object GoWithGroupMode : AccountOnboardingUiEvent
+    data object GoWithPersonalSpaceMode : AccountOnboardingUiEvent
 }

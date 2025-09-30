@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import app.paralino.core.MR
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenEvent
 import app.paralino.core.presentation.onboarding.AccountOnboardingScreenUiEvent
@@ -27,6 +28,7 @@ fun AccountOnboardingScreenCore(
     openPersonalCodes: () -> Unit,
     openPaywall: (BillingScreenSourceType) -> Unit,
     onSharePersonalCode: (String) -> Unit,
+    openSharingScreen: (GroupOrSpaceId) -> Unit,
     askNotificationPermission: () -> Unit
 ) {
 
@@ -41,11 +43,11 @@ fun AccountOnboardingScreenCore(
                 AccountOnboardingScreenEvent.OpenPersonalCodes -> openPersonalCodes()
                 AccountOnboardingScreenEvent.OpenGroupCreate -> onCreateGroup()
                 is AccountOnboardingScreenEvent.OpenPaywall -> openPaywall(event.type)
+                is AccountOnboardingScreenEvent.OpenSharingStart -> openSharingScreen(event.groupId)
 
                 null -> {
                     /* do nothing */
                 }
-
             }
         }
     }

@@ -2,18 +2,19 @@ package app.paralino.core.ui.settings.billing
 
 enum class BillingScreenSourceType(val key: String) {
     GROUP_ONBOARDING("group_onboarding"),
+    PERSONAL_SPACE_ONBOARDING("personalSpace_onboarding"),
     SKIPPED_ONBOARDING("skipped_onboarding"),
-    FREE_PLAN_NEW_USER("new_user_onboarding"),
+    FREE_PLAN_NEW_GROUP_MEMBER("new_group_member_added"),
     UPGRADE("notice"),
-    FREE_PLAN_NOTICE("notice"),
     NORMAL("normal");
 
     val isOnboarding get() = when (this) {
         GROUP_ONBOARDING,
+        PERSONAL_SPACE_ONBOARDING,
         SKIPPED_ONBOARDING,
-        FREE_PLAN_NEW_USER -> true
+        FREE_PLAN_NEW_GROUP_MEMBER -> true
+
         UPGRADE,
-        FREE_PLAN_NOTICE,
         NORMAL -> false
     }
 

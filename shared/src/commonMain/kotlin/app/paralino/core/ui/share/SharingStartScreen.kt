@@ -233,7 +233,17 @@ fun SharingStartScreenCore(
         },
         skipButton = if (vm.isOnboarding) {
             @Composable {
-                OnboardingSkipButton(onSkip = onSkipOnboarding)
+                Column {
+                    if (vm.isPersonalSpace && state.shouldUpgradePlan) {
+                        PlanLimitSmallUpgradeButton(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            text = stringResource(MR.strings.groups_sharing_plan_limit_chip_owner),
+                            onClick = { openSubscriptions() }
+                        )
+                    }
+
+                    OnboardingSkipButton(onSkip = onSkipOnboarding)
+                }
             }
         } else if (!state.isNewContract) {
             @Composable {

@@ -38,8 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
@@ -62,6 +64,7 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun UserDeviceItem(
     modifier: Modifier = Modifier,
+    elevation: Dp = 0.dp,
     state: UserDeviceOrSessionItemState,
     onEvent: (UserDeviceItemEvent) -> Unit
 ) {
@@ -75,6 +78,9 @@ fun UserDeviceItem(
             .clickable {
 //                onEvent(UserDeviceItemEvent.onItemClick(state))
                 expanded = !expanded
+            }
+            .conditional(elevation.value > 0) {
+                shadow(elevation = elevation, shape = RoundedCornerShape(12.dp))
             }
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)

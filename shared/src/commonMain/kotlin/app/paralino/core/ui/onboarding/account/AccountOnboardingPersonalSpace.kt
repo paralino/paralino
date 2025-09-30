@@ -138,6 +138,7 @@ private fun DeviceContent1(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth(0.95f)
             .pulsate(pulseAmount = 0.9f),
+        elevation = 8.dp,
         state = data,
         onEvent = { }
     )
@@ -166,6 +167,7 @@ private fun DeviceContent2(modifier: Modifier = Modifier) {
             .fillMaxWidth(0.95f)
             .pulsate(pulseAmount = 0.9f)
             .clickable { },
+        elevation = 8.dp,
         state = data,
         onEvent = { }
     )
@@ -194,6 +196,7 @@ private fun DeviceContent3(modifier: Modifier = Modifier) {
             .fillMaxWidth(0.95f)
             .pulsate(pulseAmount = 0.9f)
             .clickable { },
+        elevation = 8.dp,
         state = data,
         onEvent = { }
     )

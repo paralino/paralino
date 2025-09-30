@@ -25,7 +25,10 @@ fun FreePlanInfoScreenCore(
     AccountOnboardingScreenContent(
         modifier = Modifier.padding(paddingValues),
         coreUiState = coreUiState,
-        step = AccountOnboardingContent.SilverPlan(planConfig = uiState),
+        step = AccountOnboardingContent.AccountOnboardingStart(
+            isGroupChecked = false,
+            isPersonalSpaceChecked = false
+        ),
         onEvent = {
             if (it == AccountOnboardingUiEvent.ConfirmOnboarding) {
                 vm.confirmFreePlan()

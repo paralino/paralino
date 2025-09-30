@@ -261,7 +261,7 @@ class MemberInviteViewModel(
                                     } else {
                                         _eventChannel.send(
                                             MemberInviteScreenEvent.OpenPaywall(
-                                                BillingScreenSourceType.FREE_PLAN_NEW_USER
+                                                BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER
                                             )
                                         )
                                     }

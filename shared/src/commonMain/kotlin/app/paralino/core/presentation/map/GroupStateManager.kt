@@ -123,15 +123,12 @@ class GroupStateManager(
             val limit = userRepository.userPlans.value.groupsLimit
             val groupCount = getAllGroupsItemState().filter { it.isCurrentUserOwner }.size
             val maxGroupLimit = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.groupsLimit
-            val shouldShowFreePlanNoticeScreen = userRepository.shouldShowFreePlanNoticeScreen
 
             if (maxGroupLimit != null && groupCount >= maxGroupLimit) {
                 // This would need to be handled by the main ViewModel to update alertDialog
                 eventChannel.trySend(MapHomeScreenEvent.ShowPlanLimitAlert(limit))
             } else if (limit in 0..groupCount) {
                 eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
-            } else if (shouldShowFreePlanNoticeScreen) {
-                eventChannel.trySend(MapHomeScreenEvent.ShowFreePlanInfo)
             } else {
                 eventChannel.trySend(MapHomeScreenEvent.OpenGroupCreateScreen)
             }

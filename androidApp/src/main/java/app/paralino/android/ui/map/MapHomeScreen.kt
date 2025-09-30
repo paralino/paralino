@@ -284,10 +284,6 @@ fun MapScreenEventHandler(
                     appState.navController.navigate(AppScreen.MainHome.GroupCreate.route())
                 }
 
-                MapHomeScreenEvent.ShowFreePlanInfo -> {
-                    appState.navController.navigate(AppScreen.MainHome.FreePlanNoticeScreen.route())
-                }
-
                 MapHomeScreenEvent.OpenPaywall -> {
                     appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
                 }
@@ -372,12 +368,6 @@ fun MapScreenEventHandler(
 
                 MapHomeScreenEvent.AskNotificationPermission -> {
                     notificationPermissionHandler.askNotificationPermission()
-                }
-
-                MapHomeScreenEvent.OpenFreePlanInfo -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.FreePlanNoticeScreen.route(groupId = null)
-                    )
                 }
 
                 MapHomeScreenEvent.OpenPersonalCodes -> {

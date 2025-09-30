@@ -12,7 +12,6 @@ import app.paralino.core.domain.user.UserSessionState
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.LoginDetailsRaw
@@ -20,7 +19,6 @@ import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
-import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -108,11 +106,6 @@ class UserRepository constructor(
         )
 
     val cachedUser: UserMe? get() = localUser.value.data
-
-    val shouldShowFreePlanNoticeScreen: Boolean get() {
-        return userPlans.value.highestValidPlanConfig.planTypeEnum == PlanType.SILVER
-                && !appPrefs.didStartedGroupOnboarding
-    }
 
     suspend fun login(email: String, password: String): UserSession {
         return triggerRemoteOnly { remote.login(email, password) }

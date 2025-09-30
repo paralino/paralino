@@ -38,6 +38,11 @@ fun AccountOnboardingScreen(
         },
         openPersonalCodes = { appState.navController.navigate(AppScreen.Settings.PersonalCodes.routeSignature) },
         onSharePersonalCode = { context.share(it) },
+        openSharingScreen = {
+            appState.navController.navigate(
+                AppScreen.MainHome.SharingStart.route(groupId = it.id, isOnboarding = true)
+            )
+        },
         askNotificationPermission = { notificationPermissionHandler.askNotificationPermission() },
     )
 }

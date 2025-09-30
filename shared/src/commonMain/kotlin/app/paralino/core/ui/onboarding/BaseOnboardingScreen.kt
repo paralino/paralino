@@ -93,22 +93,26 @@ fun BaseOnboardingScreen(
     modifier: Modifier = Modifier,
     buttonText: String = stringResource(MR.strings.button_next),
     skipButtonText: String = stringResource(MR.strings.button_skip),
-    onNext: () -> Unit,
+    onNext: (() -> Unit)?,
     onSkip: (() -> Unit)?,
     content: @Composable (PaddingValues) -> Unit
 ) {
     BaseOnboardingScreen(
         modifier = modifier,
-        nextButton = @Composable {
-            FilledButton(
-                modifier = Modifier,
-                style = ButtonStyle.BIG,
-                state = AppButtonState.CONTENT,
-                icon = null,
-                onClick = onNext
-            ) {
-                Text(text = buttonText)
+        nextButton = if (onNext != null) {
+            @Composable {
+                FilledButton(
+                    modifier = Modifier,
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.CONTENT,
+                    icon = null,
+                    onClick = onNext
+                ) {
+                    Text(text = buttonText)
+                }
             }
+        } else {
+            null
         },
         skipButton = if (onSkip != null) {
             @Composable {
@@ -192,42 +196,45 @@ fun BaseOnboardingContent(
 
             Spacer(modifier.weight(1f))
 
-            Column(
-                modifier = Modifier
-                    .padding(20.dp)
-                ,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                AnimatedContent(
-                    targetState = order,
-                    label = "animated title",
-                    transitionSpec = onboardingContentTransitionSpec()
+            if (contentSizeRatio > 0f) {
+                Column(
+                    modifier = Modifier
+                        .padding(20.dp)
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = title,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                if (info != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
                     AnimatedContent(
                         targetState = order,
-                        label = "animated info",
+                        label = "animated title",
                         transitionSpec = onboardingContentTransitionSpec()
                     ) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = info.annotatedBoldCompose(),
-                            style = MaterialTheme.typography.subtitle1,
+                            text = title,
+                            style = MaterialTheme.typography.h5,
+                            fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         )
                     }
+
+                    if (info != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        AnimatedContent(
+                            targetState = order,
+                            label = "animated info",
+                            transitionSpec = onboardingContentTransitionSpec()
+                        ) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = info.annotatedBoldCompose(),
+                                style = MaterialTheme.typography.subtitle1,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
+
             }
 
             Spacer(modifier.weight(1f))
