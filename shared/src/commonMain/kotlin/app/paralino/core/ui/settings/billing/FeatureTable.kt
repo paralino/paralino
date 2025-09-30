@@ -415,7 +415,13 @@ private fun FeatureSummaryChip(
         modifier = modifier
             .clip(RoundedCornerShape(100))
             .background(MaterialTheme.colors.background)
-            .background(AppColors.accentDark.copy(alpha = 0.2f))
+            .background(
+                if (state.isHighlighted) {
+                    AppColors.highlightGold.copy(alpha = 0.8f)
+                } else {
+                    AppColors.accentDark.copy(alpha = 0.2f)
+                }
+            )
             .padding(vertical = 4.dp)
             .padding(start = 8.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -423,7 +429,11 @@ private fun FeatureSummaryChip(
         Text(
             text = state.content,
             style = MaterialTheme.typography.caption,
-            color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
+            color = if (state.isHighlighted) {
+                AppColors.darkBackground.copy(alpha = 0.8f)
+            } else {
+                MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
+            }
         )
         Spacer(Modifier.size(4.dp))
         Text(

@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.groups.settings
 
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
@@ -12,6 +13,8 @@ data class GroupSettingsScreenState(
     val loadingAction: Boolean,
     val name: String,
     val image: ImageModel,
+    val planName: String,
+    val featureTableState: FeatureTableState,
     val alertDialog: MainAlertDialog?
 )
 

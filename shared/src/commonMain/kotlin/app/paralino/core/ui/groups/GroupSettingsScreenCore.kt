@@ -2,14 +2,19 @@ package app.paralino.core.ui.groups
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Resource
@@ -25,6 +30,7 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.SettingsActionItem
+import app.paralino.core.ui.settings.billing.FeatureTable
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -138,6 +144,26 @@ fun GroupSettingsScreenCore(
                     ) {
                         vm.onEvent(GroupSettingsUiEvent.LeaveGroup)
                     }
+                }
+
+                if (state.data.canEdit) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .padding(bottom = 4.dp, top = 40.dp),
+                        text = stringResource(MR.strings.paywall_current_plan_label, state.data.planName),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
+                    )
+
+                    FeatureTable(
+                        modifier = Modifier,
+                        table = state.data.featureTableState,
+                        canExpand = false,
+                        isExpanded = true,
+                        onExpandPlans = {}
+                    )
                 }
             }
 

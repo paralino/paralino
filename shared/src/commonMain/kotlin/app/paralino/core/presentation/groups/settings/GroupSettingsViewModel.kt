@@ -7,13 +7,17 @@ import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
+import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.settings.billing.FeatureTableState
+import app.paralino.core.presentation.settings.billing.PlanInfoState
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.exceptions.DataStillLoadingException
 import app.paralino.core.utils.exceptions.NotFoundException
@@ -34,7 +38,8 @@ class GroupSettingsViewModel(
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val groupRemove: GroupRemoveUseCase,
     private val createGroup: GroupCreateUseCase,
-    private val groupPreRefresh: GroupPreRefreshUseCase
+    private val groupPreRefresh: GroupPreRefreshUseCase,
+    private val remoteConfigRepo: RemoteConfigRepository,
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroup?>(null)
@@ -49,6 +54,7 @@ class GroupSettingsViewModel(
         groupLocalDataSource.getGroupWithoutMembers(groupId)
             .mapToPayload { group ->
                 groupData.update { group }
+                val planConfig = group.planConfig(remoteConfigRepo.getConfigOnce())
 
                 GroupSettingsScreenState(
                     id = groupId,
@@ -58,6 +64,12 @@ class GroupSettingsViewModel(
                     loadingAction = false,
                     name = group.name,
                     image = group.image,
+                    planName = planConfig.adjustedPlanName,
+                    featureTableState = constructFeatureTable(
+                        planConfig = planConfig,
+                        group = group,
+                        config = remoteConfigRepo.getConfigOnce()
+                    ),
                     alertDialog = _uiState.value.data?.alertDialog
                 )
             }
@@ -207,5 +219,32 @@ class GroupSettingsViewModel(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    private fun constructFeatureTable(
+        planConfig: PlanConfig,
+        group: UserGroup,
+        config: ConfigData
+    ): FeatureTableState {
+        val currentPlan = planConfig.copy(
+            membersLimit = group.membersLimit(config),
+            devicesLimit = group.devicesLimit(config),
+            placesLimit = group.placesLimit(config) ?: -1
+        )
+        return FeatureTableState.constructFeaturesTable(
+            isGroupPlanOnly = true,
+            plans = listOf(
+                PlanInfoState(
+                    productId = "",
+                    name = currentPlan.adjustedPlanName,
+                    config = currentPlan,
+                    isCurrentPlan = true,
+                    hasSpecialOffer = false,
+                    isSelected = true,
+                    isExpanded = true,
+                    billingPeriods = emptyList()
+                )
+            )
+        )
     }
 }

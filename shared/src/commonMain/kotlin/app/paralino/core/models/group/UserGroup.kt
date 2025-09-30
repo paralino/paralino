@@ -96,14 +96,6 @@ data class UserGroup constructor(
         }.takeIf { it >= 0 }
     }
 
-    fun historyDaysLimit(config: ConfigData): Int {
-        if (isPlanExpired) {
-            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).historyDaysLimit
-        } else {
-            return config.planConfigForPlanTypeOrDefault(planType).historyDaysLimit
-        }
-    }
-
     fun planConfig(config: ConfigData): PlanConfig {
         if (isPlanExpired) {
             return config.planConfigForPlanTypeOrDefault(fallbackPlanType)

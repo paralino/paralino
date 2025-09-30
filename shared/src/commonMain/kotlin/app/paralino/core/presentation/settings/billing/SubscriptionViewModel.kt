@@ -71,7 +71,7 @@ class SubscriptionViewModel(
     private fun getPlanState(plan: UserPlan?): SubscriptionInfoState? {
         return plan?.let {
             SubscriptionInfoState(
-                name = it.config.planName,
+                name = it.config.adjustedPlanName,
                 expiresAt = it.plan.expiresAt?.toString() ?: "N/A",
                 billingPeriod = it.plan.billingPeriod.name,
                 hasPremiumPlan = it.plan.planTypeEnum.isPremium,
@@ -88,6 +88,7 @@ class SubscriptionViewModel(
     private fun constructFeatureTable(): FeatureTableState {
         val currentPlan = userRepo.userPlans.value.highestValidPlanConfig
         return FeatureTableState.constructFeaturesTable(
+            isGroupPlanOnly = false,
             plans = listOf(
                 PlanInfoState(
                     productId = "",

@@ -39,6 +39,7 @@ data class PaywallScreenState(
     val featureTableForSelectedPlan: FeatureTableState? = selectedPlan?.let { plan ->
         FeatureTableState(
             canExpand = true,
+            isGroupPlanOnly = false,
             features = fullFeatureTable.features.map {
                 val newValues = it.values.mapNotNull {
                     if (it.planType == plan.type) {

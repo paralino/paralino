@@ -8,6 +8,7 @@ import app.paralino.core.provider.localizedString
 
 data class FeatureTableState(
     val canExpand: Boolean,
+    val isGroupPlanOnly: Boolean,
     val features: List<FeatureTableItemState>
 ) {
     companion object {
@@ -20,10 +21,14 @@ data class FeatureTableState(
                 addAll(uiPlans)
             }
 
-            return constructFeaturesTable(plans = plans)
+            return constructFeaturesTable(
+                isGroupPlanOnly = false,
+                plans = plans
+            )
         }
 
         fun constructFeaturesTable(
+            isGroupPlanOnly: Boolean,
             plans: List<PlanInfoState>
         ): FeatureTableState {
             val values = buildList {
@@ -45,33 +50,35 @@ data class FeatureTableState(
                     )
                 )
 
-                addAll(createCollapsedSummary(plans = plans))
+                if (!isGroupPlanOnly) {
+                    addAll(createCollapsedSummary(plans = plans))
 
-                add(
-                    FeatureTableItemState.Section(
-                        content = MR.strings.paywall_feature_groups.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        topSpacing = 0.dp,
+                    add(
+                        FeatureTableItemState.Section(
+                            content = MR.strings.paywall_feature_groups.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            topSpacing = 0.dp,
+                        )
                     )
-                )
 
-                add(
-                    FeatureTableItemState.Detail(
-                        content = MR.strings.paywall_feature_groups.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        values = plans.map {
-                            FeatureTableItemValue.Count(
-                                content = it.config.groupsLimit.toString(),
-                                planType = it.type,
-                                highlightMode = if (it.isSelected) {
-                                    FeatureTableItemHighlightMode.FULL
-                                } else {
-                                    FeatureTableItemHighlightMode.NONE
-                                }
-                            )
-                        }
+                    add(
+                        FeatureTableItemState.Detail(
+                            content = MR.strings.paywall_feature_groups.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            values = plans.map {
+                                FeatureTableItemValue.Count(
+                                    content = it.config.groupsLimit.toString(),
+                                    planType = it.type,
+                                    highlightMode = if (it.isSelected) {
+                                        FeatureTableItemHighlightMode.FULL
+                                    } else {
+                                        FeatureTableItemHighlightMode.NONE
+                                    }
+                                )
+                            }
+                        )
                     )
-                )
+                }
 
                 add(
                     FeatureTableItemState.Detail(
@@ -173,103 +180,107 @@ data class FeatureTableState(
                     )
                 )
 
-                add(
-                    FeatureTableItemState.Section(
-                        content = MR.strings.paywall_feature_personalSpace.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        topSpacing = 16.dp
+                if (!isGroupPlanOnly) {
+                    add(
+                        FeatureTableItemState.Section(
+                            content = MR.strings.paywall_feature_personalSpace.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            topSpacing = 16.dp
+                        )
                     )
-                )
 
-                add(
-                    FeatureTableItemState.Detail(
-                        content = MR.strings.paywall_feature_summary_history.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        values = plans.map {
-                            val highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
-                            }
-
-                            if (it.config.personalHistoryDaysLimit > 0) {
-                                FeatureTableItemValue.Text(
-                                    content = MR.plurals.groups_sharing_duration_type_days.localizedString(
-                                        quantity = it.config.personalHistoryDaysLimit,
-                                        it.config.personalHistoryDaysLimit
-                                    ),
-                                    planType = it.type,
-                                    highlightMode = highlightMode
-                                )
-                            } else if (it.config.personalHistoryDaysLimit == 0) {
-                                FeatureTableItemValue.Text(
-                                    content = MR.strings.paywall_feature_history_days_minimum.localizedString(),
-                                    planType = it.type,
-                                    highlightMode = highlightMode
-                                )
-                            } else {
-                                FeatureTableItemValue.Text(
-                                    content = MR.strings.paywall_feature_value_unlimited.localizedString(),
-                                    planType = it.type,
-                                    highlightMode = highlightMode
-                                )
-                            }
-                        }
-                    )
-                )
-
-                add(
-                    FeatureTableItemState.Detail(
-                        content = MR.strings.paywall_feature_devices_personal.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        values = plans.map {
-                            FeatureTableItemValue.Count(
-                                content = it.config.personalDevicesLimit.toString(),
-                                planType = it.type,
-                                highlightMode = if (it.isSelected) {
+                    add(
+                        FeatureTableItemState.Detail(
+                            content = MR.strings.paywall_feature_summary_history.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            values = plans.map {
+                                val highlightMode = if (it.isSelected) {
                                     FeatureTableItemHighlightMode.FULL
                                 } else {
                                     FeatureTableItemHighlightMode.NONE
                                 }
-                            )
-                        }
-                    )
-                )
 
-                add(
-                    FeatureTableItemState.Detail(
-                        content = MR.strings.paywall_feature_places_personal.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        values = plans.map {
-                            val highlightMode = if (it.isSelected) {
-                                FeatureTableItemHighlightMode.FULL
-                            } else {
-                                FeatureTableItemHighlightMode.NONE
+                                if (it.config.personalHistoryDaysLimit > 0) {
+                                    FeatureTableItemValue.Text(
+                                        content = MR.plurals.groups_sharing_duration_type_days.localizedString(
+                                            quantity = it.config.personalHistoryDaysLimit,
+                                            it.config.personalHistoryDaysLimit
+                                        ),
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                } else if (it.config.personalHistoryDaysLimit == 0) {
+                                    FeatureTableItemValue.Text(
+                                        content = MR.strings.paywall_feature_history_days_minimum.localizedString(),
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                } else {
+                                    FeatureTableItemValue.Text(
+                                        content = MR.strings.paywall_feature_value_unlimited.localizedString(),
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                }
                             }
-                            if (it.config.personalPlacesLimit >= 0) {
+                        )
+                    )
+
+                    add(
+                        FeatureTableItemState.Detail(
+                            content = MR.strings.paywall_feature_devices_personal.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            values = plans.map {
                                 FeatureTableItemValue.Count(
-                                    content = it.config.personalPlacesLimit.toString(),
+                                    content = it.config.personalDevicesLimit.toString(),
                                     planType = it.type,
-                                    highlightMode = highlightMode
-                                )
-                            } else {
-                                FeatureTableItemValue.Text(
-                                    content = MR.strings.paywall_feature_value_unlimited.localizedString(),
-                                    planType = it.type,
-                                    highlightMode = highlightMode
+                                    highlightMode = if (it.isSelected) {
+                                        FeatureTableItemHighlightMode.FULL
+                                    } else {
+                                        FeatureTableItemHighlightMode.NONE
+                                    }
                                 )
                             }
-                        }
+                        )
                     )
-                )
 
-                add(
-                    FeatureTableItemState.Section(
-                        content = MR.strings.paywall_feature_section_others.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        topSpacing = 16.dp
+                    add(
+                        FeatureTableItemState.Detail(
+                            content = MR.strings.paywall_feature_places_personal.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            values = plans.map {
+                                val highlightMode = if (it.isSelected) {
+                                    FeatureTableItemHighlightMode.FULL
+                                } else {
+                                    FeatureTableItemHighlightMode.NONE
+                                }
+                                if (it.config.personalPlacesLimit >= 0) {
+                                    FeatureTableItemValue.Count(
+                                        content = it.config.personalPlacesLimit.toString(),
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                } else {
+                                    FeatureTableItemValue.Text(
+                                        content = MR.strings.paywall_feature_value_unlimited.localizedString(),
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                }
+                            }
+                        )
                     )
-                )
+                }
+
+                if (!isGroupPlanOnly) {
+                    add(
+                        FeatureTableItemState.Section(
+                            content = MR.strings.paywall_feature_section_others.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            topSpacing = 16.dp
+                        )
+                    )
+                }
 
                 add(
                     FeatureTableItemState.Detail(
@@ -343,44 +354,50 @@ data class FeatureTableState(
                     )
                 )
 
-                add(
-                    FeatureTableItemState.Detail(
-                        content = MR.strings.paywall_feature_max_privacy.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        values = plans.map {
-                            FeatureTableItemValue.Emoji(
-                                content = "✅",
-                                planType = it.type,
-                                highlightMode = if (it.isSelected) {
-                                    FeatureTableItemHighlightMode.FULL
-                                } else {
-                                    FeatureTableItemHighlightMode.NONE
-                                }
-                            )
-                        }
+                if (!isGroupPlanOnly) {
+                    add(
+                        FeatureTableItemState.Detail(
+                            content = MR.strings.paywall_feature_max_privacy.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            values = plans.map {
+                                FeatureTableItemValue.Emoji(
+                                    content = "✅",
+                                    planType = it.type,
+                                    highlightMode = if (it.isSelected) {
+                                        FeatureTableItemHighlightMode.FULL
+                                    } else {
+                                        FeatureTableItemHighlightMode.NONE
+                                    }
+                                )
+                            }
+                        )
                     )
-                )
 
-                add(
-                    FeatureTableItemState.Detail(
-                        content = MR.strings.paywall_feature_support_privacy.localizedString(),
-                        visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
-                        values = plans.map {
-                            FeatureTableItemValue.Emoji(
-                                content = if (it.type.isPremium) "✅" else "❌",
-                                planType = it.type,
-                                highlightMode = if (it.isSelected) {
-                                    FeatureTableItemHighlightMode.BOTTOM
-                                } else {
-                                    FeatureTableItemHighlightMode.NONE
-                                }
-                            )
-                        }
+                    add(
+                        FeatureTableItemState.Detail(
+                            content = MR.strings.paywall_feature_support_privacy.localizedString(),
+                            visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_EXPANDED,
+                            values = plans.map {
+                                FeatureTableItemValue.Emoji(
+                                    content = if (it.type.isPremium) "✅" else "❌",
+                                    planType = it.type,
+                                    highlightMode = if (it.isSelected) {
+                                        FeatureTableItemHighlightMode.BOTTOM
+                                    } else {
+                                        FeatureTableItemHighlightMode.NONE
+                                    }
+                                )
+                            }
+                        )
                     )
-                )
+                }
             }
 
-            return FeatureTableState(canExpand = false, features = values)
+            return FeatureTableState(
+                canExpand = false,
+                isGroupPlanOnly = isGroupPlanOnly,
+                features = values
+            )
         }
 
         private fun createCollapsedSummary(plans: List<PlanInfoState>): List<FeatureTableItemState> {
@@ -398,18 +415,21 @@ data class FeatureTableState(
                                         FeatureTableItemValueDataPoint(
                                             amount = it.config.groupsLimit.toString(),
                                             content = MR.strings.paywall_feature_summary_groups.localizedString(),
+                                            isHighlighted = false
                                         )
                                     )
                                     add(
                                         FeatureTableItemValueDataPoint(
                                             amount = it.config.membersLimit.toString(),
                                             content = MR.strings.paywall_feature_summary_members.localizedString(),
+                                            isHighlighted = false
                                         )
                                     )
                                     add(
                                         FeatureTableItemValueDataPoint(
                                             amount = it.config.devicesLimit.toString(),
                                             content = MR.strings.paywall_feature_summary_devices.localizedString(),
+                                            isHighlighted = false
                                         )
                                     )
                                     add(
@@ -420,6 +440,7 @@ data class FeatureTableState(
                                                 MR.strings.paywall_feature_value_unlimited.localizedString()
                                             },
                                             content = MR.strings.paywall_feature_summary_places.localizedString(),
+                                            isHighlighted = it.config.placesLimit < 0
                                         )
                                     )
                                     add(
@@ -435,6 +456,7 @@ data class FeatureTableState(
                                                 MR.strings.paywall_feature_value_unlimited.localizedString()
                                             },
                                             content = MR.strings.paywall_feature_summary_history.localizedString(),
+                                            isHighlighted = it.config.historyDaysLimit < 0
                                         )
                                     )
                                 },
@@ -462,6 +484,7 @@ data class FeatureTableState(
                                         FeatureTableItemValueDataPoint(
                                             amount = it.config.personalDevicesLimit.toString(),
                                             content = MR.strings.paywall_feature_summary_devices.localizedString(),
+                                            isHighlighted = false
                                         )
                                     )
                                     add(
@@ -472,6 +495,7 @@ data class FeatureTableState(
                                                 MR.strings.paywall_feature_value_unlimited.localizedString()
                                             },
                                             content = MR.strings.paywall_feature_summary_places.localizedString(),
+                                            isHighlighted = it.config.personalPlacesLimit < 0
                                         )
                                     )
                                     add(
@@ -487,6 +511,7 @@ data class FeatureTableState(
                                                 MR.strings.paywall_feature_value_unlimited.localizedString()
                                             },
                                             content = MR.strings.paywall_feature_summary_history.localizedString(),
+                                            isHighlighted = it.config.personalHistoryDaysLimit < 0
                                         )
                                     )
                                 },
@@ -604,7 +629,8 @@ sealed interface FeatureTableItemValue {
 
 data class FeatureTableItemValueDataPoint(
     val amount: String,
-    val content: String
+    val content: String,
+    val isHighlighted: Boolean
 )
 
 enum class FeatureTableItemHighlightMode {
