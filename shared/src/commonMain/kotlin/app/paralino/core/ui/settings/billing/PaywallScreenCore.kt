@@ -23,12 +23,15 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -257,6 +260,7 @@ fun PaywallScreenCore(
                             .padding(bottom = 20.dp, top = 20.dp)
                             .fillMaxWidth(),
                         displayTitle = false,
+                        displayLocationHistory = false,
                         memberName = uiState.memberName,
                         memberImageModel = uiState.memberImageModel,
                         memberDeviceName = uiState.memberDeviceName,
@@ -265,6 +269,23 @@ fun PaywallScreenCore(
 
                     Spacer(modifier.weight(1f))
                 }
+            }
+
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = uiState.screenStep == PaywallScreenStep.LOCATION_HISTORY,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { -it / 2 }
+            ) {
+                PaywallScreenFeatureLocationHistory(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    paddingValues = PaddingValues(
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
+                        bottom = 100.dp
+                    ),
+                    content = uiState.locationHistoryStepMessage
+                )
             }
 
             AnimatedVisibility(
@@ -470,6 +491,7 @@ private fun ColumnScope.PaywallScreen(
                 .padding(bottom = 40.dp, top = 20.dp)
                 .fillMaxWidth(),
             displayTitle = true,
+            displayLocationHistory = true,
             memberName = state.memberName,
             memberImageModel = state.memberImageModel,
             memberDeviceName = state.memberDeviceName,

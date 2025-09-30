@@ -11,6 +11,7 @@ import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.max
 import kotlin.time.Duration.Companion.seconds
 
 class PaywallViewModel(
@@ -74,7 +76,8 @@ class PaywallViewModel(
 
             BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
             BillingScreenSourceType.UPGRADE,
-            BillingScreenSourceType.NORMAL -> {}
+            BillingScreenSourceType.NORMAL -> {
+            }
         }
 
         combine(
@@ -208,9 +211,15 @@ class PaywallViewModel(
                     PaywallScreenStep.ONBOARDING -> {
                         _uiState.update { it.copy(screenStep = PaywallScreenStep.DEMO) }
                     }
+
                     PaywallScreenStep.DEMO -> {
+                        _uiState.update { it.copy(screenStep = PaywallScreenStep.LOCATION_HISTORY) }
+                    }
+
+                    PaywallScreenStep.LOCATION_HISTORY -> {
                         _uiState.update { it.copy(screenStep = PaywallScreenStep.PAYWALL) }
                     }
+
                     PaywallScreenStep.PAYWALL -> {
                         val selectedPlan = uiState.value.selectedPlan
                         val selectedBillingPeriod = selectedPlan?.selectedBillingPeriod
@@ -402,6 +411,15 @@ class PaywallViewModel(
             )
         }
 
+        val locationHistoryMessage = let {
+            val maxPlan = uiPlans.maxByOrNull { it.config.planTypeEnum.order }?.config
+            if (maxPlan != null && maxPlan.personalHistoryDaysLimit < 0) {
+                MR.strings.paywall_header_feature_history_unlimited.localizedString()
+            } else {
+                MR.strings.paywall_header_feature_history_more.localizedString()
+            }
+        }
+
         return PaywallScreenState(
             canShowMoreInfo = AppBuildConfig.instance.isDevMode,
             freePlanInfo = freeUiPlan,
@@ -424,8 +442,10 @@ class PaywallViewModel(
             },
             screenType = sourceType,
             memberName = userRepo.cachedUser?.data?.userName ?: "Peter",
-            memberImageModel = userRepo.cachedUser?.data?.userImage ?: ImageModel.emoji(Emojis.goat),
-            memberDeviceName = deviceApiProvider.defaultDeviceName
+            memberImageModel = userRepo.cachedUser?.data?.userImage
+                ?: ImageModel.emoji(Emojis.goat),
+            memberDeviceName = deviceApiProvider.defaultDeviceName,
+            locationHistoryStepMessage = locationHistoryMessage
         )
     }
 

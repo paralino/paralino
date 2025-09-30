@@ -1,14 +1,16 @@
 package app.paralino.core.ui.onboarding.account
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.invite.manage.PersonalCodeScreenCodeData
 import app.paralino.core.ui.CoreUiState
-import app.paralino.core.ui.onboarding.BaseOnboardingContent
+import app.paralino.core.ui.onboarding.BaseOnboardingScrollableContent
 import app.paralino.core.ui.onboarding.BaseOnboardingHeaderContent
 import app.paralino.core.ui.onboarding.BaseOnboardingScreen
 import app.paralino.core.ui.onboarding.welcome.WelcomeOnboardingPageLocationHistory
@@ -39,13 +41,14 @@ fun AccountOnboardingScreenContent(
             null
         },
     ) {
-        BaseOnboardingContent(
+        BaseOnboardingScrollableContent(
             order = step.titleKey,
             title = stringResource(step.title),
             info = step.infoText(),
             contentSizeRatio = step.contentSizeRatio,
             minHeaderSize = step.minHeaderSize,
             paddingValues = it,
+            innerPaddingValues = remember { PaddingValues() },
             headerContent = {
                 BaseOnboardingHeaderContent(
                     titleKey = step.titleKey,

@@ -66,6 +66,7 @@ fun PaywallScreenFeatureElements(
     memberName: String,
     memberDeviceName: String,
     displayTitle: Boolean,
+    displayLocationHistory: Boolean,
     valueFormatter: IValueFormatter
 ) {
     Column(
@@ -94,32 +95,34 @@ fun PaywallScreenFeatureElements(
             contentDescription = null
         )
 
+        if (displayLocationHistory) {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .height(400.dp)
+                    .rotate(2f)
+                    .shadow(8.dp, RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colors.surface)
+                    .padding(6.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                HistoryMapOnboardingContent(
+                    modifier = Modifier.fillMaxSize(),
+                    animate = false,
+                )
+            }
+        }
+
         MemberItem(
             modifier = Modifier
                 .padding(top = 20.dp)
-                .rotate(2f),
+                .rotate(-2f),
             memberName = memberName,
             memberImageModel = memberImageModel,
             memberDeviceName = memberDeviceName,
             valueFormatter = valueFormatter
         )
-
-        Box(
-            modifier = Modifier
-                .padding(top = 12.dp)
-                .height(450.dp)
-                .rotate(-2f)
-                .shadow(8.dp, RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colors.surface)
-                .padding(6.dp)
-                .clip(RoundedCornerShape(8.dp))
-        ) {
-            HistoryMapOnboardingContent(
-                modifier = Modifier.fillMaxSize(),
-                animate = false,
-            )
-        }
 
         var itemState1 by remember { mutableStateOf(true) }
         var itemState2 by remember { mutableStateOf(false) }

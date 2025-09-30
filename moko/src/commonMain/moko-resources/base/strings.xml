@@ -317,6 +317,8 @@
     <string name="paywall_discount_percentage_badge_text">%s OFF</string>
     <string name="paywall_header_feature_list_screen">You can protect privacy of all members in your group</string>
     <string name="paywall_header_feature_demo_screen">And do so much more...</string>
+    <string name="paywall_header_feature_history_unlimited">Unlimited location history for your devices is now available!</string>
+    <string name="paywall_header_feature_history_more">Unlock more days of location history</string>
     <string name="paywall_header_take_control">Take control of your privacy</string>
     <string name="paywall_header_try_it">Unlocked</string>
     <string name="paywall_header_user_reviews">What our users say</string>

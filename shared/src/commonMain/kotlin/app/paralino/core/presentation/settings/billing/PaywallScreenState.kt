@@ -24,6 +24,7 @@ data class PaywallScreenState(
     val memberImageModel: ImageModel,
     val memberName: String,
     val memberDeviceName: String,
+    val locationHistoryStepMessage: String
 ) {
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod
@@ -106,7 +107,7 @@ data class PlanBillingPeriodState(
 )
 
 enum class PaywallScreenStep {
-    ONBOARDING, DEMO, PAYWALL
+    ONBOARDING, DEMO, LOCATION_HISTORY, PAYWALL
 }
 
 data class FaqSectionState(
