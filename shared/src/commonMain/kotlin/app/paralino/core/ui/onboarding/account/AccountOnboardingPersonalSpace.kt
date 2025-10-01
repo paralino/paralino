@@ -277,8 +277,7 @@ private fun createDummyDeviceWithSession(
     )
 
     val sessionItemState = UserSessionItemState(
-        session = userSession,
-        deleteSessionAction = UserDeviceAction.DeleteSession()
+        session = userSession
     )
 
     return UserDeviceOrSessionItemState.DeviceWithSession(

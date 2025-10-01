@@ -739,12 +739,15 @@
     <string name="history_delete_irreversible_action_notice">This action is irreversible.</string>
     <string name="history_delete_screen_title">Delete location history</string>
     <string name="personalSpace_spaceTitle">Personal space</string>
-    <string name="personalSpace_session_createdAt">Created at</string>
+    <string name="personalSpace_session_createdAt">Created at:</string>
+    <string name="personalSpace_session_updatedAt">Updated at:</string>
+    <string name="personalSpace_session_expiresAt">Expires at:</string>
     <string name="personalSpace_session_title">Session</string>
     <string name="personalSpace_tracking_title">Location tracking</string>
     <string name="personalSpace_tracking_activate">Activate</string>
     <string name="personalSpace_device_tag_loggedOut">Logged out</string>
     <string name="personalSpace_device_tag_unknownSession">Session missing a device</string>
+    <string name="personalSpace_device_tag_expiredSession">Session expired</string>
     <string name="personalSpace_device_deactivate_action">Deactivate</string>
     <string name="personalSpace_device_logout_titleConfirm">Confirm logout</string>
     <string name="personalSpace_device_logout_actionConfirm">Delete session</string>

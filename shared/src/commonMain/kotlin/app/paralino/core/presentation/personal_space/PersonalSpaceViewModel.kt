@@ -212,8 +212,7 @@ class PersonalSpaceViewModel(
                 userRepo.getAllSessionsFromRemote()
                     .map {
                         UserSessionItemState(
-                            session = it,
-                            deleteSessionAction = UserDeviceAction.DeleteSession()
+                            session = it
                         )
                     }
             } catch (e: Exception) {
@@ -265,6 +264,7 @@ class PersonalSpaceViewModel(
                             } else {
                                 null
                             },
+                            // if the device has session, user should first log out and then delete the device
                             deleteAction = if (device.location == null && session == null) {
                                 previousDeviceState?.device?.deleteAction
                                     ?: UserDeviceAction.DeleteDevice()
@@ -272,10 +272,7 @@ class PersonalSpaceViewModel(
                                 null
                             }
                         ),
-                        session = session?.copy(
-                            deleteSessionAction = previousSessionState?.session?.deleteSessionAction
-                                ?: session.deleteSessionAction
-                        )
+                        session = session
                     )
                 }
             )
@@ -283,14 +280,8 @@ class PersonalSpaceViewModel(
             addAll(
                 sessions.mapNotNull { session ->
                     if (devices.none { it.sessionId == session.session.id }) {
-                        val previousSessionState = previousState.devicesWithSessions.firstOrNull {
-                            it.session?.session?.id == session.session.id
-                        }
                         UserDeviceOrSessionItemState.SessionWithoutDevice(
-                            session = session.copy(
-                                deleteSessionAction = previousSessionState?.session?.deleteSessionAction
-                                    ?: session.deleteSessionAction
-                            )
+                            session = session
                         )
                     } else {
                         null
@@ -432,6 +423,28 @@ class PersonalSpaceViewModel(
                 append("\n")
             }
 
+            session.updatedAt.isoWithOffsetToInstant()?.let {
+                valueFormatter.formatRelativeDateTime(
+                    timeUTC = it.toLocalDateTime(TimeZone.UTC)
+                )
+            }?.let {
+                append(MR.strings.personalSpace_session_updatedAt.localizedString())
+                append(" ")
+                append(it)
+                append("\n")
+            }
+
+            session.expire.isoWithOffsetToInstant()?.let {
+                valueFormatter.formatSimpleDateTime(
+                    timeUTC = it.toLocalDateTime(TimeZone.UTC)
+                )
+            }?.let {
+                append(MR.strings.personalSpace_session_expiresAt.localizedString())
+                append(" ")
+                append(it)
+                append("\n")
+            }
+
             append(session.countryName)
             append(", ")
             append(session.ip)
@@ -449,6 +462,10 @@ class PersonalSpaceViewModel(
 
                 _uiState.update {
                     it.copy(loadingAction = state is Payload.Loading)
+                }
+
+                if (state is Payload.Success) {
+                    updateSessions()
                 }
             }
             .launchIn(coroutineScope)

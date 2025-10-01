@@ -1,5 +1,7 @@
 package app.paralino.core.models.user
 
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,6 +33,10 @@ data class UserSession constructor(
     val countryName: String,
     val current: Boolean
 ) {
+    val isSessionMaybeExpired: Boolean get() = expire.isoWithOffsetToInstant()?.let {
+        it < nowUTC()
+    } ?: false
+
     val deviceWithBrandName: String? = listOf(deviceBrand, deviceModel)
         .filter { it.isNotBlank() }
         .joinToString(" ")

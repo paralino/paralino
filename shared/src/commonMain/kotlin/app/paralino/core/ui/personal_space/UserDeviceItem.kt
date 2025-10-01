@@ -306,6 +306,21 @@ fun UserDeviceItem(
                                     .align(Alignment.CenterVertically)
                             )
                         }
+
+                        if (state.session?.isSessionExpired == true) {
+                            Text(
+                                text = stringResource(MR.strings.personalSpace_device_tag_expiredSession),
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
+                                color = AppColors.darkBackground.copy(alpha = 0.8f),
+                                modifier = Modifier
+                                    .background(
+                                        AppColors.highlightGold,
+                                        MaterialTheme.shapes.medium
+                                    )
+                                    .padding(horizontal = 6.dp, vertical = 1.dp)
+                                    .align(Alignment.CenterVertically)
+                            )
+                        }
                     }
 
                     // Last location ping

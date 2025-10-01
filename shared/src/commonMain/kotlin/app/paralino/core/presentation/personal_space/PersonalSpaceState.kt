@@ -59,9 +59,10 @@ sealed interface UserDeviceOrSessionItemState {
 }
 
 data class UserSessionItemState(
-    val session: UserSession,
-    val deleteSessionAction: UserDeviceAction.DeleteSession
-)
+    val session: UserSession
+) {
+    val isSessionExpired: Boolean = session.isSessionMaybeExpired
+}
 
 data class UserDeviceItemState(
     val device: UserDeviceModel,
