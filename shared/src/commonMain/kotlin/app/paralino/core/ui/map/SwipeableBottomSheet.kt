@@ -113,9 +113,16 @@ fun SwipeableBottomSheet(
                 to = BottomSheetPosition.COLLAPSED
             )
         }
+        val paddingProgress by derivedStateOf {
+            swipeableState.progress(
+                from = BottomSheetPosition.EXPANDED,
+                to = BottomSheetPosition.HALF_EXPANDED
+            )
+        }
         val horizontalPadding = SwipeableSheetState.sheetHorizontalPadding.times(fullProgress)
         val bottomPadding = screenPaddingValues.calculateBottomPadding()
-            .times(shapeProgress) + SwipeableSheetState.sheetHorizontalPadding.times(fullProgress)
+            .times(paddingProgress)
+            .plus(SwipeableSheetState.sheetHorizontalPadding.times(fullProgress))
 
         val screenShape = RoundedCornerShape(
             topStart = shapeCorners.first,
