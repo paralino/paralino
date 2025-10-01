@@ -117,7 +117,11 @@ sealed class MapHomeScreenState {
         override val alertDialog: MainAlertDialog? = null,
     ) : MapHomeScreenState() {
         override val isSheetEnabled: Boolean = false
-        override val defaultSheetPosition: BottomSheetPosition = BottomSheetPosition.EXPANDED
+        override val defaultSheetPosition: BottomSheetPosition = if (groupsEmptyState != null) {
+            BottomSheetPosition.EXPANDED
+        } else {
+            BottomSheetPosition.HIDDEN
+        }
     }
 }
 
