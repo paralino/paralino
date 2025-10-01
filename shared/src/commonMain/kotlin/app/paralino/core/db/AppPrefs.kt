@@ -50,10 +50,12 @@ class AppPrefs(
             }
         }
 
-        const val keyToken = "prefs.profile.token"
+        const val keySessionId = "prefs.profile.token"
+        const val keySessionExpiresAt = "prefs.profile.sessionExpiration"
+        const val keySessionRenewalCheckTime = "prefs.profile.sessionRenewalCheckTime"
         const val keyUserKey = "prefs.user.masterKey"
         const val keyUserKeyVersion = "prefs.user.masterKey.version"
-        const val keySessionKey = "prefs.user.sessionKey"
+        const val keyAppSessionKey = "prefs.user.sessionKey"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
         const val keyTempPassword = "prefs.user.temp_password"
@@ -125,9 +127,29 @@ class AppPrefs(
         }
 
     var sessionId: String
-        get() = provider.userSettings.getString(keyToken, "")
+        get() = provider.userSettings.getString(keySessionId, "")
         set(value) {
-            provider.userSettings.putString(keyToken, value)
+            provider.userSettings.putString(keySessionId, value)
+        }
+
+    var sessionExpiresAt: Instant?
+        get() = provider.userSettings.getString(keySessionExpiresAt, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keySessionExpiresAt, value.toString())
+            } else {
+                provider.userSettings.remove(keySessionExpiresAt)
+            }
+        }
+
+    var sessionRenewalCheckTime: Instant?
+        get() = provider.userSettings.getString(keySessionRenewalCheckTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keySessionRenewalCheckTime, value.toString())
+            } else {
+                provider.userSettings.remove(keySessionRenewalCheckTime)
+            }
         }
 
     var email: String
@@ -195,9 +217,9 @@ class AppPrefs(
         }
 
     var sessionMasterKey: String
-        get() = provider.userSettings.getString(keySessionKey, "")
+        get() = provider.userSettings.getString(keyAppSessionKey, "")
         set(value) {
-            provider.userSettings.putString(keySessionKey, value)
+            provider.userSettings.putString(keyAppSessionKey, value)
         }
 
     var pushTokenUnsynced: String

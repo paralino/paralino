@@ -41,6 +41,7 @@ class RefreshEverythingUseCase(
     private val clearUserLocationUseCase: ClearUserLocationUseCase,
     private val locationHistoryUploadEngine: LocationHistoryUploadEngine,
     private val groupRemoveUseCase: GroupRemoveUseCase,
+    private val sessionRenewalHandler: SessionRenewalHandler,
     private val parentManager: LimitedExecutionParentManager,
 ) : LimitedExecutionRepository() {
 
@@ -87,6 +88,7 @@ class RefreshEverythingUseCase(
                     clearUserLocationUseCase.deleteOldLocations()
                     premiumStatusManager.adjustDeviceSettingsForPlan()
                     locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 10.minutes)
+                    sessionRenewalHandler.processSessionRenewal()
                 }
             )
         } catch (e: Exception) {

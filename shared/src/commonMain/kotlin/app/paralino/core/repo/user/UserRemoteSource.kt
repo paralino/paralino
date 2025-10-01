@@ -45,6 +45,10 @@ class UserRemoteSource constructor(
         return api.getCurrentSession()
     }
 
+    suspend fun renewCurrentSession(): UserSession {
+        return api.renewCurrentSession()
+    }
+
     suspend fun getAllSessions(): List<UserSession> {
         return api.getAllSessions()
     }
@@ -189,15 +193,19 @@ class UserRemoteSource constructor(
         api.logoutCurrentSession()
     }
 
-    suspend fun logoutAllButCurrentSession() {
+    suspend fun logoutAllButCurrentSession(): UserSession {
         val allSessions = getAllSessions()
         if (allSessions.size <= 1) {
-            logg.v("account_session", "No other sessions to revoke")
+            logg.v("account_session", "No other sessions to revoke, renew current one")
+            return renewCurrentSession()
         }
+
         allSessions.forEach { session ->
             if (!session.current) {
                 logoutSession(sessionId = session.id)
             }
         }
+
+        return renewCurrentSession()
     }
 }

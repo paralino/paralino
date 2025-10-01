@@ -8,6 +8,7 @@ interface IUserApi {
     suspend fun login(email: String, password: String): UserSession
     suspend fun getMe(): UserMeRaw
     suspend fun getCurrentSession(): UserSession
+    suspend fun renewCurrentSession(): UserSession
     suspend fun getAllSessions(): List<UserSession>
     suspend fun updateUserData(data: Map<String, Any>): UserMeRaw
     suspend fun changePassword(newPassword: String, oldPassword: String?): UserMeRaw

@@ -211,9 +211,7 @@ class PersonalSpaceViewModel(
             val sessions = try {
                 userRepo.getAllSessionsFromRemote()
                     .map {
-                        UserSessionItemState(
-                            session = it
-                        )
+                        UserSessionItemState(session = it)
                     }
             } catch (e: Exception) {
                 showSnackbar(e.errorString())

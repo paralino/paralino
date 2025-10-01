@@ -27,6 +27,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -113,6 +114,18 @@ class UserRepository constructor(
 
     suspend fun getAllSessionsFromRemote(): List<UserSession> {
         return triggerRemoteOnly { remote.getAllSessions() }
+            .also {
+                it.firstOrNull { it.current }?.let {
+                    appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+                }
+            }
+    }
+
+    suspend fun getCurrentSessionFromRemote(): UserSession {
+        return triggerRemoteOnly { remote.getCurrentSession() }
+            .also {
+                appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+            }
     }
 
     suspend fun remoteSignUp(
@@ -130,6 +143,7 @@ class UserRepository constructor(
             encodingType = EncodingType.BASE64_URL
         )
         appPrefs.sessionId = userSession.id
+        appPrefs.sessionExpiresAt = userSession.expire.isoWithOffsetToInstant()
         sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
@@ -280,6 +294,9 @@ class UserRepository constructor(
 
     suspend fun remoteLogoutForAllButCurrentSession() {
         triggerRemoteOnly { remote.logoutAllButCurrentSession() }
+            .also {
+                appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+            }
     }
 
     suspend fun deleteAccount() {
@@ -299,5 +316,12 @@ class UserRepository constructor(
                 remote.getLoginDetails(key)
             }
         }
+    }
+
+    suspend fun renewCurrentSession() {
+        triggerRemoteOnly { remote.renewCurrentSession() }
+            .also {
+                appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+            }
     }
 }

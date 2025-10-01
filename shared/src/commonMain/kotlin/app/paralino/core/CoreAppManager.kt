@@ -5,6 +5,7 @@ import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
+import app.paralino.core.domain.user.SessionRenewalHandler
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -30,6 +31,7 @@ class CoreAppManager(
     private val deviceApiProvider: IDeviceApiProvider,
     private val userRepo: UserRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
+    private val sessionRenewalHandler: SessionRenewalHandler,
     private val appBuildConfig: AppBuildConfig,
     private val appPrefs: AppPrefs
 ) {
@@ -122,10 +124,11 @@ class CoreAppManager(
             return
         }
 
-        logg.tag("app_state").v("App is active but was in background, refresh user and groups")
+        logg.tag("app_state").v("App is active but was in background, refresh user, groups and session")
         scopeProvider.userSessionIOScope.launch {
             userRepo.refreshUserMaybe(timeDelayMillis = 30_000)
             refreshManager.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 60_000)
+            sessionRenewalHandler.processSessionRenewal()
         }
     }
 

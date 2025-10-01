@@ -27,6 +27,10 @@ class UserApi constructor(
         return remoteModule.execute { account.getSession("current").parseSession() }
     }
 
+    override suspend fun renewCurrentSession(): UserSession {
+        return remoteModule.execute { account.updateSession("current").parseSession() }
+    }
+
     override suspend fun getAllSessions(): List<UserSession> {
         return remoteModule.execute { account.listSessions().sessions.map { it.parseSession() } }
     }

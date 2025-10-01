@@ -24,6 +24,10 @@ class UserApiWrapperIOS(
         return userApi.getCurrentSession().getOrThrow()
     }
 
+    override suspend fun renewCurrentSession(): UserSession {
+        return userApi.renewCurrentSession().getOrThrow()
+    }
+
     override suspend fun getAllSessions(): List<UserSession> {
         return userApi.getAllSessions().getOrThrow()
     }
@@ -74,6 +78,7 @@ interface IUserApiIOS {
     suspend fun login(email: String, password: String): Payload<UserSession>
     suspend fun getMe(): Payload<UserMeRaw>
     suspend fun getCurrentSession(): Payload<UserSession>
+    suspend fun renewCurrentSession(): Payload<UserSession>
     suspend fun getAllSessions(): Payload<List<UserSession>>
     suspend fun updateUserData(data: Map<String, Any>): Payload<UserMeRaw>
     suspend fun changePassword(newPassword: String, oldPassword: String?): Payload<UserMeRaw>

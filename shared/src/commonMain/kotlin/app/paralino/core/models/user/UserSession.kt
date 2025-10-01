@@ -1,8 +1,11 @@
 package app.paralino.core.models.user
 
+import app.paralino.core.utils.extensions.isInFuture
+import app.paralino.core.utils.extensions.isInPast
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration.Companion.days
 
 @Serializable
 data class UserSession constructor(
@@ -33,9 +36,11 @@ data class UserSession constructor(
     val countryName: String,
     val current: Boolean
 ) {
-    val isSessionMaybeExpired: Boolean get() = expire.isoWithOffsetToInstant()?.let {
-        it < nowUTC()
-    } ?: false
+    val isSessionMaybeExpired: Boolean get() = expire.isoWithOffsetToInstant()?.isInPast() ?: false
+
+    val canRenewSessions: Boolean get() = current && (expire.isoWithOffsetToInstant()?.let {
+        it.isInFuture() && it.minus(100.days) < nowUTC()
+    } ?: true)
 
     val deviceWithBrandName: String? = listOf(deviceBrand, deviceModel)
         .filter { it.isNotBlank() }
