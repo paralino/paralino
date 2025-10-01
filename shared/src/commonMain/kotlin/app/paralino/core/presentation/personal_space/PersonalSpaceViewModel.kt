@@ -481,7 +481,7 @@ class PersonalSpaceViewModel(
             } catch (e: Exception) {
                 _uiState.update { it.copy(loadingAction = false) }
                 logg.e("Error deleting device", e)
-                showSnackbar(e.toString())
+                showSnackbar(e.errorString())
             }
         }
     }
@@ -496,7 +496,7 @@ class PersonalSpaceViewModel(
             } catch (e: Exception) {
                 _uiState.update { it.copy(loadingAction = false) }
                 logg.e("Error deleting device", e)
-                showSnackbar(e.toString())
+                showSnackbar(e.errorString())
             }
         }
     }

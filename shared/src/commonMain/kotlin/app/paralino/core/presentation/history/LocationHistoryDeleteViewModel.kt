@@ -13,6 +13,7 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -106,7 +107,7 @@ class LocationHistoryDeleteViewModel(
             _uiState.update {
                 it.copy(isContentLoading = true)
             }
-            showSnackbar(e.toString())
+            showSnackbar(e.errorString())
         }
     }
 
@@ -131,7 +132,7 @@ class LocationHistoryDeleteViewModel(
                                     delay(400)
                                     _eventChannel.trySend(LocationHistoryDeleteScreenEvent.NavigateBack)
                                 } catch (e: Exception) {
-                                    showSnackbar(e.toString())
+                                    showSnackbar(e.errorString())
                                     _uiState.update { it.copy(isDeleteLoading =  null) }
                                 }
                             }
