@@ -38,11 +38,11 @@ class RefreshLocationHistoryUseCase(
         requestCacheDuration: Duration
     ) {
         mutex.withLock {
+            val dates = startDate.listOfDatesUntil(endDate)
             if (groupId.isPersonalSpace) {
                 refreshPersonalLocationHistory(
                     locationId = locationId,
-                    startDate = startDate,
-                    endDate = endDate,
+                    dates = dates,
                     requestCacheDuration = requestCacheDuration
                 )
             } else {
@@ -50,8 +50,7 @@ class RefreshLocationHistoryUseCase(
                     groupId = groupId.id,
                     memberUserId = memberUserId,
                     locationId = locationId,
-                    startDate = startDate,
-                    endDate = endDate,
+                    dates = dates,
                     requestCacheDuration = requestCacheDuration
                 )
             }
@@ -62,11 +61,11 @@ class RefreshLocationHistoryUseCase(
         groupId: String,
         memberUserId: String,
         locationId: String?,
-        startDate: LocalDate,
-        endDate: LocalDate,
+        dates: List<LocalDate>,
         requestCacheDuration: Duration
     ): GroupLocationHistoryReadResponse? {
-        val key = startDate.listOfDatesUntil(endDate).joinToString { it.dateForApi() }
+        val dateKeys = dates.map { it.dateForApi() }
+        val key = dateKeys.joinToString(separator = "_")
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "${groupId}_${memberUserId}_${key}",
@@ -77,8 +76,7 @@ class RefreshLocationHistoryUseCase(
                 groupId = groupId,
                 memberUserId = memberUserId,
                 locationId = locationId,
-                startDateKey = startDate.dateForApi(),
-                endDateKey = endDate.dateForApi()
+                dateKeys = dateKeys
             )
 
             val response = functionsApi.runAndWait(
@@ -112,11 +110,11 @@ class RefreshLocationHistoryUseCase(
 
     private suspend fun refreshPersonalLocationHistory(
         locationId: String?,
-        startDate: LocalDate,
-        endDate: LocalDate,
+        dates: List<LocalDate>,
         requestCacheDuration: Duration
     ): PersonalLocationHistoryReadResponse? {
-        val key = startDate.listOfDatesUntil(endDate).joinToString { it.dateForApi() }
+        val dateKeys = dates.map { it.dateForApi() }
+        val key = dateKeys.joinToString(separator = "_")
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "personal_history_${key}",
@@ -125,8 +123,7 @@ class RefreshLocationHistoryUseCase(
         ) {
             val payload = PersonalLocationHistoryReadPayload(
                 locationId = locationId,
-                startDateKey = startDate.dateForApi(),
-                endDateKey = endDate.dateForApi()
+                dateKeys = dateKeys
             )
 
             val response = functionsApi.runAndWait(

@@ -428,15 +428,13 @@ data class GroupLocationHistoryReadPayload(
     val groupId: String,
     val memberUserId: String,
     val locationId: String?,
-    val startDateKey: String,
-    val endDateKey: String
+    val dateKeys: List<String>
 )
 
 @Serializable
 data class PersonalLocationHistoryReadPayload(
     val locationId: String?,
-    val startDateKey: String,
-    val endDateKey: String
+    val dateKeys: List<String>
 )
 
 @Serializable
