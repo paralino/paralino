@@ -3,10 +3,13 @@ package app.paralino.core.ui.history
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +17,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
@@ -69,7 +70,7 @@ fun LocationHistoryDateSelector(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Scrollable days container
@@ -121,6 +122,9 @@ fun LocationHistoryDateSelector(
                                 )
                             }
                             onEvent(LocationHistoryUiEvent.OnSelectDay(it))
+                        },
+                        onDayLongClick = {
+                            onEvent(LocationHistoryUiEvent.OnLongSelectDay(it))
                         }
                     )
                 }
@@ -162,26 +166,31 @@ fun LocationHistoryDateSelector(
             }
         }
 
-        if (state.dateRangeDays != null && !state.isLimitedHistoryPlanMode) {
+        AnimatedVisibility(
+            visible = state.dateRangeDays != null && state.dateRangeDays > 1 && !state.isLimitedHistoryPlanMode,
+            enter = fadeIn() + expandHorizontally(),
+            exit = fadeOut() + shrinkHorizontally()
+        ) {
             // Day range button
             Column(
                 modifier = Modifier
+                    .padding(start = 8.dp)
                     .size(width = 50.dp, height = 48.dp)
                     .clickable { onEvent(LocationHistoryUiEvent.ToggleDayRange) }
-                    .shadow(elevation = elevation, RoundedCornerShape(12.dp))
+//                    .shadow(elevation = elevation, RoundedCornerShape(12.dp))
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colors.background),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 AnimatedContent(
-                    targetState = state.dateRangeDays,
+                    targetState = state.dateRangeDays ?: 1,
                     label = "animated count",
                     transitionSpec = onboardingContentTransitionSpec()
                 ) {
                     Text(
                         style = MaterialTheme.typography.caption,
-                        text = "${it}x",
+                        text = "${state.dateRangeDays ?: 1}x",
                         color = MaterialTheme.colors.onSurface,
                         fontSize = 16.sp,
                         lineHeight = 14.sp,
@@ -259,7 +268,8 @@ private fun DateSelectorActionButton(
 @Composable
 private fun DayCell(
     dayState: LocationHistoryDayState,
-    onDaySelected: (LocalDate) -> Unit
+    onDaySelected: (LocalDate) -> Unit,
+    onDayLongClick: (LocalDate) -> Unit,
 ) {
     // Animate corner radius based on position
     val cornerRadius = 8.dp
@@ -290,12 +300,19 @@ private fun DayCell(
             .background(
                 if (dayState.isSelected) MaterialTheme.colors.primary else Color.Transparent
             )
-            .clickable { onDaySelected(dayState.date) },
+            .combinedClickable(
+                onClick = {
+                    onDaySelected(dayState.date)
+                },
+                onLongClick = {
+                    onDayLongClick(dayState.date)
+                }
+            ),
         contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(
-            visible = dayState.isLoading &&
-                    (dayState.position == LocationHistorySelectedDayPosition.SOLO || dayState.position == LocationHistorySelectedDayPosition.CENTER),
+            visible = dayState.isLoading,
+//                    (dayState.position == LocationHistorySelectedDayPosition.SOLO || dayState.position == LocationHistorySelectedDayPosition.CENTER),
             enter = fadeIn(),
             exit = fadeOut()
         ) {

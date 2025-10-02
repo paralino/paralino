@@ -166,10 +166,7 @@ class LocationHistoryViewModel(
 
             LocationHistoryUiEvent.ToggleDayRange -> {
                 dataController.handleDaySelection(
-                    dateRangeDays = when (uiState.value.daySelectorState.dateRangeDays) {
-                        1 -> 3
-                        else -> 1
-                    },
+                    dateRangeDays = 1,
                     selectedDate = uiState.value.selectedDate,
                 )
             }
@@ -325,6 +322,12 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.OnSelectDay -> {
                 dataController.handleDaySelection(
                     dateRangeDays = uiState.value.daySelectorState.dateRangeDays ?: 1,
+                    selectedDate = event.day
+                )
+            }
+
+            is LocationHistoryUiEvent.OnLongSelectDay -> {
+                dataController.handleDayLongCLick(
                     selectedDate = event.day
                 )
             }

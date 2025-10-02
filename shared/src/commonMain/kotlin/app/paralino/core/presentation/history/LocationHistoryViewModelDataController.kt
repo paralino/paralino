@@ -13,7 +13,6 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.errorString
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,12 +22,13 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
+import kotlin.math.absoluteValue
 
+private val maxDateRange = 15
 class LocationHistoryViewModelDataController(
     val getLocationHistory: GetLocationHistoryUseCase,
     val refreshLocationHistory: RefreshLocationHistoryUseCase,
@@ -116,6 +116,57 @@ class LocationHistoryViewModelDataController(
         val updatedDays = newDays + currentDays
         _uiState.update {
             it.copy(daySelectorState = it.daySelectorState.copy(days = updatedDays))
+        }
+    }
+
+    fun handleDayLongCLick(
+        selectedDate: LocalDate
+    ) {
+        if (_uiState.value.isLoadingLocations) {
+            return
+        }
+
+        val currentState = _uiState.value
+
+        if (!currentState.canSelectDate(selectedDate)) {
+            viewModel.showSnackbar(text = MR.strings.history_map_date_unselectable_error.localizedString())
+            return
+        }
+
+        if (currentState.startDate != currentState.endDate || currentState.selectedDate == selectedDate) {
+            handleDaySelection(
+                dateRangeDays = 1,
+                selectedDate = selectedDate
+            )
+        } else {
+            val difference = currentState.selectedDate.daysUntil(selectedDate)
+            if (difference < 0) {
+                // newly selected date is earlier than current selection
+                if (difference.absoluteValue >= maxDateRange) {
+                    handleDaySelection(
+                        dateRangeDays = maxDateRange,
+                        selectedDate = selectedDate.plus(DatePeriod(days = maxDateRange - 1))
+                    )
+                } else {
+                    handleDaySelection(
+                        dateRangeDays = difference.absoluteValue + 1,
+                        selectedDate = currentState.selectedDate
+                    )
+                }
+            } else {
+                // newly selected date is after the current selection
+                if (difference.absoluteValue >= maxDateRange) {
+                    handleDaySelection(
+                        dateRangeDays = maxDateRange,
+                        selectedDate = selectedDate
+                    )
+                } else {
+                    handleDaySelection(
+                        dateRangeDays = difference + 1,
+                        selectedDate = selectedDate
+                    )
+                }
+            }
         }
     }
 

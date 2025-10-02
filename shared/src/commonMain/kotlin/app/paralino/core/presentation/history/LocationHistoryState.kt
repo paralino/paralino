@@ -387,6 +387,7 @@ sealed interface LocationHistoryUiEvent {
     data object ToggleMapFilter : LocationHistoryUiEvent
     data class OnDateSelectorAction(val action: LocationHistoryDateSelectionAction) : LocationHistoryUiEvent
     data class OnSelectDay(val day: LocalDate) : LocationHistoryUiEvent
+    data class OnLongSelectDay(val day: LocalDate) : LocationHistoryUiEvent
     data object ToggleDayRange : LocationHistoryUiEvent
     data object OnCloseScreen : LocationHistoryUiEvent
     data object OpenLocationSettings : LocationHistoryUiEvent
