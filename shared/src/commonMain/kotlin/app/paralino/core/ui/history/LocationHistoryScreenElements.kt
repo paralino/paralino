@@ -318,7 +318,7 @@ fun LocationHistoryScreenElements(
                     LocationHistoryDetailCard(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
-                            .padding(bottom = 12.dp),
+                            .padding(bottom = 8.dp),
                         uiState = uiState,
                         onEvent = onEvent
                     )

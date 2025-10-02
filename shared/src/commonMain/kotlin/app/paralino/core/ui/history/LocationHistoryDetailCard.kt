@@ -6,6 +6,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,6 +73,9 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 
+private val cornerShape = 20.dp
+private val innerCornerShape = 15.dp
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LocationHistoryDetailCard(
@@ -86,9 +90,13 @@ fun LocationHistoryDetailCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-//            .clickable { }
-                .shadow(6.dp, RoundedCornerShape(16.dp))
-                .clip(RoundedCornerShape(16.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {}
+                )
+                .shadow(6.dp, RoundedCornerShape(cornerShape))
+                .clip(RoundedCornerShape(cornerShape))
                 .background(MaterialTheme.colors.background)
         ) {
             Row(
@@ -132,7 +140,7 @@ fun LocationHistoryDetailCard(
                     modifier = Modifier
                         .padding(horizontal = 6.dp)
                         .size(width = 90.dp, height = 36.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(innerCornerShape))
                         .background(MaterialTheme.colors.surface)
                         .padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -176,10 +184,10 @@ fun LocationHistoryDetailCard(
                     .padding(horizontal = 6.dp)
                     .clip(
                         RoundedCornerShape(
-                            topStart = 12.dp,
-                            topEnd = if (uiState.deleteAction != null) 16.dp else 12.dp,
-                            bottomStart = 12.dp,
-                            bottomEnd = if (uiState.navigateAction != null) 16.dp else 12.dp
+                            topStart = innerCornerShape,
+                            topEnd = if (uiState.deleteAction != null) 16.dp else innerCornerShape,
+                            bottomStart = innerCornerShape,
+                            bottomEnd = if (uiState.navigateAction != null) 16.dp else innerCornerShape
                         )
                     )
                     .background(MaterialTheme.colors.surface)
@@ -441,7 +449,7 @@ fun LocationHistoryDetailCard(
                             },
                             size = sliderSize,
                             progress = uiState.locationIndex,
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(innerCornerShape),
                             steps = uiState.selectedLocations.size,
                             onProgressChange = {
                                 onEvent(LocationHistoryUiEvent.SetHistoryProgress(it))
@@ -648,7 +656,7 @@ private fun HistoryDataViewTypeTab(
     Row(
         modifier = modifier
             .clickable(onClick = onClick)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically

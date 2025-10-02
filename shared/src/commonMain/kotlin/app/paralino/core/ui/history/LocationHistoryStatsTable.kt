@@ -75,7 +75,7 @@ fun LocationHistoryStatsTable(
     Column(modifier = modifier) {
         LazyVerticalGrid(
             modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(15.dp))
                 .background(MaterialTheme.colors.surface),
             columns = GridCells.Fixed(2),
             userScrollEnabled = false,
