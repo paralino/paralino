@@ -7,13 +7,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -28,6 +31,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,7 +75,7 @@ fun LocationHistoryDateSelector(
         // Scrollable days container
         Card(
             modifier = Modifier
-                .weight(1f, fill = false)
+                .weight(1f, fill = state.isLimitedHistoryPlanMode)
                 .wrapContentWidth(),
             shape = RoundedCornerShape(12.dp),
             backgroundColor = MaterialTheme.colors.background,
@@ -100,6 +104,7 @@ fun LocationHistoryDateSelector(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End,
                 reverseLayout = true,
+                userScrollEnabled = !state.isLimitedHistoryPlanMode,
                 state = scrollState
             ) {
                 // Day cells
@@ -120,75 +125,44 @@ fun LocationHistoryDateSelector(
                     )
                 }
 
-                when (state.startAction) {
-                    LocationHistoryDateSelectionAction.LOAD_MODE -> {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .clickable { onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction)) }
-                                    .padding(8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = CoreAppIcons.ChevronLeft.asPainterResource(),
-                                    contentDescription = "Load previous dates",
-                                    tint = MaterialTheme.colors.primary
-                                )
+                if (!state.isLimitedHistoryPlanMode) {
+                    item {
+                        DateSelectorActionButton(
+                            action = state.startAction,
+                            onClick = {
+                                onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction))
                             }
+                        )
+                    }
+                }
+            }
+
+            if (state.isLimitedHistoryPlanMode) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {
+                                onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction))
+                            }
+                        )
+                        .background(MaterialTheme.colors.background.copy(alpha = 0.8f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    DateSelectorActionButton(
+                        action = state.startAction,
+                        onClick = {
+                            onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction))
                         }
-                    }
-
-                    LocationHistoryDateSelectionAction.UPGRADE -> {
-                        item {
-                            SmallActionButton(
-                                modifier = Modifier.padding(start = 6.dp, end = 12.dp),
-                                icon = CoreAppIcons.Add.asPainterResource(),
-                                text = {
-                                    Text(
-                                        modifier = Modifier.padding(end = 2.dp),
-                                        text = stringResource(MR.strings.history_map_date_add_more_button)
-                                    )
-                                },
-                                hasEndArrow = false,
-                                backgroundColor = MaterialTheme.colors.primary,
-                                contentColor = MaterialTheme.colors.onPrimary,
-                                onClick = {
-                                    onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction))
-                                }
-                            )
-                        }
-                    }
-
-                    LocationHistoryDateSelectionAction.ASK_FOR_UPGRADE -> {
-                        item {
-                            SmallActionButton(
-                                modifier = Modifier.padding(start = 6.dp, end = 12.dp),
-                                icon = null,
-                                text = {
-                                    Text(
-                                        modifier = Modifier.padding(end = 2.dp),
-                                        text = stringResource(MR.strings.history_map_date_need_more_button)
-                                    )
-                                },
-                                hasEndArrow = true,
-                                backgroundColor = MaterialTheme.colors.primary,
-                                contentColor = MaterialTheme.colors.onPrimary,
-                                onClick = {
-                                    onEvent(LocationHistoryUiEvent.OnDateSelectorAction(state.startAction))
-                                }
-                            )
-                        }
-                    }
-
-                    LocationHistoryDateSelectionAction.END,
-                    LocationHistoryDateSelectionAction.NONE -> {
-
-                    }
+                    )
                 }
             }
         }
 
-        if (state.dateRangeDays != null) {
+        if (state.dateRangeDays != null && !state.isLimitedHistoryPlanMode) {
             // Day range button
             Column(
                 modifier = Modifier
@@ -215,6 +189,69 @@ fun LocationHistoryDateSelector(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun DateSelectorActionButton(
+    modifier: Modifier = Modifier,
+    action: LocationHistoryDateSelectionAction,
+    onClick: () -> Unit
+) {
+    when (action) {
+        LocationHistoryDateSelectionAction.LOAD_MODE -> {
+            Box(
+                modifier = modifier
+                    .clickable(onClick = onClick)
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = CoreAppIcons.ChevronLeft.asPainterResource(),
+                    contentDescription = "Load previous dates",
+                    tint = MaterialTheme.colors.primary
+                )
+            }
+        }
+
+        LocationHistoryDateSelectionAction.UPGRADE -> {
+            SmallActionButton(
+                modifier = modifier.padding(start = 6.dp, end = 12.dp),
+                icon = CoreAppIcons.Add.asPainterResource(),
+                text = {
+                    Text(
+                        modifier = Modifier.padding(end = 2.dp),
+                        text = stringResource(MR.strings.history_map_date_add_more_button)
+                    )
+                },
+                hasEndArrow = false,
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = MaterialTheme.colors.onPrimary,
+                onClick = onClick
+            )
+        }
+
+        LocationHistoryDateSelectionAction.ASK_FOR_UPGRADE -> {
+            SmallActionButton(
+                modifier = modifier.padding(start = 6.dp, end = 12.dp),
+                icon = null,
+                text = {
+                    Text(
+                        modifier = Modifier.padding(end = 2.dp),
+                        text = stringResource(MR.strings.history_map_date_need_more_button)
+                    )
+                },
+                hasEndArrow = true,
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = MaterialTheme.colors.onPrimary,
+                onClick = onClick
+            )
+        }
+
+        LocationHistoryDateSelectionAction.END,
+        LocationHistoryDateSelectionAction.NONE -> {
+
         }
     }
 }

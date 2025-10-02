@@ -249,9 +249,9 @@ data class AppSnackbarResult constructor(
 
 @Serializable
 data class AppSnackbarPayload(
-    val title: String?,
     val text: String,
-    val hasCloseButton: Boolean,
+    val title: String? = null,
+    val hasCloseButton: Boolean = false,
 //    val iconRes: Int?,
 //    val iconTint: Int?
 )

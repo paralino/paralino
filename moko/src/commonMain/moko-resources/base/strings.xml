@@ -726,7 +726,8 @@
     <string name="history_map_date_add_more_button">Add more days</string>
     <string name="history_map_plan_limit_message_member">To see more days in location history, please contact your group admin to enable it.</string>
     <string name="history_map_plan_limit_message_owner">Upgrading your plan will give every member of your group more days in location history.</string>
-    <string name="history_map_plan_limit_message_personal">Your current plan supports **%d** days of location history. To increase your history, please upgrade your plan.</string>
+    <string name="history_map_plan_limit_message_personal_count">Your current plan supports **%d** days of location history. To increase your history, please upgrade your plan.</string>
+    <string name="history_map_plan_limit_message_personal_free">Your current plan has limited location history. To increase your history, please upgrade your plan.</string>
     <string name="history_entry_clustered_count">Entries: %s</string>
     <string name="history_entry_delete_alert_message">Delete location history entry:\n%s</string>
     <string name="history_entry_range_delete_notice_title">Entries to delete: %d</string>

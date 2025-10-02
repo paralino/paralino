@@ -135,12 +135,9 @@ class LocationHistoryViewModelDataController(
         }
 
         // Calculate new start and end dates based on selected day and range
-        val newStartDate = when (dateRangeDays) {
-            1 -> selectedDate
-            2 -> selectedDate.minus(DatePeriod(days = 1))
-            3 -> selectedDate.minus(DatePeriod(days = 2))
-            5 -> selectedDate.minus(DatePeriod(days = 4))
-            else -> selectedDate
+        val newStartDate = when {
+            dateRangeDays <= 1 -> selectedDate
+            else -> selectedDate.minus(DatePeriod(days = dateRangeDays - 1))
         }.let {
             if (currentState.daySelectorState.earliestDate != null) {
                 it.coerceAtLeast(currentState.daySelectorState.earliestDate)

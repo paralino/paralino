@@ -330,12 +330,18 @@ sealed interface LocationHistoryScreenFocusType {
 data class LocationHistoryDateSelectorState(
     val days: List<LocationHistoryDayState> = emptyList(),
     val daysInLoading: List<LocalDate> = emptyList(),
+    val isLimitedHistoryPlanMode: Boolean = false,
     val startAction: LocationHistoryDateSelectionAction = LocationHistoryDateSelectionAction.NONE,
     val dateRangeDays: Int? = null,
     val forceFocusOnSelectedDay: Boolean = false,
     val earliestDate: LocalDate? = null,
 ) {
-    val displayedDays = days.reversed().map { it.copy(isLoading = daysInLoading.contains(it.date)) }
+    val displayedDays = days.reversed()
+        .map {
+            it.copy(
+                isLoading = !isLimitedHistoryPlanMode && daysInLoading.contains(it.date)
+            )
+        }
 }
 
 enum class LocationHistoryDateSelectionAction {

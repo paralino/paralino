@@ -473,6 +473,14 @@ class LocationHistoryDataFetchController(
                 ?: PlanConfig.default
         }
 
+        val highestAppPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order } ?: PlanConfig.default
+        val upgradeAvailable = highestAppPlan.planTypeEnum.order > planConfig.planTypeEnum.order
+        val isLimitedHistoryPlan = if (isPersonalHistory) {
+            planConfig.personalHistoryDaysLimit == 0
+        } else {
+            planConfig.historyDaysLimit == 0
+        }
+
         val earliestDate = if (isPersonalHistory) {
             if (planConfig.personalHistoryDaysLimit >= 0) {
                 today.minus(DatePeriod(days = planConfig.personalHistoryDaysLimit))
@@ -486,9 +494,6 @@ class LocationHistoryDataFetchController(
                 null
             }
         }
-
-        val highestPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order } ?: PlanConfig.default
-        val upgradeAvailable = highestPlan.planTypeEnum.order > planConfig.planTypeEnum.order
         val couldLoadMore = earliestDate == null
 
         val startAction = if (couldLoadMore) {
@@ -504,11 +509,20 @@ class LocationHistoryDataFetchController(
         }
 
         return LocationHistoryDateSelectorState(
-            days = generateDates(
-                dateRangeDays = dateRangeDays,
-                startDate = selectedDate,
-                earliestDate = earliestDate
-            ),
+            isLimitedHistoryPlanMode = isLimitedHistoryPlan,
+            days = if (isLimitedHistoryPlan) {
+                generateDates(
+                    dateRangeDays = 1,
+                    startDate = today,
+                    earliestDate = today.minus(DatePeriod(days = 60))
+                ).map { it.copy(isSelected = false) }
+            } else {
+                generateDates(
+                    dateRangeDays = dateRangeDays,
+                    startDate = selectedDate,
+                    earliestDate = earliestDate
+                )
+            },
             daysInLoading = daysInLoading,
             dateRangeDays = dateRangeDays,
             startAction = startAction,

@@ -16,6 +16,7 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarPayload
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog.*
 import app.paralino.core.ui.components.onAction
@@ -274,15 +275,24 @@ class LocationHistoryViewModel(
                         coroutineScope.launch {
                             messageDispatcher.showSnackbarForResult(
                                 data = AppSnackbarData(
-                                    text = if (uiState.value.isPersonalHistory) {
-                                        MR.strings.history_map_plan_limit_message_personal.localizedString(
-                                            uiState.value.planConfig?.personalHistoryDaysLimit ?: 1
-                                        )
-                                    } else {
-                                        MR.strings.history_map_plan_limit_message_owner.localizedString()
-                                    },
+                                    payload = AppSnackbarPayload(
+                                        text = if (uiState.value.isPersonalHistory) {
+                                            val days = uiState.value.planConfig?.personalHistoryDaysLimit ?: 0
+                                            if (days == 0) {
+                                                MR.strings.history_map_plan_limit_message_personal_free.localizedString()
+                                            } else {
+                                                MR.strings.history_map_plan_limit_message_personal_count.localizedString(
+                                                    uiState.value.planConfig?.personalHistoryDaysLimit ?: 1
+                                                )
+                                            }
+                                        } else {
+                                            MR.strings.history_map_plan_limit_message_owner.localizedString()
+                                        },
+                                        title = null,
+                                        hasCloseButton = true
+                                    ),
                                     actionText = MR.strings.button_continue.localizedString(),
-                                    duration = SnackbarDuration.Long
+                                    duration = SnackbarDuration.Forever
                                 )
                             )?.result?.onAction {
                                 dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenPaywall)
@@ -295,9 +305,12 @@ class LocationHistoryViewModel(
                             // ignore result, this will just show a button that will dismiss snackbar
                             messageDispatcher.showSnackbarForResult(
                                 data = AppSnackbarData(
-                                    text = MR.strings.history_map_plan_limit_message_member.localizedString(),
+                                    payload = AppSnackbarPayload(
+                                        text = MR.strings.history_map_plan_limit_message_member.localizedString(),
+                                        hasCloseButton = true
+                                    ),
                                     actionText = MR.strings.button_ok.localizedString(),
-                                    duration = SnackbarDuration.Long
+                                    duration = SnackbarDuration.Forever
                                 )
                             )
                         }
