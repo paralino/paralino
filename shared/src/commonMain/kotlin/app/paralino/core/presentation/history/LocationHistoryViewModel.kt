@@ -111,7 +111,12 @@ class LocationHistoryViewModel(
                 dataController._uiState.update {
                     it.copy(
                         isFilterOpened = false,
-                        focusType = LocationHistoryScreenFocusType.NONE
+                        focusType = LocationHistoryScreenFocusType.NONE,
+                        previousFocusType = if (it.focusType == LocationHistoryScreenFocusType.NONE) {
+                            it.previousFocusType
+                        } else {
+                            it.focusType
+                        }
                     )
                 }
             }
@@ -128,7 +133,8 @@ class LocationHistoryViewModel(
                             LocationHistoryScreenFocusType.MEMBER_FOCUSED
                         } else {
                             LocationHistoryScreenFocusType.MEMBER_DEFAULT
-                        }
+                        },
+                        previousFocusType = it.focusType
                     )
                 }
             }
@@ -136,6 +142,13 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.OnPointClicked -> {
                 dataController._uiState.update {
                     it.copy(
+                        dataViewType = LocationHistoryDataViewType.LocationPoint,
+                        focusType = if (it.focusType == LocationHistoryScreenFocusType.NONE) {
+                            LocationHistoryScreenFocusType.MEMBER_DEFAULT
+                        } else {
+                            it.focusType
+                        },
+                        previousFocusType = it.focusType,
                         selectedLocationId = event.point.pointId,
                         isFilterOpened = false
                     )
@@ -146,6 +159,7 @@ class LocationHistoryViewModel(
                 dataController._uiState.update {
                     it.copy(
                         focusType = event.type,
+                        previousFocusType = it.focusType,
                         isFilterOpened = false
                     )
                 }
@@ -193,6 +207,7 @@ class LocationHistoryViewModel(
                             LocationHistoryDataViewType.LocationPoint -> LocationHistoryScreenFocusType.OVERVIEW
                             LocationHistoryDataViewType.Stats -> LocationHistoryScreenFocusType.OVERVIEW
                         },
+                        previousFocusType = it.focusType,
                         isFilterOpened = false
                     )
                 }

@@ -3,6 +3,7 @@ package app.paralino.core.ui.history
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,7 +55,9 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
+import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryPointState
+import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
@@ -83,6 +86,7 @@ fun LocationHistoryDetailCard(
     uiState: LocationHistoryScreenState,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
+    val isCollapsed = uiState.focusType == LocationHistoryScreenFocusType.NONE
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -93,94 +97,100 @@ fun LocationHistoryDetailCard(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = {}
+                    onClick = {
+                        if (isCollapsed) {
+                            onEvent(LocationHistoryUiEvent.OnSelectFocusType(uiState.previousFocusType))
+                        }
+                    }
                 )
                 .shadow(6.dp, RoundedCornerShape(cornerShape))
                 .clip(RoundedCornerShape(cornerShape))
                 .background(MaterialTheme.colors.background)
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                LazyRow(
+            AnimatedVisibility(visible = !isCollapsed) {
+                Row(
                     modifier = Modifier
-                        .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
+                        .padding(vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (uiState.devices.size > 1) {
-                        this.item(key = "title") {
-                            Text(
+                    LazyRow(
+                        modifier = Modifier
+                            .weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
+                    ) {
+                        if (uiState.devices.size > 1) {
+                            this.item(key = "title") {
+                                Text(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .padding(end = 8.dp),
+                                    text = stringResource(MR.strings.group_member_devices_section_title),
+                                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
+                                )
+                            }
+                        }
+                        this.items(uiState.devices, key = { it.locationId }) { device ->
+                            UserDeviceChip(
                                 modifier = Modifier
                                     .animateItem()
-                                    .padding(end = 8.dp),
-                                text = stringResource(MR.strings.group_member_devices_section_title),
-                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
+                                    .padding(end = 6.dp),
+                                selected = device.isSelected,
+                                name = device.deviceName,
+                                showIcon = uiState.devices.size == 1,
+                                onClick = {
+                                    onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
+                                }
                             )
                         }
                     }
-                    this.items(uiState.devices, key = { it.locationId }) { device ->
-                        UserDeviceChip(
+
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp)
+                            .size(width = 90.dp, height = 36.dp)
+                            .clip(RoundedCornerShape(innerCornerShape))
+                            .background(MaterialTheme.colors.surface)
+                            .padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        HistoryDataViewTypeTab(
                             modifier = Modifier
-                                .animateItem()
-                                .padding(end = 6.dp),
-                            selected = device.isSelected,
-                            name = device.deviceName,
-                            showIcon = uiState.devices.size == 1,
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            selected = uiState.dataViewType == LocationHistoryDataViewType.Stats,
+                            icon = CoreAppIcons.BarChartStats.asPainterResource(),
                             onClick = {
-                                onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
+                                onEvent(
+                                    LocationHistoryUiEvent.ChangeMapDataViewType(
+                                        LocationHistoryDataViewType.Stats
+                                    )
+                                )
+                            }
+                        )
+
+                        HistoryDataViewTypeTab(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            selected = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
+                            icon = CoreAppIcons.RouteLineWithDotsOnEnds.asPainterResource(),
+                            onClick = {
+                                onEvent(
+                                    LocationHistoryUiEvent.ChangeMapDataViewType(
+                                        LocationHistoryDataViewType.LocationPoint
+                                    )
+                                )
                             }
                         )
                     }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .size(width = 90.dp, height = 36.dp)
-                        .clip(RoundedCornerShape(innerCornerShape))
-                        .background(MaterialTheme.colors.surface)
-                        .padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    HistoryDataViewTypeTab(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                        selected = uiState.dataViewType == LocationHistoryDataViewType.Stats,
-                        icon = CoreAppIcons.BarChartStats.asPainterResource(),
-                        onClick = {
-                            onEvent(
-                                LocationHistoryUiEvent.ChangeMapDataViewType(
-                                    LocationHistoryDataViewType.Stats
-                                )
-                            )
-                        }
-                    )
-
-                    HistoryDataViewTypeTab(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight(),
-                        selected = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
-                        icon = CoreAppIcons.RouteLineWithDotsOnEnds.asPainterResource(),
-                        onClick = {
-                            onEvent(
-                                LocationHistoryUiEvent.ChangeMapDataViewType(
-                                    LocationHistoryDataViewType.LocationPoint
-                                )
-                            )
-                        }
-                    )
                 }
             }
 
             Column(
                 modifier = Modifier
-                    .padding(bottom = 6.dp)
+                    .padding(bottom = 6.dp, top = animateDpAsState(if (isCollapsed) 6.dp else 0.dp).value)
                     .padding(horizontal = 6.dp)
                     .clip(
                         RoundedCornerShape(
@@ -273,7 +283,7 @@ fun LocationHistoryDetailCard(
                         }
                     }
 
-                    if (uiState.deleteAction != null) {
+                    if (uiState.deleteAction != null && !isCollapsed) {
                         GroupMemberActionButton(
                             modifier = Modifier
                                 .padding(end = 2.dp, top = 2.dp)
@@ -376,7 +386,7 @@ fun LocationHistoryDetailCard(
                 }
             }
 
-            AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.Stats) {
+            AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.Stats && !isCollapsed) {
                 uiState.stats?.let {
                     LocationHistoryStatsTable(
                         modifier = Modifier
@@ -387,7 +397,7 @@ fun LocationHistoryDetailCard(
                 }
             }
 
-            AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint) {
+            AnimatedVisibility(visible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && !isCollapsed) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

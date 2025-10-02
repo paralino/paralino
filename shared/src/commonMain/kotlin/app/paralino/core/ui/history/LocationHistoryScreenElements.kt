@@ -4,10 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -270,18 +270,18 @@ fun LocationHistoryScreenElements(
                 horizontalArrangement = Arrangement.End
             ) {
                 FocusTypeIcon(
-                    isVisible = uiState.focusType != LocationHistoryScreenFocusType.OVERVIEW,
+                    isVisible = uiState.focusType != LocationHistoryScreenFocusType.OVERVIEW && uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
                     type = LocationHistoryScreenFocusType.OVERVIEW,
                     icon = CoreAppIcons.ZoomOutFocusMap.asPainterResource(),
                     onEvent = onEvent
                 )
 
-                FocusTypeIcon(
-                    isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && uiState.focusType == LocationHistoryScreenFocusType.NONE,
-                    type = LocationHistoryScreenFocusType.MEMBER_DEFAULT,
-                    icon = CoreAppIcons.ZoomFocusSmall.asPainterResource(),
-                    onEvent = onEvent
-                )
+//                FocusTypeIcon(
+//                    isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && uiState.focusType == LocationHistoryScreenFocusType.NONE,
+//                    type = LocationHistoryScreenFocusType.MEMBER_DEFAULT,
+//                    icon = CoreAppIcons.ZoomFocusSmall.asPainterResource(),
+//                    onEvent = onEvent
+//                )
 
                 FocusTypeIcon(
                     isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && (uiState.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT || uiState.focusType == LocationHistoryScreenFocusType.OVERVIEW),
@@ -306,14 +306,15 @@ fun LocationHistoryScreenElements(
             }
 
             Column(
-                modifier = Modifier.onGloballyPositioned { coordinates ->
-                    cardHeight(with(density) { coordinates.size.height.toDp() })
-                }
+                modifier = Modifier
+                    .onGloballyPositioned { coordinates ->
+                        cardHeight(with(density) { coordinates.size.height.toDp() })
+                    }
             ) {
                 AnimatedVisibility(
                     visible = uiState.daySelectorState.displayedDays.isNotEmpty(),
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically()
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
                 ) {
                     LocationHistoryDetailCard(
                         modifier = Modifier
@@ -325,9 +326,9 @@ fun LocationHistoryScreenElements(
                 }
 
                 AnimatedVisibility(
-                    visible = uiState.daySelectorState.displayedDays.isNotEmpty(),
-                    enter = fadeIn() + slideInVertically { it },
-                    exit = fadeOut() + slideOutVertically { it }
+                    visible = uiState.daySelectorState.displayedDays.isNotEmpty() && uiState.focusType != LocationHistoryScreenFocusType.NONE,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
                 ) {
                     LocationHistoryDateSelector(
                         modifier = Modifier
