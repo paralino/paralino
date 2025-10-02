@@ -133,12 +133,14 @@ class LocationHistoryViewModelDataController(
             return
         }
 
-        if (currentState.startDate != currentState.endDate || currentState.selectedDate == selectedDate) {
-            handleDaySelection(
-                dateRangeDays = 1,
-                selectedDate = selectedDate
-            )
-        } else {
+        // If currently a single day is selected
+        if (currentState.startDate == currentState.endDate) {
+            // If clicking the same day, do nothing
+            if (currentState.selectedDate == selectedDate) {
+                return
+            }
+            
+            // Create initial range
             val difference = currentState.selectedDate.daysUntil(selectedDate)
             if (difference < 0) {
                 // newly selected date is earlier than current selection
@@ -155,7 +157,7 @@ class LocationHistoryViewModelDataController(
                 }
             } else {
                 // newly selected date is after the current selection
-                if (difference.absoluteValue >= maxDateRange) {
+                if (difference >= maxDateRange) {
                     handleDaySelection(
                         dateRangeDays = maxDateRange,
                         selectedDate = selectedDate
@@ -163,6 +165,52 @@ class LocationHistoryViewModelDataController(
                 } else {
                     handleDaySelection(
                         dateRangeDays = difference + 1,
+                        selectedDate = selectedDate
+                    )
+                }
+            }
+        } else {
+            // Range is already selected - extend or collapse
+            val startDate = currentState.startDate
+            val endDate = currentState.endDate
+            
+            when {
+                selectedDate < startDate -> {
+                    // Extend backward (earlier in time)
+                    val daysToEnd = selectedDate.daysUntil(endDate) + 1
+                    if (daysToEnd > maxDateRange) {
+                        // Cap at max range, keep end date
+                        handleDaySelection(
+                            dateRangeDays = maxDateRange,
+                            selectedDate = selectedDate.plus(DatePeriod(days = maxDateRange - 1))
+                        )
+                    } else {
+                        handleDaySelection(
+                            dateRangeDays = daysToEnd,
+                            selectedDate = endDate
+                        )
+                    }
+                }
+                selectedDate > endDate -> {
+                    // Extend forward (later in time)
+                    val daysFromStart = startDate.daysUntil(selectedDate) + 1
+                    if (daysFromStart > maxDateRange) {
+                        // Cap at max range, move end date forward
+                        handleDaySelection(
+                            dateRangeDays = maxDateRange,
+                            selectedDate = selectedDate
+                        )
+                    } else {
+                        handleDaySelection(
+                            dateRangeDays = daysFromStart,
+                            selectedDate = selectedDate
+                        )
+                    }
+                }
+                else -> {
+                    // Click within current range, collapse to single day
+                    handleDaySelection(
+                        dateRangeDays = 1,
                         selectedDate = selectedDate
                     )
                 }
