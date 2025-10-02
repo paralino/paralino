@@ -140,7 +140,7 @@ class LocationHistoryDataFetchController(
                     locationId = null,
                     startDate = startDate,
                     endDate = endDate,
-                    requestCacheDuration = 2.minutes
+                        requestCacheDuration = 10.minutes
                 )
             } catch (e: Exception) {
                 logg.e(message = "Error refreshing location history: ${e.message}", t = e)
