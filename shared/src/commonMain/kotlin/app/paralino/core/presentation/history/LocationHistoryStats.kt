@@ -88,7 +88,7 @@ data class LocationHistoryStats(
             }
 
             val networks = locations
-                    .mapNotNull { it.point.status.net?.let { NetworkType.Companion.fromKey(it)?.networkName } }
+                    .mapNotNull { it.point.status.net?.let { NetworkType.Companion.fromKey(it)?.networkName?.takeIf { it.isNotBlank() } } }
                     .distinct()
 
             // Format values
