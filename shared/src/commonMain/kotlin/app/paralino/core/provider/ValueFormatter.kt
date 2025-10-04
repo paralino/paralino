@@ -350,8 +350,8 @@ abstract class IValueFormatter {
         val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = true)
 
         return when {
-            dateTime.date == nowDate -> "Today $timeStr"
-            dateTime.date == yesterday -> "Yesterday $timeStr"
+            dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
+            dateTime.date == yesterday -> MR.strings.date_name_today.localizedString() + " $timeStr"
             else -> {
                 val datePart = formatDatePart(
                     date = dateTime,
@@ -374,8 +374,8 @@ abstract class IValueFormatter {
         val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = true)
 
         return when {
-            dateTime.date == nowDate -> "Today $timeStr"
-            dateTime.date == yesterday -> "Yesterday $timeStr"
+            dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
+            dateTime.date == yesterday -> MR.strings.date_name_today.localizedString() + " $timeStr"
             else -> {
                 val datePart = formatDatePart(
                     date = dateTime,
@@ -395,8 +395,8 @@ abstract class IValueFormatter {
         shouldShowYear: Boolean
     ): String {
         return when {
-            date.date == nowDate -> "Today"
-            date.date == yesterday -> "Yesterday"
+            date.date == nowDate -> MR.strings.date_name_today.localizedString()
+            date.date == yesterday -> MR.strings.date_name_yesterday.localizedString()
             else -> {
                 val pattern = if (shouldShowYear) "MMMd, yyyy" else "MMMd"
                 formatBestPattern(
