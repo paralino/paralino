@@ -225,6 +225,14 @@ fun LocationHistoryScreenElements(
                         .padding(bottom = 8.dp),
                     horizontalAlignment = Alignment.End
                 ) {
+                    HistoryMapOptionChip(
+                        modifier = Modifier.padding(top = 4.dp),
+                        selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
+                        name = stringResource(MR.strings.history_map_options_location_clustering),
+                        icon = CoreAppIcons.TargetCircles.asPainterResource(),
+                        onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterLocations) }
+                    )
+
                     AnimatedVisibility(uiState.showPins) {
                         HistoryMapOptionChip(
                             modifier = Modifier.padding(top = 4.dp),
@@ -249,14 +257,6 @@ fun LocationHistoryScreenElements(
                         name = stringResource(MR.strings.history_map_options_show_path),
                         icon = CoreAppIcons.PolylineWithDots.asPainterResource(),
                         onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPolyline) }
-                    )
-
-                    HistoryMapOptionChip(
-                        modifier = Modifier.padding(top = 4.dp),
-                        selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
-                        name = stringResource(MR.strings.history_map_options_location_clustering),
-                        icon = CoreAppIcons.TargetCircles.asPainterResource(),
-                        onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterLocations) }
                     )
                 }
             }
