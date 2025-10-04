@@ -10,7 +10,7 @@ data class LocationHistoryStats(
     val totalDistanceMeters: Float,
     val batteryRange: Pair<Int, Int>,
     val averageBattery: Int,
-    val maxSpeedMps: Float,
+    val maxSpeedMps: Float?,
     val elevationRangeMeters: Pair<Float, Float>,
     val elevationGainMeters: Float,
     val locationEntriesCount: Int,
@@ -72,7 +72,7 @@ data class LocationHistoryStats(
                 0
             }
 
-            val maxSpeedMps = locationPoints.mapNotNull { it.spd }.maxOrNull() ?: 0f
+            val maxSpeedMps = locationPoints.mapNotNull { it.spd }.maxOrNull()
 
             val elevations = locationPoints.mapNotNull { it.alt }
             val elevationRangeMeters = if (elevations.isNotEmpty()) {
@@ -93,7 +93,7 @@ data class LocationHistoryStats(
 
             // Format values
             val formattedDistance = valueFormatter.getDistanceSmall(totalDistanceMeters.toDouble())
-            val formattedMaxSpeed = valueFormatter.getSpeedSmall(maxSpeedMps)
+            val formattedMaxSpeed = maxSpeedMps?.let { valueFormatter.getSpeedSmall(it) } ?: "-"
             val formattedElevationRange =
                 "${valueFormatter.getDistanceSmall(elevationRangeMeters.first.toDouble())} - ${
                     valueFormatter.getDistanceSmall(elevationRangeMeters.second.toDouble())
