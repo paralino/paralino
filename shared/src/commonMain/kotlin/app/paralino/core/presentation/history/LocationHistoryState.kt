@@ -227,7 +227,7 @@ data class LocationHistoryScreenState(
                 focusType = LocationHistoryScreenFocusType.OVERVIEW,
                 previousFocusType = LocationHistoryScreenFocusType.OVERVIEW,
                 selectedLocationId = null,
-                daySelectorState = LocationHistoryDateSelectorState(),
+                daySelectorState = LocationHistoryDateSelectorState(maxDateRangeDays = null),
                 planConfig = null,
                 isSatelliteMode = false,
                 alertDialog = null
@@ -330,6 +330,7 @@ sealed interface LocationHistoryScreenFocusType {
 }
 
 data class LocationHistoryDateSelectorState(
+    val maxDateRangeDays: Int?,
     val days: List<LocationHistoryDayState> = emptyList(),
     val daysInLoading: List<LocalDate> = emptyList(),
     val isLimitedHistoryPlanMode: Boolean = false,
@@ -338,6 +339,11 @@ data class LocationHistoryDateSelectorState(
     val forceFocusOnSelectedDay: Boolean = false,
     val earliestDate: LocalDate? = null,
 ) {
+    val isMaxRange: Boolean = if (maxDateRangeDays != null && dateRangeDays != null) {
+        maxDateRangeDays <= dateRangeDays
+    } else {
+        false
+    }
     val displayedDays = days.reversed()
         .map {
             it.copy(

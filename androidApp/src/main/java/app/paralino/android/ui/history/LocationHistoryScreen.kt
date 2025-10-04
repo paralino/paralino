@@ -230,7 +230,8 @@ private fun LocationHistoryDateSelectorPreview() {
                 elevation = 8.dp,
                 state = LocationHistoryDateSelectorState(
                     days = sampleDays.reversed(),
-                    dateRangeDays = 7
+                    dateRangeDays = 7,
+                    maxDateRangeDays = 7
                 ),
                 onEvent = { },
             )

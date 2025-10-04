@@ -197,7 +197,11 @@ fun LocationHistoryDateSelector(
                     Text(
                         style = MaterialTheme.typography.caption,
                         text = "${state.dateRangeDays ?: 1}x",
-                        color = MaterialTheme.colors.onSurface,
+                        color = if (state.isMaxRange) {
+                            AppColors.redMain
+                        } else {
+                            MaterialTheme.colors.onSurface
+                        },
                         fontSize = 16.sp,
                         lineHeight = 14.sp,
                         fontWeight = FontWeight.Bold

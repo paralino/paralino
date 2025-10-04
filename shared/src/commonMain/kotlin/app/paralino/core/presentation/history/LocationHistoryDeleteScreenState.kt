@@ -57,6 +57,7 @@ data class LocationHistoryDeleteDateState(
     val days: List<LocationHistoryDayState>
 ) {
     val selectorState = LocationHistoryDateSelectorState(
+        maxDateRangeDays = null,
         days = days,
         startAction = LocationHistoryDateSelectionAction.NONE,
         dateRangeDays = null,

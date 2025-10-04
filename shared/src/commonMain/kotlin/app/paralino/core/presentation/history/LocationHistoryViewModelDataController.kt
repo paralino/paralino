@@ -28,7 +28,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlin.math.absoluteValue
 
-private val maxDateRange = 15
 class LocationHistoryViewModelDataController(
     val getLocationHistory: GetLocationHistoryUseCase,
     val refreshLocationHistory: RefreshLocationHistoryUseCase,
@@ -42,6 +41,7 @@ class LocationHistoryViewModelDataController(
     val geofenceManager: IGeofenceManager,
     val viewModel: LocationHistoryViewModel,
 ) {
+    val maxDateRangeDays = 15
     val _uiState = MutableStateFlow<LocationHistoryScreenState>(
         LocationHistoryScreenState.emptyState()
     )
@@ -144,10 +144,10 @@ class LocationHistoryViewModelDataController(
             val difference = currentState.selectedDate.daysUntil(selectedDate)
             if (difference < 0) {
                 // newly selected date is earlier than current selection
-                if (difference.absoluteValue >= maxDateRange) {
+                if (difference.absoluteValue >= maxDateRangeDays) {
                     handleDaySelection(
-                        dateRangeDays = maxDateRange,
-                        selectedDate = selectedDate.plus(DatePeriod(days = maxDateRange - 1))
+                        dateRangeDays = maxDateRangeDays,
+                        selectedDate = selectedDate.plus(DatePeriod(days = maxDateRangeDays - 1))
                     )
                 } else {
                     handleDaySelection(
@@ -157,9 +157,9 @@ class LocationHistoryViewModelDataController(
                 }
             } else {
                 // newly selected date is after the current selection
-                if (difference >= maxDateRange) {
+                if (difference >= maxDateRangeDays) {
                     handleDaySelection(
-                        dateRangeDays = maxDateRange,
+                        dateRangeDays = maxDateRangeDays,
                         selectedDate = selectedDate
                     )
                 } else {
@@ -178,11 +178,11 @@ class LocationHistoryViewModelDataController(
                 selectedDate < startDate -> {
                     // Extend backward (earlier in time)
                     val daysToEnd = selectedDate.daysUntil(endDate) + 1
-                    if (daysToEnd > maxDateRange) {
+                    if (daysToEnd > maxDateRangeDays) {
                         // Cap at max range, keep end date
                         handleDaySelection(
-                            dateRangeDays = maxDateRange,
-                            selectedDate = selectedDate.plus(DatePeriod(days = maxDateRange - 1))
+                            dateRangeDays = maxDateRangeDays,
+                            selectedDate = selectedDate.plus(DatePeriod(days = maxDateRangeDays - 1))
                         )
                     } else {
                         handleDaySelection(
@@ -194,10 +194,10 @@ class LocationHistoryViewModelDataController(
                 selectedDate > endDate -> {
                     // Extend forward (later in time)
                     val daysFromStart = startDate.daysUntil(selectedDate) + 1
-                    if (daysFromStart > maxDateRange) {
+                    if (daysFromStart > maxDateRangeDays) {
                         // Cap at max range, move end date forward
                         handleDaySelection(
-                            dateRangeDays = maxDateRange,
+                            dateRangeDays = maxDateRangeDays,
                             selectedDate = selectedDate
                         )
                     } else {

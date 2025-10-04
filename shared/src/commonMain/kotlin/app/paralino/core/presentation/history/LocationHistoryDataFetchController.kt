@@ -509,6 +509,7 @@ class LocationHistoryDataFetchController(
         }
 
         return LocationHistoryDateSelectorState(
+            maxDateRangeDays = dataController.maxDateRangeDays,
             isLimitedHistoryPlanMode = isLimitedHistoryPlan,
             days = if (isLimitedHistoryPlan) {
                 generateDates(
