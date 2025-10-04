@@ -18,9 +18,12 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.AppSnackbarPayload
 import app.paralino.core.ui.components.SnackbarDuration
-import app.paralino.core.ui.components.dialogs.MainAlertDialog.*
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.Buttons
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteLocationHistoryEntry
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteLocationHistoryRange
 import app.paralino.core.ui.components.onAction
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -42,33 +45,77 @@ class LocationHistoryViewModel(
     private val geofenceManager: IGeofenceManager
 ) : CoreViewModel() {
 
-    val dataController = LocationHistoryViewModelDataController(
-        getLocationHistory = getLocationHistory,
-        refreshLocationHistory = refreshLocationHistory,
-        deleteLocationHistory = deleteLocationHistory,
-        userRepo = userRepo,
-        personalSpaceRepo = personalSpaceRepo,
-        userGroupRepo = userGroupRepo,
-        valueFormatter = valueFormatter,
-        appPrefs = appPrefs,
-        remoteConfig = remoteConfig,
-        geofenceManager = geofenceManager,
-        viewModel = this
+    private val _uiState = MutableStateFlow<LocationHistoryScreenState>(
+        LocationHistoryScreenState.emptyState()
     )
 
-    val uiState: StateFlow<LocationHistoryScreenState> = dataController._uiState
-    val events = dataController._eventChannel.receiveAsFlow()
+    private val _eventChannel = Channel<LocationHistoryScreenEvent?>()
+
+    private val clusteringService = LocationClusteringService(valueFormatter)
+    private val defaultMapper = ILocationHistoryStateMapper(
+        valueFormatter = valueFormatter
+    )
+
+    private val personalStateMapper = LocationHistoryPersonalStateMapper(
+        valueFormatter = valueFormatter,
+        geofenceManager = geofenceManager,
+        defaultMapper = defaultMapper,
+        clusteringService = clusteringService
+    )
+
+    private val groupStateMapper = LocationHistoryGroupStateMapper(
+        valueFormatter = valueFormatter,
+        geofenceManager = geofenceManager,
+        defaultMapper = defaultMapper,
+        clusteringService = clusteringService,
+        remoteConfig = remoteConfig
+    )
+
+    private val historyDateMapper = LocationHistoryDateMapper(
+        userRepo = userRepo,
+        userGroupRepo = userGroupRepo,
+        remoteConfig = remoteConfig,
+        valueFormatter = valueFormatter
+    )
+
+    private val dataFetchController = LocationHistoryDataFetchController(
+        getLocationHistory = getLocationHistory,
+        refreshLocationHistory = refreshLocationHistory,
+        personalSpaceRepo = personalSpaceRepo,
+        appPrefs = appPrefs,
+        userGroupRepo = userGroupRepo,
+        historyDateMapper = historyDateMapper,
+        personalStateMapper = personalStateMapper,
+        groupStateMapper = groupStateMapper,
+        _uiState = _uiState,
+        coroutineScope = coroutineScope,
+        messageDispatcher = messageDispatcher
+    )
+
+    private val historyEventHandler = LocationHistoryEventHandler(
+        deleteLocationHistory = deleteLocationHistory,
+        valueFormatter = valueFormatter,
+        geofenceManager = geofenceManager,
+        dataFetchController = dataFetchController,
+        messageDispatcher = messageDispatcher,
+        coroutineScope = coroutineScope,
+        historyDateMapper = historyDateMapper,
+        _uiState = _uiState,
+    )
+
+    val uiState: StateFlow<LocationHistoryScreenState> = _uiState
+    val events = _eventChannel.receiveAsFlow()
 
     private val uiFocusedStatus = MutableStateFlow(false)
 
     init {
-        dataController.loadHistory(groupId = groupId, memberUserId = memberUserId)
+        historyEventHandler.loadHistory(groupId = groupId, memberUserId = memberUserId)
     }
 
     fun onEvent(event: LocationHistoryUiEvent) {
         when (event) {
             is LocationHistoryUiEvent.LoadHistory -> {
-                dataController.loadHistory(
+                historyEventHandler.loadHistory(
                     groupId = event.groupId,
                     memberUserId = event.memberUserId
                 )
@@ -77,20 +124,20 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.DialogAction -> {
                 when (event.action.dialog) {
                     is DeleteLocationHistoryEntry -> {
-                        dataController._uiState.update { it.copy(alertDialog = null) }
+                        _uiState.update { it.copy(alertDialog = null) }
                         if (event.action.action == Buttons.buttonOk) {
-                            dataController.deleteSelectedEntry()
+                            historyEventHandler.deleteSelectedEntry()
                         } else if (event.action.action == DeleteLocationHistoryEntry.buttonMarkAsRangeId) {
-                            dataController.markForRangeDeletion()
+                            historyEventHandler.markForRangeDeletion()
                         }
                     }
 
                     is DeleteLocationHistoryRange -> {
-                        dataController._uiState.update { it.copy(alertDialog = null) }
+                        _uiState.update { it.copy(alertDialog = null) }
                         if (event.action.action == Buttons.buttonOk) {
-                            dataController.deleteSelectedRange()
+                            historyEventHandler.deleteSelectedRange()
                         } else if (event.action.action == DeleteLocationHistoryRange.buttonClearSelection) {
-                            dataController._uiState.update { it.copy(deletionRangeStartIndex = null) }
+                            _uiState.update { it.copy(deletionRangeStartIndex = null) }
                         }
                     }
 
@@ -99,7 +146,7 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.OnMapModeSwitch -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         isSatelliteMode = !it.isSatelliteMode,
                         isFilterOpened = false
@@ -108,7 +155,7 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.OnMapTouch -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         isFilterOpened = false,
                         focusType = LocationHistoryScreenFocusType.NONE,
@@ -122,11 +169,11 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.ToggleMapFilter -> {
-                dataController._uiState.update { it.copy(isFilterOpened = !it.isFilterOpened) }
+                _uiState.update { it.copy(isFilterOpened = !it.isFilterOpened) }
             }
 
             is LocationHistoryUiEvent.OnMarkerClick -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         isFilterOpened = false,
                         focusType = if (it.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT) {
@@ -140,7 +187,7 @@ class LocationHistoryViewModel(
             }
 
             is LocationHistoryUiEvent.OnPointClicked -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         dataViewType = LocationHistoryDataViewType.LocationPoint,
                         focusType = if (it.focusType == LocationHistoryScreenFocusType.NONE) {
@@ -156,7 +203,7 @@ class LocationHistoryViewModel(
             }
 
             is LocationHistoryUiEvent.OnSelectFocusType -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         focusType = event.type,
                         previousFocusType = it.focusType,
@@ -166,11 +213,11 @@ class LocationHistoryViewModel(
             }
 
             is LocationHistoryUiEvent.SetHistoryProgress -> {
-                val newId = dataController._uiState.value.selectedLocations.getOrNull(
+                val newId = _uiState.value.selectedLocations.getOrNull(
                     index = event.progress
                 )?.pointId
 
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         selectedLocationId = newId,
                         isFilterOpened = false
@@ -179,7 +226,7 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.ToggleDayRange -> {
-                dataController.handleDaySelection(
+                historyEventHandler.handleDaySelection(
                     dateRangeDays = 1,
                     selectedDate = uiState.value.selectedDate,
                 )
@@ -188,7 +235,7 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.OnMapLongPress -> {}
 
             is LocationHistoryUiEvent.SelectDevice -> {
-                dataController.selectDevice(event.device)
+                historyEventHandler.selectDevice(event.device)
             }
 
             is LocationHistoryUiEvent.UiLifecycleChange -> {
@@ -196,11 +243,11 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.OnCloseScreen -> {
-                dataController._eventChannel.trySend(LocationHistoryScreenEvent.NavigateBack)
+                _eventChannel.trySend(LocationHistoryScreenEvent.NavigateBack)
             }
 
             is LocationHistoryUiEvent.ChangeMapDataViewType -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         dataViewType = event.type,
                         focusType = when (event.type) {
@@ -235,7 +282,7 @@ class LocationHistoryViewModel(
                             "**$it**"
                         }
                     } ?: "-"
-                    dataController._uiState.update {
+                    _uiState.update {
                         it.copy(
                             alertDialog = DeleteLocationHistoryRange(
                                 startInfo = startTime,
@@ -248,9 +295,8 @@ class LocationHistoryViewModel(
                     }
                 } else {
                     val time =
-                        dataController._uiState.value.selectedPoint?.locationTime?.let { "**$it**" }
-                            ?: "-"
-                    dataController._uiState.update {
+                        _uiState.value.selectedPoint?.locationTime?.let { "**$it**" } ?: "-"
+                    _uiState.update {
                         it.copy(
                             alertDialog = DeleteLocationHistoryEntry(
                                 info = time,
@@ -263,8 +309,8 @@ class LocationHistoryViewModel(
             }
 
             is LocationHistoryUiEvent.OnDirectionsRequest -> {
-                dataController._uiState.value.navigateAction?.let {
-                    dataController._eventChannel.trySend(
+                _uiState.value.navigateAction?.let {
+                    _eventChannel.trySend(
                         OpenNavigation(
                             OpenExternalNavigation(
                                 lat = it.lat,
@@ -280,7 +326,7 @@ class LocationHistoryViewModel(
             is LocationHistoryUiEvent.OnDateSelectorAction -> {
                 when (event.action) {
                     LocationHistoryDateSelectionAction.LOAD_MODE -> {
-                        dataController.addPreviousMonth()
+                        historyEventHandler.addPreviousMonth()
                     }
 
                     LocationHistoryDateSelectionAction.UPGRADE -> {
@@ -307,7 +353,7 @@ class LocationHistoryViewModel(
                                     duration = SnackbarDuration.Forever
                                 )
                             )?.result?.onAction {
-                                dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenPaywall)
+                                _eventChannel.trySend(LocationHistoryScreenEvent.OpenPaywall)
                             }
                         }
                     }
@@ -335,24 +381,24 @@ class LocationHistoryViewModel(
             }
 
             is LocationHistoryUiEvent.OnSelectDay -> {
-                dataController.handleDaySelection(
+                historyEventHandler.handleDaySelection(
                     dateRangeDays = uiState.value.daySelectorState.dateRangeDays ?: 1,
                     selectedDate = event.day
                 )
             }
 
             is LocationHistoryUiEvent.OnLongSelectDay -> {
-                dataController.handleDayLongCLick(
+                historyEventHandler.handleDayLongCLick(
                     selectedDate = event.day
                 )
             }
 
             LocationHistoryUiEvent.OpenLocationSettings -> {
-                dataController._eventChannel.trySend(LocationHistoryScreenEvent.OpenHistorySettings)
+                _eventChannel.trySend(LocationHistoryScreenEvent.OpenHistorySettings)
             }
 
             LocationHistoryUiEvent.ToggleClusterLocations -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(
                         viewMode = when (it.viewMode) {
                             LocationHistoryPathViewMode.OVERVIEW -> LocationHistoryPathViewMode.DETAILED
@@ -363,13 +409,13 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.ToggleClusterPins -> {
-                dataController._uiState.update {
+                _uiState.update {
                     it.copy(clusterPins = !it.clusterPins)
                 }
             }
 
             LocationHistoryUiEvent.ToggleShowPins -> {
-                dataController._uiState.update {
+                _uiState.update {
                     if (it.showPolyline) {
                         it.copy(showPins = !it.showPins)
                     } else {
@@ -379,7 +425,7 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.ToggleShowPolyline -> {
-                dataController._uiState.update {
+                _uiState.update {
                     if (it.showPins) {
                         it.copy(showPolyline = !it.showPolyline)
                     } else {
@@ -391,7 +437,7 @@ class LocationHistoryViewModel(
     }
 
     override fun onCleared() {
-        dataController.clear()
+        historyEventHandler.clear()
         super.onCleared()
     }
 }

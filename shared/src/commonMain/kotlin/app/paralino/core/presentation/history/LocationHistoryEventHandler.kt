@@ -1,58 +1,37 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.MR
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
-import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
-import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
+import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.errorString
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.atTime
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlin.math.absoluteValue
 
-class LocationHistoryViewModelDataController(
-    val getLocationHistory: GetLocationHistoryUseCase,
-    val refreshLocationHistory: RefreshLocationHistoryUseCase,
-    val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
-    val userRepo: UserRepository,
-    val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
-    val userGroupRepo: UserGroupLocalDataSource,
-    val valueFormatter: IValueFormatter,
-    val appPrefs: AppPrefs,
-    val remoteConfig: RemoteConfigRepository,
-    val geofenceManager: IGeofenceManager,
-    val viewModel: LocationHistoryViewModel,
+class LocationHistoryEventHandler(
+    private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
+    private val valueFormatter: IValueFormatter,
+    private val geofenceManager: IGeofenceManager,
+    private val dataFetchController: LocationHistoryDataFetchController,
+    private val messageDispatcher: ICoreMessageDispatcher,
+    private val coroutineScope: CoroutineScope,
+    private val historyDateMapper: LocationHistoryDateMapper,
+    private val _uiState: MutableStateFlow<LocationHistoryScreenState>,
 ) {
-    val maxDateRangeDays = 15
-    val _uiState = MutableStateFlow<LocationHistoryScreenState>(
-        LocationHistoryScreenState.emptyState()
-    )
-
-    val _eventChannel = Channel<LocationHistoryScreenEvent?>()
 
     var historySubscriptionJob: Job? = null
-
-    val dataFetchController = LocationHistoryDataFetchController(
-        dataController = this
-    )
 
     fun loadHistory(
         groupId: String,
@@ -63,59 +42,22 @@ class LocationHistoryViewModelDataController(
             groupId = groupId,
             memberUserId = memberUserId
         )
-            .launchIn(viewModel.coroutineScope)
+            .launchIn(coroutineScope)
     }
 
     fun addPreviousMonth() {
         val currentState = _uiState.value
-        val currentDays = currentState.daySelectorState.days
 
-        if (currentDays.isEmpty()) return
+        val updatedDays = historyDateMapper.createDatesForPreviousMonth(
+            selectedDate = currentState.selectedDate,
+            dateRangeDays = currentState.daySelectorState.dateRangeDays,
+            currentDays = currentState.daySelectorState.days
+        )
 
-        // Find the oldest date in current days
-        val oldestDate = currentDays.minByOrNull { it.date }?.date ?: return
-
-        // Get the previous month
-        val previousMonth = oldestDate.minus(DatePeriod(months = 1))
-        val previousMonthStart = LocalDate(previousMonth.year, previousMonth.month, 1)
-        val previousMonthEnd = LocalDate(oldestDate.year, oldestDate.month, 1)
-            .minus(DatePeriod(days = 1))
-
-        // Calculate which days are selected based on current selection
-        val selectedDates = mutableSetOf<LocalDate>()
-        repeat(currentState.daySelectorState.dateRangeDays ?: 0) {
-            selectedDates.add(currentState.selectedDate.minus(DatePeriod(days = it)))
-        }
-        val sortedSelectedDates = selectedDates.sorted()
-
-        // Generate all days for the previous month
-        val newDays = mutableListOf<LocationHistoryDayState>()
-        var currentDate = previousMonthStart
-        while (currentDate <= previousMonthEnd) {
-            newDays.add(
-                LocationHistoryDayState(
-                    isSelected = selectedDates.contains(currentDate),
-                    isLoading = false,
-                    date = currentDate,
-                    formattedMonth = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
-                        pattern = "MMM"
-                    ),
-                    formattedDay = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
-                        pattern = "EEE"
-                    ),
-                    isWeekend = currentDate.dayOfWeek == DayOfWeek.SATURDAY || currentDate.dayOfWeek == DayOfWeek.SUNDAY,
-                    position = dataFetchController.calculatePosition(currentDate, sortedSelectedDates)
-                )
-            )
-            currentDate = currentDate.plus(DatePeriod(days = 1))
-        }
-
-        // Prepend new days to existing days and update state
-        val updatedDays = newDays + currentDays
-        _uiState.update {
-            it.copy(daySelectorState = it.daySelectorState.copy(days = updatedDays))
+        if (updatedDays != null) {
+            _uiState.update {
+                it.copy(daySelectorState = it.daySelectorState.copy(days = updatedDays))
+            }
         }
     }
 
@@ -129,7 +71,7 @@ class LocationHistoryViewModelDataController(
         val currentState = _uiState.value
 
         if (!currentState.canSelectDate(selectedDate)) {
-            viewModel.showSnackbar(text = MR.strings.history_map_date_unselectable_error.localizedString())
+            messageDispatcher.showSnackbar(text = MR.strings.history_map_date_unselectable_error.localizedString())
             return
         }
 
@@ -139,15 +81,15 @@ class LocationHistoryViewModelDataController(
             if (currentState.selectedDate == selectedDate) {
                 return
             }
-            
+
             // Create initial range
             val difference = currentState.selectedDate.daysUntil(selectedDate)
             if (difference < 0) {
                 // newly selected date is earlier than current selection
-                if (difference.absoluteValue >= maxDateRangeDays) {
+                if (difference.absoluteValue >= LocationHistoryScreenState.maxDateRangeDays) {
                     handleDaySelection(
-                        dateRangeDays = maxDateRangeDays,
-                        selectedDate = selectedDate.plus(DatePeriod(days = maxDateRangeDays - 1))
+                        dateRangeDays = LocationHistoryScreenState.maxDateRangeDays,
+                        selectedDate = selectedDate.plus(DatePeriod(days = LocationHistoryScreenState.maxDateRangeDays - 1))
                     )
                 } else {
                     handleDaySelection(
@@ -157,9 +99,9 @@ class LocationHistoryViewModelDataController(
                 }
             } else {
                 // newly selected date is after the current selection
-                if (difference >= maxDateRangeDays) {
+                if (difference >= LocationHistoryScreenState.maxDateRangeDays) {
                     handleDaySelection(
-                        dateRangeDays = maxDateRangeDays,
+                        dateRangeDays = LocationHistoryScreenState.maxDateRangeDays,
                         selectedDate = selectedDate
                     )
                 } else {
@@ -173,16 +115,16 @@ class LocationHistoryViewModelDataController(
             // Range is already selected - extend or collapse
             val startDate = currentState.startDate
             val endDate = currentState.endDate
-            
+
             when {
                 selectedDate < startDate -> {
                     // Extend backward (earlier in time)
                     val daysToEnd = selectedDate.daysUntil(endDate) + 1
-                    if (daysToEnd > maxDateRangeDays) {
+                    if (daysToEnd > LocationHistoryScreenState.maxDateRangeDays) {
                         // Cap at max range, keep end date
                         handleDaySelection(
-                            dateRangeDays = maxDateRangeDays,
-                            selectedDate = selectedDate.plus(DatePeriod(days = maxDateRangeDays - 1))
+                            dateRangeDays = LocationHistoryScreenState.maxDateRangeDays,
+                            selectedDate = selectedDate.plus(DatePeriod(days = LocationHistoryScreenState.maxDateRangeDays - 1))
                         )
                     } else {
                         handleDaySelection(
@@ -191,13 +133,14 @@ class LocationHistoryViewModelDataController(
                         )
                     }
                 }
+
                 selectedDate > endDate -> {
                     // Extend forward (later in time)
                     val daysFromStart = startDate.daysUntil(selectedDate) + 1
-                    if (daysFromStart > maxDateRangeDays) {
+                    if (daysFromStart > LocationHistoryScreenState.maxDateRangeDays) {
                         // Cap at max range, move end date forward
                         handleDaySelection(
-                            dateRangeDays = maxDateRangeDays,
+                            dateRangeDays = LocationHistoryScreenState.maxDateRangeDays,
                             selectedDate = selectedDate
                         )
                     } else {
@@ -207,6 +150,7 @@ class LocationHistoryViewModelDataController(
                         )
                     }
                 }
+
                 else -> {
                     // Click within current range, collapse to single day
                     handleDaySelection(
@@ -229,7 +173,7 @@ class LocationHistoryViewModelDataController(
         val currentState = _uiState.value
 
         if (!currentState.canSelectDate(selectedDate)) {
-            viewModel.showSnackbar(text = MR.strings.history_map_date_unselectable_error.localizedString())
+            messageDispatcher.showSnackbar(text = MR.strings.history_map_date_unselectable_error.localizedString())
             return
         }
 
@@ -285,7 +229,7 @@ class LocationHistoryViewModelDataController(
             startDate = _uiState.value.startDate,
             endDate = _uiState.value.endDate
         )
-            .launchIn(viewModel.coroutineScope)
+            .launchIn(coroutineScope)
     }
 
     fun selectDevice(device: UserActiveLocationDeviceState) {
@@ -315,7 +259,7 @@ class LocationHistoryViewModelDataController(
         _uiState.value.deleteAction?.let {
             if (_uiState.value.isCurrentUser) {
                 _uiState.value.selectedPoint?.let {
-                    viewModel.coroutineScope.launch {
+                    coroutineScope.launch {
                         _uiState.update { it.copy(isDeletingEntry = true) }
                         try {
                             deleteLocationHistory.deleteEntries(
@@ -326,7 +270,7 @@ class LocationHistoryViewModelDataController(
                                 endDate = _uiState.value.endDate
                             )
                         } catch (e: Exception) {
-                            viewModel.showSnackbar(e.errorString())
+                            messageDispatcher.showSnackbar(e.errorString())
                         }
                         _uiState.update {
                             it.copy(isDeletingEntry = false, deletionRangeStartIndex = null)
@@ -354,7 +298,7 @@ class LocationHistoryViewModelDataController(
             val locations = _uiState.value.locationsToDelete
             if (_uiState.value.isCurrentUser && locations.isNotEmpty()) {
                 _uiState.value.selectedPoint?.let {
-                    viewModel.coroutineScope.launch {
+                    coroutineScope.launch {
                         _uiState.update { it.copy(isDeletingEntry = true) }
                         try {
                             deleteLocationHistory.deleteEntries(
@@ -365,7 +309,7 @@ class LocationHistoryViewModelDataController(
                                 endDate = _uiState.value.endDate
                             )
                         } catch (e: Exception) {
-                            viewModel.showSnackbar(e.errorString())
+                            messageDispatcher.showSnackbar(e.errorString())
                         }
                         _uiState.update {
                             it.copy(isDeletingEntry = false, deletionRangeStartIndex = null)

@@ -19,6 +19,7 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.SnackbarDuration
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,7 @@ class GroupStateManager(
     private val coroutineScope: CoroutineScope,
     private val allGroups: StateFlow<Resource<List<UserGroupWithMetadata>>>,
     private val groupIdData: MutableStateFlow<GroupOrSpaceId>,
-    private val eventChannel: kotlinx.coroutines.channels.Channel<MapHomeScreenEvent?>
+    private val eventChannel: Channel<MapHomeScreenEvent?>
 ) {
 
     suspend fun switchGroup(viewSource: MapScreenViewSourceType) {

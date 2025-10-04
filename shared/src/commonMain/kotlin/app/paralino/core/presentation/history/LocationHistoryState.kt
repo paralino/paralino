@@ -198,6 +198,7 @@ data class LocationHistoryScreenState(
     }
 
     companion object {
+        const val maxDateRangeDays: Int = 15
         fun emptyState(): LocationHistoryScreenState {
             val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
             return LocationHistoryScreenState(
