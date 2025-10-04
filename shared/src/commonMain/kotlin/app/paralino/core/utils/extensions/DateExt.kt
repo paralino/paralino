@@ -70,6 +70,18 @@ fun LocalDateTime.stripNanoseconds(): LocalDateTime {
     )
 }
 
+fun LocalDateTime.stripSeconds(): LocalDateTime {
+    return LocalDateTime(
+        date = this.date,
+        time = LocalTime(
+            hour = this.time.hour,
+            minute = this.time.minute,
+            second = 0,
+            nanosecond = 0
+        )
+    )
+}
+
 fun LocalDate.dateForApi(): String {
     return this.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
 }

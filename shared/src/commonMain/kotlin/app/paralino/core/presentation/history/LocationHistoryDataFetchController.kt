@@ -28,17 +28,15 @@ import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.listOfDatesUntil
 import app.paralino.core.utils.extensions.nowUTC
-import app.paralino.core.utils.extensions.stripNanoseconds
+import app.paralino.core.utils.extensions.stripSeconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
@@ -534,10 +532,10 @@ class LocationHistoryDataFetchController(
     private fun mapLocationPoints(entry: LocationHistoryModelForDevice): List<LocationHistoryPointState.Point> {
         return entry.history.data?.history
             ?.map { point ->
-                val locATime = point.loc?.startTime?.isoToLocalDateTime()?.stripNanoseconds()
-                val locBTime = point.loc?.endTime?.isoToLocalDateTime()?.stripNanoseconds()
-                val statusATime = point.status.startTime.isoToLocalDateTime()?.stripNanoseconds()
-                val statusBTime = point.status.endTime.isoToLocalDateTime()?.stripNanoseconds()
+                val locATime = point.loc?.startTime?.isoToLocalDateTime()?.stripSeconds()
+                val locBTime = point.loc?.endTime?.isoToLocalDateTime()?.stripSeconds()
+                val statusATime = point.status.startTime.isoToLocalDateTime()?.stripSeconds()
+                val statusBTime = point.status.endTime.isoToLocalDateTime()?.stripSeconds()
 
                 val locationTime = valueFormatter.formatTimeRangeForLocationHistory(
                     startTimeUTC = locATime,

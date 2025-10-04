@@ -1,5 +1,6 @@
 package app.paralino.core.provider
 
+import androidx.room.util.joinIntoString
 import app.paralino.core.MR
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
@@ -297,9 +298,10 @@ abstract class IValueFormatter {
                 yesterday = yesterday,
                 shouldShowYear = shouldShowYear
             )
-            val startTime = formatTimeOnly(timeUTC = startTimeCorrect, showSeconds = true)
-            val endTime = formatTimeOnly(timeUTC = endTimeCorrect, showSeconds = true)
-            "$datePart $startTime - $endTime"
+            val startTime = formatTimeOnly(timeUTC = startTimeCorrect, showSeconds = false)
+            val endTime = formatTimeOnly(timeUTC = endTimeCorrect, showSeconds = false)
+            val time = listOf(startTime, endTime).distinct().joinToString(separator = " - ")
+            "$datePart $time"
         } else {
             // Different days: "June 3, 2025 12:14:23 - June 4, 2025 12:16:20"
             val startPart = formatDateTimePart(
@@ -347,7 +349,7 @@ abstract class IValueFormatter {
         yesterday: LocalDate,
         shouldShowYear: Boolean
     ): String {
-        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = true)
+        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
 
         return when {
             dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
@@ -371,7 +373,7 @@ abstract class IValueFormatter {
         yesterday: LocalDate,
         shouldShowYear: Boolean
     ): String {
-        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = true)
+        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
 
         return when {
             dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
