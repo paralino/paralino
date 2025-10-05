@@ -29,7 +29,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -42,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,7 +57,6 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
-import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
@@ -76,6 +77,7 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.launch
 
 private val cornerShape = 20.dp
 private val innerCornerShape = 15.dp
@@ -114,13 +116,16 @@ fun LocationHistoryDetailCard(
                         .padding(vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val scrollState = rememberLazyListState()
+                    val coroutineScope = rememberCoroutineScope()
                     LazyRow(
                         modifier = Modifier
                             .weight(1f),
+                        state = scrollState,
                         verticalAlignment = Alignment.CenterVertically,
                         contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
                     ) {
-                        if (uiState.devices.size > 1) {
+                        if (uiState.activeDevices.size > 1) {
                             this.item(key = "title") {
                                 Text(
                                     modifier = Modifier
@@ -131,15 +136,19 @@ fun LocationHistoryDetailCard(
                                 )
                             }
                         }
-                        this.items(uiState.devices, key = { it.locationId }) { device ->
+                        this.itemsIndexed(uiState.activeDevices, key = { index, device -> device.locationId }) { index, device ->
                             UserDeviceChip(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(end = 6.dp),
-                                selected = device.isSelected,
+                                isSelected = device.isSelected,
+                                hasLocations = device.hasLocations,
                                 name = device.deviceName,
-                                showIcon = uiState.devices.size == 1,
+                                showIcon = uiState.activeDevices.size == 1,
                                 onClick = {
+                                    coroutineScope.launch {
+                                        scrollState.animateScrollToItem(index = index)
+                                    }
                                     onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
                                 }
                             )
@@ -501,24 +510,36 @@ private fun ColumnScope.LocationTime(
 }
 
 @Composable
-fun UserDeviceChip(
+private fun UserDeviceChip(
     modifier: Modifier = Modifier,
-    selected: Boolean,
+    isSelected: Boolean,
+    hasLocations: Boolean,
     name: String,
     onClick: () -> Unit,
     showIcon: Boolean
 ) {
     val contentColor by animateColorAsState(
-        if (selected) MaterialTheme.colors.onPrimary
-        else MaterialTheme.colors.onSurface
+        if (isSelected) MaterialTheme.colors.onPrimary
+        else MaterialTheme.colors.onSurface.copy(
+            if (hasLocations) 1f else 0.6f
+        )
     )
     val backgroundColor by animateColorAsState(
-        if (selected) MaterialTheme.colors.primary
-        else MaterialTheme.colors.surface
+        if (isSelected) MaterialTheme.colors.primary
+        else MaterialTheme.colors.surface.copy(
+            if (hasLocations) 1f else 0.6f
+        )
     )
 
     DataInfoChip(
-        modifier = modifier,
+        modifier = modifier
+            .border(
+                width = if (!isSelected && hasLocations) 0.5.dp else 0.dp,
+                color = MaterialTheme.colors.secondary.copy(
+                    if (!isSelected && hasLocations) 1f else 0f
+                ),
+                shape = RoundedCornerShape(100)
+            ),
         shape = RoundedCornerShape(100),
         backgroundColor = backgroundColor,
         imageOrIcon = if (showIcon) {

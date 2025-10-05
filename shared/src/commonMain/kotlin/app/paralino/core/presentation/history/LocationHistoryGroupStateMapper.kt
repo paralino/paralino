@@ -9,7 +9,6 @@ import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
 import app.paralino.core.models.location.MemberModelWithLocations
-import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -38,8 +37,9 @@ class LocationHistoryGroupStateMapper(
                 locationId = it.id,
                 deviceId = it.deviceId,
                 deviceName = it.name,
-                isSelected = it.id == previousState.devices.firstOrNull { it.isSelected }?.locationId,
-                isCurrent = it.id == group.currentDeviceLocation?.id
+                isSelected = it.id == previousState.activeDevices.firstOrNull { it.isSelected }?.locationId,
+                isCurrent = it.id == group.currentDeviceLocation?.id,
+                hasLocations = false
             )
         }
 
@@ -51,7 +51,8 @@ class LocationHistoryGroupStateMapper(
                 UserActiveLocationDeviceState.Unknown(
                     ids = it.map { it.locationId }.distinct(),
                     deviceName = MR.strings.history_map_device_name_unknown.localizedString(),
-                    isSelected = previousState.devices.firstOrNull { it.isSelected } is UserActiveLocationDeviceState.Unknown,
+                    isSelected = previousState.activeDevices.firstOrNull { it.isSelected } is UserActiveLocationDeviceState.Unknown,
+                    hasLocations = false
                 )
             }
 

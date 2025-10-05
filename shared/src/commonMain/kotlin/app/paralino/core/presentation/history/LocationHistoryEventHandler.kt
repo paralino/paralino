@@ -237,7 +237,7 @@ class LocationHistoryEventHandler(
     fun selectDevice(device: UserActiveLocationDeviceState) {
         _uiState.update {
             val newState = it.copy(
-                devices = it.devices.map {
+                devices = it.activeDevices.map {
                     when (it) {
                         is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == device.locationId)
                         is UserActiveLocationDeviceState.Unknown -> it.copy(isSelected = it.locationId == device.locationId)

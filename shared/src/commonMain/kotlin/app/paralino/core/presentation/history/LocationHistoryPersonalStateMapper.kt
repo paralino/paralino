@@ -38,8 +38,9 @@ class LocationHistoryPersonalStateMapper(
                 deviceName = it.deviceNameOrNull
                     ?: it.deviceType?.toString()
                     ?: MR.strings.history_map_device_name_unknown.localizedString(),
-                isSelected = it.id == previousState.devices.firstOrNull { it.isSelected }?.locationId,
-                isCurrent = it.deviceId == space.currentDevice?.deviceId
+                isSelected = it.id == previousState.activeDevices.firstOrNull { it.isSelected }?.locationId,
+                isCurrent = it.deviceId == space.currentDevice?.deviceId,
+                hasLocations = false
             )
         }
 
@@ -51,7 +52,8 @@ class LocationHistoryPersonalStateMapper(
                 UserActiveLocationDeviceState.Unknown(
                     ids = it.map { it.locationId }.distinct(),
                     deviceName = MR.strings.history_map_device_name_unknown.localizedString(),
-                    isSelected = previousState.devices.firstOrNull { it.isSelected } is UserActiveLocationDeviceState.Unknown,
+                    isSelected = previousState.activeDevices.firstOrNull { it.isSelected } is UserActiveLocationDeviceState.Unknown,
+                    hasLocations = false
                 )
             }
 

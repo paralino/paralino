@@ -46,7 +46,7 @@ data class LocationHistoryScreenState(
     val showPins: Boolean,
     val clusterPins: Boolean,
     val isFilterOpened: Boolean,
-    val devices: List<UserActiveLocationDeviceState>,
+    private val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
     val stats: LocationHistoryStats?,
     val viewMode: LocationHistoryPathViewMode,
@@ -95,6 +95,24 @@ data class LocationHistoryScreenState(
                 is UserActiveLocationDeviceState.Unknown -> {
                     device.isSelected && (device.ids.contains(entry.locationId) || entry.locationId == null)
                 }
+            }
+        }
+    }
+
+    val activeDevices = devices.map { device ->
+        when (device) {
+            is UserActiveLocationDeviceState.Known -> {
+                device.copy(
+                    hasLocations = displayLocations.any { it.locationId == device.locationId }
+                )
+            }
+
+            is UserActiveLocationDeviceState.Unknown -> {
+                device.copy(
+                    hasLocations = displayLocations.any {
+                        device.ids.contains(it.locationId) || it.locationId == null
+                    }
+                )
             }
         }
     }
@@ -245,19 +263,22 @@ sealed class UserActiveLocationDeviceState {
     abstract val deviceName: String
     abstract val isSelected: Boolean
     abstract val isCurrent: Boolean
+    abstract val hasLocations: Boolean
 
     data class Known(
         override val locationId: String,
         override val deviceId: String,
         override val deviceName: String,
         override val isSelected: Boolean,
-        override val isCurrent: Boolean
+        override val isCurrent: Boolean,
+        override val hasLocations: Boolean
     ) : UserActiveLocationDeviceState()
 
     data class Unknown(
         val ids: List<String?>,
         override val deviceName: String,
-        override val isSelected: Boolean
+        override val isSelected: Boolean,
+        override val hasLocations: Boolean
     ) : UserActiveLocationDeviceState() {
         override val deviceId: String = "unknown"
         override val locationId: String = "unknown"
