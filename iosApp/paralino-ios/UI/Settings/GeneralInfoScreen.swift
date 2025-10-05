@@ -32,6 +32,7 @@ struct GeneralInfoScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_section_general_title.localizedString())
         }

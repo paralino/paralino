@@ -120,9 +120,12 @@ struct GroupListItem: View {
                     .aspectRatio(contentMode: .fit)
                     .padding(10)
                     .frame(width: 40, height: 40)
-                    .foregroundColor(.white)
-                    .background(Color.themePrimary)
+                    .foregroundColor(Color.themeOnSurface)
                     .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Color.themeSecondary.opacity(0.4), lineWidth: 0.5)
+                    )
                     .onTapGesture(perform: onEdit)
             }
         }

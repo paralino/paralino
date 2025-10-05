@@ -48,6 +48,7 @@ struct PlaceDetailScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationBarBackButtonHidden(false)
         }

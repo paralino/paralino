@@ -26,6 +26,7 @@ struct EditProfileScreen: View {
                     onExit: { path.removeLast() }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_account_edit_profile.localizedString())
         }

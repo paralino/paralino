@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
@@ -385,11 +386,13 @@ private fun YearMonthSelector(
         }
 
         Text(
+            modifier = Modifier.weight(1f),
             text = value,
             style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
 
         Box(

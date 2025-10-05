@@ -12,13 +12,17 @@ import UIKit
 
 struct HistoryMapMarker: View {
     let isDarkMode: Bool
+    let isAccurate: Bool
     
     var body: some View {
-        Image(resource: MR.shared.images.ic_location_pin_filled)
+        Image(
+//            systemName: isAccurate ? "mappin" : "mappin.and.ellipse"
+            resource: isAccurate ? MR.shared.images.ic_location_pin_filled : MR.shared.images.ic_not_listed_location_filled
+        )
             .resizable()
             .renderingMode(.template)
             .aspectRatio(contentMode: .fill)
-            .frame(width: 16, height: 16)
+            .frame(width: isAccurate ? 16 : 18, height: isAccurate ? 16 : 18)
             .foregroundColor(isDarkMode ? Color.highlightGold : Color.redMain)
     }
 }
@@ -34,6 +38,10 @@ class HistoryMapMarkerData: MKPointAnnotation, ObservableObject, Identifiable {
                 longitude: data.lng!.doubleValue
             )
         }
+    }
+    
+    var isInaccurate: Bool {
+        (data.accuracy?.floatValue ?? 0) > 200
     }
     
     init(id: String, point: LocationHistoryPointState) {
@@ -59,7 +67,7 @@ class SwiftUIHistoryMapMarkerView: MKAnnotationView {
     }
     
     func setupSwiftUIView(data: HistoryMapMarkerData, isDarkMode: Bool) {
-        let markerView = HistoryMapMarker(isDarkMode: isDarkMode)
+        let markerView = HistoryMapMarker(isDarkMode: isDarkMode, isAccurate: !data.isInaccurate)
         
         // Remove old view
         hostingController?.view.removeFromSuperview()

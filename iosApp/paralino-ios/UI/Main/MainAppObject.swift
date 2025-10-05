@@ -7,7 +7,7 @@
 
 import Foundation
 import shared
-import SwiftUICore
+import SwiftUI
 
 class MainAppObject: ObservableObject {
     

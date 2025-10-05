@@ -30,6 +30,7 @@ struct SubscriptionsScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.plans_management_screen_title.localizedString())
         }

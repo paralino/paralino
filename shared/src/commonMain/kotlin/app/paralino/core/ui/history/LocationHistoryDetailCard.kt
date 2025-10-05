@@ -521,7 +521,7 @@ private fun UserDeviceChip(
     val contentColor by animateColorAsState(
         if (isSelected) MaterialTheme.colors.onPrimary
         else MaterialTheme.colors.onSurface.copy(
-            if (hasLocations) 1f else 0.6f
+            if (hasLocations) 1f else 0.4f
         )
     )
     val backgroundColor by animateColorAsState(

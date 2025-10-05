@@ -23,6 +23,7 @@ struct LocationSettingsScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.setting_location_title.localizedString())
         }

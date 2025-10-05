@@ -270,6 +270,7 @@ data class AppSnackbarData constructor(
         } else {
             SnackbarDuration.Forever
         },
+        id: String = text
     ) : this(
         payload = AppSnackbarPayload(
             title = null,
@@ -277,7 +278,8 @@ data class AppSnackbarData constructor(
             hasCloseButton = false
         ),
         actionText = actionText,
-        duration = duration
+        duration = duration,
+        id = text
     )
 }
 

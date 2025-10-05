@@ -33,7 +33,7 @@ struct PersonalSpaceScreen: View {
                         path.append(.home(.personalSpaceSettings))
                     },
                     openTimeline: {
-                        path.append(.home(.locationHistory(groupId: UserGroup.companion.groupPersonalDevicesId, memberUserId: "")))
+                        path.append(.home(.locationHistory(groupId: UserGroup.companion.groupPersonalDevicesId, memberUserId: "", deviceId: nil)))
                     },
                     openPlaces: {
                         path.append(.home(.places(groupId: UserGroup.companion.groupPersonalDevicesId, isOnboarding: false)))
@@ -66,6 +66,7 @@ struct PersonalSpaceScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.personalSpace_spaceTitle.localizedString())
         }

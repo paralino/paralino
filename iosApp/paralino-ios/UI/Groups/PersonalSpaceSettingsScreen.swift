@@ -30,6 +30,7 @@ struct PersonalSpaceSettingsScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.personalSpace_spaceTitle.localizedString())
         }

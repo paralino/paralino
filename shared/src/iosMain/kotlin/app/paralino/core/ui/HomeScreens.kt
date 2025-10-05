@@ -23,6 +23,7 @@ import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
@@ -86,6 +87,7 @@ object HomeScreens {
         openPersonalCodes: () -> Unit,
         openPaywall: (BillingScreenSourceType) -> Unit,
         onSharePersonalCode: (String) -> Unit,
+        openSharingScreen: (GroupOrSpaceId) -> Unit,
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -97,6 +99,7 @@ object HomeScreens {
                 openPersonalCodes = openPersonalCodes,
                 openPaywall = openPaywall,
                 onSharePersonalCode = onSharePersonalCode,
+                openSharingScreen = openSharingScreen,
                 askNotificationPermission = askNotificationPermission,
             )
         }

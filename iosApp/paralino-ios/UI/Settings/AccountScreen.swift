@@ -40,6 +40,7 @@ struct AccountScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_section_account_title.localizedString())
         }

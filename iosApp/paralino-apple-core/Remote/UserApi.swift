@@ -51,6 +51,12 @@ class UserApi: IUserApiIOS {
         }
     }
     
+    func renewCurrentSession() async throws -> Payload<UserSession> {
+        return await remoteModule.executeUserApi { module in
+            try await module.account.updateSession(sessionId: "current").parseSession()
+        }
+    }
+    
     func getMe() async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
             try await module.account.get().parseUser()

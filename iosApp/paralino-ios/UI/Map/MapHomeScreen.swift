@@ -60,9 +60,6 @@ struct MapHomeScreen: View {
                     onCreateGroup: {
                         path.append(.home(.groupCreate(groupId: nil)))
                     },
-                    openFreePlanInfo: {
-                        path.append(.home(.freePlanInfo))
-                    },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
                     },
@@ -81,7 +78,7 @@ struct MapHomeScreen: View {
                         )
                     },
                     openLocationHistory: { event in
-                        path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId)))
+                        path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId, deviceId: event.deviceId)))
                     },
                     mapUIView: { () -> UIViewController in
                         let controller = MapComponentVC()

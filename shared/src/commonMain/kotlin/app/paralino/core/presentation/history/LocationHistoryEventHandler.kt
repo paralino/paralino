@@ -8,8 +8,11 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,6 +47,7 @@ class LocationHistoryEventHandler(
             memberUserId = memberUserId,
             preselectedDeviceId = preselectedDeviceId
         )
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 
@@ -231,6 +235,7 @@ class LocationHistoryEventHandler(
             startDate = _uiState.value.startDate,
             endDate = _uiState.value.endDate
         )
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 
