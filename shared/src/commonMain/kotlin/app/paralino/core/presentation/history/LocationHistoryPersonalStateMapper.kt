@@ -62,8 +62,10 @@ class LocationHistoryPersonalStateMapper(
                 add(unknownDevices)
             }
         }.let { list ->
+            // ensure always one is selected
             if (list.count { it.isSelected } != 1) {
-                val firstSelected = list.firstOrNull()
+                val firstSelected = list.firstOrNull { it.deviceId == previousState.preselectedDeviceId }
+                    ?: list.firstOrNull()
                 list.map {
                     when (it) {
                         is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == firstSelected?.locationId)
@@ -129,6 +131,7 @@ class LocationHistoryPersonalStateMapper(
         )
 
         val newState = previousState.copy(
+            preselectedDeviceId = null,
             groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
             groupImage = user.data?.userImage,
             isGroupOwner = true,

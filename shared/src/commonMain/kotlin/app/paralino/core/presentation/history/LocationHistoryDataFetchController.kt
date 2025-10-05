@@ -46,7 +46,8 @@ class LocationHistoryDataFetchController(
 ) {
     fun loadHistory(
         groupId: String,
-        memberUserId: String
+        memberUserId: String,
+        preselectedDeviceId: String?
     ): Flow<Unit> {
         return flow {
             val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -56,6 +57,7 @@ class LocationHistoryDataFetchController(
             val newState = _uiState.value.copy(
                 groupOrSpaceId = groupId.asGroupOrSpaceId(),
                 memberUserId = memberUserId.takeIf { it.isNotBlank() } ?: appPrefs.userId,
+                preselectedDeviceId = preselectedDeviceId,
                 isPersonalHistory = isPersonalHistory,
                 isCurrentUser = isCurrentUser,
                 isGroupOwner = false,

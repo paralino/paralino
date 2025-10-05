@@ -54,34 +54,41 @@ fun GroupMember(
                 )
             )
     ) {
-        when (state) {
-            is GroupMemberItemStateWithOneLocation -> {
-                GroupMemberWithLocations(
-                    state = GroupMemberItemStateWithLocations(
-                        memberState = state.memberState,
-                        locations = listOfNotNull(state.location),
-                        actions = state.actions,
-                        allowShowingDevices = false,
-                        lastLocationPing = state.lastLocationPing,
-                        lastStatusPing = state.lastStatusPing
-                    ),
-                    canShowOldLocation = canShowOldLocation,
-                    forceExpandAction = forceExpandAction,
-                    collapseOnActionClick = collapseOnActionClick,
-                    onEvent = onEvent
-                )
-            }
-
-            is GroupMemberItemStateWithLocations -> {
-                GroupMemberWithLocations(
-                    state = state,
-                    forceExpandAction = forceExpandAction,
-                    collapseOnActionClick = collapseOnActionClick,
-                    canShowOldLocation = canShowOldLocation,
-                    onEvent = onEvent
-                )
-            }
-        }
+        GroupMemberWithLocations(
+            state = state,
+            forceExpandAction = forceExpandAction,
+            collapseOnActionClick = collapseOnActionClick,
+            canShowOldLocation = canShowOldLocation,
+            onEvent = onEvent
+        )
+//        when (state) {
+//            is GroupMemberItemStateWithOneLocation -> {
+//                GroupMemberWithLocations(
+//                    state = GroupMemberItemStateWithLocations(
+//                        memberState = state.memberState,
+//                        locations = listOfNotNull(state.location),
+//                        actions = state.actions,
+//                        allowShowingDevices = false,
+//                        lastLocationPing = state.lastLocationPing,
+//                        lastStatusPing = state.lastStatusPing
+//                    ),
+//                    canShowOldLocation = canShowOldLocation,
+//                    forceExpandAction = forceExpandAction,
+//                    collapseOnActionClick = collapseOnActionClick,
+//                    onEvent = onEvent
+//                )
+//            }
+//
+//            is GroupMemberItemStateWithLocations -> {
+//                GroupMemberWithLocations(
+//                    state = state,
+//                    forceExpandAction = forceExpandAction,
+//                    collapseOnActionClick = collapseOnActionClick,
+//                    canShowOldLocation = canShowOldLocation,
+//                    onEvent = onEvent
+//                )
+//            }
+//        }
     }
 }
 
@@ -100,6 +107,7 @@ val dummyMemberState = GroupMemberState(
 val dummyLocations = listOf(
     GroupMemberItemLocationState(
         locationId = "",
+        deviceId = "",
         name = "Device 1",
         image = ImageModel.emoji(Emojis.lock),
         lat = null,
@@ -122,6 +130,7 @@ val dummyLocations = listOf(
     ),
     GroupMemberItemLocationState(
         locationId = "",
+        deviceId = "",
         name = "Primary",
         image = ImageModel.emoji(Emojis.lock),
         lat = null,
@@ -144,6 +153,7 @@ val dummyLocations = listOf(
     ),
     GroupMemberItemLocationState(
         locationId = "",
+        deviceId = "",
         name = "Device 3",
         image = ImageModel.emoji(Emojis.lock),
         lat = null,

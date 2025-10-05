@@ -8,6 +8,8 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
@@ -59,7 +61,11 @@ class MemberActionHandler(
                 eventChannel.trySend(
                     MapHomeScreenEvent.OpenLocationHistory(
                         groupId = state.memberState.groupId,
-                        memberUserId = state.memberState.userId
+                        memberUserId = state.memberState.userId,
+                        deviceId = when (state) {
+                            is GroupMemberItemStateWithLocations -> null
+                            is GroupMemberItemStateWithOneLocation -> state.deviceId
+                        }
                     )
                 )
             }
@@ -73,13 +79,13 @@ class MemberActionHandler(
     ) {
         val stateWithLocation = uiState.value.asReady()?.members?.firstOrNull { it.keyId == state.keyId }
 
-        if (stateWithLocation?.location == null) {
+        if (stateWithLocation?.singleLocation == null) {
             return
         }
 
         clearUserLocation.clearLocation(
             groupId = state.memberState.groupId.asGroupOrSpaceId(),
-            locationId = stateWithLocation.location.locationId
+            locationId = stateWithLocation.singleLocation.locationId
         )
             .onStart {
                 updateReadyState { readyState ->
@@ -111,8 +117,8 @@ class MemberActionHandler(
                                                 canDeleteLocation(
                                                     groupId = memberState.memberState.groupId.asGroupOrSpaceId(),
                                                     isCurrentUser = memberState.memberState.userId == appPrefs.userId,
-                                                    isCurrentDevice = memberState.location?.currentDevice == true,
-                                                    hasLocation = memberState.location?.visibility?.isVisible() == true
+                                                    isCurrentDevice = memberState.singleLocation?.currentDevice == true,
+                                                    hasLocation = memberState.singleLocation?.visibility?.isVisible() == true
                                                 )
                                             }
                                             ?.copy(isLoading = false)
@@ -141,7 +147,7 @@ class MemberActionHandler(
     ) {
         val stateWithLocation = uiState.value.asReady()?.members?.firstOrNull { it.keyId == state.keyId }
 
-        if (stateWithLocation?.location == null) {
+        if (stateWithLocation?.singleLocation == null) {
             return
         }
 
@@ -185,7 +191,7 @@ class MemberActionHandler(
             locationRequestUseCase.requestMemberDeviceLocation(
                 groupId = stateWithLocation.memberState.groupId.asGroupOrSpaceId(),
                 memberUserId = stateWithLocation.memberState.userId,
-                locationId = stateWithLocation.location.locationId
+                locationId = stateWithLocation.singleLocation.locationId
             )
             delay(500)
             emit(Unit)

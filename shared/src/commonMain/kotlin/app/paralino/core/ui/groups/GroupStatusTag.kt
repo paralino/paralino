@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -63,12 +64,13 @@ fun MemberDeviceStatusType.toStatusTagType(): GroupStatusTagType {
     }
 }
 
-fun GroupMemberItemStateWithLocations.toStatusTagType(expanded: Boolean): GroupStatusTagType? {
+fun GroupMemberItemState.toStatusTagType(expanded: Boolean): GroupStatusTagType? {
     return when {
         !this.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
         !expanded || this.locations.isEmpty() || !this.allowShowingDevices -> {
             val tagType = this.statusTag?.toStatusTagType()
-            if (this.singleVisibleLocation?.accuracyMeters != null && this.singleVisibleLocation.accuracyMeters.isLocationInaccurate()) {
+            val singleVisibleLocation = this.singleVisibleLocation
+            if (singleVisibleLocation?.accuracyMeters != null && singleVisibleLocation.accuracyMeters.isLocationInaccurate()) {
                 when (tagType) {
                     GroupStatusTagType.SHARING_ACTIVE,
                     GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,

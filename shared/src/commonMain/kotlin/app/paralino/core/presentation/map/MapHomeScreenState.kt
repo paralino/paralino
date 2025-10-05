@@ -142,7 +142,11 @@ sealed class MapHomeScreenEvent {
     data class OpenCreatePlace(val groupId: String) : MapHomeScreenEvent()
     data class OpenGroupDetails(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaceDetails(val groupId: String, val placeId: String) : MapHomeScreenEvent()
-    data class OpenLocationHistory(val groupId: String, val memberUserId: String) : MapHomeScreenEvent()
+    data class OpenLocationHistory(
+        val groupId: String,
+        val memberUserId: String,
+        val deviceId: String?
+    ) : MapHomeScreenEvent()
     data class OpenExternalNavigation(
         val lat: Double,
         val lng: Double,

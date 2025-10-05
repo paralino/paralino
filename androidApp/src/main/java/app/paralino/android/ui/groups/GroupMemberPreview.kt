@@ -39,7 +39,8 @@ fun GroupMemberPreview() {
                 GroupMember(
                     state = GroupMemberItemStateWithOneLocation(
                         memberState = dummyMemberState,
-                        location = null,
+                        singleLocation = null,
+                        deviceId = "",
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER
@@ -51,7 +52,8 @@ fun GroupMemberPreview() {
                 GroupMember(
                     state = GroupMemberItemStateWithOneLocation(
                         memberState = dummyMemberState.copy(isVerified = false),
-                        location = dummyLocations.first(),
+                        singleLocation = dummyLocations.first(),
+                        deviceId = "",
                         actions = MemberActionsState(
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER

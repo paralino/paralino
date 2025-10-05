@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 class LocationHistoryViewModel(
     groupId: String,
     memberUserId: String,
+    deviceId: String?,
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
     private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
@@ -109,18 +110,15 @@ class LocationHistoryViewModel(
     private val uiFocusedStatus = MutableStateFlow(false)
 
     init {
-        historyEventHandler.loadHistory(groupId = groupId, memberUserId = memberUserId)
+        historyEventHandler.loadHistory(
+            groupId = groupId,
+            memberUserId = memberUserId,
+            preselectedDeviceId = deviceId
+        )
     }
 
     fun onEvent(event: LocationHistoryUiEvent) {
         when (event) {
-            is LocationHistoryUiEvent.LoadHistory -> {
-                historyEventHandler.loadHistory(
-                    groupId = event.groupId,
-                    memberUserId = event.memberUserId
-                )
-            }
-
             is LocationHistoryUiEvent.DialogAction -> {
                 when (event.action.dialog) {
                     is DeleteLocationHistoryEntry -> {

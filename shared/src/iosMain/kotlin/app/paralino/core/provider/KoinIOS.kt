@@ -299,7 +299,7 @@ object KoinIOS {
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
             factory { DefaultNavigationAppViewModel(get()) }
-            factory { (groupId: String, memberUserId: String) -> LocationHistoryViewModel(groupId = groupId, memberUserId = memberUserId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { (groupId: String, memberUserId: String, deviceId: String?) -> LocationHistoryViewModel(groupId = groupId, memberUserId = memberUserId, deviceId = deviceId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get()) }
             factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceSettingsViewModel() }
@@ -379,7 +379,7 @@ object KoinIOS {
         val measurementSystemVM get() = get<MeasurementSystemViewModel>()
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
         val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
-        fun locationHistoryVM(groupId: String, memberUserId: String) = get<LocationHistoryViewModel> { parametersOf(groupId, memberUserId) }
+        fun locationHistoryVM(groupId: String, memberUserId: String, deviceId: String?) = get<LocationHistoryViewModel> { parametersOf(groupId, memberUserId, deviceId) }
         fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
         val personalSpaceVM = get<PersonalSpaceViewModel>()
         val personalSpaceSettingsVM = get<PersonalSpaceSettingsViewModel>()

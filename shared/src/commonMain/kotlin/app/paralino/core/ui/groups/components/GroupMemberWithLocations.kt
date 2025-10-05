@@ -68,6 +68,7 @@ import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
+import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -97,7 +98,7 @@ import dev.icerock.moko.resources.compose.stringResource
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GroupMemberWithLocations(
-    state: GroupMemberItemStateWithLocations,
+    state: GroupMemberItemState,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
@@ -107,6 +108,7 @@ fun GroupMemberWithLocations(
     var expanded by rememberSaveable(state.keyId, forceExpandAction) {
         mutableStateOf(forceExpandAction)
     }
+    val singleVisibleLocation = state.singleVisibleLocation
 
     Column {
         Row(
@@ -135,7 +137,7 @@ fun GroupMemberWithLocations(
                             )
                     )
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        if (state.singleVisibleLocation?.visibleBatteryLevel != null && (!expanded || !state.allowShowingDevices)) {
+                        if (singleVisibleLocation?.visibleBatteryLevel != null && (!expanded || !state.allowShowingDevices)) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -152,15 +154,15 @@ fun GroupMemberWithLocations(
                                         modifier = Modifier
                                             .requiredSize(16.dp)
                                             .rotate(90f),
-                                        painter = if (state.singleVisibleLocation.isBatteryCharging) {
+                                        painter = if (singleVisibleLocation.isBatteryCharging) {
                                             CoreAppIcons.BatteryChargingFull.asPainterResource()
                                         } else {
                                             CoreAppIcons.BatteryFull.asPainterResource()
                                         },
                                         tint = when {
-                                            state.singleVisibleLocation.visibleBatteryLevel > 85 -> AppColors.accent
-                                            state.singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
-                                            state.singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
+                                            singleVisibleLocation.visibleBatteryLevel > 85 -> AppColors.accent
+                                            singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
+                                            singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
                                             else -> MaterialTheme.colors.onSurface
                                         },
                                         contentDescription = null
@@ -168,11 +170,11 @@ fun GroupMemberWithLocations(
                                 }
                                 Spacer(modifier = Modifier.size(2.dp))
                                 Text(
-                                    text = "${state.singleVisibleLocation.visibleBatteryLevel}%",
+                                    text = "${singleVisibleLocation.visibleBatteryLevel}%",
                                     style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium),
                                     color = when {
-                                        state.singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
-                                        state.singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
+                                        singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
+                                        singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
                                         else -> MaterialTheme.colors.onSurface
                                     }
                                 )
@@ -308,7 +310,7 @@ fun GroupMemberWithLocations(
                                 .size(16.dp)
                         )
                         Text(
-                            text = state.filteredLastPing.annotatedBoldCompose(),
+                            text = (state.filteredLastPing ?: "").annotatedBoldCompose(),
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                         )
@@ -316,7 +318,7 @@ fun GroupMemberWithLocations(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (state.singleVisibleLocation?.speed != null) {
+                    if (singleVisibleLocation?.speed != null) {
                         Icon(
                             painter = CoreAppIcons.Speed.asPainterResource(),
                             contentDescription = null,
@@ -325,13 +327,13 @@ fun GroupMemberWithLocations(
                                 .size(18.dp)
                         )
                         Text(
-                            text = state.singleVisibleLocation.speed,
+                            text = singleVisibleLocation.speed,
                             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                     }
 
-                    if (state.singleVisibleLocation?.elevation != null) {
+                    if (singleVisibleLocation?.elevation != null) {
                         Icon(
                             painter = CoreAppIcons.Elevation.asPainterResource(),
                             contentDescription = null,
@@ -340,19 +342,19 @@ fun GroupMemberWithLocations(
                                 .size(18.dp)
                         )
                         Text(
-                            text = state.singleVisibleLocation.elevation,
+                            text = singleVisibleLocation.elevation,
                             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
                     }
 
-                    if (state.singleVisibleLocation?.networkType != null) {
+                    if (singleVisibleLocation?.networkType != null) {
                         NetworkTypeIcon(
-                            state.singleVisibleLocation.networkType,
-                            state.singleVisibleLocation.signalStrength
+                            singleVisibleLocation.networkType,
+                            singleVisibleLocation.signalStrength
                         )
                         Text(
-                            text = state.singleVisibleLocation.networkType.networkName,
+                            text = singleVisibleLocation.networkType.networkName,
                             style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                         )
                         Spacer(modifier = Modifier.size(8.dp))
@@ -386,7 +388,8 @@ fun GroupMemberWithLocations(
         ) {
             Column {
 
-                if (!state.memberState.paralinoId.isNullOrBlank() && state.allowShowingDevices) {
+                val memberState = state.memberState
+                if (!memberState.paralinoId.isNullOrBlank() && state.allowShowingDevices) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -394,7 +397,7 @@ fun GroupMemberWithLocations(
                         Icon(
                             modifier = Modifier
                                 .size(32.dp)
-                                .clickable { onEvent?.invoke(GroupMemberItemEvent.onCopyCode(state.memberState.paralinoId)) }
+                                .clickable { onEvent?.invoke(GroupMemberItemEvent.onCopyCode(memberState.paralinoId)) }
                                 .padding(6.dp),
                             painter = CoreAppIcons.ContentCopy.asPainterResource(),
                             contentDescription = null
@@ -412,7 +415,7 @@ fun GroupMemberWithLocations(
                             }
                             Text(
                                 modifier = Modifier.padding(start = 4.dp),
-                                text = state.memberState.paralinoId,
+                                text = memberState.paralinoId,
                                 style = TextStyle(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.sp,
@@ -500,10 +503,11 @@ fun GroupMemberWithLocations(
 @Composable
 private fun ColumnScope.GroupMemberActions(
     modifier: Modifier = Modifier,
-    state: GroupMemberItemStateWithLocations,
+    state: GroupMemberItemState,
     canShowOldLocation: Boolean,
     onEvent: (GroupMemberItemEvent) -> Unit
 ) {
+    val actions = state.actions
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
@@ -511,36 +515,36 @@ private fun ColumnScope.GroupMemberActions(
     ) {
         GroupMemberSmallAction(
             modifier = Modifier.align(Alignment.CenterVertically),
-            state = state.actions.deleteMember
+            state = actions.deleteMember
         ) {
             onEvent(GroupMemberItemEvent.onActionClick(it, state))
         }
         GroupMemberSmallAction(
             modifier = Modifier.align(Alignment.CenterVertically),
-            state = state.actions.blockUser
+            state = actions.blockUser
         ) {
             onEvent(GroupMemberItemEvent.onActionClick(it, state))
         }
         GroupMemberSmallAction(
             modifier = Modifier.align(Alignment.CenterVertically),
-            state = state.actions.unblockUser
+            state = actions.unblockUser
         ) {
             onEvent(GroupMemberItemEvent.onActionClick(it, state))
         }
 
-        if (state.actions.deleteLocation != null) {
+        if (actions.deleteLocation != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = MemberActionType.DELETE_LOCATION.actionIcon,
                 endIcon = null,
-                isLoading = state.actions.deleteLocation?.isLoading ?: false,
+                isLoading = actions.deleteLocation?.isLoading ?: false,
                 text = stringResource(MemberActionType.DELETE_LOCATION.actionText),
                 backgroundColor = AppColors.errorBackground,
                 contentColor = AppColors.redMain,
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onActionClick(
-                            action = state.actions.deleteLocation,
+                            action = actions.deleteLocation,
                             item = state
                         )
                     )
@@ -548,7 +552,7 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (state.actions.history != null) {
+        if (actions.history != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
@@ -557,7 +561,7 @@ private fun ColumnScope.GroupMemberActions(
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onActionClick(
-                            action = state.actions.history,
+                            action = actions.history,
                             item = state
                         )
                     )
@@ -565,7 +569,7 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (state.actions.navigate != null) {
+        if (actions.navigate != null) {
             GroupMemberActionButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = CoreAppIcons.Directions.asPainterResource(),
@@ -574,7 +578,7 @@ private fun ColumnScope.GroupMemberActions(
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onDirectionsRequest(
-                            action = state.actions.navigate,
+                            action = actions.navigate,
                             item = state
                         )
                     )
@@ -594,18 +598,18 @@ private fun ColumnScope.GroupMemberActions(
             )
         }
 
-        if (state.actions.locationRequest != null) {
+        if (actions.locationRequest != null) {
             LocationRequestItem(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .fillMaxWidth(),
-                state = state.actions.locationRequest
+                state = actions.locationRequest
             ) {
                 onEvent(GroupMemberItemEvent.onLocationRequest(state))
             }
         }
 
-        if (state.actions.securityAction) {
+        if (actions.securityAction) {
             IconButton(
                 onClick = { onEvent(GroupMemberItemEvent.onOpenRawData(state)) }
             ) {

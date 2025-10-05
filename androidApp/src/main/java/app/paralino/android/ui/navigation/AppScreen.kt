@@ -390,14 +390,17 @@ sealed class AppScreen {
 
         open class LocationHistory(private val parent: String) : AppScreen() {
             val argumentMemberUserId: String = "memberUserId"
+            val argumentDeviceId: String = "deviceId"
             override val routeSignature: String =
-                "$parent-location-history?$argumentGroupId={$argumentGroupId}&$argumentMemberUserId={$argumentMemberUserId}"
+                "$parent-location-history?$argumentGroupId={$argumentGroupId}&$argumentMemberUserId={$argumentMemberUserId}&$argumentDeviceId={$argumentDeviceId}"
 
-            fun route(groupId: String, memberUserId: String): String {
+            fun route(groupId: String, memberUserId: String, deviceId: String?): String {
                 val args = arrayOf(
                     "$argumentGroupId=$groupId",
-                    "${argumentMemberUserId}=$memberUserId"
+                    "${argumentMemberUserId}=$memberUserId",
+                    deviceId?.let { "${argumentDeviceId}=$it" }
                 )
+                    .filterNotNull()
                     .joinToString(separator = "&")
                 return "$parent-location-history?$args"
             }

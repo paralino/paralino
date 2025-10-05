@@ -61,7 +61,8 @@ fun PersonalSpaceScreen(
                 appState.navController.navigate(
                     AppScreen.MainHome.LocationHistory.route(
                         groupId = UserGroup.groupPersonalDevicesId,
-                        memberUserId = ""
+                        memberUserId = "",
+                        deviceId = null
                     )
                 )
             },

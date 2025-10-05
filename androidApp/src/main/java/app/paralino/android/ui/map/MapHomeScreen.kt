@@ -346,6 +346,7 @@ fun MapScreenEventHandler(
                         AppScreen.MainHome.LocationHistory.route(
                             groupId = event.groupId,
                             memberUserId = event.memberUserId,
+                            deviceId = event.deviceId
                         )
                     )
                 }

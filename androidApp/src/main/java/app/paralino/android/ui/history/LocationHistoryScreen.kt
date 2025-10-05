@@ -55,7 +55,8 @@ fun LocationHistoryScreen(
     appState: MainAppState,
     groupId: String,
     memberUserId: String,
-    vm: LocationHistoryViewModel = koinViewModel { parametersOf(groupId, memberUserId) },
+    deviceId: String?,
+    vm: LocationHistoryViewModel = koinViewModel { parametersOf(groupId, memberUserId, deviceId) },
 ) {
     MessageDispatcherEffect(vm, appState)
 

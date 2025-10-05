@@ -179,6 +179,7 @@ private fun MemberItem(
         mutableStateOf(
             GroupMemberItemLocationState(
                 locationId = "",
+                deviceId = "",
                 name = memberDeviceName,
                 image = ImageModel.emoji(Emojis.lock),
                 lat = null,
@@ -225,7 +226,8 @@ private fun MemberItem(
             memberState = dummyMemberState.copy(
                 name = memberName, image = memberImageModel
             ),
-            location = location,
+            singleLocation = location,
+            deviceId = "",
             actions = memberActions
         ),
         forceExpandAction = true,
@@ -292,6 +294,7 @@ private fun MemberItemWithLocations(
         listOf(
             GroupMemberItemLocationState(
                 locationId = "",
+                deviceId = "",
                 name = memberDeviceName,
                 image = ImageModel.emoji(Emojis.lock),
                 lat = null,
@@ -318,6 +321,7 @@ private fun MemberItemWithLocations(
             ),
             GroupMemberItemLocationState(
                 locationId = "",
+                deviceId = "",
                 name = "$memberDeviceName #2",
                 image = ImageModel.emoji(Emojis.lock),
                 lat = null,

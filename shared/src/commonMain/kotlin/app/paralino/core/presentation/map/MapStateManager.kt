@@ -36,9 +36,9 @@ class MapStateManager(
                             MapHomeScreenFocusType.MEMBER(
                                 memberUserId = memberStateForMarker.memberState.userId,
                                 memberId = memberStateForMarker.memberState.memberId,
-                                memberLocationId = memberStateForMarker.location?.locationId,
+                                memberLocationId = memberStateForMarker.singleLocation?.locationId,
                                 memberKeyId = markerData.markerId,
-                                isIdleActive = memberStateForMarker.location?.deviceStatus?.isIdlingOrActive ?: false,
+                                isIdleActive = memberStateForMarker.singleLocation?.deviceStatus?.isIdlingOrActive ?: false,
                                 forceZoom = isRequestForSameVisibleMarker
                             )
                         } else {
@@ -51,7 +51,7 @@ class MapStateManager(
             )
         }
 
-        if (marker == null || (markerData.type == MapPinType.MEMBER && memberStateForMarker?.location == null)) {
+        if (marker == null || (markerData.type == MapPinType.MEMBER && memberStateForMarker?.singleLocation == null)) {
             messageDispatcher.showSnackbar(MR.strings.group_member_no_location_info_message.localizedString())
         }
     }
@@ -89,7 +89,7 @@ class MapStateManager(
                 trackingMarker = null,
                 markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
                 members = it.members.map {
-                    it.copy(location = it.location?.copy(visibility = it.location.visibility.tryToHide()))
+                    it.copy(singleLocation = it.singleLocation?.copy(visibility = it.singleLocation.visibility.tryToHide()))
                 },
                 mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
             )
@@ -157,8 +157,8 @@ class MapStateManager(
                 members = it.members.map {
                     if (it.keyId == memberItem.keyId) {
                         it.copy(
-                            location = it.location?.copy(
-                                visibility = it.location.visibility.show()
+                            singleLocation = it.singleLocation?.copy(
+                                visibility = it.singleLocation.visibility.show()
                             )
                         )
                     } else {

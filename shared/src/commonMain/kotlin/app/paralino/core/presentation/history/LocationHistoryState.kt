@@ -29,6 +29,7 @@ import kotlin.math.min
 data class LocationHistoryScreenState(
     val groupOrSpaceId: GroupOrSpaceId,
     val memberUserId: String,
+    val preselectedDeviceId: String?,
     val groupName: String?,
     val groupImage: ImageModel?,
     val isGroupOwner: Boolean,
@@ -204,6 +205,7 @@ data class LocationHistoryScreenState(
             return LocationHistoryScreenState(
                 groupOrSpaceId = "".asGroupOrSpaceId(),
                 memberUserId = "",
+                preselectedDeviceId = null,
                 groupName = null,
                 groupImage = null,
                 userName = null,
@@ -375,7 +377,6 @@ enum class LocationHistorySelectedDayPosition {
 }
 
 sealed interface LocationHistoryUiEvent {
-    data class LoadHistory(val groupId: String, val memberUserId: String) : LocationHistoryUiEvent
     data class UiLifecycleChange(val active: Boolean) : LocationHistoryUiEvent
     data class SelectDevice(val device: UserActiveLocationDeviceState) : LocationHistoryUiEvent
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent

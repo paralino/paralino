@@ -35,12 +35,14 @@ class LocationHistoryEventHandler(
 
     fun loadHistory(
         groupId: String,
-        memberUserId: String
+        memberUserId: String,
+        preselectedDeviceId: String?
     ) {
         historySubscriptionJob?.cancel()
         historySubscriptionJob = dataFetchController.loadHistory(
             groupId = groupId,
-            memberUserId = memberUserId
+            memberUserId = memberUserId,
+            preselectedDeviceId = preselectedDeviceId
         )
             .launchIn(coroutineScope)
     }

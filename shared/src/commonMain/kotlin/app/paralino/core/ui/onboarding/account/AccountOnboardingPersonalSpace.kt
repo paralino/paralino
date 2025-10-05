@@ -299,6 +299,7 @@ private fun createDummyLocationState(
 ): GroupMemberItemLocationState {
     return GroupMemberItemLocationState(
         locationId = deviceId,
+        deviceId = deviceId,
         name = "Device 1",
         image = ImageModel.emoji(Emojis.lock),
         lat = null,

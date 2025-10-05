@@ -232,7 +232,8 @@ class MapStateMapper(
                                 isLoading = false,
                             )
                         ),
-                        location = null
+                        singleLocation = null,
+                        deviceId = null
                     )
                 )
             } else {
@@ -244,7 +245,7 @@ class MapStateMapper(
 
                 member.locations.map { location ->
                     val previousStateForLocation = previousState?.members?.firstOrNull {
-                        it.memberState.memberId == memberState.memberId && it.location?.locationId == location.id
+                        it.memberState.memberId == memberState.memberId && it.singleLocation?.locationId == location.id
                     }
 
                     val locationVisibility = determineLocationVisibility(
@@ -265,7 +266,8 @@ class MapStateMapper(
                     GroupMemberItemStateWithOneLocation(
                         memberState = memberState,
                         actions = actions,
-                        location = GroupMemberItemLocationState(
+                        deviceId = location.deviceId,
+                        singleLocation = GroupMemberItemLocationState(
                             memberLocation = location,
                             name = location.name,
                             image = member.member.image,
@@ -279,10 +281,10 @@ class MapStateMapper(
                 }
             }
         }
-            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE }
-            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE_NO_LOCATION }
-            .sortedByDescending { it.location?.deviceStatus?.isIdlingOrActive }
-            .sortedByDescending { it.location?.visibility?.isVisible() }
+            .sortedByDescending { it.singleLocation?.deviceStatus == MemberDeviceStatusType.ACTIVE }
+            .sortedByDescending { it.singleLocation?.deviceStatus == MemberDeviceStatusType.ACTIVE_NO_LOCATION }
+            .sortedByDescending { it.singleLocation?.deviceStatus?.isIdlingOrActive }
+            .sortedByDescending { it.singleLocation?.visibility?.isVisible() }
     }
 
     private fun buildPersonalSpaceDevicesData(
@@ -312,7 +314,7 @@ class MapStateMapper(
 
             val location = device.location
             val previousStateForLocation = previousState?.members?.firstOrNull {
-                it.memberState.memberId == memberState.memberId && it.location?.locationId == location?.id
+                it.memberState.memberId == memberState.memberId && it.singleLocation?.locationId == location?.id
             }
 
             val locationVisibility = location?.let {
@@ -335,7 +337,8 @@ class MapStateMapper(
             GroupMemberItemStateWithOneLocation(
                 memberState = memberState,
                 actions = actions,
-                location = location?.let {
+                deviceId = device.deviceId,
+                singleLocation = location?.let {
                     GroupMemberItemLocationState(
                         memberLocation = it,
                         name = null,
@@ -349,10 +352,10 @@ class MapStateMapper(
                 }
             )
         }
-            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE }
-            .sortedByDescending { it.location?.deviceStatus == MemberDeviceStatusType.ACTIVE_NO_LOCATION }
-            .sortedByDescending { it.location?.deviceStatus?.isIdlingOrActive }
-            .sortedByDescending { it.location?.visibility?.isVisible() }
+            .sortedByDescending { it.singleLocation?.deviceStatus == MemberDeviceStatusType.ACTIVE }
+            .sortedByDescending { it.singleLocation?.deviceStatus == MemberDeviceStatusType.ACTIVE_NO_LOCATION }
+            .sortedByDescending { it.singleLocation?.deviceStatus?.isIdlingOrActive }
+            .sortedByDescending { it.singleLocation?.visibility?.isVisible() }
     }
 
     private fun determineLocationVisibility(
@@ -360,7 +363,7 @@ class MapStateMapper(
         previousState: GroupMemberItemStateWithOneLocation?
     ): MemberLocationVisibilityType {
         return if (location.isLocationAvailableButOld) {
-            previousState?.location?.visibility
+            previousState?.singleLocation?.visibility
                 ?.takeIf { it == MemberLocationVisibilityType.VISIBLE_ONCE }
                 ?: MemberLocationVisibilityType.HIDDEN
         } else if (location.hasLocation) {
@@ -490,7 +493,7 @@ class MapStateMapper(
                         .filter { it.locationData.data != null }
                         .map { location ->
                             val memberLocationState = membersData.first {
-                                it.location?.locationId == location.id
+                                it.singleLocation?.locationId == location.id
                             }
                             val oldCurrentMarker = previousFocusedMarker?.takeIf {
                                 it.markerId == memberLocationState.keyId
@@ -523,7 +526,7 @@ class MapStateMapper(
                         ?.takeIf { it.locationData.data != null }
                         ?.let { location ->
                             val memberLocationState = membersData.firstOrNull {
-                                it.memberState.memberId == device.deviceId && it.location?.locationId == location.id
+                                it.memberState.memberId == device.deviceId && it.singleLocation?.locationId == location.id
                             } ?: return@mapNotNull null
 
                             val oldCurrentMarker = previousFocusedMarker?.takeIf {

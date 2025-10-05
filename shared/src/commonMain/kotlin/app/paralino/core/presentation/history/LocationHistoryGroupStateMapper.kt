@@ -64,7 +64,8 @@ class LocationHistoryGroupStateMapper(
         }.let { list ->
             // ensure always one is selected
             if (list.count { it.isSelected } != 1) {
-                val firstSelected = list.firstOrNull()
+                val firstSelected = list.firstOrNull { it.deviceId == previousState.preselectedDeviceId }
+                    ?: list.firstOrNull()
                 list.map {
                     when (it) {
                         is UserActiveLocationDeviceState.Known -> it.copy(isSelected = it.locationId == firstSelected?.locationId)
@@ -130,6 +131,7 @@ class LocationHistoryGroupStateMapper(
         )
 
         val newState = previousState.copy(
+            preselectedDeviceId = null,
             groupName = group.name,
             groupImage = group.image,
             isGroupOwner = group.isCurrentUserOwner,
