@@ -74,6 +74,7 @@ import app.paralino.core.ui.groups.components.actionIcon
 import app.paralino.core.ui.groups.components.actionText
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import dev.icerock.moko.resources.compose.stringResource
 
 private val cornerShape = 20.dp
@@ -269,7 +270,7 @@ fun LocationHistoryDetailCard(
                                         SpeedAndElevationData(point = point)
 
                                         AnimatedVisibility(
-                                            visible = point is LocationHistoryPointState.Point && point.point.loc != null && point.point.loc!!.acc > 300
+                                            visible = point is LocationHistoryPointState.Point && point.point.loc?.acc.isLocationInaccurate()
                                         ) {
                                             GroupStatusTag(status = GroupStatusTagType.INACTIVE_NOT_ACCURATE)
                                         }

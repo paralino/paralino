@@ -45,6 +45,7 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.RoundCap
@@ -300,8 +301,18 @@ fun LocationHistoryMapContent(
                     clusterItemContent = {
                         Icon(
                             modifier = Modifier
-                                .size(16.dp),
-                            painter = CoreAppIcons.LocationOnFilled.asPainterResource(),
+                                .size(
+                                    if (it.item.accuracy.isLocationInaccurate()) {
+                                        18.dp
+                                    } else {
+                                        16.dp
+                                    }
+                                ),
+                            painter = if (it.item.accuracy.isLocationInaccurate()) {
+                                CoreAppIcons.NotListedLocationFilled.asPainterResource()
+                            } else {
+                                CoreAppIcons.LocationOnFilled.asPainterResource()
+                            },
                             contentDescription = null,
                             tint = if (uiState.isSatelliteMode || isSystemInDarkTheme()) {
                                 AppColors.highlightGold

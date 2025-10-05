@@ -39,6 +39,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.SmallActionButton
 import app.paralino.core.ui.map.MapMarkerContent
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -126,19 +127,21 @@ fun MapMarkerInfoWindowContent(
                             .size(18.dp)
                     )
                     Text(
-                        text = if (state.accuracy > 300) {
+                        text = if (state.accuracy.isLocationInaccurate()) {
                             MR.strings.group_members_marker_circle_info_inaccurate.localizedString(
-                                state.title ?: MR.strings.group_member_device_title.localizedString()
+                                state.title
+                                    ?: MR.strings.group_member_device_title.localizedString()
                             )
                         } else {
                             MR.strings.group_members_marker_circle_info.localizedString(
-                                state.title ?: MR.strings.group_member_device_title.localizedString()
+                                state.title
+                                    ?: MR.strings.group_member_device_title.localizedString()
                             )
                         }
                     )
                 }
 
-                if (state.accuracy > 300) {
+                if (state.accuracy.isLocationInaccurate()) {
                     SmallActionButton(
                         modifier = Modifier.padding(top = 4.dp),
                         backgroundColor = AppColors.highlightGold,
@@ -220,13 +223,12 @@ private fun renderComposableToBitmapDescriptor(
 
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
-    val bitmap =
-        Bitmap
-            .createBitmap(
-                composeView.measuredWidth,
-                composeView.measuredHeight,
-                Bitmap.Config.ARGB_8888,
-            )
+    val bitmap = Bitmap
+        .createBitmap(
+            composeView.measuredWidth,
+            composeView.measuredHeight,
+            Bitmap.Config.ARGB_8888,
+        )
 
     bitmap.applyCanvas { composeView.draw(this) }
 

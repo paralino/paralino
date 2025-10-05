@@ -61,6 +61,7 @@ import paralino.shared.generated.resources.ic_mail
 import paralino.shared.generated.resources.ic_map
 import paralino.shared.generated.resources.ic_more_vert
 import paralino.shared.generated.resources.ic_not_listed_location
+import paralino.shared.generated.resources.ic_not_listed_location_filled
 import paralino.shared.generated.resources.ic_notifications_active
 import paralino.shared.generated.resources.ic_notifications_off
 import paralino.shared.generated.resources.ic_password
@@ -188,6 +189,7 @@ object CoreAppIcons {
     val StarCircle get() = Res.drawable.ic_star_circle_filled
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
+    val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled
     val NotificationsOff get() = Res.drawable.ic_notifications_off
     val CircleWithDot get() = Res.drawable.ic_adjust
     val Groups get() = Res.drawable.ic_groups

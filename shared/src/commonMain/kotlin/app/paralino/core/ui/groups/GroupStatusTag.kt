@@ -24,6 +24,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import dev.icerock.moko.resources.compose.stringResource
 
 
@@ -67,7 +68,7 @@ fun GroupMemberItemStateWithLocations.toStatusTagType(expanded: Boolean): GroupS
         !this.memberState.isVerified -> GroupStatusTagType.UNVERIFIED
         !expanded || this.locations.isEmpty() || !this.allowShowingDevices -> {
             val tagType = this.statusTag?.toStatusTagType()
-            if (this.singleVisibleLocation?.accuracyMeters != null && this.singleVisibleLocation.accuracyMeters > 300) {
+            if (this.singleVisibleLocation?.accuracyMeters != null && this.singleVisibleLocation.accuracyMeters.isLocationInaccurate()) {
                 when (tagType) {
                     GroupStatusTagType.SHARING_ACTIVE,
                     GroupStatusTagType.SHARING_ACTIVE_NO_LOCATION,

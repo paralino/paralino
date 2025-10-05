@@ -11,6 +11,7 @@ import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
@@ -37,7 +38,10 @@ fun HistoryMapPin(
             true
         },
         infoWindowAnchor = Offset(0.5f, 0f),
-        icon = mapMarkerIcon(isDarkMode),
+        icon = mapMarkerIcon(
+            isDarkMode = isDarkMode,
+            isAccurate = !state.accuracy.isLocationInaccurate()
+        ),
         zIndex = zIndex,
         content = null
     )
@@ -45,15 +49,26 @@ fun HistoryMapPin(
 
 @Composable
 private fun mapMarkerIcon(
-    isDarkMode: Boolean
+    isDarkMode: Boolean,
+    isAccurate: Boolean,
 ): BitmapDescriptor {
     return rememberComposeBitmapDescriptor(
-        isDarkMode
+        isDarkMode, isAccurate
     ) {
         Icon(
             modifier = Modifier
-                .size(16.dp),
-            painter = CoreAppIcons.LocationOnFilled.asPainterResource(),
+                .size(
+                    if (!isAccurate) {
+                        18.dp
+                    } else {
+                        16.dp
+                    }
+                ),
+            painter = if (!isAccurate) {
+                CoreAppIcons.NotListedLocationFilled.asPainterResource()
+            } else {
+                CoreAppIcons.LocationOnFilled.asPainterResource()
+            },
             contentDescription = null,
             tint = if (isDarkMode) {
                 AppColors.highlightGold
