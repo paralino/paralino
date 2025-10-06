@@ -58,11 +58,13 @@ class LocationHistoryMapState : BaseMapObservableObject {
                 if state.focusType is LocationHistoryScreenFocusTypeOVERVIEW {
                     if let region = self?.getFocusRegion(state.selectedLocations) {
                         let areLocationsChanged: Bool = previousState.selectedLocations.map({ $0.pointId }) != state.selectedLocations.map({ $0.pointId })
-                        self?.focusCamera(
-                            rect: region,
-                            animate: true,
-                            canInteruptAnimation: areLocationsChanged
-                        )
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            self?.focusCamera(
+                                rect: region,
+                                animate: true,
+                                canInteruptAnimation: areLocationsChanged
+                            )
+                        }
                     }
                 } else if state.focusType.isMember {
                     if let pin = state.selectedMapPinData {
