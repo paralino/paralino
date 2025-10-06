@@ -32,6 +32,7 @@ import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryScreenState
+import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
 import app.paralino.core.presentation.history.LocationHistoryStats
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -113,7 +114,7 @@ fun LocationHistoryScreen(
 
 @Composable
 private fun MapContent(
-    uiState: LocationHistoryScreenState,
+    uiState: LocationHistoryScreenUiState,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     var cardHeight by remember { mutableStateOf(0.dp) }

@@ -2,11 +2,13 @@ package app.paralino.core.presentation.history
 
 import app.paralino.core.MR
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
+import app.paralino.core.logg
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.listOfDatesUntil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -21,6 +23,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlin.collections.minus
 import kotlin.math.absoluteValue
 
 class LocationHistoryEventHandler(
@@ -215,12 +218,13 @@ class LocationHistoryEventHandler(
 
         // Update state with new selection
         _uiState.update { state ->
+            val daysInLoading = state.daySelectorState.daysInLoading
+                .plus(updatedDays.filter { it.isSelected }.map { it.date })
+                .distinct()
             state.copy(
                 daySelectorState = state.daySelectorState.copy(
                     days = updatedDays,
-                    daysInLoading = state.daySelectorState.daysInLoading
-                        .plus(updatedDays.filter { it.isSelected }.map { it.date })
-                        .distinct(),
+                    daysInLoading = daysInLoading,
                     dateRangeDays = dateRangeDays,
                 ),
                 selectedDate = selectedDate,

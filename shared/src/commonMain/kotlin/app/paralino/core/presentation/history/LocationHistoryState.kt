@@ -85,7 +85,7 @@ data class LocationHistoryScreenState(
         }
     }
 
-    val selectedLocations = displayLocations.filter { entry ->
+    val selectedLocations: List<LocationHistoryPointState> = displayLocations.filter { entry ->
         devices.any { device ->
             when (device) {
                 is UserActiveLocationDeviceState.Known -> {
@@ -99,7 +99,7 @@ data class LocationHistoryScreenState(
         }
     }
 
-    val activeDevices = devices.map { device ->
+    val activeDevices: List<UserActiveLocationDeviceState> = devices.map { device ->
         when (device) {
             is UserActiveLocationDeviceState.Known -> {
                 device.copy(
@@ -257,6 +257,90 @@ data class LocationHistoryScreenState(
     }
 }
 
+data class LocationHistoryScreenUiState(
+    // Constructor fields from LocationHistoryScreenState
+    val groupOrSpaceId: GroupOrSpaceId,
+    val groupName: String?,
+    val groupImage: ImageModel?,
+    val isGroupOwner: Boolean,
+    val userName: String?,
+    val userImage: ImageModel?,
+    val isCurrentUser: Boolean,
+    val isPersonalHistory: Boolean,
+    val selectedDate: LocalDate,
+    val isDeletingEntry: Boolean,
+    val isLoadingData: Boolean,
+    val isLoadingLocations: Boolean,
+    val showPolyline: Boolean,
+    val showPins: Boolean,
+    val clusterPins: Boolean,
+    val isFilterOpened: Boolean,
+    val stats: LocationHistoryStats?,
+    val viewMode: LocationHistoryPathViewMode,
+    val dataViewType: LocationHistoryDataViewType,
+    val focusType: LocationHistoryScreenFocusType,
+    val previousFocusType: LocationHistoryScreenFocusType,
+    val selectedLocationId: String?,
+    val daySelectorState: LocationHistoryDateSelectorState,
+    val isSatelliteMode: Boolean = false,
+    val alertDialog: MainAlertDialog? = null,
+    
+    // Computed properties from LocationHistoryScreenState
+    val deviceType: DeviceType,
+    val selectedLocations: List<LocationHistoryPointState>,
+    val activeDevices: List<UserActiveLocationDeviceState>,
+    val locationIndex: Int,
+    val selectedPoint: LocationHistoryPointState?,
+    val selectedMapPinData: MapPinData?,
+    val deleteAction: MemberActionItemState?,
+    val navigateAction: MemberNavigateItemState?,
+    val locationsToDeleteSize: Int
+) {
+    companion object {
+        fun fromScreenState(screenState: LocationHistoryScreenState): LocationHistoryScreenUiState {
+            return LocationHistoryScreenUiState(
+                // Constructor fields
+                groupOrSpaceId = screenState.groupOrSpaceId,
+                groupName = screenState.groupName,
+                groupImage = screenState.groupImage,
+                isGroupOwner = screenState.isGroupOwner,
+                userName = screenState.userName,
+                userImage = screenState.userImage,
+                isCurrentUser = screenState.isCurrentUser,
+                isPersonalHistory = screenState.isPersonalHistory,
+                selectedDate = screenState.selectedDate,
+                isDeletingEntry = screenState.isDeletingEntry,
+                isLoadingData = screenState.isLoadingData,
+                isLoadingLocations = screenState.isLoadingLocations,
+                showPolyline = screenState.showPolyline,
+                showPins = screenState.showPins,
+                clusterPins = screenState.clusterPins,
+                isFilterOpened = screenState.isFilterOpened,
+                stats = screenState.stats,
+                viewMode = screenState.viewMode,
+                dataViewType = screenState.dataViewType,
+                focusType = screenState.focusType,
+                previousFocusType = screenState.previousFocusType,
+                selectedLocationId = screenState.selectedLocationId,
+                daySelectorState = screenState.daySelectorState,
+                isSatelliteMode = screenState.isSatelliteMode,
+                alertDialog = screenState.alertDialog,
+                
+                // Computed properties
+                deviceType = screenState.deviceType,
+                selectedLocations = screenState.selectedLocations,
+                activeDevices = screenState.activeDevices,
+                locationIndex = screenState.locationIndex,
+                selectedPoint = screenState.selectedPoint,
+                selectedMapPinData = screenState.selectedMapPinData,
+                deleteAction = screenState.deleteAction,
+                navigateAction = screenState.navigateAction,
+                locationsToDeleteSize = screenState.locationsToDelete.size
+            )
+        }
+    }
+}
+
 sealed class UserActiveLocationDeviceState {
     abstract val locationId: String
     abstract val deviceId: String
@@ -300,7 +384,7 @@ sealed interface LocationHistoryPointState {
     data class Cluster(
         override val locationId: String?,
         override val locationTime: String?,
-        val points: List<LocationHistoryPointState.Point>,
+        val points: List<Point>,
         override val lat: Double,
         override val lng: Double,
         override val accuracy: Float,

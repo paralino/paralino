@@ -57,6 +57,7 @@ import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
+import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -72,7 +73,7 @@ import dev.icerock.moko.resources.compose.stringResource
 @Composable
 fun LocationHistoryScreenElements(
     modifier: Modifier = Modifier,
-    uiState: LocationHistoryScreenState,
+    uiState: LocationHistoryScreenUiState,
     topPadding: Dp,
     cardHeight: (Dp) -> Unit,
     onEvent: (LocationHistoryUiEvent) -> Unit,

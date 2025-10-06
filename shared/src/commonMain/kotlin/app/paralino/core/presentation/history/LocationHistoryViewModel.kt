@@ -5,6 +5,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
+import app.paralino.core.logg
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
@@ -25,8 +26,11 @@ import app.paralino.core.ui.components.onAction
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -104,7 +108,14 @@ class LocationHistoryViewModel(
         _uiState = _uiState,
     )
 
-    val uiState: StateFlow<LocationHistoryScreenState> = _uiState
+    val uiState: StateFlow<LocationHistoryScreenUiState> = _uiState.map {
+        LocationHistoryScreenUiState.fromScreenState(it)
+    }
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.Eagerly,
+            initialValue = LocationHistoryScreenUiState.fromScreenState(_uiState.value)
+        )
     val events = _eventChannel.receiveAsFlow()
 
     private val uiFocusedStatus = MutableStateFlow(false)
@@ -226,7 +237,7 @@ class LocationHistoryViewModel(
             LocationHistoryUiEvent.ToggleDayRange -> {
                 historyEventHandler.handleDaySelection(
                     dateRangeDays = 1,
-                    selectedDate = uiState.value.selectedDate,
+                    selectedDate = _uiState.value.selectedDate,
                 )
             }
 
@@ -259,23 +270,23 @@ class LocationHistoryViewModel(
             }
 
             LocationHistoryUiEvent.OnDeleteSelectedLocationRequest -> {
-                if (uiState.value.locationsToDelete.isNotEmpty()) {
-                    val startTime = uiState.value.locationsToDelete.firstOrNull()?.let {
+                if (_uiState.value.locationsToDelete.isNotEmpty()) {
+                    val startTime = _uiState.value.locationsToDelete.firstOrNull()?.let {
                         valueFormatter.formatTimeRangeForLocationHistory(
                             startTimeUTC = it.point.status.startTime.isoToLocalDateTime(),
                             endTimeUTC = null,
-                            rangeStart = uiState.value.startDate,
-                            rangeEnd = uiState.value.endDate
+                            rangeStart = _uiState.value.startDate,
+                            rangeEnd = _uiState.value.endDate
                         ).let {
                             "**$it**"
                         }
                     } ?: "-"
-                    val endTime = uiState.value.locationsToDelete.lastOrNull()?.let {
+                    val endTime = _uiState.value.locationsToDelete.lastOrNull()?.let {
                         valueFormatter.formatTimeRangeForLocationHistory(
                             startTimeUTC = it.point.status.endTime.isoToLocalDateTime(),
                             endTimeUTC = null,
-                            rangeStart = uiState.value.startDate,
-                            rangeEnd = uiState.value.endDate
+                            rangeStart = _uiState.value.startDate,
+                            rangeEnd = _uiState.value.endDate
                         ).let {
                             "**$it**"
                         }
@@ -285,7 +296,7 @@ class LocationHistoryViewModel(
                             alertDialog = DeleteLocationHistoryRange(
                                 startInfo = startTime,
                                 endInfo = endTime,
-                                count = uiState.value.locationsToDelete.size.toString()
+                                count = _uiState.value.locationsToDelete.size.toString()
                                     .let { "**$it**" }
                             ),
                             isFilterOpened = false
@@ -298,7 +309,7 @@ class LocationHistoryViewModel(
                         it.copy(
                             alertDialog = DeleteLocationHistoryEntry(
                                 info = time,
-                                canDeleteRange = uiState.value.selectedLocations.size > 1
+                                canDeleteRange = _uiState.value.selectedLocations.size > 1
                             ),
                             isFilterOpened = false
                         )
@@ -332,13 +343,13 @@ class LocationHistoryViewModel(
                             messageDispatcher.showSnackbarForResult(
                                 data = AppSnackbarData(
                                     payload = AppSnackbarPayload(
-                                        text = if (uiState.value.isPersonalHistory) {
-                                            val days = uiState.value.planConfig?.personalHistoryDaysLimit ?: 0
+                                        text = if (_uiState.value.isPersonalHistory) {
+                                            val days = _uiState.value.planConfig?.personalHistoryDaysLimit ?: 0
                                             if (days == 0) {
                                                 MR.strings.history_map_plan_limit_message_personal_free.localizedString()
                                             } else {
                                                 MR.strings.history_map_plan_limit_message_personal_count.localizedString(
-                                                    uiState.value.planConfig?.personalHistoryDaysLimit ?: 1
+                                                    _uiState.value.planConfig?.personalHistoryDaysLimit ?: 1
                                                 )
                                             }
                                         } else {
@@ -380,7 +391,7 @@ class LocationHistoryViewModel(
 
             is LocationHistoryUiEvent.OnSelectDay -> {
                 historyEventHandler.handleDaySelection(
-                    dateRangeDays = uiState.value.daySelectorState.dateRangeDays ?: 1,
+                    dateRangeDays = _uiState.value.daySelectorState.dateRangeDays ?: 1,
                     selectedDate = event.day
                 )
             }

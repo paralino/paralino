@@ -126,11 +126,10 @@ class LocationHistoryDataFetchController(
             }
 
             _uiState.update {
+                val daysInLoading = it.daySelectorState.daysInLoading - startDate.listOfDatesUntil(endDate)
                 it.copy(
                     daySelectorState = it.daySelectorState.copy(
-                        daysInLoading = it.daySelectorState.daysInLoading - startDate.listOfDatesUntil(
-                            endDate
-                        )
+                        daysInLoading = daysInLoading
                     )
                 )
             }

@@ -60,6 +60,7 @@ import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
+import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -86,7 +87,7 @@ private val innerCornerShape = 15.dp
 @Composable
 fun LocationHistoryDetailCard(
     modifier: Modifier = Modifier,
-    uiState: LocationHistoryScreenState,
+    uiState: LocationHistoryScreenUiState,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     val isCollapsed = uiState.focusType == LocationHistoryScreenFocusType.NONE
@@ -414,11 +415,11 @@ fun LocationHistoryDetailCard(
                     if (uiState.selectedLocations.size > 1) {
 
                         AnimatedVisibility(
-                            visible = uiState.locationsToDelete.isNotEmpty()
+                            visible = uiState.locationsToDeleteSize > 0
                         ) {
                             Text(
                                 modifier = Modifier,
-                                text = stringResource(MR.strings.history_entry_range_delete_notice_title, uiState.locationsToDelete.size),
+                                text = stringResource(MR.strings.history_entry_range_delete_notice_title, uiState.locationsToDeleteSize),
                                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
                             )
                         }

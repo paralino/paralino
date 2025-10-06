@@ -40,6 +40,7 @@ import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenState
+import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.ui.components.CoreAppIcons
@@ -63,7 +64,7 @@ import kotlinx.coroutines.flow.filterNotNull
 
 @Composable
 fun LocationHistoryMapContent(
-    uiState: LocationHistoryScreenState,
+    uiState: LocationHistoryScreenUiState,
     mapContentPadding: PaddingValues,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {

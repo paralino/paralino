@@ -15,7 +15,7 @@ class LocationHistoryMapState : BaseMapObservableObject {
     
     let vm: LocationHistoryViewModel
     
-    @Published var uiState: LocationHistoryScreenState = LocationHistoryScreenState.companion.emptyState()
+    @Published var uiState: LocationHistoryScreenUiState = LocationHistoryScreenUiState.companion.fromScreenState(screenState: LocationHistoryScreenState.companion.emptyState())
     
     init(groupId: String, memberUserId: String, deviceId: String?) {
         vm = KoinIOS.ViewModels.shared.locationHistoryVM(groupId: groupId, memberUserId: memberUserId, deviceId: deviceId)
@@ -23,8 +23,8 @@ class LocationHistoryMapState : BaseMapObservableObject {
         super.init()
         
         vm.observe(flow: vm.uiState) { [weak self] state in
-            if let state = state as? LocationHistoryScreenState {
-                let previousState = self?.uiState ?? LocationHistoryScreenState.companion.emptyState()
+            if let state = state as? LocationHistoryScreenUiState {
+                let previousState = self?.uiState ?? LocationHistoryScreenUiState.companion.fromScreenState(screenState: LocationHistoryScreenState.companion.emptyState())
                 self?.uiState = state
                 
                 if state.showPolyline {
