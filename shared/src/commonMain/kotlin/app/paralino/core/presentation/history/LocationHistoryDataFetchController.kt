@@ -156,7 +156,9 @@ class LocationHistoryDataFetchController(
                     previousState = _uiState.value
                 )
                 _uiState.update {
-                    newState
+                    newState.copy(
+                        daySelectorState = it.daySelectorState
+                    )
                 }
             } else {
                 // TODO handle data missing
