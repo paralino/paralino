@@ -5,7 +5,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
-import app.paralino.core.logg
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
@@ -62,18 +61,22 @@ class LocationHistoryViewModel(
     )
 
     private val personalStateMapper = LocationHistoryPersonalStateMapper(
-        valueFormatter = valueFormatter,
-        geofenceManager = geofenceManager,
-        defaultMapper = defaultMapper,
-        clusteringService = clusteringService
-    )
-
-    private val groupStateMapper = LocationHistoryGroupStateMapper(
+        personalSpaceRepo = personalSpaceRepo,
         valueFormatter = valueFormatter,
         geofenceManager = geofenceManager,
         defaultMapper = defaultMapper,
         clusteringService = clusteringService,
-        remoteConfig = remoteConfig
+        _uiState = _uiState,
+    )
+
+    private val groupStateMapper = LocationHistoryGroupStateMapper(
+        userGroupRepo = userGroupRepo,
+        valueFormatter = valueFormatter,
+        geofenceManager = geofenceManager,
+        defaultMapper = defaultMapper,
+        clusteringService = clusteringService,
+        remoteConfig = remoteConfig,
+        _uiState = _uiState,
     )
 
     private val historyDateMapper = LocationHistoryDateMapper(
@@ -86,9 +89,7 @@ class LocationHistoryViewModel(
     private val dataFetchController = LocationHistoryDataFetchController(
         getLocationHistory = getLocationHistory,
         refreshLocationHistory = refreshLocationHistory,
-        personalSpaceRepo = personalSpaceRepo,
         appPrefs = appPrefs,
-        userGroupRepo = userGroupRepo,
         historyDateMapper = historyDateMapper,
         personalStateMapper = personalStateMapper,
         groupStateMapper = groupStateMapper,

@@ -5,12 +5,9 @@ import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.asGroupOrSpaceId
-import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.Logr
-import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.listOfDatesUntil
 import app.paralino.core.utils.extensions.nowUTC
@@ -34,8 +31,6 @@ import kotlin.time.Duration.Companion.minutes
 class LocationHistoryDataFetchController(
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
-    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
-    private val userGroupRepo: UserGroupLocalDataSource,
     private val appPrefs: AppPrefs,
     private val historyDateMapper: LocationHistoryDateMapper,
     private val personalStateMapper: LocationHistoryPersonalStateMapper,
@@ -145,28 +140,11 @@ class LocationHistoryDataFetchController(
             startDate = startDate,
             endDate = endDate
         ).map { history ->
-            val space = personalSpaceRepo.personalSpaceState.value.data
-            if (space != null) {
-                val newState = personalStateMapper.mapPersonalHistory(
-                    space = space,
-                    history = history,
-                    startDate = startDate,
-                    endDate = endDate,
-                    previousState = _uiState.value
-                )
-                _uiState.update {
-                    newState.copy(
-                        daySelectorState = it.daySelectorState
-                    )
-                }
-            } else {
-                // TODO handle data missing
-                _uiState.update {
-                    it.copy(
-                        isLoadingLocations = false
-                    )
-                }
-            }
+            personalStateMapper.mapPersonalHistory(
+                history = history,
+                startDate = startDate,
+                endDate = endDate
+            )
         }
             .catch {
                 Logr.d("Error loading history", it)
@@ -186,29 +164,13 @@ class LocationHistoryDataFetchController(
             startDate = startDate,
             endDate = endDate
         ).map { history ->
-            val group = userGroupRepo.getGroupWithMembersOnce(groupId = groupId)
-            val currentMember = group?.memberByUserId(userId = memberUserId)
-            if (group != null && currentMember != null) {
-                val newState = groupStateMapper.mapGroupHistory(
-                    group = group,
-                    currentMember = currentMember,
-                    history = history,
-                    startDate = startDate,
-                    endDate = endDate,
-                    previousState = _uiState.value
-                )
-
-                _uiState.update {
-                    newState
-                }
-            } else {
-                // TODO handle data missing
-                _uiState.update {
-                    it.copy(
-                        isLoadingLocations = false
-                    )
-                }
-            }
+            groupStateMapper.mapGroupHistory(
+                groupId = groupId,
+                memberUserId = memberUserId,
+                history = history,
+                startDate = startDate,
+                endDate = endDate
+            )
         }
             .catch {
                 Logr.d("Error loading history", it)

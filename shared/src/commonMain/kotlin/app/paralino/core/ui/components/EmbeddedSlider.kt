@@ -76,6 +76,7 @@ fun EmbeddedSlider(
     shape: Shape = RoundedCornerShape(12.dp),
     size: EmbeddedSliderSize = EmbeddedSliderSize(),
     backgroundColor: Color = MaterialTheme.colors.surface,
+    swipeEnabled: Boolean = true,
     progress: Int,
     steps: Int,
     infoContent: @Composable () -> Unit,
@@ -117,6 +118,7 @@ fun EmbeddedSlider(
                 )
                 .fillMaxSize()
                 .swipeable(
+                    enabled = swipeEnabled,
                     state = swipeableState,
                     anchors = anchors,
                     orientation = Orientation.Horizontal
@@ -174,6 +176,7 @@ fun EmbeddedSlider(
     value: String? = null,
     shape: Shape = RoundedCornerShape(12.dp),
     size: EmbeddedSliderSize = EmbeddedSliderSize(),
+    swipeEnabled: Boolean = true,
     progress: Int,
     steps: Int,
     onProgressChange: ((Int) -> Unit)? = null,
@@ -182,6 +185,7 @@ fun EmbeddedSlider(
         modifier = modifier,
         shape = shape,
         size = size,
+        swipeEnabled = swipeEnabled,
         progress = progress,
         steps = steps,
         infoContent = {

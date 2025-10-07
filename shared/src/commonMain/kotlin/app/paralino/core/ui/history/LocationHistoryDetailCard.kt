@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -44,9 +45,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.Painter
@@ -76,7 +79,9 @@ import app.paralino.core.ui.groups.components.actionIcon
 import app.paralino.core.ui.groups.components.actionText
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
+import app.paralino.core.utils.extensions.conditional
 import app.paralino.core.utils.extensions.isLocationInaccurate
+import app.paralino.core.utils.extensions.pulsate
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
 
@@ -90,7 +95,11 @@ fun LocationHistoryDetailCard(
     uiState: LocationHistoryScreenUiState,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
+
+    val handleEvent = onEvent
+
     val isCollapsed = uiState.focusType == LocationHistoryScreenFocusType.NONE
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -103,7 +112,7 @@ fun LocationHistoryDetailCard(
                     indication = null,
                     onClick = {
                         if (isCollapsed) {
-                            onEvent(LocationHistoryUiEvent.OnSelectFocusType(uiState.previousFocusType))
+                            handleEvent(LocationHistoryUiEvent.OnSelectFocusType(uiState.previousFocusType))
                         }
                     }
                 )
@@ -150,7 +159,7 @@ fun LocationHistoryDetailCard(
                                     coroutineScope.launch {
                                         scrollState.animateScrollToItem(index = index)
                                     }
-                                    onEvent(LocationHistoryUiEvent.SelectDevice(device = device))
+                                    handleEvent(LocationHistoryUiEvent.SelectDevice(device = device))
                                 }
                             )
                         }
@@ -173,7 +182,7 @@ fun LocationHistoryDetailCard(
                             selected = uiState.dataViewType == LocationHistoryDataViewType.Stats,
                             icon = CoreAppIcons.BarChartStats.asPainterResource(),
                             onClick = {
-                                onEvent(
+                                handleEvent(
                                     LocationHistoryUiEvent.ChangeMapDataViewType(
                                         LocationHistoryDataViewType.Stats
                                     )
@@ -188,7 +197,7 @@ fun LocationHistoryDetailCard(
                             selected = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
                             icon = CoreAppIcons.RouteLineWithDotsOnEnds.asPainterResource(),
                             onClick = {
-                                onEvent(
+                                handleEvent(
                                     LocationHistoryUiEvent.ChangeMapDataViewType(
                                         LocationHistoryDataViewType.LocationPoint
                                     )
@@ -203,6 +212,10 @@ fun LocationHistoryDetailCard(
                 modifier = Modifier
                     .padding(bottom = 6.dp, top = animateDpAsState(if (isCollapsed) 6.dp else 0.dp).value)
                     .padding(horizontal = 6.dp)
+                    .conditional(uiState.isLoadingLocations) {
+                        pulsate(pulseAmount = 0.98f)
+                    }
+                    .alpha(animateFloatAsState(if (uiState.isLoadingLocations) 0.5f else 1f).value)
                     .clip(
                         RoundedCornerShape(
                             topStart = innerCornerShape,
@@ -308,7 +321,7 @@ fun LocationHistoryDetailCard(
                             backgroundColor = AppColors.errorBackground,
                             contentColor = AppColors.redMain,
                             onClick = {
-                                onEvent(LocationHistoryUiEvent.OnDeleteSelectedLocationRequest)
+                                handleEvent(LocationHistoryUiEvent.OnDeleteSelectedLocationRequest)
                             }
                         )
                     }
@@ -372,7 +385,7 @@ fun LocationHistoryDetailCard(
                                         AppColors.accent.copy(alpha = 0.2f)
                                     },
                                     onClick = {
-                                        onEvent(
+                                        handleEvent(
                                             LocationHistoryUiEvent.OnDirectionsRequest(action = uiState.navigateAction!!)
                                         )
                                     }
@@ -402,7 +415,11 @@ fun LocationHistoryDetailCard(
                     LocationHistoryStatsTable(
                         modifier = Modifier
                             .padding(bottom = 6.dp)
-                            .padding(horizontal = 6.dp),
+                            .padding(horizontal = 6.dp)
+                            .conditional(uiState.isLoadingLocations) {
+                                pulsate(pulseAmount = 0.98f)
+                            }
+                            .alpha(animateFloatAsState(if (uiState.isLoadingLocations) 0.5f else 1f).value),
                         stats = it
                     )
                 }
@@ -433,6 +450,7 @@ fun LocationHistoryDetailCard(
                                 .fillMaxWidth()
                                 .padding(horizontal = 6.dp)
                                 .padding(bottom = 6.dp)
+                                .alpha(animateFloatAsState(if (uiState.isLoadingLocations) 0.5f else 1f).value)
                                 .height(sliderSize.minHeight),
                             infoContent = {
                                 Column(
@@ -468,12 +486,13 @@ fun LocationHistoryDetailCard(
                                     )
                                 }
                             },
+                            swipeEnabled = !uiState.isLoadingLocations,
                             size = sliderSize,
                             progress = uiState.locationIndex,
                             shape = RoundedCornerShape(innerCornerShape),
                             steps = uiState.selectedLocations.size,
                             onProgressChange = {
-                                onEvent(LocationHistoryUiEvent.SetHistoryProgress(it))
+                                handleEvent(LocationHistoryUiEvent.SetHistoryProgress(it))
                             }
                         )
                     }

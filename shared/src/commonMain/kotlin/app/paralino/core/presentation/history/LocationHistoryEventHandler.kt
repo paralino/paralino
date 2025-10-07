@@ -244,6 +244,10 @@ class LocationHistoryEventHandler(
     }
 
     fun selectDevice(device: UserActiveLocationDeviceState) {
+        if (_uiState.value.isLoadingLocations) {
+            return
+        }
+
         _uiState.update {
             val newState = it.copy(
                 devices = it.activeDevices.map {
