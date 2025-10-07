@@ -48,8 +48,10 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.current
+import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.utils.extensions.conditional
 import kotlin.math.abs
 import kotlin.math.absoluteValue
@@ -91,44 +93,121 @@ fun SwipeableBottomSheet(
 
         screenContent()
 
-        val shapeProgress by derivedStateOf {
-            swipeableState.progress(
-                from = BottomSheetPosition.EXPANDED,
-                to = when (DeviceType.current) {
-                    DeviceType.Android -> BottomSheetPosition.COLLAPSED
-                    DeviceType.iOS -> BottomSheetPosition.HALF_EXPANDED
+        val topShapeCorners by derivedStateOf {
+            val progress = swipeableState.progress(
+                from = BottomSheetPosition.COLLAPSED,
+                to = BottomSheetPosition.EXPANDED
+            ).coerceIn(0f, 1f)
+            val breakingPoint = BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+            
+            when {
+                progress <= breakingPoint -> {
+                    // From collapsed to half-expanded (0f to 0.4f): 50dp to 64dp
+                    val normalizedProgress = progress / breakingPoint // 0f to 1f
+                    SwipeableSheetState.topCornerCollapsed + 
+                        ((SwipeableSheetState.topCornerHalfExpanded - SwipeableSheetState.topCornerCollapsed) * normalizedProgress)
                 }
-            )
+                else -> {
+                    // From half-expanded to expanded (0.4f to 1f): 64dp to 50dp
+                    val normalizedProgress = (progress - breakingPoint) / (1f - breakingPoint) // 0f to 1f
+                    SwipeableSheetState.topCornerHalfExpanded - 
+                        ((SwipeableSheetState.topCornerHalfExpanded - SwipeableSheetState.topCornerExpanded) * normalizedProgress)
+                }
+            }
         }
-        val shapeCorners by derivedStateOf {
-            (50 * shapeProgress.coerceIn(0.5f, 1f)).dp to
-                    // can not be 0, since on android < 12 there is some very weird bug
-                    // that makes the whole content disappear if corners are different
-                    // and sheet is manually set to some position
-                    (50 * shapeProgress.coerceIn(0.01f, 1f)).dp
+
+        val bottomShapeCorners by derivedStateOf {
+            // min value can not be 0, since on android < 12 there is some very weird bug
+            // that makes the whole content disappear if corners are different
+            // and sheet is manually set to some position
+            val progress = swipeableState.progress(
+                from = BottomSheetPosition.COLLAPSED,
+                to = BottomSheetPosition.EXPANDED
+            ).coerceIn(0.01f, 1f)
+            val breakingPoint = BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+            
+            when {
+                progress <= breakingPoint -> {
+                    // From collapsed to half-expanded (0f to 0.4f): 50dp to 40dp/58dp
+                    val normalizedProgress = progress / breakingPoint // 0f to 1f
+                    SwipeableSheetState.bottomCornerCollapsed + 
+                        ((SwipeableSheetState.bottomCornerHalfExpanded - SwipeableSheetState.bottomCornerCollapsed) * normalizedProgress)
+                }
+                else -> {
+                    // From half-expanded to expanded (0.4f to 1f): 40dp/58dp to 0dp
+                    val normalizedProgress = (progress - breakingPoint) / (1f - breakingPoint) // 0f to 1f
+                    SwipeableSheetState.bottomCornerHalfExpanded - 
+                        ((SwipeableSheetState.bottomCornerHalfExpanded - SwipeableSheetState.bottomCornerExpanded) * normalizedProgress)
+                }
+            }
         }
-        val fullProgress by derivedStateOf {
-            swipeableState.progress(
-                from = BottomSheetPosition.EXPANDED,
-                to = BottomSheetPosition.COLLAPSED
-            )
+
+        val horizontalPadding by derivedStateOf {
+            val progress = swipeableState.progress(
+                from = BottomSheetPosition.COLLAPSED,
+                to = BottomSheetPosition.EXPANDED
+            ).coerceIn(0f, 1f)
+            val breakingPoint = BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+
+            when {
+                progress <= breakingPoint -> {
+                    // From collapsed to half-expanded (0f to 0.4f): 16dp to 10dp
+                    val normalizedProgress = progress / breakingPoint // 0f to 1f
+                    SwipeableSheetState.sheetHorizontalCollapsedPadding
+                        .minus(
+                            SwipeableSheetState.sheetHorizontalCollapsedPadding
+                                .minus(SwipeableSheetState.sheetHorizontalHalfExpandedPadding)
+                                .times(normalizedProgress)
+                        ) // 16dp - 6dp = 10dp at progress 1f
+                }
+                else -> {
+                    // From half-expanded to expanded (0.4f to 1f): 10dp to 0dp
+                    val normalizedProgress = (progress - breakingPoint) / (1f - breakingPoint) // 0f to 1f
+                    SwipeableSheetState.sheetHorizontalHalfExpandedPadding
+                        .minus(
+                            SwipeableSheetState.sheetHorizontalHalfExpandedPadding
+                                .times(normalizedProgress)
+                        ) // 10dp - 10dp = 0dp at progress 1f
+                }
+            }
         }
-        val paddingProgress by derivedStateOf {
-            swipeableState.progress(
-                from = BottomSheetPosition.EXPANDED,
-                to = BottomSheetPosition.HALF_EXPANDED
-            )
+
+        val bottomPadding by derivedStateOf {
+            val progress = swipeableState.progress(
+                from = BottomSheetPosition.COLLAPSED,
+                to = BottomSheetPosition.EXPANDED
+            ).coerceIn(0f, 1f)
+            val breakingPoint = BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+
+            when {
+                progress <= breakingPoint -> {
+                    // From collapsed to half-expanded (0f to 0.4f): 16dp to 10dp
+                    val normalizedProgress = progress / breakingPoint // 0f to 1f
+                    screenPaddingValues.calculateBottomPadding()
+                        .plus(
+                            SwipeableSheetState.sheetBottomCollapsedPadding
+                                .minus(
+                                    SwipeableSheetState.sheetBottomCollapsedPadding
+                                        .minus(SwipeableSheetState.sheetBottomHalfExpandedPadding)
+                                        .times(normalizedProgress)
+                                ) // 16dp - 6dp = 10dp at progress 1f
+                        )
+                }
+                else -> {
+                    // From half-expanded to expanded (0.4f to 1f): 10dp to 0dp
+                    val normalizedProgress = (progress - breakingPoint) / (1f - breakingPoint) // 0f to 1f
+                    screenPaddingValues.calculateBottomPadding()
+                        .plus(SwipeableSheetState.sheetBottomHalfExpandedPadding)
+                        .times(1f - normalizedProgress)
+                }
+            }
         }
-        val horizontalPadding = SwipeableSheetState.sheetHorizontalPadding.times(fullProgress)
-        val bottomPadding = screenPaddingValues.calculateBottomPadding()
-            .times(paddingProgress)
-            .plus(SwipeableSheetState.sheetHorizontalPadding.times(fullProgress))
 
         val screenShape = RoundedCornerShape(
-            topStart = shapeCorners.first,
-            topEnd = shapeCorners.first,
-            bottomStart = shapeCorners.second,
-            bottomEnd = shapeCorners.second
+            topStart = topShapeCorners,
+            topEnd = topShapeCorners,
+            bottomStart = bottomShapeCorners,
+            bottomEnd = bottomShapeCorners
         )
 
         Box(
@@ -154,7 +233,14 @@ fun SwipeableBottomSheet(
                             radius = 10.dp,
                             spread = 4.dp,
                             color = Color.Black.copy(alpha = 0.2f),
-                            offset = DpOffset(0.dp, 4.dp)
+//                            offset = DpOffset(
+//                                x = 0.dp,
+//                                // offset doesn't work on iOS if shape corners are different
+//                                y = when (DeviceType.current) {
+//                                    DeviceType.Android -> 0.dp
+//                                    DeviceType.iOS -> 0.dp
+//                                }
+//                            )
                         )
                     )
                     .clip(screenShape)
@@ -414,8 +500,50 @@ class SwipeableSheetState internal constructor(
     }
 
     companion object {
-        val sheetHorizontalPadding = 8.dp
-        val sheetBottomPadding = 8.dp
+        val sheetHorizontalCollapsedPadding = when (DeviceType.current) {
+            DeviceType.Android -> 10.dp
+            DeviceType.iOS -> 16.dp
+        }
+        val sheetHorizontalHalfExpandedPadding = when (DeviceType.current) {
+            DeviceType.Android -> 6.dp
+            DeviceType.iOS -> 4.dp
+        }
+        val sheetBottomCollapsedPadding = when (DeviceType.current) {
+            DeviceType.Android -> 10.dp
+            DeviceType.iOS -> 14.dp
+        }
+        val sheetBottomHalfExpandedPadding = when (DeviceType.current) {
+            DeviceType.Android -> 6.dp
+            DeviceType.iOS -> 4.dp
+        }
+        
+        // Top corner radius values
+        val topCornerCollapsed = when (DeviceType.current) {
+            DeviceType.Android -> 50.dp
+            DeviceType.iOS -> 50.dp
+        }
+        val topCornerHalfExpanded = when (DeviceType.current) {
+            DeviceType.Android -> 40.dp
+            DeviceType.iOS -> 40.dp
+        }
+        val topCornerExpanded = when (DeviceType.current) {
+            DeviceType.Android -> 20.dp
+            DeviceType.iOS -> 20.dp
+        }
+        
+        // Bottom corner radius values
+        val bottomCornerCollapsed = when (DeviceType.current) {
+            DeviceType.Android -> 50.dp
+            DeviceType.iOS -> 50.dp
+        }
+        val bottomCornerHalfExpanded = when (DeviceType.current) {
+            DeviceType.Android -> 34.dp
+            DeviceType.iOS -> 59.dp
+        }
+        val bottomCornerExpanded = when (DeviceType.current) {
+            DeviceType.Android -> 0.dp
+            DeviceType.iOS -> 0.dp
+        }
     }
 }
 

@@ -17,12 +17,16 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
@@ -56,6 +61,7 @@ import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.asReady
+import app.paralino.core.provider.current
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
@@ -72,11 +78,25 @@ import dev.icerock.moko.resources.compose.stringResource
 fun MapHomeScreenElements(
     modifier: Modifier = Modifier,
     state: MapHomeScreenState,
-    topPadding: Dp,
-    sheetPeekHeight: Dp,
+    screenPaddingValues: PaddingValues,
+    containerHeight: Dp,
+    bottomOffset: Dp,
+    sheetFullProgress: Float,
+    isSheetHidden: Boolean,
     cardHeight: (Dp) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
 ) {
+
+    val sheetPeekHeight = (containerHeight - bottomOffset).coerceIn(
+        minimumValue = when (DeviceType.current) {
+            DeviceType.Android -> screenPaddingValues.calculateBottomPadding()
+            DeviceType.iOS -> {
+                if (isSheetHidden) screenPaddingValues.calculateBottomPadding() else 0.dp
+            }
+        },
+        maximumValue = containerHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+    )
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -91,7 +111,7 @@ fun MapHomeScreenElements(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(topPadding)
+                .height(screenPaddingValues.calculateTopPadding())
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
@@ -194,11 +214,19 @@ fun MapHomeScreenElements(
                     .padding(bottom = sheetPeekHeight),
                 contentAlignment = Alignment.CenterEnd
             ) {
+                val sidePadding = 12.dp
+                    .times(
+                        1f - when {
+                            sheetFullProgress >= BottomSheetPosition.HALF_EXPANDED.screenHeightPercent -> 1f
+                            else -> sheetFullProgress / BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                        }
+                    )
+                    .plus(16.dp)
                 // sharing time info
                 if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
                     GroupMemberActionButton(
                         modifier = Modifier
-                            .padding(horizontal = 8.dp)
+                            .padding(horizontal = sidePadding)
                             .padding(bottom = 6.dp),
                         startIcon = CoreAppIcons.Timer.asPainterResource(),
                         isLoading = false,
@@ -213,7 +241,7 @@ fun MapHomeScreenElements(
                 // sharing start
                 if (readyState != null && readyState.selectedSharingContract == null && !isMemberOrPlaceFocused) {
                     FilledButton(
-                        modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
+                        modifier = Modifier.padding(bottom = 8.dp, end = 10.dp),
                         style = ButtonStyle.SMALL(
                             iconSize = 24.dp
                         ),
@@ -284,7 +312,18 @@ fun MapHomeScreenElements(
                 ) {
                     readyState?.focusedMember?.let { memberState ->
                         Box(
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(
+                                bottom = when (DeviceType.current) {
+                                    DeviceType.Android -> 8.dp
+                                    DeviceType.iOS -> {
+                                        if (screenPaddingValues.calculateBottomPadding().value == 0f) {
+                                            8.dp
+                                        } else {
+                                            0.dp
+                                        }
+                                    }
+                                }
+                            )
                         ) {
                             GroupMember(
                                 modifier = Modifier.padding(top = 20.dp),

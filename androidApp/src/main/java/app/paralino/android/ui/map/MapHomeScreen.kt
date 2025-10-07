@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.safeDrawing
@@ -21,7 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
@@ -153,6 +157,7 @@ private fun MapHomeContent(
             MapContent(
                 appState = appState,
                 uiState = uiState,
+                sheetState = sheetState,
                 readyState = readyState,
                 bottomOffset = bottomOffset,
                 onEvent = { vm.onEvent(it) }
@@ -201,6 +206,7 @@ private fun MapHomeContent(
 private fun MapContent(
     appState: MainAppState,
     uiState: MapHomeScreenState,
+    sheetState: SwipeableSheetState,
     readyState: MapHomeScreenState.Ready?,
     bottomOffset: Dp,
     onEvent: (MapHomeScreenUiEvent) -> Unit
@@ -229,14 +235,25 @@ private fun MapContent(
             )
         )
 
+        val screenPadding = WindowInsets.safeDrawing.asPaddingValues()
+        val layoutDirection = LocalLayoutDirection.current
         MapHomeScreenElements(
             modifier = Modifier,
             state = uiState,
-            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 4.dp,
-            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
-                minimumValue = WindowInsets.navigationBars.asPaddingValues()
-                    .calculateBottomPadding(),
-                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+            screenPaddingValues = remember {
+                PaddingValues(
+                    top = screenPadding.calculateTopPadding() + 4.dp,
+                    bottom = screenPadding.calculateBottomPadding(),
+                    start = screenPadding.calculateStartPadding(layoutDirection),
+                    end = screenPadding.calculateEndPadding(layoutDirection),
+                )
+            },
+            containerHeight = this.maxHeight,
+            bottomOffset = bottomOffset,
+            isSheetHidden = sheetState.currentValue == BottomSheetPosition.HIDDEN,
+            sheetFullProgress = sheetState.progress(
+                from = BottomSheetPosition.COLLAPSED,
+                to = BottomSheetPosition.EXPANDED
             ),
             cardHeight = { cardHeight = it },
             onEvent = onEvent

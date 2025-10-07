@@ -131,7 +131,10 @@ fun MapHomeSheetContent(
         Divider(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = dividerTopPadding, bottom = animateDpAsState(dividerBottomPadding.value.minus((1f - contentAlpha) * dividerBottomPadding.value).dp).value)
+                .padding(
+                    top = dividerTopPadding,
+                    bottom = 0.dp //animateDpAsState(dividerBottomPadding.value.minus((1f - contentAlpha) * dividerBottomPadding.value).dp).value
+                )
 //                .padding(top = 8.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(percent = 50))
                 .width(30.dp),
@@ -141,11 +144,11 @@ fun MapHomeSheetContent(
         if (readyState != null) {
             MapGroupNameAndMemberInfo(
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 20.dp)
+                    .padding(start = 14.dp, end = 16.dp)
                     .onGloballyPositioned { coordinates ->
                         val height = with(density) {
                             screenPaddingValues.calculateBottomPadding()
-                                .plus(SwipeableSheetState.sheetBottomPadding)
+                                .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
                                 .plus(dividerTopPadding.times(2) + dividerHeight.times(2))
                                 .toPx()
                         }

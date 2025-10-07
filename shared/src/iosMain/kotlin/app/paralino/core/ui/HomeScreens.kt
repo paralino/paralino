@@ -416,10 +416,13 @@ object HomeScreens {
                         MapHomeScreenElements(
                             modifier = Modifier,
                             state = uiState,
-                            topPadding = paddingValues.top.dp,
-                            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
-                                minimumValue = if (sheetState.currentValue == BottomSheetPosition.HIDDEN) paddingValues.bottom.dp else 0.dp,
-                                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                            screenPaddingValues = paddingValues.toComposePaddingValues(),
+                            containerHeight = this.maxHeight,
+                            bottomOffset = bottomOffset,
+                            isSheetHidden = sheetState.currentValue == BottomSheetPosition.HIDDEN,
+                            sheetFullProgress = sheetState.progress(
+                                from = BottomSheetPosition.EXPANDED,
+                                to = BottomSheetPosition.COLLAPSED
                             ),
                             cardHeight = { cardHeight = it },
                             onEvent = { vm.onEvent(it) },
