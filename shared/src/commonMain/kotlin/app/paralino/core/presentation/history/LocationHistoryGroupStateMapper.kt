@@ -95,43 +95,35 @@ class LocationHistoryGroupStateMapper(
             }
         }
 
-        val selectedKnownLocation = currentMember.locations
-            .firstOrNull { location ->
-                devices
-                    .filter { it.isSelected && it is UserActiveLocationDeviceState.Known }
-                    .any { it.locationId == location.id }
-            }
-
-        val cachedHistory = selectedKnownLocation?.locationHistory?.data?.let {
-            it.history
-                .filter {
-                    val date = it.status.tA.isoToLocalDateTime()?.date
-                    if (date == null) {
-                        false
-                    } else {
-                        date in startDate..endDate
+        val cachedHistory = currentMember.locations.flatMap { location ->
+            location.locationHistory.data?.let {
+                it.history
+                    .filter {
+                        val date = it.status.tA.isoToLocalDateTime()?.date
+                        if (date == null) {
+                            false
+                        } else {
+                            date in startDate..endDate
+                        }
                     }
-                }
-                .groupBy { it.dayKey }
-                .mapNotNull { entry ->
-                    entry.key?.let {
-                        LocationHistoryModelForDevice(
-                            locationId = selectedKnownLocation.id,
-                            entryId = selectedKnownLocation.id,
-                            dateKey = it,
-                            historyKeyVersion = "",
-                            isCachedLocation = true,
-                            history = CryptoResource.Ready(LocationHistoryModel(history = entry.value))
-                        )
+                    .groupBy { it.dayKey }
+                    .mapNotNull { entry ->
+                        entry.key?.let {
+                            LocationHistoryModelForDevice(
+                                locationId = location.id,
+                                entryId = location.id,
+                                dateKey = it,
+                                historyKeyVersion = "",
+                                isCachedLocation = true,
+                                history = CryptoResource.Ready(LocationHistoryModel(history = entry.value))
+                            )
+                        }
                     }
-                }
+            } ?: emptyList()
         }
 
         val locations = history.history
-            .run {
-                if (cachedHistory != null) plus(cachedHistory)
-                else this
-            }
+            .plus(cachedHistory)
             .flatMap { entry ->
                 defaultMapper.mapLocationPoints(
                     entry = entry,
