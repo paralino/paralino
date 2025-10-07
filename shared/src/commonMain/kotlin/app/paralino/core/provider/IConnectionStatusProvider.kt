@@ -83,7 +83,7 @@ enum class NetworkType {
     WIFI, G2, G3, G4, G5, GENERIC_CELL;
     val key: String = name
     val networkName: String get() = when (this){
-        WIFI -> "WiFi"
+        WIFI -> "Wi-Fi"
         G2 -> "2G"
         G3 -> "3G"
         G4 -> "4G"
