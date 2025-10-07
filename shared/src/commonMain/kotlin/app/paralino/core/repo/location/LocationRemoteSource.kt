@@ -63,7 +63,7 @@ class LocationRemoteSource constructor(
                 lat = 0.0,
                 lng = 0.0,
                 accuracy = 10000000f,
-                timeUTC = "2021-01-17T21:47:27+01:00",
+                timeUTC = "2021-01-17T21:47:27",
                 endTimeUTC = null,
                 speed = null,
                 altitude = null,

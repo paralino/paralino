@@ -81,6 +81,7 @@ data class MemberDeviceData constructor(
 @Serializable
 data class MemberDeviceStatus constructor(
     val timeUTC: String? = null,
+    val tz: String? = null,
     val batteryLevel: Int? = null,
     val isCharging: Boolean? = null,
     val network: String? = null,

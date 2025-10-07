@@ -123,6 +123,7 @@ data class LocationHistoryPointModel(
 
     fun isStatusUnchanged(status: LocationHistoryPointStatusModel): Boolean {
         return status.sts == this.status.sts
+                && status.tz == this.status.tz
                 && status.bat == this.status.bat
                 && status.chr == this.status.chr
                 && status.net == this.status.net
@@ -150,6 +151,7 @@ data class LocationHistoryPointLocationModel(
 data class LocationHistoryPointStatusModel(
     val tA: String,
     val tB: String? = null,
+    val tz: String? = null,
     val sts: String? = null,
     val bat: Int? = null,
     val chr: Int? = null,

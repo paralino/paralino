@@ -85,6 +85,7 @@ class LocationPayloadProvider(
                             status = LocationHistoryPointStatusModel(
                                 tA = status.timeUTC,
                                 tB = null,
+                                tz = status.tz,
                                 sts = status.statusType?.id,
                                 bat = status.batteryLevel,
                                 chr = if (status.isCharging == null) null else if (status.isCharging) 1 else 0,

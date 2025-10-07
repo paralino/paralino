@@ -9,6 +9,9 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.offsetAt
 
 class MemberDeviceStatusProvider(
     private val locationSharingManager: LocationSharingManager,
@@ -74,6 +77,7 @@ class MemberDeviceStatusProvider(
         val sharingNetwork = validContract?.shareNetwork == true
         return MemberDeviceStatus(
             timeUTC = valueFormatter.currentTimeForApi(),
+            tz = TimeZone.currentSystemDefault().offsetAt(nowUTC()).toString(),
             batteryLevel = if (sharingBattery) deviceApiProvider.batteryLevel else null,
             isCharging = if (sharingBattery) deviceApiProvider.isCharging.takeIf { sharingBattery } else null,
             network = if (sharingNetwork) deviceApiProvider.connectionStatusProvider.initAndGetStatus().networkType?.key else null,
