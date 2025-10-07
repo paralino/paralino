@@ -538,7 +538,7 @@ class SwipeableSheetState internal constructor(
         }
         val bottomCornerHalfExpanded = when (DeviceType.current) {
             DeviceType.Android -> 34.dp
-            DeviceType.iOS -> 59.dp
+            DeviceType.iOS -> 58.dp
         }
         val bottomCornerExpanded = when (DeviceType.current) {
             DeviceType.Android -> 0.dp
