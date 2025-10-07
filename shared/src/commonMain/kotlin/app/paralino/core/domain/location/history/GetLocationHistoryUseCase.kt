@@ -58,7 +58,7 @@ class GetLocationHistoryUseCase(
             val keys = database.locationHistoryDao.getGroupHistoryKeysOnce(
                 groupId = groupId,
                 ownerUserId = memberUserId,
-                keys = it.map { it.historyKeyVersion }
+                keys = it.map { it.historyKeyVersion }.distinct()
             )
 
             historyMapper.local2CoreGroup(
@@ -81,7 +81,7 @@ class GetLocationHistoryUseCase(
             dates = dateList
         ).map {
             val keys = database.locationHistoryDao.getPersonalHistoryKeysOnce(
-                keys = it.map { it.historyKeyVersion }
+                keys = it.map { it.historyKeyVersion }.distinct()
             )
 
             historyMapper.local2CorePersonal(
