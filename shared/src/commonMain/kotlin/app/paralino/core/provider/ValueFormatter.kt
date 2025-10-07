@@ -353,7 +353,7 @@ abstract class IValueFormatter {
 
         return when {
             dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
-            dateTime.date == yesterday -> MR.strings.date_name_today.localizedString() + " $timeStr"
+            dateTime.date == yesterday -> MR.strings.date_name_yesterday.localizedString() + " $timeStr"
             else -> {
                 val datePart = formatDatePart(
                     date = dateTime,
@@ -377,7 +377,7 @@ abstract class IValueFormatter {
 
         return when {
             dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
-            dateTime.date == yesterday -> MR.strings.date_name_today.localizedString() + " $timeStr"
+            dateTime.date == yesterday -> MR.strings.date_name_yesterday.localizedString() + " $timeStr"
             else -> {
                 val datePart = formatDatePart(
                     date = dateTime,
