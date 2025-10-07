@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.MR
+import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -13,9 +14,13 @@ import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
 
 class LocationHistoryPersonalStateMapper(
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
@@ -121,17 +126,28 @@ class LocationHistoryPersonalStateMapper(
                 } ?: emptyList()
             }
 
+        logg.v("history_fetch", "Devices mapped, map points")
+
+        val now = nowUTC()
+        val timeZone = TimeZone.currentSystemDefault()
+        val nowDate = now.toLocalDateTime(timeZone)
+        val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
         val locations = history.history
             .plus(cachedHistory)
             .flatMap { entry ->
                 defaultMapper.mapLocationPoints(
                     entry = entry,
                     startDate = startDate,
-                    endDate = endDate
+                    endDate = endDate,
+                    timeZone = timeZone,
+                    nowDate = nowDate,
+                    yesterday = yesterday,
                 )
             }
             .sortedByDescending { it.point.status.startTime }
             .distinctBy { it.point.properID }
+
+        logg.v("history_fetch", "Cluster locations")
 
         val processedLocations = clusteringService.processLocations(
             points = locations,
@@ -139,6 +155,7 @@ class LocationHistoryPersonalStateMapper(
             rangeEnd = endDate
         )
 
+        logg.v("history_fetch", "History ready, start UI update")
         _uiState.update {
             val newState = it.copy(
                 preselectedDeviceId = null,

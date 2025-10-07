@@ -1,16 +1,17 @@
 package app.paralino.core.provider
 
-import androidx.room.util.joinIntoString
 import app.paralino.core.MR
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -186,9 +187,9 @@ abstract class IValueFormatter {
 
     fun fromUTCtoMapSharingTime(timeUTC: String, splitTimeToOneLine: Boolean = true): String? {
         val dateTimeUTC = timeUTC.isoToLocalDateTime() ?: return null
-        val local = dateTimeUTC.fromUTCtoLocal()
-        val now = nowUTC()
         val timeZone = TimeZone.currentSystemDefault()
+        val local = dateTimeUTC.fromUTCtoLocal(timeZone)
+        val now = nowUTC()
         val nowDate = now.toLocalDateTime(TimeZone.currentSystemDefault())
         val sameYear = local.year == nowDate.year
         val sameDay = sameYear && local.dayOfYear == nowDate.dayOfYear
@@ -214,58 +215,24 @@ abstract class IValueFormatter {
         }
     }
 
-//    fun formatTimeRangeForLocationHistory(
-//        startTimeUTC: String?,
-//        endTimeUTC: String?,
-//        rangeStart: LocalDate,
-//        rangeEnd: LocalDate,
-//    ): String? {
-//        if (startTimeUTC == null && endTimeUTC == null) return null
-//
-//        val startTimeCorrect = startTimeUTC ?: endTimeUTC ?: return null
-//        val endTimeCorrect = endTimeUTC ?: startTimeUTC ?: return null
-//
-//        val startDateTimeUTC = startTimeCorrect.isoToLocalDateTime() ?: return null
-//        val localStart = startDateTimeUTC.fromUTCtoLocal()
-//
-//        val endDateTimeUTC = endTimeCorrect.isoToLocalDateTime() ?: return null
-//        val localEnd = endDateTimeUTC.fromUTCtoLocal()
-//
-//        val now = Clock.System.now()
-//        val timeZone = TimeZone.currentSystemDefault()
-//        val nowDate = now.toLocalDateTime(TimeZone.currentSystemDefault())
-//
-//        val showYearMonthDay = listOf(localStart.year, localEnd.year, rangeStart.year, rangeEnd.year, nowDate.year).distinct().size > 1
-//        val showMonthDay = showYearMonthDay || listOf(localStart.monthNumber, localEnd.monthNumber, rangeStart.monthNumber, rangeEnd.monthNumber, nowDate.monthNumber).distinct().size > 1
-//
-//        val isSameYearForRange = localStart.year == localEnd.year
-//        val isSameMonthForRange = isSameYearForRange && localStart.monthNumber == localEnd.monthNumber
-//        val isSameDayForRange = isSameMonthForRange && localStart.dayOfYear == localEnd.dayOfYear
-//
-//    }
-
     fun formatTimeRangeForLocationHistory(
         startTimeUTC: LocalDateTime?,
         endTimeUTC: LocalDateTime?,
         rangeStart: LocalDate,
         rangeEnd: LocalDate,
+        timeZone: TimeZone = TimeZone.currentSystemDefault(),
+        nowDate: LocalDateTime = nowUTC().toLocalDateTime(timeZone),
+        yesterday: LocalDate = nowDate.date.minus(DatePeriod(days = 1))
     ): String? {
         if (startTimeUTC == null && endTimeUTC == null) return null
 
         val startTimeCorrect = startTimeUTC ?: endTimeUTC ?: return null
         val endTimeCorrect = endTimeUTC ?: startTimeUTC ?: return null
 
-        val localStart = startTimeCorrect.fromUTCtoLocal()
-
-        val localEnd = endTimeCorrect.fromUTCtoLocal()
-
-        val now = nowUTC()
-        val timeZone = TimeZone.currentSystemDefault()
-        val nowDate = now.toLocalDateTime(timeZone)
         val currentYear = nowDate.year
 
-        // Calculate yesterday
-        val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
+        val localStart = startTimeCorrect.fromUTCtoLocal(timeZone = timeZone)
+        val localEnd = endTimeCorrect.fromUTCtoLocal(timeZone = timeZone)
 
         // Determine if we should show years based on context
         val shouldShowYear = shouldShowYearInContext(
@@ -413,7 +380,9 @@ abstract class IValueFormatter {
         return this.toInstant(TimeZone.currentSystemDefault()).toLocalDateTime(TimeZone.UTC)
     }
 
-    fun LocalDateTime.fromUTCtoLocal(): LocalDateTime {
-        return this.toInstant(TimeZone.UTC).toLocalDateTime(TimeZone.currentSystemDefault())
+    fun LocalDateTime.fromUTCtoLocal(
+        timeZone: TimeZone = TimeZone.currentSystemDefault()
+    ): LocalDateTime {
+        return this.toInstant(TimeZone.UTC).toLocalDateTime(timeZone)
     }
 }

@@ -4,11 +4,9 @@ import app.paralino.core.MR
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
-import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -16,9 +14,13 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
 
 class LocationHistoryGroupStateMapper(
     private val userGroupRepo: UserGroupLocalDataSource,
@@ -122,13 +124,20 @@ class LocationHistoryGroupStateMapper(
             } ?: emptyList()
         }
 
+        val now = nowUTC()
+        val timeZone = TimeZone.currentSystemDefault()
+        val nowDate = now.toLocalDateTime(timeZone)
+        val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
         val locations = history.history
             .plus(cachedHistory)
             .flatMap { entry ->
                 defaultMapper.mapLocationPoints(
                     entry = entry,
                     startDate = startDate,
-                    endDate = endDate
+                    endDate = endDate,
+                    timeZone = timeZone,
+                    nowDate = nowDate,
+                    yesterday = yesterday
                 )
             }
             .sortedByDescending { it.point.status.startTime }

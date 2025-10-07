@@ -9,6 +9,8 @@ import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.stripSeconds
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 
 class ILocationHistoryStateMapper(
     private val valueFormatter: IValueFormatter,
@@ -16,16 +18,21 @@ class ILocationHistoryStateMapper(
     fun mapLocationPoints(
         entry: LocationHistoryModelForDevice,
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        timeZone: TimeZone,
+        nowDate: LocalDateTime,
+        yesterday: LocalDate
     ): List<LocationHistoryPointState.Point> {
         return entry.history.data?.history
             ?.map { point ->
                 val locATime = point.loc?.startTime?.isoToLocalDateTime()?.stripSeconds()
                 val locBTime = point.loc?.endTime?.isoToLocalDateTime()?.stripSeconds()
-                val statusATime = point.status.startTime.isoToLocalDateTime()?.stripSeconds()
                 val statusBTime = point.status.endTime.isoToLocalDateTime()?.stripSeconds()
 
                 val locationTime = valueFormatter.formatTimeRangeForLocationHistory(
+                    timeZone = timeZone,
+                    nowDate = nowDate,
+                    yesterday = yesterday,
                     startTimeUTC = locATime,
                     endTimeUTC = locBTime,
                     rangeStart = startDate,
@@ -33,7 +40,11 @@ class ILocationHistoryStateMapper(
                 )
 
                 val statusTime = if (locBTime != statusBTime) {
+                    val statusATime = point.status.startTime.isoToLocalDateTime()?.stripSeconds()
                     valueFormatter.formatTimeRangeForLocationHistory(
+                        timeZone = timeZone,
+                        nowDate = nowDate,
+                        yesterday = yesterday,
                         // using same time to just indicate last point for status update
                         startTimeUTC = statusATime.takeIf { it != locATime },
                         endTimeUTC = statusBTime,

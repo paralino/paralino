@@ -3,10 +3,15 @@ package app.paralino.core.presentation.history
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.math.cos
 import kotlin.math.sqrt
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
 class LocationClusteringService(
@@ -34,6 +39,11 @@ class LocationClusteringService(
         rangeStart: LocalDate,
         rangeEnd: LocalDate,
     ): List<LocationHistoryPointState> {
+        val now = nowUTC()
+        val timeZone = TimeZone.currentSystemDefault()
+        val nowDate = now.toLocalDateTime(timeZone)
+        val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
+
         val clusters = mutableListOf<LocationHistoryPointState>()
         val sortedPoints = points.sortedBy { it.point.status.startTime }
 
@@ -55,7 +65,10 @@ class LocationClusteringService(
                     finalizeCluster(
                         points = currentCluster,
                         rangeStart = rangeStart,
-                        rangeEnd = rangeEnd
+                        rangeEnd = rangeEnd,
+                        timeZone = timeZone,
+                        nowDate = nowDate,
+                        yesterday = yesterday,
                     )?.let {
                         clusters.add(it)
                     }
@@ -68,7 +81,10 @@ class LocationClusteringService(
         finalizeCluster(
             points = currentCluster,
             rangeStart = rangeStart,
-            rangeEnd = rangeEnd
+            rangeEnd = rangeEnd,
+            timeZone = timeZone,
+            nowDate = nowDate,
+            yesterday = yesterday,
         )?.let {
             clusters.add(it)
         }
@@ -80,6 +96,9 @@ class LocationClusteringService(
         points: List<LocationHistoryPointState.Point>,
         rangeStart: LocalDate,
         rangeEnd: LocalDate,
+        timeZone: TimeZone,
+        nowDate: LocalDateTime,
+        yesterday: LocalDate
     ): LocationHistoryPointState? {
         if (points.size >= 2) {
             val startTime = points.first().point.status.startTime
@@ -98,7 +117,10 @@ class LocationClusteringService(
                     startTimeUTC = startTime.isoToLocalDateTime(),
                     endTimeUTC = endTime.isoToLocalDateTime(),
                     rangeStart = rangeStart,
-                    rangeEnd = rangeEnd
+                    rangeEnd = rangeEnd,
+                    timeZone = timeZone,
+                    nowDate = nowDate,
+                    yesterday = yesterday
                 ),
                 battery = points.mapNotNull { it.point.status.bat }
                     .sorted()
