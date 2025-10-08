@@ -39,6 +39,7 @@ import paralino.shared.generated.resources.ic_elevation_2
 import paralino.shared.generated.resources.ic_expand_less
 import paralino.shared.generated.resources.ic_expand_more
 import paralino.shared.generated.resources.ic_family_star
+import paralino.shared.generated.resources.ic_filter_tune
 import paralino.shared.generated.resources.ic_focus_person_off
 import paralino.shared.generated.resources.ic_focus_person_on
 import paralino.shared.generated.resources.ic_group
@@ -178,6 +179,7 @@ object CoreAppIcons {
     val Settings get() = Res.drawable.ic_settings
     val Ruler get() = Res.drawable.ic_ruler
     val Communication get() = Res.drawable.ic_communication
+    val FilterTune get() = Res.drawable.ic_filter_tune
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay

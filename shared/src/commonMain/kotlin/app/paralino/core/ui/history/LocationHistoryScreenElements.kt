@@ -3,10 +3,11 @@ package app.paralino.core.ui.history
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -56,7 +56,6 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
-import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
@@ -291,19 +290,42 @@ fun LocationHistoryScreenElements(
                     onEvent = onEvent
                 )
 
-                Icon(
+                Box(
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .size(32.dp)
                         .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
                         .shadow(elevation = animateDpAsState(if (uiState.isFilterOpened) 4.dp else 0.dp).value, RoundedCornerShape(8.dp))
                         .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colors.background)
-                        .padding(4.dp)
-                        .rotate(animateFloatAsState(if (uiState.isFilterOpened) 90f else -90f).value),
-                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                    contentDescription = null
-                )
+                        .background(MaterialTheme.colors.background),
+                    contentAlignment = Alignment.Center
+                ) {
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = uiState.isFilterOpened,
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut()
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp),
+                            painter = CoreAppIcons.Close.asPainterResource(),
+                            contentDescription = null
+                        )
+                    }
+
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = !uiState.isFilterOpened,
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut()
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp),
+                            painter = CoreAppIcons.FilterTune.asPainterResource(),
+                            contentDescription = null
+                        )
+                    }
+                }
             }
 
             Column(
