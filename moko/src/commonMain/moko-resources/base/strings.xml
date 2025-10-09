@@ -684,6 +684,8 @@
     <string name="raw_data_screen_title">Encryption</string>
     <string name="raw_data_section_encrypted">Encrypted data on server</string>
     <string name="raw_data_section_decrypted">Decrypted data on device</string>
+    <string name="raw_data_section_history_info">Multiple similar location points could be bundled together before the encryption takes place. That is why you see a full encrypted block here. Only after location history block is decrypted, your selected point can be filtered.</string>
+    <string name="raw_data_section_history_selectedPoints_title">Selected history points: %d</string>
     <string name="plan_limit_alert_title">BETA version</string>
     <string name="plan_limit_serviceMax_alert_message">You reached the maximum number of %1$s (**%2$d**).</string>
     <string name="plan_limit_info_alert_message">You reached the maximum number of %1$s (**%2$d**). To add more, please upgrade your plan.</string>

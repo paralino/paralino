@@ -1,19 +1,21 @@
 package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
-import app.paralino.core.models.group.UserGroup
+import app.paralino.core.db.main.location.GroupHistoryEntity
+import app.paralino.core.db.main.location.PersonalHistoryEntity
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
+import app.paralino.core.models.location.LocationHistoryPointId
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.mappers.LocationHistoryMapper
+import app.paralino.core.models.raw.LocationHistoryReadEntry
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.extensions.dateForApi
 import app.paralino.core.utils.extensions.listOfDatesUntil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format
-import kotlinx.datetime.format.byUnicodePattern
-import kotlinx.datetime.plus
 
 class GetLocationHistoryUseCase(
     private val database: MainDatabaseHelper,
@@ -21,73 +23,104 @@ class GetLocationHistoryUseCase(
 ) : BaseRepository() {
 
     fun getLocationHistory(
-        groupId: String,
+        groupOrSpaceId: GroupOrSpaceId,
         memberUserId: String,
         startDate: LocalDate,
         endDate: LocalDate,
     ): Flow<LocationHistoryModelForUser> {
-        if (groupId == UserGroup.Companion.groupPersonalDevicesId) {
-            return getPersonalLocationHistory(
-                startDate = startDate,
-                endDate = endDate
-            )
+        val dateList = startDate.listOfDatesUntil(endDate).map { it.dateForApi() }
+        if (groupOrSpaceId.isPersonalSpace) {
+            return database.locationHistoryDao.getPersonalHistory(dates = dateList)
+                .map { mapPersonalLocationHistory(history = it) }
         } else {
-            return getLocationHistoryForMember(
-                groupId = groupId,
-                memberUserId = memberUserId,
-                startDate = startDate,
-                endDate = endDate
-            )
+            return database.locationHistoryDao.getGroupHistory(
+                groupId = groupOrSpaceId.id,
+                ownerUserId = memberUserId,
+                dates = dateList
+            ).map {
+                mapLocationHistoryForGroupMember(
+                    groupId = groupOrSpaceId.id,
+                    memberUserId = memberUserId,
+                    history = it
+                )
+            }
         }
     }
 
-    private fun getLocationHistoryForMember(
+    fun getLocationHistoryRawPresentationByIds(
+        groupOrSpaceId: GroupOrSpaceId,
+        memberUserId: String,
+        pointIds: List<LocationHistoryPointId>
+    ): Flow<List<Pair<LocationHistoryReadEntry, LocationHistoryModelForDevice?>>> {
+        if (groupOrSpaceId.isPersonalSpace) {
+            return database.locationHistoryDao.getPersonalHistoryEntriesByIds(
+                ids = pointIds.map { it.entryId }.distinct()
+            )
+                .map { history ->
+                    val mappedHistory = mapPersonalLocationHistory(history = history)
+                    history.map { entry ->
+                        val matchingPoint = mappedHistory.history.firstOrNull { it.entryId == entry.id }
+                        val points = matchingPoint?.copy(
+                            history = matchingPoint.history.mapSuccess {
+                                it.copy(history = it.history.filter { point -> pointIds.any { it.pointId == point.properID } })
+                            }
+                        )
+                        historyMapper.local2RemotePersonal(entry) to points
+                    }
+                }
+        } else {
+            return database.locationHistoryDao.getGroupHistoryEntriesByIds(
+                groupId = groupOrSpaceId.id,
+                ownerUserId = memberUserId,
+                ids = pointIds.map { it.entryId }.distinct()
+            ).map { history ->
+                val mappedHistory = mapLocationHistoryForGroupMember(
+                    groupId = groupOrSpaceId.id,
+                    memberUserId = memberUserId,
+                    history = history
+                )
+                history.map { entry ->
+                    val matchingPoint = mappedHistory.history.firstOrNull { it.entryId == entry.id }
+                    val points = matchingPoint?.copy(
+                        history = matchingPoint.history.mapSuccess {
+                            it.copy(history = it.history.filter { point -> pointIds.any { it.pointId == point.properID } })
+                        }
+                    )
+                    historyMapper.local2RemoteGroup(entry) to points
+                }
+            }
+        }
+    }
+
+    private suspend fun mapLocationHistoryForGroupMember(
         groupId: String,
         memberUserId: String,
-        startDate: LocalDate,
-        endDate: LocalDate,
-    ): Flow<LocationHistoryModelForUser> {
-
-        val dateList = startDate.listOfDatesUntil(endDate).map { it.dateForApi() }
-
-        return database.locationHistoryDao.getGroupHistory(
+        history: List<GroupHistoryEntity>
+    ): LocationHistoryModelForUser {
+        val keys = database.locationHistoryDao.getGroupHistoryKeysOnce(
             groupId = groupId,
             ownerUserId = memberUserId,
-            dates = dateList
-        ).map {
-            val keys = database.locationHistoryDao.getGroupHistoryKeysOnce(
-                groupId = groupId,
-                ownerUserId = memberUserId,
-                keys = it.map { it.historyKeyVersion }.distinct()
-            )
+            keys = history.map { it.historyKeyVersion }.distinct()
+        )
 
-            historyMapper.local2CoreGroup(
-                groupId = groupId,
-                memberUserId = memberUserId,
-                keys = keys,
-                entries = it
-            )
-        }
+        return historyMapper.local2CoreGroup(
+            groupId = groupId,
+            memberUserId = memberUserId,
+            keys = keys,
+            entries = history
+        )
     }
 
-    private fun getPersonalLocationHistory(
-        startDate: LocalDate,
-        endDate: LocalDate,
-    ): Flow<LocationHistoryModelForUser> {
+    private suspend fun mapPersonalLocationHistory(
+        history: List<PersonalHistoryEntity>
+    ): LocationHistoryModelForUser {
+        val keys = database.locationHistoryDao.getPersonalHistoryKeysOnce(
+            keys = history.map { it.historyKeyVersion }.distinct()
+        )
 
-        val dateList = startDate.listOfDatesUntil(endDate).map { it.dateForApi() }
-
-        return database.locationHistoryDao.getPersonalHistory(
-            dates = dateList
-        ).map {
-            val keys = database.locationHistoryDao.getPersonalHistoryKeysOnce(
-                keys = it.map { it.historyKeyVersion }.distinct()
-            )
-
-            historyMapper.local2CorePersonal(
-                keys = keys,
-                entries = it
-            )
-        }
+        return historyMapper.local2CorePersonal(
+            keys = keys,
+            entries = history
+        )
     }
 }

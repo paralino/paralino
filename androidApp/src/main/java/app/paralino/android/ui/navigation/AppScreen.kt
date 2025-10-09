@@ -4,6 +4,7 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.BaseRemoteModule
 
 sealed class AppScreen {
 
@@ -332,17 +333,20 @@ sealed class AppScreen {
 
             fun route(type: RawPresentationDataType): String {
 
-                val id = when (type) {
+                val dataPayload = when (type) {
                     is RawPresentationDataType.GroupMemberPresentation -> type.memberId
                     is RawPresentationDataType.GroupPlacePresentation -> type.placeId
                     is RawPresentationDataType.GroupPresentation -> type.groupId
+                    is RawPresentationDataType.LocationHistoryPointPresentation -> {
+                        BaseRemoteModule.formatter.encodeToString(type)
+                    }
                     RawPresentationDataType.UserPresentation -> ""
                     RawPresentationDataType.PersonalSpacePresentation -> ""
                 }
 
                 val args = arrayOf(
                     "$argumentDataType=${type.key}",
-                    "$argumentDataId=$id"
+                    "$argumentDataId=$dataPayload"
                 ).joinToString(separator = "&")
 
                 return "${parent}-raw-data-screen?$args"

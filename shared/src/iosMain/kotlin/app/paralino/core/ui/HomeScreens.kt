@@ -47,6 +47,7 @@ import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -439,6 +440,7 @@ object HomeScreens {
         paddingValues: AppleScreenPaddingValues,
         onCardHeightChange: (Float) -> Unit,
         onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
+        openRawDataScreen: (RawPresentationDataType) -> Unit,
         openHistorySettings: () -> Unit,
         openPaywall: () -> Unit,
         onNavigateBack: () -> Unit,
@@ -456,6 +458,7 @@ object HomeScreens {
                             LocationHistoryScreenEvent.OpenHistorySettings -> openHistorySettings()
                             is LocationHistoryScreenEvent.OpenNavigation -> onDirectionsRequest(event.event)
                             LocationHistoryScreenEvent.OpenPaywall -> openPaywall()
+                            is LocationHistoryScreenEvent.OpenRawDataScreen -> openRawDataScreen(event.type)
                             null -> {}
                         }
                     }

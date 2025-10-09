@@ -371,25 +371,51 @@ fun LocationHistoryDetailCard(
 
                             Spacer(modifier = Modifier.weight(1f))
 
-                            if (uiState.navigateAction != null) {
-                                GroupMemberActionButton(
-                                    modifier = Modifier
-                                        .padding(start = 8.dp)
-                                        .padding(bottom = 2.dp, end = 2.dp),
-                                    startIcon = CoreAppIcons.Directions.asPainterResource(),
-                                    endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                                    text = stringResource(MR.strings.group_members_item_directions_button),
-                                    backgroundColor = if (isSystemInDarkTheme()) {
-                                        AppColors.accentLight.copy(alpha = 0.2f)
-                                    } else {
-                                        AppColors.accent.copy(alpha = 0.2f)
-                                    },
-                                    onClick = {
-                                        handleEvent(
-                                            LocationHistoryUiEvent.OnDirectionsRequest(action = uiState.navigateAction!!)
-                                        )
-                                    }
-                                )
+                            Row(
+                                modifier = Modifier
+                                    .padding(start = 8.dp, bottom = 2.dp, end = 2.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                            ) {
+                                if (uiState.rawDataAction != null) {
+                                    GroupMemberActionButton(
+                                        modifier = Modifier,
+                                        startIcon = CoreAppIcons.Security.asPainterResource(),
+                                        endIcon = null,
+                                        text = "",
+                                        showText = false,
+                                        contentPadding = PaddingValues(6.dp),
+                                        backgroundColor = if (isSystemInDarkTheme()) {
+                                            AppColors.accentLight.copy(alpha = 0.2f)
+                                        } else {
+                                            AppColors.accent.copy(alpha = 0.2f)
+                                        },
+                                        onClick = {
+                                            handleEvent(
+                                                LocationHistoryUiEvent.OnRawDataPointClicked(action = uiState.rawDataAction)
+                                            )
+                                        }
+                                    )
+                                }
+
+                                if (uiState.navigateAction != null) {
+                                    GroupMemberActionButton(
+                                        modifier = Modifier,
+                                        startIcon = CoreAppIcons.Directions.asPainterResource(),
+                                        endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                                        text = stringResource(MR.strings.group_members_item_directions_button),
+                                        backgroundColor = if (isSystemInDarkTheme()) {
+                                            AppColors.accentLight.copy(alpha = 0.2f)
+                                        } else {
+                                            AppColors.accent.copy(alpha = 0.2f)
+                                        },
+                                        onClick = {
+                                            handleEvent(
+                                                LocationHistoryUiEvent.OnDirectionsRequest(action = uiState.navigateAction!!)
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }

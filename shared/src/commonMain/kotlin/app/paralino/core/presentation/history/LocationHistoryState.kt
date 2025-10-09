@@ -5,6 +5,7 @@ import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.location.LocationHistoryPointId
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.presentation.groups.MemberActionItemState
@@ -12,6 +13,7 @@ import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.provider.current
@@ -162,7 +164,7 @@ data class LocationHistoryScreenState(
         }
     }
 
-    val deleteAction =
+    val deleteAction: MemberActionItemState? =
         if (
             isCurrentUser &&
             selectedPoint != null &&
@@ -187,6 +189,41 @@ data class LocationHistoryScreenState(
             lng = it.lng,
             title = it.title
         )
+    }
+
+    val rawDataAction: RawPresentationDataType.LocationHistoryPointPresentation? = if (isCurrentUser && selectedPoint != null) {
+        RawPresentationDataType.LocationHistoryPointPresentation(
+            groupOrSpaceId = groupOrSpaceId.id,
+            memberUserId = memberUserId,
+            pointIds = when (selectedPoint) {
+                is LocationHistoryPointState.Cluster -> {
+                    selectedPoint.points.mapNotNull {
+                        if (!it.isCachedLocation) {
+                            LocationHistoryPointId(
+                                entryId = it.entryId,
+                                pointId = it.pointId
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                }
+                is LocationHistoryPointState.Point -> {
+                    if (!selectedPoint.isCachedLocation) {
+                        listOf(
+                            LocationHistoryPointId(
+                                entryId = selectedPoint.entryId,
+                                pointId = selectedPoint.pointId
+                            )
+                        )
+                    } else {
+                        emptyList()
+                    }
+                }
+            }
+        ).takeIf { it.pointIds.isNotEmpty() }
+    } else {
+        null
     }
 
     val locationsToDelete = if (deletionRangeStartIndex != null && selectedLocationId != null) {
@@ -294,6 +331,7 @@ data class LocationHistoryScreenUiState(
     val selectedMapPinData: MapPinData?,
     val deleteAction: MemberActionItemState?,
     val navigateAction: MemberNavigateItemState?,
+    val rawDataAction: RawPresentationDataType.LocationHistoryPointPresentation?,
     val locationsToDeleteSize: Int
 ) {
     companion object {
@@ -335,6 +373,7 @@ data class LocationHistoryScreenUiState(
                 selectedMapPinData = screenState.selectedMapPinData,
                 deleteAction = screenState.deleteAction,
                 navigateAction = screenState.navigateAction,
+                rawDataAction = screenState.rawDataAction,
                 locationsToDeleteSize = screenState.locationsToDelete.size
             )
         }
@@ -491,6 +530,7 @@ sealed interface LocationHistoryUiEvent {
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
     data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
+    data class OnRawDataPointClicked(val action: RawPresentationDataType.LocationHistoryPointPresentation) : LocationHistoryUiEvent
     data object ToggleClusterLocations : LocationHistoryUiEvent
     data object ToggleShowPins : LocationHistoryUiEvent
     data object ToggleShowPolyline : LocationHistoryUiEvent
@@ -511,6 +551,10 @@ sealed interface LocationHistoryUiEvent {
 sealed interface LocationHistoryScreenEvent {
     data class OpenNavigation(
         val event: MapHomeScreenEvent.OpenExternalNavigation
+    ) : LocationHistoryScreenEvent
+
+    data class OpenRawDataScreen(
+        val type: RawPresentationDataType
     ) : LocationHistoryScreenEvent
 
     data object NavigateBack : LocationHistoryScreenEvent

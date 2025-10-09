@@ -47,6 +47,10 @@ class RawDataPresentationViewModel constructor(
             RawPresentationDataType.PersonalSpacePresentation -> {
                 rawCryptoPresentation.getPersonalSpaceRawPresentation()
             }
+
+            is RawPresentationDataType.LocationHistoryPointPresentation -> {
+                rawCryptoPresentation.getLocationHistoryPointRawPresentation(rawPresentationType)
+            }
         }
 
         rawFlow

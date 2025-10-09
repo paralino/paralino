@@ -178,6 +178,19 @@ class LocationHistoryMapper(
         )
     }
 
+    fun local2RemoteGroup(
+        model: GroupHistoryEntity
+    ): LocationHistoryReadEntry {
+        return LocationHistoryReadEntry(
+            id = model.id,
+            dateKey = model.dateIdentifier,
+            locationId = model.locationId,
+            deviceId = model.deviceId,
+            keyVersion = model.historyKeyVersion,
+            historyData = model.historyData
+        )
+    }
+
     fun remote2LocalPersonal(
         model: LocationHistoryReadEntry
     ): PersonalHistoryEntity {
@@ -199,6 +212,19 @@ class LocationHistoryMapper(
             userKeyVersion = model.memberKeyVersion,
             historyKeyVersion = model.keyVersion,
             encryptedHistoryKey = model.encryptedKey
+        )
+    }
+
+    fun local2RemotePersonal(
+        model: PersonalHistoryEntity
+    ): LocationHistoryReadEntry {
+        return LocationHistoryReadEntry(
+            id = model.id,
+            dateKey = model.dateIdentifier,
+            locationId = model.locationId,
+            deviceId = model.deviceId,
+            keyVersion = model.historyKeyVersion,
+            historyData = model.historyData
         )
     }
 }

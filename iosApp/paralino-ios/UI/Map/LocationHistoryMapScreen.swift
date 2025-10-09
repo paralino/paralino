@@ -33,6 +33,9 @@ struct LocationHistoryMapScreen: View {
                             UIApplication.shared.open(deeplink)
                         }
                     },
+                    openRawDataScreen: { type in
+                        path.append(.settings(.rawData(type: type)))
+                    },
                     openHistorySettings: {
                         path.append(.home(.locationHistorySettings(
                             groupId: GroupOrSpaceIdHelper.shared.unwrap(id: mapState.uiState.groupOrSpaceId)!

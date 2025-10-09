@@ -135,7 +135,7 @@ class LocationHistoryDataFetchController(
 
     private fun fetchPersonalLocationHistory(startDate: LocalDate, endDate: LocalDate): Flow<Unit> {
         return getLocationHistory.getLocationHistory(
-            groupId = UserGroup.groupPersonalDevicesId,
+            groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
             memberUserId = appPrefs.userId,
             startDate = startDate,
             endDate = endDate
@@ -159,7 +159,7 @@ class LocationHistoryDataFetchController(
         endDate: LocalDate,
     ): Flow<Unit> {
         return getLocationHistory.getLocationHistory(
-            groupId = groupId,
+            groupOrSpaceId = groupId.asGroupOrSpaceId(),
             memberUserId = memberUserId,
             startDate = startDate,
             endDate = endDate

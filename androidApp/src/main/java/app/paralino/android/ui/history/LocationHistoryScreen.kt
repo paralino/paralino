@@ -96,6 +96,14 @@ fun LocationHistoryScreen(
                     )
                 }
 
+                is LocationHistoryScreenEvent.OpenRawDataScreen -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.RawDataScreen.route(
+                            type = event.type
+                        )
+                    )
+                }
+
                 null -> {}
             }
         }

@@ -167,7 +167,7 @@ class DeleteLocationHistoryEntryUseCase(
         val result = entries
             .groupBy { it.entryId }
             .mapNotNull { entry ->
-                val databaseEntry = database.locationHistoryDao.getGroupHistoryEntryOnce(id = entry.key)
+                val databaseEntry = database.locationHistoryDao.getGroupHistoryEntryOnce(groupId = groupId,id = entry.key)
                 if (databaseEntry != null) {
                     val key = database.locationHistoryDao.getGroupHistoryKeysOnce(
                         groupId = groupId,

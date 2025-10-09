@@ -80,8 +80,11 @@ interface LocationHistoryDao {
         dates: List<String>
     ): List<GroupHistoryEntity>
 
-    @Query("SELECT * FROM groupHistoryEntity WHERE id = :id")
-    suspend fun getGroupHistoryEntryOnce(id: String): GroupHistoryEntity?
+    @Query("SELECT * FROM groupHistoryEntity WHERE groupId = :groupId AND id = :id")
+    suspend fun getGroupHistoryEntryOnce(groupId: String, id: String): GroupHistoryEntity?
+
+    @Query("SELECT * FROM groupHistoryEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId AND id IN (:ids)")
+    fun getGroupHistoryEntriesByIds(groupId: String, ownerUserId: String, ids: List<String>): Flow<List<GroupHistoryEntity>>
 
     @Query("SELECT * FROM groupHistoryKeysEntity WHERE groupId = :groupId AND ownerUserId = :ownerUserId AND historyKeyVersion IN (:keys)")
     suspend fun getGroupHistoryKeysOnce(
@@ -103,6 +106,9 @@ interface LocationHistoryDao {
 
     @Query("SELECT * FROM personalHistoryEntity WHERE id = :id")
     suspend fun getPersonalHistoryEntryOnce(id: String): PersonalHistoryEntity?
+
+    @Query("SELECT * FROM personalHistoryEntity WHERE id IN (:ids)")
+    fun getPersonalHistoryEntriesByIds(ids: List<String>): Flow<List<PersonalHistoryEntity>>
 
     @Query("SELECT * FROM personalHistoryKeysEntity WHERE historyKeyVersion IN (:keys)")
     suspend fun getPersonalHistoryKeysOnce(

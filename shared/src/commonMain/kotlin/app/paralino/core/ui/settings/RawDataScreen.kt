@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -119,9 +120,36 @@ fun RawDataScreen(
                 )
             }
         }
-        this.items(state.sections) {
-            Spacer(modifier = Modifier.size(40.dp))
-            RawDataScreenSection(section = it, onCopy = onCopy)
+
+        this.item(key = "title") {
+            if (state.subtitle.isNullOrBlank()) {
+                Spacer(modifier = Modifier.size(40.dp))
+            } else {
+                Text(
+                    modifier = Modifier.padding(
+                        top = 30.dp
+                    ),
+                    text = state.subtitle,
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium)
+                )
+            }
+        }
+
+        this.itemsIndexed(state.sections) { index, section ->
+            if (!state.subtitle.isNullOrBlank() && index == 0) {
+                if (section.title != null) {
+                    Spacer(modifier = Modifier.size(40.dp))
+                } else {
+                    Spacer(modifier = Modifier.size(10.dp))
+                }
+            }
+
+            if (index > 0) {
+                Spacer(modifier = Modifier.size(40.dp))
+            }
+
+            RawDataScreenSection(section = section, onCopy = onCopy)
         }
     }
 }
@@ -215,6 +243,16 @@ private fun RawDataScreenSection(
             icon = CoreAppIcons.LockOpen.asPainterResource(),
             text = stringResource(MR.strings.raw_data_section_decrypted)
         )
+
+        if (section.decryptedContentSubtitle != null) {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                Text(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp, start = 8.dp),
+                    text = section.decryptedContentSubtitle.annotatedBoldCompose(),
+                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Light)
+                )
+            }
+        }
 
         Text(
             text = section.decryptedContent,
