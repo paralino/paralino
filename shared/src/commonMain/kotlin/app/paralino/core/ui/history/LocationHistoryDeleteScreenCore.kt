@@ -331,7 +331,7 @@ private fun DatePickerSection(
 
             // Month selector
             YearMonthSelector(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1.3f),
                 value = dateState.formattedMonth,
                 onNavigateBack = { onNavigateMonth(false) },
                 onNavigateForward = { onNavigateMonth(true) }
