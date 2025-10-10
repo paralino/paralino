@@ -26,8 +26,10 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.extensions.isOlderThan
@@ -56,6 +58,8 @@ class LocationHistoryUploadEngine(
     private val scopeProvider: ICoroutineScopeProvider,
     private val cryptoCore: CryptoCore,
     private val functionsApi: IFunctionsApi,
+    private val remoteConfig: RemoteConfigRepository,
+    private val userRepo: UserRepository,
     private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository(), ILocationHistoryUploadEngine {
 
@@ -162,6 +166,18 @@ class LocationHistoryUploadEngine(
 
         val personalHistoryNodes = this
             .filter { it.groupId == UserGroup.groupPersonalDevicesId }
+
+        val userPlan = userRepo.userPlans.value.highestValidPlanConfig
+        if (!userPlan.isPersonalHistoryEnabled) {
+            val entriesToDelete = personalHistoryNodes
+                .sortedByDescending { it.entryId }
+                .drop(100)
+            logg.tag(executionKey).v("Skip history upload for personal space - free plan (Clear ${entriesToDelete.size} entries)")
+            database.pendingLocationHistoryDao.deletePendingEntries(
+                ids = entriesToDelete.map { it.entryId }
+            )
+            return null
+        }
 
         val result = if (personalHistoryNodes.isNotEmpty()) {
             val historyKeyEntity =
@@ -320,9 +336,21 @@ class LocationHistoryUploadEngine(
             return null
         }
 
-        val historyKeys = database.pendingLocationHistoryDao.getHistoryKeys(groupId = groupId)
-
         val groupHistoryNodes = this.filter { it.groupId == groupId }
+
+        val groupPlan = group.group.planConfig(remoteConfig.getConfigOnce())
+        if (!groupPlan.isGroupHistoryEnabled) {
+            val entriesToDelete = groupHistoryNodes
+                .sortedByDescending { it.entryId }
+                .drop(100)
+            logg.tag(executionKey).v("Skip history upload for group $groupId - free plan (Clear ${entriesToDelete.size} entries)")
+            database.pendingLocationHistoryDao.deletePendingEntries(
+                ids = entriesToDelete.map { it.entryId }
+            )
+            return null
+        }
+
+        val historyKeys = database.pendingLocationHistoryDao.getHistoryKeys(groupId = groupId)
 
         val groupHistory = if (groupHistoryNodes.isNotEmpty()) {
             groupHistoryNodes
