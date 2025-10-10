@@ -413,7 +413,7 @@ class PaywallViewModel(
 
         val locationHistoryMessage = let {
             val maxPlan = uiPlans.maxByOrNull { it.config.planTypeEnum.order }?.config
-            if (maxPlan != null && maxPlan.personalHistoryDaysLimit < 0) {
+            if (maxPlan != null && maxPlan.hasUnlimitedPersonalHistory) {
                 MR.strings.paywall_header_feature_history_unlimited.localizedString()
             } else {
                 MR.strings.paywall_header_feature_history_more.localizedString()

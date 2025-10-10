@@ -49,19 +49,19 @@ class LocationHistoryDateMapper(
         val highestAppPlan = remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order } ?: PlanConfig.default
         val upgradeAvailable = highestAppPlan.planTypeEnum.order > planConfig.planTypeEnum.order
         val isLimitedHistoryPlan = if (isPersonalHistory) {
-            planConfig.personalHistoryDaysLimit == 0
+            !planConfig.isPersonalHistoryEnabled
         } else {
-            planConfig.historyDaysLimit == 0
+            !planConfig.isGroupHistoryEnabled
         }
 
         val earliestDate = if (isPersonalHistory) {
-            if (planConfig.personalHistoryDaysLimit >= 0) {
+            if (!planConfig.hasUnlimitedPersonalHistory) {
                 today.minus(DatePeriod(days = planConfig.personalHistoryDaysLimit))
             } else {
                 null
             }
         } else {
-            if (planConfig.historyDaysLimit >= 0) {
+            if (!planConfig.hasUnlimitedGroupHistory) {
                 today.minus(DatePeriod(days = planConfig.historyDaysLimit))
             } else {
                 null

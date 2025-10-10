@@ -138,6 +138,10 @@ data class PlanConfig(
 ) {
 
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
+    val hasUnlimitedPersonalHistory: Boolean = personalHistoryDaysLimit < 0
+    val hasUnlimitedGroupHistory: Boolean = historyDaysLimit < 0
+    val isPersonalHistoryEnabled: Boolean = personalHistoryDaysLimit != 0
+    val isGroupHistoryEnabled: Boolean = historyDaysLimit != 0
 
     val adjustedPlanName: String = when (planTypeEnum) {
         PlanType.SILVER -> MR.strings.paywall_silver_plan_name.localizedString()
@@ -204,9 +208,9 @@ data class PlanConfig(
             devicesLimit = 1,
             personalDevicesLimit = 1,
             placesLimit = 2,
-            personalPlacesLimit = 2,
-            historyDaysLimit = 2,
-            personalHistoryDaysLimit = 2,
+            personalPlacesLimit = 1,
+            historyDaysLimit = 0,
+            personalHistoryDaysLimit = 0,
             paralinoIdsLimit = 1,
             isActive = true,
             productIds = listOf("free"),

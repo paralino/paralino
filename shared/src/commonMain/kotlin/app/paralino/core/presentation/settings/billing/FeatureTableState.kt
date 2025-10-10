@@ -154,24 +154,24 @@ data class FeatureTableState(
                                 FeatureTableItemHighlightMode.NONE
                             }
 
-                            if (it.config.historyDaysLimit > 0) {
-                                FeatureTableItemValue.Text(
-                                    content = MR.plurals.groups_sharing_duration_type_days.localizedString(
-                                        quantity = it.config.historyDaysLimit,
-                                        it.config.historyDaysLimit
-                                    ),
-                                    planType = it.type,
-                                    highlightMode = highlightMode
-                                )
-                            } else if (it.config.historyDaysLimit == 0) {
+                            if (!it.config.isGroupHistoryEnabled) {
                                 FeatureTableItemValue.Text(
                                     content = MR.strings.paywall_feature_history_days_minimum.localizedString(),
                                     planType = it.type,
                                     highlightMode = highlightMode
                                 )
-                            } else {
+                            } else if (it.config.hasUnlimitedGroupHistory) {
                                 FeatureTableItemValue.Text(
                                     content = MR.strings.paywall_feature_value_unlimited.localizedString(),
+                                    planType = it.type,
+                                    highlightMode = highlightMode
+                                )
+                            } else {
+                                FeatureTableItemValue.Text(
+                                    content = MR.plurals.groups_sharing_duration_type_days.localizedString(
+                                        quantity = it.config.historyDaysLimit,
+                                        it.config.historyDaysLimit
+                                    ),
                                     planType = it.type,
                                     highlightMode = highlightMode
                                 )
@@ -200,24 +200,24 @@ data class FeatureTableState(
                                     FeatureTableItemHighlightMode.NONE
                                 }
 
-                                if (it.config.personalHistoryDaysLimit > 0) {
-                                    FeatureTableItemValue.Text(
-                                        content = MR.plurals.groups_sharing_duration_type_days.localizedString(
-                                            quantity = it.config.personalHistoryDaysLimit,
-                                            it.config.personalHistoryDaysLimit
-                                        ),
-                                        planType = it.type,
-                                        highlightMode = highlightMode
-                                    )
-                                } else if (it.config.personalHistoryDaysLimit == 0) {
+                                if (!it.config.isPersonalHistoryEnabled) {
                                     FeatureTableItemValue.Text(
                                         content = MR.strings.paywall_feature_history_days_minimum.localizedString(),
                                         planType = it.type,
                                         highlightMode = highlightMode
                                     )
-                                } else {
+                                } else if (it.config.hasUnlimitedPersonalHistory) {
                                     FeatureTableItemValue.Text(
                                         content = MR.strings.paywall_feature_value_unlimited.localizedString(),
+                                        planType = it.type,
+                                        highlightMode = highlightMode
+                                    )
+                                }  else {
+                                    FeatureTableItemValue.Text(
+                                        content = MR.plurals.groups_sharing_duration_type_days.localizedString(
+                                            quantity = it.config.personalHistoryDaysLimit,
+                                            it.config.personalHistoryDaysLimit
+                                        ),
                                         planType = it.type,
                                         highlightMode = highlightMode
                                     )
@@ -445,18 +445,18 @@ data class FeatureTableState(
                                     )
                                     add(
                                         FeatureTableItemValueDataPoint(
-                                            amount = if (it.config.historyDaysLimit > 0) {
+                                            amount = if (!it.config.isGroupHistoryEnabled) {
+                                                "❌"
+                                            } else if (it.config.hasUnlimitedGroupHistory) {
+                                                MR.strings.paywall_feature_value_unlimited.localizedString()
+                                            } else {
                                                 MR.plurals.groups_sharing_duration_type_days.localizedString(
                                                     quantity = it.config.historyDaysLimit,
                                                     it.config.historyDaysLimit
                                                 )
-                                            } else if (it.config.historyDaysLimit == 0) {
-                                                "❌"
-                                            } else {
-                                                MR.strings.paywall_feature_value_unlimited.localizedString()
                                             },
                                             content = MR.strings.paywall_feature_summary_history.localizedString(),
-                                            isHighlighted = it.config.historyDaysLimit < 0
+                                            isHighlighted = it.config.hasUnlimitedGroupHistory
                                         )
                                     )
                                 },
@@ -500,18 +500,18 @@ data class FeatureTableState(
                                     )
                                     add(
                                         FeatureTableItemValueDataPoint(
-                                            amount = if (it.config.personalHistoryDaysLimit > 0) {
+                                            amount = if (!it.config.isPersonalHistoryEnabled) {
+                                                "❌"
+                                            } else if (it.config.hasUnlimitedPersonalHistory){
+                                                MR.strings.paywall_feature_value_unlimited.localizedString()
+                                            } else {
                                                 MR.plurals.groups_sharing_duration_type_days.localizedString(
                                                     quantity = it.config.personalHistoryDaysLimit,
                                                     it.config.personalHistoryDaysLimit
                                                 )
-                                            } else if (it.config.personalHistoryDaysLimit == 0) {
-                                                "❌"
-                                            } else {
-                                                MR.strings.paywall_feature_value_unlimited.localizedString()
                                             },
                                             content = MR.strings.paywall_feature_summary_history.localizedString(),
-                                            isHighlighted = it.config.personalHistoryDaysLimit < 0
+                                            isHighlighted = it.config.hasUnlimitedPersonalHistory
                                         )
                                     )
                                 },
