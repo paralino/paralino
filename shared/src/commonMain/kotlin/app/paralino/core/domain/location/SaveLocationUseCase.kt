@@ -15,6 +15,7 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.UserDeviceLocationRaw
@@ -38,7 +39,7 @@ class SaveLocationUseCase(
     private val appPrefs: AppPrefs
 ) {
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    suspend fun uploadAndSaveCurrentLocation(data: MemberGroupId) {
+    suspend fun uploadAndSaveCurrentLocation(data: MemberGroupIdForUpload) {
         if (data.groupId.isPersonalSpace) {
             uploadAndSavePersonalLocation(data = data)
         } else {
@@ -47,7 +48,7 @@ class SaveLocationUseCase(
     }
 
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    private suspend fun uploadAndSavePersonalLocation(data: MemberGroupId): UserDeviceLocationRaw? {
+    private suspend fun uploadAndSavePersonalLocation(data: MemberGroupIdForUpload): UserDeviceLocationRaw? {
         val deviceKey = userKeyRepo.getDeviceSenderKeyForLocationId(
             locationId = data.locationId
         )
@@ -90,7 +91,7 @@ class SaveLocationUseCase(
     }
 
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
-    private suspend fun uploadAndSaveGroupLocation(data: MemberGroupId): MemberLocationRaw? {
+    private suspend fun uploadAndSaveGroupLocation(data: MemberGroupIdForUpload): MemberLocationRaw? {
         val memberKey = cryptoKEKRepo.getMemberSenderKey(
             groupId = data.groupId.id,
             memberUserId = appPrefs.userId,
@@ -112,18 +113,21 @@ class SaveLocationUseCase(
         val payload = buildMap {
             putAll(locationPayload)
             put("locationHistory", historyPayload)
-            put("deviceKeyVersion", memberKey.deviceKeyVersion)
         }.filter { it.value != null }
 
         if (payload.isEmpty()) {
             return null
         }
 
+        val payloadWithKey = payload.plus(
+            "deviceKeyVersion" to memberKey.deviceKeyVersion
+        )
+
         val newData = documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
             collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
             docId = data.locationId,
-            data = payload
+            data = payloadWithKey
         ).let { MemberLocationRaw.from(it) }
 
         saveGroupLocationLocally(newData)
@@ -136,7 +140,7 @@ class SaveLocationUseCase(
     }
 
     private suspend fun getLocationPayload(
-        data: MemberGroupId,
+        data: MemberGroupIdForUpload,
         key: String
     ): Map<String, String?> {
         val locationData = data.locationData?.let {
@@ -160,21 +164,18 @@ class SaveLocationUseCase(
     }
 
     private suspend fun getLocationHistoryPayload(
-        data: MemberGroupId,
+        data: MemberGroupIdForUpload,
         key: String
     ): String? {
-        val historyEntries = if (data.locationHistory != null) {
-            val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupOrSpaceId = data.groupId.id)
-                ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
+        val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(groupOrSpaceId = data.groupId.id)
+            ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
 
-            database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
-                .filter { it.localGroupHistoryKeyId == historyKey?.id }
-                .sortedByDescending { it.id }
-                .take(100)
-                .let { historyMapper.pendingLocationToCore(it) }
-        } else {
-            emptyList()
-        }
+        val historyEntries = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
+            // history key can be null for personal space
+            .filter { it.localGroupHistoryKeyId == historyKey?.id }
+            .sortedByDescending { it.id }
+            .take(100)
+            .let { historyMapper.pendingLocationToCore(it) }
 
         val locationHistory = if (historyEntries.isNotEmpty()) {
             val historyModel = LocationHistoryModel(

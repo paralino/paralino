@@ -1,17 +1,19 @@
 package app.paralino.core.presentation.history
 
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryPeriodUseCase
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteLocationHistoryDays
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.nowUTC
@@ -20,7 +22,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -36,9 +40,11 @@ import kotlinx.datetime.toLocalDateTime
 class LocationHistoryDeleteViewModel(
     private val groupId: GroupOrSpaceId,
     private val userRepo: UserRepository,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val userGroupRepo: UserGroupLocalDataSource,
     private val deleteHistoryUseCase: DeleteLocationHistoryPeriodUseCase,
-    private val valueFormatter: IValueFormatter
+    private val valueFormatter: IValueFormatter,
+    private val appPrefs: AppPrefs,
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<LocationHistoryDeleteScreenState>(
@@ -48,6 +54,8 @@ class LocationHistoryDeleteViewModel(
             groupImage = ImageModel.emoji(Emojis.lock),
             isContentLoading = true,
             isDeleteLoading = null,
+            hasDeviceSelectionError = false,
+            devices = emptyList(),
             fromDate = createDateState(
                 isEnabled = false,
                 selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -74,14 +82,25 @@ class LocationHistoryDeleteViewModel(
         try {
             if (groupId.isPersonalSpace) {
                 // Personal history
-                userRepo.localUser
-                    .onEach { user ->
+                personalSpaceRepo.personalSpaceState
+                    .mapNotNull { it.data }
+                    .onEach { space ->
                         _uiState.update { currentState ->
                             currentState.copy(
                                 groupId = groupId,
                                 groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
-                                groupImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+                                groupImage = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
                                 isContentLoading = false,
+                                devices = space.devices.map { device ->
+                                    LocationHistoryDeleteDeviceState(
+                                        deviceId = device.deviceId,
+                                        locationId = device.id,
+                                        deviceName = device.deviceNameOrNull ?: MR.strings.history_map_device_name_unknown.localizedString(),
+                                        tag = device.deviceType?.toString(),
+                                        isSelected = currentState.devices.firstOrNull { it.locationId == device.id }?.isSelected ?: false,
+                                        isCurrentDevice = device.deviceId == appPrefs.deviceId,
+                                    )
+                                }
                             )
                         }
                     }
@@ -89,15 +108,28 @@ class LocationHistoryDeleteViewModel(
             } else {
                 // Group history
                 combine(
-                    userGroupRepo.getGroupWithoutMembers(groupId.id),
+                    userGroupRepo.getGroupWithMembers(groupId.id)
+                        .filterNotNull(),
                     userRepo.localUser
                 ) { group, user ->
+                    val currentMember = group.currentUserMemberWithLocations!!
                     _uiState.update { currentState ->
+                        val devices = currentMember.locations.map { location ->
+                            LocationHistoryDeleteDeviceState(
+                                deviceId = location.deviceId,
+                                locationId = location.id,
+                                deviceName = location.deviceData.data?.deviceName ?: MR.strings.history_map_device_name_unknown.localizedString(),
+                                tag = location.deviceData.data?.deviceType?.toString(),
+                                isSelected = currentState.devices.firstOrNull { it.locationId == location.id }?.isSelected ?: false,
+                                isCurrentDevice = location.deviceId == appPrefs.deviceId,
+                            )
+                        }
                         currentState.copy(
                             groupId = groupId,
                             groupName = group.name,
                             groupImage = group.image,
                             isContentLoading = false,
+                            devices = devices
                         )
                     }
                 }
@@ -112,30 +144,17 @@ class LocationHistoryDeleteViewModel(
     }
 
     fun onEvent(event: LocationHistoryDeleteUiEvent) {
+        if (_uiState.value.isDeleteLoading != true) {
+            return
+        }
+
         when (event) {
             is LocationHistoryDeleteUiEvent.DialogAction -> {
                 _uiState.update { it.copy(alertDialog = null) }
-
                 when (event.action.dialog) {
                     is MainAlertDialog.DeleteLocationHistoryDays -> {
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
-                            _uiState.update { it.copy(isDeleteLoading = true) }
-                            // For now, just simulate deletion and navigate back
-                            coroutineScope.launch {
-                                try {
-                                    deleteHistoryUseCase.deleteHistory(
-                                        groupId = groupId,
-                                        startDate = uiState.value.fromDate.date.takeIf { uiState.value.fromDate.isEnabled },
-                                        endDate = uiState.value.untilDate.date.takeIf { uiState.value.untilDate.isEnabled },
-                                    )
-                                    _uiState.update { it.copy(isDeleteLoading = false) }
-                                    delay(400)
-                                    _eventChannel.trySend(LocationHistoryDeleteScreenEvent.NavigateBack)
-                                } catch (e: Exception) {
-                                    showSnackbar(e.errorString())
-                                    _uiState.update { it.copy(isDeleteLoading =  null) }
-                                }
-                            }
+                            confirmDeletion()
                         }
                     }
                     else -> {}
@@ -163,17 +182,19 @@ class LocationHistoryDeleteViewModel(
             }
 
             LocationHistoryDeleteUiEvent.OnDeleteAction -> {
-                if (uiState.value.fromDate.isEnabled || uiState.value.untilDate.isEnabled) {
+                if (!_uiState.value.isDeletingEverything && _uiState.value.devices.none { it.isSelected }) {
+                    _uiState.update {
+                        it.copy(hasDeviceSelectionError = true)
+                    }
+                    return
+                } else if (uiState.value.fromDate.isEnabled || uiState.value.untilDate.isEnabled) {
                     _uiState.update {
                         it.copy(
-                            alertDialog = MainAlertDialog.DeleteLocationHistoryDays(content = it.deleteInfoContent ?: "")
+                            hasDeviceSelectionError = false,
+                            alertDialog = DeleteLocationHistoryDays(content = it.deleteInfoContent ?: "")
                         )
                     }
                 }
-            }
-
-            LocationHistoryDeleteUiEvent.OnCloseScreen -> {
-                _eventChannel.trySend(LocationHistoryDeleteScreenEvent.NavigateBack)
             }
 
             LocationHistoryDeleteUiEvent.IncreaseStartYear -> {
@@ -199,6 +220,31 @@ class LocationHistoryDeleteViewModel(
             }
             LocationHistoryDeleteUiEvent.DecreaseEndMonth -> {
                 navigateEndDateMonth(forward = false)
+            }
+
+            is LocationHistoryDeleteUiEvent.ToggleDeviceSelection -> {
+                toggleDeviceSelection(selectedDevice = event.device)
+            }
+        }
+    }
+
+    private fun confirmDeletion() {
+        _uiState.update { it.copy(isDeleteLoading = true) }
+        coroutineScope.launch {
+            try {
+                deleteHistoryUseCase.deleteHistory(
+                    groupId = groupId,
+                    locationIds = _uiState.value.devices.filter { it.isSelected }.map { it.locationId },
+                    deleteForAllDevices = _uiState.value.isDeletingEverything,
+                    startDate = uiState.value.fromDate.date.takeIf { uiState.value.fromDate.isEnabled },
+                    endDate = uiState.value.untilDate.date.takeIf { uiState.value.untilDate.isEnabled },
+                )
+                _uiState.update { it.copy(isDeleteLoading = false) }
+                delay(300)
+                _eventChannel.trySend(LocationHistoryDeleteScreenEvent.NavigateBack)
+            } catch (e: Exception) {
+                showSnackbar(e.errorString())
+                _uiState.update { it.copy(isDeleteLoading =  null) }
             }
         }
     }
@@ -288,7 +334,7 @@ class LocationHistoryDeleteViewModel(
         return days
     }
 
-    fun updateYearMonth(dateState: LocationHistoryDeleteDateState, yearOffset: Int, monthOffset: Int): LocationHistoryDeleteDateState {
+    private fun updateYearMonth(dateState: LocationHistoryDeleteDateState, yearOffset: Int, monthOffset: Int): LocationHistoryDeleteDateState {
         val newDate = if (yearOffset != 0) {
             LocalDate(dateState.year + yearOffset, dateState.date.month, 1)
         } else {
@@ -316,7 +362,7 @@ class LocationHistoryDeleteViewModel(
         return createDateState(isEnabled = dateState.isEnabled, clampedDate)
     }
 
-    fun navigateStartDateYear(forward: Boolean) {
+    private fun navigateStartDateYear(forward: Boolean) {
         val currentState = _uiState.value
         val offset = if (forward) 1 else -1
         val newFromDateState = updateYearMonth(currentState.fromDate, offset, 0)
@@ -336,7 +382,7 @@ class LocationHistoryDeleteViewModel(
         }
     }
 
-    fun navigateStartDateMonth(forward: Boolean) {
+    private fun navigateStartDateMonth(forward: Boolean) {
         val currentState = _uiState.value
         val offset = if (forward) 1 else -1
         val newFromDateState = updateYearMonth(currentState.fromDate, 0, offset)
@@ -356,7 +402,7 @@ class LocationHistoryDeleteViewModel(
         }
     }
 
-    fun navigateEndDateYear(forward: Boolean) {
+    private fun navigateEndDateYear(forward: Boolean) {
         val currentState = _uiState.value
         val offset = if (forward) 1 else -1
         val newUntilDateState = updateYearMonth(currentState.untilDate, offset, 0)
@@ -376,7 +422,7 @@ class LocationHistoryDeleteViewModel(
         }
     }
 
-    fun navigateEndDateMonth(forward: Boolean) {
+    private fun navigateEndDateMonth(forward: Boolean) {
         val currentState = _uiState.value
         val offset = if (forward) 1 else -1
         val newUntilDateState = updateYearMonth(currentState.untilDate, 0, offset)
@@ -392,6 +438,21 @@ class LocationHistoryDeleteViewModel(
             it.copy(
                 fromDate = adjustedFromDate,
                 untilDate = newUntilDateState,
+            )
+        }
+    }
+
+    private fun toggleDeviceSelection(selectedDevice: LocationHistoryDeleteDeviceState) {
+        _uiState.update { state ->
+            state.copy(
+                hasDeviceSelectionError = false,
+                devices = state.devices.map { device ->
+                    if (device.locationId == selectedDevice.locationId) {
+                        device.copy(isSelected = !device.isSelected)
+                    } else {
+                        device
+                    }
+                }
             )
         }
     }

@@ -26,6 +26,7 @@ data class LocationHistoryModelForDevice(
 data class LocationHistoryPointModelForMember(
     val groupId: String,
     val entryId: Long,
+    val locationId: String,
     val localGroupHistoryKeyId: Long?,
     val history: LocationHistoryPointModel
 )

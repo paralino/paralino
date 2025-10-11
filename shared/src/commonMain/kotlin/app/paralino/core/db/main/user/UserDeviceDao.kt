@@ -56,7 +56,7 @@ interface UserDeviceDao {
     @Query("DELETE FROM userDeviceEntity")
     suspend fun clearAllUserDevices()
 
-    @Query("UPDATE OR IGNORE userDeviceEntity SET locationData = NULL WHERE id = :locationId")
+    @Query("UPDATE OR IGNORE userDeviceEntity SET locationData = NULL, locationHistory = NULL WHERE id = :locationId")
     suspend fun clearLocationDataForDevice(locationId: String)
 
     @Query("UPDATE OR IGNORE userDeviceEntity SET status = NULL WHERE id = :locationId")

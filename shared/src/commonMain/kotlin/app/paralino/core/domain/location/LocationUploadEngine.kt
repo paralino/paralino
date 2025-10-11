@@ -11,6 +11,7 @@ import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
@@ -198,7 +199,9 @@ class LocationUploadEngine constructor(
 
                 payloads.forEach {
                     try {
-                        saveLocationUseCase.uploadAndSaveCurrentLocation(it)
+                        saveLocationUseCase.uploadAndSaveCurrentLocation(
+                            MemberGroupIdForUpload(it)
+                        )
                     } catch (e: Exception) {
                         logg.w("location_service", "Error saving location for group ${it}", e)
                     }

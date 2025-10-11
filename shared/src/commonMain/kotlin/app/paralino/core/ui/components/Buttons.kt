@@ -220,6 +220,7 @@ fun FullWidthActionButton(
 fun CheckButtonIcon(
     modifier: Modifier = Modifier,
     isChecked: Boolean,
+    size: Dp = 24.dp,
     backgroundCheckedColor: Color = if (isSystemInDarkTheme()) {
         MaterialTheme.colors.onPrimary
     } else {
@@ -238,7 +239,7 @@ fun CheckButtonIcon(
     if (isChecked) {
         Icon(
             modifier = modifier
-                .size(24.dp)
+                .size(size)
                 .background(
                     color = backgroundCheckedColor,
                     shape = CircleShape
@@ -251,7 +252,7 @@ fun CheckButtonIcon(
     } else {
         Icon(
             modifier = modifier
-                .size(24.dp)
+                .size(size)
                 .background(color = backgroundUncheckedColor, shape = CircleShape)
                 .padding(2.dp),
             painter = uncheckedIcon,

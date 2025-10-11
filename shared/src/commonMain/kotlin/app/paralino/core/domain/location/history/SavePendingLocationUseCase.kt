@@ -34,6 +34,8 @@ class SavePendingLocationUseCase(
                     groupOrSpaceId = entry.groupId.id
                 )
 
+                // we are allowing saving personal history without a key
+                // since key is generated before upload
                 if (historyKey != null || entry.groupId.isPersonalSpace) {
                     val updatedEntry = getPossibleUpdatedEntry(
                         entry = entry,
@@ -86,6 +88,8 @@ class SavePendingLocationUseCase(
         )
         val isHistoryKeyValid = if (entry.groupId.isPersonalSpace) {
             // For personal space, no need to track history key since there is only one member
+            // and history key is generated before upload, not before saving entry
+            // in groups we need key before saving location
             true
         } else {
             lastPendingEntry?.localGroupHistoryKeyId == historyKey?.id

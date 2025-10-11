@@ -14,10 +14,13 @@ data class LocationHistoryDeleteScreenState(
     val groupImage: ImageModel,
     val isContentLoading: Boolean,
     val isDeleteLoading: Boolean?,
+    val hasDeviceSelectionError: Boolean,
+    val devices: List<LocationHistoryDeleteDeviceState>,
     val fromDate: LocationHistoryDeleteDateState,
     val untilDate: LocationHistoryDeleteDateState,
     val alertDialog: MainAlertDialog?,
 ) {
+    val isDeletingEverything: Boolean = !isContentLoading && devices.isEmpty()
     val isDeleteButtonEnabled: Boolean = fromDate.isEnabled || untilDate.isEnabled
     val deleteInfoContent: String? get() {
         return when {
@@ -27,27 +30,36 @@ data class LocationHistoryDeleteScreenState(
 
             // Only "From" date selected
             fromDate.isEnabled && !untilDate.isEnabled -> {
-                MR.strings.history_delete_from.localizedString(fromDate.formattedFullDate)
+                MR.strings.history_delete_deletionInfo_from.localizedString(fromDate.formattedFullDate)
             }
 
             // Only "Until" date selected
             !fromDate.isEnabled && untilDate.isEnabled -> {
-                MR.strings.history_delete_until.localizedString(untilDate.formattedFullDate)
+                MR.strings.history_delete_deletionInfo_until.localizedString(untilDate.formattedFullDate)
             }
 
             // Both dates selected but same date
             fromDate.date == untilDate.date -> {
-                MR.strings.history_delete_on_date.localizedString(fromDate.formattedFullDate)
+                MR.strings.history_delete_deletionInfo_onDate.localizedString(fromDate.formattedFullDate)
             }
 
             // Both dates selected and different (date range)
             else -> {
-                MR.strings.history_delete_range_from_until.localizedString(fromDate.formattedFullDate, untilDate.formattedFullDate)
+                MR.strings.history_delete_deletionInfo_rangeFromUntil.localizedString(fromDate.formattedFullDate, untilDate.formattedFullDate)
             }
         }
     }
     val isPersonalSpace = groupId.isPersonalSpace
 }
+
+data class LocationHistoryDeleteDeviceState(
+    val deviceId: String,
+    val locationId: String,
+    val deviceName: String,
+    val isSelected: Boolean,
+    val tag: String?,
+    val isCurrentDevice: Boolean
+)
 
 data class LocationHistoryDeleteDateState(
     val isEnabled: Boolean,
@@ -71,6 +83,7 @@ sealed interface LocationHistoryDeleteUiEvent {
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryDeleteUiEvent
     data class OnSelectStartDay(val day: LocalDate) : LocationHistoryDeleteUiEvent
     data class OnSelectEndDay(val day: LocalDate) : LocationHistoryDeleteUiEvent
+    data class ToggleDeviceSelection(val device: LocationHistoryDeleteDeviceState) : LocationHistoryDeleteUiEvent
 
     data object IncreaseStartYear : LocationHistoryDeleteUiEvent
     data object DecreaseStartYear : LocationHistoryDeleteUiEvent
@@ -85,7 +98,6 @@ sealed interface LocationHistoryDeleteUiEvent {
     data object ToggleStartDate : LocationHistoryDeleteUiEvent
     data object ToggleEndDate : LocationHistoryDeleteUiEvent
     data object OnDeleteAction : LocationHistoryDeleteUiEvent
-    data object OnCloseScreen : LocationHistoryDeleteUiEvent
 }
 
 sealed interface LocationHistoryDeleteScreenEvent {

@@ -12,13 +12,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -118,11 +122,11 @@ fun LocationHistoryDeleteScreenCore(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(paddingValues)
-                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                    .padding(vertical = 20.dp),
                 verticalArrangement = Arrangement.Top
             ) {
                 DataInfoChip(
-                    modifier = Modifier,
+                    modifier = Modifier.padding(horizontal = 20.dp),
                     image = uiState.groupImage,
                     text = uiState.groupName,
                     backgroundColor = if (uiState.isPersonalSpace) {
@@ -132,27 +136,103 @@ fun LocationHistoryDeleteScreenCore(
                     }
                 )
 
-                NoticeInfoChip(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp),
-                    text = "Deleting location history here will delete it for all devices.",
-                    icon = CoreAppIcons.Warning.asPainterResource(),
-                    backgroundColor = AppColors.errorBackground,
-                    textColor = AppColors.redMain,
-                    iconTint = AppColors.redMain
-                )
+                if (uiState.isDeletingEverything) {
+                    NoticeInfoChip(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp)
+                            .padding(horizontal = 20.dp),
+                        text = stringResource(MR.strings.history_delete_allDevices_notice),
+                        icon = CoreAppIcons.Warning.asPainterResource(),
+                        backgroundColor = AppColors.errorBackground,
+                        textColor = AppColors.redMain,
+                        iconTint = AppColors.redMain
+                    )
+                } else if (!uiState.isContentLoading) {
+                    SettingsSectionHeader(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        name = stringResource(MR.strings.group_member_devices_section_title),
+                    )
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp)
+                    ) {
+                        this.items(uiState.devices, key = { it.locationId }) { item ->
+                            DataInfoChip(
+                                modifier = Modifier,
+                                innerPaddingValues = PaddingValues(
+                                    top = 5.dp,
+                                    bottom = 5.dp,
+                                    start = 6.dp,
+                                    end = 8.dp
+                                ),
+                                imageOrIcon = {
+                                    CheckButtonIcon(
+                                        isChecked = item.isSelected,
+                                        size = 18.dp
+                                    )
+                                    Spacer(modifier = Modifier.size(6.dp))
+                                },
+                                text = {
+                                    Column(
+                                        modifier = Modifier
+                                            .offset(y = if (item.tag.isNullOrBlank()) 0.dp else (-2).dp)
+                                    ) {
+                                        Text(
+                                            modifier = Modifier,
+                                            text = item.deviceName,
+                                            style = MaterialTheme.typography.body2,
+                                        )
+                                        if (!item.tag.isNullOrBlank()) {
+                                            Text(
+                                                text = item.tag,
+                                                style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.SemiBold),
+                                                color = MaterialTheme.colors.onSecondary,
+                                                modifier = Modifier
+                                                    .background(
+                                                        color = MaterialTheme.colors.secondary,
+                                                        shape = MaterialTheme.shapes.medium
+                                                    )
+                                                    .padding(horizontal = 5.dp, vertical = 0.dp)
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = {
+                                    vm.onEvent(LocationHistoryDeleteUiEvent.ToggleDeviceSelection(item))
+                                }
+                            )
+                        }
+                    }
+                    AnimatedVisibility(
+                        visible = uiState.hasDeviceSelectionError
+                    ) {
+                        Text(
+                            text = stringResource(MR.strings.history_delete_devices_noSelectionError),
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colors.error,
+                            modifier = Modifier
+                                .padding(horizontal = 28.dp)
+                                .padding(top = 4.dp)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.size(10.dp))
 
                 SettingsSectionHeader(
-                    modifier = Modifier.fillMaxWidth(),
-                    name = "Period",
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    name = stringResource(MR.strings.history_delete_section_period_title),
                     count = null,
                     limit = null
                 )
 
                 DateSelectionOptionsContainer(
+                    modifier = Modifier.padding(horizontal = 20.dp),
                     fromDate = uiState.fromDate,
                     untilDate = uiState.untilDate,
                     onEvent = vm::onEvent
@@ -168,7 +248,7 @@ fun LocationHistoryDeleteScreenCore(
                         style = MaterialTheme.typography.body2,
                         color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
                     )
                 }
 
@@ -180,12 +260,13 @@ fun LocationHistoryDeleteScreenCore(
 
 @Composable
 private fun DateSelectionOptionsContainer(
+    modifier: Modifier = Modifier,
     fromDate: LocationHistoryDeleteDateState,
     untilDate: LocationHistoryDeleteDateState,
     onEvent: (LocationHistoryDeleteUiEvent) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(color = MaterialTheme.colors.surface)
@@ -193,7 +274,7 @@ private fun DateSelectionOptionsContainer(
         Column {
             // From date option
             DateOptionItem(
-                title = "From",
+                title = stringResource(MR.strings.history_delete_from_period_title),
                 isEnabled = fromDate.isEnabled,
                 onToggle = { onEvent(LocationHistoryDeleteUiEvent.ToggleStartDate) }
             )
@@ -235,7 +316,7 @@ private fun DateSelectionOptionsContainer(
         Column {
             // Until date option
             DateOptionItem(
-                title = "Until",
+                title = stringResource(MR.strings.history_delete_until_period_title),
                 isEnabled = untilDate.isEnabled,
                 onToggle = { onEvent(LocationHistoryDeleteUiEvent.ToggleEndDate) }
             )
@@ -280,7 +361,7 @@ private fun DateOptionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onToggle() }
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -27,6 +27,7 @@ class PendingLocationHistoryMapper(
                             LocationHistoryPointModelForMember(
                                 groupId = entry.groupId,
                                 entryId = entry.id,
+                                locationId = entry.locationId,
                                 localGroupHistoryKeyId = entry.localGroupHistoryKeyId,
                                 history = it
                             )

@@ -3,6 +3,7 @@ package app.paralino.core.domain.location
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.BaseRepository
@@ -35,7 +36,7 @@ class MemberDeviceStatusProcessor(
             if (payload != null) {
                 logg.v("device_status","Update device status in group $groupId with location (${payload.locationData != null})")
                 try {
-                    saveLocationUseCase.uploadAndSaveCurrentLocation(payload)
+                    saveLocationUseCase.uploadAndSaveCurrentLocation(MemberGroupIdForUpload(payload))
                 } finally {
                     savePendingLocationUseCase.saveNewLocations(listOf(payload))
 

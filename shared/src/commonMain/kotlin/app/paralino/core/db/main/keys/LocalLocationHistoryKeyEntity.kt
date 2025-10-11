@@ -14,6 +14,9 @@ data class LocalLocationHistoryKeyEntity(
     @ColumnInfo(name = "createdAt") val createdAt: String,
     @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long,
     @ColumnInfo(name = "historyKeyVersion") val historyKeyVersion: String,
+
+    // this key can also be blank, if location sharing is not active at the moment
+    // TODO review if we can just remove it
     @ColumnInfo(name = "encryptedHistoryKey") val encryptedHistoryKey: String,
     @ColumnInfo(name = "isSynced") val isSynced: Boolean
 ) {

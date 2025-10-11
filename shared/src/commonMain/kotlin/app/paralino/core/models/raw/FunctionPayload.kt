@@ -460,13 +460,17 @@ data class LocationHistoryDeletePayloadEntry(
 data class LocationHistoryDeletePeriodGroupPayload(
     val groupId: String,
     val startDateKey: String?,
-    val endDateKey: String?
+    val endDateKey: String?,
+    val locationIds: List<String>,
+    val deleteForAllDevices: Boolean
 )
 
 @Serializable
 data class LocationHistoryDeletePeriodPersonalPayload(
     val startDateKey: String?,
-    val endDateKey: String?
+    val endDateKey: String?,
+    val locationIds: List<String>,
+    val deleteForAllDevices: Boolean
 )
 
 @Serializable

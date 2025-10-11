@@ -12,7 +12,7 @@ import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
-import app.paralino.core.utils.extensions.dateForApi
+import app.paralino.core.utils.extensions.historyDateKeyForApi
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.listOfDatesUntil
 import app.paralino.core.utils.extensions.nowUTC
@@ -72,7 +72,7 @@ class RefreshLocationHistoryUseCase(
 
         val keyPrefix = "${groupId}_${memberUserId}_"
         val datesToLoad = dates.filter { date ->
-            val key = "${keyPrefix}${date.dateForApi()}"
+            val key = "${keyPrefix}${date.historyDateKeyForApi()}"
             val point = keyCache.value[key]
             point?.time?.isOlderThan(requestCacheDuration) ?: true
         }
@@ -81,7 +81,7 @@ class RefreshLocationHistoryUseCase(
             return null
         }
 
-        val dateKeys = datesToLoad.map { it.dateForApi() }
+        val dateKeys = datesToLoad.map { it.historyDateKeyForApi() }
         val key = dateKeys.joinToString(separator = "_")
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
@@ -138,7 +138,7 @@ class RefreshLocationHistoryUseCase(
 
         val keyPrefix = "personal_history_"
         val datesToLoad = dates.filter { date ->
-            val key = "${keyPrefix}${date.dateForApi()}"
+            val key = "${keyPrefix}${date.historyDateKeyForApi()}"
             val point = keyCache.value[key]
             point?.time?.isOlderThan(requestCacheDuration) ?: true
         }
@@ -147,7 +147,7 @@ class RefreshLocationHistoryUseCase(
             return null
         }
 
-        val dateKeys = datesToLoad.map { it.dateForApi() }
+        val dateKeys = datesToLoad.map { it.historyDateKeyForApi() }
         val key = dateKeys.joinToString(separator = "_")
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
@@ -202,7 +202,7 @@ class RefreshLocationHistoryUseCase(
                 .toMutableMap().apply {
                     val time = nowUTC()
                     dates.forEach {
-                        val key = "${keyPrefix}${it.dateForApi()}"
+                        val key = "${keyPrefix}${it.historyDateKeyForApi()}"
                         put(
                             key = key,
                             value = HistoryFetchCacheKey(

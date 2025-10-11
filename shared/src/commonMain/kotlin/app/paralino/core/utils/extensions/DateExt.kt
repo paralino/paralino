@@ -8,7 +8,6 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
@@ -82,8 +81,16 @@ fun LocalDateTime.stripSeconds(): LocalDateTime {
     )
 }
 
-fun LocalDate.dateForApi(): String {
+fun LocalDate.historyDateKeyForApi(): String {
     return this.format(LocalDate.Format { byUnicodePattern("yyyy-MM-dd") })
+}
+
+fun String.historyDateKeyFromApi(): LocalDate? {
+    return try {
+        LocalDate.parse(input = this, format = LocalDate.Formats.ISO)
+    } catch (e: Exception) {
+        null
+    }
 }
 
 fun LocalDate.listOfDatesUntil(date: LocalDate): List<LocalDate> {

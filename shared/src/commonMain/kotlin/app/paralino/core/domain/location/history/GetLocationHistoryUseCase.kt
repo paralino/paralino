@@ -11,7 +11,7 @@ import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.raw.LocationHistoryReadEntry
 import app.paralino.core.repo.base.BaseRepository
-import app.paralino.core.utils.extensions.dateForApi
+import app.paralino.core.utils.extensions.historyDateKeyForApi
 import app.paralino.core.utils.extensions.listOfDatesUntil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,7 +28,7 @@ class GetLocationHistoryUseCase(
         startDate: LocalDate,
         endDate: LocalDate,
     ): Flow<LocationHistoryModelForUser> {
-        val dateList = startDate.listOfDatesUntil(endDate).map { it.dateForApi() }
+        val dateList = startDate.listOfDatesUntil(endDate).map { it.historyDateKeyForApi() }
         if (groupOrSpaceId.isPersonalSpace) {
             return database.locationHistoryDao.getPersonalHistory(dates = dateList)
                 .map { mapPersonalLocationHistory(history = it) }

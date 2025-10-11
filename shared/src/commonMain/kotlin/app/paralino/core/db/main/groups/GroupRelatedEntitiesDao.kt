@@ -249,7 +249,7 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT COUNT(id) FROM memberLocationEntity WHERE groupId = :groupId AND userId = :userId")
     fun getLocationCountForUserInGroup(groupId: String, userId: String): Flow<Int?>
 
-    @Query("UPDATE OR IGNORE memberLocationEntity SET locationData = NULL WHERE id = :locationId")
+    @Query("UPDATE OR IGNORE memberLocationEntity SET locationData = NULL, locationHistory = NULL WHERE id = :locationId")
     suspend fun clearLocationDataForLocation(locationId: String)
 
     @Query("DELETE FROM memberLocationEntity")

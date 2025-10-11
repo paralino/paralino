@@ -300,7 +300,7 @@ object KoinIOS {
             factory { NotificationsGroupingViewModel(get()) }
             factory { DefaultNavigationAppViewModel(get()) }
             factory { (groupId: String, memberUserId: String, deviceId: String?) -> LocationHistoryViewModel(groupId = groupId, memberUserId = memberUserId, deviceId = deviceId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get()) }
+            factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceSettingsViewModel() }
         }
