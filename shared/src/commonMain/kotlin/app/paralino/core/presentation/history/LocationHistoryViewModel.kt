@@ -91,6 +91,7 @@ class LocationHistoryViewModel(
         getLocationHistory = getLocationHistory,
         refreshLocationHistory = refreshLocationHistory,
         appPrefs = appPrefs,
+        remoteConfig = remoteConfig,
         historyDateMapper = historyDateMapper,
         personalStateMapper = personalStateMapper,
         groupStateMapper = groupStateMapper,

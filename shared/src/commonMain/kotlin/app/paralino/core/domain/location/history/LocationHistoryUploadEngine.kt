@@ -172,7 +172,7 @@ class LocationHistoryUploadEngine(
             val entriesToDelete = personalHistoryNodes
                 .sortedByDescending { it.entryId }
                 .drop(100)
-            logg.tag(executionKey).v("Skip history upload for personal space - free plan (Clear ${entriesToDelete.size} entries)")
+            logg.tag(executionKey).v("Skip history upload for personal space - history disabled (Clear ${entriesToDelete.size} entries)")
             database.pendingLocationHistoryDao.deletePendingEntries(
                 ids = entriesToDelete.map { it.entryId }
             )
@@ -343,7 +343,7 @@ class LocationHistoryUploadEngine(
             val entriesToDelete = groupHistoryNodes
                 .sortedByDescending { it.entryId }
                 .drop(100)
-            logg.tag(executionKey).v("Skip history upload for group $groupId - free plan (Clear ${entriesToDelete.size} entries)")
+            logg.tag(executionKey).v("Skip history upload for group $groupId - history disabled (Clear ${entriesToDelete.size} entries)")
             database.pendingLocationHistoryDao.deletePendingEntries(
                 ids = entriesToDelete.map { it.entryId }
             )

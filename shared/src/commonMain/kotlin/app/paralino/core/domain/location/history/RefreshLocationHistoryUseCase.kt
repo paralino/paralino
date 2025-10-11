@@ -1,7 +1,9 @@
 package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.data
 import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.raw.GroupLocationHistoryReadPayload
 import app.paralino.core.models.raw.GroupLocationHistoryReadResponse
@@ -11,7 +13,10 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.BaseRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.extensions.historyDateKeyForApi
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.listOfDatesUntil
@@ -29,6 +34,9 @@ class RefreshLocationHistoryUseCase(
     private val database: MainDatabaseHelper,
     private val mapper: LocationHistoryMapper,
     private val functionsApi: IFunctionsApi,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val userGroupRepo: UserGroupLocalDataSource,
+    private val remoteConfig: RemoteConfigRepository
 ) : BaseRepository() {
 
     private val mutex = Mutex()
@@ -69,6 +77,12 @@ class RefreshLocationHistoryUseCase(
         dates: List<LocalDate>,
         requestCacheDuration: Duration
     ): GroupLocationHistoryReadResponse? {
+
+        val group = userGroupRepo.allGroupsState.value.data?.firstOrNull { it.group.id == groupId }
+        if (group?.group?.planConfig(remoteConfig.getConfigOnce())?.isGroupHistoryEnabled != true) {
+            logg.d("history_refresh", "Skip history upload for group $groupId - history disabled")
+            return null
+        }
 
         val keyPrefix = "${groupId}_${memberUserId}_"
         val datesToLoad = dates.filter { date ->
@@ -135,6 +149,11 @@ class RefreshLocationHistoryUseCase(
         dates: List<LocalDate>,
         requestCacheDuration: Duration
     ): PersonalLocationHistoryReadResponse? {
+
+        if (personalSpaceRepo.personalSpaceState.value.data?.plan?.isPersonalHistoryEnabled != true) {
+            logg.d("history_refresh", "Skip history upload for personal space - history disabled")
+            return null
+        }
 
         val keyPrefix = "personal_history_"
         val datesToLoad = dates.filter { date ->

@@ -9,6 +9,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.Logr
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.extensions.errorString
@@ -20,14 +21,17 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.minutes
 
@@ -37,6 +41,7 @@ class LocationHistoryDataFetchController(
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
     private val appPrefs: AppPrefs,
+    private val remoteConfig: RemoteConfigRepository,
     private val historyDateMapper: LocationHistoryDateMapper,
     private val personalStateMapper: LocationHistoryPersonalStateMapper,
     private val groupStateMapper: LocationHistoryGroupStateMapper,
@@ -126,7 +131,8 @@ class LocationHistoryDataFetchController(
             }
 
             _uiState.update {
-                val daysInLoading = it.daySelectorState.daysInLoading - startDate.listOfDatesUntil(endDate)
+                val daysInLoading =
+                    it.daySelectorState.daysInLoading - startDate.listOfDatesUntil(endDate)
                 it.copy(
                     daySelectorState = it.daySelectorState.copy(
                         daysInLoading = daysInLoading
@@ -139,22 +145,39 @@ class LocationHistoryDataFetchController(
     }
 
     private fun fetchPersonalLocationHistory(startDate: LocalDate, endDate: LocalDate): Flow<Unit> {
-        return combine(
-            personalSpaceRepo.personalSpaceState,
-            getLocationHistory.getLocationHistory(
-                groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
-                memberUserId = appPrefs.userId,
-                startDate = startDate,
-                endDate = endDate
-            )
-        ) { space, history ->
-            personalStateMapper.mapPersonalHistory(
-                space = space.data,
-                history = history,
-                startDate = startDate,
-                endDate = endDate
-            )
-        }
+        return personalSpaceRepo.personalSpaceState
+            .flatMapLatest { space ->
+
+                // if history is not enabled, allow reading up 2 days of cached history
+                val isHistoryEnabled = space.data?.plan?.isPersonalHistoryEnabled == true
+                val endDate = if (isHistoryEnabled) {
+                    endDate
+                } else {
+                    // today
+                    nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                }
+
+                val startDate = if (isHistoryEnabled) {
+                    startDate
+                } else {
+                    endDate.minus(DatePeriod(days = 1))
+                }
+
+                getLocationHistory.getLocationHistory(
+                    groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                    memberUserId = appPrefs.userId,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+                    .map { history ->
+                        personalStateMapper.mapPersonalHistory(
+                            space = space.data,
+                            history = history,
+                            startDate = startDate,
+                            endDate = endDate
+                        )
+                    }
+            }
             .catch {
                 Logr.d("Error loading history", it)
             }
@@ -167,22 +190,41 @@ class LocationHistoryDataFetchController(
         startDate: LocalDate,
         endDate: LocalDate,
     ): Flow<Unit> {
-        return combine(
-            userGroupRepo.getMemberWithLocationsAndGroup(groupId = groupId, memberUserId = memberUserId),
-            getLocationHistory.getLocationHistory(
-                groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
-                memberUserId = appPrefs.userId,
-                startDate = startDate,
-                endDate = endDate
-            )
-        ) { memberData, history ->
-            groupStateMapper.mapGroupHistory(
-                memberData = memberData,
-                history = history,
-                startDate = startDate,
-                endDate = endDate
-            )
-        }
+        return userGroupRepo.getMemberWithLocationsAndGroup(
+            groupId = groupId,
+            memberUserId = memberUserId
+        )
+            .flatMapLatest { memberData ->
+                // if history is not enabled, allow reading up 2 days of cached history
+                val isHistoryEnabled =
+                    memberData?.group?.planConfig(remoteConfig.getConfigOnce())?.isPersonalHistoryEnabled == true
+                val endDate = if (isHistoryEnabled) {
+                    endDate
+                } else {
+                    // today
+                    nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                }
+
+                val startDate = if (isHistoryEnabled) {
+                    startDate
+                } else {
+                    endDate.minus(DatePeriod(days = 1))
+                }
+
+                getLocationHistory.getLocationHistory(
+                    groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                    memberUserId = appPrefs.userId,
+                    startDate = startDate,
+                    endDate = endDate
+                ).map { history ->
+                    groupStateMapper.mapGroupHistory(
+                        memberData = memberData,
+                        history = history,
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                }
+            }
             .catch {
                 Logr.d("Error loading history", it)
             }

@@ -291,7 +291,7 @@ val coreModule = module {
     single { RefreshEverythingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
-    single { RefreshLocationHistoryUseCase(get(), get(), get()) }
+    single { RefreshLocationHistoryUseCase(get(), get(), get(), get(), get(), get()) }
     single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { DeleteLocationHistoryPeriodUseCase(get(), get(), get(), get(), get()) }
     single { DeleteObsoleteLocationHistoryUseCase(get(), get(), get(), get(), get()) }
