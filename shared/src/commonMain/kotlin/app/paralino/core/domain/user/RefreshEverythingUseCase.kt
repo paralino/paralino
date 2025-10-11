@@ -6,6 +6,7 @@ import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
+import app.paralino.core.domain.location.history.DeleteObsoleteLocationHistoryUseCase
 import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.logg
@@ -42,6 +43,7 @@ class RefreshEverythingUseCase(
     private val locationHistoryUploadEngine: LocationHistoryUploadEngine,
     private val groupRemoveUseCase: GroupRemoveUseCase,
     private val sessionRenewalHandler: SessionRenewalHandler,
+    private val deleteObsoleteLocationHistoryUseCase: DeleteObsoleteLocationHistoryUseCase,
     private val parentManager: LimitedExecutionParentManager,
 ) : LimitedExecutionRepository() {
 
@@ -87,6 +89,7 @@ class RefreshEverythingUseCase(
                     revokeDeviceStatusUseCase.revokeActiveStatus()
                     clearUserLocationUseCase.deleteOldLocations()
                     premiumStatusManager.adjustDeviceSettingsForPlan()
+                    deleteObsoleteLocationHistoryUseCase.deleteObsoleteHistory()
                     locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 10.minutes)
                     sessionRenewalHandler.processSessionRenewal()
                 }
