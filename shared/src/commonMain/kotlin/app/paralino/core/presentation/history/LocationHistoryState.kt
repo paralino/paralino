@@ -229,14 +229,18 @@ data class LocationHistoryScreenState(
     val locationsToDelete = if (deletionRangeStartIndex != null && selectedLocationId != null) {
         val rangeStart = min(deletionRangeStartIndex, locationIndex)
         val rangeEnd = max(deletionRangeStartIndex, locationIndex)
-        selectedLocations.subList(
-            fromIndex = rangeStart,
-            toIndex = rangeEnd + 1
-        ).flatMap {
-            when (it) {
-                is LocationHistoryPointState.Cluster -> it.points
-                is LocationHistoryPointState.Point -> listOf(it)
+        try {
+            selectedLocations.subList(
+                fromIndex = rangeStart,
+                toIndex = rangeEnd + 1
+            ).flatMap {
+                when (it) {
+                    is LocationHistoryPointState.Cluster -> it.points
+                    is LocationHistoryPointState.Point -> listOf(it)
+                }
             }
+        } catch (e: Exception) {
+            emptyList()
         }
     } else {
         emptyList()

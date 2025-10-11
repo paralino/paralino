@@ -7,10 +7,10 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
+import app.paralino.core.models.location.MemberModelWithLocationsAndGroup
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isoToLocalDateTime
@@ -23,7 +23,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class LocationHistoryGroupStateMapper(
-    private val userGroupRepo: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val geofenceManager: IGeofenceManager,
     private val defaultMapper: ILocationHistoryStateMapper,
@@ -32,15 +31,13 @@ class LocationHistoryGroupStateMapper(
     private val _uiState: MutableStateFlow<LocationHistoryScreenState>
 ) {
     suspend fun mapGroupHistory(
-        groupId: String,
-        memberUserId: String,
+        memberData: MemberModelWithLocationsAndGroup?,
         history: LocationHistoryModelForUser,
         startDate: LocalDate,
         endDate: LocalDate
     ) {
-
-        val group = userGroupRepo.getGroupWithMembersOnce(groupId = groupId)
-        val currentMember = group?.memberByUserId(userId = memberUserId)
+        val group = memberData?.group
+        val currentMember = memberData?.member
         if (group == null || currentMember == null) {
             // TODO handle data missing
             _uiState.update {
@@ -57,7 +54,7 @@ class LocationHistoryGroupStateMapper(
                 deviceId = it.deviceId,
                 deviceName = it.name,
                 isSelected = it.id == _uiState.value.activeDevices.firstOrNull { it.isSelected }?.locationId,
-                isCurrent = it.id == group.currentDeviceLocation?.id,
+                isCurrent = it.id == currentMember.currentDeviceLocation?.id,
                 hasLocations = false
             )
         }
@@ -163,7 +160,7 @@ class LocationHistoryGroupStateMapper(
                 locations = processedLocations,
                 devices = devices,
                 stats = null,
-                planConfig = group.group.planConfig(remoteConfig.getConfigOnce())
+                planConfig = group.planConfig(remoteConfig.getConfigOnce())
             )
 
             val stats = LocationHistoryStats.calculateStats(

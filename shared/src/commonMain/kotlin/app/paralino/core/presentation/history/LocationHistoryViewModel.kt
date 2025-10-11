@@ -62,7 +62,6 @@ class LocationHistoryViewModel(
     )
 
     private val personalStateMapper = LocationHistoryPersonalStateMapper(
-        personalSpaceRepo = personalSpaceRepo,
         valueFormatter = valueFormatter,
         geofenceManager = geofenceManager,
         defaultMapper = defaultMapper,
@@ -71,7 +70,6 @@ class LocationHistoryViewModel(
     )
 
     private val groupStateMapper = LocationHistoryGroupStateMapper(
-        userGroupRepo = userGroupRepo,
         valueFormatter = valueFormatter,
         geofenceManager = geofenceManager,
         defaultMapper = defaultMapper,
@@ -88,6 +86,8 @@ class LocationHistoryViewModel(
     )
 
     private val dataFetchController = LocationHistoryDataFetchController(
+        personalSpaceRepo = personalSpaceRepo,
+        userGroupRepo = userGroupRepo,
         getLocationHistory = getLocationHistory,
         refreshLocationHistory = refreshLocationHistory,
         appPrefs = appPrefs,

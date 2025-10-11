@@ -8,6 +8,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.location.IGeofenceManager
@@ -23,7 +24,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class LocationHistoryPersonalStateMapper(
-    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val geofenceManager: IGeofenceManager,
     private val defaultMapper: ILocationHistoryStateMapper,
@@ -32,11 +32,11 @@ class LocationHistoryPersonalStateMapper(
 ) {
 
     suspend fun mapPersonalHistory(
+        space: UserPersonalSpaceModel?,
         history: LocationHistoryModelForUser,
         startDate: LocalDate,
         endDate: LocalDate
     ) {
-        val space = personalSpaceRepo.personalSpaceState.value.data
         if (space == null) {
             // TODO handle data missing
             _uiState.update {

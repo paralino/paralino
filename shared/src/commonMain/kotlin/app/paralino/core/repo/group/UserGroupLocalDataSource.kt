@@ -11,6 +11,7 @@ import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.models.location.MemberModelWithLocationsAndGroup
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.mappers.GroupsMapperLocal
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
@@ -268,6 +269,19 @@ class UserGroupLocalDataSource constructor(
             val raw = memberMapper.local2Remote(member, locations)
             val core = memberMapper.local2Core(member, locations, group)
             raw to core
+        }
+    }
+
+    fun getMemberWithLocationsAndGroup(groupId: String, memberUserId: String): Flow<MemberModelWithLocationsAndGroup?> {
+        return combine(
+            getGroupWithoutMembers(groupId = groupId),
+            database.groupRelatedDao.getMember(groupId = groupId, userId = memberUserId).filterNotNull(),
+            database.groupRelatedDao.getMemberLocations(groupId = groupId, userId = memberUserId)
+        ) { group, member, locations ->
+            MemberModelWithLocationsAndGroup(
+                group = group,
+                member = memberMapper.local2Core(member = member, memberLocations = locations, group = group)
+            )
         }
     }
 

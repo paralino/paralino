@@ -5,9 +5,12 @@ import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.provider.Logr
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.listOfDatesUntil
 import app.paralino.core.utils.extensions.nowUTC
@@ -17,10 +20,10 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -29,6 +32,8 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.minutes
 
 class LocationHistoryDataFetchController(
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val userGroupRepo: UserGroupLocalDataSource,
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
     private val appPrefs: AppPrefs,
@@ -134,13 +139,17 @@ class LocationHistoryDataFetchController(
     }
 
     private fun fetchPersonalLocationHistory(startDate: LocalDate, endDate: LocalDate): Flow<Unit> {
-        return getLocationHistory.getLocationHistory(
-            groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
-            memberUserId = appPrefs.userId,
-            startDate = startDate,
-            endDate = endDate
-        ).map { history ->
+        return combine(
+            personalSpaceRepo.personalSpaceState,
+            getLocationHistory.getLocationHistory(
+                groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                memberUserId = appPrefs.userId,
+                startDate = startDate,
+                endDate = endDate
+            )
+        ) { space, history ->
             personalStateMapper.mapPersonalHistory(
+                space = space.data,
                 history = history,
                 startDate = startDate,
                 endDate = endDate
@@ -158,15 +167,17 @@ class LocationHistoryDataFetchController(
         startDate: LocalDate,
         endDate: LocalDate,
     ): Flow<Unit> {
-        return getLocationHistory.getLocationHistory(
-            groupOrSpaceId = groupId.asGroupOrSpaceId(),
-            memberUserId = memberUserId,
-            startDate = startDate,
-            endDate = endDate
-        ).map { history ->
+        return combine(
+            userGroupRepo.getMemberWithLocationsAndGroup(groupId = groupId, memberUserId = memberUserId),
+            getLocationHistory.getLocationHistory(
+                groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                memberUserId = appPrefs.userId,
+                startDate = startDate,
+                endDate = endDate
+            )
+        ) { memberData, history ->
             groupStateMapper.mapGroupHistory(
-                groupId = groupId,
-                memberUserId = memberUserId,
+                memberData = memberData,
                 history = history,
                 startDate = startDate,
                 endDate = endDate
