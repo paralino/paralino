@@ -212,8 +212,8 @@ class LocationHistoryDataFetchController(
                 }
 
                 getLocationHistory.getLocationHistory(
-                    groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
-                    memberUserId = appPrefs.userId,
+                    groupOrSpaceId = groupId.asGroupOrSpaceId(),
+                    memberUserId = memberUserId,
                     startDate = startDate,
                     endDate = endDate
                 ).map { history ->
