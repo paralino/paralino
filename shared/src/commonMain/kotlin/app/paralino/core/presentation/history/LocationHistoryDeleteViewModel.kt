@@ -144,7 +144,7 @@ class LocationHistoryDeleteViewModel(
     }
 
     fun onEvent(event: LocationHistoryDeleteUiEvent) {
-        if (_uiState.value.isDeleteLoading != true) {
+        if (_uiState.value.isDeleteLoading == true) {
             return
         }
 
