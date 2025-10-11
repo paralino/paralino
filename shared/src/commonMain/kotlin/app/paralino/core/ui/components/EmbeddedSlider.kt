@@ -1,10 +1,13 @@
 package app.paralino.core.ui.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,18 +19,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SwipeableDefaults.AnimationSpec
-import androidx.compose.material.SwipeableState
 import androidx.compose.material.Text
-import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,33 +42,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-@ExperimentalMaterialApi
-private fun <T : Any> rememberSwipeableState(
+private fun rememberAnchoredDraggableState(
     key: Any,
-    initialValue: T,
-    animationSpec: AnimationSpec<Float> = AnimationSpec,
-    confirmStateChange: (newValue: T) -> Boolean = { true }
-): SwipeableState<T> {
-    return rememberSaveable(
-        key,
-        saver = SwipeableState.Saver(
-            animationSpec = animationSpec,
-            confirmStateChange = confirmStateChange
-        )
-    ) {
-        SwipeableState(
+    initialValue: Int,
+    anchors: DraggableAnchors<Int>
+): AnchoredDraggableState<Int> {
+    return remember(key) {
+        AnchoredDraggableState(
             initialValue = initialValue,
-            animationSpec = animationSpec,
-            confirmStateChange = confirmStateChange
+            anchors = anchors
         )
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EmbeddedSlider(
     modifier: Modifier = Modifier,
@@ -90,25 +80,42 @@ fun EmbeddedSlider(
             .clip(shape)
             .background(backgroundColor)
     ) {
-        val swipeableState = rememberSwipeableState(key = steps, initialValue = progress)
-
-        LaunchedEffect(steps) {
-            snapshotFlow { swipeableState.targetValue }
-                .distinctUntilChanged()
-                .collectLatest { onProgressChange?.invoke(it) }
-        }
-
         val (viewWidthPx, contentWidthPx) = with(LocalDensity.current) {
             maxWidth.toPx() to size.minStepWidth.toPx()
         }
 
         val stepPx = (viewWidthPx - contentWidthPx) / steps.minus(1)
         val anchors = remember(steps, stepPx, contentWidthPx) {
-            mutableMapOf<Float, Int>().apply {
+            DraggableAnchors {
                 repeat(steps) {
-                    this.put(it * stepPx + contentWidthPx, it)
+                    it at (it * stepPx + contentWidthPx)
                 }
             }
+        }
+        
+        val anchoredDraggableState = rememberAnchoredDraggableState(
+            key = steps,
+            initialValue = progress,
+            anchors = anchors
+        )
+
+        // Handle progress changes from external source
+        LaunchedEffect(progress) {
+            snapshotFlow { progress }
+                .distinctUntilChanged()
+                .collectLatest {
+                    delay(300)
+                    if (anchoredDraggableState.currentValue != it && anchoredDraggableState.targetValue != it) {
+                        anchoredDraggableState.animateTo(progress)
+                    }
+                }
+        }
+
+        // Handle drag completion and notify parent
+        LaunchedEffect(steps) {
+            snapshotFlow { anchoredDraggableState.targetValue }
+                .distinctUntilChanged()
+                .collectLatest { onProgressChange?.invoke(it) }
         }
 
         Box(
@@ -117,11 +124,11 @@ fun EmbeddedSlider(
                     minHeight = size.minHeight
                 )
                 .fillMaxSize()
-                .swipeable(
+                .anchoredDraggable(
+                    state = anchoredDraggableState,
+                    orientation = Orientation.Horizontal,
                     enabled = swipeEnabled,
-                    state = swipeableState,
-                    anchors = anchors,
-                    orientation = Orientation.Horizontal
+                    overscrollEffect = rememberOverscrollEffect()
                 )
         ) {
             Row(
@@ -132,7 +139,7 @@ fun EmbeddedSlider(
                     .fillMaxHeight()
                     .width(
                         with(LocalDensity.current) {
-                            swipeableState.offset.value.toDp()
+                            anchoredDraggableState.offset.toDp()
                         }
                     )
                     .clip(shape)
@@ -168,7 +175,6 @@ fun EmbeddedSlider(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EmbeddedSlider(
     modifier: Modifier = Modifier,
