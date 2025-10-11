@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -151,9 +152,10 @@ fun LocationHistoryDetailCard(
                                 modifier = Modifier
                                     .animateItem()
                                     .padding(end = 6.dp),
-                                isSelected = device.isSelected,
-                                hasLocations = device.hasLocations,
                                 name = device.deviceName,
+                                isSelected = device.isSelected,
+                                isCurrent = device.isCurrent,
+                                hasLocations = device.hasLocations,
                                 showIcon = uiState.activeDevices.size == 1,
                                 onClick = {
                                     coroutineScope.launch {
@@ -558,11 +560,12 @@ private fun ColumnScope.LocationTime(
 @Composable
 private fun UserDeviceChip(
     modifier: Modifier = Modifier,
-    isSelected: Boolean,
-    hasLocations: Boolean,
     name: String,
+    isSelected: Boolean,
+    isCurrent: Boolean,
+    hasLocations: Boolean,
+    showIcon: Boolean,
     onClick: () -> Unit,
-    showIcon: Boolean
 ) {
     val contentColor by animateColorAsState(
         if (isSelected) MaterialTheme.colors.onPrimary
@@ -597,6 +600,18 @@ private fun UserDeviceChip(
                     painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
                     contentDescription = null,
                     tint = contentColor
+                )
+            }
+        } else if (isCurrent) {
+            {
+                Box(
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .size(4.dp)
+                        .background(
+                            color = if (isSelected) MaterialTheme.colors.onPrimary else MaterialTheme.colors.primary,
+                            shape = CircleShape
+                        )
                 )
             }
         } else {
