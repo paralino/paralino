@@ -15,6 +15,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.UserDeviceModel
+import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.detail.LocationSharingState
@@ -375,6 +376,22 @@ class PersonalSpaceViewModel(
                     }
 
                     is MainAlertDialog.DeleteInactiveUserOwnDevice -> {
+                        if (event.action.isOk) {
+                            coroutineScope.launch {
+                                _uiState.update { it.copy(alertDialog = null) }
+                                delay(200)
+                                _uiState.update {
+                                    it.copy(
+                                        alertDialog = MainAlertDialog.DeleteInactiveUserOwnDeviceConfirm(event.action.dialog.device)
+                                    )
+                                }
+                            }
+                        } else {
+                            _uiState.update { it.copy(alertDialog = null) }
+                        }
+                    }
+
+                    is MainAlertDialog.DeleteInactiveUserOwnDeviceConfirm -> {
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             deleteDevice(device = dialog.device)
                         }

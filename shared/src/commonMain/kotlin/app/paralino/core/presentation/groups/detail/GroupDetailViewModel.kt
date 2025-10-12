@@ -274,6 +274,29 @@ class GroupDetailViewModel(
                     }
 
                     is MainAlertDialog.DeleteMemberLocation -> {
+                        if (event.action.isOk) {
+                            coroutineScope.launch {
+                                _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
+                                delay(200)
+                                _uiState.update {
+                                    it.mapSuccess {
+                                        it.copy(
+                                            alertDialog = MainAlertDialog.DeleteMemberLocationConfirm(
+                                                memberId = event.action.dialog.memberId,
+                                                locationId = event.action.dialog.locationId,
+                                                isUserOwnDevice = event.action.dialog.isUserOwnDevice,
+                                                memberName = event.action.dialog.memberName
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
+                        }
+                    }
+
+                    is MainAlertDialog.DeleteMemberLocationConfirm -> {
                         _uiState.update { it.mapSuccess { it.copy(alertDialog = null) } }
                         if (event.action.isOk) {
                             removeMemberLocation(

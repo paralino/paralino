@@ -331,6 +331,33 @@ sealed interface MainAlertDialog {
         )
     }
 
+    data class DeleteMemberLocationConfirm(
+        val memberId: String,
+        val locationId: String,
+        val isUserOwnDevice: Boolean,
+        val memberName: String,
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = stringResource(resource = MR.strings.group_members_device_confirm_remove_alert_title),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.group_members_device_confirm_remove_button),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
     data class ToggleMemberVerification(val turnOn: Boolean) : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
 
@@ -975,7 +1002,31 @@ sealed interface MainAlertDialog {
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(MR.strings.button_delete),
+                    text = stringResource(MR.strings.personalSpace_device_delete_dialogButton),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class DeleteInactiveUserOwnDeviceConfirm(
+        val device: UserDeviceModel
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.alert_title_confirm),
+            message = stringResource(MR.strings.personalSpace_device_delete_confirm_dialogMessage),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.group_members_device_confirm_remove_button),
                     color = AlertDialogButtonData.destructiveColor,
                     needsLongConfirmation = true
                 ),
