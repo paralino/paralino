@@ -5,16 +5,13 @@ import app.paralino.core.crypto.LocationHistoryKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
-import app.paralino.core.domain.location.SaveLocationUseCase
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryModel
-import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.mappers.LocationHistoryMapper
-import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.LocationHistoryDeleteGroupPayload
 import app.paralino.core.models.raw.LocationHistoryDeletePayloadEntry
 import app.paralino.core.models.raw.LocationHistoryDeletePersonalPayload
@@ -30,12 +27,11 @@ import kotlin.time.Duration.Companion.seconds
 class DeleteLocationHistoryEntryUseCase(
     private val database: MainDatabaseHelper,
     private val historyMapper: LocationHistoryMapper,
-    private val pendingHistoryMapper: PendingLocationHistoryMapper,
+    private val deletePendingLocation: DeletePendingLocationUseCase,
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val refreshLocationHistoryUseCase: RefreshLocationHistoryUseCase,
-    private val saveLocationUseCase: SaveLocationUseCase,
     private val appPrefs: AppPrefs
 ) {
 
@@ -77,7 +73,7 @@ class DeleteLocationHistoryEntryUseCase(
         entries: List<LocationHistoryPointState.Point>,
     ) {
         // handle cached entries first
-        clearCachedEntries(groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(), entries = entries)
+        deletePendingLocation.clearPendingAndCachedEntries(groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(), entries = entries)
 
         val result = entries
             .groupBy { it.entryId }
@@ -153,7 +149,7 @@ class DeleteLocationHistoryEntryUseCase(
         entries: List<LocationHistoryPointState.Point>,
     ) {
         // handle cached entries first
-        clearCachedEntries(groupOrSpaceId = groupId.asGroupOrSpaceId(), entries = entries)
+        deletePendingLocation.clearPendingAndCachedEntries(groupOrSpaceId = groupId.asGroupOrSpaceId(), entries = entries)
 
         val result = entries
             .groupBy { it.entryId }
@@ -223,33 +219,6 @@ class DeleteLocationHistoryEntryUseCase(
 
         if (!response.isSuccess) {
             throw response.remoteException
-        }
-    }
-
-    private suspend fun clearCachedEntries(
-        groupOrSpaceId: GroupOrSpaceId,
-        entries: List<LocationHistoryPointState.Point>,
-    ) {
-        val toDeletePending = database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = groupOrSpaceId.id)
-            .let { pendingHistoryMapper.pendingLocationToCore(it) }
-            .filter { pending ->
-                entries.any { it.point.properID == pending.history.properID }
-            }
-            .map { it.entryId }
-
-        if (toDeletePending.isNotEmpty()) {
-            database.pendingLocationHistoryDao.deletePendingEntries(ids = toDeletePending)
-            entries.mapNotNull { it.locationId }.distinct().forEach {
-                saveLocationUseCase.uploadAndSaveCurrentLocation(
-                    data = MemberGroupIdForUpload(
-                        groupId = groupOrSpaceId,
-                        locationId = it,
-                        locationData = null,
-                        deviceStatus = null,
-                        uploadPendingHistory = true
-                    )
-                )
-            }
         }
     }
 }

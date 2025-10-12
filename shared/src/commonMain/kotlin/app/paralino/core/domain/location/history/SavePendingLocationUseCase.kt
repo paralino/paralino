@@ -6,6 +6,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
 import app.paralino.core.db.main.location.PendingLocationHistoryEntity
+import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryPointModel
@@ -45,11 +46,12 @@ class SavePendingLocationUseCase(
 
                     if (updatedEntry != null) {
                         updatedEntry
-                    } else {
+                    } else if (!entry.locationHistory.dayKey.isNullOrBlank()) {
                         PendingLocationHistoryEntity(
                             id = 0,
                             groupId = entry.groupId.id,
                             locationId = entry.locationId,
+                            dateIdentifier = entry.locationHistory.dayKey,
                             locationHistoryData = cryptoCore.encryptDataWithKey(
                                 data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
                                     entry.locationHistory
@@ -59,6 +61,9 @@ class SavePendingLocationUseCase(
                             userKeyVersion = userKey.version,
                             localGroupHistoryKeyId = historyKey?.id
                         )
+                    } else {
+                        logg.e("location_history", "Day key is null or blank: ${entry.locationHistory.status.startTime}")
+                        null
                     }
                 } else {
                     // history key is missing so we are skipping location point
@@ -140,19 +145,25 @@ class SavePendingLocationUseCase(
             }
 
         return if (updatedEntry != null && lastPendingEntry != null) {
-            PendingLocationHistoryEntity(
-                id = lastPendingEntry.id,
-                groupId = entry.groupId.id,
-                locationId = entry.locationId,
-                locationHistoryData = cryptoCore.encryptDataWithKey(
-                    data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
-                        updatedEntry
+            if (!updatedEntry.dayKey.isNullOrBlank()) {
+                PendingLocationHistoryEntity(
+                    id = lastPendingEntry.id,
+                    groupId = entry.groupId.id,
+                    locationId = entry.locationId,
+                    dateIdentifier = updatedEntry.dayKey,
+                    locationHistoryData = cryptoCore.encryptDataWithKey(
+                        data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
+                            updatedEntry
+                        ),
+                        key = userKey.key
                     ),
-                    key = userKey.key
-                ),
-                userKeyVersion = userKey.version,
-                localGroupHistoryKeyId = historyKey?.id
-            )
+                    userKeyVersion = userKey.version,
+                    localGroupHistoryKeyId = historyKey?.id
+                )
+            } else {
+                logg.e("location_history", "Day key is null or blank: ${updatedEntry.status.startTime}")
+                null
+            }
         } else {
             null
         }

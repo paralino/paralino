@@ -1,9 +1,10 @@
 package app.paralino.core.domain.location.history
 
-import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.logg
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
@@ -19,7 +20,7 @@ class DeleteObsoleteLocationHistoryUseCase(
     private val userGroupLocalDataSource: UserGroupLocalDataSource,
     private val userPersonalSpaceLocalDataSource: UserPersonalSpaceLocalDataSource,
     private val remoteConfigRepository: RemoteConfigRepository,
-    private val appPrefs: AppPrefs
+    private val deletePendingLocation: DeletePendingLocationUseCase,
 ) {
 
     suspend fun deleteObsoleteHistory() {
@@ -32,7 +33,7 @@ class DeleteObsoleteLocationHistoryUseCase(
                 val planConfig = personalSpace.plan
                 
                 // Only delete if history is not unlimited and is enabled
-                if (!planConfig.hasUnlimitedPersonalHistory && planConfig.isPersonalHistoryEnabled) {
+                if (!planConfig.hasUnlimitedPersonalHistory) {
                     val cutoffDate = today.minus(DatePeriod(days = planConfig.personalHistoryDaysLimit))
                     val cutoffDateKey = cutoffDate.historyDateKeyForApi()
                     
@@ -44,6 +45,14 @@ class DeleteObsoleteLocationHistoryUseCase(
                         startDate = null,
                         endDate = cutoffDateKey
                     )
+
+                    deletePendingLocation.clearPendingAndCachedEntries(
+                        groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                        startDate = null,
+                        endDate = cutoffDate,
+                        locationIds = emptyList(),
+                        deleteForAllDevices = true,
+                    )
                 }
             }
 
@@ -53,7 +62,7 @@ class DeleteObsoleteLocationHistoryUseCase(
                 val planConfig = group.planConfig(config)
                 
                 // Only delete if history is not unlimited and is enabled
-                if (!planConfig.hasUnlimitedGroupHistory && planConfig.isGroupHistoryEnabled) {
+                if (!planConfig.hasUnlimitedGroupHistory) {
                     val cutoffDate = today.minus(DatePeriod(days = planConfig.historyDaysLimit))
                     val cutoffDateKey = cutoffDate.historyDateKeyForApi()
                     
@@ -66,6 +75,14 @@ class DeleteObsoleteLocationHistoryUseCase(
                         deleteForAllDevices = true,
                         startDate = null,
                         endDate = cutoffDateKey
+                    )
+
+                    deletePendingLocation.clearPendingAndCachedEntries(
+                        groupOrSpaceId = group.id.asGroupOrSpaceId(),
+                        startDate = null,
+                        endDate = cutoffDate,
+                        locationIds = emptyList(),
+                        deleteForAllDevices = true,
                     )
                 }
             }

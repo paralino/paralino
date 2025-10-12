@@ -44,6 +44,7 @@ import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryPeriodUseCase
 import app.paralino.core.domain.location.history.DeleteObsoleteLocationHistoryUseCase
+import app.paralino.core.domain.location.history.DeletePendingLocationUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
@@ -292,9 +293,10 @@ val coreModule = module {
     single { GetMemberWithLocationsUseCase(get(), get(), get(), get()) }
     single { GetLocationHistoryUseCase(get(), get()) }
     single { RefreshLocationHistoryUseCase(get(), get(), get(), get(), get(), get()) }
-    single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { DeleteLocationHistoryPeriodUseCase(get(), get(), get(), get(), get()) }
+    single { DeleteLocationHistoryEntryUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { DeleteLocationHistoryPeriodUseCase(get(), get(), get(), get()) }
     single { DeleteObsoleteLocationHistoryUseCase(get(), get(), get(), get(), get()) }
+    single { DeletePendingLocationUseCase(get(), get(), get()) }
     single { PersonalSpaceRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { DeletePersonalDeviceUseCase(get(), get()) }
     single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }

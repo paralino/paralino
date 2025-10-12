@@ -173,6 +173,12 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_23_24 = object : Migration(23, 24) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE pendingLocationHistoryEntity ADD COLUMN `dateIdentifier` TEXT NOT NULL DEFAULT ''")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -197,5 +203,6 @@ object MainDatabaseMigrations {
         MIGRATION_20_21,
         MIGRATION_21_22,
         MIGRATION_22_23,
+        MIGRATION_23_24,
     )
 }

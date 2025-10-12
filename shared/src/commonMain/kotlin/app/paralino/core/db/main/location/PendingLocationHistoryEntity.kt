@@ -9,6 +9,7 @@ data class PendingLocationHistoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "groupId") val groupId: String,
     @ColumnInfo(name = "locationId") val locationId: String,
+    @ColumnInfo(name = "dateIdentifier") val dateIdentifier: String,
     @ColumnInfo(name = "locationHistoryData") val locationHistoryData: String,
     @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long,
     @ColumnInfo(name = "groupHistoryKeyId") val localGroupHistoryKeyId: Long?
