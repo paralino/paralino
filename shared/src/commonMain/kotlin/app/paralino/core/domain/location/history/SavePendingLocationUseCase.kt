@@ -4,11 +4,9 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
-import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
-import app.paralino.core.db.main.location.PendingLocationHistoryEntity
+import app.paralino.core.db.main.history.PendingLocationHistoryEntity
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.user.SymmetricCryptoKeyData
@@ -30,48 +28,10 @@ class SavePendingLocationUseCase(
         val userKey = cryptoUserKeysRepo.activePersonalKeyWithVersion()
 
         val entries = data.mapNotNull { entry ->
-            if (entry.locationHistory != null) {
-                val historyKey = database.pendingLocationHistoryDao.getLatestHistoryKey(
-                    groupOrSpaceId = entry.groupId.id
-                )
-
-                // we are allowing saving personal history without a key
-                // since key is generated before upload
-                if (historyKey != null || entry.groupId.isPersonalSpace) {
-                    val updatedEntry = getPossibleUpdatedEntry(
-                        entry = entry,
-                        userKey = userKey,
-                        historyKey = historyKey
-                    )
-
-                    if (updatedEntry != null) {
-                        updatedEntry
-                    } else if (!entry.locationHistory.dayKey.isNullOrBlank()) {
-                        PendingLocationHistoryEntity(
-                            id = 0,
-                            groupId = entry.groupId.id,
-                            locationId = entry.locationId,
-                            dateIdentifier = entry.locationHistory.dayKey,
-                            locationHistoryData = cryptoCore.encryptDataWithKey(
-                                data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
-                                    entry.locationHistory
-                                ),
-                                key = userKey.key
-                            ),
-                            userKeyVersion = userKey.version,
-                            localGroupHistoryKeyId = historyKey?.id
-                        )
-                    } else {
-                        logg.e("location_history", "Day key is null or blank: ${entry.locationHistory.status.startTime}")
-                        null
-                    }
-                } else {
-                    // history key is missing so we are skipping location point
-                    null
-                }
-            } else {
-                null
-            }
+            getLocalEntry(
+                userKey = userKey,
+                entry = entry
+            )
         }
 
         database.pendingLocationHistoryDao.createPendingEntries(
@@ -79,10 +39,56 @@ class SavePendingLocationUseCase(
         )
     }
 
+    private suspend fun getLocalEntry(
+        userKey: SymmetricCryptoKeyData,
+        entry: MemberGroupId
+    ): PendingLocationHistoryEntity? {
+        if (entry.locationHistory == null) {
+            return null
+        }
+
+        val groupHistoryKeyId = if (entry.groupId.isPersonalSpace) {
+            null
+        } else {
+            // if history key is missing we are skipping location point
+            database.groupLocalHistoryKeyDao.getLatestHistoryKey(
+                groupOrSpaceId = entry.groupId.id
+            )?.id ?: return null
+        }
+
+        val updatedEntry = getPossibleUpdatedEntry(
+            entry = entry,
+            userKey = userKey,
+            groupHistoryKeyId = groupHistoryKeyId
+        )
+
+        return if (updatedEntry != null) {
+            updatedEntry
+        } else if (!entry.locationHistory.dayKey.isNullOrBlank()) {
+            PendingLocationHistoryEntity(
+                id = 0,
+                groupId = entry.groupId.id,
+                locationId = entry.locationId,
+                dateIdentifier = entry.locationHistory.dayKey,
+                locationHistoryData = cryptoCore.encryptDataWithKey(
+                    data = BaseRemoteModule.locationHistoryFormatter.encodeToString(
+                        entry.locationHistory
+                    ),
+                    key = userKey.key
+                ),
+                userKeyVersion = userKey.version,
+                localGroupHistoryKeyId = groupHistoryKeyId
+            )
+        } else {
+            logg.e("location_history", "Day key is null or blank: ${entry.locationHistory.status.startTime}")
+            null
+        }
+    }
+
     private suspend fun getPossibleUpdatedEntry(
         entry: MemberGroupId,
         userKey: SymmetricCryptoKeyData,
-        historyKey: LocalLocationHistoryKeyEntity?
+        groupHistoryKeyId: Long?
     ): PendingLocationHistoryEntity? {
         if (entry.locationHistory == null) {
             return null
@@ -97,7 +103,7 @@ class SavePendingLocationUseCase(
             // in groups we need key before saving location
             true
         } else {
-            lastPendingEntry?.localGroupHistoryKeyId == historyKey?.id
+            lastPendingEntry?.localGroupHistoryKeyId == groupHistoryKeyId
         }
 
         val lastEntryPoint =
@@ -158,7 +164,7 @@ class SavePendingLocationUseCase(
                         key = userKey.key
                     ),
                     userKeyVersion = userKey.version,
-                    localGroupHistoryKeyId = historyKey?.id
+                    localGroupHistoryKeyId = groupHistoryKeyId
                 )
             } else {
                 logg.e("location_history", "Day key is null or blank: ${updatedEntry.status.startTime}")

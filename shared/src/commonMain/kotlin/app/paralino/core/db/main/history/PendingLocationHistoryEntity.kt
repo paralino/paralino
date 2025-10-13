@@ -1,4 +1,4 @@
-package app.paralino.core.db.main.location
+package app.paralino.core.db.main.history
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -12,5 +12,9 @@ data class PendingLocationHistoryEntity(
     @ColumnInfo(name = "dateIdentifier") val dateIdentifier: String,
     @ColumnInfo(name = "locationHistoryData") val locationHistoryData: String,
     @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long,
+
+    /**
+     * This is always null for personal space
+    */
     @ColumnInfo(name = "groupHistoryKeyId") val localGroupHistoryKeyId: Long?
 )

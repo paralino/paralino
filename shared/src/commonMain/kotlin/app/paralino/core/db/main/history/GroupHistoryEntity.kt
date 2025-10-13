@@ -1,4 +1,4 @@
-package app.paralino.core.db.main.location
+package app.paralino.core.db.main.history
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -1,8 +1,8 @@
 package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
-import app.paralino.core.db.main.location.GroupHistoryEntity
-import app.paralino.core.db.main.location.PersonalHistoryEntity
+import app.paralino.core.db.main.history.GroupHistoryEntity
+import app.paralino.core.db.main.history.PersonalHistoryEntity
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser

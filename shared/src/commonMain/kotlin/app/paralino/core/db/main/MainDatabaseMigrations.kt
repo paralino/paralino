@@ -179,6 +179,14 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_24_25 = object : Migration(24, 25) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("DROP TABLE localLocationHistoryKeyEntity")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -204,5 +212,6 @@ object MainDatabaseMigrations {
         MIGRATION_21_22,
         MIGRATION_22_23,
         MIGRATION_23_24,
+        MIGRATION_24_25,
     )
 }

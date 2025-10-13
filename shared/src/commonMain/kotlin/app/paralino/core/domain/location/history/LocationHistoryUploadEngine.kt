@@ -5,8 +5,8 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
-import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
-import app.paralino.core.db.main.location.UnconfirmedLocationHistoryEntity
+import app.paralino.core.db.main.history.UnconfirmedLocationHistoryEntity
+import app.paralino.core.db.main.keys.PersonalLocalHistoryKeyEntity
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.crypto.GroupValidityVerification
 import app.paralino.core.domain.crypto.IntegrityResult
@@ -135,22 +135,18 @@ class LocationHistoryUploadEngine(
             if (response.isSuccess) {
                 val response = response.response<HistoryUploadResponse>()
 
-                response.data.personalHistoryResult?.let {
-                    database.pendingLocationHistoryDao.deleteUnconfirmedUploadEntries(
-                        ids = it.uploadedEntries
+                response.data.personalHistoryResult?.let { personalResult ->
+                    database.unconfirmedLocationHistoryDao.deleteUnconfirmedUploadEntries(
+                        ids = personalResult.uploadedEntries
                     )
 
-                    it.uploadedHistoryKeys.forEach {
-                        database.pendingLocationHistoryDao.updateLocalHistoryKey(
-                            groupId = UserGroup.groupPersonalDevicesId,
-                            historyKeyVersion = it,
-                            synced = true
-                        )
-                    }
+                    database.personalLocalHistoryKeyDao.markKeysAsSynced(
+                        syncedKeysVersions = personalResult.uploadedHistoryKeys
+                    )
                 }
 
                 response.data.groupHistoryResult?.let {
-                    database.pendingLocationHistoryDao.deleteUnconfirmedUploadEntries(
+                    database.unconfirmedLocationHistoryDao.deleteUnconfirmedUploadEntries(
                         ids = it.uploadedEntries
                     )
                 }
@@ -181,7 +177,7 @@ class LocationHistoryUploadEngine(
 
         val result = if (personalHistoryNodes.isNotEmpty()) {
             val historyKeyEntity =
-                database.pendingLocationHistoryDao.getLatestHistoryKey(groupOrSpaceId = UserGroup.groupPersonalDevicesId)
+                database.personalLocalHistoryKeyDao.getLatestHistoryKey()
                     ?.takeIf { key -> key.createdAtInstant?.isOlderThan(30.days) == false }
 
             val historyKeyData = if (historyKeyEntity == null) {
@@ -260,7 +256,8 @@ class LocationHistoryUploadEngine(
         val newKeyData = result.first
         val personalHistory = result.second
 
-        val currentUnconfirmed = database.pendingLocationHistoryDao.getAllUnconfirmedEntriesForGroupOnce(groupId = UserGroup.groupPersonalDevicesId)
+        val currentUnconfirmed = database.unconfirmedLocationHistoryDao
+            .getAllUnconfirmedEntriesForGroupOnce(groupId = UserGroup.groupPersonalDevicesId)
             .map {
                 LocationHistoryPayloadEntry(
                     dateIdentifier = it.dateIdentifier,
@@ -270,7 +267,7 @@ class LocationHistoryUploadEngine(
                 )
             }
 
-        val unsyncedKeys = database.pendingLocationHistoryDao.getUnsyncedHistoryKeys(groupId = UserGroup.groupPersonalDevicesId)
+        val unsyncedKeys = database.personalLocalHistoryKeyDao.getAllUnsyncedHistoryKeys()
             .map {
                 LocationHistoryPersonalKeyPayload(
                     historyKeyVersion = it.historyKeyVersion,
@@ -280,9 +277,8 @@ class LocationHistoryUploadEngine(
             }
 
         if (newKeyData != null) {
-            database.pendingLocationHistoryDao.saveLocalHistoryKey(
-                key = LocalLocationHistoryKeyEntity(
-                    groupId = UserGroup.groupPersonalDevicesId,
+            database.personalLocalHistoryKeyDao.saveLocalHistoryKey(
+                key = PersonalLocalHistoryKeyEntity(
                     createdAt = nowUTC().toString(),
                     userKeyVersion = newKeyData.userKeyVersion,
                     historyKeyVersion =  newKeyData.historyKeyVersion,
@@ -292,7 +288,7 @@ class LocationHistoryUploadEngine(
             )
         }
 
-        database.pendingLocationHistoryDao.createUnconfirmedEntries(
+        database.unconfirmedLocationHistoryDao.createUnconfirmedEntries(
             entries = personalHistory.map {
                 UnconfirmedLocationHistoryEntity(
                     pendingUploadId = it.pendingUploadId,
@@ -332,7 +328,7 @@ class LocationHistoryUploadEngine(
         if (result == IntegrityResult.CORRUPTED) {
             logg.tag(executionKey).v("Group device integrity is corrupted, clear pending location history for (${groupId})")
             database.pendingLocationHistoryDao.deleteAllPendingEntriesForGroup(groupOrSpaceId = groupId)
-            database.pendingLocationHistoryDao.deleteAllUnconfirmedEntriesForGroup(groupId = groupId)
+            database.unconfirmedLocationHistoryDao.deleteAllUnconfirmedEntriesForGroup(groupId = groupId)
             return null
         }
 
@@ -350,7 +346,7 @@ class LocationHistoryUploadEngine(
             return null
         }
 
-        val historyKeys = database.pendingLocationHistoryDao.getHistoryKeys(groupId = groupId)
+        val historyKeys = database.groupLocalHistoryKeyDao.getHistoryKeys(groupId = groupId)
 
         val groupHistory = if (groupHistoryNodes.isNotEmpty()) {
             groupHistoryNodes
@@ -414,7 +410,7 @@ class LocationHistoryUploadEngine(
             emptyList()
         }
 
-        val currentUnconfirmed = database.pendingLocationHistoryDao.getAllUnconfirmedEntriesForGroupOnce(groupId = groupId)
+        val currentUnconfirmed = database.unconfirmedLocationHistoryDao.getAllUnconfirmedEntriesForGroupOnce(groupId = groupId)
             .map {
                 LocationHistoryPayloadEntry(
                     dateIdentifier = it.dateIdentifier,
@@ -424,7 +420,7 @@ class LocationHistoryUploadEngine(
                 )
             }
 
-        database.pendingLocationHistoryDao.createUnconfirmedEntries(
+        database.unconfirmedLocationHistoryDao.createUnconfirmedEntries(
             entries = groupHistory.map {
                 UnconfirmedLocationHistoryEntity(
                     pendingUploadId = it.pendingUploadId,

@@ -25,17 +25,21 @@ import app.paralino.core.db.main.keys.GroupKeysEntity
 import app.paralino.core.db.main.keys.GroupMembersKeysEntity
 import app.paralino.core.db.main.keys.GroupRelatedKeysDao
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
-import app.paralino.core.db.main.keys.LocalLocationHistoryKeyEntity
+import app.paralino.core.db.main.keys.GroupLocalHistoryKeyEntity
 import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.db.main.keys.UserKeysDao
 import app.paralino.core.db.main.keys.UserKeysEntity
-import app.paralino.core.db.main.location.GroupHistoryEntity
-import app.paralino.core.db.main.location.LocationHistoryDao
-import app.paralino.core.db.main.location.PendingLocationHistoryDao
-import app.paralino.core.db.main.location.PendingLocationHistoryEntity
-import app.paralino.core.db.main.location.PersonalHistoryEntity
-import app.paralino.core.db.main.location.UnconfirmedLocationHistoryEntity
+import app.paralino.core.db.main.history.GroupHistoryEntity
+import app.paralino.core.db.main.history.GroupLocalHistoryKeyDao
+import app.paralino.core.db.main.history.LocationHistoryDao
+import app.paralino.core.db.main.history.PendingLocationHistoryDao
+import app.paralino.core.db.main.history.PendingLocationHistoryEntity
+import app.paralino.core.db.main.history.PersonalHistoryEntity
+import app.paralino.core.db.main.history.PersonalLocalHistoryKeyDao
+import app.paralino.core.db.main.history.UnconfirmedLocationHistoryEntity
+import app.paralino.core.db.main.history.UnconfirmedUploadHistoryDao
+import app.paralino.core.db.main.keys.PersonalLocalHistoryKeyEntity
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.db.main.places.PlaceActivityDao
 import app.paralino.core.db.main.places.PlaceActivityEntity
@@ -83,10 +87,11 @@ import kotlinx.coroutines.IO
         PersonalHistoryEntity::class,
         GroupHistoryKeyEntity::class,
         GroupHistoryEntity::class,
-        LocalLocationHistoryKeyEntity::class,
+        PersonalLocalHistoryKeyEntity::class,
+        GroupLocalHistoryKeyEntity::class,
         UnconfirmedLocationHistoryEntity::class
     ],
-    version = 24,
+    version = 25,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
@@ -103,6 +108,9 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun placeActivityDao(): PlaceActivityDao
     abstract fun groupRelatedDao(): GroupRelatedEntitiesDao
     abstract fun pendingLocationHistoryDao(): PendingLocationHistoryDao
+    abstract fun unconfirmedLocationHistoryDao(): UnconfirmedUploadHistoryDao
+    abstract fun personalLocalHistoryKeyDao(): PersonalLocalHistoryKeyDao
+    abstract fun groupLocalHistoryKeyDao(): GroupLocalHistoryKeyDao
     abstract fun locationHistoryDao(): LocationHistoryDao
     abstract fun logoutDao(): LogoutDao
 

@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlin.time.Instant
 
-@Entity(tableName = "localLocationHistoryKeyEntity")
-data class LocalLocationHistoryKeyEntity(
+@Entity(tableName = "groupLocalHistoryKeyEntity")
+data class GroupLocalHistoryKeyEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(name = "groupId") val groupId: String,
     @ColumnInfo(name = "createdAt") val createdAt: String,

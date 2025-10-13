@@ -309,7 +309,7 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
     suspend fun clearAllUnconfirmedLocationHistoryForGroup(groupId: String)
 
-    @Query("DELETE FROM localLocationHistoryKeyEntity WHERE groupId = :groupId")
+    @Query("DELETE FROM groupLocalHistoryKeyEntity WHERE groupId = :groupId")
     suspend fun clearAllLocalHistoryKeysForGroup(groupId: String)
 
 

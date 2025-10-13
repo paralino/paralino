@@ -54,6 +54,8 @@ class DeleteObsoleteLocationHistoryUseCase(
                         deleteForAllDevices = true,
                     )
                 }
+
+                database.personalLocalHistoryKeyDao.clearUnusedSyncedKeys()
             }
 
             // Delete obsolete group history
