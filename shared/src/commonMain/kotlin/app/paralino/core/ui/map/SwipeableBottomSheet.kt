@@ -506,7 +506,7 @@ class SwipeableSheetState internal constructor(
         }
         val sheetHorizontalHalfExpandedPadding = when (DeviceType.current) {
             DeviceType.Android -> 6.dp
-            DeviceType.iOS -> 4.dp
+            DeviceType.iOS -> 6.dp
         }
         val sheetBottomCollapsedPadding = when (DeviceType.current) {
             DeviceType.Android -> 10.dp
@@ -514,7 +514,7 @@ class SwipeableSheetState internal constructor(
         }
         val sheetBottomHalfExpandedPadding = when (DeviceType.current) {
             DeviceType.Android -> 6.dp
-            DeviceType.iOS -> 4.dp
+            DeviceType.iOS -> 6.dp
         }
         
         // Top corner radius values
@@ -538,7 +538,7 @@ class SwipeableSheetState internal constructor(
         }
         val bottomCornerHalfExpanded = when (DeviceType.current) {
             DeviceType.Android -> 34.dp
-            DeviceType.iOS -> 58.dp
+            DeviceType.iOS -> 57.dp
         }
         val bottomCornerExpanded = when (DeviceType.current) {
             DeviceType.Android -> 0.dp
