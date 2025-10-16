@@ -51,8 +51,8 @@ class SavePendingLocationUseCase(
             null
         } else {
             // if history key is missing we are skipping location point
-            database.groupLocalHistoryKeyDao.getLatestHistoryKey(
-                groupOrSpaceId = entry.groupId.id
+            database.groupLocalHistoryKeyDao.getActiveHistoryKey(
+                groupId = entry.groupId.id
             )?.id ?: return null
         }
 
@@ -99,7 +99,7 @@ class SavePendingLocationUseCase(
         )
         val isHistoryKeyValid = if (entry.groupId.isPersonalSpace) {
             // For personal space, no need to track history key since there is only one member
-            // and history key is generated before upload, not before saving entry
+            // and history key is generated before upload, not before saving entry.
             // in groups we need key before saving location
             true
         } else {

@@ -27,6 +27,7 @@ class MainDatabaseHelper(
     val unconfirmedLocationHistoryDao by lazy { roomDatabase.unconfirmedLocationHistoryDao() }
     val personalLocalHistoryKeyDao by lazy { roomDatabase.personalLocalHistoryKeyDao() }
     val groupLocalHistoryKeyDao by lazy { roomDatabase.groupLocalHistoryKeyDao() }
+    val unsyncedGroupHistoryKeysDao by lazy { roomDatabase.unsyncedGroupHistoryKeysDao() }
     val locationHistoryDao by lazy { roomDatabase.locationHistoryDao() }
     val logoutDao by lazy { roomDatabase.logoutDao() }
     val userDeviceDao by lazy { roomDatabase.userDeviceDao() }

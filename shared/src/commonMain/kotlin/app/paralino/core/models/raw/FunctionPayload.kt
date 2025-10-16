@@ -128,9 +128,7 @@ data class MemberLocationDataPayload constructor(
 data class GroupSenderKeyPayload constructor(
     val userId: String,
     val memberKeyVersion: Long,
-    val encryptedSenderKey: String,
-    val historyKeyVersion: String?,
-    val encryptedHistoryKey: String?,
+    val encryptedSenderKey: String
 )
 
 @Serializable
@@ -380,6 +378,8 @@ data class LocationHistoryGroupPayload(
     val locationId: String,
     val entries: List<LocationHistoryPayloadEntry>,
     val retryEntries: List<LocationHistoryPayloadEntry>,
+    val historyKeys: List<LocationHistoryGroupKeyPayload>,
+    val retryHistoryKeys: List<LocationHistoryGroupKeyPayload>
 )
 
 @Serializable
@@ -394,6 +394,14 @@ data class LocationHistoryPayloadEntry(
 data class LocationHistoryPersonalKeyPayload constructor(
     val historyKeyVersion: String,
     val userKeyVersion: Long,
+    val encryptedHistoryKey: String,
+)
+
+@Serializable
+data class LocationHistoryGroupKeyPayload constructor(
+    val memberId: String,
+    val historyKeyVersion: String,
+    val memberKeyVersion: Long,
     val encryptedHistoryKey: String,
 )
 
@@ -413,7 +421,15 @@ data class PersonalHistoryUploadResponse(
 @Serializable
 data class GroupHistoryUploadResponse(
     val uploadedEntries: List<String>,
+    val uploadedHistoryKeys: List<GroupHistoryKeyUploadResult>,
     val errors: List<HistoryUploadError>
+)
+
+@Serializable
+data class GroupHistoryKeyUploadResult(
+    val groupId: String,
+    val memberId: String,
+    val historyKeyVersion: String,
 )
 
 @Serializable

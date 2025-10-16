@@ -87,6 +87,8 @@ class DeleteObsoleteLocationHistoryUseCase(
                         deleteForAllDevices = true,
                     )
                 }
+
+                database.groupLocalHistoryKeyDao.deleteAllInactiveKeys(groupId = group.id)
             }
             
             logg.tag("delete_obsolete_history").d("Obsolete history cleanup completed")

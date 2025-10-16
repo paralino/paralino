@@ -312,6 +312,9 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM groupLocalHistoryKeyEntity WHERE groupId = :groupId")
     suspend fun clearAllLocalHistoryKeysForGroup(groupId: String)
 
+    @Query("DELETE FROM unsyncedGroupHistoryKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllUnsyncedHistoryKeysForGroup(groupId: String)
+
 
 
     // Transaction operations
@@ -370,6 +373,7 @@ interface GroupRelatedEntitiesDao {
         clearAllPendingHistoryForGroup(groupId = groupId)
         clearAllUnconfirmedLocationHistoryForGroup(groupId = groupId)
         clearAllLocalHistoryKeysForGroup(groupId = groupId)
+        clearAllUnsyncedHistoryKeysForGroup(groupId = groupId)
     }
 
     @Transaction

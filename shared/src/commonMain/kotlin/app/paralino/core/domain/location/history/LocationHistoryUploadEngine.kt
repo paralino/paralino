@@ -17,6 +17,7 @@ import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryPointModelForMember
 import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.HistoryUploadResponse
+import app.paralino.core.models.raw.LocationHistoryGroupKeyPayload
 import app.paralino.core.models.raw.LocationHistoryGroupPayload
 import app.paralino.core.models.raw.LocationHistoryPayloadEntry
 import app.paralino.core.models.raw.LocationHistoryPersonalKeyPayload
@@ -29,7 +30,7 @@ import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.InvalidRequestException
 import app.paralino.core.utils.extensions.isOlderThan
@@ -59,7 +60,7 @@ class LocationHistoryUploadEngine(
     private val cryptoCore: CryptoCore,
     private val functionsApi: IFunctionsApi,
     private val remoteConfig: RemoteConfigRepository,
-    private val userRepo: UserRepository,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository(), ILocationHistoryUploadEngine {
 
@@ -145,10 +146,18 @@ class LocationHistoryUploadEngine(
                     )
                 }
 
-                response.data.groupHistoryResult?.let {
+                response.data.groupHistoryResult?.let { groupResult ->
                     database.unconfirmedLocationHistoryDao.deleteUnconfirmedUploadEntries(
-                        ids = it.uploadedEntries
+                        ids = groupResult.uploadedEntries
                     )
+
+                    groupResult.uploadedHistoryKeys.forEach { key ->
+                        database.unsyncedGroupHistoryKeysDao.deleteKeys(
+                            groupId = key.groupId,
+                            memberId = key.memberId,
+                            historyKeyVersion = key.historyKeyVersion
+                        )
+                    }
                 }
             } else {
                 throw response.remoteException
@@ -163,8 +172,11 @@ class LocationHistoryUploadEngine(
         val personalHistoryNodes = this
             .filter { it.groupId == UserGroup.groupPersonalDevicesId }
 
-        val userPlan = userRepo.userPlans.value.highestValidPlanConfig
-        if (!userPlan.isPersonalHistoryEnabled) {
+        val space = personalSpaceRepo.personalSpaceState.value.data
+        if (space == null) {
+            logg.tag(executionKey).v("Skip history upload for personal space - not initialized")
+            return null
+        } else if (!space.plan.isPersonalHistoryEnabled) {
             val entriesToDelete = personalHistoryNodes
                 .sortedByDescending { it.entryId }
                 .drop(100)
@@ -346,7 +358,7 @@ class LocationHistoryUploadEngine(
             return null
         }
 
-        val historyKeys = database.groupLocalHistoryKeyDao.getHistoryKeys(groupId = groupId)
+        val localHistoryKeys = database.groupLocalHistoryKeyDao.getHistoryKeys(groupId = groupId)
 
         val groupHistory = if (groupHistoryNodes.isNotEmpty()) {
             groupHistoryNodes
@@ -360,8 +372,7 @@ class LocationHistoryUploadEngine(
                     if (!dateKey.isNullOrBlank()) {
                         entryPerDay.value.mapNotNull { entryPerKey ->
 
-                            val historyKey = historyKeys.firstOrNull { it.id == entryPerKey.key }
-                                ?.takeIf { it.historyKeyVersion.isNotBlank() }
+                            val historyKey = localHistoryKeys.firstOrNull { it.id == entryPerKey.key }
 
                             if (historyKey != null) {
                                 val historyKeyData = HistoryKeyPayload(
@@ -436,7 +447,44 @@ class LocationHistoryUploadEngine(
             ids = groupHistoryNodes.map { it.entryId }
         )
 
-        if (groupHistory.isEmpty() && currentUnconfirmed.isEmpty()) {
+        val unsyncedHistoryKeys = database.unsyncedGroupHistoryKeysDao
+            .getHistoryKeysForGroup(groupId = groupId)
+            .filter { key ->
+                group.members.any {
+                    it.member.isVerified &&
+                            it.member.id == key.memberId &&
+                            it.member.userId == key.memberUserId &&
+                            it.member.verification == key.memberVerification
+                }
+            }
+
+        val neverSyncedKeys = unsyncedHistoryKeys.filter { !it.isSyncedOnce }.map {
+            LocationHistoryGroupKeyPayload(
+                memberId = it.memberId,
+                historyKeyVersion = it.historyKeyVersion,
+                memberKeyVersion = it.memberKeyVersion,
+                encryptedHistoryKey = it.encryptedHistoryKey
+            )
+        }
+
+        val retryHistoryKeys = unsyncedHistoryKeys.filter { it.isSyncedOnce }.map {
+            LocationHistoryGroupKeyPayload(
+                memberId = it.memberId,
+                historyKeyVersion = it.historyKeyVersion,
+                memberKeyVersion = it.memberKeyVersion,
+                encryptedHistoryKey = it.encryptedHistoryKey
+            )
+        }
+
+        neverSyncedKeys.forEach { key ->
+            database.unsyncedGroupHistoryKeysDao.markKeysAsSyncedOnce(
+                groupId = groupId,
+                memberId = key.memberId,
+                historyKeyVersion = key.historyKeyVersion
+            )
+        }
+
+        if (groupHistory.isEmpty() && currentUnconfirmed.isEmpty() && retryHistoryKeys.isEmpty()) {
             return null
         }
 
@@ -444,7 +492,9 @@ class LocationHistoryUploadEngine(
             groupId = groupId,
             locationId = group.currentDeviceLocation?.id ?: "",
             entries = groupHistory,
-            retryEntries = currentUnconfirmed
+            retryEntries = currentUnconfirmed,
+            historyKeys = neverSyncedKeys,
+            retryHistoryKeys = retryHistoryKeys
         )
     }
 

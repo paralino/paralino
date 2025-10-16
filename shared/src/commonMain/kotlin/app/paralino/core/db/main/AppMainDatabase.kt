@@ -39,6 +39,8 @@ import app.paralino.core.db.main.history.PersonalHistoryEntity
 import app.paralino.core.db.main.history.PersonalLocalHistoryKeyDao
 import app.paralino.core.db.main.history.UnconfirmedLocationHistoryEntity
 import app.paralino.core.db.main.history.UnconfirmedUploadHistoryDao
+import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyDao
+import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.PersonalLocalHistoryKeyEntity
 import app.paralino.core.db.main.places.PendingPlaceEventsEntity
 import app.paralino.core.db.main.places.PlaceActivityDao
@@ -89,9 +91,10 @@ import kotlinx.coroutines.IO
         GroupHistoryEntity::class,
         PersonalLocalHistoryKeyEntity::class,
         GroupLocalHistoryKeyEntity::class,
-        UnconfirmedLocationHistoryEntity::class
+        UnconfirmedLocationHistoryEntity::class,
+        UnsyncedGroupHistoryKeyEntity::class,
     ],
-    version = 25,
+    version = 26,
     exportSchema = true
 )
 @ConstructedBy(AppMainDatabaseConstructor::class)
@@ -112,6 +115,7 @@ abstract class AppMainDatabase : RoomDatabase() {
     abstract fun personalLocalHistoryKeyDao(): PersonalLocalHistoryKeyDao
     abstract fun groupLocalHistoryKeyDao(): GroupLocalHistoryKeyDao
     abstract fun locationHistoryDao(): LocationHistoryDao
+    abstract fun unsyncedGroupHistoryKeysDao(): UnsyncedGroupHistoryKeyDao
     abstract fun logoutDao(): LogoutDao
 
     companion object {

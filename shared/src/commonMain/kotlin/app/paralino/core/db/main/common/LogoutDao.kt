@@ -32,6 +32,7 @@ interface LogoutDao {
         clearAllUnconfirmedHistory()
         clearAllGroupLocalHistoryKeys()
         clearAllPersonalLocalHistoryKeys()
+        clearUnsyncedGroupHistoryKeys()
         clearAllGroupKeys()
         clearAllGroupMembersKeys()
         clearAllGroupDeviceKeys()
@@ -109,6 +110,9 @@ interface LogoutDao {
 
     @Query("DELETE FROM personalLocalHistoryKeyEntity")
     suspend fun clearAllPersonalLocalHistoryKeys()
+
+    @Query("DELETE FROM unsyncedGroupHistoryKeyEntity")
+    suspend fun clearUnsyncedGroupHistoryKeys()
 
     @Query("DELETE FROM groupKeysEntity")
     suspend fun clearAllGroupKeys()

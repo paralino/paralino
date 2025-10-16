@@ -14,11 +14,8 @@ data class GroupLocalHistoryKeyEntity(
     @ColumnInfo(name = "createdAt") val createdAt: String,
     @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long,
     @ColumnInfo(name = "historyKeyVersion") val historyKeyVersion: String,
-
-    // this key can also be blank, if location sharing is not active at the moment
-    // TODO review if we can just remove it
     @ColumnInfo(name = "encryptedHistoryKey") val encryptedHistoryKey: String,
-    @ColumnInfo(name = "isSynced") val isSynced: Boolean
+    @ColumnInfo(name = "isActive") val isActive: Boolean,
 ) {
     @Ignore
     val createdAtInstant: Instant? = createdAt.isoWithOffsetToInstant()
@@ -29,7 +26,7 @@ data class GroupLocalHistoryKeyEntity(
         userKeyVersion: Long,
         historyKeyVersion: String,
         encryptedHistoryKey: String,
-        isSynced: Boolean
+        isActive: Boolean,
     ) : this(
         id = 0,
         groupId = groupId,
@@ -37,6 +34,6 @@ data class GroupLocalHistoryKeyEntity(
         userKeyVersion = userKeyVersion,
         historyKeyVersion = historyKeyVersion,
         encryptedHistoryKey = encryptedHistoryKey,
-        isSynced = isSynced
+        isActive = isActive,
     )
 }

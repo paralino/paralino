@@ -8,6 +8,7 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.user.UserMe
+import app.paralino.core.models.user.UserPlans
 import kotlinx.serialization.Contextual
 
 data class UserDeviceModel(
@@ -27,10 +28,11 @@ data class UserDeviceModel(
 
 data class UserPersonalSpaceModel(
     val user: UserMe,
-    val plan: PlanConfig,
+    val plans: UserPlans,
     val devices: List<UserDeviceModel>,
     val placesCount: Int
 ) {
+    val plan: PlanConfig = plans.highestValidPlanConfig
     val activeDeviceCount: Int = devices.count { it.location != null }
     val currentDevice: UserDeviceModel? get() {
         val userId = appPrefs.userId

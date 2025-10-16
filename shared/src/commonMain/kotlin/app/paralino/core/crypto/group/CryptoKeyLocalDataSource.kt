@@ -1,10 +1,13 @@
 package app.paralino.core.crypto.group
 
+import androidx.compose.runtime.key
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.GroupLocalHistoryKeyEntity
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -165,22 +168,46 @@ class CryptoKeyLocalDataSource constructor(
         )
     }
 
-    suspend fun saveGroupHistoryKey(
+    suspend fun saveAndActivateGroupHistoryKey(
         groupId: String,
         userKeyVersion: Long,
         historyKeyVersion: String,
-        encryptedHistoryKey: String,
-        isSynced: Boolean,
+        encryptedHistoryKey: String
     ) {
-        database.groupLocalHistoryKeyDao.saveLocalHistoryKey(
+        database.groupLocalHistoryKeyDao.saveAndActivateHistoryKey(
             key = GroupLocalHistoryKeyEntity(
                 groupId = groupId,
                 createdAt = nowUTC().toString(),
                 userKeyVersion = userKeyVersion,
                 historyKeyVersion = historyKeyVersion,
                 encryptedHistoryKey = encryptedHistoryKey,
-                isSynced = isSynced
+                isActive = true
             )
+        )
+    }
+
+    suspend fun deactivateGroupHistoryKey(groupId: String) {
+        database.groupLocalHistoryKeyDao.markKeysAsInactive(groupId)
+    }
+
+    suspend fun savePendingGroupHistoryMemberKeys(
+        groupId: String,
+        keys: List<MemberDeviceKeyRotation.GroupHistoryKeyPayload>
+    ) {
+        database.unsyncedGroupHistoryKeysDao.saveLocalHistoryKeys(
+            keys = keys.map { key ->
+                UnsyncedGroupHistoryKeyEntity(
+                    id = 0,
+                    groupId = groupId,
+                    memberUserId = key.userId,
+                    memberId = key.memberId,
+                    memberVerification = key.memberVerification,
+                    memberKeyVersion = key.memberKeyVersion,
+                    historyKeyVersion = key.historyKeyVersion,
+                    encryptedHistoryKey = key.encryptedHistoryKey,
+                    isSyncedOnce = false
+                )
+            }
         )
     }
 

@@ -274,7 +274,7 @@ class RegisterDeviceForSharingUseCase constructor(
                     status = status,
                     groupKeyVersion = groupKey.version,
                     notify = notifyOthers,
-                    keys = keyData.keys
+                    keys = keyData.keys.map { it.senderKey }
                 )
 
                 logg.tag("sharing_start").d("Send register device request")
@@ -306,28 +306,30 @@ class RegisterDeviceForSharingUseCase constructor(
 
                     val safetySignature = getSafetySignature(groupId = groupId, member = member)
 
-                    // always save history key entry even if invalid so we keep ratchet going
-                    cryptoKEKRepo.saveGroupHistoryKey(
-                        groupId = groupId,
-                        userKeyVersion = userKey.version,
-                        historyKeyVersion = keyData.historyKeyVersion ?: "",
-                        encryptedHistoryKey = if (!keyData.plainTextHistoryKey.isNullOrBlank()) {
-                            cryptoCore.encryptDataWithKey(
-                                data = keyData.plainTextHistoryKey,
-                                key = userKey.key
-                            )
-                        } else {
-                            ""
-                        },
-                        isSynced = true
-                    )
-
                     cryptoKEKRepo.updateIntegrity(
                         groupId = group.id,
                         integrity = groupDeviceIntegrity,
                         safetySignature = safetySignature,
                         userKeyVersion = userKey.version
                     )
+
+                    if (keyData.plainTextHistoryKey.isNullOrBlank() || keyData.historyKeyVersion.isNullOrBlank()) {
+                        cryptoKEKRepo.deactivateGroupHistoryKey(groupId = group.id)
+                    } else {
+                        cryptoKEKRepo.saveAndActivateGroupHistoryKey(
+                            groupId = group.id,
+                            userKeyVersion = userKey.version,
+                            historyKeyVersion = keyData.historyKeyVersion,
+                            encryptedHistoryKey = cryptoCore.encryptDataWithKey(
+                                data = keyData.plainTextHistoryKey,
+                                key = userKey.key
+                            )
+                        )
+                    }
+
+                    keyData.keys.mapNotNull { it.historyKey }.let { keys ->
+                        cryptoKEKRepo.savePendingGroupHistoryMemberKeys(groupId = group.id, keys = keys)
+                    }
 
                     logg.tag("sharing_start").d("Integrity updated, refresh group")
                     val result2 = groupPreRefreshUseCase.refreshGroupWithMembers(

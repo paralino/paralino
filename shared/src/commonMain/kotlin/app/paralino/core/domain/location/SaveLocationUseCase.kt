@@ -171,8 +171,7 @@ class SaveLocationUseCase(
         val historyEntries = if (data.groupId.isPersonalSpace) {
             database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
         } else {
-            val historyKey = database.groupLocalHistoryKeyDao.getLatestHistoryKey(groupOrSpaceId = data.groupId.id)
-                ?.takeIf { it.encryptedHistoryKey.isNotBlank() }
+            val historyKey = database.groupLocalHistoryKeyDao.getActiveHistoryKey(groupId = data.groupId.id)
             database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
                 // history key can be null for personal space
                 .filter { it.localGroupHistoryKeyId == historyKey?.id }

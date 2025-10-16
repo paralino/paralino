@@ -66,11 +66,11 @@ class UserPersonalSpaceLocalDataSource constructor(
             devicesLocal.getAllUserDevices(),
             userRepo.userPlans,
             database.groupRelatedDao.getPlacesCountForPersonalSpace()
-        ) { user, devices, plan, placesCount ->
+        ) { user, devices, plans, placesCount ->
             if (user != null) {
                 UserPersonalSpaceModel(
                     user = user,
-                    plan = plan.highestValidPlanConfig,
+                    plans = plans,
                     devices = devices,
                     placesCount = placesCount ?: 0
                 )

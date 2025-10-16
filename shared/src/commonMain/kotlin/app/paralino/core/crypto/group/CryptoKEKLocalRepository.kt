@@ -14,6 +14,7 @@ import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -598,20 +599,29 @@ class CryptoKEKLocalRepository(
         )
     }
 
-    suspend fun saveGroupHistoryKey(
+    suspend fun saveAndActivateGroupHistoryKey(
         groupId: String,
         userKeyVersion: Long,
         historyKeyVersion: String,
         encryptedHistoryKey: String,
-        isSynced: Boolean,
     ) {
-        local.saveGroupHistoryKey(
+        local.saveAndActivateGroupHistoryKey(
             groupId = groupId,
             userKeyVersion = userKeyVersion,
             historyKeyVersion = historyKeyVersion,
             encryptedHistoryKey = encryptedHistoryKey,
-            isSynced = isSynced
         )
+    }
+
+    suspend fun deactivateGroupHistoryKey(groupId: String) {
+        local.deactivateGroupHistoryKey(groupId = groupId)
+    }
+
+    suspend fun savePendingGroupHistoryMemberKeys(
+        groupId: String,
+        keys: List<MemberDeviceKeyRotation.GroupHistoryKeyPayload>
+    ) {
+        local.savePendingGroupHistoryMemberKeys(groupId = groupId, keys = keys)
     }
 
     suspend fun getDeviceIntegrityForGroup(groupId: String): GroupDeviceIntegrityEntity? {

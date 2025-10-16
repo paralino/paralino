@@ -170,6 +170,14 @@ class MemberDeviceKeyRotation(
             locationData = newLocationData.locationPayload,
         )
 
+        // Save history keys locally before upload
+        // this way we have the keys regardless of result since backend only saves and distributes the keys.
+        // If we would save it for successful response, there could be a case where everything is
+        // actually synced properly, but device throws a network error - then we would lose history keys
+        newLocationData.keyData?.keys?.mapNotNull { it.historyKey }?.let { keys ->
+            cryptoKEKRepository.savePendingGroupHistoryMemberKeys(groupId = group.id, keys = keys)
+        }
+
         val response = functionsApi.runAndWait(
             function = ServerFunction.KEYS_UPDATE_LOCATIONS,
             data = payloadData
@@ -215,21 +223,19 @@ class MemberDeviceKeyRotation(
                 membershipKey = publicKey.membershipKey,
             )
 
-            // always save history key entry even if invalid so we keep ratchet going
-            cryptoKEKRepository.saveGroupHistoryKey(
-                groupId = group.id,
-                userKeyVersion = userKey.version,
-                historyKeyVersion = newLocationData.keyData?.historyKeyVersion ?: "",
-                encryptedHistoryKey = if (!newLocationData.keyData?.plainTextHistoryKey.isNullOrBlank()) {
-                    cryptoCore.encryptDataWithKey(
+            if (newLocationData.keyData?.plainTextHistoryKey.isNullOrBlank() || newLocationData.keyData.historyKeyVersion.isNullOrBlank()) {
+                cryptoKEKRepository.deactivateGroupHistoryKey(groupId = group.id)
+            } else {
+                cryptoKEKRepository.saveAndActivateGroupHistoryKey(
+                    groupId = group.id,
+                    userKeyVersion = userKey.version,
+                    historyKeyVersion = newLocationData.keyData.historyKeyVersion,
+                    encryptedHistoryKey = cryptoCore.encryptDataWithKey(
                         data = newLocationData.keyData.plainTextHistoryKey,
                         key = userKey.key
                     )
-                } else {
-                    ""
-                },
-                isSynced = false
-            )
+                )
+            }
 
             cryptoKEKRepository.updateIntegrity(
                 groupId = group.id,
@@ -305,7 +311,7 @@ class MemberDeviceKeyRotation(
 
             // location history cache always set to empty so we don't leak old history to new members
             locationHistory = "",
-            encryptedSenderKeys = senderKeys?.keys ?: emptyList()
+            encryptedSenderKeys = senderKeys?.keys?.map { it.senderKey } ?: emptyList()
         )
 
         return GroupDeviceLocationKeyData(
@@ -348,24 +354,32 @@ class MemberDeviceKeyRotation(
                 )
 
             if (memberPublicKey is GroupMemberMainPublicKey.Valid) {
-                GroupSenderKeyPayload(
-                    userId = groupMember.member.userId,
-                    encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
-                        data = newSenderKey,
-                        // sign with owner private key
-                        myPrivateKey = myMembershipKeys.key.privateKey,
-                        // encrypt with user public key
-                        publicKey = memberPublicKey.key
-                    ),
-                    memberKeyVersion = memberPublicKey.memberKeyVersion,
-                    historyKeyVersion = historyKeyVersion,
-                    encryptedHistoryKey = if (newHistoryKey != null) {
-                        cryptoCore.encryptDataWithKeyPair(
-                            data = newHistoryKey,
+                GroupMemberKeyPayload(
+                    senderKey = GroupSenderKeyPayload(
+                        userId = groupMember.member.userId,
+                        encryptedSenderKey = cryptoCore.encryptDataWithKeyPair(
+                            data = newSenderKey,
                             // sign with owner private key
                             myPrivateKey = myMembershipKeys.key.privateKey,
                             // encrypt with user public key
                             publicKey = memberPublicKey.key
+                        ),
+                        memberKeyVersion = memberPublicKey.memberKeyVersion
+                    ),
+                    historyKey = if (newHistoryKey != null && historyKeyVersion != null) {
+                        GroupHistoryKeyPayload(
+                            memberId = groupMember.member.id,
+                            userId = groupMember.member.userId,
+                            memberVerification = groupMember.member.verification,
+                            memberKeyVersion = memberPublicKey.memberKeyVersion,
+                            historyKeyVersion = historyKeyVersion,
+                            encryptedHistoryKey = cryptoCore.encryptDataWithKeyPair(
+                                data = newHistoryKey,
+                                // sign with owner private key
+                                myPrivateKey = myMembershipKeys.key.privateKey,
+                                // encrypt with user public key
+                                publicKey = memberPublicKey.key
+                            )
                         )
                     } else {
                         null
@@ -408,6 +422,20 @@ class MemberDeviceKeyRotation(
         val plainTextSenderKey: String,
         val plainTextHistoryKey: String?,
         val historyKeyVersion: String?,
-        val keys: List<GroupSenderKeyPayload>,
+        val keys: List<GroupMemberKeyPayload>
+    )
+
+    data class GroupMemberKeyPayload constructor(
+        val senderKey: GroupSenderKeyPayload,
+        val historyKey: GroupHistoryKeyPayload?
+    )
+
+    data class GroupHistoryKeyPayload constructor(
+        val memberId: String,
+        val userId: String,
+        val memberVerification: String,
+        val memberKeyVersion: Long,
+        val historyKeyVersion: String,
+        val encryptedHistoryKey: String,
     )
 }
