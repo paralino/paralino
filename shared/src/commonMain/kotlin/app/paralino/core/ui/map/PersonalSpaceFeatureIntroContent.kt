@@ -50,9 +50,9 @@ fun PersonalSpaceFeatureIntroContent(
             .padding(8.dp)
             .background(
                 color = AppColors.accentLight.copy(alpha = 0.2f),
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(19.dp)
             )
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(19.dp))
     ) {
         WavyDashedLine(
             modifier = Modifier

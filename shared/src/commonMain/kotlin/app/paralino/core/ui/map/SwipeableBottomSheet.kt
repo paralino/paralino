@@ -527,8 +527,8 @@ class SwipeableSheetState internal constructor(
             DeviceType.iOS -> 40.dp
         }
         val topCornerExpanded = when (DeviceType.current) {
-            DeviceType.Android -> 20.dp
-            DeviceType.iOS -> 20.dp
+            DeviceType.Android -> 25.dp
+            DeviceType.iOS -> 25.dp
         }
         
         // Bottom corner radius values
