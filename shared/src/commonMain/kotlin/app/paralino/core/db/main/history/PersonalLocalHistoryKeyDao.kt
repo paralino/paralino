@@ -19,6 +19,9 @@ interface PersonalLocalHistoryKeyDao {
     @Query("SELECT * FROM personalLocalHistoryKeyEntity WHERE isSynced = 0 ORDER BY id DESC")
     suspend fun getAllUnsyncedHistoryKeys(): List<PersonalLocalHistoryKeyEntity>
 
+    @Query("SELECT historyKeyVersion FROM personalLocalHistoryKeyEntity ORDER BY id DESC")
+    suspend fun getAllHistoryKeyVersions(): List<String>
+
     @Query("UPDATE personalLocalHistoryKeyEntity SET isSynced = :isSynced WHERE historyKeyVersion = :historyKeyVersion")
     suspend fun updateLocalHistoryKey(historyKeyVersion: String, isSynced: Boolean)
 

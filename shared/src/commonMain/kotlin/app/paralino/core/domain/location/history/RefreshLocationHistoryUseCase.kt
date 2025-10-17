@@ -1,6 +1,8 @@
 package app.paralino.core.domain.location.history
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
@@ -36,7 +38,8 @@ class RefreshLocationHistoryUseCase(
     private val functionsApi: IFunctionsApi,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val userGroupRepo: UserGroupLocalDataSource,
-    private val remoteConfig: RemoteConfigRepository
+    private val remoteConfig: RemoteConfigRepository,
+    private val appPrefs: AppPrefs,
 ) : BaseRepository() {
 
     private val mutex = Mutex()
@@ -126,8 +129,20 @@ class RefreshLocationHistoryUseCase(
                 dates = datesToLoad
             )
 
-            val keys = response.keys.map {
+            val historyKeys = response.historyKeys.map {
                 mapper.remote2LocalGroup(groupId = groupId, memberUserId = memberUserId, model = it)
+            }
+
+            val kxKeys = response.kxKeys.map {
+                PersonalGroupKeyEntity(
+                    id = it.keyId,
+                    ownerUserId = appPrefs.userId,
+                    groupId = groupId,
+                    encryptedUserKeys = it.encryptedKeys,
+                    personalGroupKeyVersion = it.memberKeyVersion,
+                    userKeyVersion = it.userKeyVersion,
+                    isArchived = true
+                )
             }
 
             val entries = response.entries.map {
@@ -139,7 +154,8 @@ class RefreshLocationHistoryUseCase(
                 groupId = groupId,
                 memberUserId = memberUserId,
                 entries = entries,
-                keys = keys
+                historyKeys = historyKeys,
+                kxKeys = kxKeys
             )
         }
     }
@@ -206,7 +222,7 @@ class RefreshLocationHistoryUseCase(
             database.locationHistoryDao.recreatePersonalHistory(
                 dates = response.dateKeys,
                 entries = entries,
-                keys = keys
+                historyKeys = keys
             )
         }
     }

@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
+import app.paralino.core.db.main.keys.PersonalGroupKeyEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -16,14 +17,14 @@ interface LocationHistoryDao {
     suspend fun recreatePersonalHistory(
         dates: List<String>,
         entries: List<PersonalHistoryEntity>,
-        keys: List<PersonalHistoryKeyEntity>
+        historyKeys: List<PersonalHistoryKeyEntity>,
     ) {
         deleteOldPersonalHistory(dates = dates)
         deleteUnusedPersonalHistoryKeys(
             usedIds = getAllPersonalHistoryKeysVersions()
         )
         createPersonalHistory(entries = entries)
-        createPersonalKeys(keys = keys)
+        createPersonalKeys(keys = historyKeys)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -42,7 +43,8 @@ interface LocationHistoryDao {
         memberUserId: String,
         dates: List<String>,
         entries: List<GroupHistoryEntity>,
-        keys: List<GroupHistoryKeyEntity>
+        historyKeys: List<GroupHistoryKeyEntity>,
+        kxKeys: List<PersonalGroupKeyEntity>,
     ) {
         deleteOldGroupHistory(groupId = groupId, memberUserId = memberUserId, dates = dates)
         deleteUnusedGroupHistoryKeys(
@@ -50,8 +52,14 @@ interface LocationHistoryDao {
             memberUserId = memberUserId,
             usedIds = getAllGroupHistoryKeysVersions(groupId = groupId, memberUserId = memberUserId)
         )
+        deleteUnusedArchivedPersonalGroupKeys(
+            groupId = groupId,
+            usedIds = getAllUsedPersonalGroupKeysVersions(groupId = groupId)
+        )
+
         createGroupHistory(entries = entries)
-        createGroupKeys(keys = keys)
+        createGroupKeys(keys = historyKeys)
+        createPersonalGroupKeys(keys = kxKeys)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -63,6 +71,18 @@ interface LocationHistoryDao {
 
     @Query("DELETE FROM groupHistoryKeysEntity WHERE groupId = :groupId AND (:memberUserId IS NULL OR ownerUserId = :memberUserId) AND historyKeyVersion NOT IN (:usedIds)")
     suspend fun deleteUnusedGroupHistoryKeys(groupId: String, memberUserId: String?, usedIds: List<String>)
+
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createPersonalGroupKeys(keys: List<PersonalGroupKeyEntity>)
+
+    @Query("DELETE FROM personalGroupKeyEntity WHERE groupId = :groupId AND isArchived = 1 AND personalGroupKeyVersion NOT IN (:usedIds)")
+    suspend fun deleteUnusedArchivedPersonalGroupKeys(groupId: String, usedIds: List<Long>)
+
+    @Query("SELECT memberKeyVersion FROM groupHistoryKeysEntity WHERE groupId = :groupId")
+    suspend fun getAllUsedPersonalGroupKeysVersions(groupId: String): List<Long>
+
 
 
 
@@ -219,6 +239,11 @@ interface LocationHistoryDao {
             groupId = groupId,
             memberUserId = memberUserId,
             usedIds = getAllGroupHistoryKeysVersions(groupId = groupId, memberUserId = memberUserId)
+        )
+
+        deleteUnusedArchivedPersonalGroupKeys(
+            groupId = groupId,
+            usedIds = getAllUsedPersonalGroupKeysVersions(groupId = groupId)
         )
     }
 }

@@ -195,6 +195,12 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_26_27 = object : Migration(26, 27) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE personalGroupKeyEntity ADD COLUMN `isArchived` INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -222,5 +228,6 @@ object MainDatabaseMigrations {
         MIGRATION_23_24,
         MIGRATION_24_25,
         MIGRATION_25_26,
+        MIGRATION_26_27
     )
 }

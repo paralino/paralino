@@ -11,7 +11,8 @@ data class PersonalGroupKeyRaw(
     val encryptedUserKeys: String,
     val groupId: String,
     val personalGroupKeyVersion: Long,
-    val userKeyVersion: Long
+    val userKeyVersion: Long,
+    val isArchived: Boolean,
 ) {
 
     companion object {
@@ -22,7 +23,8 @@ data class PersonalGroupKeyRaw(
                 encryptedUserKeys = map["encryptedUserKeys"] as String,
                 groupId = map["groupId"] as String,
                 personalGroupKeyVersion = (map["personalGroupKeyVersion"] as Number).toLong(),
-                userKeyVersion = (map["userKeyVersion"] as Number).toLong()
+                userKeyVersion = (map["userKeyVersion"] as Number).toLong(),
+                isArchived = (map["isArchived"] as? Boolean) ?: false,
             )
         }
     }

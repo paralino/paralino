@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 data class GroupLocationHistoryReadResponse(
     val dateKeys: List<String>,
     val entries: List<LocationHistoryReadEntry>,
-    val keys: List<LocationHistoryReadKey>,
+    val historyKeys: List<LocationHistoryReadKey>,
+    val kxKeys: List<PersonalKxReadKey>,
 )
 
 @Serializable
@@ -31,4 +32,12 @@ data class LocationHistoryReadKey(
     val memberKeyVersion: Long,
     val keyVersion: String,
     val encryptedKey: String
+)
+
+@Serializable
+data class PersonalKxReadKey(
+    val keyId: String,
+    val memberKeyVersion: Long,
+    val userKeyVersion: Long,
+    val encryptedKeys: String
 )

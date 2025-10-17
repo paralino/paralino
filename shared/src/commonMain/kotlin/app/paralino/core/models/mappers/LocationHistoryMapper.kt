@@ -32,7 +32,7 @@ class LocationHistoryMapper(
         val actualKeys = keys
             .filter { key -> entries.any { it.historyKeyVersion == key.historyKeyVersion } }
             .distinctBy { it.historyKeyVersion }
-            .mapNotNull { cryptoKEKRepo.parseLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid }
+            .mapNotNull { cryptoKEKRepo.parsePersonalLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid }
 
         return remote2Core(
             groupId = UserGroup.groupPersonalDevicesId,
@@ -54,7 +54,7 @@ class LocationHistoryMapper(
         val actualKeys = keys
             .filter { key -> entries.any { it.historyKeyVersion == key.historyKeyVersion } }
             .distinctBy { it.historyKeyVersion }
-            .mapNotNull { cryptoKEKRepo.parseLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid }
+            .mapNotNull { cryptoKEKRepo.parseGroupLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid }
 
         return remote2Core(
             groupId = groupId,

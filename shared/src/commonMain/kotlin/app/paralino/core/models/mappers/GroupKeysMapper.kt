@@ -91,7 +91,8 @@ class GroupKeysMapper {
             encryptedUserKeys = model.encryptedUserKeys,
             groupId = model.groupId,
             personalGroupKeyVersion = model.personalGroupKeyVersion,
-            userKeyVersion = model.userKeyVersion
+            userKeyVersion = model.userKeyVersion,
+            isArchived = model.isArchived
         )
     }
 
@@ -102,7 +103,8 @@ class GroupKeysMapper {
             encryptedUserKeys = model.encryptedUserKeys,
             groupId = model.groupId,
             personalGroupKeyVersion = model.personalGroupKeyVersion,
-            userKeyVersion = model.userKeyVersion
+            userKeyVersion = model.userKeyVersion,
+            isArchived = model.isArchived
         )
     }
 }

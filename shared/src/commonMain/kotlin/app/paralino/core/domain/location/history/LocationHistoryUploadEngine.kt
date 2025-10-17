@@ -358,7 +358,7 @@ class LocationHistoryUploadEngine(
             return null
         }
 
-        val localHistoryKeys = database.groupLocalHistoryKeyDao.getHistoryKeys(groupId = groupId)
+        val localHistoryKeys = database.groupLocalHistoryKeyDao.getAllHistoryKeys(groupId = groupId)
 
         val groupHistory = if (groupHistoryNodes.isNotEmpty()) {
             groupHistoryNodes

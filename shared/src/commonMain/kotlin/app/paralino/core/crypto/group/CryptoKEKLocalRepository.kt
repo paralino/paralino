@@ -175,7 +175,7 @@ class CryptoKEKLocalRepository(
     }
 
     suspend fun hasPersonalGroupKeyByVersion(groupId: String, version: Long): Boolean {
-        return local.getPersonalGroupKeys().any {
+        return local.getPersonalGroupKeys(includeArchivedKeys = false).any {
             it.groupId == groupId && it.personalGroupKeyVersion == version
         }
     }
@@ -302,7 +302,7 @@ class CryptoKEKLocalRepository(
         )
     }
 
-    suspend fun parseLocationHistoryKey(
+    suspend fun parseGroupLocationHistoryKey(
         keyRaw: GroupHistoryKeyEntity
     ): LocationHistoryKey {
         if (keyRaw.encryptedHistoryKey.isBlank()) {
@@ -324,7 +324,13 @@ class CryptoKEKLocalRepository(
         }
 
         val myPreKey =
-            when (val myPreKey = getMyPreKeyForGroup(keyRaw.groupId, keyRaw.memberKeyVersion)) {
+            when (
+                val myPreKey = getMyPreKeyForGroup(
+                    groupId = keyRaw.groupId,
+                    version = keyRaw.memberKeyVersion,
+                    includeArchivedKeys = true
+                )
+            ) {
                 is UserGroupPersonalKeyPair.Error -> {
                     return LocationHistoryKey.Error.InvalidPersonalKeyPair(myPreKey)
                 }
@@ -353,7 +359,7 @@ class CryptoKEKLocalRepository(
         )
     }
 
-    suspend fun parseLocationHistoryKey(
+    suspend fun parsePersonalLocationHistoryKey(
         keyRaw: PersonalHistoryKeyEntity
     ): LocationHistoryKey {
         if (keyRaw.encryptedHistoryKey.isBlank()) {
@@ -514,9 +520,10 @@ class CryptoKEKLocalRepository(
 
     suspend fun getMyPreKeyForGroup(
         groupId: String,
-        version: Long?
+        version: Long?,
+        includeArchivedKeys: Boolean = false
     ): UserGroupPersonalKeyPair {
-        val allKeys = local.getPersonalGroupKeys()
+        val allKeys = local.getPersonalGroupKeys(includeArchivedKeys = includeArchivedKeys)
             .filter { it.groupId == groupId }
         val keyRaw = allKeys
             .let { keys ->

@@ -23,7 +23,7 @@ interface GroupLocalHistoryKeyDao {
     suspend fun getActiveHistoryKey(groupId: String): GroupLocalHistoryKeyEntity?
 
     @Query("SELECT * FROM groupLocalHistoryKeyEntity WHERE groupId = :groupId ORDER BY id DESC")
-    suspend fun getHistoryKeys(groupId: String): List<GroupLocalHistoryKeyEntity>
+    suspend fun getAllHistoryKeys(groupId: String): List<GroupLocalHistoryKeyEntity>
 
     @Query("UPDATE OR IGNORE groupLocalHistoryKeyEntity SET isActive = 0 WHERE groupId = :groupId")
     suspend fun markKeysAsInactive(groupId: String)

@@ -11,5 +11,6 @@ data class PersonalGroupKeyEntity(
     @ColumnInfo(name = "encryptedUserKeys") val encryptedUserKeys: String,
     @ColumnInfo(name = "groupId") val groupId: String,
     @ColumnInfo(name = "personalGroupKeyVersion") val personalGroupKeyVersion: Long,
-    @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long
+    @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long,
+    @ColumnInfo(name = "isArchived") val isArchived: Boolean,
 )

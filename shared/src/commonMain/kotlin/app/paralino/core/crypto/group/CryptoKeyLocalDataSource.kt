@@ -48,11 +48,17 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    suspend fun getPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
-        return cachedPersonalGroupKeys.value.ifEmpty {
-            getAllPersonalGroupKeys()
-                .also { cachedPersonalGroupKeys.value = it }
+    suspend fun getPersonalGroupKeys(includeArchivedKeys: Boolean): List<PersonalGroupKeyRaw> {
+        val archivedKeys = if (includeArchivedKeys) {
+            getAllArchivedPersonalGroupKeys()
+        } else {
+            emptyList()
         }
+
+        return cachedPersonalGroupKeys.value.ifEmpty {
+            getAllActivePersonalGroupKeys()
+                .also { cachedPersonalGroupKeys.value = it }
+        } + archivedKeys
     }
 
     suspend fun getLocalGroupSenderKey(groupId: String): LocalGroupDeviceKeysEntity? {
@@ -226,8 +232,13 @@ class CryptoKeyLocalDataSource constructor(
             .map { keysMapper.local2Remote(it) }
     }
 
-    private suspend fun getAllPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
-        return database.groupRelatedKeysDao.getAllPersonalGroupKeys()
+    private suspend fun getAllArchivedPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return database.groupRelatedKeysDao.getAllArchivedPersonalGroupKeys()
+            .map { keysMapper.local2Remote(it) }
+    }
+
+    private suspend fun getAllActivePersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return database.groupRelatedKeysDao.getAllActivePersonalGroupKeys()
             .map { keysMapper.local2Remote(it) }
     }
 

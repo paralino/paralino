@@ -83,7 +83,7 @@ class DeleteLocationHistoryEntryUseCase(
                     val key = database.locationHistoryDao.getPersonalHistoryKeysOnce(
                         keys = listOf(databaseEntry.historyKeyVersion)
                     ).firstOrNull()?.let {
-                        cryptoKEKRepo.parseLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid
+                        cryptoKEKRepo.parsePersonalLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid
                     }
 
                     if (key != null) {
@@ -161,7 +161,7 @@ class DeleteLocationHistoryEntryUseCase(
                         ownerUserId = memberUserId,
                         keys = listOf(databaseEntry.historyKeyVersion)
                     ).firstOrNull()?.let {
-                        cryptoKEKRepo.parseLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid
+                        cryptoKEKRepo.parseGroupLocationHistoryKey(keyRaw = it) as? LocationHistoryKey.Valid
                     }
 
                     if (key != null) {
