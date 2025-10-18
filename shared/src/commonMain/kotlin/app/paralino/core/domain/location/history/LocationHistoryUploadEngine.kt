@@ -316,6 +316,8 @@ class LocationHistoryUploadEngine(
             ids = personalHistoryNodes.map { it.entryId }
         )
 
+        val usedHistoryKeys = database.personalLocalHistoryKeyDao.getAllHistoryKeyVersions()
+
         if (personalHistory.isEmpty() && currentUnconfirmed.isEmpty() && unsyncedKeys.isEmpty() && newKeyData == null) {
             return null
         }
@@ -324,7 +326,8 @@ class LocationHistoryUploadEngine(
             entries = personalHistory,
             keys = listOfNotNull(newKeyData),
             retryEntries = currentUnconfirmed,
-            retryKeys = unsyncedKeys
+            retryKeys = unsyncedKeys,
+            usedHistoryKeys = usedHistoryKeys
         )
     }
 
@@ -484,6 +487,11 @@ class LocationHistoryUploadEngine(
             )
         }
 
+        val usedHistoryKeys = database.groupLocalHistoryKeyDao.getAllHistoryKeys(groupId = groupId)
+            .map { it.historyKeyVersion }
+            .plus(unsyncedHistoryKeys.map { it.historyKeyVersion })
+            .distinct()
+
         if (groupHistory.isEmpty() && currentUnconfirmed.isEmpty() && retryHistoryKeys.isEmpty()) {
             return null
         }
@@ -494,7 +502,8 @@ class LocationHistoryUploadEngine(
             entries = groupHistory,
             retryEntries = currentUnconfirmed,
             historyKeys = neverSyncedKeys,
-            retryHistoryKeys = retryHistoryKeys
+            retryHistoryKeys = retryHistoryKeys,
+            usedHistoryKeys = usedHistoryKeys
         )
     }
 

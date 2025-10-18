@@ -370,6 +370,7 @@ data class LocationHistoryPersonalPayload(
     val keys: List<LocationHistoryPersonalKeyPayload>,
     val retryEntries: List<LocationHistoryPayloadEntry>,
     val retryKeys: List<LocationHistoryPersonalKeyPayload>,
+    val usedHistoryKeys: List<String>
 )
 
 @Serializable
@@ -379,7 +380,8 @@ data class LocationHistoryGroupPayload(
     val entries: List<LocationHistoryPayloadEntry>,
     val retryEntries: List<LocationHistoryPayloadEntry>,
     val historyKeys: List<LocationHistoryGroupKeyPayload>,
-    val retryHistoryKeys: List<LocationHistoryGroupKeyPayload>
+    val retryHistoryKeys: List<LocationHistoryGroupKeyPayload>,
+    val usedHistoryKeys: List<String>
 )
 
 @Serializable
