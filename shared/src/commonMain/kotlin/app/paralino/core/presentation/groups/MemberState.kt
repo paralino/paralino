@@ -25,11 +25,9 @@ sealed class GroupMemberItemState() {
     abstract val allowShowingDevices: Boolean
     abstract val locations: List<GroupMemberItemLocationState>
 
-    val singleVisibleLocation = singleLocation?.takeIf { it.visibility.isVisible() }
-    val filteredLastPing: String? get() = lastLocationPing?.takeIf { singleLocation != null }
-    val statusTag: MemberDeviceStatusType?
-        get() = singleLocation?.deviceStatus
-            ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
+    abstract val singleVisibleLocation: GroupMemberItemLocationState?
+    abstract val filteredLastPing: String?
+    abstract val statusTag: MemberDeviceStatusType?
 }
 
 data class GroupMemberState constructor(
@@ -66,14 +64,21 @@ data class GroupMemberItemStateWithOneLocation constructor(
     override val singleLocation: GroupMemberItemLocationState?,
     override val actions: MemberActionsState,
 ) : GroupMemberItemState() {
-    override val keyId: String
-        get() = singleLocation?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
-            ?: deviceId
-            ?: memberState.memberId
+    override val keyId: String = singleLocation?.locationId
+        ?.takeIf { it.isNotBlank() }
+        ?.plus(memberState.memberId)
+        ?: deviceId
+        ?: memberState.memberId
 
-    override val lastLocationPing: String? get() = singleLocation?.lastLocationPing
-    override val lastStatusPing: String? get() = singleVisibleLocation?.lastStatusPing
+    override val lastLocationPing: String? = singleLocation?.lastLocationPing
     override val locations = listOfNotNull(singleLocation)
+
+    override val singleVisibleLocation: GroupMemberItemLocationState? = singleLocation?.takeIf { it.visibility.isVisible() }
+    override val filteredLastPing: String? = lastLocationPing?.takeIf { singleLocation != null }
+    override val statusTag: MemberDeviceStatusType? = singleLocation?.deviceStatus
+        ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
+
+    override val lastStatusPing: String? = singleVisibleLocation?.lastStatusPing
     override val allowShowingDevices: Boolean = false
 }
 
@@ -86,11 +91,16 @@ data class GroupMemberItemStateWithLocations constructor(
     override val lastStatusPing: String?
 ) : GroupMemberItemState() {
 
-    override val keyId: String
-        get() = singleLocation?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
-            ?: memberState.memberId
-
     override val singleLocation = locations.takeIf { it.size == 1 }?.first()
+    override val keyId: String = singleLocation?.locationId
+        ?.takeIf { it.isNotBlank() }
+        ?.plus(memberState.memberId)
+        ?: memberState.memberId
+
+    override val singleVisibleLocation: GroupMemberItemLocationState? = singleLocation?.takeIf { it.visibility.isVisible() }
+    override val filteredLastPing: String? = lastLocationPing?.takeIf { singleLocation != null }
+    override val statusTag: MemberDeviceStatusType? = singleLocation?.deviceStatus
+        ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
 }
 
 data class GroupMemberItemLocationState constructor(
