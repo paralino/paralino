@@ -19,22 +19,22 @@ class DocumentsApi: IDocumentApiIOS {
     
     func createDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String?, data: Any) async throws -> Payload<NSDictionary> {
         return await remoteModule.execute { module in
-            let result = try await module.database.createDocument(
+            let result = try await module.tablesDB.createRow(
                 databaseId: databaseType.id,
-                collectionId: collectionId,
-                documentId: docId ?? module.appBuildConfig.resourceIds.uniqueIdPlaceholder,
+                tableId: collectionId,
+                rowId: docId ?? module.appBuildConfig.resourceIds.uniqueIdPlaceholder,
                 data: data
-            ).parseDocument()
+            ).parseRow()
             return NSDictionary(dictionary: result)
         }
     }
     
     func deleteDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.execute { module in
-            let _ = try await module.database.deleteDocument(
+            let _ = try await module.tablesDB.deleteRow(
                 databaseId: databaseType.id,
-                collectionId: collectionId,
-                documentId: documentId
+                tableId: collectionId,
+                rowId: documentId
             )
             return KotlinUnit()
         }
@@ -42,11 +42,11 @@ class DocumentsApi: IDocumentApiIOS {
     
     func getDocument(databaseType: BackendDatabaseType, collectionId: String, documentId: String) async throws -> Payload<NSDictionary> {
         return await remoteModule.execute { module in
-            let result = try await module.database.getDocument(
+            let result = try await module.tablesDB.getRow(
                 databaseId: databaseType.id,
-                collectionId: collectionId,
-                documentId: documentId
-            ).parseDocument()
+                tableId: collectionId,
+                rowId: documentId
+            ).parseRow()
             return NSDictionary(dictionary: result)
         }
     }
@@ -69,15 +69,15 @@ class DocumentsApi: IDocumentApiIOS {
                     mappedQueries.append(Query.cursorAfter(cursor))
                 }
                 
-                let results = try await module.database.listDocuments(
+                let results = try await module.tablesDB.listRows(
                     databaseId: databaseType.id,
-                    collectionId: collectionId,
+                    tableId: collectionId,
                     queries: mappedQueries
                 )
                 
-                let shouldLoadMore = onNewValues(results.documents.map { try! $0.parseDocument() }) == true
-                if shouldLoadMore && results.documents.count >= Int(limit) {
-                    cursor = results.documents.last?.id ?? ""
+                let shouldLoadMore = onNewValues(results.rows.map { try! $0.parseRow() }) == true
+                if shouldLoadMore && results.rows.count >= Int(limit) {
+                    cursor = results.rows.last?.id ?? ""
                 } else {
                     cursor = ""
                 }
@@ -88,12 +88,12 @@ class DocumentsApi: IDocumentApiIOS {
     
     func updateDocument(databaseType: BackendDatabaseType, collectionId: String, docId: String, data: Any) async throws -> Payload<NSDictionary> {
         return await remoteModule.execute { module in
-            let result = try await module.database.updateDocument(
+            let result = try await module.tablesDB.updateRow(
                 databaseId: databaseType.id,
-                collectionId: collectionId,
-                documentId: docId,
+                tableId: collectionId,
+                rowId: docId,
                 data: data
-            ).parseDocument()
+            ).parseRow()
             return NSDictionary(dictionary: result)
         }
     }
@@ -114,6 +114,13 @@ class DocumentsApi: IDocumentApiIOS {
 
 private extension Appwrite.Document {
     func parseDocument() throws -> [String: Any]{
+        let result = try self.data.toJson()
+        return SerializationExtKt.fromJsonObjectToMapOfPrimitives(result)
+    }
+}
+
+private extension Appwrite.Row {
+    func parseRow() throws -> [String: Any]{
         let result = try self.data.toJson()
         return SerializationExtKt.fromJsonObjectToMapOfPrimitives(result)
     }

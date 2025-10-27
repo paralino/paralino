@@ -33,7 +33,7 @@ class AppwriteRemoteModule: IRemoteModule {
     }()
     
     lazy var account: Account = { return Account(client) }()
-    lazy var database: Databases = { return Databases(client) }()
+    lazy var tablesDB: TablesDB = { return TablesDB(client) }()
     lazy var functions: Functions = { return Functions(client) }()
     lazy var realtime: Realtime = { return Realtime(client) }()
     
