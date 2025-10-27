@@ -4,8 +4,8 @@ import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import io.appwrite.Query
-import io.appwrite.models.Document
-import io.appwrite.models.DocumentList
+import io.appwrite.models.Row
+import io.appwrite.models.RowList
 
 class DocumentsApi constructor(
     private val remoteModule: AppWriteRemoteModule
@@ -18,10 +18,10 @@ class DocumentsApi constructor(
         data: Any
     ): Map<String, Any> {
         return remoteModule.execute {
-            database.createDocument(
+            tablesDB.createRow(
                 databaseId = databaseType.id,
-                collectionId = collectionId,
-                documentId = docId ?: this.appBuildConfig.resourceIds.uniqueIdPlaceholder,
+                tableId = collectionId,
+                rowId = docId ?: this.appBuildConfig.resourceIds.uniqueIdPlaceholder,
                 data = data
             ).parseDocument()
         }
@@ -34,10 +34,10 @@ class DocumentsApi constructor(
         data: Any
     ): Map<String, Any> {
         return remoteModule.execute {
-            database.updateDocument(
+            tablesDB.updateRow(
                 databaseId = databaseType.id,
-                collectionId = collectionId,
-                documentId = docId,
+                tableId = collectionId,
+                rowId = docId,
                 data = data
             ).parseDocument()
         }
@@ -49,10 +49,10 @@ class DocumentsApi constructor(
         documentId: String,
     ): Map<String, Any> {
         return remoteModule.execute {
-            database.getDocument(
+            tablesDB.getRow(
                 databaseId = databaseType.id,
-                collectionId = collectionId,
-                documentId = documentId
+                tableId = collectionId,
+                rowId = documentId
             ).parseDocument()
         }
     }
@@ -67,9 +67,9 @@ class DocumentsApi constructor(
         remoteModule.execute {
             var cursor: String = ""
             do {
-                val results = database.listDocuments(
+                val results = tablesDB.listRows(
                     databaseId = databaseType.id,
-                    collectionId = collectionId,
+                    tableId = collectionId,
                     queries = buildList {
                         addAll(buildQuery(queries))
                         add(Query.limit(limit))
@@ -79,8 +79,8 @@ class DocumentsApi constructor(
                 )
 
                 val shouldLoadMore = onNewValues(results.parseListOfDocuments())
-                if(shouldLoadMore && results.documents.size >= limit) {
-                    cursor = results.documents.lastOrNull()?.id ?: ""
+                if(shouldLoadMore && results.rows.size >= limit) {
+                    cursor = results.rows.lastOrNull()?.id ?: ""
                 } else {
                     cursor = ""
                 }
@@ -94,20 +94,20 @@ class DocumentsApi constructor(
         documentId: String,
     ) {
         remoteModule.execute {
-            database.deleteDocument(
+            tablesDB.deleteRow(
                 databaseId = databaseType.id,
-                collectionId = collectionId,
-                documentId = documentId
+                tableId = collectionId,
+                rowId = documentId
             )
         }
     }
 
-    private fun Document<Map<String, Any>>.parseDocument(): Map<String, Any> {
+    private fun Row<Map<String, Any>>.parseDocument(): Map<String, Any> {
         return this.data
     }
 
-    private fun DocumentList<Map<String, Any>>.parseListOfDocuments(): List<Map<String, Any>> {
-        return this.documents.map { it.parseDocument() }
+    private fun RowList<Map<String, Any>>.parseListOfDocuments(): List<Map<String, Any>> {
+        return this.rows.map { it.parseDocument() }
     }
 
     private fun buildQuery(queries: List<BackendQuery>): List<String> {

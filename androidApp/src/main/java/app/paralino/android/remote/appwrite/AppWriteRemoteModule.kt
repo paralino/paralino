@@ -12,9 +12,9 @@ import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
-import io.appwrite.services.Databases
 import io.appwrite.services.Functions
 import io.appwrite.services.Realtime
+import io.appwrite.services.TablesDB
 import kotlinx.coroutines.delay
 import java.net.UnknownHostException
 import java.util.UUID
@@ -27,7 +27,7 @@ class AppWriteRemoteModule(
 ) {
 
     internal val account: Account by lazy { Account(client) }
-    internal val database: Databases by lazy { Databases(client) }
+    internal val tablesDB: TablesDB by lazy { TablesDB(client) }
     internal val functions: Functions by lazy { Functions(client) }
     internal val realtime: Realtime by lazy { Realtime(client) }
 
