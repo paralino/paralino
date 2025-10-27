@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class SharingContractEntity(
     @PrimaryKey val groupId: String,
     @ColumnInfo(name = "endTimeUTC") val endTimeUTC: String?,
+    @ColumnInfo(name = "endTimeUTCOverride") val endTimeUTCOverride: String? = null,
     @ColumnInfo(name = "shareBattery") val shareBattery: Boolean,
     @ColumnInfo(name = "shareSpeed") val shareSpeed: Boolean,
     @ColumnInfo(name = "shareElevation") val shareElevation: Boolean,

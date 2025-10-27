@@ -5,6 +5,7 @@ import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -58,6 +59,7 @@ class SettingsViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
     private val deviceApiProvider: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
+    private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs,
     private val appRatingManager: AppRatingManager
@@ -86,6 +88,10 @@ class SettingsViewModel(
                 try {
                     personalCodeRepo.refreshPersonalCodesAndRestockKeys()
                 } catch (_: Exception) { }
+            }
+            try {
+                premiumStatusManager.adjustDeviceSettingsForPlan()
+            } catch (e: Exception) {
             }
         }
 

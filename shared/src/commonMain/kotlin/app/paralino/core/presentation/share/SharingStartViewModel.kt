@@ -509,7 +509,8 @@ class SharingStartViewModel(
     private suspend fun registerDeviceAndStartSharing(group: GroupItemState) {
         val contract = LocationSharingContract(
             groupOrSpaceId = group.id,
-            endTimeUTC = _uiState.value.currentContract?.endTimeUTC ?: LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
+            endTimeUTCPreference = _uiState.value.currentContract?.endTimeUTC ?: LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
+            endTimeUTCOverride = null,
             shareBattery = _uiState.value.shareBattery,
             shareSpeed = _uiState.value.shareSpeed,
             shareElevation = _uiState.value.shareElevation,

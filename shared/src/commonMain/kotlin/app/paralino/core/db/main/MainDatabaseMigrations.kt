@@ -201,6 +201,12 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_27_28 = object : Migration(27, 28) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `endTimeUTCOverride` TEXT DEFAULT NULL")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -228,6 +234,7 @@ object MainDatabaseMigrations {
         MIGRATION_23_24,
         MIGRATION_24_25,
         MIGRATION_25_26,
-        MIGRATION_26_27
+        MIGRATION_26_27,
+        MIGRATION_27_28,
     )
 }

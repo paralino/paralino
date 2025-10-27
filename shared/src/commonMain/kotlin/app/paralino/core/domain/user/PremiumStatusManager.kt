@@ -13,8 +13,11 @@ import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class PremiumStatusManager(
@@ -52,31 +55,35 @@ class PremiumStatusManager(
 
         val personalSpaceOverLimit = personalSpaceRepo.personalSpaceState.value.data?.isSpaceOverLimits() == true
 
-        if (personalSpaceOverLimit) {
-            val contract = locationSharingManager.currentSharingContractForGroup(id = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
-            val newContract = contract?.asValidContract(
-                sharingLimitDuration = 5.days
-            )
-            if (newContract != null) {
-                locationSharingManager.startSharing(newContract)
+        val now = nowUTC()
+        val personalContract = locationSharingManager.currentSharingContractForGroup(id = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
+        val newPersonalContract = personalContract?.asValidContract(
+            newEndTimeUTCOverride = if (personalSpaceOverLimit) {
+                personalContract.endTimeUTCOverride ?: now.plus(5.days).toLocalDateTime(TimeZone.UTC).toString()
+            } else {
+                null
             }
+        )
+        if (newPersonalContract != null && newPersonalContract != personalContract) {
+            locationSharingManager.startSharing(newPersonalContract)
         }
 
         val groupsDataForOwner = groupLocalDataSource.allGroupsState.value.data?.filter { it.group.isCurrentUserOwner } ?: emptyList()
         val groupLimit = userRepo.userPlans.value.groupsLimit.takeIf { config.plans.isNotEmpty() } ?: Int.MAX_VALUE
         val groupsOverLimits = groupsDataForOwner.map {
-            if (it.isGroupOverLimits(config) || groupsDataForOwner.size > groupLimit) {
-                val contract = locationSharingManager.currentSharingContractForGroup(id = it.group.id.asGroupOrSpaceId())
-                val newContract = contract?.asValidContract(
-                    sharingLimitDuration = 5.days
-                )
-                if (newContract != null) {
-                    locationSharingManager.startSharing(newContract)
+            val isGroupOverLimit = it.isGroupOverLimits(config) || groupsDataForOwner.size > groupLimit
+            val contract = locationSharingManager.currentSharingContractForGroup(id = it.group.id.asGroupOrSpaceId())
+            val newContract = contract?.asValidContract(
+                newEndTimeUTCOverride = if (isGroupOverLimit) {
+                    contract.endTimeUTCOverride ?: now.plus(5.days).toLocalDateTime(TimeZone.UTC).toString()
+                } else {
+                    null
                 }
-                true
-            } else {
-                false
+            )
+            if (newContract != null && newContract != contract) {
+                locationSharingManager.startSharing(newContract)
             }
+            isGroupOverLimit
         }.any { it }
 
         hasGroupOverLimits.update {

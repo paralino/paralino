@@ -8,7 +8,8 @@ object SharingContractsMapper {
     fun local2Remote(model: SharingContractEntity): LocationSharingContract {
         return LocationSharingContract(
             groupOrSpaceId = model.groupId.asGroupOrSpaceId(),
-            endTimeUTC = model.endTimeUTC,
+            endTimeUTCPreference = model.endTimeUTC,
+            endTimeUTCOverride = model.endTimeUTCOverride,
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,
@@ -23,7 +24,8 @@ object SharingContractsMapper {
     fun remote2Local(model: LocationSharingContract): SharingContractEntity {
         return SharingContractEntity(
             groupId = model.groupOrSpaceId.id,
-            endTimeUTC = model.endTimeUTC,
+            endTimeUTC = model.endTimeUTCPreference,
+            endTimeUTCOverride = model.endTimeUTCOverride,
             shareBattery = model.shareBattery,
             shareSpeed = model.shareSpeed,
             shareElevation = model.shareElevation,

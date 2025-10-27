@@ -13,7 +13,8 @@ import kotlin.time.Duration
 
 data class LocationSharingContract constructor(
     val groupOrSpaceId: GroupOrSpaceId,
-    val endTimeUTC: String?,
+    val endTimeUTCPreference: String?,
+    val endTimeUTCOverride: String?,
     val shareBattery: Boolean,
     val shareSpeed: Boolean,
     val shareElevation: Boolean,
@@ -24,10 +25,11 @@ data class LocationSharingContract constructor(
     val isEnabled: Boolean,
 ) {
 
+    val endTimeUTC: String? = endTimeUTCOverride ?: endTimeUTCPreference
     val isAlwaysOn: Boolean get() = endTimeUTC == null
     val isLongTerm: Boolean get() = isLongTerm(endsInMillis)
 
-    val endsInMillis: Long get() {
+    private val endsInMillis: Long get() {
         if (isAlwaysOn) return -1
         val now = nowUTC()
         val end = endTimeUTC!!.fromUTCtoInstant() ?: return -1
@@ -35,19 +37,14 @@ data class LocationSharingContract constructor(
         return diff.inWholeMilliseconds
     }
 
-    fun asValidContract(sharingLimitDuration: Duration? = null): LocationSharingContract? {
+    fun asValidContract(newEndTimeUTCOverride: String? = endTimeUTCOverride): LocationSharingContract? {
         if (!isEnabled) {
             return null
         } else if(isAlwaysOn) {
-            if (sharingLimitDuration != null) {
-                val now = nowUTC()
-                val maxSharing = now.plus(duration = sharingLimitDuration)
-                return this.copy(endTimeUTC = maxSharing.toLocalDateTime(TimeZone.UTC).toString())
-            }
             // invalid public sharing contract
-            else if(this.groupOrSpaceId.isPublicSharing) return null
+            if(this.groupOrSpaceId.isPublicSharing) return null
             // endless sharing for other groups
-            else return this
+            else return this.copy(endTimeUTCOverride = newEndTimeUTCOverride)
         } else {
             val date = endTimeUTC!!.fromUTCtoInstant() ?: return null
             val now = nowUTC()
@@ -58,21 +55,12 @@ data class LocationSharingContract constructor(
                 // limit public sharing if needed
                 val maxPublic = now.plus(SharingDurationPreset.publicSharingMaxDurationMillis, DateTimeUnit.MILLISECOND)
                 if(date > maxPublic) {
-                    return this.copy(endTimeUTC = maxPublic.toLocalDateTime(TimeZone.UTC).toString())
+                    return this.copy(endTimeUTCPreference = maxPublic.toLocalDateTime(TimeZone.UTC).toString())
                 } else {
-                    return this
+                    return this.copy(endTimeUTCOverride = newEndTimeUTCOverride)
                 }
-            } else if (sharingLimitDuration != null) {
-                // limit duration if needed
-                val maxSharing = now.plus(duration = sharingLimitDuration)
-                if(date > maxSharing) {
-                    return this.copy(endTimeUTC = maxSharing.toLocalDateTime(TimeZone.UTC).toString())
-                } else {
-                    return this
-                }
-            }
-            else {
-                return this
+            } else {
+                return this.copy(endTimeUTCOverride = newEndTimeUTCOverride)
             }
         }
     }
