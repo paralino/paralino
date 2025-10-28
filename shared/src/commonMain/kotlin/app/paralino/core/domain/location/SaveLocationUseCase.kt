@@ -53,7 +53,7 @@ class SaveLocationUseCase(
             locationId = data.locationId
         )
         if (deviceKey !is PersonalSpaceDeviceKey.Valid)
-            throw MissingMemberKeyException(groupId = data.groupId.id, memberId = appPrefs.userId)
+            throw MissingMemberKeyException(groupId = data.groupId.id, memberId = appPrefs.userId, keyError = deviceKey::class.simpleName)
 
         val locationPayload = getLocationPayload(
             data = data,

@@ -2,6 +2,7 @@ package app.paralino.core.domain.location.history
 
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.location.SaveLocationUseCase
+import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.mappers.PendingLocationHistoryMapper
@@ -28,15 +29,19 @@ class DeletePendingLocationUseCase(
         if (toDeletePending.isNotEmpty()) {
             database.pendingLocationHistoryDao.deletePendingEntries(ids = toDeletePending)
             entries.mapNotNull { it.locationId }.distinct().forEach {
-                saveLocationUseCase.uploadAndSaveCurrentLocation(
-                    data = MemberGroupIdForUpload(
-                        groupId = groupOrSpaceId,
-                        locationId = it,
-                        locationData = null,
-                        deviceStatus = null,
-                        uploadPendingHistory = true
+                try {
+                    saveLocationUseCase.uploadAndSaveCurrentLocation(
+                        data = MemberGroupIdForUpload(
+                            groupId = groupOrSpaceId,
+                            locationId = it,
+                            locationData = null,
+                            deviceStatus = null,
+                            uploadPendingHistory = true
+                        )
                     )
-                )
+                } catch (e: Exception) {
+                    logg.w("Error updating device location after history deletion", e)
+                }
             }
         }
     }
@@ -72,18 +77,25 @@ class DeletePendingLocationUseCase(
             }
             .map { it.id }
 
+        // TODO handle saveLocationUseCase when deleteForAllDevices is true
+        // fetch all current location ids and update for them
+
         if (toDeletePending.isNotEmpty()) {
             database.pendingLocationHistoryDao.deletePendingEntries(ids = toDeletePending)
             locationIds.forEach {
-                saveLocationUseCase.uploadAndSaveCurrentLocation(
-                    data = MemberGroupIdForUpload(
-                        groupId = groupOrSpaceId,
-                        locationId = it,
-                        locationData = null,
-                        deviceStatus = null,
-                        uploadPendingHistory = true
+                try {
+                    saveLocationUseCase.uploadAndSaveCurrentLocation(
+                        data = MemberGroupIdForUpload(
+                            groupId = groupOrSpaceId,
+                            locationId = it,
+                            locationData = null,
+                            deviceStatus = null,
+                            uploadPendingHistory = true
+                        )
                     )
-                )
+                } catch (e: Exception) {
+                    logg.w("Error updating device location after history deletion", e)
+                }
             }
         }
     }
