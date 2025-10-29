@@ -110,6 +110,7 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.ui.theme.featureItemTitle
 import app.paralino.core.utils.extensions.annotatedBoldCompose
+import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -425,7 +426,7 @@ private fun ColumnScope.PaywallScreen(
         onEvent = onEvent
     )
 
-    if (state.selectedPlan != null) {
+    if (state.selectedPlan != null && state.canMakePurchaseOnThisPlatform) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
             BillingPeriodOptions(
                 modifier = Modifier
@@ -442,6 +443,23 @@ private fun ColumnScope.PaywallScreen(
                 }
             )
         }
+    }
+
+    if (!state.canMakePurchaseOnThisPlatform) {
+        NoticeInfoChip(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 20.dp)
+                .padding(top = 12.dp, bottom = 12.dp),
+            text = stringResource(MR.strings.plans_management_info_wrong_platform_title),
+            icon = {
+                Icon(
+                    painter = CoreAppIcons.Warning.asPainterResource(),
+                    contentDescription = null,
+                    tint = AppColors.redMain
+                )
+            }
+        )
     }
 
     AnimatedVisibility(
@@ -789,7 +807,7 @@ private fun PaywallBottomCard(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedVisibility(billingPeriodState?.trialDurationDays != null && state.screenStep == PaywallScreenStep.PAYWALL) {
+            AnimatedVisibility(billingPeriodState?.trialDurationDays != null && state.screenStep == PaywallScreenStep.PAYWALL && state.canMakePurchaseOnThisPlatform) {
                 Text(
                     modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
                     text = stringResource(
@@ -802,7 +820,17 @@ private fun PaywallBottomCard(
                 )
             }
 
-            AnimatedVisibility(selectedPlan != null && state.screenStep == PaywallScreenStep.PAYWALL) {
+            AnimatedVisibility(!state.canMakePurchaseOnThisPlatform) {
+                Text(
+                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
+                    text = stringResource(MR.strings.plans_management_info_wrong_platform_message),
+                    style = MaterialTheme.typography.body2,
+                    textAlign = TextAlign.Center,
+                    color = contentColor
+                )
+            }
+
+            AnimatedVisibility(selectedPlan != null && state.screenStep == PaywallScreenStep.PAYWALL && state.canMakePurchaseOnThisPlatform) {
                 SmallActionButton(
                     modifier = Modifier.padding(bottom = 8.dp),
                     backgroundColor = Color.Transparent,
@@ -829,7 +857,7 @@ private fun PaywallBottomCard(
                 Spacer(modifier = Modifier.size(12.dp))
             }
 
-            AnimatedVisibility(selectedPlan != null || state.screenStep != PaywallScreenStep.PAYWALL) {
+            AnimatedVisibility(selectedPlan != null || state.screenStep != PaywallScreenStep.PAYWALL || !state.canMakePurchaseOnThisPlatform) {
                 FilledButton(
                     modifier = Modifier,
                     style = ButtonStyle.BIG,
@@ -839,7 +867,9 @@ private fun PaywallBottomCard(
                     Text(
                         text = when (state.screenStep) {
                             PaywallScreenStep.PAYWALL -> {
-                                if (billingPeriodState?.trialDurationDays != null) {
+                                if (!state.canMakePurchaseOnThisPlatform) {
+                                    stringResource(MR.strings.button_ok)
+                                } else if (billingPeriodState?.trialDurationDays != null) {
                                     stringResource(
                                         MR.strings.paywall_start_button_free,
                                         "${billingPeriodState.trialDurationDays}"
@@ -859,7 +889,7 @@ private fun PaywallBottomCard(
                 }
             }
 
-            AnimatedVisibility(selectedPlan == null && state.screenStep == PaywallScreenStep.PAYWALL) {
+            AnimatedVisibility(selectedPlan == null && state.screenStep == PaywallScreenStep.PAYWALL && state.canMakePurchaseOnThisPlatform) {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
                     text = stringResource(MR.strings.paywall_select_plan_label),

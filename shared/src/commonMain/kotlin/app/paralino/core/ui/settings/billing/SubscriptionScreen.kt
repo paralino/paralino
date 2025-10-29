@@ -137,9 +137,14 @@ fun SubscriptionScreenCore(
                     }
                 } else {
                     Text(
-                        text = stringResource(MR.strings.plans_management_info_wrong_platform),
+                        text = stringResource(MR.strings.plans_management_info_wrong_platform_title),
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = stringResource(MR.strings.plans_management_info_wrong_platform_message),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                     )
                 }
             } else {

@@ -1,10 +1,13 @@
 package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
+import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
@@ -26,11 +29,20 @@ data class PaywallScreenState(
     val memberDeviceName: String,
     val locationHistoryStepMessage: String
 ) {
-    val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
-    val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod
 
     val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
     val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
+    val canMakePurchaseOnThisPlatform: Boolean = when (currentPlan?.currentPlanProvider) {
+        PlanProvider.APPLE_APP_STORE -> DeviceType.current == DeviceType.iOS
+        PlanProvider.GOOGLE_PLAY_STORE -> DeviceType.current == DeviceType.Android
+        PlanProvider.PARALINO -> false
+        null -> true
+    }
+
+    val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
+    val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod?.takeIf {
+        canMakePurchaseOnThisPlatform
+    }
 
     val fullFeatureTable: FeatureTableState = FeatureTableState.constructFeaturesTable(
         freeUiPlan = freePlanInfo,
@@ -75,6 +87,7 @@ data class PlanInfoState(
     val name: String,
     val config: PlanConfig,
     val isCurrentPlan: Boolean,
+    val currentPlanProvider: PlanProvider?,
     val hasSpecialOffer: Boolean,
     val isSelected: Boolean,
     val isExpanded: Boolean,

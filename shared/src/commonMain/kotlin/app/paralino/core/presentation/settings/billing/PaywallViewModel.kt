@@ -223,7 +223,9 @@ class PaywallViewModel(
                     PaywallScreenStep.PAYWALL -> {
                         val selectedPlan = uiState.value.selectedPlan
                         val selectedBillingPeriod = selectedPlan?.selectedBillingPeriod
-                        if (selectedPlan == null) {
+                        if (!uiState.value.canMakePurchaseOnThisPlatform) {
+                            _eventChannel.trySend(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
+                        } else if (selectedPlan == null) {
                             messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
                         } else if (selectedPlan.type.isPremium) {
                             if (selectedBillingPeriod == null) {
@@ -240,9 +242,7 @@ class PaywallViewModel(
                                 }
                             }
                         } else {
-                            coroutineScope.launch {
-                                _eventChannel.send(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
-                            }
+                            _eventChannel.trySend(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
                         }
                     }
                 }
@@ -326,6 +326,7 @@ class PaywallViewModel(
             name = freePlanConfig.adjustedPlanName,
             config = freePlanConfig,
             isCurrentPlan = false,
+            currentPlanProvider = null,
             hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
@@ -404,6 +405,7 @@ class PaywallViewModel(
                 name = planConfig.adjustedPlanName,
                 config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
+                currentPlanProvider = plans.highestValidPlan?.plan?.provider,
                 hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
                 isExpanded = !sourceType.shouldPreselectPlan,

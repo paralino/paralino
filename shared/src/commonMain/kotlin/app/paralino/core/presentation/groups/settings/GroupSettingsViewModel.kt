@@ -9,6 +9,7 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
@@ -239,6 +240,7 @@ class GroupSettingsViewModel(
                     name = currentPlan.adjustedPlanName,
                     config = currentPlan,
                     isCurrentPlan = true,
+                    currentPlanProvider = PlanProvider.fromKey(group.provider),
                     hasSpecialOffer = false,
                     isSelected = true,
                     isExpanded = true,
