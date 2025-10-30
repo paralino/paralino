@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
@@ -110,7 +111,7 @@ fun GroupStatusTag(
 }
 
 @Composable
-fun FlowRowScope.GroupStatusTagContent(
+fun RowScope.GroupStatusTagContent(
     status: GroupStatusTagType
 ) {
     val tagIconColor = when (status) {

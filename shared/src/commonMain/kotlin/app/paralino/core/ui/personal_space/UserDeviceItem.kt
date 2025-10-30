@@ -14,22 +14,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,13 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
@@ -53,7 +47,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.groups.GroupStatusTagContent
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
-import app.paralino.core.ui.groups.components.NetworkTypeIcon
+import app.paralino.core.ui.groups.components.GroupMemberDeviceDataFlowRow
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -141,52 +135,6 @@ fun UserDeviceItem(
                                     style = MaterialTheme.typography.h5,
                                     color = MaterialTheme.colors.onSurface
                                 )
-                            }
-                        }
-
-                        // Battery level
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                            if (state.device?.visibleBatteryLevel != null) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 2.dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(
-                                        modifier = Modifier.size(width = 16.dp, height = 16.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier
-                                                .requiredSize(16.dp)
-                                                .rotate(90f),
-                                            painter = if (state.device?.location?.isBatteryCharging == true) {
-                                                CoreAppIcons.BatteryChargingFull.asPainterResource()
-                                            } else {
-                                                CoreAppIcons.BatteryFull.asPainterResource()
-                                            },
-                                            tint = when {
-                                                state.device?.visibleBatteryLevel!! > 85 -> AppColors.accent
-                                                state.device?.visibleBatteryLevel!! < 15 -> AppColors.redMain
-                                                state.device?.visibleBatteryLevel!! < 30 -> AppColors.highlightGold
-                                                else -> MaterialTheme.colors.onSurface
-                                            },
-                                            contentDescription = null
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.size(2.dp))
-                                    Text(
-                                        text = "${state.device?.visibleBatteryLevel}%",
-                                        style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium),
-                                        color = when {
-                                            state.device?.visibleBatteryLevel!! < 15 -> AppColors.redMain
-                                            state.device?.visibleBatteryLevel!! < 30 -> AppColors.highlightGold
-                                            else -> MaterialTheme.colors.onSurface
-                                        }
-                                    )
-                                }
                             }
                         }
                     }
@@ -342,20 +290,15 @@ fun UserDeviceItem(
                         }
                     }
 
-                    // Speed, elevation, network info
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (state.device?.location?.networkType != null) {
-                            NetworkTypeIcon(
-                                networkType = state.device?.location?.networkType!!,
-                                signalStrength = state.device?.location?.signalStrength
-                            )
-                            Text(
-                                text = state.device?.location?.networkType?.networkName!!,
-                                style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                        }
-                    }
+                    GroupMemberDeviceDataFlowRow(
+                        modifier = modifier.padding(top = 2.dp),
+                        batteryLevel = state.device?.visibleBatteryLevel,
+                        isBatteryCharging = state.device?.location?.isBatteryCharging ?: false,
+                        networkType = state.device?.location?.networkType,
+                        signalStrength = state.device?.location?.signalStrength,
+                        speed = state.device?.location?.speed,
+                        elevation = state.device?.location?.elevation
+                    )
                 }
             }
 

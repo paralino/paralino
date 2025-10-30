@@ -152,8 +152,8 @@ data class GroupMemberItemLocationState constructor(
         accuracyMeters = memberLocation.locationData.data?.accuracy,
         deviceStatus = memberLocation.locationAwareStatusType,
         onlineStatus = memberLocation.status.data?.onlineStatus,
-        networkType = memberLocation.status.data?.networkType?.takeIf { showSpeedAndElevation },
-        signalStrength = memberLocation.status.data?.signalStrength?.takeIf { showSpeedAndElevation },
+        networkType = memberLocation.status.data?.networkType,
+        signalStrength = memberLocation.status.data?.signalStrength,
         canEdit = canEdit,
         currentDevice = currentDevice,
         visibility = visibility

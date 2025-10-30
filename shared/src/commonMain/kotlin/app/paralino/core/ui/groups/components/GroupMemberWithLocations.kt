@@ -6,13 +6,14 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -69,7 +71,6 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
@@ -82,7 +83,7 @@ import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
-import app.paralino.core.ui.groups.GroupStatusTag
+import app.paralino.core.ui.groups.GroupStatusTagContent
 import app.paralino.core.ui.groups.toStatusTagType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
@@ -136,70 +137,6 @@ fun GroupMemberWithLocations(
                                 shape = RoundedCornerShape(8.dp)
                             )
                     )
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        if (singleVisibleLocation?.visibleBatteryLevel != null && (!expanded || !state.allowShowingDevices)) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 2.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(width = 16.dp, height = 16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .requiredSize(16.dp)
-                                            .rotate(90f),
-                                        painter = if (singleVisibleLocation.isBatteryCharging) {
-                                            CoreAppIcons.BatteryChargingFull.asPainterResource()
-                                        } else {
-                                            CoreAppIcons.BatteryFull.asPainterResource()
-                                        },
-                                        tint = when {
-                                            singleVisibleLocation.visibleBatteryLevel > 85 -> AppColors.accent
-                                            singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
-                                            singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
-                                            else -> MaterialTheme.colors.onSurface
-                                        },
-                                        contentDescription = null
-                                    )
-                                }
-                                Spacer(modifier = Modifier.size(2.dp))
-                                Text(
-                                    text = "${singleVisibleLocation.visibleBatteryLevel}%",
-                                    style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium),
-                                    color = when {
-                                        singleVisibleLocation.visibleBatteryLevel < 15 -> AppColors.redMain
-                                        singleVisibleLocation.visibleBatteryLevel < 30 -> AppColors.highlightGold
-                                        else -> MaterialTheme.colors.onSurface
-                                    }
-                                )
-                            }
-                        } else if (state.locations.size > 1) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 2.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(14.dp),
-                                    painter = CoreAppIcons.Devices.asPainterResource(),
-                                    contentDescription = null
-                                )
-                                Spacer(modifier = Modifier.size(4.dp))
-                                Text(
-                                    text = "${state.locations.size}",
-                                    style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.SemiBold)
-                                )
-                            }
-                        }
-                    }
                 }
 
                 Box(
@@ -297,68 +234,72 @@ fun GroupMemberWithLocations(
                     modifier = Modifier
                 )
 
-                GroupStatusTag(state.toStatusTagType(expanded = expanded))
+                val isLastPingVisible =
+                    state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)
 
-                if (state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = CoreAppIcons.AccessTime.asPainterResource(),
-                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 2.dp)
-                                .size(16.dp)
-                        )
-                        Text(
-                            text = (state.filteredLastPing ?: "").annotatedBoldCompose(),
-                            style = MaterialTheme.typography.caption,
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
+                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+                ) {
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        if (state.locations.size > 1) {
+                            Row(
+                                // offset to make it visually look in place
+                                modifier = Modifier.offset(y = 1.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(16.dp),
+                                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.size(2.dp))
+                                Text(
+                                    text = "${state.locations.size}",
+                                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold)
+                                )
+                            }
+                        }
+                    }
+
+                    state.toStatusTagType(expanded = expanded)?.let {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
+                        ) {
+                            GroupStatusTagContent(it)
+                        }
+                    }
+
+                    if (isLastPingVisible) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = CoreAppIcons.AccessTime.asPainterResource(),
+                                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 2.dp)
+                                    .size(16.dp)
+                            )
+                            Text(
+                                text = (state.filteredLastPing ?: "").annotatedBoldCompose(),
+                                style = MaterialTheme.typography.caption,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                            )
+                        }
+                    } else {
+                        GroupMemberDeviceDataRowContent(
+                            state = singleVisibleLocation,
+                            isBatteryVisible = (!expanded || !state.allowShowingDevices)
                         )
                     }
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (singleVisibleLocation?.speed != null) {
-                        Icon(
-                            painter = CoreAppIcons.Speed.asPainterResource(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 2.dp)
-                                .size(18.dp)
-                        )
-                        Text(
-                            text = singleVisibleLocation.speed,
-                            style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                    }
-
-                    if (singleVisibleLocation?.elevation != null) {
-                        Icon(
-                            painter = CoreAppIcons.Elevation.asPainterResource(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 2.dp)
-                                .size(18.dp)
-                        )
-                        Text(
-                            text = singleVisibleLocation.elevation,
-                            style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                    }
-
-                    if (singleVisibleLocation?.networkType != null) {
-                        NetworkTypeIcon(
-                            singleVisibleLocation.networkType,
-                            singleVisibleLocation.signalStrength
-                        )
-                        Text(
-                            text = singleVisibleLocation.networkType.networkName,
-                            style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                    }
+                if (isLastPingVisible) {
+                    GroupMemberDeviceDataFlowRow(
+                        modifier = Modifier.padding(top = 2.dp),
+                        state = singleVisibleLocation,
+                        isBatteryVisible = (!expanded || !state.allowShowingDevices)
+                    )
                 }
             }
 
@@ -371,7 +312,12 @@ fun GroupMemberWithLocations(
             ) {
                 if (canExpand) {
                     Icon(
-                        painter = if (expanded) CoreAppIcons.ExpandLess.asPainterResource() else CoreAppIcons.ExpandMore.asPainterResource(),
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(22.dp)
+                            .rotate(if (expanded) 90f else 0f),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
                         contentDescription = null
                     )
                 }
@@ -380,14 +326,18 @@ fun GroupMemberWithLocations(
 
         // action item
         AnimatedVisibility(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .padding(bottom = 10.dp)
-                .fillMaxWidth(),
+//            modifier = Modifier
+//                .padding(horizontal = 10.dp)
+//                .padding(bottom = 10.dp)
+//                .fillMaxWidth(),
             visible = expanded
         ) {
-            Column {
-
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .padding(bottom = 10.dp)
+                    .fillMaxWidth(),
+            ) {
                 val memberState = state.memberState
                 if (!memberState.paralinoId.isNullOrBlank() && state.allowShowingDevices) {
                     Row(
@@ -397,7 +347,13 @@ fun GroupMemberWithLocations(
                         Icon(
                             modifier = Modifier
                                 .size(32.dp)
-                                .clickable { onEvent?.invoke(GroupMemberItemEvent.onCopyCode(memberState.paralinoId)) }
+                                .clickable {
+                                    onEvent?.invoke(
+                                        GroupMemberItemEvent.onCopyCode(
+                                            memberState.paralinoId
+                                        )
+                                    )
+                                }
                                 .padding(6.dp),
                             painter = CoreAppIcons.ContentCopy.asPainterResource(),
                             contentDescription = null
@@ -432,7 +388,7 @@ fun GroupMemberWithLocations(
 
                 state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }
                     ?.let { devices ->
-                        Column(modifier = Modifier.padding(top = 12.dp)) {
+                        Column(modifier = Modifier.padding(top = 16.dp)) {
                             Text(
                                 modifier = Modifier.padding(start = 8.dp),
                                 text = stringResource(MR.strings.group_member_devices_section_title),
@@ -513,23 +469,67 @@ private fun ColumnScope.GroupMemberActions(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        GroupMemberSmallAction(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            state = actions.deleteMember
-        ) {
-            onEvent(GroupMemberItemEvent.onActionClick(it, state))
+        if (actions.deleteMember != null) {
+            GroupMemberActionButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                startIcon = actions.deleteMember.type.actionIcon,
+                endIcon = null,
+                isLoading = actions.deleteMember.isLoading,
+                text = stringResource(actions.deleteMember.type.actionText),
+                backgroundColor = AppColors.errorBackground,
+                contentColor = AppColors.redMain,
+                onClick = {
+                    onEvent(
+                        GroupMemberItemEvent.onActionClick(
+                            action = actions.deleteMember,
+                            item = state
+                        )
+                    )
+                }
+            )
         }
-        GroupMemberSmallAction(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            state = actions.blockUser
-        ) {
-            onEvent(GroupMemberItemEvent.onActionClick(it, state))
+
+        if (actions.blockUser != null) {
+            GroupMemberActionButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                startIcon = actions.blockUser.type.actionIcon,
+                endIcon = null,
+                isLoading = actions.blockUser.isLoading,
+                text = stringResource(actions.blockUser.type.actionText),
+                backgroundColor = AppColors.errorBackground,
+                contentColor = AppColors.redMain,
+                onClick = {
+                    onEvent(
+                        GroupMemberItemEvent.onActionClick(
+                            action = actions.blockUser,
+                            item = state
+                        )
+                    )
+                }
+            )
         }
-        GroupMemberSmallAction(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            state = actions.unblockUser
-        ) {
-            onEvent(GroupMemberItemEvent.onActionClick(it, state))
+
+        if (actions.unblockUser != null) {
+            GroupMemberActionButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                startIcon = actions.unblockUser.type.actionIcon,
+                endIcon = null,
+                isLoading = actions.unblockUser.isLoading,
+                text = stringResource(actions.unblockUser.type.actionText),
+                backgroundColor = if (isSystemInDarkTheme()) {
+                    AppColors.accentLight.copy(alpha = 0.2f)
+                } else {
+                    AppColors.accent.copy(alpha = 0.2f)
+                },
+                onClick = {
+                    onEvent(
+                        GroupMemberItemEvent.onActionClick(
+                            action = actions.unblockUser,
+                            item = state
+                        )
+                    )
+                }
+            )
         }
 
         if (actions.deleteLocation != null) {
@@ -537,7 +537,7 @@ private fun ColumnScope.GroupMemberActions(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = MemberActionType.DELETE_LOCATION.actionIcon,
                 endIcon = null,
-                isLoading = actions.deleteLocation?.isLoading ?: false,
+                isLoading = actions.deleteLocation.isLoading,
                 text = stringResource(MemberActionType.DELETE_LOCATION.actionText),
                 backgroundColor = AppColors.errorBackground,
                 contentColor = AppColors.redMain,
@@ -657,13 +657,11 @@ private fun GroupMemberLocationChild(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .padding(start = 8.dp)
+            .padding(top = 4.dp, bottom = 8.dp)
             .clip(RoundedCornerShape(12.dp))
 //            .background(MaterialTheme.colors.surface)
-            .combinedClickable(
-                onClick = { onClick(state) },
-                onLongClick = { if (state.canEdit) onDelete(state) }
+            .clickable(
+                onClick = { onClick(state) }
             )
             .padding(horizontal = 6.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -689,37 +687,6 @@ private fun GroupMemberLocationChild(
                 painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
                 contentDescription = null
             )
-            if (state.visibleBatteryLevel != null) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(width = 18.dp, height = 10.dp)
-                        ) {
-                            Icon(
-                                modifier = Modifier
-                                    .requiredSize(18.dp)
-                                    .rotate(90f),
-                                painter = if (state.isBatteryCharging) {
-                                    CoreAppIcons.BatteryChargingFull.asPainterResource()
-                                } else {
-                                    CoreAppIcons.BatteryFull.asPainterResource()
-                                },
-                                contentDescription = null
-                            )
-                        }
-                        Text(
-                            modifier = Modifier.offset(y = -(3.dp)),
-                            text = "${state.visibleBatteryLevel}%",
-                            style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium)
-                        )
-                    }
-                }
-            }
         }
 
         Column(
@@ -727,10 +694,9 @@ private fun GroupMemberLocationChild(
                 .weight(1f)
                 .padding(
                     start = 8.dp,
-                    end = 4.dp,
-                    bottom = if (state.visibleBatteryLevel != null && state.lastLocationPing == null) 12.dp else 0.dp
+                    end = 4.dp
                 ),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically)
         ) {
             Text(
                 text = state.name?.takeIf { it.isNotBlank() }
@@ -739,57 +705,259 @@ private fun GroupMemberLocationChild(
                 modifier = Modifier
             )
 
-            GroupStatusTag(state.deviceStatus?.toStatusTagType())
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+            ) {
+                state.deviceStatus?.toStatusTagType()?.let {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
+                    ) {
+                        GroupStatusTagContent(it)
+                    }
+                }
 
-            if (state.lastLocationPing != null) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = CoreAppIcons.AccessTime.asPainterResource(),
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 2.dp)
-                            .size(14.dp)
-                    )
-                    Text(
-                        text = state.lastLocationPing.annotatedBoldCompose(),
-                        style = MaterialTheme.typography.caption,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                if (state.lastLocationPing != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = CoreAppIcons.AccessTime.asPainterResource(),
+                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(end = 2.dp)
+                                .size(14.dp)
+                        )
+                        Text(
+                            text = state.lastLocationPing.annotatedBoldCompose(),
+                            style = MaterialTheme.typography.caption,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                        )
+                    }
+                } else {
+                    GroupMemberDeviceDataRowContent(
+                        state = state,
+                        isBatteryVisible = true
                     )
                 }
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            if (state.lastLocationPing != null) {
+                GroupMemberDeviceDataFlowRow(
+                    modifier = Modifier.padding(top = 2.dp),
+                    state = state,
+                    isBatteryVisible = true
+                )
+            }
+        }
 
-                if (state.speed != null) {
-                    Icon(
-                        painter = CoreAppIcons.Speed.asPainterResource(),
-                        contentDescription = null,
+        if (state.canEdit) {
+            GroupMemberActionButton(
+                modifier = Modifier,
+                startIcon = CoreAppIcons.Delete.asPainterResource(),
+                endIcon = null,
+                isLoading = false,
+                contentPadding = PaddingValues(6.dp),
+                text = "",
+                showText = false,
+                backgroundColor = AppColors.errorBackground,
+                contentColor = AppColors.redMain,
+                onClick = { onDelete(state) }
+            )
+        }
+    }
+}
+
+@Composable
+fun GroupMemberDeviceDataFlowRow(
+    modifier: Modifier,
+    state: GroupMemberItemLocationState?,
+    isBatteryVisible: Boolean
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
+        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+    ) {
+        GroupMemberDeviceDataRowContent(
+            state = state,
+            isBatteryVisible = isBatteryVisible
+        )
+    }
+}
+
+@Composable
+fun GroupMemberDeviceDataFlowRow(
+    modifier: Modifier,
+    batteryLevel: Int?,
+    isBatteryCharging: Boolean,
+    networkType: NetworkType?,
+    signalStrength: NetworkSignalStrength?,
+    speed: String?,
+    elevation: String?
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
+        verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically)
+    ) {
+        GroupMemberDeviceDataRowContent(
+            batteryLevel = batteryLevel,
+            isBatteryCharging = isBatteryCharging,
+            networkType = networkType,
+            signalStrength = signalStrength,
+            speed = speed,
+            elevation = elevation
+        )
+    }
+}
+
+@Composable
+fun FlowRowScope.GroupMemberDeviceDataRowContent(
+    state: GroupMemberItemLocationState?,
+    isBatteryVisible: Boolean
+) {
+    GroupMemberDeviceDataRowContent(
+        batteryLevel = state?.visibleBatteryLevel?.takeIf { isBatteryVisible },
+        isBatteryCharging = state?.isBatteryCharging ?: false,
+        networkType = state?.networkType,
+        signalStrength = state?.signalStrength,
+        speed = state?.speed,
+        elevation = state?.elevation
+    )
+}
+
+@Composable
+fun FlowRowScope.GroupMemberDeviceDataRowContent(
+    batteryLevel: Int?,
+    isBatteryCharging: Boolean,
+    networkType: NetworkType?,
+    signalStrength: NetworkSignalStrength?,
+    speed: String?,
+    elevation: String?
+) {
+    val isNetworkVisible = networkType != null
+    val isSpeedVisible = speed != null
+    val isElevationVisible = elevation != null
+    val isBatteryVisible = batteryLevel != null
+
+    if (isNetworkVisible || isBatteryVisible) {
+        Row(
+            modifier = Modifier.align(alignment = Alignment.CenterVertically),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+        ) {
+            if (isBatteryVisible) {
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
                         modifier = Modifier
-                            .padding(end = 2.dp)
-                            .size(18.dp)
+                            .size(width = 16.dp, height = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .requiredSize(16.dp)
+                                .rotate(90f),
+                            painter = if (isBatteryCharging) {
+                                CoreAppIcons.BatteryChargingFull.asPainterResource()
+                            } else {
+                                CoreAppIcons.BatteryFull.asPainterResource()
+                            },
+                            tint = when {
+                                batteryLevel > 85 -> AppColors.accent
+                                batteryLevel < 15 -> AppColors.redMain
+                                batteryLevel < 30 -> AppColors.highlightGold
+                                else -> MaterialTheme.colors.onSurface
+                            },
+                            contentDescription = null
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(2.dp))
+                    Text(
+                        text = "${batteryLevel}%",
+                        style = MaterialTheme.typography.overline.copy(fontWeight = FontWeight.Medium),
+                        color = when {
+                            batteryLevel < 15 -> AppColors.redMain
+                            batteryLevel < 30 -> AppColors.highlightGold
+                            else -> MaterialTheme.colors.onSurface
+                        }
+                    )
+                }
+            }
+
+            if (isNetworkVisible) {
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    NetworkTypeIcon(
+                        networkType = networkType,
+                        signalStrength = signalStrength
                     )
                     Text(
-                        text = state.speed,
+                        text = networkType.networkName,
                         style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
                     )
-                    Spacer(modifier = Modifier.size(8.dp))
                 }
+            }
+        }
+    }
 
-                if (state.elevation != null) {
-                    Icon(
-                        painter = CoreAppIcons.Elevation.asPainterResource(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 2.dp)
-                            .size(18.dp)
-                    )
-                    Text(
-                        text = state.elevation,
-                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
-                    )
-                    Spacer(modifier = Modifier.size(8.dp))
-                }
+    if ((isBatteryVisible || isNetworkVisible) && (isSpeedVisible || isElevationVisible)) {
+        Box(
+            modifier = Modifier
+                .align(alignment = Alignment.CenterVertically)
+                .padding(horizontal = 8.dp)
+                .requiredHeightIn(min = 12.dp)
+                .width(0.5.dp)
+                .background(color = AppColors.accent.copy(alpha = 0.2f))
+        )
+    }
+
+    Row(
+        modifier = Modifier.align(alignment = Alignment.CenterVertically),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+    ) {
+        if (isSpeedVisible) {
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = CoreAppIcons.Speed.asPainterResource(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 2.dp)
+                        .size(18.dp)
+                )
+                Text(
+                    text = speed,
+                    style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                )
+            }
+        }
+
+        if (isElevationVisible) {
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = CoreAppIcons.Elevation.asPainterResource(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 2.dp)
+                        .size(18.dp)
+                )
+                Text(
+                    text = elevation,
+                    style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                )
             }
         }
     }
