@@ -3,6 +3,8 @@ package app.paralino.core.ui.groups
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,9 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,7 +43,6 @@ import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
-import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenUiEvent
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
@@ -159,37 +158,47 @@ fun GroupDetailScreenCore(
 
         is Payload.Success -> {
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                floatingActionButton = {
-                    if (state.data.sharingStatus != null) {
-                        FilledButton(
-                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
-                            style = ButtonStyle.SMALL(
-                                iconSize = 24.dp
-                            ),
-                            icon = CoreAppIcons.StopCircle.asPainterResource(),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.error,
-                                contentColor = MaterialTheme.colors.onError
-                            ),
-                            onClick = { vm.onEvent(GroupDetailScreenUiEvent.StopSharing) }
-                        ) {
-                            Text(text = stringResource(MR.strings.location_sharing_button_stop_groups))
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {
+                            vm.onEvent(GroupDetailScreenUiEvent.OnWholeContentClick)
                         }
-                    } else {
-                        FilledButton(
-                            modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
-                            style = ButtonStyle.SMALL(
-                                iconSize = 24.dp
-                            ),
-                            icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.primary,
-                                contentColor = MaterialTheme.colors.onPrimary
-                            ),
-                            onClick = { openSharing() }
-                        ) {
-                            Text(text = stringResource(MR.strings.location_sharing_button_start_groups))
+                    ),
+                floatingActionButton = {
+                    if (!state.data.isMemberFocused) {
+                        if (state.data.sharingStatus != null) {
+                            FilledButton(
+                                modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
+                                style = ButtonStyle.SMALL(
+                                    iconSize = 24.dp
+                                ),
+                                icon = CoreAppIcons.StopCircle.asPainterResource(),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = MaterialTheme.colors.error,
+                                    contentColor = MaterialTheme.colors.onError
+                                ),
+                                onClick = { vm.onEvent(GroupDetailScreenUiEvent.StopSharing) }
+                            ) {
+                                Text(text = stringResource(MR.strings.location_sharing_button_stop_groups))
+                            }
+                        } else {
+                            FilledButton(
+                                modifier = Modifier.padding(bottom = contentPadding.calculateBottomPadding()),
+                                style = ButtonStyle.SMALL(
+                                    iconSize = 24.dp
+                                ),
+                                icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = MaterialTheme.colors.primary,
+                                    contentColor = MaterialTheme.colors.onPrimary
+                                ),
+                                onClick = { openSharing() }
+                            ) {
+                                Text(text = stringResource(MR.strings.location_sharing_button_start_groups))
+                            }
                         }
                     }
                 },
@@ -247,10 +256,10 @@ fun GroupDetailScreenCore(
                     if (state.data.errors.isNotEmpty())
                         this.item { Spacer(modifier = Modifier.size(10.dp)) }
 
-                    if (state.data.sharingStatus != null) {
+                    if (state.data.sharingStatus != null && !state.data.isMemberFocused) {
                         this.item(key = "sharing_status") {
                             Box(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().animateItem(),
                                 contentAlignment = Alignment.Center
                             ) {
                                 GroupDetailSharingStatusElement(
@@ -259,101 +268,93 @@ fun GroupDetailScreenCore(
                                 )
                             }
                         }
-                        this.item { Spacer(modifier = Modifier.size(20.dp)) }
+                        this.item { Spacer(modifier = Modifier.size(20.dp).animateItem()) }
                     }
 
-                    this.item(key = "main_header") {
-                        GroupDetailsHeader(
-                            groupName = state.data.name,
-                            groupImage = state.data.image,
-                            onMapClick = { openMap() },
-                            onPlacesClick = { openPlaces() },
-                            onSettingsClick = openGroupSettings,
-                            onSharingClick = { openSharing() }
-                        )
+                    if (!state.data.isMemberFocused) {
+                        this.item(key = "main_header") {
+                            GroupDetailsHeader(
+                                modifier = Modifier.animateItem(),
+                                groupName = state.data.name,
+                                groupImage = state.data.image,
+                                onMapClick = { openMap() },
+                                onPlacesClick = { openPlaces() },
+                                onSettingsClick = openGroupSettings,
+                                onSharingClick = { openSharing() }
+                            )
+                        }
                     }
 
-                    if (state.data.shouldShowPlanBanner) {
+                    if (state.data.shouldShowPlanBanner && !state.data.isMemberFocused) {
                         this.item(key = "plan_upgrade_banner") {
                             PremiumPlanBannerSmall(
-                                modifier = Modifier.zIndex(1f),
+                                modifier = Modifier.zIndex(1f).animateItem(),
                                 description = stringResource(MR.strings.plans_banner_inline_group_detail),
                                 onClick = openPaywall
                             )
-                            Spacer(modifier = Modifier.size(30.dp))
+                            Spacer(modifier = Modifier.size(30.dp).animateItem())
                         }
                     }
 
-                    this.stickyHeader(key = "member_list_header") {
-                        Row(
-                            modifier = Modifier
-                                .zIndex(0f)
-                                .fillParentMaxWidth()
-                                .background(MaterialTheme.colors.background)
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(MR.strings.group_details_section_members_title),
-                                style = MaterialTheme.typography.h6,
-                                modifier = Modifier.alpha(ContentAlpha.medium)
-                            )
-                            Spacer(modifier = Modifier.size(8.dp))
-                            PlanLimitCount(
-                                count = state.data.members.size,
-                                limit = if (state.data.canShowMembersLimit) {
-                                    state.data.membersLimit
-                                } else {
-                                    null
-                                }
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            if (state.data.canEdit) {
-                                SmallActionButton(
-                                    modifier = Modifier,
-                                    icon = CoreAppIcons.Add.asPainterResource(),
-                                    text = {
-                                        Text(
-                                            modifier = Modifier.padding(end = 2.dp),
-                                            text = stringResource(MR.strings.group_details_add_member_button)
-                                        )
-                                    },
-                                    backgroundColor = MaterialTheme.colors.primary,
-                                    contentColor = MaterialTheme.colors.onPrimary,
-                                    onClick = { vm.onEvent(GroupDetailScreenUiEvent.OnAddNewMember) }
+                    if (!state.data.isMemberFocused) {
+                        this.stickyHeader(key = "member_list_header") {
+                            Row(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .zIndex(0f)
+                                    .fillParentMaxWidth()
+                                    .background(MaterialTheme.colors.background)
+                                    .padding(vertical = 8.dp)
+                                    .padding(bottom = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(MR.strings.group_details_section_members_title),
+                                    style = MaterialTheme.typography.h6,
+                                    modifier = Modifier.alpha(ContentAlpha.medium)
                                 )
+                                Spacer(modifier = Modifier.size(8.dp))
+                                PlanLimitCount(
+                                    count = state.data.members.size,
+                                    limit = if (state.data.canShowMembersLimit) {
+                                        state.data.membersLimit
+                                    } else {
+                                        null
+                                    }
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                if (state.data.canEdit) {
+                                    SmallActionButton(
+                                        modifier = Modifier,
+                                        icon = CoreAppIcons.Add.asPainterResource(),
+                                        text = {
+                                            Text(
+                                                modifier = Modifier.padding(end = 2.dp),
+                                                text = stringResource(MR.strings.group_details_add_member_button)
+                                            )
+                                        },
+                                        backgroundColor = MaterialTheme.colors.primary,
+                                        contentColor = MaterialTheme.colors.onPrimary,
+                                        onClick = { vm.onEvent(GroupDetailScreenUiEvent.OnAddNewMember) }
+                                    )
+                                }
                             }
                         }
-                        Spacer(modifier = Modifier.size(4.dp))
                     }
 
                     this.itemsIndexed(
-                        items = state.data.members,
+                        items = state.data.visibleMembers,
                         key = { index, item -> item.memberState.memberId }
                     ) { index, item ->
-
-                        if (index > 0)
-                            Spacer(modifier = Modifier.size(8.dp))
-
-                        var expanded by rememberSaveable() {
-                            mutableStateOf(false)
-                        }
-
                         GroupMember(
-                            modifier = Modifier.animateItem(),
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(top = if (index > 0) 8.dp else 0.dp),
                             state = item,
-                            forceExpandAction = expanded,
+                            forceExpandAction = item.memberState.memberId == state.data.focusedMemberId,
                             collapseOnActionClick = false,
                             onEvent = { event ->
-                                when (event) {
-                                    is GroupMemberItemEvent.onItemClick -> {
-                                        expanded = !expanded
-                                    }
-
-                                    else -> {
-                                        vm.onEvent(GroupDetailScreenUiEvent.OnMemberItemEvent(event))
-                                    }
-                                }
+                                vm.onEvent(GroupDetailScreenUiEvent.OnMemberItemEvent(event))
                             }
                         )
                     }

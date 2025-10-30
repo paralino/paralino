@@ -186,6 +186,7 @@ class GroupDetailViewModel(
                 image = group.image,
                 sharingStatus = sharingState,
                 members = members,
+                focusedMemberId = currentState.data?.focusedMemberId,
                 membersLimit = membersLimit,
                 canShowMembersLimit = group.isCurrentUserOwner,
                 shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(
@@ -310,6 +311,14 @@ class GroupDetailViewModel(
                 }
             }
 
+            GroupDetailScreenUiEvent.OnWholeContentClick -> {
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(focusedMemberId = null)
+                    }
+                }
+            }
+
             is GroupDetailScreenUiEvent.OnMemberItemEvent -> {
                 when (event.event) {
                     is GroupMemberItemEvent.onActionClick -> {
@@ -386,8 +395,21 @@ class GroupDetailViewModel(
                         }
                     }
 
+                    is GroupMemberItemEvent.onItemClick -> {
+                        _uiState.update {
+                            it.mapSuccess {
+                                it.copy(
+                                    focusedMemberId = if (it.focusedMemberId.isNullOrBlank()) {
+                                        event.event.item.memberState.memberId
+                                    } else {
+                                        null
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                     is GroupMemberItemEvent.onDirectionsRequest,
-                    is GroupMemberItemEvent.onItemClick,
                     is GroupMemberItemEvent.onLocationRequest,
                     is GroupMemberItemEvent.onShowLocation -> {
                     }

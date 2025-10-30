@@ -15,6 +15,7 @@ data class GroupDetailScreenState(
     val image: ImageModel,
     val sharingStatus: LocationSharingState?,
     val members: List<GroupMemberItemState>,
+    val focusedMemberId: String?,
     val membersLimit: Int,
     val canShowMembersLimit: Boolean,
     val shouldShowPlanBanner: Boolean,
@@ -22,7 +23,16 @@ data class GroupDetailScreenState(
     val isGroupOverLimit: Boolean?,
     val errors: List<ConditionErrorType>,
     val alertDialog: MainAlertDialog?
-)
+) {
+    val isMemberFocused: Boolean = !focusedMemberId.isNullOrBlank()
+    val visibleMembers: List<GroupMemberItemState> = members.filter {
+        if (isMemberFocused) {
+            it.memberState.memberId == focusedMemberId
+        } else {
+            true
+        }
+    }
+}
 
 data class LocationSharingState(
     val endTime: String?,
@@ -38,6 +48,7 @@ data class LocationSharingState(
 sealed interface GroupDetailScreenUiEvent {
     data class DialogAction(val action: AlertDialogAction) : GroupDetailScreenUiEvent
     data class OnMemberItemEvent(val event: GroupMemberItemEvent) : GroupDetailScreenUiEvent
+    data object OnWholeContentClick : GroupDetailScreenUiEvent
     data object OnAddNewMember : GroupDetailScreenUiEvent
     data object StopSharing : GroupDetailScreenUiEvent
 }

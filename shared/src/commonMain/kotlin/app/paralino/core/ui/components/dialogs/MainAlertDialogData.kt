@@ -319,9 +319,7 @@ sealed interface MainAlertDialog {
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(resource = MR.strings.group_details_remove_member_alert_button),
-                    color = AlertDialogButtonData.destructiveColor,
-                    needsLongConfirmation = true
+                    text = stringResource(resource = MR.strings.group_details_remove_member_alert_button)
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
