@@ -20,7 +20,6 @@ struct LocationHistoryMapScreen: View {
     var body: some View {
         ZStack {
             ComposeRepresentable {
-                
                 ScreensIOS.shared.home.LocationHistoryMapScreen(
                     vm: mapState.vm,
                     paddingValues: safeAreaInsets,
@@ -64,6 +63,11 @@ struct LocationHistoryMapScreen: View {
             }
             .ignoresSafeArea(.all, edges: .vertical)
             .toolbar(.hidden, for: .navigationBar)
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                    .onChanged { _ in /* no-op, just to claim */ }
+                    .onEnded { _ in }
+            )
         }
         .onAppear {
             Logr.d(tag:"history_screen", message: "History screen appear")

@@ -43,7 +43,13 @@ struct PlaceCreateScreen: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(appState.screenTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                    .onChanged { _ in /* no-op, just to claim */ }
+                    .onEnded { _ in }
+            )
         }
+        
         .photoPickerSheet($bottomSheet) { image in
             appState.vm.updateImage(image: image)
             bottomSheet = nil
