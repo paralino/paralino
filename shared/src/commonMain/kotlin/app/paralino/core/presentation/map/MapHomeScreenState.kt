@@ -11,7 +11,10 @@ import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.provider.current
@@ -46,7 +49,7 @@ sealed class MapHomeScreenState {
         val activeUserCount: Int,
         val idleUserCount: Int,
 
-        val members: List<GroupMemberItemStateWithOneLocation>,
+        val allMembersOrDevices: List<GroupMemberItemStateWithOneLocation>,
         val places: List<PlaceListItemData>,
         val markers: List<MapPinData>,
         val trackingMarker: FocusedMarkerData?,
@@ -71,8 +74,25 @@ sealed class MapHomeScreenState {
             selectedGroupSharingContract
         }
 
+        val membersWithDevices: List<GroupMemberItemState> = allMembersOrDevices
+            .groupBy { it.memberState }
+            .map {
+                if (it.value.size > 1) {
+                    GroupMemberItemStateWithFullStateLocations(
+                        memberState = it.key,
+                        items = it.value,
+                        actions = MemberActionsState(),
+                        allowShowingDevices = true,
+                        lastLocationPing = null,
+                        lastStatusPing = null
+                    )
+                } else {
+                    it.value.first()
+                }
+            }
+
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
-        val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
+        val allMembersVerified: Boolean get() = allMembersOrDevices.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
 
         val focusedTypeId: String = when (mapHomeScreenFocusType) {
@@ -87,7 +107,7 @@ sealed class MapHomeScreenState {
 
         val focusedMember: GroupMemberItemState? =
             (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
-                members.firstOrNull { it.keyId == item.memberKeyId }
+                allMembersOrDevices.firstOrNull { it.keyId == item.memberKeyId }
             }
 
         override val isSheetEnabled: Boolean = if (isPersonalSpace) {

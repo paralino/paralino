@@ -7,6 +7,7 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.MemberLocation
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -206,6 +207,10 @@ fun MapPinData.asFocusedMarker(): FocusedMarkerData {
 }
 
 fun GroupMemberItemState.asFocusedMarker(): FocusedMarkerData {
+    return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)
+}
+
+fun GroupMemberItemLocationState.asFocusedMarker(): FocusedMarkerData {
     return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)
 }
 

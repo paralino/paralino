@@ -163,7 +163,7 @@ class MapStateMapper(
             activeUserCount = activeCount,
             idleUserCount = idleCount,
             currentUserImage = userData.userImage ?: ImageModel.emoji(Emojis.robot),
-            members = membersData,
+            allMembersOrDevices = membersData,
             places = placesData,
             markers = markers,
             trackingMarker = trackingMarker,
@@ -216,16 +216,17 @@ class MapStateMapper(
         groupPlanConfig: PlanConfig,
         previousState: MapHomeScreenState.Ready?
     ): List<GroupMemberItemStateWithOneLocation> {
-
         return groupMembers.flatMap { member ->
+            val memberState = GroupMemberState(
+                member = member.member,
+                isCurrentUser = member.member.userId == appPrefs.userId,
+                canHaveExpandButton = false
+            ).copy(paralinoId = null)
+
             if (member.locations.isEmpty()) {
                 listOf(
                     GroupMemberItemStateWithOneLocation(
-                        memberState = GroupMemberState(
-                            member = member.member,
-                            isCurrentUser = member.member.userId == appPrefs.userId,
-                            canHaveExpandButton = false
-                        ),
+                        memberState = memberState,
                         actions = MemberActionsState(
                             history = MemberActionItemState(
                                 type = MemberActionType.LOCATION_HISTORY,
@@ -237,14 +238,8 @@ class MapStateMapper(
                     )
                 )
             } else {
-                val memberState = GroupMemberState(
-                    member = member.member,
-                    isCurrentUser = member.member.userId == appPrefs.userId,
-                    canHaveExpandButton = false
-                )
-
                 member.locations.map { location ->
-                    val previousStateForLocation = previousState?.members?.firstOrNull {
+                    val previousStateForLocation = previousState?.allMembersOrDevices?.firstOrNull {
                         it.memberState.memberId == memberState.memberId && it.singleLocation?.locationId == location.id
                     }
 
@@ -313,7 +308,7 @@ class MapStateMapper(
             )
 
             val location = device.location
-            val previousStateForLocation = previousState?.members?.firstOrNull {
+            val previousStateForLocation = previousState?.allMembersOrDevices?.firstOrNull {
                 it.memberState.memberId == memberState.memberId && it.singleLocation?.locationId == location?.id
             }
 

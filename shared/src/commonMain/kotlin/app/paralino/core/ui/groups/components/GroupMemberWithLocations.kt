@@ -114,7 +114,10 @@ fun GroupMemberWithLocations(
     Column {
         Row(
             modifier = Modifier
-                .padding(vertical = 10.dp)
+                .padding(
+                    top = 10.dp,
+                    bottom = if (state.compactMultiDeviceMode) 0.dp else 10.dp
+                )
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -122,12 +125,12 @@ fun GroupMemberWithLocations(
             Box(modifier = Modifier.width(IntrinsicSize.Min)) {
                 Column(
                     modifier = Modifier
-                        .width(50.dp)
+                        .width(if (state.compactMultiDeviceMode) 32.dp else 50.dp)
                 ) {
                     ImageModelImage(
                         imageModel = state.memberState.image ?: ImageModel.emoji(Emojis.robot),
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(if (state.compactMultiDeviceMode) 32.dp else 50.dp)
                             .border(
                                 width = if (state.memberState.isCurrentUser) 2.dp else 0.5.dp,
                                 color = if (state.memberState.isCurrentUser)
@@ -180,59 +183,87 @@ fun GroupMemberWithLocations(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 12.dp, end = 8.dp),
+                    .padding(
+                        start = if (state.compactMultiDeviceMode) 8.dp else 12.dp,
+                        end = 8.dp
+                    ),
                 verticalArrangement = Arrangement.Center
             ) {
-                val iconId = "deviceIcon"
-                Text(
-                    text = remember(
-                        state.memberState.name,
-                        state.singleLocation?.name,
-                        expanded,
-                        state.allowShowingDevices
-                    ) {
-                        buildAnnotatedString {
-                            this.append(state.memberState.name.annotatedBold())
-                            if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
-                                this.append(" • ")
-                                appendInlineContent(iconId, "[device]")
-                                this.withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp,
-                                        baselineShift = BaselineShift(0.1f),
-                                        color = AppColors.accent
-                                    )
-                                ) {
-                                    this.append(state.singleLocation?.name ?: "")
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+//                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+//                        if (state.locations.size > 1 && state.compactMultiDeviceMode) {
+//                            Row(
+//                                modifier = Modifier,
+//                                verticalAlignment = Alignment.CenterVertically
+//                            ) {
+//                                Icon(
+//                                    modifier = Modifier.size(16.dp),
+//                                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+//                                    contentDescription = null
+//                                )
+//                                Spacer(modifier = Modifier.size(2.dp))
+//                                Text(
+//                                    text = "${state.locations.size}",
+//                                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold)
+//                                )
+//                            }
+//                        }
+//                    }
+
+                    val iconId = "deviceIcon"
+                    Text(
+                        text = remember(
+                            state.memberState.name,
+                            state.singleLocation?.name,
+                            expanded,
+                            state.allowShowingDevices
+                        ) {
+                            buildAnnotatedString {
+                                this.append(state.memberState.name.annotatedBold())
+                                if (!state.singleLocation?.name.isNullOrBlank() && (!expanded || !state.allowShowingDevices)) {
+                                    this.append(" • ")
+                                    appendInlineContent(iconId, "[device]")
+                                    this.withStyle(
+                                        style = SpanStyle(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp,
+                                            baselineShift = BaselineShift(0.1f),
+                                            color = AppColors.accent
+                                        )
+                                    ) {
+                                        this.append(state.singleLocation?.name ?: "")
+                                    }
                                 }
                             }
-                        }
-                    },
-                    inlineContent = mapOf(
-                        Pair(
-                            iconId,
-                            InlineTextContent(
-                                Placeholder(
-                                    width = 14.sp,
-                                    height = 16.sp,
-                                    placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                                )
-                            ) {
-                                Icon(
-                                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
-                                    contentDescription = null,
-                                    tint = AppColors.accent,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(top = 1.dp, end = 1.dp)
-                                )
-                            }
-                        )
-                    ),
-                    style = MaterialTheme.typography.subtitle1,
-                    modifier = Modifier
-                )
+                        },
+                        inlineContent = mapOf(
+                            Pair(
+                                iconId,
+                                InlineTextContent(
+                                    Placeholder(
+                                        width = 14.sp,
+                                        height = 16.sp,
+                                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                                    )
+                                ) {
+                                    Icon(
+                                        painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                                        contentDescription = null,
+                                        tint = AppColors.accent,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(top = 1.dp, end = 1.dp)
+                                    )
+                                }
+                            )
+                        ),
+                        style = MaterialTheme.typography.subtitle1,
+                        modifier = Modifier
+                    )
+                }
 
                 val isLastPingVisible =
                     state.filteredLastPing != null && (!expanded || !state.allowShowingDevices)
@@ -242,7 +273,7 @@ fun GroupMemberWithLocations(
                     verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
                 ) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        if (state.locations.size > 1) {
+                        if (state.locations.size > 1 && !state.compactMultiDeviceMode) {
                             Row(
                                 // offset to make it visually look in place
                                 modifier = Modifier.offset(y = 1.dp),
@@ -335,7 +366,6 @@ fun GroupMemberWithLocations(
             Column(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
-                    .padding(bottom = 10.dp)
                     .fillMaxWidth(),
             ) {
                 val memberState = state.memberState
@@ -388,17 +418,31 @@ fun GroupMemberWithLocations(
 
                 state.locations.takeIf { state.allowShowingDevices }?.takeIf { it.isNotEmpty() }
                     ?.let { devices ->
-                        Column(modifier = Modifier.padding(top = 16.dp)) {
-                            Text(
-                                modifier = Modifier.padding(start = 8.dp),
-                                text = stringResource(MR.strings.group_member_devices_section_title),
-                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
+                        Column(
+                            modifier = Modifier.padding(
+                                top = if (!state.compactMultiDeviceMode) 16.dp else 0.dp,
+                                bottom = 8.dp
                             )
+                        ) {
+                            if (!state.compactMultiDeviceMode) {
+                                Text(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    text = stringResource(MR.strings.group_member_devices_section_title),
+                                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium)
+                                )
+                            }
+
                             devices.forEach { device ->
                                 GroupMemberLocationChild(
                                     state = device,
                                     onClick = {
                                         // open device
+                                        onEvent?.invoke(
+                                            GroupMemberItemEvent.onDeviceClick(
+                                                item = state,
+                                                device = it
+                                            )
+                                        )
                                     },
                                     onDelete = {
                                         // delete device
@@ -417,7 +461,7 @@ fun GroupMemberWithLocations(
                 if (state.actions.isActive || canShowOldLocation) {
                     GroupMemberActions(
                         modifier = Modifier
-                            .padding(top = 0.dp)
+                            .padding(bottom = 10.dp)
                             .fillMaxWidth(),
                         state = state,
                         canShowOldLocation = canShowOldLocation,
@@ -657,7 +701,7 @@ private fun GroupMemberLocationChild(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 4.dp, bottom = 8.dp)
+            .padding(top = 4.dp, bottom = 4.dp)
             .clip(RoundedCornerShape(12.dp))
 //            .background(MaterialTheme.colors.surface)
             .clickable(
@@ -707,7 +751,7 @@ private fun GroupMemberLocationChild(
 
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically)
             ) {
                 state.deviceStatus?.toStatusTagType()?.let {
                     Row(
@@ -745,7 +789,7 @@ private fun GroupMemberLocationChild(
 
             if (state.lastLocationPing != null) {
                 GroupMemberDeviceDataFlowRow(
-                    modifier = Modifier.padding(top = 2.dp),
+                    modifier = Modifier,
                     state = state,
                     isBatteryVisible = true
                 )
@@ -800,7 +844,7 @@ fun GroupMemberDeviceDataFlowRow(
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
-        verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically)
+        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
     ) {
         GroupMemberDeviceDataRowContent(
             batteryLevel = batteryLevel,

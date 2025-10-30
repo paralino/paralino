@@ -4,6 +4,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
 import app.paralino.core.presentation.map.MapHomeScreenEvent.*
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePlace
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
@@ -203,8 +204,15 @@ class MapEventHandler(
 
             is GroupMemberItemEvent.onCopyCode -> {}
             is GroupMemberItemEvent.onDeleteDeviceClick -> {}
+
+            is GroupMemberItemEvent.onDeviceClick -> {
+                mapStateManager.trackMarker(uiState, updateReadyState, event.device.asFocusedMarker())
+            }
+
             is GroupMemberItemEvent.onItemClick -> {
-                mapStateManager.trackMarker(uiState, updateReadyState, event.item.asFocusedMarker())
+                if (event.item !is GroupMemberItemStateWithFullStateLocations) {
+                    mapStateManager.trackMarker(uiState, updateReadyState, event.item.asFocusedMarker())
+                }
             }
 
             is GroupMemberItemEvent.onLocationRequest -> {

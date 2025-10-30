@@ -22,7 +22,7 @@ class MapStateManager(
             ?.trackingMarker?.markerId == markerData.markerId
 
         val memberStateForMarker = uiState.value.asReady()
-            ?.members?.firstOrNull { it.keyId == markerData.markerId }
+            ?.allMembersOrDevices?.firstOrNull { it.keyId == markerData.markerId }
 
         updateState { readyState ->
             readyState.copy(
@@ -88,7 +88,7 @@ class MapStateManager(
             it.copy(
                 trackingMarker = null,
                 markers = it.markers.map { it.copy(focused = false, hidden = it.obsolete) },
-                members = it.members.map {
+                allMembersOrDevices = it.allMembersOrDevices.map {
                     it.copy(singleLocation = it.singleLocation?.copy(visibility = it.singleLocation.visibility.tryToHide()))
                 },
                 mapHomeScreenFocusType = MapHomeScreenFocusType.NONE
@@ -154,7 +154,7 @@ class MapStateManager(
 
                     else -> it.mapHomeScreenFocusType
                 },
-                members = it.members.map {
+                allMembersOrDevices = it.allMembersOrDevices.map {
                     if (it.keyId == memberItem.keyId) {
                         it.copy(
                             singleLocation = it.singleLocation?.copy(

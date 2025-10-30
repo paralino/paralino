@@ -87,7 +87,7 @@ private fun MainMapSheetActiveBody(
         screenPaddingValues = screenPaddingValues,
         swipeableState = swipeableState,
         readyState = readyState,
-        members = readyState.members,
+        members = readyState.membersWithDevices,
         places = readyState.places,
         onEvent = onEvent,
         onMapGroupInfoHeightChange = onMapGroupInfoHeightChange,

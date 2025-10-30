@@ -8,6 +8,7 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.LocationRequestItemState
@@ -64,6 +65,7 @@ class MemberActionHandler(
                         memberUserId = state.memberState.userId,
                         deviceId = when (state) {
                             is GroupMemberItemStateWithLocations -> null
+                            is GroupMemberItemStateWithFullStateLocations -> null
                             is GroupMemberItemStateWithOneLocation -> state.deviceId
                         }
                     )
@@ -77,7 +79,7 @@ class MemberActionHandler(
         updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
         uiState: StateFlow<MapHomeScreenState>
     ) {
-        val stateWithLocation = uiState.value.asReady()?.members?.firstOrNull { it.keyId == state.keyId }
+        val stateWithLocation = uiState.value.asReady()?.allMembersOrDevices?.firstOrNull { it.keyId == state.keyId }
 
         if (stateWithLocation?.singleLocation == null) {
             return
@@ -90,7 +92,7 @@ class MemberActionHandler(
             .onStart {
                 updateReadyState { readyState ->
                     readyState.copy(
-                        members = readyState.members.map {
+                        allMembersOrDevices = readyState.allMembersOrDevices.map {
                             if (it.keyId == state.keyId) {
                                 it.copy(
                                     actions = it.actions.copy(
@@ -108,7 +110,7 @@ class MemberActionHandler(
             .onCompletion {
                 updateReadyState { readyState ->
                     readyState.copy(
-                        members = readyState.members.map { memberState ->
+                        allMembersOrDevices = readyState.allMembersOrDevices.map { memberState ->
                             if (memberState.keyId == state.keyId) {
                                 memberState.copy(
                                     actions = memberState.actions.copy(
@@ -145,7 +147,7 @@ class MemberActionHandler(
         uiState: StateFlow<MapHomeScreenState>,
         getAllGroupsItemState: () -> List<GroupItemState>
     ) {
-        val stateWithLocation = uiState.value.asReady()?.members?.firstOrNull { it.keyId == state.keyId }
+        val stateWithLocation = uiState.value.asReady()?.allMembersOrDevices?.firstOrNull { it.keyId == state.keyId }
 
         if (stateWithLocation?.singleLocation == null) {
             return
@@ -199,7 +201,7 @@ class MemberActionHandler(
             .onStart {
                 updateReadyState { readyState ->
                     readyState.copy(
-                        members = readyState.members.map {
+                        allMembersOrDevices = readyState.allMembersOrDevices.map {
                             if (it.keyId == stateWithLocation.keyId) {
                                 it.copy(
                                     actions = it.actions.copy(
@@ -224,7 +226,7 @@ class MemberActionHandler(
                 }
                 updateReadyState { readyState ->
                     readyState.copy(
-                        members = readyState.members.map {
+                        allMembersOrDevices = readyState.allMembersOrDevices.map {
                             if (it.keyId == stateWithLocation.keyId) {
                                 it.copy(
                                     actions = it.actions.copy(

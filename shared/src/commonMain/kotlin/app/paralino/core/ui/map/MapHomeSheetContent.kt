@@ -295,7 +295,7 @@ private fun LazyListScope.membersList(
         GroupMember(
             state = itemState,
             collapseOnActionClick = true,
-            forceExpandAction = false,
+            forceExpandAction = itemState.locations.size > 1,
             onEvent = onEvent
         )
     }
