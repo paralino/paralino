@@ -1758,7 +1758,7 @@
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
 			requirement = {
 				kind = exactVersion;
-				version = 5.20.0;
+				version = 5.45.0;
 			};
 		};
 		25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
@@ -1766,7 +1766,7 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
 				kind = exactVersion;
-				version = 8.43.0;
+				version = 8.57.1;
 			};
 		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
@@ -1774,7 +1774,7 @@
 			repositoryURL = "https://github.com/jedisct1/swift-sodium.git";
 			requirement = {
 				kind = revision;
-				revision = 5b7e71852a1c1b46dd51c3f31c76747d9c82016e;
+				revision = ec71f90b271108c71783fba8685c32f88f6c52af;
 			};
 		};
 		2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */ = {
@@ -1782,7 +1782,7 @@
 			repositoryURL = "https://github.com/apple/swift-nio.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.74.0;
+				minimumVersion = 2.88.0;
 			};
 		};
 		257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
@@ -1790,7 +1790,7 @@
 			repositoryURL = "https://github.com/apple/swift-atomics.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 1.3.0;
 			};
 		};
 		25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */ = {
@@ -1798,7 +1798,7 @@
 			repositoryURL = "https://github.com/swift-server/async-http-client.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.20.1;
+				minimumVersion = 1.29.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
