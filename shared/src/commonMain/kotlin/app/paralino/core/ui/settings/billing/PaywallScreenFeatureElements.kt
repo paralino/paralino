@@ -228,7 +228,8 @@ private fun MemberItem(
             ),
             singleLocation = location,
             deviceId = "",
-            actions = memberActions
+            actions = memberActions,
+            isHighlighted = true
         ),
         forceExpandAction = true,
         collapseOnActionClick = false,

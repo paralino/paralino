@@ -24,6 +24,7 @@ sealed class GroupMemberItemState() {
     abstract val singleLocation: GroupMemberItemLocationState?
     abstract val allowShowingDevices: Boolean
     abstract val compactMultiDeviceMode: Boolean
+    abstract val isHighlighted: Boolean
     abstract val locations: List<GroupMemberItemLocationState>
 
     abstract val singleVisibleLocation: GroupMemberItemLocationState?
@@ -64,6 +65,7 @@ data class GroupMemberItemStateWithOneLocation constructor(
     val deviceId: String?,
     override val singleLocation: GroupMemberItemLocationState?,
     override val actions: MemberActionsState,
+    override val isHighlighted: Boolean
 ) : GroupMemberItemState() {
     override val keyId: String = singleLocation?.keyId
         ?.takeIf { it.isNotBlank() }
@@ -93,6 +95,7 @@ data class GroupMemberItemStateWithFullStateLocations constructor(
     override val lastStatusPing: String?
 ) : GroupMemberItemState() {
 
+    override val isHighlighted: Boolean = memberState.isCurrentUser
     override val locations = items.mapNotNull { it.singleLocation }
     override val singleLocation = locations.takeIf { it.size == 1 }?.first()
     override val keyId: String = singleLocation?.keyId
@@ -116,6 +119,7 @@ data class GroupMemberItemStateWithLocations constructor(
     override val lastStatusPing: String?
 ) : GroupMemberItemState() {
 
+    override val isHighlighted: Boolean = memberState.isCurrentUser
     override val singleLocation = locations.takeIf { it.size == 1 }?.first()
     override val keyId: String = singleLocation?.keyId
         ?.takeIf { it.isNotBlank() }

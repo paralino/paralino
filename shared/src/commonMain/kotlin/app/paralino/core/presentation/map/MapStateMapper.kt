@@ -234,7 +234,8 @@ class MapStateMapper(
                             )
                         ),
                         singleLocation = null,
-                        deviceId = null
+                        deviceId = null,
+                        isHighlighted = memberState.isCurrentUser
                     )
                 )
             } else {
@@ -271,7 +272,8 @@ class MapStateMapper(
                             showSpeedAndElevation = true,
                             visibility = locationVisibility,
                             formatter = valueFormatter
-                        )
+                        ),
+                        isHighlighted = memberState.isCurrentUser
                     )
                 }
             }
@@ -344,7 +346,8 @@ class MapStateMapper(
                         visibility = locationVisibility,
                         formatter = valueFormatter
                     )
-                }
+                },
+                isHighlighted = device.deviceId == appPrefs.deviceId
             )
         }
             .sortedByDescending { it.singleLocation?.deviceStatus == MemberDeviceStatusType.ACTIVE }

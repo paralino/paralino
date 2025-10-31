@@ -45,7 +45,8 @@ fun GroupMemberPreview() {
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER
                             )
-                        )
+                        ),
+                        isHighlighted = true
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))
@@ -58,7 +59,8 @@ fun GroupMemberPreview() {
                             deleteMember = MemberActionItemState(
                                 MemberActionType.DELETE_MEMBER
                             )
-                        )
+                        ),
+                        isHighlighted = true
                     )
                 ) { }
                 Spacer(modifier = Modifier.size(8.dp))

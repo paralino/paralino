@@ -133,8 +133,8 @@ fun GroupMemberWithLocations(
                         modifier = Modifier
                             .size(if (state.compactMultiDeviceMode) 32.dp else 50.dp)
                             .border(
-                                width = if (state.memberState.isCurrentUser) 2.dp else 0.5.dp,
-                                color = if (state.memberState.isCurrentUser)
+                                width = if (state.isHighlighted) 2.dp else 0.5.dp,
+                                color = if (state.isHighlighted)
                                     MaterialTheme.colors.primary
                                 else
                                     MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
