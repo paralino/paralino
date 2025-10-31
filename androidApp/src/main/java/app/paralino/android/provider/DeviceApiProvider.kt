@@ -59,6 +59,10 @@ class DeviceApiProvider constructor(
         appClass.copy(data)
     }
 
+    override fun deviceCornerRadius(): Float {
+        return 34f
+    }
+
     override suspend fun logout() {
         try {
             logg.tag("logout").w("Canceling all work on logout")

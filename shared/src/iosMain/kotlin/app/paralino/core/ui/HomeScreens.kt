@@ -329,6 +329,7 @@ object HomeScreens {
                 val sheetState = rememberSwipeableSheetState(
                     initialValue = BottomSheetPosition.HIDDEN,
                     collapsedAnchorBottomPaddingPixels = 0f,
+                    bottomScreenCornerRadius = vm.deviceApiProvider.deviceCornerRadius(),
                     confirmValueChange = {
                         it != BottomSheetPosition.HIDDEN
                     }

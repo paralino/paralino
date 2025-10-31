@@ -78,6 +78,8 @@ fun SwipeableBottomSheet(
             constraintsScope.maxHeight.toPx()
         }
 
+        val bottomCornerRadiusDp = remember(swipeableState.bottomScreenCornerRadius) { (swipeableState.bottomScreenCornerRadius * 0.9194).dp }
+
         swipeableState.createAnchors(
             screenHeightPixels = screenHeightPixels,
             collapsedInfoHeightPixel = collapsedInfoHeightPixel,
@@ -131,13 +133,12 @@ fun SwipeableBottomSheet(
                     // From collapsed to half-expanded (0f to 0.4f): 50dp to 40dp/58dp
                     val normalizedProgress = progress / breakingPoint // 0f to 1f
                     SwipeableSheetState.bottomCornerCollapsed + 
-                        ((SwipeableSheetState.bottomCornerHalfExpanded - SwipeableSheetState.bottomCornerCollapsed) * normalizedProgress)
+                        ((bottomCornerRadiusDp - SwipeableSheetState.bottomCornerCollapsed) * normalizedProgress)
                 }
                 else -> {
                     // From half-expanded to expanded (0.4f to 1f): 40dp/58dp to 0dp
                     val normalizedProgress = (progress - breakingPoint) / (1f - breakingPoint) // 0f to 1f
-                    SwipeableSheetState.bottomCornerHalfExpanded - 
-                        ((SwipeableSheetState.bottomCornerHalfExpanded - SwipeableSheetState.bottomCornerExpanded) * normalizedProgress)
+                    bottomCornerRadiusDp - ((bottomCornerRadiusDp - SwipeableSheetState.bottomCornerExpanded) * normalizedProgress)
                 }
             }
         }
@@ -360,6 +361,7 @@ class SwipeableSheetState internal constructor(
     internal val state: AnchoredDraggableState<BottomSheetPosition>,
     val mapContentListState: LazyListState,
     private val collapsedAnchorBottomPaddingPixels: Float = 0f,
+    val bottomScreenCornerRadius: Float,
     private val positionalThreshold: (totalDistance: Float) -> Float,
     private val velocityThreshold: () -> Float,
     private val confirmValueChange: (BottomSheetPosition) -> Boolean
@@ -536,10 +538,10 @@ class SwipeableSheetState internal constructor(
             DeviceType.Android -> 50.dp
             DeviceType.iOS -> 50.dp
         }
-        val bottomCornerHalfExpanded = when (DeviceType.current) {
-            DeviceType.Android -> 34.dp
-            DeviceType.iOS -> 57.dp
-        }
+//        val bottomCornerHalfExpanded = when (DeviceType.current) {
+//            DeviceType.Android -> 34.dp
+//            DeviceType.iOS -> 57.dp
+//        }
         val bottomCornerExpanded = when (DeviceType.current) {
             DeviceType.Android -> 0.dp
             DeviceType.iOS -> 0.dp
@@ -553,6 +555,7 @@ fun rememberSwipeableSheetState(
     initialValue: BottomSheetPosition = BottomSheetPosition.HIDDEN,
     mapContentListState: LazyListState = rememberLazyListState(),
     collapsedAnchorBottomPaddingPixels: Float = 0f,
+    bottomScreenCornerRadius: Float = 0f,
     confirmValueChange: (BottomSheetPosition) -> Boolean
 ): SwipeableSheetState {
     val density = LocalDensity.current
@@ -573,7 +576,8 @@ fun rememberSwipeableSheetState(
             positionalThreshold = positionalThreshold,
             velocityThreshold = velocityThreshold,
             confirmValueChange = confirmValueChange,
-            collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels
+            collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
+            bottomScreenCornerRadius = bottomScreenCornerRadius
         )
     }
 }
