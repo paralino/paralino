@@ -184,6 +184,7 @@ sealed interface MapHomeScreenUiEvent {
     data class OnGroupsEmptyStateEvent(val event: GroupsInitEmptyScreenUiEvent) : MapHomeScreenUiEvent
     data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
     data class SwitchViewSource(val viewSource: MapScreenViewSourceType) : MapHomeScreenUiEvent
+    data object OpenPersonalLocationHistory : MapHomeScreenUiEvent
     data object SwitchToPersonalSpace : MapHomeScreenUiEvent
     data object SwitchToGroups : MapHomeScreenUiEvent
     data object TryCreateGroup : MapHomeScreenUiEvent

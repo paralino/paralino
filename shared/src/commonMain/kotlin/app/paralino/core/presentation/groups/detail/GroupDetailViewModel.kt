@@ -412,6 +412,7 @@ class GroupDetailViewModel(
                     is GroupMemberItemEvent.onDirectionsRequest,
                     is GroupMemberItemEvent.onLocationRequest,
                     is GroupMemberItemEvent.onDeviceClick,
+                    is GroupMemberItemEvent.onOpenLocationHistory,
                     is GroupMemberItemEvent.onShowLocation -> {
                     }
                 }

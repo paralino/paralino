@@ -5,6 +5,8 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.*
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePlace
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
@@ -173,6 +175,16 @@ class MapEventHandler(
                     it.copy(isFirstTimeInPersonalSpace = false)
                 }
             }
+
+            MapHomeScreenUiEvent.OpenPersonalLocationHistory -> {
+                eventChannel.trySend(
+                    MapHomeScreenEvent.OpenLocationHistory(
+                        groupId = UserGroup.groupPersonalDevicesId,
+                        memberUserId = appPrefs.userId,
+                        deviceId = null
+                    )
+                )
+            }
         }
     }
 
@@ -227,7 +239,22 @@ class MapEventHandler(
                 )
             }
 
+            is GroupMemberItemEvent.onOpenLocationHistory -> {
+                eventChannel.trySend(
+                    MapHomeScreenEvent.OpenLocationHistory(
+                        groupId = event.item.memberState.groupId,
+                        memberUserId = event.item.memberState.userId,
+                        deviceId = when (event.item) {
+                            is GroupMemberItemStateWithLocations -> null
+                            is GroupMemberItemStateWithFullStateLocations -> null
+                            is GroupMemberItemStateWithOneLocation -> event.item.deviceId
+                        }
+                    )
+                )
+            }
+
             is GroupMemberItemEvent.onOpenRawData -> {}
+
             is GroupMemberItemEvent.onShowLocation -> {
                 mapStateManager.toggleMarkerVisibility(
                     uiState = uiState,

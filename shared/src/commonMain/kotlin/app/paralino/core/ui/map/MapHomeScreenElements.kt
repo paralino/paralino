@@ -208,11 +208,12 @@ fun MapHomeScreenElements(
         Spacer(modifier = Modifier.weight(1f))
 
         Box {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = sheetPeekHeight),
-                contentAlignment = Alignment.CenterEnd
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
             ) {
                 val sidePadding = 12.dp
                     .times(
@@ -222,43 +223,62 @@ fun MapHomeScreenElements(
                         }
                     )
                     .plus(16.dp)
-                // sharing time info
-                if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
-                    GroupMemberActionButton(
-                        modifier = Modifier
-                            .padding(horizontal = sidePadding)
-                            .padding(bottom = 6.dp),
-                        startIcon = CoreAppIcons.Timer.asPainterResource(),
-                        isLoading = false,
-                        text = readyState?.sharingEndTime
-                            ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
-                        onClick = {
-                            onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
-                        }
-                    )
-                }
 
-                // sharing start
-                if (readyState != null && readyState.selectedSharingContract == null && !isMemberOrPlaceFocused) {
-                    FilledButton(
-                        modifier = Modifier.padding(bottom = 8.dp, end = 10.dp),
-                        style = ButtonStyle.SMALL(
-                            iconSize = 24.dp
-                        ),
-                        icon = CoreAppIcons.ShareLocation.asPainterResource(),
-                        colors = ButtonDefaults.buttonColors(
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = sidePadding),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (!isMemberOrPlaceFocused && readyState?.isPersonalSpace == true) {
+                        GroupMemberActionButton(
+                            modifier = Modifier.padding(bottom = 6.dp),
+                            startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                            startIconSize = 14.dp,
+                            endIcon = null,
+                            text = "",
+                            showText = false,
+                            contentPadding = PaddingValues(8.dp),
+                            onClick = {
+                                onEvent(MapHomeScreenUiEvent.OpenPersonalLocationHistory)
+                            }
+                        )
+                    }
+
+                    // sharing time info
+                    if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
+                        GroupMemberActionButton(
+                            modifier = Modifier
+                                .padding(bottom = 6.dp),
+                            startIcon = CoreAppIcons.Timer.asPainterResource(),
+                            isLoading = false,
+                            text = readyState?.sharingEndTime
+                                ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
+                            onClick = {
+                                onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
+                            }
+                        )
+                    }
+
+                    // sharing start
+                    if (readyState != null && readyState.selectedSharingContract == null && !isMemberOrPlaceFocused) {
+                        GroupMemberActionButton(
+                            modifier = Modifier
+                                .padding(bottom = 6.dp),
+                            startIcon = CoreAppIcons.ShareLocation.asPainterResource(),
+                            isLoading = false,
                             backgroundColor = MaterialTheme.colors.primary,
-                            contentColor = MaterialTheme.colors.onPrimary
-                        ),
-                        onClick = {
-                            onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
-                        }
-                    ) {
-                        if (state.isPersonalSpace) {
-                            Text(text = stringResource(MR.strings.location_sharing_button_start_personal))
-                        } else {
-                            Text(text = stringResource(MR.strings.location_sharing_button_start_groups))
-                        }
+                            contentColor = MaterialTheme.colors.onPrimary,
+                            text = if (state.isPersonalSpace) {
+                                stringResource(MR.strings.location_sharing_button_start_personal)
+                            } else {
+                                stringResource(MR.strings.location_sharing_button_start_groups)
+                            },
+                            onClick = {
+                                onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
+                            }
+                        )
                     }
                 }
             }

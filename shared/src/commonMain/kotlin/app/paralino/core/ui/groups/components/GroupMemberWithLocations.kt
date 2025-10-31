@@ -62,6 +62,7 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
@@ -193,26 +194,6 @@ fun GroupMemberWithLocations(
                     horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-//                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-//                        if (state.locations.size > 1 && state.compactMultiDeviceMode) {
-//                            Row(
-//                                modifier = Modifier,
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                Icon(
-//                                    modifier = Modifier.size(16.dp),
-//                                    painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
-//                                    contentDescription = null
-//                                )
-//                                Spacer(modifier = Modifier.size(2.dp))
-//                                Text(
-//                                    text = "${state.locations.size}",
-//                                    style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold)
-//                                )
-//                            }
-//                        }
-//                    }
-
                     val iconId = "deviceIcon"
                     Text(
                         text = remember(
@@ -357,10 +338,6 @@ fun GroupMemberWithLocations(
 
         // action item
         AnimatedVisibility(
-//            modifier = Modifier
-//                .padding(horizontal = 10.dp)
-//                .padding(bottom = 10.dp)
-//                .fillMaxWidth(),
             visible = expanded
         ) {
             Column(
@@ -604,10 +581,7 @@ private fun ColumnScope.GroupMemberActions(
                 text = stringResource(MR.strings.groups_sharing_setting_timeline_title),
                 onClick = {
                     onEvent(
-                        GroupMemberItemEvent.onActionClick(
-                            action = actions.history,
-                            item = state
-                        )
+                        GroupMemberItemEvent.onOpenLocationHistory(item = state)
                     )
                 }
             )
@@ -663,29 +637,6 @@ private fun ColumnScope.GroupMemberActions(
                     contentDescription = null
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun GroupMemberSmallAction(
-    modifier: Modifier = Modifier,
-    state: MemberActionItemState?,
-    onClick: (MemberActionItemState) -> Unit
-) {
-    if (state != null) {
-        FilledButton(
-            modifier = modifier,
-            style = ButtonStyle.SMALL_ACTION,
-            icon = state.type.actionIcon,
-            elevation = 0.dp,
-            onClick = { onClick(state) },
-            state = AppButtonState.loadingStateWithCheck(isLoading = state.isLoading)
-        ) {
-            Text(
-                text = stringResource(state.type.actionText),
-                style = MaterialTheme.typography.caption
-            )
         }
     }
 }
@@ -1014,6 +965,7 @@ fun GroupMemberActionButton(
     text: String,
     showText: Boolean = true,
     isLoading: Boolean = false,
+    startIconSize: Dp = 18.dp,
     endIcon: Painter? = CoreAppIcons.ChevronRight.asPainterResource(),
     backgroundColor: Color = MaterialTheme.colors.surface,
     contentColor: Color = contentColorFor(backgroundColor),
@@ -1033,13 +985,13 @@ fun GroupMemberActionButton(
         imageOrIcon = {
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(startIconSize),
                     strokeWidth = 2.dp,
                     color = contentColor
                 )
             } else {
                 Icon(
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(startIconSize),
                     painter = startIcon,
                     contentDescription = null,
                     tint = contentColor
