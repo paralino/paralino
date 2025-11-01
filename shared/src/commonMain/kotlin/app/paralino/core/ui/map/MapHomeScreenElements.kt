@@ -45,9 +45,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -233,12 +235,21 @@ fun MapHomeScreenElements(
                 ) {
                     if (!isMemberOrPlaceFocused && readyState?.isPersonalSpace == true) {
                         GroupMemberActionButton(
-                            modifier = Modifier.padding(bottom = 6.dp),
+                            modifier = Modifier
+                                .padding(bottom = 6.dp)
+                                .dropShadow(
+                                    shape = CircleShape,
+                                    shadow = Shadow(
+                                        radius = 16.dp,
+                                        color = Color.Black.copy(alpha = 0.2f),
+                                    )
+                                ),
                             startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                             startIconSize = 14.dp,
                             endIcon = null,
                             text = "",
                             showText = false,
+                            backgroundColor = MaterialTheme.colors.background,
                             contentPadding = PaddingValues(8.dp),
                             onClick = {
                                 onEvent(MapHomeScreenUiEvent.OpenPersonalLocationHistory)
@@ -250,11 +261,19 @@ fun MapHomeScreenElements(
                     if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
                         GroupMemberActionButton(
                             modifier = Modifier
-                                .padding(bottom = 6.dp),
+                                .padding(bottom = 6.dp)
+                                .dropShadow(
+                                    shape = CircleShape,
+                                    shadow = Shadow(
+                                        radius = 16.dp,
+                                        color = Color.Black.copy(alpha = 0.2f),
+                                    )
+                                ),
                             startIcon = CoreAppIcons.Timer.asPainterResource(),
                             isLoading = false,
                             text = readyState?.sharingEndTime
                                 ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
+                            backgroundColor = MaterialTheme.colors.background,
                             onClick = {
                                 onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
                             }

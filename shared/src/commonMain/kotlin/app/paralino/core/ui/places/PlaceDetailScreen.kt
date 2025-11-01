@@ -54,6 +54,7 @@ fun PlaceDetailScreenCore(
     onNavigateBack: () -> Unit,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
+    openPlaceSensitivityScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
 ) {
@@ -119,6 +120,7 @@ fun PlaceDetailScreenCore(
                 openPlaceEditScreen = openPlaceEditScreen,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
+                openPlaceSensitivityScreen = openPlaceSensitivityScreen,
                 onPlaceDelete = {
                     showDialog = MainAlertDialog.DeletePlace
                 },
@@ -145,6 +147,7 @@ private fun PlaceDetailScreen(
     userScrollEnabled: Boolean,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
+    openPlaceSensitivityScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     onPlaceDelete: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
@@ -218,6 +221,12 @@ private fun PlaceDetailScreen(
                         icon = CoreAppIcons.NotificationsActive.asPainterResource(),
                     ) {
                         openPlaceAlertsScreen()
+                    }
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.place_sensitivity_screen_title),
+                        icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                    ) {
+                        openPlaceSensitivityScreen()
                     }
                 }
 

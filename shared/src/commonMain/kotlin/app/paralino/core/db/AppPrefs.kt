@@ -1,10 +1,11 @@
 package app.paralino.core.db
 
-import app.paralino.core.appPrefs
+import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
@@ -103,6 +104,7 @@ class AppPrefs(
         const val keyDeviceTheme = "prefs.device.theme"
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
+        const val keyPlaceSensitivityType = "prefs.device.placeSensitivity"
     }
 
     val isTokenValid: Boolean
@@ -472,6 +474,25 @@ class AppPrefs(
         set(value) {
             provider.appSettings.putString(keyDeviceTheme, value)
         }
+
+    fun setPlaceSensitivityForPlace(placeId: String, sensitivity: GroupPlaceSensitivityData?) {
+        if (sensitivity != null) {
+            val model = BaseRemoteModule.formatter.encodeToString(sensitivity)
+            provider.userSettings.putString("${keyPlaceSensitivityType}_${placeId}", model)
+        } else {
+            provider.userSettings.remove("${keyPlaceSensitivityType}_${placeId}")
+        }
+    }
+
+    fun getPlaceSensitivityForPlace(placeId: String): GroupPlaceSensitivityData? {
+        return provider.userSettings.getStringOrNull("${keyPlaceSensitivityType}_${placeId}")?.let {
+            try {
+                BaseRemoteModule.formatter.decodeFromString(it)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
 
 
     fun hasGuestAccount(): Boolean {

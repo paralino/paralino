@@ -323,6 +323,7 @@ private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationSta
         highBatteryImpact = true,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = { itemState = !itemState }
     )
 }
@@ -338,6 +339,7 @@ private fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
         highBatteryImpact = false,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = { itemState = !itemState }
     )
 }

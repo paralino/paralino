@@ -51,11 +51,13 @@ import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
+import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 
 @Composable
@@ -209,6 +211,14 @@ fun NavGraphBuilder.homeGraph(
         }
         composable(AppScreen.MainHome.PersonalSpaceSettings.routeSignature) {
             PersonalSpaceSettingsScreen(appState = appState)
+        }
+        composable(AppScreen.MainHome.PlaceSensitivity.routeSignature) {
+            val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceSensitivity.argumentGroupId)!!
+            val placeId = it.arguments?.getString(AppScreen.MainHome.PlaceSensitivity.argumentPlaceId)!!
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<PlaceSensitivityViewModel> { parametersOf(groupId, placeId) }
+            )
         }
     }
 }

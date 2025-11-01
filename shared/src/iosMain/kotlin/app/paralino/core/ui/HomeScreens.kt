@@ -543,6 +543,7 @@ object HomeScreens {
         paddingValues: AppleScreenPaddingValues,
         openPlaceRawDataScreen: () -> Unit,
         openPlaceAlertsScreen: () -> Unit,
+        openPlaceSensitivityScreen: () -> Unit,
         openPlaceEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
         mapUIView: (PlaceDetailScreenState) -> UIViewController,
@@ -561,6 +562,7 @@ object HomeScreens {
                 onNavigateBack = onNavigateBack,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
+                openPlaceSensitivityScreen = openPlaceSensitivityScreen,
                 openPlaceEditScreen = openPlaceEditScreen,
                 mapContent = { state ->
                     Box(

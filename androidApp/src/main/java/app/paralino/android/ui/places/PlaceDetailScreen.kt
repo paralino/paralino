@@ -80,6 +80,14 @@ fun PlaceDetailScreen(
                     )
                 )
             },
+            openPlaceSensitivityScreen = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.PlaceSensitivity.route(
+                        groupId = groupId,
+                        placeId = placeId
+                    )
+                )
+            },
             openPlaceEditScreen = {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlaceCreate.route(

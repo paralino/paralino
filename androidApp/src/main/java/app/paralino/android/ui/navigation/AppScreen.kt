@@ -217,6 +217,7 @@ sealed class AppScreen {
 
         object PlaceDetail : Common.PlaceDetail("home")
         object PlaceAlerts : Common.PlaceDetail("place-alerts")
+        object PlaceSensitivity : Common.PlaceDetail("place-sensitivity")
 
         object LocationHistoryDelete : AppScreen() {
             override val routeSignature: String =

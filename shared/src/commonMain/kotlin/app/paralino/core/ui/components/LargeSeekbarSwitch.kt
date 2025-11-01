@@ -75,7 +75,8 @@ fun LargeSeekbarSwitch(
     description: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
-    elevation: Dp = animateDpAsState(if (state.switchState?.checkState == true) 16.dp else 0.dp).value,
+    enabled: Boolean = true,
+    elevation: Dp = animateDpAsState(if (state.switchState?.checkState == true && enabled) 16.dp else 0.dp).value,
     size: LargeSwitchSize = LargeSwitchSize(),
     onLongClick: (() -> Unit)? = null,
     onProgressChange: ((Int) -> Unit)? = null,
@@ -83,7 +84,7 @@ fun LargeSeekbarSwitch(
 ) {
 
     val sourceColor =
-        if (state.switchState?.checkState == true && state.seekbarState == null) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+        if (state.switchState?.checkState == true && state.seekbarState == null && enabled) MaterialTheme.colors.primary else MaterialTheme.colors.surface
     val backgroundColor by animateColorAsState(targetValue = sourceColor)
     val contentColor by animateColorAsState(targetValue = contentColorFor(backgroundColor = sourceColor))
 
@@ -226,9 +227,17 @@ fun LargeSeekbarSwitch(
                                 .padding(8.dp),
                             tint = contentColor
                         )
+                        Spacer(modifier = Modifier.weight(1f))
+                    } else {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .weight(1f),
+                            text = title,
+                            style = titleStyle,
+                            color = contentColor
+                        )
                     }
-
-                    Spacer(modifier = Modifier.weight(1f))
 
                     Box(
                         modifier = Modifier
@@ -282,11 +291,13 @@ fun LargeSeekbarSwitch(
                     .animateContentSize()
                     .padding(vertical = 2.dp, horizontal = 4.dp)
             ) {
-                Text(
-                    text = title,
-                    style = titleStyle,
-                    color = contentColor
-                )
+                if (icon != null) {
+                    Text(
+                        text = title,
+                        style = titleStyle,
+                        color = contentColor
+                    )
+                }
                 if (!description.isNullOrBlank()) {
                     if (focusDescription) {
                         Text(

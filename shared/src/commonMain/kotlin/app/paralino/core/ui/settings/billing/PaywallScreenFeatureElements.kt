@@ -389,6 +389,7 @@ private fun BatteryPerformance1Switch(
         highBatteryImpact = true,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = onClick
     )
 }
@@ -407,6 +408,7 @@ private fun BatteryPerformance2Switch(
         highBatteryImpact = true,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = onClick
     )
 }

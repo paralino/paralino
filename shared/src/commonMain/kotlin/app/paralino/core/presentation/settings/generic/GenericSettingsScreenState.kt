@@ -59,9 +59,11 @@ sealed interface GenericSettingListItem {
         override val keyId: String,
         val title: String,
         val description: String,
-        val icon: DrawableResource,
+        val icon: DrawableResource?,
         val isChecked: Boolean,
+        val isEnabled: Boolean,
         val isLoading: Boolean,
+        val isVisible: Boolean
     ): GenericSettingListItem
 
     data class GroupOptions(
@@ -69,6 +71,7 @@ sealed interface GenericSettingListItem {
         override val keyId: String,
         val items: List<GroupOptionItem>
     ): GenericSettingListItem {
+        val visibleItems = items.filter { it.isVisible }
         val selectedItem: GroupOptionItem = items.firstOrNull { it.isSelected }
             ?: items.firstOrNull { it.id == defaultId }
             ?: items.first()
@@ -83,7 +86,9 @@ data class GroupOptionItem(
     val batteryImpact: String?,
     val highBatteryImpact: Boolean,
     val isPremiumFeatureEnabled: Boolean,
-    val isSelected: Boolean
+    val isSelected: Boolean,
+    val isLoading: Boolean = false,
+    val isVisible: Boolean = true
 )
 
 sealed interface GenericSettingsScreenEvent {
@@ -92,6 +97,6 @@ sealed interface GenericSettingsScreenEvent {
 
 sealed interface GenericSettingsScreenUiEvent {
     data class ToggleSwitch<KEY>(val switch: GenericSettingListItem.Switch<KEY>) : GenericSettingsScreenUiEvent
-    data class SelectOptionItem(val option: GroupOptionItem) : GenericSettingsScreenUiEvent
+    data class SelectOptionItem(val groupOptions: GenericSettingListItem.GroupOptions, val option: GroupOptionItem) : GenericSettingsScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : GenericSettingsScreenUiEvent
 }
