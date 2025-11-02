@@ -4,7 +4,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
-import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceRequest
@@ -12,25 +11,30 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.models.places.PlaceActivityState
+import app.paralino.core.presentation.places.detail.PlaceSensitivityDelayType
+import app.paralino.core.presentation.places.detail.PlaceSensitivityLocationRefreshType
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Instant
 import kotlin.math.absoluteValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 abstract class IPlacesActivityProcessor {
     abstract suspend fun processLocation(data: LocationDataModel)
 }
 
-class IOSLSEPlacesActivityProcessor: IPlacesActivityProcessor() {
+class IOSLSEPlacesActivityProcessor : IPlacesActivityProcessor() {
     override suspend fun processLocation(data: LocationDataModel) {}
 }
 
@@ -43,8 +47,9 @@ class PlacesActivityProcessor(
     private val geofenceManager: IGeofenceManager,
     private val scopeProvider: ICoroutineScopeProvider,
     private val locationSharingManager: LocationSharingManager,
+    private val oneTimeLocation: IOneTimeLocationProvider,
     private val appPrefs: AppPrefs
-): IPlacesActivityProcessor() {
+) : IPlacesActivityProcessor() {
 
     override suspend fun processLocation(data: LocationDataModel) {
         // TODO filter out frequent calls and calculations of distance between points
@@ -287,19 +292,43 @@ class PlacesActivityProcessor(
     ) {
         logg.tag("place_activity").i("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
+
+        val place = local.getPlaceWithoutSettingsOnce(placeId)
+        if (place == null) {
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (place null) - $placeId")
+            placeActivityRepo.updatePlaceActivity(
+                placeId = placeId,
+                state = null
+            )
+            return
+        }
+
         val updateJob = scopeProvider.userSessionIOScope.launch {
-            val delay = placeActivityDelay(trigger = trigger)
+            val delay = placeActivityDelay(
+                place = place,
+                trigger = trigger
+            )
+
             logg.tag("place_activity")
                 .i("Delay place notify $activityTag - $placeId for ${delay?.inWholeSeconds}")
 
             if (delay != null) {
+                if (place.alertSensitivity.sensitivityRefresh == PlaceSensitivityLocationRefreshType.BEFORE) {
+                    updateDeviceStatusAndLocation(
+                        activityTag = activityTag,
+                        trigger = trigger,
+                        place = place
+                    )
+                }
+
                 delay(delay)
             }
 
             try {
                 processPlaceActivity(
                     activityTag = activityTag,
-                    placeId = placeId
+                    place = place
                 )
             } catch (e: Exception) {
                 logg.w("place_activity", "Error notifying place exit: ${e.message}")
@@ -318,8 +347,9 @@ class PlacesActivityProcessor(
 
     private suspend fun processPlaceActivity(
         activityTag: String,
-        placeId: String
+        place: GroupPlace
     ) {
+        val placeId = place.id
         val currentState = placeActivityRepo.getPlaceActivity(placeId = placeId)
 
         if (currentState == null) {
@@ -359,18 +389,6 @@ class PlacesActivityProcessor(
             return
         }
 
-        val place = local.getPlaceWithoutSettingsOnce(placeId)
-
-        if (place == null) {
-            logg.tag("place_activity")
-                .d("Cancel place $activityTag notify (place null) - $placeId")
-            placeActivityRepo.updatePlaceActivity(
-                placeId = placeId,
-                state = null
-            )
-            return
-        }
-
         if (!locationSharingManager.isSharingActiveForGroup(place.groupOrSpaceId)) {
             // reset place activity if sharing stops
             placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
@@ -385,6 +403,16 @@ class PlacesActivityProcessor(
             logg.tag("place_activity")
                 .d("Cancel place $activityTag notify (place without alerts) - $placeId")
             return
+        }
+
+        if (place.alertSensitivity.ignoreInaccurate) {
+            val location =
+                oneTimeLocation.getLastLocation(requestType = IOneTimeLocationProvider.RequestType.CacheOnly)
+            if (location == null || location.accuracy.isLocationInaccurate()) {
+                placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
+                logg.tag("place_activity")
+                    .d("Cancel place $activityTag notify (location not accurate) - $placeId")
+            }
         }
 
         logg.tag("place_activity").i("Trigger notify place $activityTag - $placeId")
@@ -407,51 +435,90 @@ class PlacesActivityProcessor(
             )
 
             // update device status with last location if place activity came from geofence
-            if (currentState.scheduleTrigger == PlaceActivityTriggerType.GOEFENCE) {
+            if (place.alertSensitivity.sensitivityRefresh == PlaceSensitivityLocationRefreshType.AFTER) {
                 updateDeviceStatusAndLocation(
                     activityTag = activityTag,
+                    trigger = currentState.scheduleTrigger,
                     place = place
                 )
             }
         } catch (e: Exception) {
-            placeActivityRepo.updatePlaceActivity(placeId, null)
+            placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
             throw e
         }
     }
 
-    private fun updateDeviceStatusAndLocation(
+    private suspend fun updateDeviceStatusAndLocation(
         activityTag: String,
+        trigger: PlaceActivityTriggerType?,
         place: GroupPlace
     ) {
-        scopeProvider.userSessionIOScope.launch {
-            // update device status with last location if place activity came from geofence
-            try {
-                deviceStatusProcessor.pushDeviceStatus(groupId = place.groupOrSpaceId)
-            } catch (e: Exception) {
-                logg.tag("place_activity")
-                    .w("Error updating member status in ${place.groupOrSpaceId} from $activityTag - ${place.id}: ${e.message}")
+        if (trigger == PlaceActivityTriggerType.GOEFENCE) {
+            scopeProvider.userSessionIOScope.launch {
+                // update device status with last location if place activity came from geofence
+                try {
+                    deviceStatusProcessor.pushDeviceStatus(groupId = place.groupOrSpaceId)
+                } catch (e: Exception) {
+                    logg.tag("place_activity")
+                        .w("Error updating member status in ${place.groupOrSpaceId} from $activityTag - ${place.id}: ${e.message}")
+                }
             }
         }
-        locationPerformanceManager.locationBoostRequested(
-            request = LocationPerformanceRequest(
-                type = LocationPerformanceType.HIGH,
-                durationMillis = 12.seconds.inWholeMilliseconds
-            ),
-            groupId = place.groupOrSpaceId,
-            from = "place $activityTag"
-        )
+
+        val shouldRefresh = if (place.alertSensitivity.refreshOnlyInaccurate) {
+            val location =
+                oneTimeLocation.getLastLocation(IOneTimeLocationProvider.RequestType.CacheOnly)
+            location == null || location.accuracy.isLocationInaccurate() || location.timeUTCInstant?.isOlderThan(
+                5.minutes
+            ) != false
+        } else {
+            true
+        }
+
+        if (shouldRefresh) {
+            val duration = when (place.alertSensitivity.sensitivityDelay) {
+                PlaceSensitivityDelayType.NONE -> 12.seconds
+                PlaceSensitivityDelayType.MINIMUM -> 6.seconds
+                PlaceSensitivityDelayType.BALANCED -> 12.seconds
+                PlaceSensitivityDelayType.LONG -> 20.seconds
+            }
+
+            locationPerformanceManager.locationBoostRequested(
+                request = LocationPerformanceRequest(
+                    type = LocationPerformanceType.HIGH,
+                    durationMillis = duration.inWholeMilliseconds
+                ),
+                groupId = place.groupOrSpaceId,
+                from = "place $activityTag"
+            )
+        }
     }
 
-    private fun placeActivityDelay(trigger: PlaceActivityTriggerType): Duration? {
+    private fun placeActivityDelay(
+        place: GroupPlace?,
+        trigger: PlaceActivityTriggerType
+    ): Duration? {
+        if (place == null) {
+            return null
+        }
+
         return when (trigger) {
             PlaceActivityTriggerType.GOEFENCE -> {
-                if (appPrefs.placeActivityThrottle) null
-                else null
+                when (place.alertSensitivity.sensitivityDelay) {
+                    PlaceSensitivityDelayType.NONE -> null
+                    PlaceSensitivityDelayType.MINIMUM -> 6.seconds
+                    PlaceSensitivityDelayType.BALANCED -> 12.seconds
+                    PlaceSensitivityDelayType.LONG -> 20.seconds
+                }
             }
 
             else -> {
-                if (appPrefs.placeActivityThrottle) 20.seconds
-                else 5.seconds
+                when (place.alertSensitivity.sensitivityDelay) {
+                    PlaceSensitivityDelayType.NONE -> 5.seconds
+                    PlaceSensitivityDelayType.MINIMUM -> 10.seconds
+                    PlaceSensitivityDelayType.BALANCED -> 15.seconds
+                    PlaceSensitivityDelayType.LONG -> 25.seconds
+                }
             }
         }
     }

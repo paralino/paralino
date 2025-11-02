@@ -168,7 +168,7 @@ object KoinSetup {
         single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
         single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
         single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
-        single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+        single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
         single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
 
         single {
