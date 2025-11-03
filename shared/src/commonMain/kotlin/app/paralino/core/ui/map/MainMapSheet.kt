@@ -47,7 +47,7 @@ fun MainMapSheet(
         swipeableState = swipeableState,
         screenContent = screenContent,
         body = {
-            if (mapUiState is MapHomeScreenState.Ready) {
+            if (mapUiState is MapHomeScreenState.Ready && mapUiState.locationHistoryMode == null) {
                 MainMapSheetActiveBody(
                     screenPaddingValues = screenPaddingValues,
                     appState = appState,

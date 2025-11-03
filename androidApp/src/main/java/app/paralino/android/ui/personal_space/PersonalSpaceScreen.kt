@@ -66,6 +66,12 @@ fun PersonalSpaceScreen(
                     )
                 )
             },
+            openMap = {
+                appState.navController.navigate(AppScreen.MainHome.MainMap.route(UserGroup.groupPersonalDevicesId)) {
+                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
+                    this.launchSingleTop = true
+                }
+            },
             openPlaces = {
                 appState.navController.navigate(
                     AppScreen.MainHome.PlacesList.route(groupId = UserGroup.groupPersonalDevicesId)

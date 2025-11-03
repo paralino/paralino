@@ -44,6 +44,7 @@ sealed class MapHomeScreenState {
         override val currentUserImage: ImageModel,
 
         val isFirstTimeInPersonalSpace: Boolean,
+        val locationHistoryMode: MapLocationHistoryModeGroupUserData?,
 
         val userCount: Int,
         val activeUserCount: Int,
@@ -116,7 +117,7 @@ sealed class MapHomeScreenState {
             true
         }
 
-        override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberOrPlaceFocused) {
+        override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberOrPlaceFocused || locationHistoryMode != null) {
             BottomSheetPosition.HIDDEN
         } else {
             if (isPersonalSpace && isFirstTimeInPersonalSpace) {
@@ -200,6 +201,7 @@ sealed interface MapHomeScreenUiEvent {
     data object OnMapModeSwitch : MapHomeScreenUiEvent
     data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
+    data object CloseLocationHistory : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {
@@ -232,6 +234,12 @@ sealed interface MapHomeScreenFocusType {
         }
     }
 }
+
+data class MapLocationHistoryModeGroupUserData(
+    val groupId: String,
+    val memberUserId: String,
+    val deviceId: String?
+)
 
 sealed interface MapScreenViewSourceType {
     val id: GroupOrSpaceId?

@@ -7,6 +7,9 @@ import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.domain.location.RealtimeEventsMaker
+import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
+import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
+import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
@@ -16,11 +19,14 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.history.LocationHistoryUiEvent
+import app.paralino.core.presentation.history.LocationHistoryViewModelController
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
@@ -45,6 +51,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -65,6 +72,10 @@ class MapHomeViewModel constructor(
     private val clearUserLocation: ClearUserLocationUseCase,
     private val realtimeEvents: RealtimeEventsMaker,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val getLocationHistory: GetLocationHistoryUseCase,
+    private val refreshLocationHistory: RefreshLocationHistoryUseCase,
+    private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
+    private val geofenceManager: IGeofenceManager,
     private val appPrefs: AppPrefs,
     val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
@@ -172,6 +183,10 @@ class MapHomeViewModel constructor(
         coroutineScope = coroutineScope
     )
 
+    private var locationHistoryController: LocationHistoryViewModelController? = null
+    val historyUiState get() = locationHistoryController?.uiState
+    val historyEvents get() = locationHistoryController?.events
+
     init {
         appRatingManager.tryShowingAppRating(source = AppRatingSource.MAIN_MAP)
 
@@ -179,6 +194,40 @@ class MapHomeViewModel constructor(
         setupAppLifecycleHandling()
         setupLocationFocusManagement()
         setupStateBuilding()
+        setupHistorySubscription()
+    }
+
+    private fun setupHistorySubscription() {
+        uiState.mapNotNull {
+            it.asReady()
+        }
+            .map { it.locationHistoryMode }
+            .distinctUntilChanged()
+            .onEach { historyMode ->
+                locationHistoryController?.onCleared()
+                if (historyMode == null) {
+                    locationHistoryController = null
+                } else {
+                    locationHistoryController = LocationHistoryViewModelController(
+                        groupId = historyMode.groupId,
+                        memberUserId = historyMode.memberUserId,
+                        deviceId = historyMode.deviceId,
+                        getLocationHistory = getLocationHistory,
+                        refreshLocationHistory = refreshLocationHistory,
+                        deleteLocationHistory = deleteLocationHistory,
+                        userRepo = userRepository,
+                        personalSpaceRepo = personalSpaceRepo,
+                        userGroupRepo = groupRepo,
+                        valueFormatter = valueFormatter,
+                        appPrefs = appPrefs,
+                        remoteConfig = remoteConfig,
+                        geofenceManager = geofenceManager,
+                        coroutineScope = coroutineScope,
+                        messageDispatcher = messageDispatcher
+                    )
+                }
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun setupGroupValidation() {
@@ -392,6 +441,14 @@ class MapHomeViewModel constructor(
         mapEventHandler.onEvent(event)
     }
 
+    fun onEvent(event: LocationHistoryUiEvent) {
+        if (event is LocationHistoryUiEvent.OnCloseScreen) {
+            mapEventHandler.onEvent(MapHomeScreenUiEvent.CloseLocationHistory)
+        } else {
+            locationHistoryController?.onEvent(event)
+        }
+    }
+
     fun getGroupPickerState(showPersonalSpace: Boolean): BottomSheetPickerType.GroupPickerBottomSheet {
         return groupStateManager.getGroupPickerState(showPersonalSpace)
     }
@@ -407,6 +464,8 @@ class MapHomeViewModel constructor(
 
     override fun onCleared() {
         super.onCleared()
+        locationHistoryController?.onCleared()
+        locationHistoryController = null
         groupSubscriptionJob.cancel()
         locationFocusManager.cancelJobs()
     }

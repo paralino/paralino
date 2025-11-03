@@ -159,3 +159,5 @@ enum class MemberDeviceStatusType constructor(val id: String) {
         }
     }
 }
+
+data class LatLng(val lat: Double, val lng: Double)

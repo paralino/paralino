@@ -525,6 +525,11 @@ enum class LocationHistorySelectedDayPosition {
 }
 
 sealed interface LocationHistoryUiEvent {
+    data class ReloadHistory(
+        val groupId: String,
+        val memberUserId: String,
+        val preselectedDeviceId: String?
+    ) : LocationHistoryUiEvent
     data class UiLifecycleChange(val active: Boolean) : LocationHistoryUiEvent
     data class SelectDevice(val device: UserActiveLocationDeviceState) : LocationHistoryUiEvent
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent

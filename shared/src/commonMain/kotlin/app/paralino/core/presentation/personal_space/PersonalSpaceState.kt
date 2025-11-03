@@ -130,6 +130,7 @@ sealed interface PersonalSpaceScreenEvent {
     data object OpenPlaces : PersonalSpaceScreenEvent
     data object OpenSharingScreen : PersonalSpaceScreenEvent
     data object OpenTimeline : PersonalSpaceScreenEvent
+    data object OpenMap : PersonalSpaceScreenEvent
 }
 
 sealed interface PersonalSpaceScreenUiEvent {
@@ -138,6 +139,7 @@ sealed interface PersonalSpaceScreenUiEvent {
     data object OpenPlaces : PersonalSpaceScreenUiEvent
     data object OpenSharingScreen : PersonalSpaceScreenUiEvent
     data object OpenTimeline : PersonalSpaceScreenUiEvent
+    data object OpenMap : PersonalSpaceScreenUiEvent
     data class OnDeviceEvent(val event: UserDeviceItemEvent) : PersonalSpaceScreenUiEvent
 }
 

@@ -31,7 +31,6 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
-import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
 import app.paralino.core.presentation.history.LocationHistoryStats
@@ -46,6 +45,7 @@ import app.paralino.core.ui.history.LocationHistoryStatsTable
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.openNavigation
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 import org.koin.androidx.compose.koinViewModel
@@ -62,7 +62,6 @@ fun LocationHistoryScreen(
     MessageDispatcherEffect(vm, appState)
 
     val uiState by vm.uiState.collectAsState()
-    val context = LocalContext.current
 
     LifecycleStartEffect(Unit) {
         vm.onEvent(LocationHistoryUiEvent.UiLifecycleChange(active = true))
@@ -71,11 +70,70 @@ fun LocationHistoryScreen(
         }
     }
 
+    LocationHistoryScreenEventHandler(
+        appState = appState,
+        uiState = uiState,
+        events = vm.events,
+        onDialogEvent = {
+            vm.onEvent(it)
+        },
+        onCloseHistory = {
+            appState.navController.popBackStack()
+        }
+    )
+
+    MapContent(
+        uiState = uiState,
+        onEvent = { vm.onEvent(it) }
+    )
+}
+
+@Composable
+private fun MapContent(
+    uiState: LocationHistoryScreenUiState,
+    onEvent: (LocationHistoryUiEvent) -> Unit
+) {
+    var cardHeight by remember { mutableStateOf(0.dp) }
+
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        LocationHistoryMapWithContent(
+            uiState = uiState,
+            onEvent = onEvent,
+            mapContentPadding = PaddingValues(
+                top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 64.dp,
+                bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues()
+                    .calculateBottomPadding()).coerceIn(
+                    minimumValue = WindowInsets.navigationBars.asPaddingValues()
+                        .calculateBottomPadding(),
+                    maximumValue = this.maxHeight
+                )
+            )
+        )
+
+        LocationHistoryScreenElements(
+            modifier = Modifier,
+            uiState = uiState,
+            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 4.dp,
+            cardHeight = { cardHeight = it },
+            onEvent = onEvent
+        )
+    }
+}
+
+@Composable
+fun LocationHistoryScreenEventHandler(
+    appState: MainAppState,
+    uiState: LocationHistoryScreenUiState,
+    events: Flow<LocationHistoryScreenEvent?>?,
+    onDialogEvent: (LocationHistoryUiEvent.DialogAction) -> Unit,
+    onCloseHistory: () -> Unit,
+) {
+    val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
-        vm.events.collectLatest { event ->
+        events?.collectLatest { event ->
             when (event) {
                 LocationHistoryScreenEvent.NavigateBack -> {
-                    appState.navController.popBackStack()
+                    onCloseHistory()
                 }
 
                 is LocationHistoryScreenEvent.OpenNavigation -> {
@@ -111,47 +169,9 @@ fun LocationHistoryScreen(
 
     val dialog = uiState.alertDialog
     dialog?.Show {
-        vm.onEvent(LocationHistoryUiEvent.DialogAction(AlertDialogAction(dialog, it)))
-    }
-
-    MapContent(
-        uiState = uiState,
-        onEvent = { vm.onEvent(it) }
-    )
-}
-
-@Composable
-private fun MapContent(
-    uiState: LocationHistoryScreenUiState,
-    onEvent: (LocationHistoryUiEvent) -> Unit
-) {
-    var cardHeight by remember { mutableStateOf(0.dp) }
-
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        LocationHistoryMapContent(
-            uiState = uiState,
-            onEvent = onEvent,
-            mapContentPadding = PaddingValues(
-                top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 64.dp,
-                bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues()
-                    .calculateBottomPadding()).coerceIn(
-                    minimumValue = WindowInsets.navigationBars.asPaddingValues()
-                        .calculateBottomPadding(),
-                    maximumValue = this.maxHeight
-                )
-            )
-        )
-
-        LocationHistoryScreenElements(
-            modifier = Modifier,
-            uiState = uiState,
-            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 4.dp,
-            cardHeight = { cardHeight = it },
-            onEvent = onEvent
-        )
+        onDialogEvent(LocationHistoryUiEvent.DialogAction(AlertDialogAction(dialog, it)))
     }
 }
-
 
 
 @Preview(showBackground = true)

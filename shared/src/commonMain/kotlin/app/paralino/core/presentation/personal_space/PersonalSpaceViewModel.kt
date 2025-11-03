@@ -350,6 +350,12 @@ class PersonalSpaceViewModel(
                 }
             }
 
+            PersonalSpaceScreenUiEvent.OpenMap -> {
+                coroutineScope.launch {
+                    _eventChannel.send(PersonalSpaceScreenEvent.OpenMap)
+                }
+            }
+
             is PersonalSpaceScreenUiEvent.DialogAction -> {
                 when (val dialog = event.action.dialog) {
                     is MainAlertDialog.SessionInfo -> {

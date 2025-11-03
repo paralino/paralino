@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -81,8 +82,6 @@ fun LocationHistoryScreenElements(
         modifier = modifier
             .fillMaxSize()
     ) {
-
-        val density = LocalDensity.current
 
         Box(
             modifier = Modifier
@@ -208,73 +207,90 @@ fun LocationHistoryScreenElements(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Column(
-            modifier = Modifier.padding(
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-            ),
-            verticalArrangement = Arrangement.Bottom
+        LocationHistoryMapCardUi(
+            modifier = Modifier,
+            uiState = uiState,
+            cardHeight = cardHeight,
+            onEvent = onEvent
+        )
+    }
+}
+
+@Composable
+fun LocationHistoryMapCardUi(
+    modifier: Modifier = Modifier,
+    uiState: LocationHistoryScreenUiState,
+    cardHeight: (Dp) -> Unit,
+    onEvent: (LocationHistoryUiEvent) -> Unit,
+){
+    val density = LocalDensity.current
+    Column(
+        modifier = modifier.padding(
+            bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+        ),
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        AnimatedVisibility(
+            modifier = Modifier.align(alignment = Alignment.End),
+            visible = uiState.isFilterOpened
         ) {
-            AnimatedVisibility(
-                modifier = Modifier.align(alignment = Alignment.End),
-                visible = uiState.isFilterOpened
-            ) {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(horizontal = 8.dp)
-                        .padding(bottom = 8.dp),
-                    horizontalAlignment = Alignment.End
-                ) {
-                    HistoryMapOptionChip(
-                        modifier = Modifier.padding(top = 4.dp),
-                        selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
-                        name = stringResource(MR.strings.history_map_options_location_clustering),
-                        icon = CoreAppIcons.TargetCircles.asPainterResource(),
-                        onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterLocations) }
-                    )
-
-                    AnimatedVisibility(uiState.showPins) {
-                        HistoryMapOptionChip(
-                            modifier = Modifier.padding(top = 4.dp),
-                            selected = uiState.clusterPins,
-                            name = stringResource(MR.strings.history_map_options_pin_clustering),
-                            icon = CoreAppIcons.CircleCluster.asPainterResource(),
-                            onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterPins) }
-                        )
-                    }
-
-                    HistoryMapOptionChip(
-                        modifier = Modifier.padding(top = 4.dp),
-                        selected = uiState.showPins,
-                        name = stringResource(MR.strings.history_map_options_show_pins),
-                        icon = CoreAppIcons.LocationOn.asPainterResource(),
-                        onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPins) }
-                    )
-
-                    HistoryMapOptionChip(
-                        modifier = Modifier.padding(top = 4.dp),
-                        selected = uiState.showPolyline,
-                        name = stringResource(MR.strings.history_map_options_show_path),
-                        icon = CoreAppIcons.PolylineWithDots.asPainterResource(),
-                        onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPolyline) }
-                    )
-                }
-            }
-
-            Row(
+            Column(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .fillMaxWidth()
-                    .padding(end = 16.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp),
+                horizontalAlignment = Alignment.End
             ) {
-                FocusTypeIcon(
-                    isVisible = uiState.focusType != LocationHistoryScreenFocusType.OVERVIEW && uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
-                    type = LocationHistoryScreenFocusType.OVERVIEW,
-                    icon = CoreAppIcons.ZoomOutFocusMap.asPainterResource(),
-                    onEvent = onEvent
+                HistoryMapOptionChip(
+                    modifier = Modifier.padding(top = 4.dp),
+                    selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
+                    name = stringResource(MR.strings.history_map_options_location_clustering),
+                    icon = CoreAppIcons.TargetCircles.asPainterResource(),
+                    onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterLocations) }
                 )
+
+                AnimatedVisibility(uiState.showPins) {
+                    HistoryMapOptionChip(
+                        modifier = Modifier.padding(top = 4.dp),
+                        selected = uiState.clusterPins,
+                        name = stringResource(MR.strings.history_map_options_pin_clustering),
+                        icon = CoreAppIcons.CircleCluster.asPainterResource(),
+                        onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterPins) }
+                    )
+                }
+
+                HistoryMapOptionChip(
+                    modifier = Modifier.padding(top = 4.dp),
+                    selected = uiState.showPins,
+                    name = stringResource(MR.strings.history_map_options_show_pins),
+                    icon = CoreAppIcons.LocationOn.asPainterResource(),
+                    onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPins) }
+                )
+
+                HistoryMapOptionChip(
+                    modifier = Modifier.padding(top = 4.dp),
+                    selected = uiState.showPolyline,
+                    name = stringResource(MR.strings.history_map_options_show_path),
+                    icon = CoreAppIcons.PolylineWithDots.asPainterResource(),
+                    onClick = { onEvent(LocationHistoryUiEvent.ToggleShowPolyline) }
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.End)
+                .fillMaxWidth()
+                .padding(end = 16.dp, bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            FocusTypeIcon(
+                isVisible = uiState.focusType != LocationHistoryScreenFocusType.OVERVIEW && uiState.dataViewType == LocationHistoryDataViewType.LocationPoint,
+                type = LocationHistoryScreenFocusType.OVERVIEW,
+                icon = CoreAppIcons.ZoomOutFocusMap.asPainterResource(),
+                onEvent = onEvent
+            )
 
 //                FocusTypeIcon(
 //                    isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && uiState.focusType == LocationHistoryScreenFocusType.NONE,
@@ -283,85 +299,100 @@ fun LocationHistoryScreenElements(
 //                    onEvent = onEvent
 //                )
 
-                FocusTypeIcon(
-                    isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && (uiState.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT || uiState.focusType == LocationHistoryScreenFocusType.OVERVIEW),
-                    type = LocationHistoryScreenFocusType.MEMBER_FOCUSED,
-                    icon = CoreAppIcons.ZoomFocusFull.asPainterResource(),
-                    onEvent = onEvent
-                )
+            FocusTypeIcon(
+                isVisible = uiState.dataViewType == LocationHistoryDataViewType.LocationPoint && (uiState.focusType == LocationHistoryScreenFocusType.MEMBER_DEFAULT || uiState.focusType == LocationHistoryScreenFocusType.OVERVIEW),
+                type = LocationHistoryScreenFocusType.MEMBER_FOCUSED,
+                icon = CoreAppIcons.ZoomFocusFull.asPainterResource(),
+                onEvent = onEvent
+            )
 
-                Box(
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(32.dp)
-                        .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
-                        .shadow(elevation = animateDpAsState(if (uiState.isFilterOpened) 4.dp else 0.dp).value, RoundedCornerShape(8.dp))
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colors.background),
-                    contentAlignment = Alignment.Center
+            Box(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(32.dp)
+                    .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
+                    .shadow(elevation = animateDpAsState(if (uiState.isFilterOpened) 4.dp else 0.dp).value, RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colors.background),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = uiState.isFilterOpened,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut()
                 ) {
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = uiState.isFilterOpened,
-                        enter = fadeIn() + scaleIn(),
-                        exit = fadeOut() + scaleOut()
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(24.dp),
-                            painter = CoreAppIcons.Close.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .rotate(90f),
+                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                        contentDescription = null
+                    )
+                }
 
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = !uiState.isFilterOpened,
-                        enter = fadeIn() + scaleIn(),
-                        exit = fadeOut() + scaleOut()
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(24.dp),
-                            painter = CoreAppIcons.FilterTune.asPainterResource(),
-                            contentDescription = null
-                        )
-                    }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = !uiState.isFilterOpened,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut()
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp),
+                        painter = CoreAppIcons.FilterTune.asPainterResource(),
+                        contentDescription = null
+                    )
                 }
             }
 
-            Column(
+            Icon(
                 modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        cardHeight(with(density) { coordinates.size.height.toDp() })
-                    }
-            ) {
-                AnimatedVisibility(
-                    visible = uiState.daySelectorState.displayedDays.isNotEmpty(),
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
-                ) {
-                    LocationHistoryDetailCard(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .padding(bottom = 8.dp),
-                        uiState = uiState,
-                        onEvent = onEvent
-                    )
-                }
+                    .padding(end = 4.dp)
+                    .size(32.dp)
+                    .clickable(onClick = {
+                        onEvent(LocationHistoryUiEvent.OnCloseScreen)
+                    })
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(AppColors.redMain)
+                    .padding(4.dp),
+                painter = CoreAppIcons.Close.asPainterResource(),
+                tint = AppColors.lightBackground,
+                contentDescription = null
+            )
+        }
 
-                AnimatedVisibility(
-                    visible = uiState.daySelectorState.displayedDays.isNotEmpty() && uiState.focusType != LocationHistoryScreenFocusType.NONE,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
-                ) {
-                    LocationHistoryDateSelector(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .padding(bottom = 8.dp),
-                        elevation = 4.dp,
-                        state = uiState.daySelectorState,
-                        onEvent = onEvent
-                    )
+        Column(
+            modifier = Modifier
+                .onGloballyPositioned { coordinates ->
+                    cardHeight(with(density) { coordinates.size.height.toDp() })
                 }
+        ) {
+            AnimatedVisibility(
+                visible = uiState.daySelectorState.displayedDays.isNotEmpty(),
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                LocationHistoryDetailCard(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 8.dp),
+                    uiState = uiState,
+                    onEvent = onEvent
+                )
+            }
+
+            AnimatedVisibility(
+                visible = uiState.daySelectorState.displayedDays.isNotEmpty() && uiState.focusType != LocationHistoryScreenFocusType.NONE,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                LocationHistoryDateSelector(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 8.dp),
+                    elevation = 4.dp,
+                    state = uiState.daySelectorState,
+                    onEvent = onEvent
+                )
             }
         }
     }

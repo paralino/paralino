@@ -177,13 +177,21 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OpenPersonalLocationHistory -> {
-                eventChannel.trySend(
-                    MapHomeScreenEvent.OpenLocationHistory(
-                        groupId = UserGroup.groupPersonalDevicesId,
-                        memberUserId = appPrefs.userId,
-                        deviceId = null
+                updateReadyState {
+                    it.copy(
+                        locationHistoryMode = MapLocationHistoryModeGroupUserData(
+                            groupId = UserGroup.groupPersonalDevicesId,
+                            memberUserId = appPrefs.userId,
+                            deviceId = null
+                        )
                     )
-                )
+                }
+            }
+
+            MapHomeScreenUiEvent.CloseLocationHistory -> {
+                updateReadyState {
+                    it.copy(locationHistoryMode = null)
+                }
             }
         }
     }
@@ -240,17 +248,19 @@ class MapEventHandler(
             }
 
             is GroupMemberItemEvent.onOpenLocationHistory -> {
-                eventChannel.trySend(
-                    MapHomeScreenEvent.OpenLocationHistory(
-                        groupId = event.item.memberState.groupId,
-                        memberUserId = event.item.memberState.userId,
-                        deviceId = when (event.item) {
-                            is GroupMemberItemStateWithLocations -> null
-                            is GroupMemberItemStateWithFullStateLocations -> null
-                            is GroupMemberItemStateWithOneLocation -> event.item.deviceId
-                        }
+                updateReadyState {
+                    it.copy(
+                        locationHistoryMode = MapLocationHistoryModeGroupUserData(
+                            groupId = event.item.memberState.groupId,
+                            memberUserId = event.item.memberState.userId,
+                            deviceId = when (event.item) {
+                                is GroupMemberItemStateWithLocations -> null
+                                is GroupMemberItemStateWithFullStateLocations -> null
+                                is GroupMemberItemStateWithOneLocation -> event.item.deviceId
+                            }
+                        )
                     )
-                )
+                }
             }
 
             is GroupMemberItemEvent.onOpenRawData -> {}

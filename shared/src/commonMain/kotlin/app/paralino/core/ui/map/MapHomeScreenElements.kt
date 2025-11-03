@@ -16,7 +16,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
@@ -85,8 +88,8 @@ fun MapHomeScreenElements(
     bottomOffset: Dp,
     sheetFullProgress: Float,
     isSheetHidden: Boolean,
-    cardHeight: (Dp) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
+    bottomCards: @Composable BoxScope.(sheetPeekHeight: Dp) -> Unit
 ) {
 
     val sheetPeekHeight = (containerHeight - bottomOffset).coerceIn(
@@ -105,10 +108,6 @@ fun MapHomeScreenElements(
     ) {
 
         val readyState = rememberUpdatedState(state.asReady()).value
-        val density = LocalDensity.current
-
-        val isMemberOrPlaceFocused =
-            readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true
 
         Box(
             modifier = Modifier
@@ -217,177 +216,206 @@ fun MapHomeScreenElements(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Bottom
             ) {
-                val sidePadding = 12.dp
-                    .times(
-                        1f - when {
-                            sheetFullProgress >= BottomSheetPosition.HALF_EXPANDED.screenHeightPercent -> 1f
-                            else -> sheetFullProgress / BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                MapHomeElementSharingRow(
+                    sheetFullProgress = sheetFullProgress,
+                    readyState = readyState,
+                    onEvent = onEvent
+                )
+            }
+
+            bottomCards(sheetPeekHeight)
+        }
+    }
+}
+
+@Composable
+fun BoxScope.MapHomeElementMainCards(
+    modifier: Modifier = Modifier,
+    readyState: MapHomeScreenState.Ready?,
+    screenPaddingValues: PaddingValues,
+    sheetPeekHeight: Dp,
+    cardHeight: (Dp) -> Unit,
+    onEvent: (MapHomeScreenUiEvent) -> Unit
+) {
+    val density = LocalDensity.current
+    Column(
+        modifier = modifier
+            .padding(bottom = animateDpAsState(targetValue = sheetPeekHeight).value)
+            .onGloballyPositioned { coordinates ->
+                val height = with(density) { coordinates.size.height.toDp() - 20.dp }
+                cardHeight(height)
+            }
+    ) {
+        // focused item
+        AnimatedVisibility(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp),
+            visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.PLACE,
+            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            readyState?.focusedPlace?.let { placeState ->
+                Box(
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    PlaceListItem(
+                        modifier = Modifier.padding(top = 38.dp),
+                        state = placeState,
+                        hasEndArrow = true,
+                        onClick = { onEvent(MapHomeScreenUiEvent.OnPlaceClick(placeState)) }
+                    )
+                    CloseFocusButton(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(end = 8.dp),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
                         }
                     )
-                    .plus(16.dp)
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = sidePadding),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (!isMemberOrPlaceFocused && readyState?.isPersonalSpace == true) {
-                        GroupMemberActionButton(
-                            modifier = Modifier
-                                .padding(bottom = 6.dp)
-                                .dropShadow(
-                                    shape = CircleShape,
-                                    shadow = Shadow(
-                                        radius = 16.dp,
-                                        color = Color.Black.copy(alpha = 0.2f),
-                                    )
-                                ),
-                            startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                            startIconSize = 14.dp,
-                            endIcon = null,
-                            text = "",
-                            showText = false,
-                            backgroundColor = MaterialTheme.colors.background,
-                            contentPadding = PaddingValues(8.dp),
-                            onClick = {
-                                onEvent(MapHomeScreenUiEvent.OpenPersonalLocationHistory)
-                            }
-                        )
-                    }
-
-                    // sharing time info
-                    if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
-                        GroupMemberActionButton(
-                            modifier = Modifier
-                                .padding(bottom = 6.dp)
-                                .dropShadow(
-                                    shape = CircleShape,
-                                    shadow = Shadow(
-                                        radius = 16.dp,
-                                        color = Color.Black.copy(alpha = 0.2f),
-                                    )
-                                ),
-                            startIcon = CoreAppIcons.Timer.asPainterResource(),
-                            isLoading = false,
-                            text = readyState?.sharingEndTime
-                                ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
-                            backgroundColor = MaterialTheme.colors.background,
-                            onClick = {
-                                onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
-                            }
-                        )
-                    }
-
-                    // sharing start
-                    if (readyState != null && readyState.selectedSharingContract == null && !isMemberOrPlaceFocused) {
-                        GroupMemberActionButton(
-                            modifier = Modifier
-                                .padding(bottom = 6.dp),
-                            startIcon = CoreAppIcons.ShareLocation.asPainterResource(),
-                            isLoading = false,
-                            backgroundColor = MaterialTheme.colors.primary,
-                            contentColor = MaterialTheme.colors.onPrimary,
-                            text = if (state.isPersonalSpace) {
-                                stringResource(MR.strings.location_sharing_button_start_personal)
-                            } else {
-                                stringResource(MR.strings.location_sharing_button_start_groups)
-                            },
-                            onClick = {
-                                onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
-                            }
-                        )
-                    }
                 }
             }
+        }
 
-            Column(
+        AnimatedVisibility(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp),
+            visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.MEMBER,
+            enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            readyState?.focusedMember?.let { memberState ->
+                Box(
+                    modifier = Modifier.padding(
+                        bottom = when (DeviceType.current) {
+                            DeviceType.Android -> 8.dp
+                            DeviceType.iOS -> {
+                                if (screenPaddingValues.calculateBottomPadding().value == 0f) {
+                                    8.dp
+                                } else {
+                                    0.dp
+                                }
+                            }
+                        }
+                    )
+                ) {
+                    GroupMember(
+                        modifier = Modifier.padding(top = 38.dp),
+                        state = memberState,
+                        backgroundColor = MaterialTheme.colors.background,
+                        shape = RoundedCornerShape(16.dp),
+                        collapseOnActionClick = false,
+                        forceExpandAction = true,
+                        canShowOldLocation = true,
+                        onEvent = { event ->
+                            onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(event = event))
+                        }
+                    )
+                    CloseFocusButton(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(end = 12.dp),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MapHomeElementSharingRow(
+    sheetFullProgress: Float,
+    readyState: MapHomeScreenState.Ready?,
+    onEvent: (MapHomeScreenUiEvent) -> Unit,
+) {
+    val sidePadding = 12.dp
+        .times(
+            1f - when {
+                sheetFullProgress >= BottomSheetPosition.HALF_EXPANDED.screenHeightPercent -> 1f
+                else -> sheetFullProgress / BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+            }
+        )
+        .plus(16.dp)
+
+    val isMemberOrPlaceFocused =
+        readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true || readyState?.locationHistoryMode != null
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = sidePadding),
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (!isMemberOrPlaceFocused && readyState?.isPersonalSpace == true) {
+            GroupMemberActionButton(
                 modifier = Modifier
-                    .padding(bottom = animateDpAsState(targetValue = sheetPeekHeight).value)
-                    .onGloballyPositioned { coordinates ->
-                        val height = with(density) { coordinates.size.height.toDp() - 20.dp }
-                        cardHeight(height)
-                    }
-            ) {
-                // focused item
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 8.dp),
-                    visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.PLACE,
-                    enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
-                ) {
-                    readyState?.focusedPlace?.let { placeState ->
-                        Box(
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        ) {
-                            PlaceListItem(
-                                modifier = Modifier.padding(top = 20.dp),
-                                state = placeState,
-                                hasEndArrow = true,
-                                onClick = { onEvent(MapHomeScreenUiEvent.OnPlaceClick(placeState)) }
-                            )
-                            CloseFocusButton(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(end = 8.dp),
-                                onClick = {
-                                    onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
-                                }
-                            )
-                        }
-                    }
+                    .padding(bottom = 6.dp)
+                    .dropShadow(
+                        shape = CircleShape,
+                        shadow = Shadow(
+                            radius = 16.dp,
+                            color = Color.Black.copy(alpha = 0.2f),
+                        )
+                    ),
+                startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                startIconSize = 14.dp,
+                endIcon = null,
+                text = "",
+                showText = false,
+                backgroundColor = MaterialTheme.colors.background,
+                contentPadding = PaddingValues(8.dp),
+                onClick = {
+                    onEvent(MapHomeScreenUiEvent.OpenPersonalLocationHistory)
                 }
+            )
+        }
 
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 8.dp),
-                    visible = readyState != null && readyState.mapHomeScreenFocusType is MapHomeScreenFocusType.MEMBER,
-                    enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
-                ) {
-                    readyState?.focusedMember?.let { memberState ->
-                        Box(
-                            modifier = Modifier.padding(
-                                bottom = when (DeviceType.current) {
-                                    DeviceType.Android -> 8.dp
-                                    DeviceType.iOS -> {
-                                        if (screenPaddingValues.calculateBottomPadding().value == 0f) {
-                                            8.dp
-                                        } else {
-                                            0.dp
-                                        }
-                                    }
-                                }
-                            )
-                        ) {
-                            GroupMember(
-                                modifier = Modifier.padding(top = 20.dp),
-                                state = memberState,
-                                backgroundColor = MaterialTheme.colors.background,
-                                shape = RoundedCornerShape(16.dp),
-                                collapseOnActionClick = false,
-                                forceExpandAction = true,
-                                canShowOldLocation = true,
-                                onEvent = { event ->
-                                    onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(event = event))
-                                }
-                            )
-                            CloseFocusButton(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(end = 12.dp),
-                                onClick = {
-                                    onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
-                                }
-                            )
-                        }
-                    }
+        // sharing time info
+        if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
+            GroupMemberActionButton(
+                modifier = Modifier
+                    .padding(bottom = 6.dp)
+                    .dropShadow(
+                        shape = CircleShape,
+                        shadow = Shadow(
+                            radius = 16.dp,
+                            color = Color.Black.copy(alpha = 0.2f),
+                        )
+                    ),
+                startIcon = CoreAppIcons.Timer.asPainterResource(),
+                isLoading = false,
+                text = readyState?.sharingEndTime
+                    ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
+                backgroundColor = MaterialTheme.colors.background,
+                onClick = {
+                    onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
                 }
-            }
+            )
+        }
+
+        // sharing start
+        if (readyState != null && readyState.selectedSharingContract == null && !isMemberOrPlaceFocused) {
+            GroupMemberActionButton(
+                modifier = Modifier
+                    .padding(bottom = 6.dp),
+                startIcon = CoreAppIcons.ShareLocation.asPainterResource(),
+                isLoading = false,
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = MaterialTheme.colors.onPrimary,
+                text = if (readyState.isPersonalSpace) {
+                    stringResource(MR.strings.location_sharing_button_start_personal)
+                } else {
+                    stringResource(MR.strings.location_sharing_button_start_groups)
+                },
+                onClick = {
+                    onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
+                }
+            )
         }
     }
 }
@@ -397,12 +425,23 @@ fun CloseFocusButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    FilledButton(
-        modifier = modifier.size(32.dp),
-        onClick = onClick,
-        icon = CoreAppIcons.Close.asPainterResource(),
-        style = ButtonStyle.ICON,
-        content = null
+//    FilledButton(
+//        modifier = modifier.size(32.dp),
+//        onClick = onClick,
+//        icon = CoreAppIcons.Close.asPainterResource(),
+//        style = ButtonStyle.ICON,
+//        content = null
+//    )
+    Icon(
+        modifier = modifier
+            .size(32.dp)
+            .clickable(onClick = onClick)
+            .clip(RoundedCornerShape(8.dp))
+            .background(AppColors.redMain)
+            .padding(4.dp),
+        painter = CoreAppIcons.Close.asPainterResource(),
+        tint = AppColors.lightBackground,
+        contentDescription = null
     )
 }
 

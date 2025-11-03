@@ -6,9 +6,9 @@ import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCa
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -24,6 +24,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteLocationHis
 import app.paralino.core.ui.components.dialogs.MainAlertDialog.DeleteLocationHistoryRange
 import app.paralino.core.ui.components.onAction
 import app.paralino.core.utils.extensions.isoToLocalDateTime
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,6 +50,55 @@ class LocationHistoryViewModel(
     private val remoteConfig: RemoteConfigRepository,
     private val geofenceManager: IGeofenceManager
 ) : CoreViewModel() {
+
+    val controller = LocationHistoryViewModelController(
+        groupId = groupId,
+        memberUserId = memberUserId,
+        deviceId = deviceId,
+        getLocationHistory = getLocationHistory,
+        refreshLocationHistory = refreshLocationHistory,
+        deleteLocationHistory = deleteLocationHistory,
+        userRepo = userRepo,
+        personalSpaceRepo = personalSpaceRepo,
+        userGroupRepo = userGroupRepo,
+        valueFormatter = valueFormatter,
+        appPrefs = appPrefs,
+         remoteConfig = remoteConfig,
+        geofenceManager = geofenceManager,
+        coroutineScope = coroutineScope,
+        messageDispatcher = messageDispatcher
+    )
+
+    val uiState = controller.uiState
+    val events = controller.events
+
+    fun onEvent(event: LocationHistoryUiEvent) {
+        controller.onEvent(event)
+    }
+
+    override fun onCleared() {
+        controller.onCleared()
+        super.onCleared()
+    }
+}
+
+class LocationHistoryViewModelController(
+    groupId: String,
+    memberUserId: String,
+    deviceId: String?,
+    private val getLocationHistory: GetLocationHistoryUseCase,
+    private val refreshLocationHistory: RefreshLocationHistoryUseCase,
+    private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
+    private val userRepo: UserRepository,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val userGroupRepo: UserGroupLocalDataSource,
+    private val valueFormatter: IValueFormatter,
+    private val appPrefs: AppPrefs,
+    private val remoteConfig: RemoteConfigRepository,
+    private val geofenceManager: IGeofenceManager,
+    private val coroutineScope: CoroutineScope,
+    private val messageDispatcher: ICoreMessageDispatcher
+) {
 
     private val _uiState = MutableStateFlow<LocationHistoryScreenState>(
         LocationHistoryScreenState.emptyState()
@@ -119,6 +169,7 @@ class LocationHistoryViewModel(
             started = SharingStarted.Eagerly,
             initialValue = LocationHistoryScreenUiState.fromScreenState(_uiState.value)
         )
+
     val events = _eventChannel.receiveAsFlow()
 
     private val uiFocusedStatus = MutableStateFlow(false)
@@ -133,6 +184,14 @@ class LocationHistoryViewModel(
 
     fun onEvent(event: LocationHistoryUiEvent) {
         when (event) {
+            is LocationHistoryUiEvent.ReloadHistory -> {
+                historyEventHandler.loadHistory(
+                    groupId = event.groupId,
+                    memberUserId = event.memberUserId,
+                    preselectedDeviceId = event.preselectedDeviceId
+                )
+            }
+
             is LocationHistoryUiEvent.DialogAction -> {
                 when (event.action.dialog) {
                     is DeleteLocationHistoryEntry -> {
@@ -456,8 +515,7 @@ class LocationHistoryViewModel(
         }
     }
 
-    override fun onCleared() {
+    fun onCleared() {
         historyEventHandler.clear()
-        super.onCleared()
     }
 }

@@ -68,6 +68,7 @@ fun PersonalSpaceScreenCore(
     vm: PersonalSpaceViewModel,
     contentPadding: PaddingValues,
     openSettings: () -> Unit,
+    openMap: () -> Unit,
     openTimeline: () -> Unit,
     openPlaces: () -> Unit,
     openSharing: () -> Unit,
@@ -89,6 +90,7 @@ fun PersonalSpaceScreenCore(
                 PersonalSpaceScreenEvent.OpenPlaces -> openPlaces()
                 PersonalSpaceScreenEvent.OpenSharingScreen -> openSharing()
                 PersonalSpaceScreenEvent.OpenTimeline -> openTimeline()
+                PersonalSpaceScreenEvent.OpenMap -> openMap()
 
                 null -> {
                     /* do nothing */
@@ -239,7 +241,8 @@ fun PersonalSpaceScreenCore(
                         onSettingsClick = { openSettings() },
                         onPlacesClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenPlaces) },
                         onTimelineClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenTimeline) },
-                        onSharingClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) }
+                        onMapClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenMap) },
+                        onSharingClick = { vm.onEvent(PersonalSpaceScreenUiEvent.OpenSharingScreen) },
                     )
                 }
 
@@ -358,6 +361,7 @@ fun PersonalSpaceHeader(
     onSettingsClick: () -> Unit,
     onPlacesClick: () -> Unit,
     onTimelineClick: () -> Unit,
+    onMapClick: () -> Unit,
     onSharingClick: () -> Unit,
 ) {
     Column(
@@ -397,8 +401,8 @@ fun PersonalSpaceHeader(
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .fillMaxWidth(0.5f),
-                icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                title = stringResource(MR.strings.groups_sharing_setting_timeline_title),
+                icon = CoreAppIcons.Map.asPainterResource(),
+                title = stringResource(MR.strings.title_map),
                 description = null,
                 state = LargeSeekbarSwitchState.SeekbarSwitchState(
                     switchState = LargeSeekbarSwitchState.Switch(
@@ -408,7 +412,7 @@ fun PersonalSpaceHeader(
                     seekbarState = null
                 ),
                 onStateChange = {
-                    onTimelineClick()
+                    onMapClick()
                 }
             )
             LargeSeekbarSwitch(
