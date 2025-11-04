@@ -1,11 +1,13 @@
 package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -377,7 +379,8 @@ private fun FeatureTableItem(
                                         .clickable { onCellClick(featureItem, value) }
                                         .padding(2.dp),
                                     painter = CoreAppIcons.InfoCircle.asPainterResource(),
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = if (isSystemInDarkTheme()) AppColors.accent else AppColors.accentDark
                                 )
                             }
 

@@ -571,7 +571,7 @@ class PaywallViewModel(
                 ?.plan?.billingPeriod
                 ?.let { it == period }
             // then take default
-            ?: (period == PlanBillingPeriod.MONTHLY)
+            ?: (period == PlanBillingPeriod.ANNUALLY)
     }
 
     private fun isPlanSelected(

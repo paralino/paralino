@@ -295,7 +295,7 @@
     <string name="plan_limit_locationRequest_groupMember_message">**Premium feature**\n\nContact your group admin to enable high-priority location requests for faster updates.</string>
     <string name="paywall_onboarding_skip_button">Use free version</string>
     <string name="paywall_screen_header">Select the plan that is right for you</string>
-    <string name="paywall_screen_title">Premium</string>
+    <string name="paywall_screen_title">Membership</string>
     <string name="paywall_current_plan_label">Current plan: %1$s</string>
     <string name="paywall_special_offer_label">Special offer</string>
     <string name="paywall_special_offer_title">Forever discount</string>

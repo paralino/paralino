@@ -322,7 +322,7 @@ fun PaywallScreenCore(
                         title = if (uiState.isLoading || uiState.selectedPlan == null) {
                             null
                         } else {
-                            stringResource(MR.strings.paywall_select_plan_label)
+                            stringResource(MR.strings.paywall_screen_title)
                         },
                         navigationIcon = if (uiState.isLoading) {
                             null
