@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
+import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
@@ -258,34 +259,36 @@ fun LocationSettingsScreenCore(
             }
         }
 
-        this.stickyHeader(key = "location_history") {
-            SettingsSectionHeader(
-                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                name = stringResource(MR.strings.setting_location_history_section_title)
-            )
-        }
+        if (false) {
+            this.stickyHeader(key = "location_history") {
+                SettingsSectionHeader(
+                    modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                    name = stringResource(MR.strings.setting_location_history_section_title)
+                )
+            }
 
-        this.item(key = "location_history_items") {
-            Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
+            this.item(key = "location_history_items") {
+                Column(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth().animateItem()) {
 
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        text = stringResource(MR.strings.setting_location_history_section_info).annotatedBoldCompose(),
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
-                        textAlign = TextAlign.Start
-                    )
-                }
-
-                GenericSettingsOptions(
-                    modifier = Modifier.fillMaxWidth(),
-                    items = uiState.historySettings.items,
-                    onOptionSelected = {
-                        vm.onEvent(
-                            LocationSettingsScreenUiEvent.ChangePerformance(it)
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(
+                            modifier = Modifier.padding(bottom = 20.dp),
+                            text = stringResource(MR.strings.setting_location_history_section_info).annotatedBoldCompose(),
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
+                            textAlign = TextAlign.Start
                         )
                     }
-                )
+
+                    GenericSettingsOptions(
+                        modifier = Modifier.fillMaxWidth(),
+                        items = uiState.historySettings.items,
+                        onOptionSelected = {
+                            vm.onEvent(
+                                LocationSettingsScreenUiEvent.ChangePerformance(it)
+                            )
+                        }
+                    )
+                }
             }
         }
 
