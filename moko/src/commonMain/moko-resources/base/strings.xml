@@ -286,6 +286,7 @@
     <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
     <string name="plans_management_action_change">Change plan</string>
+    <string name="plans_management_action_explore">Plans</string>
     <string name="plan_period_weekly_name">Weekly</string>
     <string name="plan_period_monthly_name">Monthly</string>
     <string name="plan_period_annually_name">Annually</string>

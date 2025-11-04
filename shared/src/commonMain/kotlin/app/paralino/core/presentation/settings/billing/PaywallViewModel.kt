@@ -249,14 +249,18 @@ class PaywallViewModel(
             }
 
             PaywallScreenUiEvent.RestorePurchase -> {
-                _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
-                coroutineScope.launch {
-                    _eventChannel.send(PaywallScreenEvent.OnRestorePurchase)
+                if (uiState.value.canMakePurchaseOnThisPlatform) {
+                    _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
+                    coroutineScope.launch {
+                        _eventChannel.send(PaywallScreenEvent.OnRestorePurchase)
+                    }
                 }
             }
 
             PaywallScreenUiEvent.RequestPromoCode -> {
-                _uiState.update { it.copy(isPromoCodeSectionVisible = true) }
+                if (uiState.value.canMakePurchaseOnThisPlatform) {
+                    _uiState.update { it.copy(isPromoCodeSectionVisible = true) }
+                }
             }
 
             is PaywallScreenUiEvent.OnChangePromoCode -> {
@@ -264,19 +268,21 @@ class PaywallViewModel(
             }
 
             PaywallScreenUiEvent.ApplyPromoCode -> {
-                _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
-                coroutineScope.launch {
-                    try {
-                        userRepo.redeemPromoCode(code = uiState.value.promoCode)
-                        onEvent(PaywallScreenUiEvent.RefreshPlans)
-                    } catch (e: Exception) {
-                        _uiState.update {
-                            it.copy(
-                                alertDialog = MainAlertDialog.BillingError(
-                                    code = 0,
-                                    message = MR.strings.paywall_purchase_error_alert_message.localizedString()
+                if (uiState.value.canMakePurchaseOnThisPlatform) {
+                    _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
+                    coroutineScope.launch {
+                        try {
+                            userRepo.redeemPromoCode(code = uiState.value.promoCode)
+                            onEvent(PaywallScreenUiEvent.RefreshPlans)
+                        } catch (e: Exception) {
+                            _uiState.update {
+                                it.copy(
+                                    alertDialog = MainAlertDialog.BillingError(
+                                        code = 0,
+                                        message = MR.strings.paywall_purchase_error_alert_message.localizedString()
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
