@@ -181,20 +181,6 @@ fun SettingsScreenCore(
                     viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
                 }
             }
-
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
-                SettingsActionItem(
-                    name = stringResource(MR.strings.setting_title_placeActivityThrottle),
-                    description = when (readyState.placeActivityThrottleEnabled) {
-                        true -> stringResource(MR.strings.setting_description_placeActivityThrottle_enabled)
-                        false -> stringResource(MR.strings.setting_description_placeActivityThrottle_disabled)
-                    },
-                    icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                    type = SettingsActionItemType.Switch(readyState.placeActivityThrottleEnabled)
-                ) {
-                    viewModel.onEvent(AccountScreenUiEvent.TogglePlaceActivityThrottle)
-                }
-            }
         }
 
         SettingSectionInfo(

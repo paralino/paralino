@@ -137,7 +137,6 @@ class SettingsViewModel(
                             deleteAccountState = null,
                             versionName = deviceApiProvider.appVersionText,
                             boostTime = null,
-                            placeActivityThrottleEnabled = appPrefs.placeActivityThrottle,
                             userPlan = userPlans.highestValidPlanConfig
                         )
                     )
@@ -224,17 +223,6 @@ class SettingsViewModel(
         }
     }
 
-    private fun togglePlaceActivityThrottle() {
-        _accountState.update {
-            it.mapSuccess {
-                val newValue = !it.placeActivityThrottleEnabled
-                logg.v("Toggle place activity throttle: $newValue")
-                appPrefs.placeActivityThrottle = newValue
-                it.copy(placeActivityThrottleEnabled = newValue)
-            }
-        }
-    }
-
     private fun onShowDialog(dialog: MainAlertDialog?) {
         _accountState.update { it.mapSuccess { it.copy(alertDialog = dialog) } }
     }
@@ -244,7 +232,6 @@ class SettingsViewModel(
             AccountScreenUiEvent.DeleteAccount -> onShowDialog(MainAlertDialog.DeleteAccount)
             AccountScreenUiEvent.Logout -> onShowDialog(MainAlertDialog.Logout)
             AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
-            AccountScreenUiEvent.TogglePlaceActivityThrottle -> togglePlaceActivityThrottle()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
             AccountScreenUiEvent.SendEmailVerification -> {
                 _accountState.update {

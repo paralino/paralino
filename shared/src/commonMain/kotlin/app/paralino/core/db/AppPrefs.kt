@@ -75,7 +75,6 @@ class AppPrefs(
         const val keyIsPersonalSpaceSelected = "prefs.device.isPersonalSpaceSelected"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
-        const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
         const val keyDidStartedGroupOnboarding = "prefs.group.onboardingStarted"
@@ -274,12 +273,6 @@ class AppPrefs(
             } else {
                 provider.userSettings.remove(keyTrackingBoost)
             }
-        }
-
-    var placeActivityThrottle: Boolean
-        get() = provider.userSettings.getBoolean(keyPlaceActivityThrottle, true)
-        set(value) {
-            provider.userSettings.putBoolean(keyPlaceActivityThrottle, value)
         }
 
     var didEverFullyRefreshData: Boolean
