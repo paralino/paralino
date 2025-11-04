@@ -19,6 +19,8 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.history.LocationHistoryScreenEvent
+import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.history.LocationHistoryViewModelController
 import app.paralino.core.provider.IDeviceApiProvider
@@ -41,6 +43,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -54,6 +57,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
@@ -183,9 +187,16 @@ class MapHomeViewModel constructor(
         coroutineScope = coroutineScope
     )
 
-    private var locationHistoryController: LocationHistoryViewModelController? = null
-    val historyUiState get() = locationHistoryController?.uiState
-    val historyEvents get() = locationHistoryController?.events
+    private val locationHistoryController = MutableStateFlow<LocationHistoryViewModelController?>(null)
+    val historyUiState: StateFlow<LocationHistoryScreenUiState?> = locationHistoryController
+        .flatMapLatest { it?.uiState ?: flowOf(null) }
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+    val historyEvents: Flow<LocationHistoryScreenEvent?> = locationHistoryController
+        .flatMapLatest { it?.events ?: flowOf(null) }
 
     init {
         appRatingManager.tryShowingAppRating(source = AppRatingSource.MAIN_MAP)
@@ -204,27 +215,29 @@ class MapHomeViewModel constructor(
             .map { it.locationHistoryMode }
             .distinctUntilChanged()
             .onEach { historyMode ->
-                locationHistoryController?.onCleared()
+                locationHistoryController.value?.onCleared()
                 if (historyMode == null) {
-                    locationHistoryController = null
+                    locationHistoryController.update { null }
                 } else {
-                    locationHistoryController = LocationHistoryViewModelController(
-                        groupId = historyMode.groupId,
-                        memberUserId = historyMode.memberUserId,
-                        deviceId = historyMode.deviceId,
-                        getLocationHistory = getLocationHistory,
-                        refreshLocationHistory = refreshLocationHistory,
-                        deleteLocationHistory = deleteLocationHistory,
-                        userRepo = userRepository,
-                        personalSpaceRepo = personalSpaceRepo,
-                        userGroupRepo = groupRepo,
-                        valueFormatter = valueFormatter,
-                        appPrefs = appPrefs,
-                        remoteConfig = remoteConfig,
-                        geofenceManager = geofenceManager,
-                        coroutineScope = coroutineScope,
-                        messageDispatcher = messageDispatcher
-                    )
+                    locationHistoryController.update {
+                        LocationHistoryViewModelController(
+                            groupId = historyMode.groupId,
+                            memberUserId = historyMode.memberUserId,
+                            deviceId = historyMode.deviceId,
+                            getLocationHistory = getLocationHistory,
+                            refreshLocationHistory = refreshLocationHistory,
+                            deleteLocationHistory = deleteLocationHistory,
+                            userRepo = userRepository,
+                            personalSpaceRepo = personalSpaceRepo,
+                            userGroupRepo = groupRepo,
+                            valueFormatter = valueFormatter,
+                            appPrefs = appPrefs,
+                            remoteConfig = remoteConfig,
+                            geofenceManager = geofenceManager,
+                            coroutineScope = coroutineScope,
+                            messageDispatcher = messageDispatcher
+                        )
+                    }
                 }
             }
             .launchIn(coroutineScope)
@@ -445,7 +458,7 @@ class MapHomeViewModel constructor(
         if (event is LocationHistoryUiEvent.OnCloseScreen) {
             mapEventHandler.onEvent(MapHomeScreenUiEvent.CloseLocationHistory)
         } else {
-            locationHistoryController?.onEvent(event)
+            locationHistoryController.value?.onEvent(event)
         }
     }
 
@@ -464,8 +477,8 @@ class MapHomeViewModel constructor(
 
     override fun onCleared() {
         super.onCleared()
-        locationHistoryController?.onCleared()
-        locationHistoryController = null
+        locationHistoryController.value?.onCleared()
+        locationHistoryController.update { null }
         groupSubscriptionJob.cancel()
         locationFocusManager.cancelJobs()
     }

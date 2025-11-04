@@ -420,6 +420,11 @@ class GroupDetailViewModel(
 
             GroupDetailScreenUiEvent.OnAddNewMember -> tryAddMember()
             GroupDetailScreenUiEvent.StopSharing -> stopSharing()
+            GroupDetailScreenUiEvent.OpenMap -> {
+                appPrefs.selectedGroupId = groupId
+                appPrefs.isPersonalSpaceSelected = false
+                _eventChannel.trySend(GroupDetailScreenEvent.OpenMap)
+            }
         }
     }
 

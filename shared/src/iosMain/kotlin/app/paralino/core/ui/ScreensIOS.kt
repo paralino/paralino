@@ -13,6 +13,7 @@ import app.paralino.core.ui.theme.AppTheme
 object ScreensIOS {
     val login = LoginScreens
     val home = HomeScreens
+    val map = MainMapScreen
     val settings = SettingsScreens
 }
 

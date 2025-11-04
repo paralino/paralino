@@ -35,6 +35,10 @@ struct PersonalSpaceScreen: View {
                     openTimeline: {
                         path.append(.home(.locationHistory(groupId: UserGroup.companion.groupPersonalDevicesId, memberUserId: "", deviceId: nil)))
                     },
+                    openMap: {
+                        path.removeAll()
+                        path.append(.home(.map))
+                    },
                     openPlaces: {
                         path.append(.home(.places(groupId: UserGroup.companion.groupPersonalDevicesId, isOnboarding: false)))
                     },

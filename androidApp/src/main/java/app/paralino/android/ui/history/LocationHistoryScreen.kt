@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LifecycleStartEffect
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
@@ -62,13 +61,6 @@ fun LocationHistoryScreen(
     MessageDispatcherEffect(vm, appState)
 
     val uiState by vm.uiState.collectAsState()
-
-    LifecycleStartEffect(Unit) {
-        vm.onEvent(LocationHistoryUiEvent.UiLifecycleChange(active = true))
-        onStopOrDispose {
-            vm.onEvent(LocationHistoryUiEvent.UiLifecycleChange(active = false))
-        }
-    }
 
     LocationHistoryScreenEventHandler(
         appState = appState,

@@ -71,7 +71,7 @@ private fun MapHomeContent(
     MessageDispatcherEffect(vm, appState)
 
     val uiState by vm.uiState.collectAsStateWithLifecycle()
-    val historyUiState = vm.historyUiState?.collectAsStateWithLifecycle()?.value
+    val historyUiState = vm.historyUiState.collectAsStateWithLifecycle().value
     val readyState by rememberUpdatedState(newValue = uiState.asReady())
     val density = LocalDensity.current
     val pickerState = rememberGroupBottomSheetPickerState()

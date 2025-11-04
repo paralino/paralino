@@ -20,7 +20,7 @@ struct LocationHistoryMapScreen: View {
     var body: some View {
         ZStack {
             ComposeRepresentable {
-                ScreensIOS.shared.home.LocationHistoryMapScreen(
+                ScreensIOS.shared.map.LocationHistoryMapScreen(
                     vm: mapState.vm,
                     paddingValues: safeAreaInsets,
                     onCardHeightChange: { offset in
@@ -74,21 +74,6 @@ struct LocationHistoryMapScreen: View {
         }
         .onDisappear {
             Logr.d(tag:"history_screen", message: "History screen disappear")
-            mapState.vm.onEvent(event: LocationHistoryUiEventUiLifecycleChange(active: false))
-        }
-        .onChange(of: scenePhase, initial: true) { oldScene, newScene in
-            Logr.d(tag:"history_screen", message: "History screen scene switch (old: \(oldScene)) - (new: \(newScene))")
-            
-            switch newScene {
-            case .active:
-                mapState.vm.onEvent(event: LocationHistoryUiEventUiLifecycleChange(active: true))
-            case .inactive:
-                mapState.vm.onEvent(event: LocationHistoryUiEventUiLifecycleChange(active: false))
-            case .background:
-                mapState.vm.onEvent(event: LocationHistoryUiEventUiLifecycleChange(active: false))
-            @unknown default:
-                break
-            }
         }
         .navigationBarBackButtonHidden(true)
     }

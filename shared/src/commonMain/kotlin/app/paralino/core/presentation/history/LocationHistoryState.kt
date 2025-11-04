@@ -530,7 +530,6 @@ sealed interface LocationHistoryUiEvent {
         val memberUserId: String,
         val preselectedDeviceId: String?
     ) : LocationHistoryUiEvent
-    data class UiLifecycleChange(val active: Boolean) : LocationHistoryUiEvent
     data class SelectDevice(val device: UserActiveLocationDeviceState) : LocationHistoryUiEvent
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent

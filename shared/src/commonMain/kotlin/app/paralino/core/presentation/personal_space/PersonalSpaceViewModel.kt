@@ -352,6 +352,7 @@ class PersonalSpaceViewModel(
 
             PersonalSpaceScreenUiEvent.OpenMap -> {
                 coroutineScope.launch {
+                    appPrefs.isPersonalSpaceSelected = true
                     _eventChannel.send(PersonalSpaceScreenEvent.OpenMap)
                 }
             }

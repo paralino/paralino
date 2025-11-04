@@ -242,7 +242,7 @@ fun BoxScope.MapHomeElementMainCards(
         modifier = modifier
             .padding(bottom = animateDpAsState(targetValue = sheetPeekHeight).value)
             .onGloballyPositioned { coordinates ->
-                val height = with(density) { coordinates.size.height.toDp() - 20.dp }
+                val height = with(density) { coordinates.size.height.toDp() - 38.dp }
                 cardHeight(height)
             }
     ) {

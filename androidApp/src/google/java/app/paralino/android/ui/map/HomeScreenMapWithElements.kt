@@ -52,9 +52,10 @@ internal fun HomeScreenMapWithElements(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
 
         val screenAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
-        val navigationBarPadding = WindowInsets.safeDrawing.asPaddingValues()
+        val bottomPadding = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding()
         val mapContentPadding by remember(
-            screenAreaPadding, navigationBarPadding,
+            screenAreaPadding,
+            bottomPadding,
             readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused,
             historyUiState != null,
             bottomOffset,
@@ -64,13 +65,13 @@ internal fun HomeScreenMapWithElements(
                 PaddingValues(
                     top = screenAreaPadding.calculateTopPadding() + 64.dp,
                     bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true || historyUiState != null) {
-                        (cardHeight + navigationBarPadding.calculateBottomPadding()).coerceIn(
-                            minimumValue = navigationBarPadding.calculateBottomPadding(),
+                        (cardHeight + bottomPadding).coerceIn(
+                            minimumValue = bottomPadding,
                             maximumValue = this.maxHeight
                         )
                     } else {
                         (this.maxHeight - bottomOffset).coerceIn(
-                            minimumValue = navigationBarPadding.calculateBottomPadding(),
+                            minimumValue = bottomPadding,
                             maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
                         )
                     }

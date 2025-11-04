@@ -5,6 +5,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
+import app.paralino.core.logg
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
@@ -172,8 +173,6 @@ class LocationHistoryViewModelController(
 
     val events = _eventChannel.receiveAsFlow()
 
-    private val uiFocusedStatus = MutableStateFlow(false)
-
     init {
         historyEventHandler.loadHistory(
             groupId = groupId,
@@ -307,10 +306,6 @@ class LocationHistoryViewModelController(
 
             is LocationHistoryUiEvent.SelectDevice -> {
                 historyEventHandler.selectDevice(event.device)
-            }
-
-            is LocationHistoryUiEvent.UiLifecycleChange -> {
-                uiFocusedStatus.update { event.active }
             }
 
             LocationHistoryUiEvent.OnCloseScreen -> {

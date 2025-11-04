@@ -51,6 +51,7 @@ sealed interface GroupDetailScreenUiEvent {
     data object OnWholeContentClick : GroupDetailScreenUiEvent
     data object OnAddNewMember : GroupDetailScreenUiEvent
     data object StopSharing : GroupDetailScreenUiEvent
+    data object OpenMap : GroupDetailScreenUiEvent
 }
 
 sealed class GroupDetailScreenEvent() {
@@ -58,6 +59,7 @@ sealed class GroupDetailScreenEvent() {
     object GroupMemberAdd : GroupDetailScreenEvent()
     data class OpenRawMemberData(val memberId: String) : GroupDetailScreenEvent()
     data object OpenPaywall : GroupDetailScreenEvent()
+    data object OpenMap : GroupDetailScreenEvent()
     object GroupMemberDeleted : GroupDetailScreenEvent()
     object UserBlockActionCompleted : GroupDetailScreenEvent()
     object MemberLocationDeleted : GroupDetailScreenEvent()

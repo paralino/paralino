@@ -105,17 +105,10 @@ fun GroupDetailScreenCore(
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
             when (event) {
-                GroupDetailScreenEvent.GroupDeleted -> {
-                    onNavigateBack()
-                }
-
-                GroupDetailScreenEvent.GroupMemberAdd -> {
-                    openMemberAdd()
-                }
-
-                is GroupDetailScreenEvent.OpenPaywall -> {
-                    openPaywall()
-                }
+                GroupDetailScreenEvent.GroupDeleted -> onNavigateBack()
+                GroupDetailScreenEvent.GroupMemberAdd -> openMemberAdd()
+                GroupDetailScreenEvent.OpenPaywall -> openPaywall()
+                GroupDetailScreenEvent.OpenMap -> openMap()
 
                 is GroupDetailScreenEvent.OpenRawMemberData -> {
                     openMemberRawData(event.memberId)
@@ -277,10 +270,10 @@ fun GroupDetailScreenCore(
                                 modifier = Modifier.animateItem(),
                                 groupName = state.data.name,
                                 groupImage = state.data.image,
-                                onMapClick = { openMap() },
-                                onPlacesClick = { openPlaces() },
+                                onMapClick = { vm.onEvent(GroupDetailScreenUiEvent.OpenMap) },
+                                onPlacesClick = openPlaces,
                                 onSettingsClick = openGroupSettings,
-                                onSharingClick = { openSharing() }
+                                onSharingClick = openSharing
                             )
                         }
                     }

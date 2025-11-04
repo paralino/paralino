@@ -23,10 +23,9 @@ struct MapHomeScreen: View {
     var body: some View {
         ZStack {
             ComposeRepresentable {
-                ScreensIOS.shared.home.MapSheet(
+                ScreensIOS.shared.map.MapSheet(
                     vm: mapState.vm,
                     paddingValues: safeAreaInsets,
-                    initialUiState: mapState.uiState,
                     onOpenPlacesScreen: { groupId in
                         path.append(.home(.places(groupId: groupId, isOnboarding: false)))
                     },
@@ -44,6 +43,9 @@ struct MapHomeScreen: View {
                     },
                     onSharingStartClick: { groupId in
                         path.append(.home(.sharingStart(groupId: groupId, isOnboarding: false)))
+                    },
+                    onHistorySettingsClick: { groupId in
+                        path.append(.home(.locationHistorySettings(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: groupId)!)))
                     },
                     onSettingsClick: {
                         path.append(.settings(.settings))
@@ -69,6 +71,9 @@ struct MapHomeScreen: View {
                     openPersonalCodes: {
                         path.append(.settings(.personalCodes))
                     },
+                    openRawDataScreen: { type in
+                        path.append(.settings(.rawData(type: type)))
+                    },
                     onSharePersonalCode: { content in
                         shareText = ShareText(text: content)
                     },
@@ -84,9 +89,7 @@ struct MapHomeScreen: View {
                         let controller = MapComponentVC()
                         controller.additionalSafeAreaInsets = .init(top: 65, left: 0, bottom: 0, right: 0)
                         controller.mapState = mapState
-                        controller.onMapPan = {
-                            mapState.vm.onEvent(event: MapHomeScreenUiEventOnMapTouch())
-                        }
+                        controller.onMapPan = { mapState.onMapTouch() }
                         controller.onMapLongPress = { point in
                             if let readyState = mapState.uiState.asReady() {
                                 path.append(.home(.placeCreate(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: readyState.groupOrSpaceId)!, placeId: nil, lat: point.latitude, lng: point.longitude)))
@@ -101,22 +104,22 @@ struct MapHomeScreen: View {
         }
         .onAppear {
             Logr.d(tag:"home_screen", message: "Home screen appear")
-            mapState.vm.onEvent(event: MapHomeScreenUiEventSwitchViewSource(viewSource: MapScreenViewSourceTypeDefaultGroupOrSpace(id: nil)))
+            mapState.onMainEvent(event: MapHomeScreenUiEventSwitchViewSource(viewSource: MapScreenViewSourceTypeDefaultGroupOrSpace(id: nil)))
         }
         .onDisappear {
             Logr.d(tag:"home_screen", message: "Home screen disappear")
-            mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
+            mapState.onMainEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
         }
         .onChange(of: scenePhase, initial: true) { oldScene, newScene in
             Logr.d(tag:"home_screen", message: "Home screen scene switch (old: \(oldScene)) - (new: \(newScene))")
             
             switch newScene {
             case .active:
-                mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: true))
+                mapState.onMainEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: true))
             case .inactive:
-                mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
+                mapState.onMainEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
             case .background:
-                mapState.vm.onEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
+                mapState.onMainEvent(event: MapHomeScreenUiEventUiLifecycleChange(active: false))
             @unknown default:
                 break
             }
@@ -125,17 +128,17 @@ struct MapHomeScreen: View {
             $groupPicker,
             onSelectGroup: { state in
                 groupPicker = nil
-                mapState.vm.onEvent(
+                mapState.onMainEvent(
                     event: MapHomeScreenUiEventSwitchViewSource(viewSource: MapScreenViewSourceTypeDefaultGroupOrSpace(id: state.id))
                 )
             },
             onEditGroup: { state in
                 groupPicker = nil
-                mapState.vm.onEvent(event: MapHomeScreenUiEventOpenGroupDetails(groupId: state.id))
+                mapState.onMainEvent(event: MapHomeScreenUiEventOpenGroupDetails(groupId: state.id))
             },
             onCreateGroup: {
                 groupPicker = nil
-                mapState.vm.onEvent(event: MapHomeScreenUiEventTryCreateGroup())
+                mapState.onMainEvent(event: MapHomeScreenUiEventTryCreateGroup())
             },
             onJoinGroup: {
                 groupPicker = nil
