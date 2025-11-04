@@ -61,6 +61,7 @@ data class PaywallScreenState(
                             is FeatureTableItemValue.Emoji -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
                             is FeatureTableItemValue.Summary -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
                             is FeatureTableItemValue.Text -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
+                            is FeatureTableItemValue.MoreInfo -> it.copy(highlightMode = FeatureTableItemHighlightMode.NONE)
                             is FeatureTableItemValue.Title -> null
                         }
                     } else {
@@ -156,6 +157,7 @@ sealed class PaywallScreenUiEvent() {
 
     data class SelectPlanType(val planType: PlanType) : PaywallScreenUiEvent()
     data class DialogAction(val action: AlertDialogAction) : PaywallScreenUiEvent()
+    data class OnCellItemClick(val table: FeatureTableItemState, val cellItem: FeatureTableItemValue) : PaywallScreenUiEvent()
 }
 
 class PurchaseErrorException(

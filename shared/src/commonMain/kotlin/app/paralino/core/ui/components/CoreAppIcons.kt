@@ -48,6 +48,7 @@ import paralino.shared.generated.resources.ic_home
 import paralino.shared.generated.resources.ic_home_work
 import paralino.shared.generated.resources.ic_how_to_reg
 import paralino.shared.generated.resources.ic_incognito
+import paralino.shared.generated.resources.ic_info_circle
 import paralino.shared.generated.resources.ic_key
 import paralino.shared.generated.resources.ic_launcher_foreground
 import paralino.shared.generated.resources.ic_library_books
@@ -73,6 +74,7 @@ import paralino.shared.generated.resources.ic_phone_android
 import paralino.shared.generated.resources.ic_phonelink_setup
 import paralino.shared.generated.resources.ic_polyline
 import paralino.shared.generated.resources.ic_privacy_tip
+import paralino.shared.generated.resources.ic_question_mark_circle
 import paralino.shared.generated.resources.ic_radio_button_unchecked
 import paralino.shared.generated.resources.ic_refresh
 import paralino.shared.generated.resources.ic_replay
@@ -180,6 +182,8 @@ object CoreAppIcons {
     val Ruler get() = Res.drawable.ic_ruler
     val Communication get() = Res.drawable.ic_communication
     val FilterTune get() = Res.drawable.ic_filter_tune
+    val QuestionCircle get() = Res.drawable.ic_question_mark_circle
+    val InfoCircle get() = Res.drawable.ic_info_circle
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay

@@ -14,12 +14,17 @@ import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.settings.billing.FeatureTableItemValue
 import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.PlanInfoState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarPayload
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.ToggleMemberVerification
 import app.paralino.core.utils.exceptions.DataStillLoadingException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -103,7 +108,7 @@ class GroupSettingsViewModel(
                 _uiState.value.data?.let { data ->
                     if (data.canEdit && data.isMemberVerificationEnabled) {
                         updateDialog(
-                            MainAlertDialog.ToggleMemberVerification(turnOn = !data.isMemberVerificationOn)
+                            ToggleMemberVerification(turnOn = !data.isMemberVerificationOn)
                         )
                     }
                 }
@@ -136,6 +141,24 @@ class GroupSettingsViewModel(
                         }
                     }
 
+                    else -> {}
+                }
+            }
+
+            is GroupSettingsUiEvent.OnCellItemClick -> {
+                when (event.cellItem) {
+                    is FeatureTableItemValue.MoreInfo -> {
+                        showSnackbar(
+                            data = AppSnackbarData(
+                                payload = AppSnackbarPayload(
+                                    title = event.cellItem.title,
+                                    text = event.cellItem.content,
+                                    hasCloseButton = true
+                                ),
+                                duration = SnackbarDuration.Long
+                            )
+                        )
+                    }
                     else -> {}
                 }
             }

@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
@@ -195,6 +196,18 @@ fun AppSnackbar(
                             .background(MaterialTheme.colors.surface)
                             .padding(20.dp),
                     ) {
+                        if (payload.title != null) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(4.dp),
+                                text = payload.title,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.subtitle1.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            )
+                        }
+
                         Text(
                             modifier = Modifier
                                 .padding(4.dp),

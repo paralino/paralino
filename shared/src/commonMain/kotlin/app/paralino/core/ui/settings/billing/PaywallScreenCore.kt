@@ -405,20 +405,24 @@ private fun ColumnScope.PaywallScreen(
         )
     }
 
-    Spacer(modifier = Modifier.size(16.dp))
-
     AnimatedVisibility(
         state.currentPlan != null
     ) {
         Text(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 8.dp),
+                .padding(bottom = 8.dp, top = 8.dp),
             text = stringResource(MR.strings.paywall_current_plan_label, state.currentPlanName).annotatedBoldCompose(),
             style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Normal),
             textAlign = TextAlign.Center,
             color = MaterialTheme.colors.onBackground.copy(ContentAlpha.medium)
         )
+    }
+
+    AnimatedVisibility(
+        state.currentPlan == null
+    ) {
+        Spacer(modifier = Modifier.size(16.dp))
     }
 
     PlanTypePicker(
@@ -493,6 +497,9 @@ private fun ColumnScope.PaywallScreen(
         isExpanded = arePlansExpanded,
         onExpandPlans = {
             arePlansExpanded = true
+        },
+        onCellClick = { featureTableState, item ->
+            onEvent(PaywallScreenUiEvent.OnCellItemClick(table = featureTableState, cellItem = item))
         }
     )
 

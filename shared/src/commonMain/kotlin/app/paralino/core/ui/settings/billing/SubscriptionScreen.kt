@@ -177,7 +177,15 @@ fun SubscriptionScreenCore(
                 table = uiState.featureTableState,
                 canExpand = false,
                 isExpanded = true,
-                onExpandPlans = {}
+                onExpandPlans = {},
+                onCellClick = { table, cell ->
+                    vm.onEvent(
+                        SubscriptionScreenUiEvent.OnCellItemClick(
+                            table = table,
+                            cellItem = cell
+                        )
+                    )
+                }
             )
         }
     }

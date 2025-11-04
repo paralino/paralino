@@ -1,7 +1,6 @@
 package app.paralino.core.presentation.settings.billing
 
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
@@ -9,6 +8,9 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarPayload
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,6 +116,24 @@ class SubscriptionViewModel(
                         _eventChannel.trySend(SubscriptionScreenEvent.OnNavigateBack)
                     }
 
+                    else -> {}
+                }
+            }
+
+            is SubscriptionScreenUiEvent.OnCellItemClick -> {
+                when (event.cellItem) {
+                    is FeatureTableItemValue.MoreInfo -> {
+                        showSnackbar(
+                            data = AppSnackbarData(
+                                payload = AppSnackbarPayload(
+                                    title = event.cellItem.title,
+                                    text = event.cellItem.content,
+                                    hasCloseButton = true
+                                ),
+                                duration = SnackbarDuration.Long
+                            )
+                        )
+                    }
                     else -> {}
                 }
             }

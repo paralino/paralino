@@ -356,6 +356,7 @@
     <string name="paywall_feature_table_expand_button">Compare all benefits</string>
     <string name="paywall_feature_value_unlimited">Unlimited</string>
     <string name="paywall_feature_history_days_minimum">&lt; 1 day</string>
+    <string name="paywall_feature_history_days_minimum_info">Location history stores up to 100 most recent points for a maximum of 2 days. It is not saved persistently due to limited resources.</string>
     <string name="paywall_feature_summary_groups">Groups</string>
     <string name="paywall_feature_summary_devices">Devices</string>
     <string name="paywall_feature_summary_members">Members</string>

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
@@ -66,7 +68,8 @@ fun FeatureTable(
     table: FeatureTableState,
     canExpand: Boolean = table.canExpand,
     isExpanded: Boolean,
-    onExpandPlans: () -> Unit
+    onExpandPlans: () -> Unit,
+    onCellClick: (FeatureTableItemState, FeatureTableItemValue) -> Unit
 ) {
     BoxWithConstraints(
         modifier = modifier
@@ -101,7 +104,8 @@ fun FeatureTable(
                                 modifier = Modifier,
                                 featureItem = feature,
                                 maxWidth = maxWidth,
-                                isExpanded = isExpanded
+                                isExpanded = isExpanded,
+                                onCellClick = onCellClick
                             )
 
                             if (index > 1) {
@@ -161,6 +165,7 @@ private fun FeatureTableItem(
     featureItem: FeatureTableItemState,
     maxWidth: Dp,
     isExpanded: Boolean,
+    onCellClick: (FeatureTableItemState, FeatureTableItemValue) -> Unit
 ) {
     var containerHeight by remember(featureItem) { mutableStateOf(0f) }
     val nameWidth = when (featureItem) {
@@ -362,6 +367,17 @@ private fun FeatureTableItem(
                                     text = value.content,
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.body2
+                                )
+                            }
+
+                            is FeatureTableItemValue.MoreInfo -> {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable { onCellClick(featureItem, value) }
+                                        .padding(2.dp),
+                                    painter = CoreAppIcons.InfoCircle.asPainterResource(),
+                                    contentDescription = null
                                 )
                             }
 

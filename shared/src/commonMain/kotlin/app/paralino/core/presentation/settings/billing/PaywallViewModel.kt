@@ -21,6 +21,9 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarPayload
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.Emojis
@@ -300,6 +303,24 @@ class PaywallViewModel(
                             )
                         )
                     }
+                }
+            }
+
+            is PaywallScreenUiEvent.OnCellItemClick -> {
+                when (event.cellItem) {
+                    is FeatureTableItemValue.MoreInfo -> {
+                        showSnackbar(
+                            data = AppSnackbarData(
+                                payload = AppSnackbarPayload(
+                                    title = event.cellItem.title,
+                                    text = event.cellItem.content,
+                                    hasCloseButton = true
+                                ),
+                                duration = SnackbarDuration.Long
+                            )
+                        )
+                    }
+                    else -> {}
                 }
             }
         }

@@ -155,8 +155,9 @@ data class FeatureTableState(
                             }
 
                             if (!it.config.isGroupHistoryEnabled) {
-                                FeatureTableItemValue.Text(
-                                    content = MR.strings.paywall_feature_history_days_minimum.localizedString(),
+                                FeatureTableItemValue.MoreInfo(
+                                    title = it.config.adjustedPlanName,
+                                    content = MR.strings.paywall_feature_history_days_minimum_info.localizedString(),
                                     planType = it.type,
                                     highlightMode = highlightMode
                                 )
@@ -201,8 +202,9 @@ data class FeatureTableState(
                                 }
 
                                 if (!it.config.isPersonalHistoryEnabled) {
-                                    FeatureTableItemValue.Text(
-                                        content = MR.strings.paywall_feature_history_days_minimum.localizedString(),
+                                    FeatureTableItemValue.MoreInfo(
+                                        title = it.config.adjustedPlanName,
+                                        content = MR.strings.paywall_feature_history_days_minimum_info.localizedString(),
                                         planType = it.type,
                                         highlightMode = highlightMode
                                     )
@@ -603,6 +605,13 @@ sealed interface FeatureTableItemValue {
     ) : FeatureTableItemValue
 
     data class Count(
+        val content: String,
+        override val planType: PlanType,
+        override val highlightMode: FeatureTableItemHighlightMode,
+    ) : FeatureTableItemValue
+
+    data class MoreInfo(
+        val title: String,
         val content: String,
         override val planType: PlanType,
         override val highlightMode: FeatureTableItemHighlightMode,

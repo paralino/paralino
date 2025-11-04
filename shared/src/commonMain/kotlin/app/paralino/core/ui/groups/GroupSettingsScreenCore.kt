@@ -162,7 +162,12 @@ fun GroupSettingsScreenCore(
                         table = state.data.featureTableState,
                         canExpand = false,
                         isExpanded = true,
-                        onExpandPlans = {}
+                        onExpandPlans = {},
+                        onCellClick = { table, cell ->
+                            vm.onEvent(
+                                GroupSettingsUiEvent.OnCellItemClick(table = table, cellItem = cell)
+                            )
+                        }
                     )
                 }
             }
