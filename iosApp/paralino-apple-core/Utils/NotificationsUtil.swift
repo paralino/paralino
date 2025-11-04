@@ -26,6 +26,7 @@ extension IPushNotificationPresenter.Payload {
         }
         
         content.threadIdentifier = self.notificationGroupId ?? "paralino"
+        content.sound = UNNotificationSound.default
         
         return content
     }
