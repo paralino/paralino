@@ -26,9 +26,6 @@ struct AccountScreen: View {
                     openEditProfile: {
                         path.append(.settings(.editProfile))
                     },
-                    openBlockList: {
-                        path.append(.settings(.blocklist))
-                    },
                     openChangeEmail: {
                         path.append(.settings(.changeEmail))
                     },
@@ -37,6 +34,9 @@ struct AccountScreen: View {
                     },
                     openProfileRawScreen: {
                         path.append(.settings(.rawData(type: .UserPresentation())))
+                    },
+                    openBlockList: {
+                        path.append(.settings(.blocklist))
                     },
                     onShare: { data in
                         shareText = ShareText(text: data)
