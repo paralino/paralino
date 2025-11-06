@@ -394,6 +394,7 @@ class PlacesActivityProcessor(
                 placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
                 logg.tag("place_activity")
                     .d("Cancel place $activityTag notify (location not accurate) - $placeId")
+                return
             }
         }
 
@@ -481,7 +482,7 @@ class PlacesActivityProcessor(
         }
     }
 
-    private fun placeActivityDelay(
+    private suspend fun placeActivityDelay(
         place: GroupPlace?,
         trigger: PlaceActivityTriggerType
     ): Duration? {
@@ -489,22 +490,57 @@ class PlacesActivityProcessor(
             return null
         }
 
+        val location = oneTimeLocation.getLastLocation(
+            requestType = IOneTimeLocationProvider.RequestType.CacheOnly
+        )
+        val isLocationVeryAccurate = location?.let {
+            it.accuracy < 30 && !it.isOlderThan(10.seconds)
+        } ?: false
+
         return when (trigger) {
             PlaceActivityTriggerType.GOEFENCE -> {
                 when (place.alertSensitivity.sensitivityDelay) {
-                    PlaceSensitivityDelayType.NONE -> null
-                    PlaceSensitivityDelayType.MINIMUM -> 6.seconds
-                    PlaceSensitivityDelayType.BALANCED -> 12.seconds
-                    PlaceSensitivityDelayType.LONG -> 20.seconds
+                    PlaceSensitivityDelayType.NONE -> {
+                        null
+                    }
+
+                    PlaceSensitivityDelayType.MINIMUM -> {
+                        if (isLocationVeryAccurate) null
+                        else 6.seconds
+                    }
+
+                    PlaceSensitivityDelayType.BALANCED -> {
+                        if (isLocationVeryAccurate) 4.seconds
+                        else 12.seconds
+                    }
+
+                    PlaceSensitivityDelayType.LONG -> {
+                        20.seconds
+                    }
                 }
             }
 
             else -> {
                 when (place.alertSensitivity.sensitivityDelay) {
-                    PlaceSensitivityDelayType.NONE -> 5.seconds
-                    PlaceSensitivityDelayType.MINIMUM -> 10.seconds
-                    PlaceSensitivityDelayType.BALANCED -> 15.seconds
-                    PlaceSensitivityDelayType.LONG -> 25.seconds
+                    PlaceSensitivityDelayType.NONE -> {
+                        if (isLocationVeryAccurate) null
+                        else 5.seconds
+                    }
+
+                    PlaceSensitivityDelayType.MINIMUM -> {
+                        if (isLocationVeryAccurate) 5.seconds
+                        else 10.seconds
+                    }
+
+                    PlaceSensitivityDelayType.BALANCED -> {
+                        if (isLocationVeryAccurate) 10.seconds
+                        else 15.seconds
+                    }
+
+                    PlaceSensitivityDelayType.LONG -> {
+                        if (isLocationVeryAccurate) 15.seconds
+                        else 25.seconds
+                    }
                 }
             }
         }
@@ -559,12 +595,20 @@ class PlacesActivityProcessor(
 
             location.accuracy > 100 -> {
                 // if accuracy is not that great, only consider exit if user is  somewhat far away
-                if (place.alertSensitivity.ignoreInaccurate) location.accuracy else location.accuracy / 2
+                if (place.alertSensitivity.ignoreInaccurate) {
+                    location.accuracy
+                } else {
+                    location.accuracy / 2
+                }
             }
 
             else -> {
                 // if accuracy is decent,
-                if (place.alertSensitivity.ignoreInaccurate) (location.accuracy / 10).coerceAtLeast(5f) else 0f
+                if (place.alertSensitivity.ignoreInaccurate) {
+                    (location.accuracy / 10).coerceAtLeast(5f)
+                } else {
+                    0f
+                }
             }
         }
         val isExit = distance > placeData.radiusMeters + location.accuracy + exitThreshold
