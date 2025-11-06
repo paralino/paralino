@@ -10,7 +10,6 @@ data class PersonalHistoryEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "dateIdentifier") val dateIdentifier: String,
     @ColumnInfo(name = "locationId") val locationId: String?,
-    @ColumnInfo(name = "deviceId") val deviceId: String?,
     @ColumnInfo(name = "historyData") val historyData: String,
     @ColumnInfo(name = "historyKeyVersion") val historyKeyVersion: String
 ) {
@@ -18,7 +17,6 @@ data class PersonalHistoryEntity(
         return LocationHistoryReadEntry(
             id = this.id,
             dateKey = this.dateIdentifier,
-            deviceId = this.deviceId,
             locationId = this.locationId,
             keyVersion = this.historyKeyVersion,
             historyData = this.historyData,

@@ -157,7 +157,6 @@ class LocationHistoryMapper(
             groupId = groupId,
             ownerUserId = memberUserId,
             locationId = model.locationId,
-            deviceId = model.deviceId,
             historyKeyVersion = model.keyVersion,
             historyData = model.historyData
         )
@@ -185,7 +184,6 @@ class LocationHistoryMapper(
             id = model.id,
             dateKey = model.dateIdentifier,
             locationId = model.locationId,
-            deviceId = model.deviceId,
             keyVersion = model.historyKeyVersion,
             historyData = model.historyData
         )
@@ -198,7 +196,6 @@ class LocationHistoryMapper(
             id = model.id,
             dateIdentifier = model.dateKey,
             locationId = model.locationId,
-            deviceId = model.deviceId,
             historyKeyVersion = model.keyVersion,
             historyData = model.historyData
         )
@@ -222,7 +219,6 @@ class LocationHistoryMapper(
             id = model.id,
             dateKey = model.dateIdentifier,
             locationId = model.locationId,
-            deviceId = model.deviceId,
             keyVersion = model.historyKeyVersion,
             historyData = model.historyData
         )

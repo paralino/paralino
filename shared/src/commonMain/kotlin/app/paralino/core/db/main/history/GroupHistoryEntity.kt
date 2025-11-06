@@ -12,7 +12,6 @@ data class GroupHistoryEntity(
     @ColumnInfo(name = "groupId") val groupId: String,
     @ColumnInfo(name = "ownerUserId") val ownerUserId: String,
     @ColumnInfo(name = "locationId") val locationId: String?,
-    @ColumnInfo(name = "deviceId") val deviceId: String?,
     @ColumnInfo(name = "historyKeyVersion") val historyKeyVersion: String,
     @ColumnInfo(name = "historyData") val historyData: String,
 ) {
@@ -20,7 +19,6 @@ data class GroupHistoryEntity(
         return LocationHistoryReadEntry(
             id = this.id,
             dateKey = this.dateIdentifier,
-            deviceId = this.deviceId,
             locationId = this.locationId,
             keyVersion = this.historyKeyVersion,
             historyData = this.historyData,

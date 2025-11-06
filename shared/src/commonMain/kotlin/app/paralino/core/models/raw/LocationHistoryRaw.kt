@@ -21,7 +21,6 @@ data class PersonalLocationHistoryReadResponse(
 data class LocationHistoryReadEntry(
     val id: String,
     val dateKey: String,
-    val deviceId: String?,
     val locationId: String?,
     val keyVersion: String,
     val historyData: String

@@ -384,9 +384,7 @@ class RawCryptoPresentation constructor(
                         MR.strings.raw_data_section_history_selectedPoints_title.localizedString(it)
                     },
                     rawData = sectionEntry.first.historyData,
-                    contentIdInfo = buildList {
-                        add("Device ID: **${sectionEntry.first.deviceId}**")
-                    }.map { ContentIdItem(it) },
+                    contentIdInfo = emptyList(),
                     decryptedData = decryptedData,
                     type = type
                 )
