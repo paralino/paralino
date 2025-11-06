@@ -115,7 +115,7 @@
     <string name="onboarding_step_locationHistoryIntro_button_next">Enable for all</string>
     <string name="onboarding_step_personalSpace_title_currentUsers">Paralino + You</string>
     <string name="onboarding_step_personalSpace_title_newUsers">Connect your devices</string>
-    <string name="onboarding_step_personalSpace_info_currentUsers">Now you have special place to manage and keep track of your own devices.</string>
+    <string name="onboarding_step_personalSpace_info_currentUsers">Now you have a special place to manage and keep track of your own devices.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Personal space allows you to manage and keep track of your own devices.</string>
     <string name="onboarding_step_accountStart_title_tag">Get ready</string>
     <string name="onboarding_step_accountStart_title">Choose how you want to start</string>
