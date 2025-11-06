@@ -452,6 +452,7 @@ private fun ColumnScope.PaywallScreen(
     if (!state.canMakePurchaseOnThisPlatform) {
         NoticeInfoChip(
             modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 20.dp)
                 .padding(top = 12.dp, bottom = 12.dp),
@@ -468,7 +469,27 @@ private fun ColumnScope.PaywallScreen(
 
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        visible = state.selectedBillingPeriod?.isPromoDiscount == true
+        visible = state.canMakePurchaseOnThisPlatform && state.subscriptionNoticeForCurrentPlan != null
+    ) {
+        NoticeInfoChip(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 12.dp),
+            text = state.subscriptionNoticeForCurrentPlan ?: "",
+            icon = {
+                Icon(
+                    painter = CoreAppIcons.StarFamily.asPainterResource(),
+                    contentDescription = null
+                )
+            }
+        )
+    }
+
+    AnimatedVisibility(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        visible = state.selectedBillingPeriod?.isPromoDiscount == true && state.canMakePurchaseOnThisPlatform
     ) {
         NoticeInfoChip(
             modifier = Modifier
@@ -526,10 +547,11 @@ private fun ColumnScope.PaywallScreen(
 
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null
+        visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null && state.canMakePurchaseOnThisPlatform
     ) {
         NoticeInfoChip(
             modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 20.dp)
                 .padding(bottom = if (!state.screenType.isOnboarding) 0.dp else 20.dp)

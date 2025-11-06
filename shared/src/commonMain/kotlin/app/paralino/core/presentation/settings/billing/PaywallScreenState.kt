@@ -1,12 +1,14 @@
 package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.intl.Locale
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
+import app.paralino.core.models.base.SubscriptionInfoNotice
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -27,7 +29,8 @@ data class PaywallScreenState(
     val memberImageModel: ImageModel,
     val memberName: String,
     val memberDeviceName: String,
-    val locationHistoryStepMessage: String
+    val locationHistoryStepMessage: String,
+    val subscriptionNotice: List<SubscriptionInfoNotice>
 ) {
 
     val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
@@ -80,6 +83,32 @@ data class PaywallScreenState(
                 }
             }
         )
+    }
+
+    val subscriptionNoticeForCurrentPlan: String? = selectedPlan?.let { plan ->
+        if (plan.selectedBillingPeriod != null) {
+            noticeForPlan(planType = plan.config.planTypeEnum, period = plan.selectedBillingPeriod.billingPeriod)
+        } else {
+            null
+        }
+    }
+
+    private fun noticeForPlan(
+        planType: PlanType,
+        period: PlanBillingPeriod
+    ): String? {
+        val language = try {
+            Locale.current.language
+        } catch (e: Exception) {
+            "en"
+        }
+        return subscriptionNotice.firstOrNull {
+            it.keys.firstOrNull {
+                it.plans.contains(planType.key) && it.periods.contains(period.key)
+            } != null
+        }?.i18nMessage?.let {
+            it.get(language) ?: it.get("en")
+        }
     }
 }
 

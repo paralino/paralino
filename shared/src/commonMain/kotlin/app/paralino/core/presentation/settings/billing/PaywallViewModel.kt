@@ -474,7 +474,8 @@ class PaywallViewModel(
             memberImageModel = userRepo.cachedUser?.data?.userImage
                 ?: ImageModel.emoji(Emojis.goat),
             memberDeviceName = deviceApiProvider.defaultDeviceName,
-            locationHistoryStepMessage = locationHistoryMessage
+            locationHistoryStepMessage = locationHistoryMessage,
+            subscriptionNotice = remoteConfigRepo.getCachedConfigOnce().subscriptionNotice ?: emptyList()
         )
     }
 
