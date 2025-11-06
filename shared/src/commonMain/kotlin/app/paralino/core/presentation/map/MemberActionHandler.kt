@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class MemberActionHandler(
+    private val uiState: StateFlow<MapHomeScreenState>,
     private val clearUserLocation: ClearUserLocationUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
     private val sharingManager: LocationSharingManager,
@@ -144,7 +145,6 @@ class MemberActionHandler(
     fun requestLocationUpdate(
         state: GroupMemberItemState,
         updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
-        uiState: StateFlow<MapHomeScreenState>,
         getAllGroupsItemState: () -> List<GroupItemState>
     ) {
         val stateWithLocation = uiState.value.asReady()?.allMembersOrDevices?.firstOrNull { it.keyId == state.keyId }
@@ -260,24 +260,31 @@ class MemberActionHandler(
                         }
                     }
                 } else {
-                    scheduleDeviceResponseCheck(updateReadyState)
+                    scheduleDeviceResponseCheck()
                 }
             }
             .catch { /* errors are handled in onCompletion */ }
             .launchIn(coroutineScope)
     }
 
-    private fun scheduleDeviceResponseCheck(
-        updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
-    ) {
+    private fun scheduleDeviceResponseCheck() {
         coroutineScope.launch {
             delay(locationRequestDuration)
-            // This would need access to the current UI state to check for obsolete requests
-            // For now, we'll just show the message
-            messageDispatcher.showSnackbar(
-                text = MR.strings.group_member_device_not_responding_message.localizedString(),
-                duration = SnackbarDuration.Long
-            )
+            val anyObsoleteRequests = uiState.value.asReady()?.allMembersOrDevices?.any { member ->
+                member.actions.locationRequest?.let { request ->
+                    val isWaiting = request.isWaitingForUser
+                    val isObsolete = request.lastLocationRequest?.plus(locationRequestDuration)
+                        ?.let { it < nowUTC() } ?: true
+                    isWaiting && isObsolete
+                } ?: false
+            } ?: false
+
+            if (anyObsoleteRequests) {
+                messageDispatcher.showSnackbar(
+                    text = MR.strings.group_member_device_not_responding_message.localizedString(),
+                    duration = SnackbarDuration.Long
+                )
+            }
         }
     }
 

@@ -135,6 +135,7 @@ class MapHomeViewModel constructor(
         eventChannel = _eventChannel
     )
     private val memberActionHandler = MemberActionHandler(
+        uiState = uiState,
         clearUserLocation = clearUserLocation,
         locationRequestUseCase = locationRequestUseCase,
         sharingManager = sharingManager,

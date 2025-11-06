@@ -239,7 +239,6 @@ class MapEventHandler(
                 memberActionHandler.requestLocationUpdate(
                     state = event.item,
                     updateReadyState = updateReadyState,
-                    uiState = uiState,
                     getAllGroupsItemState = {
                         groupStateManager.getGroupPickerState(showPersonalSpace = false)
                             .let { it.createdGroups + it.joinedGroups }
