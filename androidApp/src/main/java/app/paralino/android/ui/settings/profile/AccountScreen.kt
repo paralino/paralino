@@ -53,6 +53,9 @@ fun AccountScreen(
             openEditProfile = {
                 appState.navController.navigate(AppScreen.Settings.ProfileDetails.EditProfile.routeSignature)
             },
+            openBlockList = {
+                appState.navController.navigate(AppScreen.Settings.BlockList.routeSignature)
+            },
             openChangeEmail = {
                 appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangeEmail.routeSignature)
             },

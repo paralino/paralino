@@ -26,6 +26,9 @@ struct AccountScreen: View {
                     openEditProfile: {
                         path.append(.settings(.editProfile))
                     },
+                    openBlockList: {
+                        path.append(.settings(.blocklist))
+                    },
                     openChangeEmail: {
                         path.append(.settings(.changeEmail))
                     },

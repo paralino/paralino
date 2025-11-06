@@ -80,6 +80,7 @@ fun AccountScreenCore(
     openEditProfile: () -> Unit,
     openChangeEmail: () -> Unit,
     openChangePassword: () -> Unit,
+    openBlockList: () -> Unit,
     onShare: (String) -> Unit,
 ) {
 
@@ -141,6 +142,13 @@ fun AccountScreenCore(
                     icon = CoreAppIcons.Person.asPainterResource()
                 ) {
                     openEditProfile()
+                }
+
+                SettingsActionItem(
+                    name = stringResource(MR.strings.blocklist_screen_title),
+                    icon = CoreAppIcons.Block.asPainterResource()
+                ) {
+                    openBlockList()
                 }
 
                 if (state.data.userState.isGuestUser) {

@@ -137,10 +137,10 @@ fun SettingsScreenCore(
             }
 
             SettingsActionItem(
-                name = stringResource(MR.strings.blocklist_screen_title),
-                icon = CoreAppIcons.Block.asPainterResource()
+                name = stringResource(MR.strings.plans_management_screen_title),
+                icon = CoreAppIcons.StarFamily.asPainterResource()
             ) {
-                openBlockList()
+                openSubscriptions()
             }
 
             SettingsActionItem(
@@ -155,13 +155,6 @@ fun SettingsScreenCore(
                 icon = CoreAppIcons.ShareLocation.asPainterResource()
             ) {
                 openLocationSettings()
-            }
-
-            SettingsActionItem(
-                name = stringResource(MR.strings.plans_management_screen_title),
-                icon = CoreAppIcons.StarFamily.asPainterResource()
-            ) {
-                openSubscriptions()
             }
 
             if (AppBuildConfig.instance.hasPreviewFeatures) {
