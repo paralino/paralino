@@ -117,7 +117,7 @@ class MapHomeViewModel constructor(
 
     private var groupSubscriptionJob: Job = SupervisorJob()
     private val locationRequestDuration = 20.seconds
-    private val locationRequestDelay = 1.minutes
+    private val locationRequestDelay = 25.seconds
 
     // Initialize managers
     private val mapStateManager = MapStateManager(messageDispatcher)
