@@ -1000,9 +1000,7 @@ sealed interface MainAlertDialog {
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(MR.strings.personalSpace_device_delete_dialogButton),
-                    color = AlertDialogButtonData.destructiveColor,
-                    needsLongConfirmation = true
+                    text = stringResource(MR.strings.personalSpace_device_delete_dialogButton)
                 ),
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
