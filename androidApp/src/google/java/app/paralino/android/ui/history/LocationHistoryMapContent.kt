@@ -199,7 +199,7 @@ fun rememberLocationHistoryMapController(
         satelliteMode = isSatelliteMode
     )
 
-    return remember(mapContentPadding) {
+    return remember(mapContentPadding, isSatelliteMode) {
         derivedStateOf {
             MapUiControlledData(
                 cameraPositionState = cameraPositionState,

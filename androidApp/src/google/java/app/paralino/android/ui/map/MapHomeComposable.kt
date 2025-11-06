@@ -107,7 +107,7 @@ fun rememberMainHomeMapController(
         satelliteMode = uiState.isSatelliteMode
     )
 
-    return remember(mapContentPadding) {
+    return remember(mapContentPadding, uiState.isSatelliteMode) {
         derivedStateOf {
             MapUiControlledData(
                 cameraPositionState = cameraPositionState,
