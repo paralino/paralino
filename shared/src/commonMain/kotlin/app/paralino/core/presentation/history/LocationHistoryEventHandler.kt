@@ -88,6 +88,11 @@ class LocationHistoryEventHandler(
         if (currentState.startDate == currentState.endDate) {
             // If clicking the same day, do nothing
             if (currentState.selectedDate == selectedDate) {
+                handleDaySelection(
+                    dateRangeDays = currentState.daySelectorState.dateRangeDays ?: 1,
+                    selectedDate = selectedDate,
+                    forceReload = true
+                )
                 return
             }
 
@@ -160,6 +165,15 @@ class LocationHistoryEventHandler(
                     }
                 }
 
+                selectedDate == endDate -> {
+                    // tapping same selected date, force reload
+                    handleDaySelection(
+                        dateRangeDays = currentState.daySelectorState.dateRangeDays ?: 1,
+                        selectedDate = selectedDate,
+                        forceReload = true
+                    )
+                }
+
                 else -> {
                     // Click within current range, collapse to single day
                     handleDaySelection(
@@ -173,7 +187,8 @@ class LocationHistoryEventHandler(
 
     fun handleDaySelection(
         dateRangeDays: Int,
-        selectedDate: LocalDate
+        selectedDate: LocalDate,
+        forceReload: Boolean = false
     ) {
         if (_uiState.value.isLoadingLocations) {
             return
@@ -237,7 +252,8 @@ class LocationHistoryEventHandler(
         historySubscriptionJob?.cancel()
         historySubscriptionJob = dataFetchController.reload(
             startDate = _uiState.value.startDate,
-            endDate = _uiState.value.endDate
+            endDate = _uiState.value.endDate,
+            forceReload = forceReload
         )
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)

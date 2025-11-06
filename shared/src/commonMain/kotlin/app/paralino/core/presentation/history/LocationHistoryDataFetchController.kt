@@ -34,6 +34,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class LocationHistoryDataFetchController(
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
@@ -88,7 +89,8 @@ class LocationHistoryDataFetchController(
             emitAll(
                 reload(
                     startDate = newState.startDate,
-                    endDate = newState.endDate
+                    endDate = newState.endDate,
+                    forceReload = false
                 )
             )
         }
@@ -96,7 +98,8 @@ class LocationHistoryDataFetchController(
 
     fun reload(
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        forceReload: Boolean
     ): Flow<Unit> {
         val groupId = _uiState.value.groupOrSpaceId
         val memberUserId = _uiState.value.memberUserId
@@ -123,7 +126,7 @@ class LocationHistoryDataFetchController(
                     locationId = null,
                     startDate = startDate,
                     endDate = endDate,
-                    requestCacheDuration = 10.minutes
+                    requestCacheDuration = if (forceReload) 0.seconds else 10.minutes
                 )
             } catch (e: Exception) {
                 logg.e(message = "Error refreshing location history: ${e.message}", t = e)
