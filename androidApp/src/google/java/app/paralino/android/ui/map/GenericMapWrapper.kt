@@ -83,7 +83,10 @@ fun GenericMapWrapper(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = { mapOverlayShown = false }
+                    onClick = {
+                        onMapLoaded()
+                        mapOverlayShown = false
+                    }
                 ),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
