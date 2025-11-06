@@ -50,7 +50,7 @@ fun rememberMainHomeMapController(
     val scope = rememberCoroutineScope()
     var canAnimateMapFocus by remember { mutableStateOf(false) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
-    val areEffectsEnabled = remember(stateData?.locationHistoryMode) { stateData?.locationHistoryMode == null }
+    val areEffectsEnabled = remember(stateData?.mapHomeScreenFocusType) { stateData?.locationHistoryMode == null }
 
     if (isMapLoaded && areEffectsEnabled) {
         LaunchedEffect(Unit) {

@@ -56,15 +56,14 @@ internal fun HomeScreenMapWithElements(
         val mapContentPadding by remember(
             screenAreaPadding,
             bottomPadding,
-            readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused,
-            historyUiState != null,
+            readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused,
             bottomOffset,
             cardHeight
         ) {
             derivedStateOf {
                 PaddingValues(
                     top = screenAreaPadding.calculateTopPadding() + 64.dp,
-                    bottom = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true || historyUiState != null) {
+                    bottom = if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
                         (cardHeight + bottomPadding).coerceIn(
                             minimumValue = bottomPadding,
                             maximumValue = this.maxHeight

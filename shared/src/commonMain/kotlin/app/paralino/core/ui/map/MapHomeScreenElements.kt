@@ -341,8 +341,8 @@ private fun MapHomeElementSharingRow(
         )
         .plus(16.dp)
 
-    val isMemberOrPlaceFocused =
-        readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true || readyState?.locationHistoryMode != null
+    val isMemberPlaceOrHistoryFocused =
+        readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true
 
     Row(
         modifier = Modifier
@@ -351,7 +351,7 @@ private fun MapHomeElementSharingRow(
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (!isMemberOrPlaceFocused && readyState?.isPersonalSpace == true) {
+        if (!isMemberPlaceOrHistoryFocused && readyState?.isPersonalSpace == true) {
             GroupMemberActionButton(
                 modifier = Modifier
                     .padding(bottom = 6.dp)
@@ -376,7 +376,7 @@ private fun MapHomeElementSharingRow(
         }
 
         // sharing time info
-        if (readyState?.selectedSharingContract != null && !isMemberOrPlaceFocused) {
+        if (readyState?.selectedSharingContract != null && !isMemberPlaceOrHistoryFocused) {
             GroupMemberActionButton(
                 modifier = Modifier
                     .padding(bottom = 6.dp)
@@ -399,7 +399,7 @@ private fun MapHomeElementSharingRow(
         }
 
         // sharing start
-        if (readyState != null && readyState.selectedSharingContract == null && !isMemberOrPlaceFocused) {
+        if (readyState != null && readyState.selectedSharingContract == null && !isMemberPlaceOrHistoryFocused) {
             GroupMemberActionButton(
                 modifier = Modifier
                     .padding(bottom = 6.dp),

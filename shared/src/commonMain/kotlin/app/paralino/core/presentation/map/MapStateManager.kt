@@ -61,7 +61,7 @@ class MapStateManager(
         updateState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
     ) {
         updateState { currentState ->
-            if (currentState.mapHomeScreenFocusType.isMemberOrPlaceFocused) {
+            if (currentState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
                 // de-init focused marker so it is not tracked
                 // and reset zoom enforcing for member focus
                 currentState.copy(

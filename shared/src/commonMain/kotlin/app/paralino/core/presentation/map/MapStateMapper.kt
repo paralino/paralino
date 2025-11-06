@@ -180,8 +180,7 @@ class MapStateMapper(
             verified = isVerified,
             alertDialog = alertDialog,
             isSatelliteMode = isSatelliteMode,
-            groupPlanConfig = planConfig,
-            locationHistoryMode = previousState?.locationHistoryMode
+            groupPlanConfig = planConfig
         )
     }
 

@@ -213,7 +213,7 @@ class MapHomeViewModel constructor(
         uiState.mapNotNull {
             it.asReady()
         }
-            .map { it.locationHistoryMode }
+            .map { it.mapHomeScreenFocusType.asLocationHistory }
             .distinctUntilChanged()
             .onEach { historyMode ->
                 locationHistoryController.value?.onCleared()
@@ -325,7 +325,7 @@ class MapHomeViewModel constructor(
             .distinctUntilChanged()
             .onEach {
                 locationFocusManager.initRealtime()
-                locationFocusManager.keepLocationFocusOn(focusType = it.mapFocusType)
+                locationFocusManager.keepLocationFocusOn(lifecycleData = it)
             }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)

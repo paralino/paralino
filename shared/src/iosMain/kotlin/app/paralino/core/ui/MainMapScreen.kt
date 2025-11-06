@@ -147,7 +147,7 @@ object MainMapScreen {
                     snapshotFlow { bottomOffset to cardHeight }
                         .distinctUntilChanged()
                         .collectLatest {
-                            val bottomOffset = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true || historyUiState != null) {
+                            val bottomOffset = if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
                                 (cardHeight + paddingValues.bottom.dp).coerceIn(
                                     minimumValue = paddingValues.bottom.dp,
                                     maximumValue = height

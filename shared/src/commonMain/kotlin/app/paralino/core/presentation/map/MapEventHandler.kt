@@ -62,9 +62,13 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OnBackClicked -> {
-                if (uiState.value.asReady()?.locationHistoryMode != null) {
+                if (uiState.value.asReady()?.mapHomeScreenFocusType?.asLocationHistory != null) {
                     updateReadyState {
-                        it.copy(locationHistoryMode = null)
+                        it.copy(
+                            mapHomeScreenFocusType = it.mapHomeScreenFocusType.asLocationHistory
+                                ?.member
+                                ?: MapHomeScreenFocusType.NONE
+                        )
                     }
                 } else {
                     mapStateManager.hideFocusedItem(updateReadyState)
@@ -189,7 +193,8 @@ class MapEventHandler(
             MapHomeScreenUiEvent.OpenPersonalLocationHistory -> {
                 updateReadyState {
                     it.copy(
-                        locationHistoryMode = MapLocationHistoryModeGroupUserData(
+                        mapHomeScreenFocusType = MapHomeScreenFocusType.LOCATION_HISTORY(
+                            member = it.mapHomeScreenFocusType.asMember,
                             groupId = UserGroup.groupPersonalDevicesId,
                             memberUserId = appPrefs.userId,
                             deviceId = null
@@ -200,7 +205,11 @@ class MapEventHandler(
 
             MapHomeScreenUiEvent.CloseLocationHistory -> {
                 updateReadyState {
-                    it.copy(locationHistoryMode = null)
+                    it.copy(
+                        mapHomeScreenFocusType = it.mapHomeScreenFocusType.asLocationHistory
+                            ?.member
+                            ?: MapHomeScreenFocusType.NONE
+                    )
                 }
             }
         }
@@ -259,7 +268,8 @@ class MapEventHandler(
             is GroupMemberItemEvent.onOpenLocationHistory -> {
                 updateReadyState {
                     it.copy(
-                        locationHistoryMode = MapLocationHistoryModeGroupUserData(
+                        mapHomeScreenFocusType = MapHomeScreenFocusType.LOCATION_HISTORY(
+                            member = it.mapHomeScreenFocusType.asMember,
                             groupId = event.item.memberState.groupId,
                             memberUserId = event.item.memberState.userId,
                             deviceId = when (event.item) {

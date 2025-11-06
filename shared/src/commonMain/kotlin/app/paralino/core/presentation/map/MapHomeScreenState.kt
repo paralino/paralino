@@ -44,7 +44,6 @@ sealed class MapHomeScreenState {
         override val currentUserImage: ImageModel,
 
         val isFirstTimeInPersonalSpace: Boolean,
-        val locationHistoryMode: MapLocationHistoryModeGroupUserData?,
 
         val userCount: Int,
         val activeUserCount: Int,
@@ -96,11 +95,6 @@ sealed class MapHomeScreenState {
         val allMembersVerified: Boolean get() = allMembersOrDevices.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
 
-        val focusedTypeId: String = when (mapHomeScreenFocusType) {
-            is MapHomeScreenFocusType.PLACE -> mapHomeScreenFocusType.placeId
-            is MapHomeScreenFocusType.MEMBER -> mapHomeScreenFocusType.memberKeyId
-            else -> mapHomeScreenFocusType.toString()
-        }
         val focusedPlace: PlaceListItemData? =
             (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
                 places.firstOrNull { it.id == item.placeId }
@@ -111,13 +105,15 @@ sealed class MapHomeScreenState {
                 allMembersOrDevices.firstOrNull { it.keyId == item.memberKeyId }
             }
 
+        val locationHistoryMode: MapHomeScreenFocusType.LOCATION_HISTORY? = mapHomeScreenFocusType.asLocationHistory
+
         override val isSheetEnabled: Boolean = if (isPersonalSpace) {
             !isFirstTimeInPersonalSpace
         } else {
             true
         }
 
-        override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberOrPlaceFocused || locationHistoryMode != null) {
+        override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
             BottomSheetPosition.HIDDEN
         } else {
             if (isPersonalSpace && isFirstTimeInPersonalSpace) {
@@ -221,26 +217,24 @@ sealed interface MapHomeScreenFocusType {
         val forceZoom: Boolean
     ) : MapHomeScreenFocusType
 
+    data class LOCATION_HISTORY(
+        val member: MapHomeScreenFocusType.MEMBER?,
+        val groupId: String,
+        val memberUserId: String,
+        val deviceId: String?
+    ) : MapHomeScreenFocusType
+
     data object ALL_PLACES : MapHomeScreenFocusType
     data object ALL_MEMBERS : MapHomeScreenFocusType
 
     val areMembersFocused: Boolean get() = this == ALL_MEMBERS
     val arePlacesFocused: Boolean get() = this == ALL_PLACES
+    val asLocationHistory: LOCATION_HISTORY? get() = this as? LOCATION_HISTORY
+    val asMember: MEMBER? get() = this as? MEMBER
+    val isLocationHistoryFocused: Boolean get() = this is LOCATION_HISTORY
     val isMemberOrPlaceFocused: Boolean get() = this is MEMBER || this is PLACE
-
-    fun toggle(target: MapHomeScreenFocusType): MapHomeScreenFocusType {
-        return when (this) {
-            NONE -> target
-            else -> if (target != this) target else NONE
-        }
-    }
+    val isMemberPlaceOrHistoryFocused: Boolean get() = isMemberOrPlaceFocused || isLocationHistoryFocused
 }
-
-data class MapLocationHistoryModeGroupUserData(
-    val groupId: String,
-    val memberUserId: String,
-    val deviceId: String?
-)
 
 sealed interface MapScreenViewSourceType {
     val id: GroupOrSpaceId?

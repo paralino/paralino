@@ -58,7 +58,7 @@ class LocationFocusManager(
         }
     }
 
-    fun keepLocationFocusOn(focusType: MapHomeScreenFocusType) {
+    fun keepLocationFocusOn(lifecycleData: MapScreenLifecycleData) {
         activePingSubscriptionJob?.cancel()
         activeLocationBoostJob?.cancel()
 
@@ -71,6 +71,11 @@ class LocationFocusManager(
 
         if (!deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
             logg.v("location_performance", "App is in background, ignore active ping")
+            return
+        }
+
+        if (lifecycleData.mapFocusType.isLocationHistoryFocused) {
+            logg.v("location_performance", "Location history is focused, ignore active ping")
             return
         }
 
@@ -87,7 +92,7 @@ class LocationFocusManager(
 
         activePingSubscriptionJob = locationRequestUseCase.keepLocationFocus(
             groupId = groupId,
-            focusType = focusType
+            focusType = lifecycleData.mapFocusType
         )
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)

@@ -39,11 +39,10 @@ internal fun MapHomeScreenEventHandler(
     )
 
     BackHandler(
-        enabled = readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true ||
-                (sheetState.isFullyExpanded() && readyState != null) ||
-                readyState?.locationHistoryMode != null
+        enabled = readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true ||
+                (sheetState.isFullyExpanded() && readyState != null)
     ) {
-        if (readyState?.locationHistoryMode == null) {
+        if (readyState?.mapHomeScreenFocusType?.asLocationHistory == null) {
             appState.uiScope.launch {
                 sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
             }
