@@ -67,7 +67,7 @@ class SaveLocationUseCase(
 
         val payload = buildMap {
             putAll(locationPayload)
-            put("locationHistory", historyPayload)
+            put("locationHistory", historyPayload.first)
         }.filter { it.value != null }
 
         if (payload.isEmpty()) {
@@ -83,7 +83,7 @@ class SaveLocationUseCase(
 
         savePersonalLocationLocally(newData)
 
-        if ((historyPayload?.length ?: 0) >= 50_000) {
+        if ((historyPayload.first?.length ?: 0) >= 50_000 || historyPayload.second > 150) {
             locationHistoryUpload.syncPendingEntriesInBackground(cacheTime = 2.minutes)
         }
 
@@ -112,7 +112,7 @@ class SaveLocationUseCase(
 
         val payload = buildMap {
             putAll(locationPayload)
-            put("locationHistory", historyPayload)
+            put("locationHistory", historyPayload.first)
         }.filter { it.value != null }
 
         if (payload.isEmpty()) {
@@ -132,7 +132,7 @@ class SaveLocationUseCase(
 
         saveGroupLocationLocally(newData)
 
-        if ((historyPayload?.length ?: 0) >= 50_000) {
+        if ((historyPayload.first?.length ?: 0) >= 50_000 || historyPayload.second > 150) {
             locationHistoryUpload.syncPendingEntriesInBackground(cacheTime = 2.minutes)
         }
 
@@ -166,9 +166,9 @@ class SaveLocationUseCase(
     private suspend fun getLocationHistoryPayload(
         data: MemberGroupIdForUpload,
         key: String
-    ): String? {
+    ): Pair<String?, Int> {
 
-        val historyEntries = if (data.groupId.isPersonalSpace) {
+        val allPendingEntries = if (data.groupId.isPersonalSpace) {
             database.pendingLocationHistoryDao.getAllEntriesForGroupOnce(groupOrSpaceId = data.groupId.id)
         } else {
             val historyKey = database.groupLocalHistoryKeyDao.getActiveHistoryKey(groupId = data.groupId.id)
@@ -177,6 +177,8 @@ class SaveLocationUseCase(
                 .filter { it.localGroupHistoryKeyId == historyKey?.id }
         }
             .sortedByDescending { it.id }
+
+        val historyEntries = allPendingEntries
             .take(100)
             .let { historyMapper.pendingLocationToCore(it) }
 
@@ -192,7 +194,7 @@ class SaveLocationUseCase(
             ""
         }
 
-        return locationHistory
+        return locationHistory to allPendingEntries.size
     }
 
     suspend fun saveGroupLocationLocally(data: MemberLocationRaw) {
