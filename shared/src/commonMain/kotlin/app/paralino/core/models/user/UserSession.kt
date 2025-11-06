@@ -49,7 +49,10 @@ data class UserSession constructor(
 
     val deviceOrClientName: String = listOfNotNull(
         deviceWithBrandName,
-        clientName
+        clientName.let {
+            if (it == "Android Browser") "Android"
+            else it
+        }
     )
         .firstOrNull { it.isNotBlank() }
         ?: ""
