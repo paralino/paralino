@@ -200,6 +200,7 @@ sealed interface MapHomeScreenUiEvent {
     data object OnSettingsClick : MapHomeScreenUiEvent
     data object OnMapModeSwitch : MapHomeScreenUiEvent
     data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
+    data object OnBackClicked : MapHomeScreenUiEvent
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
 }

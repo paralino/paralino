@@ -61,6 +61,16 @@ class MapEventHandler(
                 mapStateManager.hideFocusedItem(updateReadyState)
             }
 
+            MapHomeScreenUiEvent.OnBackClicked -> {
+                if (uiState.value.asReady()?.locationHistoryMode != null) {
+                    updateReadyState {
+                        it.copy(locationHistoryMode = null)
+                    }
+                } else {
+                    mapStateManager.hideFocusedItem(updateReadyState)
+                }
+            }
+
             MapHomeScreenUiEvent.OnFocusOnMembersClick -> {
                 mapStateManager.setSelectedContentType(
                     updateReadyState,

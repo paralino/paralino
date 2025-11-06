@@ -40,12 +40,15 @@ internal fun MapHomeScreenEventHandler(
 
     BackHandler(
         enabled = readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused == true ||
-                (sheetState.isFullyExpanded() && readyState != null)
+                (sheetState.isFullyExpanded() && readyState != null) ||
+                readyState?.locationHistoryMode != null
     ) {
-        appState.uiScope.launch {
-            sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+        if (readyState?.locationHistoryMode == null) {
+            appState.uiScope.launch {
+                sheetState.animateTo(BottomSheetPosition.HALF_EXPANDED)
+            }
         }
-        vm.onEvent(MapHomeScreenUiEvent.OnCloseFocusedItemClick)
+        vm.onEvent(MapHomeScreenUiEvent.OnBackClicked)
     }
 
     LifecycleStartEffect(Unit) {
