@@ -42,7 +42,7 @@ data class MemberLocation constructor(
         return (adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS || isStatusOlderThan(1.minutes))
                 && adaptedStatus != MemberDeviceStatusType.ACTIVE
                 && adaptedStatus?.isDeviceSetupWrong != true
-                && ((isOlderThan(2.minutes) || !hasLocation) || ((isOlderThan(40.seconds) || !hasLocation) && adaptedStatus != MemberDeviceStatusType.BATTERY_SAVER_ON))
+                && ((isOlderThan(2.minutes) || !hasLocation) || ((isOlderThan(30.seconds) || !hasLocation) && adaptedStatus != MemberDeviceStatusType.BATTERY_SAVER_ON))
                 && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
     }
 
