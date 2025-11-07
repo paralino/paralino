@@ -12,6 +12,7 @@ import app.paralino.core.utils.exceptions.MissingCryptoKeyException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.exceptions.MissingUserKeyException
+import app.paralino.core.utils.exceptions.PermissionDeniedException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import app.paralino.core.utils.exceptions.UnverifiedUserException
 
@@ -64,6 +65,10 @@ fun Throwable?.errorString(): String {
         }
         is EncryptionException -> MR.strings.error_crypto_encryption_generic.localizedString()
         is DecryptionException -> MR.strings.error_crypto_decryption_generic.localizedString()
+        is PermissionDeniedException -> {
+            if (error.type == "plan_limit_reached") MR.strings.plan_limit_generic_message.localizedString()
+            else MR.strings.error_permissionDenied_remote.localizedString()
+        }
         else -> MR.strings.error_generic_snacbar.localizedString()
     }
 }

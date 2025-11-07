@@ -35,6 +35,7 @@
     <string name="error_load_data_generic">Unable to complete the request.</string>
     <string name="error_no_connection_snackbar">Unable to connect\n**Check your internet connection.**</string>
     <string name="error_server_unavailable">Unable to connect at the moment, please try again shortly.</string>
+    <string name="error_permissionDenied_remote">Request not allowed!</string>
     <string name="error_something_wrong">Something went wrong!</string>
     <string name="error_something_wrong_http">Something went wrong! [%d]</string>
     <string name="error_generic_snacbar">Ups, please try again.</string>
@@ -723,7 +724,6 @@
     <string name="raw_data_section_decrypted">Decrypted data on device</string>
     <string name="raw_data_section_history_info">Multiple similar location points could be bundled together before the encryption takes place. That is why you see a full encrypted block here. Only after location history block is decrypted, your selected point can be filtered.</string>
     <string name="raw_data_section_history_selectedPoints_title">Selected history points: %d</string>
-    <string name="plan_limit_alert_title">BETA version</string>
     <string name="plan_limit_serviceMax_alert_message">You reached the maximum number of %1$s (**%2$d**).</string>
     <string name="plan_limit_info_alert_message">You reached the maximum number of %1$s (**%2$d**). To add more, please upgrade your plan.</string>
     <string name="plan_limit_alert_title">Plan limit</string>
@@ -739,6 +739,7 @@
     <string name="plan_limit_overLimit_places_banner_title">**Place alerts are disabled!**\nAllowed number of places is exceeded.</string>
     <string name="plan_limit_overLimit_sharing_banner_title">**Location sharing is limited!**\nThis group has exceeded its resources.</string>
     <string name="plan_limit_overLimit_tracking_banner_title">**Location tracking is limited!**\nYou exceeded your plan resources.</string>
+    <string name="plan_limit_generic_message">Plan limit reached!</string>
     <string name="app_version_alert_title">New app update</string>
     <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>
     <string name="app_version_alert_title_mandatory">Please update</string>
