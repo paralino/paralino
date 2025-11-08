@@ -817,4 +817,12 @@
         • Create places that matter only to you\n\n
         Your space, your rules.
     </string>
+    <string name="history_stats_distance">Distance</string>
+    <string name="history_stats_entries">Entries</string>
+    <string name="history_stats_max_speed">Max Speed</string>
+    <string name="history_stats_networks">Networks</string>
+    <string name="history_stats_avg_battery">Avg. Battery</string>
+    <string name="history_stats_battery_range">Battery Range</string>
+    <string name="history_stats_elevation_gain">Elevation Gain</string>
+    <string name="history_stats_elevation_range">Elevation Range</string>
 </resources>

@@ -20,7 +20,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.paralino.core.MR
 import app.paralino.core.presentation.history.LocationHistoryStats
+import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.CoreAppIcons
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -37,38 +39,47 @@ fun LocationHistoryStatsTable(
 ) {
     val statsList = remember(stats) {
         listOf(
-            StatInfo("Distance", stats?.formattedDistance ?: "-", CoreAppIcons.PolylineWithDots),
             StatInfo(
-                "Entries",
-                stats?.locationEntriesCount?.toString() ?: "-",
-                CoreAppIcons.LocationOn
-            ),
-            StatInfo("Max Speed", stats?.formattedMaxSpeed ?: "-", CoreAppIcons.Speed),
-            StatInfo(
-                "Networks",
-                stats?.networks?.joinToString(", ")?.ifEmpty { "-" } ?: "-",
-                CoreAppIcons.SignalCell3
+                label = MR.strings.history_stats_distance.localizedString(),
+                value = stats?.formattedDistance ?: "-",
+                icon = CoreAppIcons.PolylineWithDots
             ),
             StatInfo(
-                "Avg. Battery",
-                stats?.averageBattery?.let { "$it%" } ?: "-",
-                CoreAppIcons.BatteryFull),
+                label = MR.strings.history_stats_entries.localizedString(),
+                value = stats?.locationEntriesCount?.toString() ?: "-",
+                icon = CoreAppIcons.LocationOn
+            ),
             StatInfo(
-                "Battery Range", stats?.batteryRange?.let {
+                label = MR.strings.history_stats_max_speed.localizedString(),
+                value = stats?.formattedMaxSpeed ?: "-",
+                icon = CoreAppIcons.Speed
+            ),
+            StatInfo(
+                label = MR.strings.history_stats_networks.localizedString(),
+                value = stats?.networks?.joinToString(", ")?.ifEmpty { "-" } ?: "-",
+                icon = CoreAppIcons.SignalCell3
+            ),
+            StatInfo(
+                label = MR.strings.history_stats_avg_battery.localizedString(),
+                value = stats?.averageBattery?.let { "$it%" } ?: "-",
+                icon = CoreAppIcons.BatteryFull),
+            StatInfo(
+                label = MR.strings.history_stats_battery_range.localizedString(),
+                value = stats?.batteryRange?.let {
                     "${stats.batteryRange.first}% - ${stats.batteryRange.second}%"
                 } ?: "-",
-                CoreAppIcons.BatteryChargingFull
+                icon = CoreAppIcons.BatteryChargingFull
             ),
             StatInfo(
-                "Elevation Gain",
-                stats?.formattedElevationGain ?: "-",
-                CoreAppIcons.Elevation
+                label = MR.strings.history_stats_elevation_gain.localizedString(),
+                value = stats?.formattedElevationGain ?: "-",
+                icon = CoreAppIcons.Elevation
             ),
             StatInfo(
-                "Elevation Range",
-                stats?.formattedElevationRange ?: "-",
-                CoreAppIcons.Elevation
-            ),
+                label = MR.strings.history_stats_elevation_range.localizedString(),
+                value = stats?.formattedElevationRange ?: "-",
+                icon = CoreAppIcons.Elevation
+            )
         )
     }
 
