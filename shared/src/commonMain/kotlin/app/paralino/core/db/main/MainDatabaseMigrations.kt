@@ -82,27 +82,23 @@ object MainDatabaseMigrations {
 
     private val MIGRATION_12_13 = object : Migration(12, 13) {
         override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `saveToHistory` INTEGER NOT NULL DEFAULT 0")
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `endTimeUTCOverride` TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `isEnabled` INTEGER NOT NULL DEFAULT 1")
             connection.execSQL("ALTER TABLE groupDeviceIntegrityEntity ADD COLUMN safetySignature TEXT DEFAULT NULL")
             connection.execSQL("ALTER TABLE memberLocationEntity ADD COLUMN locationHistory TEXT DEFAULT NULL")
-            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `saveToHistory` INTEGER NOT NULL DEFAULT 0")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `pendingLocationHistoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyId` INTEGER NOT NULL)")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `localLocationHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `pendingLocationHistoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `groupHistoryKeyId` INTEGER)")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `unconfirmedLocationHistoryEntity` (`pendingUploadId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`pendingUploadId`))")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryKeysEntity` (`id` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, PRIMARY KEY(`id`))")
             connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryKeysEntity` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, PRIMARY KEY(`id`))")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyKeyVersion` TEXT NOT NULL, `historyData` TEXT NOT NULL, PRIMARY KEY(`id`))")
-        }
-    }
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `historyKeyVersion` TEXT NOT NULL, `historyData` TEXT NOT NULL, PRIMARY KEY(`id`))")
 
-    private val MIGRATION_13_14 = object : Migration(13, 14) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `isEnabled` INTEGER NOT NULL DEFAULT 1")
-        }
-    }
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isActive` INTEGER NOT NULL)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `unsyncedGroupHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `memberUserId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `memberVerification` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSyncedOnce` INTEGER NOT NULL)")
+            connection.execSQL("ALTER TABLE personalGroupKeyEntity ADD COLUMN `isArchived` INTEGER NOT NULL DEFAULT 0")
 
-    private val MIGRATION_14_15 = object : Migration(14, 15) {
-        override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("""
                 CREATE TABLE IF NOT EXISTS `userDeviceEntity` (
                     `id` TEXT NOT NULL,
@@ -112,8 +108,10 @@ object MainDatabaseMigrations {
                     `ownerUserId` TEXT NOT NULL,
                     `deviceId` TEXT NOT NULL,
                     `locationPushToken` TEXT,
+                    `batteryAlertSettings` TEXT DEFAULT NULL,
                     `encryptedSenderKey` TEXT,
                     `userKeyVersion` INTEGER,
+                    `locationId` TEXT DEFAULT NULL,
                     `deviceData` TEXT,
                     `locationData` TEXT,
                     `status` TEXT,
@@ -121,98 +119,12 @@ object MainDatabaseMigrations {
                     PRIMARY KEY(`id`)
                 )
             """.trimIndent())
-        }
-    }
 
-    private val MIGRATION_15_16 = object : Migration(15, 16) {
-        override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE placeEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
-        }
-    }
-
-    private val MIGRATION_16_17 = object : Migration(16, 17) {
-        override fun migrate(connection: SQLiteConnection) {
             connection.execSQL("ALTER TABLE placeEntity ADD COLUMN `userKeyVersion` INTEGER DEFAULT NULL")
-        }
-    }
-
-    private val MIGRATION_17_18 = object : Migration(17, 18) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN `locationId` TEXT DEFAULT NULL")
-        }
-    }
-
-    private val MIGRATION_18_19 = object : Migration(18, 19) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("DROP TABLE pendingLocationHistoryEntity")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `pendingLocationHistoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `groupHistoryKeyId` INTEGER)")
-        }
-    }
-
-    private val MIGRATION_19_20 = object : Migration(19, 20) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE placeActivityEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
-        }
-    }
-
-    private val MIGRATION_20_21 = object : Migration(20, 21) {
-        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE placeSettingsEntity ADD COLUMN `deviceId` TEXT DEFAULT NULL")
             connection.execSQL("ALTER TABLE placeSettingsEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
-        }
-    }
-
-    private val MIGRATION_21_22 = object : Migration(21, 22) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN batteryAlertSettings TEXT DEFAULT NULL")
-        }
-    }
-
-    private val MIGRATION_22_23 = object : Migration(22, 23) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE placeSettingsEntity ADD COLUMN deviceId TEXT DEFAULT NULL")
-        }
-    }
-
-    private val MIGRATION_23_24 = object : Migration(23, 24) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE pendingLocationHistoryEntity ADD COLUMN `dateIdentifier` TEXT NOT NULL DEFAULT ''")
-        }
-    }
-
-    private val MIGRATION_24_25 = object : Migration(24, 25) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("DROP TABLE localLocationHistoryKeyEntity")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
-        }
-    }
-
-    private val MIGRATION_25_26 = object : Migration(25, 26) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("DROP TABLE groupLocalHistoryKeyEntity")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `unsyncedGroupHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `memberUserId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `memberVerification` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSyncedOnce` INTEGER NOT NULL)")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isActive` INTEGER NOT NULL)")
-        }
-    }
-
-    private val MIGRATION_26_27 = object : Migration(26, 27) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE personalGroupKeyEntity ADD COLUMN `isArchived` INTEGER NOT NULL DEFAULT 0")
-        }
-    }
-
-    private val MIGRATION_27_28 = object : Migration(27, 28) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `endTimeUTCOverride` TEXT DEFAULT NULL")
-        }
-    }
-
-    private val MIGRATION_28_29 = object : Migration(28, 29) {
-        override fun migrate(connection: SQLiteConnection) {
-            connection.execSQL("DROP TABLE personalHistoryEntity")
-            connection.execSQL("DROP TABLE groupHistoryEntity")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
-            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `historyKeyVersion` TEXT NOT NULL, `historyData` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("ALTER TABLE placeActivityEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
         }
     }
 
@@ -229,22 +141,6 @@ object MainDatabaseMigrations {
         MIGRATION_9_10,
         MIGRATION_10_11,
         MIGRATION_11_12,
-        MIGRATION_12_13,
-        MIGRATION_13_14,
-        MIGRATION_14_15,
-        MIGRATION_15_16,
-        MIGRATION_16_17,
-        MIGRATION_17_18,
-        MIGRATION_18_19,
-        MIGRATION_19_20,
-        MIGRATION_20_21,
-        MIGRATION_21_22,
-        MIGRATION_22_23,
-        MIGRATION_23_24,
-        MIGRATION_24_25,
-        MIGRATION_25_26,
-        MIGRATION_26_27,
-        MIGRATION_27_28,
-        MIGRATION_28_29,
+        MIGRATION_12_13
     )
 }
