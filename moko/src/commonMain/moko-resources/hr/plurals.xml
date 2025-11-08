@@ -45,4 +45,14 @@
         <item quantity="few">**%d mjesta** s neograničenim obavijestima</item>
         <item quantity="other">**%d mjesta** s neograničenim obavijestima</item>
     </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d grupa</item>
+        <item quantity="few">%d grupe</item>
+        <item quantity="other">%d grupa</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d mjesto s neograničenim obavijestima</item>
+        <item quantity="few">%d mjesta s neograničenim obavijestima</item>
+        <item quantity="other">%d mjesta s neograničenim obavijestima</item>
+    </plurals>
 </resources>

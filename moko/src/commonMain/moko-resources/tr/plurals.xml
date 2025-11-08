@@ -1,4 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d dakika</item>
+        <item quantity="other">%d dakika</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d saat</item>
+        <item quantity="other">%d saat</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d gün</item>
+        <item quantity="other">%d gün</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d ay</item>
+        <item quantity="other">%d ay</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d yıl</item>
+        <item quantity="other">%d yıl</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Konum 1 gruba paylaşılıyor</item>
+        <item quantity="other">Konum %d gruba paylaşılıyor</item>
+    </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d grup</item>
+        <item quantity="other">%d grup</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">%d üye</item>
+        <item quantity="other">%d üye</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d sınırsız uyarılı yer</item>
+        <item quantity="other">%d sınırsız uyarılı yer</item>
+    </plurals>
 </resources>
-

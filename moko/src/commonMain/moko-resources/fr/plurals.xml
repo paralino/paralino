@@ -45,4 +45,14 @@
         <item quantity="many">**%d lieux** avec alertes illimitées</item>
         <item quantity="other">**%d lieux** avec alertes illimitées</item>
     </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d groupe</item>
+        <item quantity="many">%d groupes</item>
+        <item quantity="other">%d groupes</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d lieu avec alertes illimitées</item>
+        <item quantity="many">%d lieux avec alertes illimitées</item>
+        <item quantity="other">%d lieux avec alertes illimitées</item>
+    </plurals>
 </resources>

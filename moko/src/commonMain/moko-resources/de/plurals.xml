@@ -36,5 +36,13 @@
         <item quantity="one">**%d Ort** mit unbegrenzten Benachrichtigungen</item>
         <item quantity="other">**%d Orte** mit unbegrenzten Benachrichtigungen</item>
     </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d Gruppe</item>
+        <item quantity="other">%d Gruppen</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d Ort mit unbegrenzten Benachrichtigungen</item>
+        <item quantity="other">%d Orte mit unbegrenzten Benachrichtigungen</item>
+    </plurals>
 
 </resources>

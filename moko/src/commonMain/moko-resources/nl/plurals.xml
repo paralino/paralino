@@ -36,4 +36,12 @@
         <item quantity="one">%d jaar</item>
         <item quantity="other">%d jaren</item>
     </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d groep</item>
+        <item quantity="other">%d groepen</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d plaats met onbeperkte meldingen</item>
+        <item quantity="other">%d plaatsen met onbeperkte meldingen</item>
+    </plurals>
 </resources>
