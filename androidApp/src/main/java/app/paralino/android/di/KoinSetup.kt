@@ -6,6 +6,8 @@ import app.paralino.android.app_rating.AppRatingPresenter
 import app.paralino.android.app_update.AppUpdateManager
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
+import app.paralino.android.domain.ExportPersonalLocationHistoryUseCase
+import app.paralino.android.domain.ImportPersonalLocationHistoryUseCase
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
@@ -111,6 +113,8 @@ import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlacesActivityProcessor
+import app.paralino.core.repo.user.IExportPersonalLocationHistoryUseCase
+import app.paralino.core.repo.user.IImportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
@@ -156,6 +160,9 @@ object KoinSetup {
 
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
         single { AppRatingPresenter(androidApplication(), get()) } bind IAppRatingPresenter::class
+
+        single { ExportPersonalLocationHistoryUseCase(androidApplication() as AppClass, get(), get(), get()) } bind IExportPersonalLocationHistoryUseCase::class
+        single { ImportPersonalLocationHistoryUseCase(androidApplication() as AppClass, get(), get(), get(), get()) } bind IImportPersonalLocationHistoryUseCase::class
     }
 
     private val appSpecificModule = module {
