@@ -17,8 +17,8 @@
         <item quantity="other">%d uren</item>
     </plurals>
     <plurals name="plan_benefit_members">
-        <item quantity="one">**%d lid**</item>
-        <item quantity="other">**%d leden**</item>
+        <item quantity="one">%d lid</item>
+        <item quantity="other">%d leden</item>
     </plurals>
     <plurals name="plan_benefit_group">
         <item quantity="one">**%d groep**</item>

@@ -36,9 +36,9 @@
         <item quantity="other">**%d grupa**</item>
     </plurals>
     <plurals name="plan_benefit_members">
-        <item quantity="one">**%d član**</item>
-        <item quantity="few">**%d člana**</item>
-        <item quantity="other">**%d članova**</item>
+        <item quantity="one">%d član</item>
+        <item quantity="few">%d člana</item>
+        <item quantity="other">%d članova</item>
     </plurals>
     <plurals name="plan_benefit_places">
         <item quantity="one">**%d mjesto** s neograničenim obavijestima</item>

@@ -36,9 +36,9 @@
         <item quantity="other">**%d grupos**</item>
     </plurals>
     <plurals name="plan_benefit_members">
-        <item quantity="one">**%d membro**</item>
-        <item quantity="many">**%d membros**</item>
-        <item quantity="other">**%d membros**</item>
+        <item quantity="one">%d membro</item>
+        <item quantity="many">%d membros</item>
+        <item quantity="other">%d membros</item>
     </plurals>
     <plurals name="plan_benefit_places">
         <item quantity="one">**%d local** com alertas ilimitados</item>
