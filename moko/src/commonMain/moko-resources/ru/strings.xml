@@ -811,4 +811,12 @@
     <string name="group_create_suggestion_bestGroup">Лучшая группа на свете</string>
     <string name="group_create_suggestion_coffee">Любители кофе</string>
     <string name="group_settings_verification_description_off">Члены группы могут добавляться другими пользователями, и дополнительная проверка со стороны владельца группы не требуется.</string>
+    <string name="history_stats_distance">Расстояние</string>
+    <string name="history_stats_entries">Записи</string>
+    <string name="history_stats_max_speed">Максимальная скорость</string>
+    <string name="history_stats_networks">Сети</string>
+    <string name="history_stats_avg_battery">Средняя батарея</string>
+    <string name="history_stats_battery_range">Запас батареи</string>
+    <string name="history_stats_elevation_gain">Набор высоты</string>
+    <string name="history_stats_elevation_range">Диапазон высоты</string>
 </resources>

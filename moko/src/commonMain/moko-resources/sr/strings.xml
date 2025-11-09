@@ -811,4 +811,12 @@
     <string name="history_delete_devices_noSelectionError">Молимо вас да изаберете најмање један уређај</string>
     <string name="history_delete_section_period_title">Период</string>
     <string name="history_delete_from_period_title">Од</string>
+    <string name="history_stats_distance">Удаљеност</string>
+    <string name="history_stats_entries">Уноси</string>
+    <string name="history_stats_max_speed">Максимална брзина</string>
+    <string name="history_stats_networks">Мреже</string>
+    <string name="history_stats_avg_battery">Просечна батерија</string>
+    <string name="history_stats_battery_range">Опсег батерије</string>
+    <string name="history_stats_elevation_gain">Надморска висина</string>
+    <string name="history_stats_elevation_range">Опсег надморске висине</string>
 </resources>

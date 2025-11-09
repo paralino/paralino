@@ -811,4 +811,12 @@
     <string name="group_members_status_not_sharing">Ikke deling</string>
     <string name="group_members_status_offline">Enheten er offline</string>
     <string name="group_members_status_gps_off">GPS er av</string>
+    <string name="history_stats_distance">Avstand</string>
+    <string name="history_stats_entries">Inndata</string>
+    <string name="history_stats_max_speed">Maks. hastighet</string>
+    <string name="history_stats_networks">Nettverk</string>
+    <string name="history_stats_avg_battery">Gjennomsnittlig batteri</string>
+    <string name="history_stats_battery_range">Batteri rekkevidde</string>
+    <string name="history_stats_elevation_gain">Høydemeter</string>
+    <string name="history_stats_elevation_range">Høydeområde</string>
 </resources>

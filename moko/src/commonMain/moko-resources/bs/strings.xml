@@ -826,4 +826,12 @@
     <string name="personalSpace_tracking_status_infinite">**Uvijek uključeno** praćenje je aktivno</string>
     <string name="personalSpace_sheet_introBanner_title">Vaš lični prostor</string>
     <string name="personalSpace_sheet_introBanner_message">Ovo je privatna oblast samo za vas i vaše uređaje.  \n\n • Pregledajte svoju istoriju lokacije  \n • Upravljajte i pratite svoje uređaje  \n • Kreirajte mjesta koja su važna samo za vas  \n\n Vaš prostor, vaša pravila.</string>
+    <string name="history_stats_distance">Udaljenost</string>
+    <string name="history_stats_entries">Unosi</string>
+    <string name="history_stats_max_speed">Maks. brzina</string>
+    <string name="history_stats_networks">Mreže</string>
+    <string name="history_stats_avg_battery">Prosječna baterija</string>
+    <string name="history_stats_battery_range">Opseg baterije</string>
+    <string name="history_stats_elevation_gain">Uspon</string>
+    <string name="history_stats_elevation_range">Opseg visine</string>
 </resources>

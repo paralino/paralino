@@ -811,4 +811,12 @@
     <string name="login_info_password_reset_done">Ελέγξτε το email σας για οδηγίες επαναφοράς κωδικού πρόσβασης</string>
     <string name="group_member_no_location_info_message">Αυτή η συσκευή δεν έχει ακόμη τοποθεσία.</string>
     <string name="group_member_devices_section_title">Συσκευές</string>
+    <string name="history_stats_distance">Απόσταση</string>
+    <string name="history_stats_entries">Εγγραφές</string>
+    <string name="history_stats_max_speed">Μέγιστη Ταχύτητα</string>
+    <string name="history_stats_networks">Δίκτυα</string>
+    <string name="history_stats_avg_battery">Μέση Μπαταρία</string>
+    <string name="history_stats_battery_range">Εύρος Μπαταρίας</string>
+    <string name="history_stats_elevation_gain">Κέρδος Υψομέτρου</string>
+    <string name="history_stats_elevation_range">Εύρος Υψομέτρου</string>
 </resources>

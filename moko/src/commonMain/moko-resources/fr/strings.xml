@@ -826,4 +826,12 @@
     <string name="error_permissionDenied_remote">Demande non autorisée !</string>
     <string name="setting_location_history_level_1">Moyen</string>
     <string name="paywall_feature_summary_devices">Appareils</string>
+    <string name="history_stats_distance">Distance</string>
+    <string name="history_stats_entries">Entrées</string>
+    <string name="history_stats_max_speed">Vitesse max</string>
+    <string name="history_stats_networks">Réseaux</string>
+    <string name="history_stats_avg_battery">Autonomie moyenne</string>
+    <string name="history_stats_battery_range">Plage de batterie</string>
+    <string name="history_stats_elevation_gain">Dénivelé</string>
+    <string name="history_stats_elevation_range">Plage d\'élévation</string>
 </resources>

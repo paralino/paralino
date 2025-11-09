@@ -811,4 +811,12 @@
     <string name="personalSpace_tracking_status_infinite">**Her zaman açık** izleme aktiftir</string>
     <string name="personalSpace_sheet_introBanner_title">Kişisel alanınız</string>
     <string name="personalSpace_sheet_introBanner_message">Bu, yalnızca sizin ve cihazlarınız için özel bir alandır.\n\n • Kendi konum geçmişinizi görüntüleyin\n • Kendi cihazlarınızı yönetin ve takip edin\n • Sadece sizin için önemli yerler oluşturun\n\n Alanınız, kurallarınız.</string>
+    <string name="history_stats_distance">Mesafe</string>
+    <string name="history_stats_entries">Girişler</string>
+    <string name="history_stats_max_speed">Maks. Hız</string>
+    <string name="history_stats_networks">Ağlar</string>
+    <string name="history_stats_avg_battery">Ortalama Batarya</string>
+    <string name="history_stats_battery_range">Batarya Menzili</string>
+    <string name="history_stats_elevation_gain">Yükseklik Kazancı</string>
+    <string name="history_stats_elevation_range">Yükseklik Menzili</string>
 </resources>

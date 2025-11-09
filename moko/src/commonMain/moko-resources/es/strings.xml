@@ -826,4 +826,12 @@
     <string name="personalSpace_tracking_status_infinite">El seguimiento **siempre activo** está habilitado</string>
     <string name="personalSpace_sheet_introBanner_title">Su espacio personal</string>
     <string name="personalSpace_sheet_introBanner_message">Esta es un área privada solo para usted y sus dispositivos.  \n\n • Vea su propio historial de ubicaciones  \n • Administre y haga un seguimiento de sus propios dispositivos  \n • Cree lugares que solo importen a usted  \n\n Su espacio, sus reglas.</string>
+    <string name="history_stats_distance">Distancia</string>
+    <string name="history_stats_entries">Entradas</string>
+    <string name="history_stats_max_speed">Velocidad Máxima</string>
+    <string name="history_stats_networks">Redes</string>
+    <string name="history_stats_avg_battery">Prom. Batería</string>
+    <string name="history_stats_battery_range">Rango de Batería</string>
+    <string name="history_stats_elevation_gain">Ganancia de Elevación</string>
+    <string name="history_stats_elevation_range">Rango de Elevación</string>
 </resources>

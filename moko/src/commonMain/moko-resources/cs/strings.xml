@@ -811,4 +811,12 @@
     <string name="login_step_error_encryption_signUp">Chyba při nastavování šifrování</string>
     <string name="login_step_error_user_setup">Nelze připravit uživatelská data.</string>
     <string name="login_info_password_reset_done">Zkontrolujte svůj e-mail pro pokyny k obnovení hesla</string>
+    <string name="history_stats_distance">Vzdálenost</string>
+    <string name="history_stats_entries">Záznamy</string>
+    <string name="history_stats_max_speed">Maximální rychlost</string>
+    <string name="history_stats_networks">Sítě</string>
+    <string name="history_stats_avg_battery">Průměrná baterie</string>
+    <string name="history_stats_battery_range">Dosah baterie</string>
+    <string name="history_stats_elevation_gain">Získání nadmořské výšky</string>
+    <string name="history_stats_elevation_range">Rozsah nadmořské výšky</string>
 </resources>

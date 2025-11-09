@@ -811,4 +811,12 @@
     <string name="group_members_last_active_status_recently_2">2 perce</string>
     <string name="group_members_last_status_update">**Utolsó frissítés:**</string>
     <string name="group_members_status_inactive">Inaktív</string>
+    <string name="history_stats_distance">Távolság</string>
+    <string name="history_stats_entries">Bejegyzések</string>
+    <string name="history_stats_max_speed">Max. Sebesség</string>
+    <string name="history_stats_networks">Hálózatok</string>
+    <string name="history_stats_avg_battery">Átlagos Akkumulátor</string>
+    <string name="history_stats_battery_range">Akkumulátor Hatótávolság</string>
+    <string name="history_stats_elevation_gain">Emelkedés</string>
+    <string name="history_stats_elevation_range">Emelkedési Tartomány</string>
 </resources>

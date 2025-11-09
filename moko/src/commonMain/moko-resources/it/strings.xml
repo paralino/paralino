@@ -826,4 +826,12 @@
     <string name="personalSpace_settings_battery_notifications_info">Decidi se desideri ricevere notifiche su questo dispositivo se uno dei tuoi dispositivi ha un livello di batteria basso.</string>
     <string name="plan_limit_overLimit_personalSpace_banner_title">**Il tuo spazio ha superato i limiti del piano!**  \n\nIl tracciamento della posizione è limitato e potrebbe non funzionare correttamente.  \n\nSi prega di **rimuovere alcune risorse** o considerare di aggiornare il proprio piano per ripristinare la piena funzionalità.</string>
     <string name="plan_limit_overLimit_sharing_banner_title">**La condivisione della posizione è limitata!**  \nQuesto gruppo ha superato le sue risorse.</string>
+    <string name="history_stats_distance">Distanza</string>
+    <string name="history_stats_entries">Voce</string>
+    <string name="history_stats_max_speed">Velocità max</string>
+    <string name="history_stats_networks">Reti</string>
+    <string name="history_stats_avg_battery">Batteria media</string>
+    <string name="history_stats_battery_range">Autonomia della batteria</string>
+    <string name="history_stats_elevation_gain">Dislivello</string>
+    <string name="history_stats_elevation_range">Intervallo di elevazione</string>
 </resources>

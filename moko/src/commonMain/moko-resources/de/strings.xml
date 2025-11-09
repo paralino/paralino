@@ -826,4 +826,12 @@
     <string name="password_confirmation_caption">Bitte geben Sie Ihr aktuelles Passwort ein, um Ihre lokalen Verschlüsselungsschlüssel zu aktualisieren und die App weiterhin zu nutzen.</string>
     <string name="password_confirmation_button_confirm">Passwort bestätigen</string>
     <string name="raw_data_section_history_selectedPoints_title">Ausgewählte Verlaufspunkte: %d</string>
+    <string name="history_stats_distance">Entfernung</string>
+    <string name="history_stats_entries">Einträge</string>
+    <string name="history_stats_max_speed">Max. Geschwindigkeit</string>
+    <string name="history_stats_networks">Netzwerke</string>
+    <string name="history_stats_avg_battery">Durchschnittliche Batterie</string>
+    <string name="history_stats_battery_range">Batteriereichweite</string>
+    <string name="history_stats_elevation_gain">Höhengewinn</string>
+    <string name="history_stats_elevation_range">Höhenbereich</string>
 </resources>

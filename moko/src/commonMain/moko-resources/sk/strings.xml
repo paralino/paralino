@@ -811,4 +811,12 @@
     <string name="personalSpace_device_delete_dialogMessage">Ste si istý, že chcete vymazať toto zariadenie?</string>
     <string name="personalSpace_device_delete_confirm_dialogMessage">Odstránením tohto zariadenia sa tiež odstránia všetky zaznamenané histórie polohy!\n\nTento krok je nezvratný.</string>
     <string name="personalSpace_current_device">**Toto zariadenie**</string>
+    <string name="history_stats_distance">Vzdialenosť</string>
+    <string name="history_stats_entries">Záznamy</string>
+    <string name="history_stats_max_speed">Maximálna rýchlosť</string>
+    <string name="history_stats_networks">Siete</string>
+    <string name="history_stats_avg_battery">Priemerná batéria</string>
+    <string name="history_stats_battery_range">Dosah batérie</string>
+    <string name="history_stats_elevation_gain">Zisk nadmorskej výšky</string>
+    <string name="history_stats_elevation_range">Rozsah nadmorskej výšky</string>
 </resources>

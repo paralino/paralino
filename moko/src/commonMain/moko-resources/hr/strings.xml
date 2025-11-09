@@ -826,4 +826,12 @@
     <string name="onboarding_step_locationHistoryIntro_title_active">Omogući povijest lokacije</string>
     <string name="groups_sharing_setting_timeline_title">Vremenska linija</string>
     <string name="location_sharing_button_start_personal">Započni praćenje</string>
+    <string name="history_stats_distance">Udaljenost</string>
+    <string name="history_stats_entries">Unosi</string>
+    <string name="history_stats_max_speed">Maks. brzina</string>
+    <string name="history_stats_networks">Mreže</string>
+    <string name="history_stats_avg_battery">Pros. trajanje baterije</string>
+    <string name="history_stats_battery_range">Domet baterije</string>
+    <string name="history_stats_elevation_gain">Uspon</string>
+    <string name="history_stats_elevation_range">Raspon visine</string>
 </resources>

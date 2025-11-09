@@ -811,4 +811,12 @@
     <string name="form_invalid_name_description">Vaše ime ni veljavno.</string>
     <string name="form_generic_validation">Prosimo, izpolnite vse podatke.</string>
     <string name="form_rules_password_min_length">Minimalno %d znakov</string>
+    <string name="history_stats_distance">Razdalja</string>
+    <string name="history_stats_entries">Vnosi</string>
+    <string name="history_stats_max_speed">Maks. Hitrost</string>
+    <string name="history_stats_networks">Mreže</string>
+    <string name="history_stats_avg_battery">Povprečna Baterija</string>
+    <string name="history_stats_battery_range">Baterijski Doseg</string>
+    <string name="history_stats_elevation_gain">Višinska Razlika</string>
+    <string name="history_stats_elevation_range">Višinski Doseg</string>
 </resources>

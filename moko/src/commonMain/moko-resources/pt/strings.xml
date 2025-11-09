@@ -826,4 +826,12 @@
     <string name="button_later">Mais tarde</string>
     <string name="error_permissionDenied_remote">Solicitação não permitida!</string>
     <string name="place_sensitivity_allUsersToggle_alreadyActive">As configurações já estão ativadas.</string>
+    <string name="history_stats_distance">Distância</string>
+    <string name="history_stats_entries">Entradas</string>
+    <string name="history_stats_max_speed">Velocidade Máxima</string>
+    <string name="history_stats_networks">Redes</string>
+    <string name="history_stats_avg_battery">Média da Bateria</string>
+    <string name="history_stats_battery_range">Autonomia da Bateria</string>
+    <string name="history_stats_elevation_gain">Ganho de Elevação</string>
+    <string name="history_stats_elevation_range">Faixa de Elevação</string>
 </resources>

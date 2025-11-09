@@ -811,4 +811,12 @@
     <string name="group_members_last_active_status_recently_1">Acum 1 minut</string>
     <string name="group_members_last_active_status_recently_2">Acum 2 minute</string>
     <string name="group_members_last_status_update">**Ultima actualizare:**</string>
+    <string name="history_stats_distance">Distanță</string>
+    <string name="history_stats_entries">Intrări</string>
+    <string name="history_stats_max_speed">Viteză maximă</string>
+    <string name="history_stats_networks">Rețele</string>
+    <string name="history_stats_avg_battery">Durata medie a bateriei</string>
+    <string name="history_stats_battery_range">Autonomie baterie</string>
+    <string name="history_stats_elevation_gain">Crestere de altitudine</string>
+    <string name="history_stats_elevation_range">Interval de altitudine</string>
 </resources>

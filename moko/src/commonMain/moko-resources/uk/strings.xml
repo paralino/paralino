@@ -811,4 +811,12 @@
     <string name="form_rules_password_min_strength">Містить різні символи</string>
     <string name="form_rules_password_match">Паролі співпадають</string>
     <string name="info_email_confirm">Будь ласка, підтвердіть свою електронну адресу!</string>
+    <string name="history_stats_distance">Відстань</string>
+    <string name="history_stats_entries">Записи</string>
+    <string name="history_stats_max_speed">Максимальна швидкість</string>
+    <string name="history_stats_networks">Мережі</string>
+    <string name="history_stats_avg_battery">Середня батарея</string>
+    <string name="history_stats_battery_range">Діапазон батареї</string>
+    <string name="history_stats_elevation_gain">Набір висоти</string>
+    <string name="history_stats_elevation_range">Діапазон висоти</string>
 </resources>

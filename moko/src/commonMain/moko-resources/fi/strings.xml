@@ -811,4 +811,12 @@
     <string name="group_members_status_not_sharing">Ei jaeta</string>
     <string name="group_members_status_offline">Laite on offline-tilassa</string>
     <string name="group_members_status_gps_off">GPS on pois päältä</string>
+    <string name="history_stats_distance">Etäisyys</string>
+    <string name="history_stats_entries">Merkinnät</string>
+    <string name="history_stats_max_speed">Maksimi Nopeus</string>
+    <string name="history_stats_networks">Verkot</string>
+    <string name="history_stats_avg_battery">Kesk. Akun Kesto</string>
+    <string name="history_stats_battery_range">Akun Kantama</string>
+    <string name="history_stats_elevation_gain">Korkeusero</string>
+    <string name="history_stats_elevation_range">Korkeuden Vaihtelu</string>
 </resources>

@@ -811,4 +811,12 @@
     <string name="form_invalid_name_description">Twoje imię jest nieprawidłowe.</string>
     <string name="login_step_error_encryption_signUp">Błąd podczas konfigurowania szyfrowania</string>
     <string name="login_step_error_user_setup">Nie można przygotować danych użytkownika</string>
+    <string name="history_stats_distance">Odległość</string>
+    <string name="history_stats_entries">Zapisy</string>
+    <string name="history_stats_max_speed">Maks. prędkość</string>
+    <string name="history_stats_networks">Sieci</string>
+    <string name="history_stats_avg_battery">Śr. bateria</string>
+    <string name="history_stats_battery_range">Zasięg baterii</string>
+    <string name="history_stats_elevation_gain">Wzniesienie</string>
+    <string name="history_stats_elevation_range">Zakres wysokości</string>
 </resources>

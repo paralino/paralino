@@ -811,4 +811,12 @@
     <string name="groups_sharing_setting_network_share">Nätverksstatus</string>
     <string name="groups_sharing_setting_deviceStatus_title">Enhetens status</string>
     <string name="groups_sharing_setting_deviceStatus_description">Om aktiverat kommer din status att visa om din plats är avstängd, om du saknar platsbehörigheter eller om du slutar dela din plats. Om inaktiverat kommer din status att visa **%s** i dessa fall.</string>
+    <string name="history_stats_distance">Avstånd</string>
+    <string name="history_stats_entries">Inmatningar</string>
+    <string name="history_stats_max_speed">Maxhastighet</string>
+    <string name="history_stats_networks">Nätverk</string>
+    <string name="history_stats_avg_battery">Medelbatteri</string>
+    <string name="history_stats_battery_range">Batteriram</string>
+    <string name="history_stats_elevation_gain">Höjdförändring</string>
+    <string name="history_stats_elevation_range">Höjdintervall</string>
 </resources>

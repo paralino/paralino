@@ -826,4 +826,12 @@
     <string name="plan_limit_info_alert_message">U heeft het maximale aantal %1$s (**%2$d**) bereikt. Om meer toe te voegen, dient u uw abonnement te upgraden.</string>
     <string name="plan_limit_overLimit_personalSpace_banner_title">**Uw ruimte heeft de limieten van het abonnement overschreden!**  \n\nLocatie-tracking is beperkt en werkt mogelijk niet correct.  \n\nVerwijder alstublieft **enkele middelen** of overweeg uw abonnement te upgraden om de volledige functionaliteit te herstellen.</string>
     <string name="plan_limit_generic_message">Abonnementslimiet bereikt!</string>
+    <string name="history_stats_distance">Afstand</string>
+    <string name="history_stats_entries">Invoeren</string>
+    <string name="history_stats_max_speed">Maximale Snelheid</string>
+    <string name="history_stats_networks">Netwerken</string>
+    <string name="history_stats_avg_battery">Gem. Batterij</string>
+    <string name="history_stats_battery_range">Batterij Bereik</string>
+    <string name="history_stats_elevation_gain">HellingstoENAME</string>
+    <string name="history_stats_elevation_range">Helling Bereik</string>
 </resources>
