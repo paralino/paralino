@@ -431,7 +431,7 @@
     <string name="login_signup_selection_login_info">Sähköposti/salasana</string>
     <string name="login_signup_selection_guest_title">Vieras</string>
     <string name="login_signup_selection_guest_info">Paikallinen tili</string>
-    <string name="login_signup_terms_privacy_text">Luomalla tilin hyväksyt tietosuojakäytännön ja käyttöehdot.</string>
+    <string name="login_signup_terms_privacy_text">Luomalla tilin hyväksyt **tietosuojakäytännön** ja **käyttöehdot**.</string>
     <string name="login_signup_terms_privacy_privacy">tietosuojakäytäntö</string>
     <string name="login_signup_terms_privacy_terms">käyttöehdot</string>
     <string name="login_step_logIn">Kirjaudutaan sisään</string>

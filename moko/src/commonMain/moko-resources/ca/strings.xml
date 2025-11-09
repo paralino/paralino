@@ -412,7 +412,7 @@
     <string name="login_signup_selection_login_info">Correu electrònic/contrasenya</string>
     <string name="login_signup_selection_guest_title">Convidat</string>
     <string name="login_signup_selection_guest_info">Compte local</string>
-    <string name="login_signup_terms_privacy_text">En crear un compte, accepteu la política de privadesa i els termes d\'ús.</string>
+    <string name="login_signup_terms_privacy_text">En crear un compte, accepteu la **política de privacitat** i els **termes d\'ús**.</string>
     <string name="login_signup_terms_privacy_privacy">política de privadesa</string>
     <string name="login_signup_terms_privacy_terms">termes d\'ús</string>
     <string name="login_step_logIn">Iniciant sessió</string>

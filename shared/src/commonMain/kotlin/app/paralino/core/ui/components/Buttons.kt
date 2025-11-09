@@ -195,8 +195,8 @@ fun FullWidthActionButton(
             text = text,
             color = contentColor,
             fontWeight = FontWeight.Normal,
-            fontSize = 12.sp,
-            lineHeight = 14.sp,
+            fontSize = 14.sp,
+            lineHeight = 16.sp,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(horizontal = 8.dp)

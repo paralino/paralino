@@ -428,7 +428,7 @@
     <string name="login_signup_selection_login_info">Email/parolă</string>
     <string name="login_signup_selection_guest_title">Oaspete</string>
     <string name="login_signup_selection_guest_info">Cont local</string>
-    <string name="login_signup_terms_privacy_text">Prin crearea unui cont, ești de acord cu politica de confidențialitate și termenii de utilizare.</string>
+    <string name="login_signup_terms_privacy_text">Prin crearea unui cont, ești de acord cu **politica de confidențialitate** și cu **termenii de utilizare**.</string>
     <string name="login_signup_terms_privacy_privacy">politica de confidențialitate</string>
     <string name="login_signup_terms_privacy_terms">termenii de utilizare</string>
     <string name="login_step_logIn">Te conectăm</string>

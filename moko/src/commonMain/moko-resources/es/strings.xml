@@ -369,7 +369,7 @@
     <string name="login_signup_selection_login_info">Correo/contraseña</string>
     <string name="login_signup_selection_guest_title">Invitado</string>
     <string name="login_signup_selection_guest_info">Cuenta local</string>
-    <string name="login_signup_terms_privacy_text">Al crear una cuenta aceptas la política de privacidad y los términos de uso.</string>
+    <string name="login_signup_terms_privacy_text">Al crear una cuenta, aceptas la **política de privacidad** y los **términos de uso**.</string>
     <string name="login_signup_terms_privacy_privacy">política de privacidad</string>
     <string name="login_signup_terms_privacy_terms">términos de uso</string>
     <string name="login_step_logIn">Iniciando sesión</string>

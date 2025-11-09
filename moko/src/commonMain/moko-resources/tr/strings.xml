@@ -431,7 +431,7 @@
     <string name="login_signup_selection_login_info">E-posta/şifre</string>
     <string name="login_signup_selection_guest_title">Misafir</string>
     <string name="login_signup_selection_guest_info">Yerel hesap</string>
-    <string name="login_signup_terms_privacy_text">Bir hesap oluşturarak gizlilik politikası ve kullanım şartlarını kabul etmiş olursunuz.</string>
+    <string name="login_signup_terms_privacy_text">Bir hesap oluşturarak **gizlilik politikasını** ve **kullanım koşullarını** kabul etmiş olursunuz.</string>
     <string name="login_signup_terms_privacy_privacy">gizlilik politikası</string>
     <string name="login_signup_terms_privacy_terms">kullanım şartları</string>
     <string name="login_step_logIn">Giriş yapılıyor</string>

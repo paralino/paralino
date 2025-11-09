@@ -456,7 +456,7 @@
     <string name="login_signup_selection_login_info">Email/κωδικός πρόσβασης</string>
     <string name="login_signup_selection_guest_title">Επισκέπτης</string>
     <string name="login_signup_selection_guest_info">Τοπικός λογαριασμός</string>
-    <string name="login_signup_terms_privacy_text">Δημιουργώντας έναν λογαριασμό συμφωνείτε με την πολιτική απορρήτου και τους όρους χρήσης.</string>
+    <string name="login_signup_terms_privacy_text">Με την δημιουργία ενός λογαριασμού αποδέχεστε την **πολιτική απορρήτου** και τους **όρους χρήσης**.</string>
     <string name="login_signup_terms_privacy_privacy">πολιτική απορρήτου</string>
     <string name="login_signup_terms_privacy_terms">όροι χρήσης</string>
     <string name="login_step_logIn">Συνδέεστε</string>

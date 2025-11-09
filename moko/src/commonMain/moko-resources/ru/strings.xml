@@ -421,7 +421,7 @@
     <string name="login_signup_selection_login_info">Электронная почта/пароль</string>
     <string name="login_signup_selection_guest_title">Гость</string>
     <string name="login_signup_selection_guest_info">Локальная учетная запись</string>
-    <string name="login_signup_terms_privacy_text">Создавая учетную запись, вы соглашаетесь с политикой конфиденциальности и условиями использования.</string>
+    <string name="login_signup_terms_privacy_text">Создавая аккаунт, вы соглашаетесь с **политикой конфиденциальности** и **условиями использования**.</string>
     <string name="group_details_security_action">Безопасность</string>
     <string name="login_signup_terms_privacy_privacy">политика конфиденциальности</string>
     <string name="login_signup_terms_privacy_terms">условия использования</string>

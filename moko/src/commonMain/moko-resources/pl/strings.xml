@@ -432,7 +432,7 @@
     <string name="login_signup_selection_login_info">Email/hasło</string>
     <string name="login_signup_selection_guest_title">Gość</string>
     <string name="login_signup_selection_guest_info">Konto lokalne</string>
-    <string name="login_signup_terms_privacy_text">Tworząc konto, zgadzasz się na politykę prywatności i warunki użytkowania.</string>
+    <string name="login_signup_terms_privacy_text">Tworząc konto, zgadzasz się na **politykę prywatności** oraz **warunki użytkowania**.</string>
     <string name="login_signup_terms_privacy_privacy">polityka prywatności</string>
     <string name="login_signup_terms_privacy_terms">warunki użytkowania</string>
     <string name="login_step_logIn">Logowanie</string>

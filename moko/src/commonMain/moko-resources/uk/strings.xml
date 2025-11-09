@@ -422,7 +422,7 @@
     <string name="login_signup_selection_login_info">Електронна пошта/пароль</string>
     <string name="login_signup_selection_guest_title">Гість</string>
     <string name="login_signup_selection_guest_info">Локальний обліковий запис</string>
-    <string name="login_signup_terms_privacy_text">Створюючи обліковий запис, ви погоджуєтеся з політикою конфіденційності та умовами використання.</string>
+    <string name="login_signup_terms_privacy_text">Створюючи обліковий запис, ви погоджуєтеся з **політикою конфіденційності** та **умовами використання**.</string>
     <string name="login_signup_terms_privacy_privacy">політика конфіденційності</string>
     <string name="login_signup_terms_privacy_terms">умови використання</string>
     <string name="login_step_logIn">Вхід у систему</string>

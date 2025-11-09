@@ -4,7 +4,7 @@
     <string name="login_signup_selection_login_info">Email/heslo</string>
     <string name="login_signup_selection_guest_title">Hosť</string>
     <string name="login_signup_selection_guest_info">Miestny účet</string>
-    <string name="login_signup_terms_privacy_text">Vytvorením účtu súhlasíte s *zásadami ochrany osobných údajov* a *podmienkami používania*.</string>
+    <string name="login_signup_terms_privacy_text">Vytvorením účtu súhlasíte s **podmienkami ochrany osobných údajov** a **podmienkami používania**.</string>
     <string name="group_create_suggestions_header">Návrhy</string>
     <string name="group_create_suggestion_family">Rodina</string>
     <string name="personalSpace_section_other">Iné zariadenia a relácie</string>

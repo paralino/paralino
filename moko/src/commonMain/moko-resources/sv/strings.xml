@@ -508,7 +508,7 @@
     <string name="login_signup_selection_guest_title">Gäst</string>
     <string name="login_signup_selection_guest_info">Lokalt konto</string>
     <string name="place_notification_default">Din plats hade en aktivitet</string>
-    <string name="login_signup_terms_privacy_text">Genom att skapa ett konto godkänner du sekretesspolicyn och användarvillkoren.</string>
+    <string name="login_signup_terms_privacy_text">Genom att skapa ett konto godkänner du **integritetspolicyn** och **användarvillkoren**.</string>
     <string name="login_signup_terms_privacy_privacy">sekretesspolicy</string>
     <string name="login_signup_terms_privacy_terms">användarvillkor</string>
     <string name="login_step_logIn">Loggar in</string>
