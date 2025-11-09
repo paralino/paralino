@@ -432,7 +432,7 @@
     <string name="login_signup_selection_login_info">E-mail/heslo</string>
     <string name="login_signup_selection_guest_title">Host</string>
     <string name="login_signup_selection_guest_info">Místní účet</string>
-    <string name="login_signup_terms_privacy_text">Vytvořením účtu souhlasíte s pravidly ochrany osobních údajů a podmínkami použití.</string>
+    <string name="login_signup_terms_privacy_text">Vytvořením účtu souhlasíte s **zásadami ochrany osobních údajů** a **podmínkami používání**.</string>
     <string name="login_signup_terms_privacy_privacy">pravidla ochrany osobních údajů</string>
     <string name="login_signup_terms_privacy_terms">podmínky použití</string>
     <string name="login_step_logIn">Přihlašuji vás</string>

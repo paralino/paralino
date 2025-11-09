@@ -429,7 +429,7 @@
     <string name="login_signup_selection_login_info">Email/lozinka</string>
     <string name="login_signup_selection_guest_title">Gost</string>
     <string name="login_signup_selection_guest_info">Lokalni nalog</string>
-    <string name="login_signup_terms_privacy_text">Kreiranjem naloga slažete se sa politikom privatnosti i uslovima korišćenja.</string>
+    <string name="login_signup_terms_privacy_text">Kreiranjem naloga saglašavate se sa **politikom privatnosti** i **uslovima korišćenja**.</string>
     <string name="login_signup_terms_privacy_privacy">politika privatnosti</string>
     <string name="login_signup_terms_privacy_terms">uslovi korišćenja</string>
     <string name="login_step_logIn">Prijavljujem vas</string>

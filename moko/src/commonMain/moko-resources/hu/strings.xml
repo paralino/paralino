@@ -430,7 +430,7 @@
     <string name="login_signup_selection_login_info">E-mail/jelszó</string>
     <string name="login_signup_selection_guest_title">Vendég</string>
     <string name="login_signup_selection_guest_info">Helyi fiók</string>
-    <string name="login_signup_terms_privacy_text">A fiók létrehozásával elfogadja az adatvédelmi irányelveket és a felhasználási feltételeket.</string>
+    <string name="login_signup_terms_privacy_text">Fiók létrehozásával elfogadja a **adatvédelmi irányelveket** és a **használati feltételeket**.</string>
     <string name="login_signup_terms_privacy_privacy">adatvédelmi irányelvek</string>
     <string name="login_signup_terms_privacy_terms">felhasználási feltételek</string>
     <string name="login_step_logIn">Bejelentkezés folyamatban</string>

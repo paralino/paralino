@@ -406,7 +406,7 @@
     <string name="login_signup_selection_login_info">Email/adgangskode</string>
     <string name="login_signup_selection_guest_title">Gæst</string>
     <string name="login_signup_selection_guest_info">Lokal konto</string>
-    <string name="login_signup_terms_privacy_text">Ved at oprette en konto accepterer du privatlivspolitikken og brugsvilkårene.</string>
+    <string name="login_signup_terms_privacy_text">Ved at oprette en konto accepterer du **privatlivspolitikken** og **brugsbetingelserne**.</string>
     <string name="login_signup_terms_privacy_privacy">privatlivspolitik</string>
     <string name="login_signup_terms_privacy_terms">brugsvilkår</string>
     <string name="login_step_logIn">Logger dig ind</string>

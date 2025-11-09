@@ -454,7 +454,7 @@
     <string name="login_signup_selection_login_info">Email/mot de passe</string>
     <string name="login_signup_selection_guest_title">Invité</string>
     <string name="login_signup_selection_guest_info">Compte local</string>
-    <string name="login_signup_terms_privacy_text">En créant un compte, vous acceptez la politique de confidentialité et les conditions d\'utilisation.</string>
+    <string name="login_signup_terms_privacy_text">En créant un compte, vous acceptez la **politique de confidentialité** et les **conditions d\'utilisation**.</string>
     <string name="login_signup_terms_privacy_privacy">politique de confidentialité</string>
     <string name="login_signup_terms_privacy_terms">conditions d\'utilisation</string>
     <string name="login_step_logIn">Connexion en cours</string>

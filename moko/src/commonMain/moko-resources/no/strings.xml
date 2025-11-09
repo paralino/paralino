@@ -432,7 +432,7 @@
     <string name="login_signup_selection_login_info">E-post/passord</string>
     <string name="login_signup_selection_guest_title">Gjest</string>
     <string name="login_signup_selection_guest_info">Lokal konto</string>
-    <string name="login_signup_terms_privacy_text">Ved å opprette en konto godtar du personvernerklæringen og vilkårene for bruk.</string>
+    <string name="login_signup_terms_privacy_text">Ved å opprette en konto samtykker du til **personvernerklæringen** og **bruksvilkårene**.</string>
     <string name="login_signup_terms_privacy_privacy">personvernerklæring</string>
     <string name="login_signup_terms_privacy_terms">vilkår for bruk</string>
     <string name="login_step_logIn">Logger deg inn</string>

@@ -309,7 +309,7 @@
     <string name="login_signup_selection_login_info">Е-пошта/лозинка</string>
     <string name="login_signup_selection_guest_title">Гост</string>
     <string name="login_signup_selection_guest_info">Локални налог</string>
-    <string name="login_signup_terms_privacy_text">Креирањем налога слажете се са политиком приватности и условима коришћења.</string>
+    <string name="login_signup_terms_privacy_text">Креирањем налога слажете се са *политиком приватности* и *условима коришћења*.</string>
     <string name="login_signup_terms_privacy_privacy">политика приватности</string>
     <string name="login_signup_terms_privacy_terms">услови коришћења</string>
     <string name="login_step_logIn">Пријављивање...</string>

@@ -375,7 +375,7 @@
     <string name="login_signup_selection_login_info">E-mail/wachtwoord</string>
     <string name="login_signup_selection_guest_title">Gast</string>
     <string name="login_signup_selection_guest_info">Lokaal account</string>
-    <string name="login_signup_terms_privacy_text">Door een account aan te maken, gaat u akkoord met het privacybeleid en de gebruiksvoorwaarden.</string>
+    <string name="login_signup_terms_privacy_text">Door een account aan te maken, stemt u in met het **privacybeleid** en de **gebruiksovereenkomst**.</string>
     <string name="login_signup_terms_privacy_privacy">privacybeleid</string>
     <string name="login_signup_terms_privacy_terms">gebruiksvoorwaarden</string>
     <string name="login_step_logIn">U aan het inloggen</string>

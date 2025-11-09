@@ -451,7 +451,7 @@
     <string name="login_signup_selection_login_info">E-pošta/geslo</string>
     <string name="login_signup_selection_guest_title">Gost</string>
     <string name="login_signup_selection_guest_info">Lokalni račun</string>
-    <string name="login_signup_terms_privacy_text">Z ustvarjanjem računa se strinjate s politiko zasebnosti in pogoji uporabe.</string>
+    <string name="login_signup_terms_privacy_text">Z ustvarjanjem računa se strinjate z **politiko zasebnosti** in **pogoji uporabe**.</string>
     <string name="login_signup_terms_privacy_terms">pogoji uporabe</string>
     <string name="login_step_logIn">Prijavljam vas</string>
     <string name="login_step_signUp">Ustvarjanje računa</string>
