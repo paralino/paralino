@@ -1,4 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minutt</item>
+        <item quantity="other">%d minutter</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d time</item>
+        <item quantity="other">%d timer</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dager</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d måned</item>
+        <item quantity="other">%d måneder</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d år</item>
+        <item quantity="other">%d år</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Deler lokasjon med 1 gruppe</item>
+        <item quantity="other">Deler lokasjon med %d grupper</item>
+    </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d gruppe</item>
+        <item quantity="other">%d grupper</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">%d medlem</item>
+        <item quantity="other">%d medlemmer</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d sted med ubegrensede varsler</item>
+        <item quantity="other">%d steder med ubegrensede varsler</item>
+    </plurals>
 </resources>
-

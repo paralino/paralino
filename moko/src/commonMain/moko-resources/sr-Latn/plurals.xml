@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minuta</item>
+        <item quantity="few">%d minute</item>
+        <item quantity="other">%d minuta</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d sat</item>
+        <item quantity="few">%d sata</item>
+        <item quantity="other">%d sati</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d dan</item>
+        <item quantity="few">%d dana</item>
+        <item quantity="other">%d dana</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d mesec</item>
+        <item quantity="few">%d meseca</item>
+        <item quantity="other">%d mesesi</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d godina</item>
+        <item quantity="few">%d godine</item>
+        <item quantity="other">%d godina</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Deljenje lokacije sa %d grupom</item>
+        <item quantity="few">Deljenje lokacije sa %d grupe</item>
+        <item quantity="other">Deljenje lokacije sa %d grupa</item>
+    </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d grupa</item>
+        <item quantity="few">%d grupe</item>
+        <item quantity="other">%d grupa</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">%d član</item>
+        <item quantity="few">%d člana</item>
+        <item quantity="other">%d članova</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d mesto sa neograničenim obaveštenjima</item>
+        <item quantity="few">%d mesta sa neograničenim obaveštenjima</item>
+        <item quantity="other">%d mesta sa neograničenim obaveštenjima</item>
+    </plurals>
+</resources>

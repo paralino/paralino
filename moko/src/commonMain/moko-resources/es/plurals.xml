@@ -36,13 +36,23 @@
         <item quantity="other">**%d grupos**</item>
     </plurals>
     <plurals name="plan_benefit_members">
-        <item quantity="one">**%d miembro**</item>
-        <item quantity="many">**%d miembros**</item>
-        <item quantity="other">**%d miembros**</item>
+        <item quantity="one">%d miembro</item>
+        <item quantity="many">%d miembros</item>
+        <item quantity="other">%d miembros</item>
     </plurals>
     <plurals name="plan_benefit_places">
         <item quantity="one">**%d lugar** con alertas ilimitadas</item>
         <item quantity="many">**%d lugares** con alertas ilimitadas</item>
         <item quantity="other">**%d lugares** con alertas ilimitadas</item>
+    </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d grupo</item>
+        <item quantity="many">%d grupos</item>
+        <item quantity="other">%d grupos</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d lugar con alertas ilimitadas</item>
+        <item quantity="many">%d lugares con alertas ilimitadas</item>
+        <item quantity="other">%d lugares con alertas ilimitadas</item>
     </plurals>
 </resources>

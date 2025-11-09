@@ -1,4 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d час</item>
+        <item quantity="few">%d часа</item>
+        <item quantity="other">%d часов</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d день</item>
+        <item quantity="few">%d дня</item>
+        <item quantity="other">%d дней</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d месяц</item>
+        <item quantity="few">%d месяца</item>
+        <item quantity="other">%d месяцев</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d год</item>
+        <item quantity="few">%d года</item>
+        <item quantity="other">%d лет</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Общий доступ к местоположению с 1 группой</item>
+        <item quantity="few">Общий доступ к местоположению с %d группами</item>
+        <item quantity="other">Общий доступ к местоположению с %d группами</item>
+    </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d группа</item>
+        <item quantity="few">%d группы</item>
+        <item quantity="other">%d групп</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">%d участник</item>
+        <item quantity="few">%d участника</item>
+        <item quantity="other">%d участников</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d место с неограниченными уведомлениями</item>
+        <item quantity="few">%d места с неограниченными уведомлениями</item>
+        <item quantity="other">%d мест с неограниченными уведомлениями</item>
+    </plurals>
 </resources>
-

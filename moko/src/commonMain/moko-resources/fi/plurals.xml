@@ -1,4 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minuutti</item>
+        <item quantity="other">%d minuuttia</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d tunti</item>
+        <item quantity="other">%d tuntia</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d päivä</item>
+        <item quantity="other">%d päivää</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d kuukausi</item>
+        <item quantity="other">%d kuukautta</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d vuosi</item>
+        <item quantity="other">%d vuotta</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Jakaminen sijainti 1 ryhmälle</item>
+        <item quantity="other">Jakaminen sijainti %d ryhmälle</item>
+    </plurals>
+    <plurals name="plan_benefit_groups">
+        <item quantity="one">%d ryhmä</item>
+        <item quantity="other">%d ryhmää</item>
+    </plurals>
+    <plurals name="plan_benefit_members">
+        <item quantity="one">%d jäsen</item>
+        <item quantity="other">%d jäsentä</item>
+    </plurals>
+    <plurals name="plan_benefit_places_alerts">
+        <item quantity="one">%d paikka rajoittamattomilla hälytyksillä</item>
+        <item quantity="other">%d paikkaa rajoittamattomilla hälytyksillä</item>
+    </plurals>
 </resources>
-
