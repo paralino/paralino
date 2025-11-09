@@ -430,9 +430,7 @@
     <string name="login_signup_selection_login_info">Email/password</string>
     <string name="login_signup_selection_guest_title">Guest</string>
     <string name="login_signup_selection_guest_info">Local account</string>
-    <string name="login_signup_terms_privacy_text">By creating an account you agree to the privacy policy and terms of use.</string>
-    <string name="login_signup_terms_privacy_privacy">privacy policy</string>
-    <string name="login_signup_terms_privacy_terms">terms of use</string>
+    <string name="login_signup_terms_privacy_text">By creating an account you agree to the **privacy policy** and **terms of use**.</string>
     <string name="login_step_logIn">Logging you in</string>
     <string name="login_step_signUp">Creating an account</string>
     <string name="login_step_encryption">Setting up encryption</string>

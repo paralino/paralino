@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -35,15 +34,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
@@ -73,6 +70,7 @@ import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.extensions.splitRanges
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -367,6 +365,7 @@ fun LoginScreenCore(
                             stringResource(resource = MR.strings.login_button_create_guest_account)
                         }
                     }
+
                     LoginScreenUiType.FORGOT_PASSWORD -> stringResource(resource = MR.strings.login_button_reset_password)
                 }
                 Text(text = text)
@@ -415,56 +414,66 @@ fun LoginScreenCore(
 
 @Composable
 fun ColumnScope.TermsAndPrivacyElement(uiType: LoginScreenUiType) {
-    val text = stringResource(resource = MR.strings.login_signup_terms_privacy_text)
-    val privacy = stringResource(resource = MR.strings.login_signup_terms_privacy_privacy)
-    val terms = stringResource(resource = MR.strings.login_signup_terms_privacy_terms)
-    val privacyStart = text.indexOf(privacy)
-    val privacyEnd = text.indexOf(privacy) + privacy.length
-    val termsStart = text.indexOf(terms)
-    val termsEnd = text.indexOf(terms) + terms.length
+    val textWithMarkers = stringResource(resource = MR.strings.login_signup_terms_privacy_text)
+    val ranges = textWithMarkers.splitRanges("**")
+    val cleanText = textWithMarkers.replace("**", "")
 
-    val uriHandler = LocalUriHandler.current
+    val privacyRange = ranges.getOrNull(0)?.second
+    val termsRange = ranges.getOrNull(1)?.second
+
+    val annotatedText = buildAnnotatedString {
+        withStyle(
+            style = MaterialTheme.typography.subtitle2.copy(fontWeight = FontWeight.Normal)
+                .toSpanStyle().copy(
+                color = MaterialTheme.colors.onBackground.copy(alpha = 0.6f)
+            )
+        ) {
+            append(cleanText)
+        }
+        privacyRange?.let { range ->
+            addStyle(
+                style = MaterialTheme.typography.subtitle2.copy(fontWeight = FontWeight.Bold)
+                    .toSpanStyle().copy(
+                    color = if (!isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
+                ),
+                start = range.first,
+                end = range.last
+            )
+            addLink(
+                url = LinkAnnotation.Url(BackendResourceIDs.privacyPolicyUrl),
+                start = range.first,
+                end = range.last
+            )
+        }
+        termsRange?.let { range ->
+            addStyle(
+                style = MaterialTheme.typography.subtitle2.copy(fontWeight = FontWeight.Bold)
+                    .toSpanStyle().copy(
+                    color = if (!isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
+                ),
+                start = range.first,
+                end = range.last
+            )
+            addLink(
+                url = LinkAnnotation.Url(BackendResourceIDs.termsOfUseUrl),
+                start = range.first,
+                end = range.last
+            )
+        }
+    }
+
     AnimatedVisibility(
         visible = uiType == LoginScreenUiType.SIGNUP,
         modifier = Modifier.fillMaxWidth()
     ) {
-        ClickableText(
+        Text(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .padding(top = 10.dp, bottom = 30.dp)
                 .align(Alignment.CenterHorizontally),
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.6f)
-                    )
-                ) {
-                    append(text)
-                }
-                addStyle(
-                    style = SpanStyle(
-                        color = if (!isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    ), start = privacyStart, end = privacyEnd
-                )
-                addStyle(
-                    style = SpanStyle(
-                        color = if (!isSystemInDarkTheme()) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    ), start = termsStart, end = termsEnd
-                )
-            }
-        ) {
-            if (it in privacyStart..privacyEnd) {
-                uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl)
-            } else if (it in termsStart..termsEnd) {
-                uriHandler.openUri(BackendResourceIDs.termsOfUseUrl)
-            }
-        }
+            text = annotatedText,
+            style = MaterialTheme.typography.button
+        )
     }
 }
 
