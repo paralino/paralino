@@ -1,0 +1,9 @@
+/* 
+  Localizable.strings
+  paralino-ios
+
+  Created by Zelimir on 15.04.23.
+  
+*/
+
+"hello_world" = "Hello world!";
