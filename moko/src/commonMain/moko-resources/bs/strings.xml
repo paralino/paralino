@@ -697,7 +697,7 @@
     <string name="paywall_feature_section_others">Zajedničke prednosti</string>
     <string name="info_email_confirm_skip_button">Preskoči za sada</string>
     <string name="info_email_confirm_skip_notice">Bićete ponovo pitani kasnije</string>
-    <string name="groups_sharing_setting_timeline_title">Vremenska linija</string>
+    <string name="groups_sharing_setting_timeline_title">Istorija lokacije</string>
     <string name="groups_sharing_setting_timeline_description">Ako je omogućeno, vaša ažuriranja lokacije će biti sačuvana u istoriji lokacije.</string>
     <string name="location_sharing_button_start_personal">Započnite praćenje</string>
     <string name="location_sharing_button_stop_personal">Prestanite sa praćenjem</string>
@@ -733,11 +733,11 @@
     <string name="place_sensitivity_optionDelay1_title">Bez kašnjenja</string>
     <string name="place_sensitivity_optionDelay1_info">Pokreti mjesta se obrađuju odmah. Mogu proizvesti više lažnih upozorenja o mjestima ako je vaš signal slab ili ako prolazite pored mjesta.</string>
     <string name="place_sensitivity_optionDelay2_title">Malo kašnjenje</string>
-    <string name="place_sensitivity_optionDelay2_info">Čeka nekoliko sekundi prije nego što reaguje na pokrete mjesta. Mogu proizvesti lažna upozorenja o mjestima ako je vaš signal slab ili ako prolazite pored mjesta.</string>
+    <string name="place_sensitivity_optionDelay2_info">U zavisnosti od tačnosti trenutne lokacije, aplikacija može čekati između 0-10 sekundi pre nego što reaguje na pomeranje mesta.</string>
     <string name="place_sensitivity_optionDelay3_title">Izbalansirano</string>
-    <string name="place_sensitivity_optionDelay3_info">Čeka do 10–15 sekundi prije nego što reaguje na pokrete mjesta. Neka upozorenja mogu propasti ako sistem zaustavi aplikaciju tokom obrade.</string>
+    <string name="place_sensitivity_optionDelay3_info">U zavisnosti od tačnosti trenutne lokacije, aplikacija može čekati do 5–15 sekundi pre nego što reaguje na pomeranje mesta. Neki upozorenja mogu propasti ako sistem zaustavi aplikaciju tokom obrade.</string>
     <string name="place_sensitivity_optionDelay4_title">Duže čekanje</string>
-    <string name="place_sensitivity_optionDelay4_info">Čeka malo duže prije nego što reaguje na pokrete mjesta. Ovo će odložiti obavijesti, pa se pobrinite da ste povezani na Internet i da aplikacija može raditi u pozadini bez ograničenja.</string>
+    <string name="place_sensitivity_optionDelay4_info">Čeka do 20-30 sekundi prije nego što reaguje na pokrete. To će odgoditi obavijesti, pa se pobrinite da ste povezani na Internet i da aplikacija može raditi u pozadini bez ograničenja.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignoriši netačne lokacije</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Upozorenje o mjestu će biti ignorisano ako aplikacija ne može potvrditi lokaciju kao tačnu. Ovo može uzrokovati da se legitimni pokreti mjesta ignorišu ili odlažu.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Mjesto upozorenja će se obrađivati kao i obično. Koristi manje baterije, ali može proizvesti lažne pozitivne rezultate.</string>
@@ -834,4 +834,5 @@
     <string name="history_stats_battery_range">Opseg baterije</string>
     <string name="history_stats_elevation_gain">Uspon</string>
     <string name="history_stats_elevation_range">Opseg visine</string>
+    <string name="group_members_item_history_button">Historija</string>
 </resources>

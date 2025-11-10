@@ -464,7 +464,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Jos se on käytössä, tilasi näyttää, jos sijaintisi on pois päältä, sinulta puuttuu sijaintiluvat tai lopetat sijaintisi jakamisen. Jos se on pois päältä, tilasi näyttää **%s** näissä tapauksissa.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Ilmoita jäseniä</string>
     <string name="groups_sharing_setting_notifyOthers_description">Jos käytössä, ryhmän jäsenet saavat ilmoituksen siitä, että aloit jakaa sijaintiasi.</string>
-    <string name="groups_sharing_setting_timeline_title">Aikajana</string>
+    <string name="groups_sharing_setting_timeline_title">Sijaintihistoria</string>
     <string name="groups_sharing_setting_timeline_description">Jos käytössä, sijaintipäivityksesi tallennetaan sijaintihistoriaan.</string>
     <string name="location_sharing_button_start_groups">Aloita jakaminen</string>
     <string name="location_sharing_button_start_personal">Aloita seuranta</string>
@@ -609,12 +609,12 @@
     <string name="place_sensitivity_optionDelay1_title">Ei viivettä</string>
     <string name="place_sensitivity_optionDelay1_info">Paikan liikkeet käsitellään välittömästi. Saattaa tuottaa enemmän vääriä paikkahälytyksiä, jos signaalisi on heikko tai ajat paikan ohi.</string>
     <string name="place_sensitivity_optionDelay2_title">Pieni viive</string>
-    <string name="place_sensitivity_optionDelay2_info">Odottaa muutaman sekunnin ennen kuin reagoi paikan liikkeisiin. Saattaa tuottaa vääriä paikkahälytyksiä, jos signaalisi on heikko tai ajat paikan ohi.</string>
+    <string name="place_sensitivity_optionDelay2_info">Sijainnin nykyisestä tarkkuudesta riippuen sovellus voi odottaa 0-10 sekuntia ennen kuin reagoi paikansiirtoihin.</string>
     <string name="place_sensitivity_optionDelay3_title">Tasapainotettu</string>
     <string name="group_member_sharing_started_notification">%s aloitti sijainnin jakamisen</string>
-    <string name="place_sensitivity_optionDelay3_info">Odottaa jopa 10–15 sekuntia ennen kuin reagoi paikan liikkeisiin. Jotkut hälytykset saattavat epäonnistua, jos järjestelmä pysäyttää sovelluksen käsittelyn aikana.</string>
+    <string name="place_sensitivity_optionDelay3_info">Sijainnin tarkkuudesta riippuen sovellus voi odottaa 5–15 sekuntia ennen kuin reagoi sijaintimuutoksiin. Jotkin ilmoitukset saattavat epäonnistua, jos järjestelmä pysäyttää sovelluksen käsittelyn aikana.</string>
     <string name="place_sensitivity_optionDelay4_title">Pidempi odotus</string>
-    <string name="place_sensitivity_optionDelay4_info">Odottaa hieman pidempään ennen kuin reagoi paikan liikkeisiin. Tämä viivästyttää ilmoituksia, joten varmista, että olet yhteydessä Internetiin ja että sovellus voi toimia taustalla ilman rajoituksia.</string>
+    <string name="place_sensitivity_optionDelay4_info">Odottaa 20-30 sekuntia ennen kuin reagoi paikka-liiketoimintoihin. Tämä viivästyttää ilmoituksia, joten varmista, että olet yhteydessä Internetiin ja että sovellus voi pyöriä taustalla ilman rajoituksia.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ohita epätarkat sijainnit</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Paikkahälytys ohitetaan, jos sovellus ei voi vahvistaa sijaintia tarkaksi. Tämä saattaa aiheuttaa, että oikeat paikan liikkeet ohitetaan tai viivästyvät.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Paikkahälytys käsitellään normaalisti. Käyttää vähemmän akkua, mutta saattaa tuottaa vääriä positiivisia tuloksia.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Akun Kantama</string>
     <string name="history_stats_elevation_gain">Korkeusero</string>
     <string name="history_stats_elevation_range">Korkeuden Vaihtelu</string>
+    <string name="group_members_item_history_button">Historia</string>
 </resources>

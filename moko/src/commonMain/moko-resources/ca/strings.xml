@@ -443,7 +443,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Si està habilitat, el vostre estat mostrarà si la vostra ubicació està desactivada, si us falten permisos de ubicació o si deixeu de compartir la vostra ubicació. Si està deshabilitat, el vostre estat mostrarà **%s** en aquests casos.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notificar membres</string>
     <string name="groups_sharing_setting_notifyOthers_description">Si està habilitat, els membres del grup rebran una notificació que has començat a compartir la teva ubicació.</string>
-    <string name="groups_sharing_setting_timeline_title">Línia de temps</string>
+    <string name="groups_sharing_setting_timeline_title">Històric de la ubicació</string>
     <string name="groups_sharing_setting_timeline_description">Si està habilitat, les actualitzacions de la teva ubicació es desaran a l\'historial de ubicacions.</string>
     <string name="location_sharing_button_start_groups">Començar a compartir</string>
     <string name="location_sharing_button_start_personal">Començar a rastrejar</string>
@@ -586,11 +586,11 @@
     <string name="place_sensitivity_optionDelay1_title">Sense retard</string>
     <string name="place_sensitivity_optionDelay1_info">Els moviments de lloc es processen immediatament. Pot produir més alertes falses de lloc si el teu senyal és feble o passes pel lloc.</string>
     <string name="place_sensitivity_optionDelay2_title">Retard petit</string>
-    <string name="place_sensitivity_optionDelay2_info">Espera uns segons abans de reaccionar als moviments de lloc. Pot produir alertes falses de lloc si el teu senyal és feble o passes pel lloc.</string>
+    <string name="place_sensitivity_optionDelay2_info">Dependrà de la precisió de la ubicació actual, l\'aplicació pot esperar entre 0 i 10 segons abans de reaccionar als moviments del lloc.</string>
     <string name="place_sensitivity_optionDelay3_title">Equilibrat</string>
-    <string name="place_sensitivity_optionDelay3_info">Espera fins a 10-15 segons abans de reaccionar als moviments de lloc. Algunes alertes podrien fallar si el sistema atura l\'aplicació mentre processa.</string>
+    <string name="place_sensitivity_optionDelay3_info">Depenent de l\'exactitud de la posició actual, l\'aplicació pot esperar fins a 5–15 segons abans de reaccionar als moviments del lloc. Algunes alertes podrien fallar si el sistema atura l\'aplicació mentre la processa.</string>
     <string name="place_sensitivity_optionDelay4_title">Espera més temps</string>
-    <string name="place_sensitivity_optionDelay4_info">Espera una mica més abans de reaccionar als moviments de lloc. Això retardarà les notificacions, així que assegura\'t que estàs connectat a Internet i que l\'aplicació pot funcionar en segon pla sense restriccions.</string>
+    <string name="place_sensitivity_optionDelay4_info">Espera fins a 20-30 segons abans de reaccionar a les moviments de lloc. Això retardarà les notificacions, així que assegura\'t que estàs connectat a Internet i que l\'aplicació pot funcionar en segon pla sense restriccions.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorar ubicacions inexactes</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">L\'alerta de lloc serà ignorada si l\'aplicació no pot confirmar la ubicació com a precisa. Això podria fer que els moviments de lloc legítims siguin ignorats o retardats.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">L\'alerta de lloc es processarà com de costum. Utilitza menys bateria però podria produir falsos positius.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Autonomia de la bateria</string>
     <string name="history_stats_elevation_gain">Guany d\'elevació</string>
     <string name="history_stats_elevation_range">Rang d\'elevació</string>
+    <string name="group_members_item_history_button">Història</string>
 </resources>

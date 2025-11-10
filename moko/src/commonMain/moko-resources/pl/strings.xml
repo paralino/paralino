@@ -464,7 +464,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Jeśli jest włączone, twój status pokaże, czy twoja lokalizacja jest wyłączona, brakuje ci uprawnień do lokalizacji, lub przestałeś udostępniać swoją lokalizację. Jeśli jest wyłączone, twój status pokaże **%s** w tych przypadkach.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Powiadom członków</string>
     <string name="groups_sharing_setting_notifyOthers_description">Jeśli włączone, członkowie grupy otrzymają powiadomienie, że rozpocząłeś udostępnianie swojej lokalizacji.</string>
-    <string name="groups_sharing_setting_timeline_title">Oś czasu</string>
+    <string name="groups_sharing_setting_timeline_title">Historia lokalizacji</string>
     <string name="groups_sharing_setting_timeline_description">Jeśli włączone, aktualizacje Twojej lokalizacji będą zapisywane w historii lokalizacji.</string>
     <string name="location_sharing_button_start_groups">Rozpocznij udostępnianie</string>
     <string name="location_sharing_button_start_personal">Rozpocznij śledzenie</string>
@@ -627,11 +627,11 @@
     <string name="place_sensitivity_optionDelay1_title">Brak opóźnienia</string>
     <string name="place_sensitivity_optionDelay1_info">Ruchy miejsc są przetwarzane natychmiast. Może to powodować więcej fałszywych powiadomień o miejscach, jeśli sygnał jest słaby lub przejeżdżasz obok miejsca.</string>
     <string name="place_sensitivity_optionDelay2_title">Małe opóźnienie</string>
-    <string name="place_sensitivity_optionDelay2_info">Czeka kilka sekund przed reakcją na ruchy miejsc. Może to powodować fałszywe powiadomienia o miejscach, jeśli sygnał jest słaby lub przejeżdżasz obok miejsca.</string>
+    <string name="place_sensitivity_optionDelay2_info">W zależności od dokładności lokalizacji, aplikacja może czekać od 0 do 10 sekund, zanim zareaguje na ruchy miejsca.</string>
     <string name="place_sensitivity_optionDelay3_title">Zrównoważona</string>
-    <string name="place_sensitivity_optionDelay3_info">Czeka do 10–15 sekund przed reakcją na ruchy miejsc. Niektóre powiadomienia mogą się nie udać, jeśli system zatrzyma aplikację podczas przetwarzania.</string>
+    <string name="place_sensitivity_optionDelay3_info">W zależności od dokładności lokalizacji, aplikacja może czekać od 5 do 15 sekund przed reakcją na ruchy miejsca. Niektóre powiadomienia mogą nie zadziałać, jeśli system zatrzyma aplikację podczas przetwarzania.</string>
     <string name="place_sensitivity_optionDelay4_title">Dłuższe oczekiwanie</string>
-    <string name="place_sensitivity_optionDelay4_info">Czeka nieco dłużej przed reakcją na ruchy miejsc. To opóźni powiadomienia, więc upewnij się, że jesteś połączony z Internetem i aplikacja może działać w tle bez ograniczeń.</string>
+    <string name="place_sensitivity_optionDelay4_info">Czeka do 20-30 sekund, zanim zareaguje na ruchy miejsca. Opóźni to powiadomienia, więc upewnij się, że jesteś połączony z Internetem i że aplikacja może działać w tle bez ograniczeń.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignoruj niedokładne lokalizacje</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Powiadomienie o miejscu zostanie zignorowane, jeśli aplikacja nie może potwierdzić lokalizacji jako dokładnej. Może to spowodować, że uzasadnione ruchy miejsc zostaną zignorowane lub opóźnione.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Powiadomienie o miejscu zostanie przetworzone jak zwykle. Zużywa mniej baterii, ale może powodować fałszywe pozytywy.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Zasięg baterii</string>
     <string name="history_stats_elevation_gain">Wzniesienie</string>
     <string name="history_stats_elevation_range">Zakres wysokości</string>
+    <string name="group_members_item_history_button">Historia</string>
 </resources>

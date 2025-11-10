@@ -361,7 +361,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Ако је омогућено, ваш статус ће приказивати да ли је локација искључена, да ли недостају дозволе за локацију или да ли сте престали да делите локацију. Ако је онемогућено, у тим случајевима ваш статус ће приказивати **%s**</string>
     <string name="groups_sharing_setting_notifyOthers_title">Обавестите чланове</string>
     <string name="groups_sharing_setting_notifyOthers_description">Ако је омогућено, чланови групе ће примити обавештење да сте почели да делите своју локацију.</string>
-    <string name="groups_sharing_setting_timeline_title">Хронологија</string>
+    <string name="groups_sharing_setting_timeline_title">Историја локације</string>
     <string name="groups_sharing_setting_timeline_description">Ако је омогућено, ажурирања ваше локације биће сачувана у историји локација.</string>
     <string name="location_sharing_button_start_groups">Почните дељење</string>
     <string name="location_sharing_button_start_personal">Почните праћење</string>
@@ -465,11 +465,11 @@
     <string name="place_sensitivity_optionDelay1_title">Без задржке</string>
     <string name="place_sensitivity_optionDelay1_info">Промене места се обрађују одмах. Може произвести више лажних упозорења ако је ваш сигнал слаб или ако прођете поред места возећи.</string>
     <string name="place_sensitivity_optionDelay2_title">Мала задршка</string>
-    <string name="place_sensitivity_optionDelay2_info">Чека неколико секунди пре реаговања на промене места. Може произвести лажна упозорења ако је сигнал слаб или ако прођете поред места возећи.</string>
+    <string name="place_sensitivity_optionDelay2_info">У зависности од тренутне тачности локације, апликација може чекати између 0-10 секунди пре него што реагује на померање места.</string>
     <string name="place_sensitivity_optionDelay3_title">Уравнотежено</string>
-    <string name="place_sensitivity_optionDelay3_info">Чека до 10–15 секунди пре реаговања на промене места. Нека упозорења могу пропасти ако систем заустави апликацију током обраде.</string>
+    <string name="place_sensitivity_optionDelay3_info">У зависности од тренутне тачности локације, апликација може чекати до 5–15 секунди пре него што реагује на померање места. Неке обавештења могу пропустити ако систем заустави апликацију током обраде.</string>
     <string name="place_sensitivity_optionDelay4_title">Дужа задршка</string>
-    <string name="place_sensitivity_optionDelay4_info">Чека нешто дуже пре реаговања на промене места. Ово ће одложити обавештења, па проверите да ли сте повезани на интернет и да ли апликација може да ради у позадини без ограничења.</string>
+    <string name="place_sensitivity_optionDelay4_info">Чека до 20-30 секунди пре него што реагује на померање места. Ово ће одложити обавештења, па се уверите да сте повезани на Интернет и да апликација може радити у позадини без ограничења.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Игноришите нетачне локације</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Упозорење за место ће бити игнорисано ако апликација не може да потврди да је локација тачна. Ово може довести до тога да легитимне промене локације буду игнорисане или одложене.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Упозорење за место ће бити обрађено као и обично. Користи мање батерије али може произвести лажне позитиве.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Опсег батерије</string>
     <string name="history_stats_elevation_gain">Надморска висина</string>
     <string name="history_stats_elevation_range">Опсег надморске висине</string>
+    <string name="group_members_item_history_button">Историја</string>
 </resources>

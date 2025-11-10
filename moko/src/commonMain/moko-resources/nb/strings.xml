@@ -464,7 +464,7 @@
     <string name="info_email_confirm">Vennligst bekreft e-postadressen din!</string>
     <string name="groups_sharing_setting_notifyOthers_title">Varsle medlemmer</string>
     <string name="groups_sharing_setting_notifyOthers_description">Hvis aktivert, vil gruppemedlemmer motta varsling om at du har begynt å dele din plassering.</string>
-    <string name="groups_sharing_setting_timeline_title">Tidslinje</string>
+    <string name="groups_sharing_setting_timeline_title">Stedhistorikk</string>
     <string name="groups_sharing_setting_timeline_description">Hvis aktivert, vil oppdateringer av din plassering bli lagret i plasseringens historikk.</string>
     <string name="location_sharing_button_start_groups">Begynn å dele</string>
     <string name="location_sharing_button_start_personal">Begynn å spore</string>
@@ -608,11 +608,11 @@
     <string name="place_sensitivity_optionDelay1_title">Ingen forsinkelse</string>
     <string name="place_sensitivity_optionDelay1_info">Stedsbevegelser behandles umiddelbart. Kan gi flere falske stedsvarsler hvis signalet ditt er svakt eller du kjører forbi stedet.</string>
     <string name="place_sensitivity_optionDelay2_title">Liten forsinkelse</string>
-    <string name="place_sensitivity_optionDelay2_info">Venter noen sekunder før den reagerer på stedsbevegelser. Kan gi falske stedsvarsler hvis signalet ditt er svakt eller du kjører forbi stedet.</string>
+    <string name="place_sensitivity_optionDelay2_info">Avhengig av nøyaktigheten til nåværende posisjon, kan appen vente mellom 0-10 sekunder før den reagerer på bevegelse av stedet.</string>
     <string name="place_sensitivity_optionDelay3_title">Balansert</string>
-    <string name="place_sensitivity_optionDelay3_info">Venter opptil 10–15 sekunder før den reagerer på stedsbevegelser. Noen varsler kan feile hvis systemet stopper appen mens den behandler.</string>
+    <string name="place_sensitivity_optionDelay3_info">Avhengig av nøyaktigheten til den nåværende plasseringen, kan appen vente i opptil 5–15 sekunder før den reagerer på bevegelse. Noen varsler kan mislykkes hvis systemet stopper appen under behandling.</string>
     <string name="place_sensitivity_optionDelay4_title">Lengre ventetid</string>
-    <string name="place_sensitivity_optionDelay4_info">Venter litt lenger før den reagerer på stedsbevegelser. Dette vil forsinke varsler, så sørg for at du er koblet til Internett og at appen kan kjøre i bakgrunnen uten restriksjoner.</string>
+    <string name="place_sensitivity_optionDelay4_info">Venter i opptil 20-30 sekunder før den reagerer på bevegelsene på stedet. Dette vil forsinke varsler, så sørg for at du er koblet til Internett, og at appen kan kjøre i bakgrunnen uten restriksjoner.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorer unøyaktige steder</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Stedsvarselet vil bli ignorert hvis appen ikke kan bekrefte posisjonen som nøyaktig. Dette kan føre til at legitime stedsbevegelser blir ignorert eller forsinket.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Stedsvarselet vil bli behandlet som vanlig. Bruker mindre batteri, men kan gi falske positiver.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Batteri rekkevidde</string>
     <string name="history_stats_elevation_gain">Høydemeter</string>
     <string name="history_stats_elevation_range">Høydeområde</string>
+    <string name="group_members_item_history_button">Historie</string>
 </resources>

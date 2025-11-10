@@ -551,7 +551,7 @@
     <string name="button_cancel">Avbryt</string>
     <string name="personalSpace_device_deactivate_action">Avaktivera</string>
     <string name="groups_sharing_setting_notifyOthers_description">Om aktiverat kommer gruppmedlemmar att få en avisering om att du har börjat dela din plats.</string>
-    <string name="groups_sharing_setting_timeline_title">Tidslinje</string>
+    <string name="groups_sharing_setting_timeline_title">Plats historia</string>
     <string name="personalSpace_device_logout_titleConfirm">Bekräfta utloggning</string>
     <string name="group_members_device_confirm_remove_alert_title">Att ta bort en enhet kommer också att radera all relaterad platsinformation och stoppa platsdelning!\n\nDenna åtgärd är oåterkallelig.</string>
     <string name="group_members_device_confirm_remove_button">OK, ta bort det</string>
@@ -660,11 +660,11 @@
     <string name="place_sensitivity_optionDelay1_title">Ingen fördröjning</string>
     <string name="place_sensitivity_optionDelay1_info">Platsrörelser behandlas omedelbart. Kan producera fler falska platsaviseringar om din signal är svag eller om du kör förbi platsen.</string>
     <string name="place_sensitivity_optionDelay2_title">Liten fördröjning</string>
-    <string name="place_sensitivity_optionDelay2_info">Väntar några sekunder innan den reagerar på platsrörelser. Kan producera falska platsaviseringar om din signal är svag eller om du kör förbi platsen.</string>
+    <string name="place_sensitivity_optionDelay2_info">Beroende på noggrannheten i den aktuella platsen kan appen vänta mellan 0-10 sekunder innan den reagerar på platsrörelser.</string>
     <string name="place_sensitivity_optionDelay3_title">Balanserad</string>
-    <string name="place_sensitivity_optionDelay3_info">Väntar upp till 10–15 sekunder innan den reagerar på platsrörelser. Vissa aviseringar kan misslyckas om systemet stoppar appen under behandlingen.</string>
+    <string name="place_sensitivity_optionDelay3_info">Beroende på noggrannheten i den aktuella platsen kan appen vänta upp till 5–15 sekunder innan den reagerar på platsrörelser. Vissa aviseringar kan misslyckas om systemet stoppar appen medan den bearbetar.</string>
     <string name="place_sensitivity_optionDelay4_title">Längre väntan</string>
-    <string name="place_sensitivity_optionDelay4_info">Väntar lite längre innan den reagerar på platsrörelser. Detta kommer att fördröja aviseringar, så se till att du är ansluten till Internet och att appen kan köras i bakgrunden utan begränsningar.</string>
+    <string name="place_sensitivity_optionDelay4_info">Väntar upp till 20-30 sekunder innan den reagerar på placeringsrörelser. Detta kommer att fördröja meddelanden, så se till att du är ansluten till Internet och att appen kan köras i bakgrunden utan begränsningar.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorera oexakta platser</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Platsavisering kommer att ignoreras om appen inte kan bekräfta platsen som exakt. Detta kan orsaka att legitima platsrörelser ignoreras eller fördröjs.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Platsavisering kommer att behandlas som vanligt. Använder mindre batteri men kan producera falska positiva resultat.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Batteriram</string>
     <string name="history_stats_elevation_gain">Höjdförändring</string>
     <string name="history_stats_elevation_range">Höjdintervall</string>
+    <string name="group_members_item_history_button">Historia</string>
 </resources>

@@ -643,7 +643,7 @@
     <string name="history_entry_clustered_count">Voci: %s</string>
     <string name="info_email_confirm_skip_button">Salta per ora</string>
     <string name="info_email_confirm_skip_notice">Ti verrà chiesto di nuovo più tardi</string>
-    <string name="groups_sharing_setting_timeline_title">Cronologia</string>
+    <string name="groups_sharing_setting_timeline_title">Cronologia delle posizioni</string>
     <string name="groups_sharing_setting_timeline_description">Se abilitato, gli aggiornamenti della tua posizione verranno salvati nella cronologia delle posizioni.</string>
     <string name="location_sharing_button_start_personal">Inizia a tracciare</string>
     <string name="location_sharing_button_stop_personal">Interrompi il tracciamento</string>
@@ -666,11 +666,11 @@
     <string name="place_sensitivity_optionDelay1_title">Nessun ritardo</string>
     <string name="place_sensitivity_optionDelay1_info">I movimenti del luogo vengono elaborati immediatamente. Potrebbe generare più avvisi falsi se il segnale è debole o se passi oltre il luogo.</string>
     <string name="place_sensitivity_optionDelay2_title">Ritardo breve</string>
-    <string name="place_sensitivity_optionDelay2_info">Aspetta alcuni secondi prima di reagire ai movimenti del luogo. Potrebbe generare avvisi falsi se il segnale è debole o se passi oltre il luogo.</string>
+    <string name="place_sensitivity_optionDelay2_info">A seconda dell\'accuratezza della posizione attuale, l\'app può attendere da 0 a 10 secondi prima di reagire ai movimenti del luogo.</string>
     <string name="place_sensitivity_optionDelay3_title">Bilanciato</string>
-    <string name="place_sensitivity_optionDelay3_info">Aspetta fino a 10-15 secondi prima di reagire ai movimenti del luogo. Alcuni avvisi potrebbero non attivarsi se il sistema interrompe l\'app durante l\'elaborazione.</string>
+    <string name="place_sensitivity_optionDelay3_info">A seconda dell\'accuratezza della posizione attuale, l\'app potrebbe attendere fino a 5-15 secondi prima di reagire ai movimenti del luogo. Alcuni avvisi potrebbero non riuscire se il sistema interrompe l\'app durante l\'elaborazione.</string>
     <string name="place_sensitivity_optionDelay4_title">Attesa più lunga</string>
-    <string name="place_sensitivity_optionDelay4_info">Aspetta un po\' più a lungo prima di reagire ai movimenti del luogo. Questo ritarderà le notifiche, quindi assicurati di essere connesso a Internet e che l\'app possa funzionare in background senza restrizioni.</string>
+    <string name="place_sensitivity_optionDelay4_info">Attende fino a 20-30 secondi prima di reagire ai movimenti del luogo. Ciò ritarderà le notifiche, quindi assicurati di essere connesso a Internet e che l\'app possa funzionare in background senza restrizioni.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignora posizioni inaccurate</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">L\'avviso del luogo sarà ignorato se l\'app non può confermare la posizione come accurata. Questo potrebbe causare l\'ignoranza o il ritardo di movimenti legittimi del luogo.</string>
     <string name="invite_plan_limit_chip_owner">Per aggiungere più membri a questo gruppo, si prega di aggiornare il piano o rimuovere uno dei membri attuali.</string>
@@ -834,4 +834,5 @@
     <string name="history_stats_battery_range">Autonomia della batteria</string>
     <string name="history_stats_elevation_gain">Dislivello</string>
     <string name="history_stats_elevation_range">Intervallo di elevazione</string>
+    <string name="group_members_item_history_button">Storia</string>
 </resources>

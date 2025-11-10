@@ -464,7 +464,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Pokud je povoleno, váš stav ukáže, zda je vaše poloha vypnuta, chybí vám oprávnění k poloze, nebo jste přestali sdílet svou polohu. Pokud je zakázáno, váš stav v těchto případech ukáže **%s**.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Oznámit členům</string>
     <string name="groups_sharing_setting_notifyOthers_description">Pokud je povoleno, členové skupiny obdrží oznámení, že jste začali sdílet svou polohu.</string>
-    <string name="groups_sharing_setting_timeline_title">Časová osa</string>
+    <string name="groups_sharing_setting_timeline_title">Historie polohy</string>
     <string name="groups_sharing_setting_timeline_description">Pokud je povoleno, aktualizace vaší polohy budou uloženy do historie polohy.</string>
     <string name="location_sharing_button_start_groups">Začít sdílet</string>
     <string name="location_sharing_button_start_personal">Začít sledovat</string>
@@ -626,11 +626,11 @@
     <string name="place_sensitivity_optionDelay1_title">Žádné zpoždění</string>
     <string name="place_sensitivity_optionDelay1_info">Pohyb místa je zpracován okamžitě. Může produkovat více falešných upozornění na místo, pokud je váš signál slabý nebo projíždíte kolem místa.</string>
     <string name="place_sensitivity_optionDelay2_title">Malé zpoždění</string>
-    <string name="place_sensitivity_optionDelay2_info">Čeká několik sekund, než reaguje na pohyby místa. Může produkovat falešná upozornění na místo, pokud je váš signál slabý nebo projíždíte kolem místa.</string>
+    <string name="place_sensitivity_optionDelay2_info">V závislosti na přesnosti aktuální polohy může aplikace čekat kdekoli od 0 do 10 sekund, než zareaguje na pohyby místa.</string>
     <string name="place_sensitivity_optionDelay3_title">Vyvážené</string>
-    <string name="place_sensitivity_optionDelay3_info">Čeká až 10–15 sekund, než reaguje na pohyby místa. Některá upozornění mohou selhat, pokud systém zastaví aplikaci během zpracování.</string>
+    <string name="place_sensitivity_optionDelay3_info">V závislosti na aktuální přesnosti umístění může aplikace čekat až 5–15 sekund, než zareaguje na pohyby místa. Některé upozornění mohou selhat, pokud systém zastaví aplikaci během zpracování.</string>
     <string name="place_sensitivity_optionDelay4_title">Delší čekání</string>
-    <string name="place_sensitivity_optionDelay4_info">Čeká o něco déle, než reaguje na pohyby místa. To zpozdí oznámení, takže se ujistěte, že jste připojeni k internetu a aplikace může běžet na pozadí bez omezení.</string>
+    <string name="place_sensitivity_optionDelay4_info">Čeká až 20-30 sekund, než zareaguje na pohyby místa. To zpozdí oznámení, takže se ujistěte, že jste připojeni k internetu a aplikace může běžet na pozadí bez omezení.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorovat nepřesná umístění</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Upozornění na místo bude ignorováno, pokud aplikace nemůže potvrdit umístění jako přesné. To může způsobit, že legitimní pohyby místa budou ignorovány nebo zpožděny.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Upozornění na místo bude zpracováno jako obvykle. Používá méně baterie, ale může produkovat falešné pozitivy.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Dosah baterie</string>
     <string name="history_stats_elevation_gain">Získání nadmořské výšky</string>
     <string name="history_stats_elevation_range">Rozsah nadmořské výšky</string>
+    <string name="group_members_item_history_button">Historie</string>
 </resources>

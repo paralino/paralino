@@ -691,7 +691,7 @@
     <string name="paywall_feature_section_others">Gemeinsame Vorteile</string>
     <string name="info_email_confirm_skip_button">Jetzt überspringen</string>
     <string name="info_email_confirm_skip_notice">Sie werden später erneut gefragt</string>
-    <string name="groups_sharing_setting_timeline_title">Zeitleiste</string>
+    <string name="groups_sharing_setting_timeline_title">Standortverlauf</string>
     <string name="groups_sharing_setting_timeline_description">Wenn aktiviert, werden Ihre Standortaktualisierungen im Standortverlauf gespeichert.</string>
     <string name="location_sharing_button_start_personal">Tracking starten</string>
     <string name="location_sharing_button_stop_personal">Tracking stoppen</string>
@@ -723,9 +723,9 @@
     <string name="place_sensitivity_optionDelay1_title">Keine Verzögerung</string>
     <string name="place_sensitivity_optionDelay1_info">Standortbewegungen werden sofort verarbeitet. Kann mehr falsche Standortbenachrichtigungen erzeugen, wenn Ihr Signal schwach ist oder Sie am Standort vorbeifahren.</string>
     <string name="place_sensitivity_optionDelay2_title">Kurze Verzögerung</string>
-    <string name="place_sensitivity_optionDelay2_info">Wartet einige Sekunden, bevor auf Standortbewegungen reagiert wird. Kann falsche Standortbenachrichtigungen erzeugen, wenn Ihr Signal schwach ist oder Sie am Standort vorbeifahren.</string>
-    <string name="place_sensitivity_optionDelay3_info">Wartet bis zu 10–15 Sekunden, bevor auf Standortbewegungen reagiert wird. Einige Benachrichtigungen könnten fehlschlagen, wenn das System die App während der Verarbeitung stoppt.</string>
-    <string name="place_sensitivity_optionDelay4_info">Wartet etwas länger, bevor auf Standortbewegungen reagiert wird. Dies verzögert die Benachrichtigungen, stellen Sie also sicher, dass Sie mit dem Internet verbunden sind und die App im Hintergrund ohne Einschränkungen ausgeführt werden kann.</string>
+    <string name="place_sensitivity_optionDelay2_info">Je nach Genauigkeit des aktuellen Standorts kann die App zwischen 0-10 Sekunden warten, bevor sie auf Ortsbewegungen reagiert.</string>
+    <string name="place_sensitivity_optionDelay3_info">Abhängig von der Genauigkeit des aktuellen Standorts kann die App bis zu 5–15 Sekunden warten, bevor sie auf Ortsbewegungen reagiert. Einige Benachrichtigungen könnten fehlschlagen, wenn das System die App während der Verarbeitung stoppt.</string>
+    <string name="place_sensitivity_optionDelay4_info">Warte 20-30 Sekunden, bevor auf Bewegungen reagiert wird. Dies wird die Benachrichtigungen verzögern, stellen Sie also sicher, dass Sie mit dem Internet verbunden sind und die App im Hintergrund ohne Einschränkungen ausgeführt werden kann.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ungenaue Standorte ignorieren</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Standortbenachrichtigungen werden ignoriert, wenn die App den Standort nicht als genau bestätigen kann. Dies kann dazu führen, dass legitime Standortbewegungen ignoriert oder verzögert werden.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Der Platzalarm wird wie gewohnt verarbeitet. Verbraucht weniger Akku, kann jedoch zu Fehlalarmen führen.</string>
@@ -834,4 +834,5 @@
     <string name="history_stats_battery_range">Batteriereichweite</string>
     <string name="history_stats_elevation_gain">Höhengewinn</string>
     <string name="history_stats_elevation_range">Höhenbereich</string>
+    <string name="group_members_item_history_button">Geschichte</string>
 </resources>

@@ -462,7 +462,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Ha engedélyezve van, az állapota mutatni fogja, ha a helymeghatározása ki van kapcsolva, hiányoznak a helymeghatározási engedélyek, vagy leállította a helymegosztást. Ha le van tiltva, az állapota **%s** fog mutatni ezekben az esetekben.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Értesítse a tagokat</string>
     <string name="groups_sharing_setting_notifyOthers_description">Ha engedélyezve van, a csoporttagok értesítést kapnak arról, hogy elkezdte megosztani a helyét.</string>
-    <string name="groups_sharing_setting_timeline_title">Idővonal</string>
+    <string name="groups_sharing_setting_timeline_title">Helyszíntörténet</string>
     <string name="groups_sharing_setting_timeline_description">Ha engedélyezve van, a helyfrissítések mentésre kerülnek a helytörténetbe.</string>
     <string name="location_sharing_button_start_groups">Kezdje el a megosztást</string>
     <string name="location_sharing_button_start_personal">Kezdje el a nyomkövetést</string>
@@ -751,8 +751,8 @@
     <string name="personalSpace_tracking_status_infinite">**Mindig aktív** nyomkövetés</string>
     <string name="personalSpace_sheet_introBanner_title">Személyes tered</string>
     <string name="personalSpace_sheet_introBanner_message">Ez egy privát terület, amely csak számodra és a készülékeid számára készült.\n\n • Tekintsd meg a saját helytörténetedet\n • Kezeld és kövesd nyomon a saját készülékeidet\n • Hozz létre olyan helyeket, amelyek csak neked számítanak\n\n A te tered, a te szabályaid.</string>
-    <string name="place_sensitivity_optionDelay3_info">Akár 10–15 másodpercet is vár, mielőtt reagálna a helyváltozásokra. Néhány értesítés meghiúsulhat, ha a rendszer leállítja az alkalmazást a feldolgozás során.</string>
-    <string name="place_sensitivity_optionDelay4_info">Kicsit tovább vár, mielőtt reagálna a helyváltozásokra. Ez késlelteti az értesítéseket, ezért győződjön meg róla, hogy csatlakozik az Internethez, és az alkalmazás korlátozások nélkül futhat a háttérben.</string>
+    <string name="place_sensitivity_optionDelay3_info">A jelenlegi helymeghatározás pontosságától függően az alkalmazás akár 5-15 másodpercig is várhat, mielőtt reagál a helyváltozásokra. Néhány értesítés meghiúsulhat, ha a rendszer leállítja az alkalmazást a feldolgozás során.</string>
+    <string name="place_sensitivity_optionDelay4_info">Akár 20-30 másodpercet is vár, mielőtt reagálna a helyzetváltozásokra. Ez késleltetheti az értesítéseket, ezért győződjön meg arról, hogy csatlakoztatva van az Internethez, és az alkalmazás korlátozások nélkül futhat a háttérben.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">A helyértesítést figyelmen kívül hagyják, ha az alkalmazás nem tudja megerősíteni a helyet pontosnak. Ez valódi helyváltozásokat okozhat, amelyeket figyelmen kívül hagynak vagy késlekednek.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">A helyértesítést a megszokott módon dolgozzák fel. Kevesebb akkumulátort használ, de hamis pozitívumokat okozhat.</string>
     <string name="place_sensitivity_optionRefresh_inaccurate_title">Frissítés Csak Ha a Hely Pontatlan</string>
@@ -767,7 +767,7 @@
     <string name="place_sensitivity_optionDelay1_title">Nincs Késleltetés</string>
     <string name="place_sensitivity_optionDelay1_info">A helyváltozások azonnal feldolgozásra kerülnek. További hamis helyértesítéseket okozhat, ha a jel gyenge, vagy ha elhalad a hely mellett.</string>
     <string name="place_sensitivity_optionDelay2_title">Kis Késleltetés</string>
-    <string name="place_sensitivity_optionDelay2_info">Néhány másodpercet vár, mielőtt reagálna a helyváltozásokra. További hamis helyértesítéseket okozhat, ha a jel gyenge, vagy ha elhalad a hely mellett.</string>
+    <string name="place_sensitivity_optionDelay2_info">A jelenlegi helymeghatározás pontosságától függően az alkalmazás 0-10 másodpercig is várhat, mielőtt reagálna a helyváltoztatásokra.</string>
     <string name="place_sensitivity_optionDelay3_title">Kiegyensúlyozott</string>
     <string name="place_sensitivity_optionDelay4_title">Hosszabb Várakozás</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Figyelmen kívül hagyja a pontatlan helyeket</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Akkumulátor Hatótávolság</string>
     <string name="history_stats_elevation_gain">Emelkedés</string>
     <string name="history_stats_elevation_range">Emelkedési Tartomány</string>
+    <string name="group_members_item_history_button">Történelem</string>
 </resources>

@@ -454,7 +454,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Якщо увімкнено, ваш статус покаже, якщо ваше місцезнаходження вимкнено, ви не маєте дозволів на місцезнаходження або ви припинили ділитися своїм місцезнаходженням. Якщо вимкнено, ваш статус покаже **%s** у цих випадках.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Повідомити учасників</string>
     <string name="groups_sharing_setting_notifyOthers_description">Якщо увімкнено, учасники групи отримають сповіщення про те, що ви почали ділитися своїм місцезнаходженням.</string>
-    <string name="groups_sharing_setting_timeline_title">Хронологія</string>
+    <string name="groups_sharing_setting_timeline_title">Історія місцезнаходжень</string>
     <string name="groups_sharing_setting_timeline_description">Якщо увімкнено, оновлення вашого місцезнаходження будуть збережені в історії місцезнаходжень.</string>
     <string name="location_sharing_button_start_groups">Почати ділитися</string>
     <string name="location_sharing_button_start_personal">Почати відстеження</string>
@@ -599,11 +599,11 @@
     <string name="place_sensitivity_optionDelay1_title">Без затримки</string>
     <string name="place_sensitivity_optionDelay1_info">Рухи місця обробляються негайно. Можуть виникати більше помилкових сповіщень про місце, якщо ваш сигнал слабкий або ви проїжджаєте повз місце.</string>
     <string name="place_sensitivity_optionDelay2_title">Невелика затримка</string>
-    <string name="place_sensitivity_optionDelay2_info">Чекає кілька секунд перед реакцією на рухи місця. Можуть виникати помилкові сповіщення про місце, якщо ваш сигнал слабкий або ви проїжджаєте повз місце.</string>
+    <string name="place_sensitivity_optionDelay2_info">Залежно від точності поточного місцезнаходження, застосунок може чекати від 0 до 10 секунд перед тим, як реагувати на переміщення місця.</string>
     <string name="place_sensitivity_optionDelay3_title">Збалансовано</string>
-    <string name="place_sensitivity_optionDelay3_info">Чекає до 10–15 секунд перед реакцією на рухи місця. Деякі сповіщення можуть не спрацювати, якщо система зупиняє додаток під час обробки.</string>
+    <string name="place_sensitivity_optionDelay3_info">Залежно від точності визначення місцезнаходження, програма може чекати до 5–15 секунд перед тим, як відреагувати на переміщення місця. Деякі сповіщення можуть не спрацювати, якщо система зупиняє програму під час обробки.</string>
     <string name="place_sensitivity_optionDelay4_title">Довше очікування</string>
-    <string name="place_sensitivity_optionDelay4_info">Чекає трохи довше перед реакцією на рухи місця. Це затримає сповіщення, тому переконайтеся, що ви підключені до Інтернету і додаток може працювати у фоновому режимі без обмежень.</string>
+    <string name="place_sensitivity_optionDelay4_info">Чекає до 20-30 секунд перед реакцією на переміщення місць. Це затримає сповіщення, тому переконайтеся, що ви підключені до Інтернету та що додаток може працювати у фоновому режимі без обмежень.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ігнорувати неточні місцезнаходження</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Сповіщення про місце буде проігноровано, якщо додаток не може підтвердити місцезнаходження як точне. Це може призвести до ігнорування або затримки законних рухів місця.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Сповіщення про місце буде оброблено як зазвичай. Використовує менше акумулятора, але може призвести до помилкових сповіщень.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Діапазон батареї</string>
     <string name="history_stats_elevation_gain">Набір висоти</string>
     <string name="history_stats_elevation_range">Діапазон висоти</string>
+    <string name="group_members_item_history_button">Історія</string>
 </resources>

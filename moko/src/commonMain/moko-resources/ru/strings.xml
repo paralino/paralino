@@ -473,7 +473,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Если включено, ваш статус будет показывать, если ваше местоположение отключено, у вас отсутствуют разрешения на доступ к местоположению или вы прекратили делиться своим местоположением. Если отключено, ваш статус будет показывать **%s** в этих случаях.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Уведомить участников</string>
     <string name="groups_sharing_setting_notifyOthers_description">Если включено, участники группы получат уведомление о том, что вы начали делиться своим местоположением.</string>
-    <string name="groups_sharing_setting_timeline_title">Хронология</string>
+    <string name="groups_sharing_setting_timeline_title">История местоположений</string>
     <string name="groups_sharing_setting_timeline_description">Если включено, обновления вашего местоположения будут сохранены в истории местоположений.</string>
     <string name="location_sharing_button_start_groups">Начать делиться</string>
     <string name="location_sharing_button_start_personal">Начать отслеживание</string>
@@ -617,11 +617,11 @@
     <string name="place_sensitivity_optionDelay1_title">Без задержки</string>
     <string name="place_sensitivity_optionDelay1_info">Движения местоположения обрабатываются немедленно. Может привести к большему количеству ложных уведомлений о местоположении, если ваш сигнал слабый или вы проезжаете мимо места.</string>
     <string name="place_sensitivity_optionDelay2_title">Небольшая задержка</string>
-    <string name="place_sensitivity_optionDelay2_info">Ждет несколько секунд перед реакцией на движения местоположения. Может привести к ложным уведомлениям о местоположении, если ваш сигнал слабый или вы проезжаете мимо места.</string>
+    <string name="place_sensitivity_optionDelay2_info">В зависимости от точности текущего местоположения приложение может ожидать от 0 до 10 секунд перед тем, как отреагировать на перемещение.</string>
     <string name="place_sensitivity_optionDelay3_title">Сбалансировано</string>
-    <string name="place_sensitivity_optionDelay3_info">Ждет до 10–15 секунд перед реакцией на движения местоположения. Некоторые уведомления могут не сработать, если система остановит приложение во время обработки.</string>
+    <string name="place_sensitivity_optionDelay3_info">В зависимости от точности текущего местоположения, приложение может ожидать от 5 до 15 секунд, прежде чем отреагировать на перемещения. Некоторые оповещения могут не сработать, если система остановит приложение во время обработки.</string>
     <string name="place_sensitivity_optionDelay4_title">Длительное ожидание</string>
-    <string name="place_sensitivity_optionDelay4_info">Ждет немного дольше перед реакцией на движения местоположения. Это задержит уведомления, поэтому убедитесь, что вы подключены к Интернету и приложение может работать в фоновом режиме без ограничений.</string>
+    <string name="place_sensitivity_optionDelay4_info">Ожидает до 20-30 секунд перед реакцией на перемещения мест. Это задержит уведомления, поэтому убедитесь, что вы подключены к Интернету и приложение может работать в фоновом режиме без ограничений.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Игнорировать неточные местоположения</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Уведомление о местоположении будет проигнорировано, если приложение не может подтвердить местоположение как точное. Это может привести к игнорированию или задержке законных движений местоположения.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Уведомление о местоположении будет обработано как обычно. Использует меньше батареи, но может привести к ложным срабатываниям.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Запас батареи</string>
     <string name="history_stats_elevation_gain">Набор высоты</string>
     <string name="history_stats_elevation_range">Диапазон высоты</string>
+    <string name="group_members_item_history_button">История</string>
 </resources>

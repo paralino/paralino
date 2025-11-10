@@ -650,7 +650,7 @@
     <string name="personalSpace_tracking_status_infinite">**Altijd aan** tracking is actief</string>
     <string name="personalSpace_sheet_introBanner_title">Uw persoonlijke ruimte</string>
     <string name="personalSpace_sheet_introBanner_message">Dit is een privégebied alleen voor u en uw apparaten.  \n\n • Bekijk uw eigen locatiegeschiedenis  \n • Beheer en houd uw eigen apparaten bij  \n • Maak plaatsen die alleen voor u belangrijk zijn  \n\n Uw ruimte, uw regels.</string>
-    <string name="groups_sharing_setting_timeline_title">Tijdlijn</string>
+    <string name="groups_sharing_setting_timeline_title">Locatiegeschiedenis</string>
     <string name="groups_sharing_setting_timeline_description">Als ingeschakeld, worden uw locatie-updates opgeslagen in de locatiegeschiedenis.</string>
     <string name="location_sharing_button_start_personal">Begin met volgen</string>
     <string name="location_sharing_button_stop_personal">Stop met volgen</string>
@@ -719,9 +719,9 @@
     <string name="paywall_feature_section_others">Algemene voordelen</string>
     <string name="place_sensitivity_optionDelay1_info">Plaatsbewegingen worden onmiddellijk verwerkt. Kan meer valse plaatsmeldingen genereren als uw signaal zwak is of als u langs de plaats rijdt.</string>
     <string name="place_sensitivity_optionDelay2_title">Kleine vertraging</string>
-    <string name="place_sensitivity_optionDelay2_info">Wacht een paar seconden voordat er op plaatsbewegingen wordt gereageerd. Kan valse plaatswaarschuwingen genereren als uw signaal zwak is of als u langs de plaats rijdt.</string>
-    <string name="place_sensitivity_optionDelay3_info">Wacht tot 10–15 seconden voordat er op plaatsbewegingen wordt gereageerd. Sommige waarschuwingen kunnen mislukken als het systeem de app stopt tijdens het verwerken.</string>
-    <string name="place_sensitivity_optionDelay4_info">Wacht iets langer voordat er op plaatsbewegingen wordt gereageerd. Dit zal meldingen vertragen, dus zorg ervoor dat u verbonden bent met het internet en dat de app op de achtergrond zonder beperkingen kan draaien.</string>
+    <string name="place_sensitivity_optionDelay2_info">Afhankelijk van de nauwkeurigheid van de huidige locatie kan de app tussen de 0-10 seconden wachten voordat hij reageert op plaatsbewegingen.</string>
+    <string name="place_sensitivity_optionDelay3_info">Afhankelijk van de nauwkeurigheid van de huidige locatie, kan de app tot 5–15 seconden wachten voordat deze reageert op plaatsbewegingen. Sommige waarschuwingen kunnen mislukken als het systeem de app stopt tijdens het verwerken.</string>
+    <string name="place_sensitivity_optionDelay4_info">Wacht tot 20-30 seconden voordat je reageert op plaatsing van bewegingen. Dit zal meldingen vertragen, dus zorg ervoor dat je verbonden bent met het internet en dat de app op de achtergrond zonder beperkingen kan draaien.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Negeer onnauwkeurige locaties</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Plaatswaarschuwing wordt genegeerd als de app de locatie niet als nauwkeurig kan bevestigen. Dit kan ertoe leiden dat legitieme plaatsbewegingen worden genegeerd of vertraagd.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Plaatswaarschuwing wordt zoals gebruikelijk verwerkt. Verbruikt minder batterij, maar kan valse positieven opleveren.</string>
@@ -834,4 +834,5 @@
     <string name="history_stats_battery_range">Batterij Bereik</string>
     <string name="history_stats_elevation_gain">HellingstoENAME</string>
     <string name="history_stats_elevation_range">Helling Bereik</string>
+    <string name="group_members_item_history_button">Geschiedenis</string>
 </resources>

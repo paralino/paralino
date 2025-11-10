@@ -691,7 +691,7 @@
     <string name="paywall_feature_section_others">Benefícios comuns</string>
     <string name="info_email_confirm_skip_button">Pular por agora</string>
     <string name="info_email_confirm_skip_notice">Você será questionado novamente mais tarde</string>
-    <string name="groups_sharing_setting_timeline_title">Linha do tempo</string>
+    <string name="groups_sharing_setting_timeline_title">Histórico de localização</string>
     <string name="groups_sharing_setting_timeline_description">Se ativado, suas atualizações de localização serão salvas no histórico de localização.</string>
     <string name="location_sharing_button_start_personal">Iniciar rastreamento</string>
     <string name="location_sharing_button_stop_personal">Parar rastreamento</string>
@@ -725,11 +725,11 @@
     <string name="place_sensitivity_optionDelay1_title">Sem Atraso</string>
     <string name="place_sensitivity_optionDelay1_info">Os movimentos do lugar são processados imediatamente. Pode produzir mais alertas falsos de lugar se seu sinal estiver fraco ou se você passar rapidamente pelo lugar.</string>
     <string name="place_sensitivity_optionDelay2_title">Pequeno Atraso</string>
-    <string name="place_sensitivity_optionDelay2_info">Espera alguns segundos antes de reagir aos movimentos do lugar. Pode produzir alertas falsos de lugar se seu sinal estiver fraco ou se você passar rapidamente pelo lugar.</string>
+    <string name="place_sensitivity_optionDelay2_info">Dependendo da precisão da localização atual, o aplicativo pode esperar entre 0 a 10 segundos antes de reagir a movimentos de lugar.</string>
     <string name="place_sensitivity_optionDelay3_title">Equilibrado</string>
-    <string name="place_sensitivity_optionDelay3_info">Espera até 10–15 segundos antes de reagir aos movimentos do lugar. Alguns alertas podem falhar se o sistema parar o aplicativo enquanto processa.</string>
+    <string name="place_sensitivity_optionDelay3_info">Dependendo da precisão da localização atual, o aplicativo pode esperar de 5 a 15 segundos antes de reagir aos movimentos do local. Alguns alertas podem falhar se o sistema interromper o aplicativo durante o processamento.</string>
     <string name="place_sensitivity_optionDelay4_title">Aguardar Mais</string>
-    <string name="place_sensitivity_optionDelay4_info">Espera um pouco mais antes de reagir aos movimentos do lugar. Isso atrasará as notificações, então certifique-se de que você está conectado à Internet e que o aplicativo pode ser executado em segundo plano sem restrições.</string>
+    <string name="place_sensitivity_optionDelay4_info">Aguarda de 20 a 30 segundos antes de reagir a movimentos de lugares. Isso atrasará as notificações, então certifique-se de que está conectado à Internet e que o aplicativo pode funcionar em segundo plano sem restrições.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorar localizações imprecisas</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">O alerta de lugar será ignorado se o aplicativo não puder confirmar a localização como precisa. Isso pode fazer com que movimentos legítimos de lugar sejam ignorados ou atrasados.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">O alerta de local será processado como de costume. Usa menos bateria, mas pode produzir falsos positivos.</string>
@@ -834,4 +834,5 @@
     <string name="history_stats_battery_range">Autonomia da Bateria</string>
     <string name="history_stats_elevation_gain">Ganho de Elevação</string>
     <string name="history_stats_elevation_range">Faixa de Elevação</string>
+    <string name="group_members_item_history_button">História</string>
 </resources>

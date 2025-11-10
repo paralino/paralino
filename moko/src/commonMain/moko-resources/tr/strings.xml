@@ -484,7 +484,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Eğer etkinse, durumunuz konumunuz kapalıysa, konum izinleriniz eksikse veya konumunuzu paylaşmayı durdurduysanız bunu gösterecektir. Eğer devre dışıysa, bu durumlarda durumunuz **%s** olarak görünecektir.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Üyeleri bilgilendir</string>
     <string name="groups_sharing_setting_notifyOthers_description">Eğer etkinleştirilirse, grup üyeleri konumunuzu paylaşmaya başladığınızda bildirim alacaklardır.</string>
-    <string name="groups_sharing_setting_timeline_title">Zaman Çizelgesi</string>
+    <string name="groups_sharing_setting_timeline_title">Konum geçmişi</string>
     <string name="groups_sharing_setting_timeline_description">Eğer etkinleştirilirse, konum güncellemeleriniz konum geçmişine kaydedilecektir.</string>
     <string name="location_sharing_button_start_groups">Paylaşmaya başla</string>
     <string name="location_sharing_button_start_personal">Takibi başlat</string>
@@ -648,11 +648,11 @@
     <string name="place_sensitivity_optionDelay1_title">Gecikme Yok</string>
     <string name="place_sensitivity_optionDelay1_info">Yer hareketleri hemen işlenir. Sinyaliniz zayıfsa veya yerin yanından geçiyorsanız daha fazla yanlış yer uyarısı üretebilir.</string>
     <string name="place_sensitivity_optionDelay2_title">Küçük Gecikme</string>
-    <string name="place_sensitivity_optionDelay2_info">Yer hareketlerine tepki vermeden önce birkaç saniye bekler. Sinyaliniz zayıfsa veya yerin yanından geçiyorsanız yanlış yer uyarıları üretebilir.</string>
+    <string name="place_sensitivity_optionDelay2_info">Mevcut konum doğruluğuna bağlı olarak, uygulama yer hareketlerine tepki vermeden önce 0-10 saniye arasında bekleyebilir.</string>
     <string name="place_sensitivity_optionDelay3_title">Dengeli</string>
-    <string name="place_sensitivity_optionDelay3_info">Yer hareketlerine tepki vermeden önce 10-15 saniye bekler. İşlem sırasında sistem uygulamayı durdurursa bazı uyarılar başarısız olabilir.</string>
+    <string name="place_sensitivity_optionDelay3_info">Mevcut konum doğruluğuna bağlı olarak, uygulama yer hareketlerine tepki vermeden önce 5–15 saniye bekleyebilir. Bazı bildirimler, sistem uygulamayı işleme alırken durdurursa başarısız olabilir.</string>
     <string name="place_sensitivity_optionDelay4_title">Daha Uzun Bekleme</string>
-    <string name="place_sensitivity_optionDelay4_info">Yer hareketlerine tepki vermeden önce biraz daha uzun bekler. Bu bildirimleri geciktirecektir, bu nedenle İnternete bağlı olduğunuzdan ve uygulamanın arka planda kısıtlamasız çalışabildiğinden emin olun.</string>
+    <string name="place_sensitivity_optionDelay4_info">Hareketlerinizi algılamadan önce 20-30 saniye bekler. Bu, bildirimlerin gecikmesine neden olacaktır; bu nedenle, Internete bağlı olduğunuzdan emin olun ve uygulamanın arka planda kısıtlamalar olmadan çalışabildiğinden emin olun.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Yanlış konumları göz ardı et</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Uygulama konumu doğru olarak onaylayamazsa yer uyarısı göz ardı edilecektir. Bu, meşru yer hareketlerinin göz ardı edilmesine veya gecikmesine neden olabilir.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Yer uyarısı normal şekilde işlenecektir. Daha az pil kullanır ancak yanlış pozitifler üretebilir.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Batarya Menzili</string>
     <string name="history_stats_elevation_gain">Yükseklik Kazancı</string>
     <string name="history_stats_elevation_range">Yükseklik Menzili</string>
+    <string name="group_members_item_history_button">Tarih</string>
 </resources>

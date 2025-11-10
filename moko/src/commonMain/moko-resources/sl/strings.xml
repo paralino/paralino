@@ -482,7 +482,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Če je omogočeno, bo vaše stanje prikazovalo, če je vaša lokacija izklopljena, če manjkajo dovoljenja za lokacijo ali če prenehate deliti svojo lokacijo. Če je onemogočeno, bo vaše stanje v teh primerih prikazovalo **%s**.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Obvesti člane</string>
     <string name="groups_sharing_setting_notifyOthers_description">Če je omogočeno, bodo člani skupine prejeli obvestilo, da ste začeli deliti svojo lokacijo.</string>
-    <string name="groups_sharing_setting_timeline_title">Časovnica</string>
+    <string name="groups_sharing_setting_timeline_title">Zgodovina lokacije</string>
     <string name="groups_sharing_setting_timeline_description">Če je omogočeno, bodo posodobitve vaše lokacije shranjene v zgodovino lokacij.</string>
     <string name="location_sharing_button_start_groups">Začnite deliti</string>
     <string name="location_sharing_button_start_personal">Začnite slediti</string>
@@ -626,11 +626,11 @@
     <string name="place_sensitivity_optionDelay1_title">Brez zamika</string>
     <string name="place_sensitivity_optionDelay1_info">Premiki kraja se obdelajo takoj. Lahko povzročijo več lažnih opozoril o kraju, če je vaš signal šibek ali če se peljete mimo kraja.</string>
     <string name="place_sensitivity_optionDelay2_title">Majhen zamik</string>
-    <string name="place_sensitivity_optionDelay2_info">Čaka nekaj sekund, preden se odzove na premike kraja. Lahko povzroči lažna opozorila o kraju, če je vaš signal šibek ali če se peljete mimo kraja.</string>
+    <string name="place_sensitivity_optionDelay2_info">Odvisno od natančnosti trenutne lokacije, lahko aplikacija čaka kjerkoli med 0-10 sekundami, preden se odzove na premike mesta.</string>
     <string name="place_sensitivity_optionDelay3_title">Uravnoteženo</string>
-    <string name="place_sensitivity_optionDelay3_info">Čaka do 10–15 sekund, preden se odzove na premike kraja. Nekatera opozorila morda ne bodo delovala, če sistem ustavi aplikacijo med obdelavo.</string>
+    <string name="place_sensitivity_optionDelay3_info">Glede natančnosti trenutne lokacije, lahko aplikacija čaka od 5 do 15 sekund, preden reagira na premike na mestu. Nekateri opozorilni signali morda ne bodo delovali, če sistem ustavi aplikacijo med obdelavo.</string>
     <string name="place_sensitivity_optionDelay4_title">Daljši zamik</string>
-    <string name="place_sensitivity_optionDelay4_info">Čaka nekoliko dlje, preden se odzove na premike kraja. To bo zamudilo obvestila, zato se prepričajte, da ste povezani z internetom in da lahko aplikacija deluje v ozadju brez omejitev.</string>
+    <string name="place_sensitivity_optionDelay4_info">Čaka do 20-30 sekundi pre nego što reaguje na pomeranje mesta. Ovo će odložiti obaveštenja, stoga se pobrinite da ste povezani na Internet i da aplikacija može da radi u pozadini bez ograničenja.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignoriraj netočne lokacije</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Opozorilo o kraju bo ignorirano, če aplikacija ne more potrditi lokacije kot natančne. To lahko povzroči, da se legitimni premiki kraja ignorirajo ali zamudijo.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Opozorilo o kraju bo obdelano kot običajno. Porabi manj baterije, vendar lahko povzroči lažne pozitivne rezultate.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Baterijski Doseg</string>
     <string name="history_stats_elevation_gain">Višinska Razlika</string>
     <string name="history_stats_elevation_range">Višinski Doseg</string>
+    <string name="group_members_item_history_button">Zgodovina</string>
 </resources>

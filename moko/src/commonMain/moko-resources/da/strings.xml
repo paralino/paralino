@@ -458,7 +458,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Hvis aktiveret, vil din status vise, hvis din placering er slået fra, du mangler placeringstilladelser, eller du stopper med at dele din placering. Hvis deaktiveret, vil din status vise **%s** i disse tilfælde.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Underret medlemmer</string>
     <string name="groups_sharing_setting_notifyOthers_description">Hvis aktiveret, vil gruppemedlemmer modtage en meddelelse om, at du er begyndt at dele din placering.</string>
-    <string name="groups_sharing_setting_timeline_title">Tidslinje</string>
+    <string name="groups_sharing_setting_timeline_title">Placeringens historie</string>
     <string name="groups_sharing_setting_timeline_description">Hvis aktiveret, vil dine placeringopdateringer blive gemt i placeringens historik.</string>
     <string name="location_sharing_button_start_groups">Begynd at dele</string>
     <string name="location_sharing_button_start_personal">Begynd at spore</string>
@@ -602,11 +602,11 @@
     <string name="place_sensitivity_optionDelay1_title">Ingen Forsinkelse</string>
     <string name="place_sensitivity_optionDelay1_info">Stedbevægelser behandles straks. Kan producere flere falske stedalarmer, hvis dit signal er svagt, eller hvis du kører forbi stedet.</string>
     <string name="place_sensitivity_optionDelay2_title">Lille Forsinkelse</string>
-    <string name="place_sensitivity_optionDelay2_info">Venter et par sekunder, før den reagerer på stedbevægelser. Kan producere falske stedalarmer, hvis dit signal er svagt, eller hvis du kører forbi stedet.</string>
+    <string name="place_sensitivity_optionDelay2_info">Afhankelijk af nøjagtigheden af den nuværende placering kan appen vente alt mellem 0-10 sekunder, før den reagerer på placeringens bevægelser.</string>
     <string name="place_sensitivity_optionDelay3_title">Balanceret</string>
-    <string name="place_sensitivity_optionDelay3_info">Venter op til 10–15 sekunder, før den reagerer på stedbevægelser. Nogle alarmer kan fejle, hvis systemet stopper appen under behandlingen.</string>
+    <string name="place_sensitivity_optionDelay3_info">Afhængigt af nøjagtigheden af den nuværende placering kan appen vente op til 5–15 sekunder, før den reagerer på bevægelser på stedet. Nogle alarmer kan fejle, hvis systemet stopper appen, mens det behandler.</string>
     <string name="place_sensitivity_optionDelay4_title">Længere Ventetid</string>
-    <string name="place_sensitivity_optionDelay4_info">Venter lidt længere, før den reagerer på stedbevægelser. Dette vil forsinke meddelelser, så sørg for, at du er tilsluttet internettet, og at appen kan køre i baggrunden uden begrænsninger.</string>
+    <string name="place_sensitivity_optionDelay4_info">Venter op til 20-30 sekunder før den reagerer på placeringer. Dette vil forsinke meddelelserne, så sørg for, at du er tilsluttet internettet, og at appen kan køre i baggrunden uden begrænsninger.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorer unøjagtige placeringer</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Stedalarm vil blive ignoreret, hvis appen ikke kan bekræfte placeringen som nøjagtig. Dette kan medføre, at legitime stedbevægelser bliver ignoreret eller forsinket.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Stedalarm vil blive behandlet som sædvanligt. Bruger mindre batteri, men kan producere falske positiver.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Batteri Rækkevidde</string>
     <string name="history_stats_elevation_gain">Højdeforøgelse</string>
     <string name="history_stats_elevation_range">Højderækkevidde</string>
+    <string name="group_members_item_history_button">Historie</string>
 </resources>

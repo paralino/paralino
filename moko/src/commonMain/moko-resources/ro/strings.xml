@@ -480,7 +480,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Dacă este activat, starea dumneavoastră va arăta dacă locația este dezactivată, dacă lipsesc permisiunile de locație sau dacă ați oprit partajarea locației. Dacă este dezactivat, starea dumneavoastră va arăta **%s** în aceste cazuri.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notificare membri</string>
     <string name="groups_sharing_setting_notifyOthers_description">Dacă este activat, membrii grupului vor primi o notificare că ați început să partajați locația dumneavoastră.</string>
-    <string name="groups_sharing_setting_timeline_title">Cronologie</string>
+    <string name="groups_sharing_setting_timeline_title">Istoricul locației</string>
     <string name="groups_sharing_setting_timeline_description">Dacă este activat, actualizările locației dumneavoastră vor fi salvate în istoricul locației.</string>
     <string name="location_sharing_button_start_groups">Începeți partajarea</string>
     <string name="location_sharing_button_start_personal">Începeți urmărirea</string>
@@ -624,11 +624,11 @@
     <string name="place_sensitivity_optionDelay1_title">Fără întârziere</string>
     <string name="place_sensitivity_optionDelay1_info">Mișcările locului sunt procesate imediat. Poate produce mai multe alerte false de loc dacă semnalul dumneavoastră este slab sau treceți pe lângă loc.</string>
     <string name="place_sensitivity_optionDelay2_title">Întârziere mică</string>
-    <string name="place_sensitivity_optionDelay2_info">Așteaptă câteva secunde înainte de a reacționa la mișcările locului. Poate produce alerte false de loc dacă semnalul dumneavoastră este slab sau treceți pe lângă loc.</string>
+    <string name="place_sensitivity_optionDelay2_info">În funcție de acuratețea locației curente, aplicația poate aștepta între 0-10 secunde înainte de a reacționa la mișcările locului.</string>
     <string name="place_sensitivity_optionDelay3_title">Echilibrat</string>
-    <string name="place_sensitivity_optionDelay3_info">Așteaptă până la 10–15 secunde înainte de a reacționa la mișcările locului. Unele alerte ar putea eșua dacă sistemul oprește aplicația în timpul procesării.</string>
+    <string name="place_sensitivity_optionDelay3_info">În funcție de precizia locației actuale, aplicația poate aștepta până la 5–15 secunde înainte de a reacționa la mișcările locului. Unele alerte ar putea eșua dacă sistemul oprește aplicația în timpul procesării.</string>
     <string name="place_sensitivity_optionDelay4_title">Așteptare mai lungă</string>
-    <string name="place_sensitivity_optionDelay4_info">Așteaptă un pic mai mult înainte de a reacționa la mișcările locului. Acest lucru va întârzia notificările, așa că asigurați-vă că sunteți conectat la Internet și că aplicația poate rula în fundal fără restricții.</string>
+    <string name="place_sensitivity_optionDelay4_info">Așteaptă până la 20-30 de secunde înainte de a reacționa la mișcările locului. Acest lucru va întârzia notificările, așa că asigură-te că ești conectat la Internet și că aplicația poate rula în fundal fără restricții.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorarea locațiilor inexacte</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Alertele de loc vor fi ignorate dacă aplicația nu poate confirma locația ca fiind precisă. Acest lucru ar putea cauza ignorarea sau întârzierea mișcărilor legitime de loc.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Alertele de loc vor fi procesate ca de obicei. Folosește mai puțină baterie, dar ar putea produce rezultate false.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Autonomie baterie</string>
     <string name="history_stats_elevation_gain">Crestere de altitudine</string>
     <string name="history_stats_elevation_range">Interval de altitudine</string>
+    <string name="group_members_item_history_button">Istorie</string>
 </resources>

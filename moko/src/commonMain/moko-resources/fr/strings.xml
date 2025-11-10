@@ -689,7 +689,7 @@
     <string name="paywall_feature_section_others">Avantages communs</string>
     <string name="info_email_confirm_skip_button">Passer pour l\'instant</string>
     <string name="info_email_confirm_skip_notice">Vous serez à nouveau interrogé plus tard</string>
-    <string name="groups_sharing_setting_timeline_title">Chronologie</string>
+    <string name="groups_sharing_setting_timeline_title">Historique de localisation</string>
     <string name="groups_sharing_setting_timeline_description">Si activé, vos mises à jour de localisation seront enregistrées dans l\'historique de localisation.</string>
     <string name="location_sharing_button_start_personal">Commencer le suivi</string>
     <string name="location_sharing_button_stop_personal">Arrêter le suivi</string>
@@ -724,11 +724,11 @@
     <string name="place_sensitivity_optionDelay1_title">Aucun délai</string>
     <string name="place_sensitivity_optionDelay1_info">Les mouvements de lieu sont traités immédiatement. Cela peut produire plus de fausses alertes de lieu si votre signal est faible ou si vous passez devant le lieu.</string>
     <string name="place_sensitivity_optionDelay2_title">Petit délai</string>
-    <string name="place_sensitivity_optionDelay2_info">Attends quelques secondes avant de réagir aux mouvements de lieu. Cela peut produire de fausses alertes de lieu si votre signal est faible ou si vous passez devant le lieu.</string>
+    <string name="place_sensitivity_optionDelay2_info">En fonction de la précision de l\'emplacement actuel, l\'application peut attendre entre 0 et 10 secondes avant de réagir aux mouvements de lieu.</string>
     <string name="place_sensitivity_optionDelay3_title">Équilibré</string>
-    <string name="place_sensitivity_optionDelay3_info">Attends jusqu\'à 10 à 15 secondes avant de réagir aux mouvements de lieu. Certaines alertes peuvent échouer si le système arrête l\'application pendant le traitement.</string>
+    <string name="place_sensitivity_optionDelay3_info">En fonction de la précision de la localisation actuelle, l\'application peut attendre jusqu\'à 5 à 15 secondes avant de réagir aux mouvements de l\'emplacement. Certaines alertes pourraient échouer si le système arrête l\'application pendant le traitement.</string>
     <string name="place_sensitivity_optionDelay4_title">Attente plus longue</string>
-    <string name="place_sensitivity_optionDelay4_info">Attends un peu plus longtemps avant de réagir aux mouvements de lieu. Cela retardera les notifications, alors assurez-vous d\'être connecté à Internet et que l\'application peut fonctionner en arrière-plan sans restrictions.</string>
+    <string name="place_sensitivity_optionDelay4_info">Attendez jusqu\'à 20 à 30 secondes avant de réagir aux déplacements placés. Cela retardera les notifications, veillez donc à être connecté à Internet et à ce que l\'application puisse fonctionner en arrière-plan sans restrictions.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignorer les emplacements inexactes</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">L\'alerte de lieu sera ignorée si l\'application ne peut pas confirmer que l\'emplacement est précis. Cela pourrait entraîner l\'ignorance ou le retard de mouvements de lieu légitimes.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">L\'alerte sera traitée comme d\'habitude. Utilise moins de batterie mais pourrait produire de faux positifs.</string>
@@ -834,4 +834,5 @@
     <string name="history_stats_battery_range">Plage de batterie</string>
     <string name="history_stats_elevation_gain">Dénivelé</string>
     <string name="history_stats_elevation_range">Plage d\'élévation</string>
+    <string name="group_members_item_history_button">Histoire</string>
 </resources>

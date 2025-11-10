@@ -487,7 +487,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">Εάν είναι ενεργοποιημένο, η κατάσταση σας θα δείχνει αν η τοποθεσία σας είναι απενεργοποιημένη, αν λείπουν άδειες τοποθεσίας ή αν σταματήσετε να μοιράζεστε την τοποθεσία σας. Εάν είναι απενεργοποιημένο, η κατάσταση σας θα δείχνει **%s** σε αυτές τις περιπτώσεις.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Ειδοποίηση μελών</string>
     <string name="groups_sharing_setting_notifyOthers_description">Εάν είναι ενεργοποιημένο, τα μέλη της ομάδας θα λάβουν ειδοποίηση ότι αρχίσατε να μοιράζεστε την τοποθεσία σας.</string>
-    <string name="groups_sharing_setting_timeline_title">Χρονολόγιο</string>
+    <string name="groups_sharing_setting_timeline_title">Ιστορικό τοποθεσίας</string>
     <string name="groups_sharing_setting_timeline_description">Εάν είναι ενεργοποιημένο, οι ενημερώσεις της τοποθεσίας σας θα αποθηκεύονται στο ιστορικό τοποθεσίας.</string>
     <string name="location_sharing_button_start_groups">Αρχίστε να μοιράζεστε</string>
     <string name="location_sharing_button_start_personal">Αρχίστε την παρακολούθηση</string>
@@ -613,11 +613,11 @@
     <string name="place_sensitivity_optionDelay1_info">Οι κινήσεις τοποθεσίας επεξεργάζονται άμεσα. Μπορεί να παραχθούν περισσότερες ψευδείς ειδοποιήσεις τοποθεσίας αν το σήμα σας είναι αδύναμο ή αν περάσετε από την τοποθεσία.</string>
     <string name="place_sensitivity_optionDelay2_title">Μικρή Καθυστέρηση</string>
     <string name="history_delete_deletionInfo_until">Διαγραφή όλου του ιστορικού τοποθεσίας μέχρι **%s**</string>
-    <string name="place_sensitivity_optionDelay2_info">Περιμένει μερικά δευτερόλεπτα πριν αντιδράσει σε κινήσεις τοποθεσίας. Μπορεί να παραχθούν ψευδείς ειδοποιήσεις τοποθεσίας αν το σήμα σας είναι αδύναμο ή αν περάσετε από την τοποθεσία.</string>
+    <string name="place_sensitivity_optionDelay2_info">Ανάλογα με την ακρίβεια της τρέχουσας τοποθεσίας, η εφαρμογή μπορεί να περιμένει οπουδήποτε από 0-10 δευτερόλεπτα πριν αντιδράσει στις κινήσεις του τόπου.</string>
     <string name="place_sensitivity_optionDelay3_title">Ισορροπημένη</string>
-    <string name="place_sensitivity_optionDelay3_info">Περιμένει έως 10–15 δευτερόλεπτα πριν αντιδράσει σε κινήσεις τοποθεσίας. Ορισμένες ειδοποιήσεις μπορεί να αποτύχουν αν το σύστημα σταματήσει την εφαρμογή κατά την επεξεργασία.</string>
+    <string name="place_sensitivity_optionDelay3_info">Ανάλογα με την ακριβή τοποθεσία, η εφαρμογή μπορεί να περιμένει έως και 5–15 δευτερόλεπτα πριν αντιδράσει στις κινήσεις του τόπου. Ορισμένες ειδοποιήσεις μπορεί να αποτύχουν αν το σύστημα σταματήσει την εφαρμογή κατά τη διάρκεια της επεξεργασίας.</string>
     <string name="place_sensitivity_optionDelay4_title">Μεγαλύτερη Αναμονή</string>
-    <string name="place_sensitivity_optionDelay4_info">Περιμένει λίγο περισσότερο πριν αντιδράσει σε κινήσεις τοποθεσίας. Αυτό θα καθυστερήσει τις ειδοποιήσεις, οπότε βεβαιωθείτε ότι είστε συνδεδεμένοι στο Διαδίκτυο και ότι η εφαρμογή μπορεί να λειτουργεί στο παρασκήνιο χωρίς περιορισμούς.</string>
+    <string name="place_sensitivity_optionDelay4_info">Περιμένει έως και 20-30 δευτερόλεπτα πριν αντιδράσει σε κινήσεις τοποθεσίας. Αυτό θα καθυστερήσει τις ειδοποιήσεις, οπότε βεβαιωθείτε ότι είστε συνδεδεμένοι στο Διαδίκτυο και ότι η εφαρμογή μπορεί να λειτουργεί στο παρασκήνιο χωρίς περιορισμούς.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Αγνοήστε ανακριβείς τοποθεσίες</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Η ειδοποίηση τοποθεσίας θα αγνοηθεί αν η εφαρμογή δεν μπορεί να επιβεβαιώσει την τοποθεσία ως ακριβή. Αυτό μπορεί να προκαλέσει την αγνόηση ή την καθυστέρηση νόμιμων κινήσεων τοποθεσίας.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Η ειδοποίηση τοποθεσίας θα επεξεργαστεί όπως συνήθως. Χρησιμοποιεί λιγότερη μπαταρία αλλά μπορεί να παραγάγει ψευδείς θετικές ειδοποιήσεις.</string>
@@ -819,4 +819,5 @@
     <string name="history_stats_battery_range">Εύρος Μπαταρίας</string>
     <string name="history_stats_elevation_gain">Κέρδος Υψομέτρου</string>
     <string name="history_stats_elevation_range">Εύρος Υψομέτρου</string>
+    <string name="group_members_item_history_button">Ιστορία</string>
 </resources>
