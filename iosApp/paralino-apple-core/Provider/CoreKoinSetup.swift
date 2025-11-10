@@ -64,7 +64,9 @@ public class CoreKoinSetup {
         notificationStatusProvider: @escaping () -> INotificationStatusProvider
     ) -> [Koin_coreModule] {
         
-        let bundleId = Bundle.main.bundleIdentifier ?? "app.paralino.ios.undefined"
+        let systemBundleId = Bundle.main.bundleIdentifier ?? "app.paralino.ios"
+        let bundleId = systemBundleId.starts(with: "app.paralino.ios.test") ? "app.paralino.ios.test" : "app.paralino.ios"
+        
         let appBuildConfig = AppBuildConfig(
             serverUrl: Bundle.main.object(forInfoDictionaryKey: "paralinoServerUrl") as! String,
             projectId: Bundle.main.object(forInfoDictionaryKey: "paralinoServerKey") as! String,

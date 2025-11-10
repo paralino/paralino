@@ -578,7 +578,7 @@ private fun ColumnScope.GroupMemberActions(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
                 endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
-                text = stringResource(MR.strings.groups_sharing_setting_timeline_title),
+                text = stringResource(MR.strings.group_members_item_history_button),
                 onClick = {
                     onEvent(
                         GroupMemberItemEvent.onOpenLocationHistory(item = state)
@@ -1164,5 +1164,5 @@ val MemberActionType.actionText: StringResource
         MemberActionType.DELETE_LOCATION -> MR.strings.group_members_item_clear_location_button
         MemberActionType.BLOCK_USER -> MR.strings.group_details_block_group_alert_button
         MemberActionType.UNBLOCK_USER -> MR.strings.blocklist_unblock_alert_button
-        MemberActionType.LOCATION_HISTORY -> MR.strings.groups_sharing_setting_timeline_title
+        MemberActionType.LOCATION_HISTORY -> MR.strings.group_members_item_history_button
     }

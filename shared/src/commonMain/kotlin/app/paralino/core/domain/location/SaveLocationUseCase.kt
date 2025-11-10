@@ -9,12 +9,11 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.db.main.user.UserDeviceEntityLocationDataUpdate
-import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.LocationHistoryModel
-import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.MemberLocationRaw
@@ -35,7 +34,7 @@ class SaveLocationUseCase(
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
     private val historyMapper: PendingLocationHistoryMapper,
-    private val locationHistoryUpload: LocationHistoryUploadEngine,
+    private val locationHistoryUpload: ILocationHistoryUploadEngine,
     private val appPrefs: AppPrefs
 ) {
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)

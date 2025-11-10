@@ -1,6 +1,6 @@
 package app.paralino.core.domain.location
 
-import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
@@ -36,7 +36,7 @@ class ActiveSharingEngine(
     private val geofenceRegistrationMonitor: GeofenceRegistrationMonitor,
     private val scopeProvider: ICoroutineScopeProvider,
     private val locationUploadEngine: LocationUploadEngine,
-    private val locationHistoryUploadEngine: LocationHistoryUploadEngine,
+    private val locationHistoryUploadEngine: ILocationHistoryUploadEngine,
     private val locationCache: LocationCacheRepository,
     private val appBuildConfig: AppBuildConfig
 ): BaseRepository() {

@@ -163,12 +163,13 @@ object ParalinoCore {
         val logr = Logr
 
         val appPrefs = koinApp.koin.get<AppPrefs>()
-        val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
-        val appBuildConfig = koinApp.koin.get<AppBuildConfig>()
-        val inAppLogger = koinApp.koin.get<InAppLogger>()
-
-        AppBuildConfig.instance = appBuildConfig
         AppPrefs.instance = appPrefs
+
+        val appBuildConfig = koinApp.koin.get<AppBuildConfig>()
+        AppBuildConfig.instance = appBuildConfig
+
+        val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
+        val inAppLogger = koinApp.koin.get<InAppLogger>()
 
         val crashReportingLogger = koinApp.koin.get<ICrashReportingLogr>()
         logr.init(

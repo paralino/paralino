@@ -6,6 +6,8 @@ import app.paralino.android.app_rating.AppRatingPresenter
 import app.paralino.android.app_update.AppUpdateManager
 import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
+import app.paralino.android.domain.ExportPersonalLocationHistoryUseCase
+import app.paralino.android.domain.ImportPersonalLocationHistoryUseCase
 import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
@@ -27,8 +29,6 @@ import app.paralino.android.remote.appwrite.UserApi
 import app.paralino.android.tracking.LocationInitHandler
 import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.android.tracking.geofence.GeofenceManager
-import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
-import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
@@ -44,19 +44,18 @@ import app.paralino.core.domain.crypto.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.PersonalDeviceCryptoKeyRotation
-import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
-import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.asGroupOrSpaceId
-import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
-import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
+import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
@@ -71,9 +70,11 @@ import app.paralino.core.presentation.login.password_confirmation.PasswordConfir
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
-import app.paralino.core.presentation.map.GroupsInitEmptyStateManager
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
+import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
+import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
@@ -111,6 +112,8 @@ import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlacesActivityProcessor
+import app.paralino.core.repo.user.IExportPersonalLocationHistoryUseCase
+import app.paralino.core.repo.user.IImportPersonalLocationHistoryUseCase
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.android.ext.koin.androidApplication
@@ -156,6 +159,9 @@ object KoinSetup {
 
         single { AppUpdateManager(androidApplication(), get()) } bind IAppUpdateManager::class
         single { AppRatingPresenter(androidApplication(), get()) } bind IAppRatingPresenter::class
+
+        single { ExportPersonalLocationHistoryUseCase(androidApplication() as AppClass, get(), get(), get()) } bind IExportPersonalLocationHistoryUseCase::class
+        single { ImportPersonalLocationHistoryUseCase(androidApplication() as AppClass, get(), get(), get(), get()) } bind IImportPersonalLocationHistoryUseCase::class
     }
 
     private val appSpecificModule = module {
