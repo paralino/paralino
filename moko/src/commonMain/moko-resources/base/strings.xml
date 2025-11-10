@@ -480,7 +480,7 @@
     <string name="groups_sharing_setting_deviceStatus_description">If enabled, your status will show if your location is off, you are missing location permissions, or you stop sharing your location. If disabled, your status will show **%s** in those cases.</string>
     <string name="groups_sharing_setting_notifyOthers_title">Notify members</string>
     <string name="groups_sharing_setting_notifyOthers_description">If enabled, group members will receive notification that you started sharing your location.</string>
-    <string name="groups_sharing_setting_timeline_title">Timeline</string>
+    <string name="groups_sharing_setting_timeline_title">Location history</string>
     <string name="groups_sharing_setting_timeline_description">If enabled, your location updates will be saved to location history.</string>
     <string name="location_sharing_button_start_groups">Start sharing</string>
     <string name="location_sharing_button_start_personal">Start tracking</string>
@@ -526,6 +526,7 @@
     <string name="group_members_item_refresh_location_button">Refresh</string>
     <string name="group_members_item_old_location_button">Show last location</string>
     <string name="group_members_item_directions_button">Directions</string>
+    <string name="group_members_item_history_button">History</string>
     <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
     <string name="group_members_marker_circle_info_inaccurate">%s might be somewhere inside this circle</string>
     <string name="group_member_title">Member</string>
@@ -644,11 +645,11 @@
     <string name="place_sensitivity_optionDelay1_title">No Delay</string>
     <string name="place_sensitivity_optionDelay1_info">Place movements are processed immediately. May produce more false place alerts if your signal is weak or you drive past the place.</string>
     <string name="place_sensitivity_optionDelay2_title">Small Delay</string>
-    <string name="place_sensitivity_optionDelay2_info">Waits a few seconds before reacting to place movements. May produce false place alerts if your signal is weak or you drive past the place.</string>
+    <string name="place_sensitivity_optionDelay2_info">Depending on current location accuracy, app can wait anywhere between 0-10 seconds before reacting to place movements.</string>
     <string name="place_sensitivity_optionDelay3_title">Balanced</string>
-    <string name="place_sensitivity_optionDelay3_info">Waits up to 10–15 seconds before reacting to place movements. Some alerts might fail if the system stops the app while processing.</string>
+    <string name="place_sensitivity_optionDelay3_info">Depending on current location accuracy, app can wait up to 5–15 seconds before reacting to place movements. Some alerts might fail if the system stops the app while processing.</string>
     <string name="place_sensitivity_optionDelay4_title">Longer Wait</string>
-    <string name="place_sensitivity_optionDelay4_info">Waits a bit longer before reacting to place movements. This will delay notifications, so make sure you are connected to the Internet and the app can run in the background without restrictions.</string>
+    <string name="place_sensitivity_optionDelay4_info">Waits up to 20-30 seconds before reacting to place movements. This will delay notifications, so make sure you are connected to the Internet and the app can run in the background without restrictions.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_title">Ignore inaccurate locations</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_on">Place alert will be ignored if the app can not confirm the location as accurate. This might cause legitimate place movements to be ignored or delayed.</string>
     <string name="place_sensitivity_optionRefresh_onlyAccurate_info_off">Place alert will be processed as usual. Uses less battery but might produce false positives.</string>
