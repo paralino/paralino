@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "22f79e10831d3d0eba297ff9d719daf8",
+    "identityHash": "4d5057b66d7c6f0128184df92b0e7a28",
     "entities": [
       {
         "tableName": "subscriptionPlanEntity",
@@ -121,6 +121,97 @@
         }
       },
       {
+        "tableName": "userDeviceEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `pushTargetId` TEXT, `sessionId` TEXT, `deviceType` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `deviceId` TEXT NOT NULL, `locationPushToken` TEXT, `batteryAlertSettings` TEXT, `encryptedSenderKey` TEXT, `userKeyVersion` INTEGER, `locationId` TEXT, `deviceData` TEXT, `locationData` TEXT, `status` TEXT, `locationHistory` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pushTargetId",
+            "columnName": "pushTargetId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "sessionId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "deviceType",
+            "columnName": "deviceType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerUserId",
+            "columnName": "ownerUserId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationPushToken",
+            "columnName": "locationPushToken",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "batteryAlertSettings",
+            "columnName": "batteryAlertSettings",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "encryptedSenderKey",
+            "columnName": "encryptedSenderKey",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "userKeyVersion",
+            "columnName": "userKeyVersion",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "locationId",
+            "columnName": "locationId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "deviceData",
+            "columnName": "deviceData",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "locationData",
+            "columnName": "locationData",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "locationHistory",
+            "columnName": "locationHistory",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
         "tableName": "blocklistEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `resourceType` TEXT NOT NULL, `resourceId` TEXT NOT NULL, `data` TEXT, `userKeyVersion` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
@@ -168,7 +259,7 @@
       },
       {
         "tableName": "sharingContractEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` TEXT NOT NULL, `endTimeUTC` TEXT, `shareBattery` INTEGER NOT NULL, `shareSpeed` INTEGER NOT NULL, `shareElevation` INTEGER NOT NULL, `approximateLocationInMeters` INTEGER, `shareNetwork` INTEGER NOT NULL, `shareDeviceStatus` INTEGER NOT NULL, `saveToHistory` INTEGER NOT NULL, PRIMARY KEY(`groupId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` TEXT NOT NULL, `endTimeUTC` TEXT, `endTimeUTCOverride` TEXT, `shareBattery` INTEGER NOT NULL, `shareSpeed` INTEGER NOT NULL, `shareElevation` INTEGER NOT NULL, `approximateLocationInMeters` INTEGER, `shareNetwork` INTEGER NOT NULL, `shareDeviceStatus` INTEGER NOT NULL, `saveToHistory` INTEGER NOT NULL, `isEnabled` INTEGER NOT NULL, PRIMARY KEY(`groupId`))",
         "fields": [
           {
             "fieldPath": "groupId",
@@ -179,6 +270,11 @@
           {
             "fieldPath": "endTimeUTC",
             "columnName": "endTimeUTC",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "endTimeUTCOverride",
+            "columnName": "endTimeUTCOverride",
             "affinity": "TEXT"
           },
           {
@@ -219,6 +315,12 @@
           {
             "fieldPath": "saveToHistory",
             "columnName": "saveToHistory",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "isEnabled",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -422,7 +524,7 @@
       },
       {
         "tableName": "personalGroupKeyEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `encryptedUserKeys` TEXT NOT NULL, `groupId` TEXT NOT NULL, `personalGroupKeyVersion` INTEGER NOT NULL, `userKeyVersion` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `encryptedUserKeys` TEXT NOT NULL, `groupId` TEXT NOT NULL, `personalGroupKeyVersion` INTEGER NOT NULL, `userKeyVersion` INTEGER NOT NULL, `isArchived` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -457,6 +559,12 @@
           {
             "fieldPath": "userKeyVersion",
             "columnName": "userKeyVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isArchived",
+            "columnName": "isArchived",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -719,7 +827,7 @@
       },
       {
         "tableName": "placeActivityEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`placeId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `isEnter` INTEGER NOT NULL, `stateChangeTimeMillis` INTEGER NOT NULL, `stateChangeTrigger` TEXT NOT NULL, `isScheduledStateEnter` INTEGER, `isLastNotifyStateEnter` INTEGER, `notifyTrigger` TEXT, `scheduleTrigger` TEXT, `notifyTimeMillis` INTEGER, PRIMARY KEY(`placeId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`placeId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `isEnter` INTEGER NOT NULL, `stateChangeTimeMillis` INTEGER NOT NULL, `stateChangeTrigger` TEXT NOT NULL, `isScheduledStateEnter` INTEGER, `isLastNotifyStateEnter` INTEGER, `notifyTrigger` TEXT, `scheduleTrigger` TEXT, `notifyTimeMillis` INTEGER, `isInPersonalSpace` INTEGER NOT NULL, PRIMARY KEY(`placeId`))",
         "fields": [
           {
             "fieldPath": "placeId",
@@ -775,6 +883,12 @@
             "fieldPath": "notifyTimeMillis",
             "columnName": "notifyTimeMillis",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isInPersonalSpace",
+            "columnName": "isInPersonalSpace",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -1043,7 +1157,7 @@
       },
       {
         "tableName": "placeEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `groupKeyVersion` INTEGER NOT NULL, `privatePlace` INTEGER NOT NULL, `data` TEXT NOT NULL, `eventKeys` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `groupKeyVersion` INTEGER NOT NULL, `userKeyVersion` INTEGER, `privatePlace` INTEGER NOT NULL, `isInPersonalSpace` INTEGER NOT NULL, `data` TEXT NOT NULL, `eventKeys` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1070,8 +1184,19 @@
             "notNull": true
           },
           {
+            "fieldPath": "userKeyVersion",
+            "columnName": "userKeyVersion",
+            "affinity": "INTEGER"
+          },
+          {
             "fieldPath": "privatePlace",
             "columnName": "privatePlace",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isInPersonalSpace",
+            "columnName": "isInPersonalSpace",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -1097,7 +1222,7 @@
       },
       {
         "tableName": "placeSettingsEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `placeId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `alertData` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `placeId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `deviceId` TEXT, `isInPersonalSpace` INTEGER NOT NULL, `alertData` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1121,6 +1246,17 @@
             "fieldPath": "ownerUserId",
             "columnName": "ownerUserId",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isInPersonalSpace",
+            "columnName": "isInPersonalSpace",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -1205,7 +1341,7 @@
       },
       {
         "tableName": "pendingLocationHistoryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `groupHistoryKeyId` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1226,6 +1362,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "dateIdentifier",
+            "columnName": "dateIdentifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "locationHistoryData",
             "columnName": "locationHistoryData",
             "affinity": "TEXT",
@@ -1238,10 +1380,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "localHistoryKeyId",
-            "columnName": "historyKeyId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "localGroupHistoryKeyId",
+            "columnName": "groupHistoryKeyId",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -1289,7 +1430,7 @@
       },
       {
         "tableName": "personalHistoryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1306,11 +1447,6 @@
           {
             "fieldPath": "locationId",
             "columnName": "locationId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "deviceId",
-            "columnName": "deviceId",
             "affinity": "TEXT"
           },
           {
@@ -1383,7 +1519,7 @@
       },
       {
         "tableName": "groupHistoryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `deviceId` TEXT, `historyKeyVersion` TEXT NOT NULL, `historyData` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `historyKeyVersion` TEXT NOT NULL, `historyData` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1415,11 +1551,6 @@
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "deviceId",
-            "columnName": "deviceId",
-            "affinity": "TEXT"
-          },
-          {
             "fieldPath": "historyKeyVersion",
             "columnName": "historyKeyVersion",
             "affinity": "TEXT",
@@ -1440,8 +1571,56 @@
         }
       },
       {
-        "tableName": "localLocationHistoryKeyEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)",
+        "tableName": "personalLocalHistoryKeyEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userKeyVersion",
+            "columnName": "userKeyVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "historyKeyVersion",
+            "columnName": "historyKeyVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encryptedHistoryKey",
+            "columnName": "encryptedHistoryKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "isSynced",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "groupLocalHistoryKeyEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isActive` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -1480,8 +1659,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "isSynced",
-            "columnName": "isSynced",
+            "fieldPath": "isActive",
+            "columnName": "isActive",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -1534,11 +1713,77 @@
             "pendingUploadId"
           ]
         }
+      },
+      {
+        "tableName": "unsyncedGroupHistoryKeyEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `memberUserId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `memberVerification` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSyncedOnce` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "groupId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberUserId",
+            "columnName": "memberUserId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberId",
+            "columnName": "memberId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberVerification",
+            "columnName": "memberVerification",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "memberKeyVersion",
+            "columnName": "memberKeyVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "historyKeyVersion",
+            "columnName": "historyKeyVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encryptedHistoryKey",
+            "columnName": "encryptedHistoryKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSyncedOnce",
+            "columnName": "isSyncedOnce",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '22f79e10831d3d0eba297ff9d719daf8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4d5057b66d7c6f0128184df92b0e7a28')"
     ]
   }
 }
