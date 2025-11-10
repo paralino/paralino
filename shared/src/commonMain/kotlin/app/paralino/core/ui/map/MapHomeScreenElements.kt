@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,27 +19,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -61,7 +58,6 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
-import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
@@ -347,7 +343,8 @@ private fun MapHomeElementSharingRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(end = sidePadding),
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = sidePadding),
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -356,19 +353,15 @@ private fun MapHomeElementSharingRow(
                 modifier = Modifier
                     .padding(bottom = 6.dp)
                     .dropShadow(
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(100),
                         shadow = Shadow(
                             radius = 16.dp,
                             color = Color.Black.copy(alpha = 0.2f),
                         )
                     ),
                 startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                startIconSize = 14.dp,
-                endIcon = null,
-                text = "",
-                showText = false,
+                text = stringResource(MR.strings.group_members_item_history_button),
                 backgroundColor = MaterialTheme.colors.background,
-                contentPadding = PaddingValues(8.dp),
                 onClick = {
                     onEvent(MapHomeScreenUiEvent.OpenPersonalLocationHistory)
                 }
@@ -381,16 +374,23 @@ private fun MapHomeElementSharingRow(
                 modifier = Modifier
                     .padding(bottom = 6.dp)
                     .dropShadow(
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(100),
                         shadow = Shadow(
                             radius = 16.dp,
                             color = Color.Black.copy(alpha = 0.2f),
                         )
                     ),
-                startIcon = CoreAppIcons.Timer.asPainterResource(),
-                isLoading = false,
-                text = readyState?.sharingEndTime
-                    ?: stringResource(MR.strings.groups_sharing_duration_type_infinite),
+                startIcon = if (readyState.isPersonalSpace) {
+                    CoreAppIcons.ShareLocation.asPainterResource()
+                } else {
+                    CoreAppIcons.Timer.asPainterResource()
+                },
+                text = if (readyState.isPersonalSpace) {
+                    stringResource(MR.strings.group_members_item_tracking_button)
+                } else {
+                    readyState.sharingEndTime
+                        ?: stringResource(MR.strings.groups_sharing_duration_type_infinite)
+                },
                 backgroundColor = MaterialTheme.colors.background,
                 onClick = {
                     onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
