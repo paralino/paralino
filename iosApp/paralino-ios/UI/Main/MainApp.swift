@@ -72,7 +72,7 @@ struct MainApp: App {
                 appState.vm.cancelSessionExpired()
             }
             .loadingOverlay(isLoading: appState.uiState.dataRefreshBlockingLoadingShown)
-            .onChange(of: appDelegate.appRatingPresenter.appRatingRequested, initial: false) { oldState, newState in
+            .onChange(of: appDelegate.appRatingPresenter.appRatingRequested, initial: true) { oldState, newState in
                 if newState == true {
                     Logr.v(tag: "app_rating", message: "Trigger iOS app rating dialog")
                     requestReview()

@@ -42,11 +42,11 @@ class AppRatingManager(
             else -> {
                 when (deviceApiProvider.deviceType) {
                     DeviceType.Android -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion < 56
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 60
                     }
 
                     DeviceType.iOS -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion < 34
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 36
                     }
                 }
             }
@@ -55,5 +55,8 @@ class AppRatingManager(
 }
 
 enum class AppRatingSource {
-    GROUP_DETAIL, MAIN_MAP, APP_SETTINGS, PAYWALL_ONBOARDING
+    GROUP_DETAIL,
+    MAIN_MAP,
+    APP_SETTINGS,
+    PAYWALL_ONBOARDING
 }
