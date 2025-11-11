@@ -149,56 +149,6 @@ data class PlanConfig(
         else -> planName
     }
 
-    fun planBenefits(): List<PlanBenefit> {
-        val planConfig = this
-        return buildList {
-            add(
-                PlanBenefit(
-                    content = MR.plurals.plan_benefit_groups.localizedString(
-                        planConfig.groupsLimit,
-                        planConfig.groupsLimit
-                    ),
-                    isHighlighted = true
-                )
-            )
-            add(
-                PlanBenefit(
-                    content = MR.plurals.plan_benefit_members.localizedString(
-                        planConfig.membersLimit,
-                        planConfig.membersLimit
-                    ),
-                    isHighlighted = true
-                )
-            )
-            add(
-                PlanBenefit(
-                    content = MR.plurals.plan_benefit_places_alerts.localizedString(
-                        planConfig.placesLimit,
-                        planConfig.placesLimit
-                    ),
-                    isHighlighted = true,
-                    separateLine = true
-                )
-            )
-            if (planTypeEnum.isPremium) {
-                add(
-                    PlanBenefit(
-                        content = "**${MR.strings.paywall_feature_locate.localizedString()}**",
-                        isHighlighted = true,
-                        separateLine = true
-                    )
-                )
-            }
-            add(
-                PlanBenefit(
-                    content = MR.strings.plans_benefit_sharing.localizedString(),
-                    isHighlighted = true,
-                    separateLine = true
-                )
-            )
-        }
-    }
-
     companion object {
         val default = PlanConfig(
             planType = PlanType.FREE.key,
@@ -217,10 +167,4 @@ data class PlanConfig(
             productPlanIds = listOf("free")
         )
     }
-
-    data class PlanBenefit(
-        val content: String,
-        val isHighlighted: Boolean,
-        val separateLine: Boolean = false
-    )
 }

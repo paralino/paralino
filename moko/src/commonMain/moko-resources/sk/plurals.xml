@@ -30,19 +30,14 @@
         <item quantity="few">Zdieľanie polohy s %d skupinami</item>
         <item quantity="other">Zdieľanie polohy s %d skupinami</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d skupina</item>
-        <item quantity="few">%d skupiny</item>
-        <item quantity="other">%d skupín</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Skupina</item>
+        <item quantity="few">Skupiny</item>
+        <item quantity="other">Skupín</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d člen</item>
-        <item quantity="few">%d členovia</item>
-        <item quantity="other">%d členov</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d miesto s neobmedzenými upozorneniami</item>
-        <item quantity="few">%d miesta s neobmedzenými upozorneniami</item>
-        <item quantity="other">%d miest s neobmedzenými upozorneniami</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Zariadenie</item>
+        <item quantity="few">Zariadenia</item>
+        <item quantity="other">Zariadení</item>
     </plurals>
 </resources>

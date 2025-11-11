@@ -28,20 +28,16 @@
         <item quantity="one">**%d Gruppe**</item>
         <item quantity="other">**%d Gruppen**</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d Mitglied</item>
-        <item quantity="other">%d Mitglieder</item>
-    </plurals>
     <plurals name="plan_benefit_places">
         <item quantity="one">**%d Ort** mit unbegrenzten Benachrichtigungen</item>
         <item quantity="other">**%d Orte** mit unbegrenzten Benachrichtigungen</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d Gruppe</item>
-        <item quantity="other">%d Gruppen</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Gruppe</item>
+        <item quantity="other">Gruppen</item>
     </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d Ort mit unbegrenzten Benachrichtigungen</item>
-        <item quantity="other">%d Orte mit unbegrenzten Benachrichtigungen</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Gerät</item>
+        <item quantity="other">Geräte</item>
     </plurals>
 </resources>

@@ -443,7 +443,7 @@ class PaywallViewModel(
         val locationHistoryMessage = let {
             val maxPlan = uiPlans.maxByOrNull { it.config.planTypeEnum.order }?.config
             if (maxPlan != null && maxPlan.hasUnlimitedPersonalHistory) {
-                MR.strings.paywall_header_feature_history_unlimited.localizedString()
+                MR.strings.paywall_header_feature_history_unlimited.localizedString(maxPlan.adjustedPlanName)
             } else {
                 MR.strings.paywall_header_feature_history_more.localizedString()
             }

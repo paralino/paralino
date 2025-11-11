@@ -276,10 +276,13 @@ private fun FeatureTableItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = 4.dp,
+                            alignment = Alignment.Start
+                        ),
                         verticalArrangement = Arrangement.spacedBy(
-                            4.dp,
-                            Alignment.CenterVertically
+                            space = 4.dp,
+                            alignment = Alignment.CenterVertically
                         ),
                         maxItemsInEachRow = featureItem.itemsPerRow
                     ) {
@@ -442,19 +445,9 @@ private fun FeatureSummaryChip(
                 }
             )
             .padding(vertical = 4.dp)
-            .padding(start = 8.dp, end = 4.dp),
+            .padding(start = 4.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = state.content,
-            style = MaterialTheme.typography.caption,
-            color = if (state.isHighlighted) {
-                AppColors.darkBackground.copy(alpha = 0.8f)
-            } else {
-                MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
-            }
-        )
-        Spacer(Modifier.size(4.dp))
         Text(
             modifier = Modifier
                 .defaultMinSize(minWidth = 24.dp)
@@ -467,6 +460,16 @@ private fun FeatureSummaryChip(
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colors.onSurface
+        )
+        Spacer(Modifier.size(4.dp))
+        Text(
+            text = state.content,
+            style = MaterialTheme.typography.caption,
+            color = if (state.isHighlighted) {
+                AppColors.darkBackground.copy(alpha = 0.8f)
+            } else {
+                MaterialTheme.colors.onBackground.copy(alpha = 0.8f)
+            }
         )
     }
 }

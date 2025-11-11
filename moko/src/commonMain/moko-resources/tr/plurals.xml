@@ -24,16 +24,12 @@
         <item quantity="one">Konum 1 gruba paylaşılıyor</item>
         <item quantity="other">Konum %d gruba paylaşılıyor</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d grup</item>
-        <item quantity="other">%d grup</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grup</item>
+        <item quantity="other">Grup</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d üye</item>
-        <item quantity="other">%d üye</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d sınırsız uyarılı yer</item>
-        <item quantity="other">%d sınırsız uyarılı yer</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Cihaz</item>
+        <item quantity="other">Cihaz</item>
     </plurals>
 </resources>

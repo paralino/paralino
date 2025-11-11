@@ -24,16 +24,12 @@
         <item quantity="one">Jakaminen sijainti 1 ryhmälle</item>
         <item quantity="other">Jakaminen sijainti %d ryhmälle</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d ryhmä</item>
-        <item quantity="other">%d ryhmää</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Ryhmä</item>
+        <item quantity="other">Ryhmää</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d jäsen</item>
-        <item quantity="other">%d jäsentä</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d paikka rajoittamattomilla hälytyksillä</item>
-        <item quantity="other">%d paikkaa rajoittamattomilla hälytyksillä</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Laite</item>
+        <item quantity="other">Laitetta</item>
     </plurals>
 </resources>

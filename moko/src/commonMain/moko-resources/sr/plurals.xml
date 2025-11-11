@@ -30,19 +30,14 @@
         <item quantity="few">Дељење локације са %d групе</item>
         <item quantity="other">Дељење локације са %d група</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d група</item>
-        <item quantity="few">%d групе</item>
-        <item quantity="other">%d група</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Група</item>
+        <item quantity="few">Групе</item>
+        <item quantity="other">Група</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d члан</item>
-        <item quantity="few">%d члана</item>
-        <item quantity="other">%d чланова</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d место са неограниченим обавештењима</item>
-        <item quantity="few">%d места са неограниченим обавештењима</item>
-        <item quantity="other">%d места са неограниченим обавештењима</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Уређај</item>
+        <item quantity="few">Уређаја</item>
+        <item quantity="other">Уређаја</item>
     </plurals>
 </resources>

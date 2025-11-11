@@ -24,16 +24,12 @@
         <item quantity="one">Κοινοποίηση τοποθεσίας με 1 ομάδα</item>
         <item quantity="other">Κοινοποίηση τοποθεσίας με %d ομάδες</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d ομάδα</item>
-        <item quantity="other">%d ομάδες</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Ομάδα</item>
+        <item quantity="other">Ομάδες</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d μέλος</item>
-        <item quantity="other">%d μέλη</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d τοποθεσία με απεριόριστες ειδοποιήσεις</item>
-        <item quantity="other">%d τοποθεσίες με απεριόριστες ειδοποιήσεις</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Συσκευή</item>
+        <item quantity="other">Συσκευές</item>
     </plurals>
 </resources>

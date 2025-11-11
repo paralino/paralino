@@ -36,22 +36,16 @@
         <item quantity="few">Deljenje lokacije z %d skupinami</item>
         <item quantity="other">Deljenje lokacije z %d skupinami</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d skupina</item>
-        <item quantity="two">%d skupini</item>
-        <item quantity="few">%d skupine</item>
-        <item quantity="other">%d skupin</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Skupina</item>
+        <item quantity="two">Skupini</item>
+        <item quantity="few">Skupine</item>
+        <item quantity="other">Skupin</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d član</item>
-        <item quantity="two">%d člana</item>
-        <item quantity="few">%d člani</item>
-        <item quantity="other">%d članov</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d mesto z neomejenimi opozorili</item>
-        <item quantity="two">%d mesti z neomejenimi opozorili</item>
-        <item quantity="few">%d mesta z neomejenimi opozorili</item>
-        <item quantity="other">%d mest z neomejenimi opozorili</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Naprava</item>
+        <item quantity="two">Napravi</item>
+        <item quantity="few">Naprave</item>
+        <item quantity="other">Naprav</item>
     </plurals>
 </resources>

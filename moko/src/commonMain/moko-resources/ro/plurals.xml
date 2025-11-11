@@ -30,19 +30,14 @@
         <item quantity="few">Partajare locație cu %d grupuri</item>
         <item quantity="other">Partajare locație cu %d grupuri</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d grup</item>
-        <item quantity="few">%d grupuri</item>
-        <item quantity="other">%d grupuri</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grup</item>
+        <item quantity="few">Grupuri</item>
+        <item quantity="other">Grupuri</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d membru</item>
-        <item quantity="few">%d membri</item>
-        <item quantity="other">%d membri</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d loc cu alerte nelimitate</item>
-        <item quantity="few">%d locuri cu alerte nelimitate</item>
-        <item quantity="other">%d locuri cu alerte nelimitate</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Dispozitiv</item>
+        <item quantity="few">Dispozitive</item>
+        <item quantity="other">Dispozitive</item>
     </plurals>
 </resources>

@@ -30,19 +30,14 @@
         <item quantity="few">Общий доступ к местоположению с %d группами</item>
         <item quantity="other">Общий доступ к местоположению с %d группами</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d группа</item>
-        <item quantity="few">%d группы</item>
-        <item quantity="other">%d групп</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Группа</item>
+        <item quantity="few">Группы</item>
+        <item quantity="other">Групп</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d участник</item>
-        <item quantity="few">%d участника</item>
-        <item quantity="other">%d участников</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d место с неограниченными уведомлениями</item>
-        <item quantity="few">%d места с неограниченными уведомлениями</item>
-        <item quantity="other">%d мест с неограниченными уведомлениями</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Устройство</item>
+        <item quantity="few">Устройства</item>
+        <item quantity="other">Устройств</item>
     </plurals>
 </resources>

@@ -40,19 +40,14 @@
         <item quantity="many">**%d luoghi** con avvisi illimitati</item>
         <item quantity="other">**%d luoghi** con avvisi illimitati</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d membro</item>
-        <item quantity="many">%d membri</item>
-        <item quantity="other">%d membri</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Gruppo</item>
+        <item quantity="many">Gruppi</item>
+        <item quantity="other">Gruppi</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d gruppo</item>
-        <item quantity="many">%d gruppi</item>
-        <item quantity="other">%d gruppi</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d luogo con avvisi illimitati</item>
-        <item quantity="many">%d luoghi con avvisi illimitati</item>
-        <item quantity="other">%d luoghi con avvisi illimitati</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Dispositivo</item>
+        <item quantity="many">Dispositivi</item>
+        <item quantity="other">Dispositivi</item>
     </plurals>
 </resources>

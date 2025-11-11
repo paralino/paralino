@@ -24,16 +24,12 @@
         <item quantity="one">Compartir ubicació amb 1 grup</item>
         <item quantity="other">Compartir ubicació amb %d grups</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d grup</item>
-        <item quantity="other">%d grups</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grup</item>
+        <item quantity="other">Grups</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d membre</item>
-        <item quantity="other">%d membres</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d lloc amb alertes il·limitades</item>
-        <item quantity="other">%d llocs amb alertes il·limitades</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Dispositiu</item>
+        <item quantity="other">Dispositius</item>
     </plurals>
 </resources>

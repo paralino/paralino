@@ -24,16 +24,12 @@
         <item quantity="one">Deler lokasjon med 1 gruppe</item>
         <item quantity="other">Deler lokasjon med %d grupper</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d gruppe</item>
-        <item quantity="other">%d grupper</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Gruppe</item>
+        <item quantity="other">Grupper</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d medlem</item>
-        <item quantity="other">%d medlemmer</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d sted med ubegrensede varsler</item>
-        <item quantity="other">%d steder med ubegrensede varsler</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Enhet</item>
+        <item quantity="other">Enheter</item>
     </plurals>
 </resources>

@@ -24,16 +24,12 @@
         <item quantity="one">Helymegosztás 1 csoporttal</item>
         <item quantity="other">Helymegosztás %d csoporttal</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d csoport</item>
-        <item quantity="other">%d csoport</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Csoport</item>
+        <item quantity="other">Csoport</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d tag</item>
-        <item quantity="other">%d tag</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d hely korlátlan értesítésekkel</item>
-        <item quantity="other">%d hely korlátlan értesítésekkel</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Eszköz</item>
+        <item quantity="other">Eszköz</item>
     </plurals>
 </resources>

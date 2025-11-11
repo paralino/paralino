@@ -30,19 +30,14 @@
         <item quantity="few">Обмін місцезнаходженням з %d групами</item>
         <item quantity="other">Обмін місцезнаходженням з %d групами</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d група</item>
-        <item quantity="few">%d групи</item>
-        <item quantity="other">%d груп</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Група</item>
+        <item quantity="few">Групи</item>
+        <item quantity="other">Груп</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d учасник</item>
-        <item quantity="few">%d учасники</item>
-        <item quantity="other">%d учасників</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d місце з необмеженими сповіщеннями</item>
-        <item quantity="few">%d місця з необмеженими сповіщеннями</item>
-        <item quantity="other">%d місць з необмеженими сповіщеннями</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Пристрій</item>
+        <item quantity="few">Пристрої</item>
+        <item quantity="other">Пристроїв</item>
     </plurals>
 </resources>

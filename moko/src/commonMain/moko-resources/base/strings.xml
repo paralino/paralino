@@ -141,7 +141,7 @@
     <string name="settings_account_guest_convert">Convert account</string>
     <string name="settings_account_guest_badge">Guest account</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Multiple devices</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Share your location from multiple devices and link them to the same account.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Connect all your devices to the same account.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Account recovery</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Keep access to your data even if you delete the app or switch to a new phone.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Personal device tracking</string>
@@ -319,9 +319,11 @@
     <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
     <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
     <string name="paywall_discount_percentage_badge_text">%s OFF</string>
-    <string name="paywall_header_feature_list_screen">You can protect privacy of all members in your group</string>
-    <string name="paywall_header_feature_demo_screen">And do so much more...</string>
-    <string name="paywall_header_feature_history_unlimited">Unlimited location history for your devices is now available!</string>
+    <string name="paywall_header_feature_list_screen_solo">You deserve privacy!</string>
+    <string name="paywall_header_feature_list_screen_family">Your family deserves privacy!</string>
+    <string name="paywall_header_feature_demo_screen">And so much more...</string>
+    <string name="paywall_header_feature_history_title">Track your travels</string>
+    <string name="paywall_header_feature_history_unlimited">Get unlimited personal location history with the **%1$s** plan!</string>
     <string name="paywall_header_feature_history_more">Unlock more days of location history</string>
     <string name="paywall_header_take_control">Take control of your privacy</string>
     <string name="paywall_header_try_it">Unlocked</string>
@@ -329,11 +331,11 @@
     <string name="paywall_header_unlock_premium">Unlock full experience</string>
     <string name="paywall_header_choose_plan">Choose your plan duration</string>
     <string name="paywall_feature_privacy">Peace of mind</string>
-    <string name="paywall_feature_privacy_description">Paralino protects your privacy as well as the privacy of all your group members.</string>
+    <string name="paywall_feature_privacy_description">No ads, no spying, no shady business. What you see is what you get!</string>
     <string name="paywall_feature_premium_sharing">Premium location sharing</string>
-    <string name="paywall_feature_premium_sharing_description">No ads, fully featured and battery-efficient – everything you\'ve been looking for.</string>
+    <string name="paywall_feature_premium_sharing_description">Fully featured and battery efficient.</string>
     <string name="paywall_feature_control">Complete sharing control</string>
-    <string name="paywall_feature_control_description">Access all features and control how and what you share.</string>
+    <string name="paywall_feature_control_description">You decide how and what you share.</string>
     <string name="paywall_special_offer_description">**Special launch discount**\nAvailable during the beta period – claim your special discount and keep this price forever.</string>
     <string name="paywall_price_per_member">As low as **%1$s**/member/month for %2$d members</string>
     <string name="paywall_price_per_month">**≈ %1$s** / month</string>
@@ -359,8 +361,6 @@
     <string name="paywall_feature_value_unlimited">Unlimited</string>
     <string name="paywall_feature_history_days_minimum">&lt; 1 day</string>
     <string name="paywall_feature_history_days_minimum_info">Location history stores up to 100 most recent points for a maximum of 2 days. It is not saved persistently due to limited resources.</string>
-    <string name="paywall_feature_summary_groups">Groups</string>
-    <string name="paywall_feature_summary_devices">Devices</string>
     <string name="paywall_feature_summary_members">Members</string>
     <string name="paywall_feature_summary_places">Places</string>
     <string name="paywall_feature_summary_history">Location history</string>

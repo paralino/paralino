@@ -164,21 +164,21 @@ fun PaywallScreenCore(
         var bottomCardHeight by remember { mutableStateOf(0) }
         val density = LocalDensity.current
         val focusManager = LocalFocusManager.current
-        var buttonVisible by remember { mutableStateOf(false) }
+        var buttonVisible by remember { mutableStateOf(true) }
 
-        LaunchedEffect(uiState.screenStep) {
-            when (uiState.screenStep) {
-                PaywallScreenStep.ONBOARDING -> {
-                    buttonVisible = false
-                    delay(700)
-                    buttonVisible = true
-                }
-
-                else -> {
-                    buttonVisible = true
-                }
-            }
-        }
+//        LaunchedEffect(uiState.screenStep) {
+//            when (uiState.screenStep) {
+//                PaywallScreenStep.ONBOARDING -> {
+//                    buttonVisible = false
+//                    delay(1200)
+//                    buttonVisible = true
+//                }
+//
+//                else -> {
+//                    buttonVisible = true
+//                }
+//            }
+//        }
 
         Box(
             modifier = Modifier
@@ -211,7 +211,11 @@ fun PaywallScreenCore(
                             .padding(top = 8.dp)
                             .padding(horizontal = 20.dp)
                             .fillMaxWidth(),
-                        text = stringResource(MR.strings.paywall_header_feature_list_screen),
+                        text = if (uiState.screenType == BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING) {
+                            stringResource(MR.strings.paywall_header_feature_list_screen_solo)
+                        } else {
+                            stringResource(MR.strings.paywall_header_feature_list_screen_family)
+                        },
                         style = MaterialTheme.typography.h4,
                         fontWeight = FontWeight.Bold,
                         fontSize = 28.sp,
@@ -345,7 +349,7 @@ fun PaywallScreenCore(
 
             AnimatedVisibility(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                visible = buttonVisible && (uiState.selectedPlan != null || uiState.screenStep != PaywallScreenStep.PAYWALL),
+                visible = (uiState.selectedPlan != null || uiState.screenStep != PaywallScreenStep.PAYWALL),
                 enter = fadeIn() + slideInVertically { it },
                 exit = fadeOut() + slideOutVertically { it }
             ) {
@@ -368,6 +372,7 @@ fun PaywallScreenCore(
                 PaywallBottomCard(
                     state = uiState,
                     paddingValues = paddingValues,
+                    isButtonVisible = buttonVisible,
                     onStartPurchase = { vm.onEvent(PaywallScreenUiEvent.StartPurchase) },
                     modifier = Modifier
                         .onGloballyPositioned { coordinates ->
@@ -697,16 +702,16 @@ private fun FeaturesSection(
             .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        FeatureInfoItem(delay = 0.seconds) {
+//        FeatureInfoItem(delay = 0.seconds) {
             SettingsActionItem(
                 name = stringResource(MR.strings.paywall_feature_privacy),
                 tag = stringResource(MR.strings.paywall_feature_privacy_description),
                 nameTextStyle = MaterialTheme.typography.featureItemTitle,
-                icon = CoreAppIcons.PrivacyTip.asPainterResource(),
+                icon = CoreAppIcons.Lock.asPainterResource(),
                 type = SettingsActionItemType.Action
             )
-        }
-        FeatureInfoItem(delay = 150.milliseconds) {
+//        }
+//        FeatureInfoItem(delay = 150.milliseconds) {
             SettingsActionItem(
                 name = stringResource(MR.strings.paywall_feature_premium_sharing),
                 tag = stringResource(MR.strings.paywall_feature_premium_sharing_description),
@@ -714,8 +719,8 @@ private fun FeaturesSection(
                 icon = CoreAppIcons.StarFamily.asPainterResource(),
                 type = SettingsActionItemType.Action
             )
-        }
-        FeatureInfoItem(delay = 300.milliseconds) {
+//        }
+//        FeatureInfoItem(delay = 300.milliseconds) {
             SettingsActionItem(
                 name = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices),
                 tag = stringResource(MR.strings.settings_account_guest_convert_intro_multiple_devices_tag),
@@ -723,8 +728,8 @@ private fun FeaturesSection(
                 icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
                 type = SettingsActionItemType.Action
             )
-        }
-        FeatureInfoItem(delay = 450.milliseconds) {
+//        }
+//        FeatureInfoItem(delay = 450.milliseconds) {
             SettingsActionItem(
                 name = stringResource(MR.strings.paywall_feature_control),
                 tag = stringResource(MR.strings.paywall_feature_control_description),
@@ -732,7 +737,7 @@ private fun FeaturesSection(
                 icon = CoreAppIcons.Settings.asPainterResource(),
                 type = SettingsActionItemType.Action
             )
-        }
+//        }
     }
 }
 
@@ -812,6 +817,7 @@ private fun ColumnScope.PlanTypePicker(
 private fun PaywallBottomCard(
     modifier: Modifier = Modifier,
     state: PaywallScreenState,
+    isButtonVisible: Boolean,
     paddingValues: PaddingValues,
     onStartPurchase: () -> Unit,
 ) {
@@ -890,8 +896,13 @@ private fun PaywallBottomCard(
                 FilledButton(
                     modifier = Modifier,
                     style = ButtonStyle.BIG,
-                    state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
-                    onClick = onStartPurchase
+                    state = AppButtonState.loadingState(!isButtonVisible || state.isPurchaseButtonLoading),
+                    enabled = isButtonVisible,
+                    onClick = {
+                        if (isButtonVisible) {
+                            onStartPurchase()
+                        }
+                    }
                 ) {
                     Text(
                         text = when (state.screenStep) {

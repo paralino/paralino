@@ -407,7 +407,7 @@ data class FeatureTableState(
                 add(
                     FeatureTableItemState.Summary(
                         title = MR.strings.paywall_feature_groups.localizedString(),
-                        itemsPerRow = 2,
+                        itemsPerRow = 3,
                         topSpacing = 0.dp,
                         visibilityMode = FeatureTableItemVisibilityMode.VISIBLE_COLLAPSED,
                         values = plans.map {
@@ -416,7 +416,9 @@ data class FeatureTableState(
                                     add(
                                         FeatureTableItemValueDataPoint(
                                             amount = it.config.groupsLimit.toString(),
-                                            content = MR.strings.paywall_feature_summary_groups.localizedString(),
+                                            content = MR.plurals.paywall_feature_summary_groups.localizedString(
+                                                quantity = it.config.groupsLimit
+                                            ),
                                             isHighlighted = false
                                         )
                                     )
@@ -430,7 +432,9 @@ data class FeatureTableState(
                                     add(
                                         FeatureTableItemValueDataPoint(
                                             amount = it.config.devicesLimit.toString(),
-                                            content = MR.strings.paywall_feature_summary_devices.localizedString(),
+                                            content = MR.plurals.paywall_feature_summary_devices.localizedString(
+                                                quantity = it.config.devicesLimit
+                                            ),
                                             isHighlighted = false
                                         )
                                     )
@@ -485,7 +489,9 @@ data class FeatureTableState(
                                     add(
                                         FeatureTableItemValueDataPoint(
                                             amount = it.config.personalDevicesLimit.toString(),
-                                            content = MR.strings.paywall_feature_summary_devices.localizedString(),
+                                            content = MR.plurals.paywall_feature_summary_devices.localizedString(
+                                                quantity = it.config.personalDevicesLimit
+                                            ),
                                             isHighlighted = false
                                         )
                                     )

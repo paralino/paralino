@@ -24,16 +24,12 @@
         <item quantity="one">Delar plats med 1 grupp</item>
         <item quantity="other">Delar plats med %d grupper</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d grupp</item>
-        <item quantity="other">%d grupper</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grupp</item>
+        <item quantity="other">Grupper</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d medlem</item>
-        <item quantity="other">%d medlemmar</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d plats med obegränsade aviseringar</item>
-        <item quantity="other">%d platser med obegränsade aviseringar</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Enhet</item>
+        <item quantity="other">Enheter</item>
     </plurals>
 </resources>

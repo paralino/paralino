@@ -30,19 +30,14 @@
         <item quantity="few">Udostępnianie lokalizacji do %d grup</item>
         <item quantity="other">Udostępnianie lokalizacji do %d grup</item>
     </plurals>
-    <plurals name="plan_benefit_groups">
-        <item quantity="one">%d grupa</item>
-        <item quantity="few">%d grupy</item>
-        <item quantity="other">%d grup</item>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grupa</item>
+        <item quantity="few">Grupy</item>
+        <item quantity="other">Grup</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">%d członek</item>
-        <item quantity="few">%d członków</item>
-        <item quantity="other">%d członków</item>
-    </plurals>
-    <plurals name="plan_benefit_places_alerts">
-        <item quantity="one">%d miejsce z nieograniczonymi alertami</item>
-        <item quantity="few">%d miejsca z nieograniczonymi alertami</item>
-        <item quantity="other">%d miejsc z nieograniczonymi alertami</item>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Urządzenie</item>
+        <item quantity="few">Urządzenia</item>
+        <item quantity="other">Urządzeń</item>
     </plurals>
 </resources>

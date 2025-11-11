@@ -25,8 +25,8 @@ fun PaywallScreenFeatureLocationHistory(
             BaseOnboardingScrollableContent(
                 modifier = Modifier,
                 order = 1,
-                title = content,
-                info = null,
+                title = stringResource(MR.strings.paywall_header_feature_history_title),
+                info = content,
                 contentSizeRatio = 0.4f,
                 minHeaderSize = 300.dp,
                 paddingValues = rootPaddingValues,
