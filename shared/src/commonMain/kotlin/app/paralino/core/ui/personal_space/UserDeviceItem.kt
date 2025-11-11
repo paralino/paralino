@@ -291,7 +291,7 @@ fun UserDeviceItem(
                     }
 
                     GroupMemberDeviceDataFlowRow(
-                        modifier = modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = 2.dp),
                         batteryLevel = state.device?.visibleBatteryLevel,
                         isBatteryCharging = state.device?.location?.isBatteryCharging ?: false,
                         networkType = state.device?.location?.networkType,

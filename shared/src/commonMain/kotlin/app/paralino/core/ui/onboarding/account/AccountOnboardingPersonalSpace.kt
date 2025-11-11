@@ -50,6 +50,7 @@ import app.paralino.core.utils.extensions.pulsate
 import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.random.Random
 
 @Composable
 fun AccountOnboardingPersonalSpace(
@@ -261,7 +262,8 @@ private fun createDummyDeviceWithSession(
 
     val deviceItemState = UserDeviceItemState(
         device = userDevice,
-        location = if (hasLocation) createDummyLocationState(
+        location = createDummyLocationState(
+            hasLocation = hasLocation,
             deviceId = deviceId,
             batteryLevel = batteryLevel,
             isCharging = isCharging,
@@ -270,7 +272,7 @@ private fun createDummyDeviceWithSession(
             signalStrength = signalStrength,
             networkType = networkType,
             time = time,
-        ) else null,
+        ),
         deleteAction = if (!hasLocation) UserDeviceAction.DeleteDevice() else null,
         deactivateAction = if (hasLocation) UserDeviceAction.DeactivateDevice() else null,
         isCurrentDevice = isCurrentDevice
@@ -288,6 +290,7 @@ private fun createDummyDeviceWithSession(
 
 
 private fun createDummyLocationState(
+    hasLocation: Boolean,
     deviceId: String,
     batteryLevel: Int?,
     isCharging: Boolean?,
@@ -295,7 +298,7 @@ private fun createDummyLocationState(
     deviceStatus: MemberDeviceStatusType,
     networkType: NetworkType,
     signalStrength: NetworkSignalStrength,
-    time: String
+    time: String,
 ): GroupMemberItemLocationState {
     return GroupMemberItemLocationState(
         locationId = deviceId,
@@ -307,11 +310,11 @@ private fun createDummyLocationState(
         actualBatteryLevel = batteryLevel,
         adjustedBatteryLevel = batteryLevel,
         isBatteryCharging = isCharging ?: false,
-        speed = "35 km/h",
-        elevation = "250m",
-        lastLocationPing = time,
+        speed = if (hasLocation && networkType != NetworkType.WIFI) "${Random.nextInt(20, 40)} km/h" else null,
+        elevation = if (hasLocation) "${Random.nextInt(10, 40).times(10)}m" else null,
+        lastLocationPing = if (hasLocation) time else null,
         lastStatusPing = time,
-        accuracyMeters = 400f,
+        accuracyMeters = if (hasLocation) 400f else null,
         deviceStatus = deviceStatus,
         canEdit = true,
         currentDevice = true,
