@@ -136,21 +136,20 @@ class AccountOnboardingViewModel(
                     }
                 }
 
-                groupCount == 0 -> {
-                    AccountOnboardingContent.ParalinoID(
-                        personalCode = personalCode,
-                        didShareCode = false
-                    )
-                }
-
-                !deviceStatus.notificationStatus.isNotificationPermissionAllowed && !appPrefs.didAskForNotificationPermissions -> {
+                !deviceStatus.notificationStatus.isNotificationPermissionAllowed -> {
                     appPrefs.didAskForNotificationPermissions = true
                     AccountOnboardingContent.PushNotifications
                 }
 
+                groupCount == 0 -> {
+                    AccountOnboardingContent.AccountOnboardingStart(
+                        isGroupChecked = previousState?.isGroupModeChecked ?: false,
+                        isPersonalSpaceChecked = previousState?.isPersonalSpaceModeChecked ?: false
+                    )
+                }
+
                 else -> {
-                    markOnboardingFinished()
-                    null
+                    AccountOnboardingContent.PersonalSpaceNewUsersIntro
                 }
             }
         }
@@ -179,7 +178,10 @@ class AccountOnboardingViewModel(
                         _uiState.update {
                             it.mapReady {
                                 it.copy(
-                                    onboardingStep = AccountOnboardingContent.GroupCreate,
+                                    onboardingStep = AccountOnboardingContent.ParalinoID(
+                                        personalCode = it.personalCode,
+                                        didShareCode = false
+                                    ),
                                     isGroupModeChecked = true
                                 )
                             }
@@ -243,6 +245,7 @@ class AccountOnboardingViewModel(
     private fun skipOnboarding() {
         when (val step = uiState.value.data?.onboardingStep) {
             AccountOnboardingContent.GroupCreate -> {
+                // go back
                 startAccountStartOnboarding()
             }
 
@@ -275,6 +278,7 @@ class AccountOnboardingViewModel(
                 if (groupCount > 0) {
                     finishOnboarding()
                 } else {
+                    // go back
                     startAccountStartOnboarding()
                 }
             }
@@ -347,14 +351,9 @@ class AccountOnboardingViewModel(
     }
 
     private fun skipParalinoIDOnboarding() {
-        if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
-            startAccountStartOnboarding()
-        } else {
-            _uiState.update {
-                appPrefs.didAskForNotificationPermissions = true
-                it.mapReady {
-                    it.copy(onboardingStep = AccountOnboardingContent.PushNotifications)
-                }
+        _uiState.update {
+            it.mapReady {
+                it.copy(onboardingStep = AccountOnboardingContent.GroupCreate)
             }
         }
     }
