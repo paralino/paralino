@@ -160,7 +160,7 @@ fun ChangePasswordScreenCore(
                     key = uiState,
                     state = LargeSeekbarSwitchState.SeekbarSwitchState(
                         seekbarState = null,
-                        switchState = LargeSeekbarSwitchState.Switch(uiState.keepDevicesLoggedIn)
+                        switchState = LargeSeekbarSwitchState.Switch(uiState.logoutOtherDevices)
                     )
                 ).value,
                 onStateChange = {

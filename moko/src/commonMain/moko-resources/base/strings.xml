@@ -152,8 +152,8 @@
     <string name="settings_account_credentialsChange_step_change">Changing credentials</string>
     <string name="settings_account_credentialsChange_step_verify">Verifying keys</string>
     <string name="settings_account_credentialsChange_step_done">Done</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Stay logged in on other devices</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">If disabled, you will be logged out of all your other devices, and they will stop location sharing.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Log out from other devices</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">If enabled, you will be logged out of all your other devices, and they will stop location sharing.</string>
     <string name="settings_account_logout_alert_title">Logout</string>
     <string name="settings_account_logout_alert_message">Are you sure you want to logout?</string>
     <string name="settings_account_delete_alert_title">Delete account</string>

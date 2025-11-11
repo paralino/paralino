@@ -116,7 +116,7 @@ class ChangePasswordViewModel(
                 changePasswordAction(
                     passwordOld = passwordOld,
                     passwordNew = passwordNew,
-                    keepSessions = _uiState.value.keepDevicesLoggedIn
+                    keepSessions = !_uiState.value.logoutOtherDevices
                 )
             }
         }
@@ -196,7 +196,7 @@ class ChangePasswordViewModel(
 
     fun onDeviceSessionToggleChange(enabled: Boolean) {
         if (_uiState.value.actionLoading == true) return
-        _uiState.update { it.copy(keepDevicesLoggedIn = enabled) }
+        _uiState.update { it.copy(logoutOtherDevices = enabled) }
     }
 
     private fun getLastPasswordUpdateDate(): AnnotatedString? {
