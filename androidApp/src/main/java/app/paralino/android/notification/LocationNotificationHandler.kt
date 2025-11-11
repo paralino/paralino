@@ -18,6 +18,7 @@ import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
 import app.paralino.android.utils.extensions.attributedBold
 import app.paralino.core.MR
+import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.nameRes
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
@@ -33,7 +34,12 @@ class LocationNotificationHandler(
         AppColors.lightThemePrimary.toArgb()
     }
 
-    fun notify(context: Context, groupCount: Int, errors: List<ConditionErrorType>): Notification {
+    fun notify(
+        context: Context,
+        groupCount: Int,
+        isPersonalSpaceActive: Boolean,
+        errors: List<ConditionErrorType>
+    ): Notification {
 
         val notificationManager = NotificationManagerCompat.from(context)
 
@@ -53,14 +59,25 @@ class LocationNotificationHandler(
         }
 
         val content = if (errors.isEmpty()) {
-            MR.plurals.notifications_sharing_active_message
-                .format(groupCount, groupCount)
-                .toString(context)
+            buildList {
+                if (groupCount > 0) {
+                    add(
+                        MR.plurals.notifications_sharing_active_message
+                            .format(groupCount, groupCount)
+                            .toString(context)
+                    )
+                }
+
+                if (isPersonalSpaceActive) {
+                    add(MR.strings.notifications_tracking_active_message.localizedString())
+                }
+            }.joinToString(separator = "\n")
         } else {
-            val errorContent = errors.map {
-                context.getString(it.nameRes.resourceId)
-            }.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**")
-                .attributedBold(context)
+            val errorContent =
+                errors.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**") {
+                    context.getString(it.nameRes.resourceId)
+                }
+                    .attributedBold(context)
 
             context.getString(MR.strings.notifications_sharing_error_message.resourceId, errorContent)
         }

@@ -14,7 +14,9 @@ import app.paralino.android.remote.sync.FullRefreshSyncWorker
 import app.paralino.core.domain.location.LocationUploadEngine
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.AppLifecycleType
@@ -77,7 +79,12 @@ class LocationService : Service() {
                 ServiceCompat.startForeground(
                     this,
                     notificationHandler.notificationId,
-                    notificationHandler.notify(this, groupCount = 0, errors = emptyList()),
+                    notificationHandler.notify(
+                        context = this,
+                        groupCount = 0,
+                        isPersonalSpaceActive = false,
+                        errors = emptyList()
+                    ),
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
                 )
                 logg.v(
@@ -174,8 +181,14 @@ class LocationService : Service() {
                 add(ConditionErrorType.Network)
             }
         }
-        val count = locationSharingManager.allContractsFlow.value.data?.size ?: 0
-        notificationHandler.notify(this, count, errors)
+        val groupCount = locationSharingManager.allContractsFlow.value.data?.count { !it.groupOrSpaceId.isPersonalSpace } ?: 0
+        val isPersonalSpaceActive = locationSharingManager.isSharingActiveForGroupMaybe(id = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
+        notificationHandler.notify(
+            context = this,
+            groupCount = groupCount,
+            isPersonalSpaceActive = isPersonalSpaceActive,
+            errors = errors
+        )
     }
 
     private fun startTracking() {

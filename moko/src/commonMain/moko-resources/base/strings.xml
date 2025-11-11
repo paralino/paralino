@@ -55,6 +55,7 @@
     <string name="error_crypto_encryption_generic">Unable to encrypt data, please try again.</string>
     <string name="error_crypto_decryption_generic">Unable to decrypt data, please try again.</string>
     <string name="notifications_sharing_active_title">Sharing active</string>
+    <string name="notifications_tracking_active_message">Personal location tracking is active</string>
     <string name="notifications_sharing_error_title">Sharing on hold!</string>
     <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
