@@ -140,7 +140,7 @@ sealed class AccountOnboardingContent(
         skipButtonText = if (didShareCode) {
             null
         } else {
-            MR.strings.button_skip
+            MR.strings.button_notNow
         },
         minHeaderSize = Dp.Unspecified
     ) {
@@ -162,8 +162,13 @@ sealed class AccountOnboardingContent(
         titleKey = 160,
         titleTag = MR.strings.onboarding_step_accountStart_title_tag,
         title = MR.strings.onboarding_step_accountStart_title_tag,
-        buttonText = null,
-        skipButtonText = if (isGroupChecked || isPersonalSpaceChecked) {
+        buttonText = if (isGroupChecked && isPersonalSpaceChecked) {
+            MR.strings.button_done
+        } else {
+            null
+        },
+        skipButtonText = if (listOf(isGroupChecked, isPersonalSpaceChecked).count { it } == 1) {
+            // only show skip if one step is checked
             MR.strings.button_skip
         } else {
             null

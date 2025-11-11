@@ -120,35 +120,45 @@ class AccountOnboardingViewModel(
 
         val personalCode = PersonalCodeScreenCodeData.viewOnlyCode(code)
 
-        return AccountOnboardingScreenState(
-            userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
-            personalCode = personalCode,
-            onboardingStep = if (previousState != null) {
-                if (previousState.onboardingStep is AccountOnboardingContent.ParalinoID) {
-                    previousState.onboardingStep.copy(personalCode = personalCode)
-                } else {
-                    previousState.onboardingStep
-                }
+        val onboardingStep = if (previousState != null) {
+            if (previousState.onboardingStep is AccountOnboardingContent.ParalinoID) {
+                previousState.onboardingStep.copy(personalCode = personalCode)
             } else {
-                if (appPrefs.didHaveAccountWelcomeOnboarding) {
+                previousState.onboardingStep
+            }
+        } else {
+            when {
+                appPrefs.didHaveAccountWelcomeOnboarding -> {
                     if (!appPrefs.didHaveLocationHistoryIntroOnboarding) {
                         AccountOnboardingContent.PersonalSpaceCurrentUsersIntro
                     } else {
                         null
                     }
-                } else if (groupCount == 0) {
+                }
+
+                groupCount == 0 -> {
                     AccountOnboardingContent.ParalinoID(
                         personalCode = personalCode,
                         didShareCode = false
                     )
-                } else if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed && !appPrefs.didAskForNotificationPermissions) {
+                }
+
+                !deviceStatus.notificationStatus.isNotificationPermissionAllowed && !appPrefs.didAskForNotificationPermissions -> {
                     appPrefs.didAskForNotificationPermissions = true
                     AccountOnboardingContent.PushNotifications
-                } else {
+                }
+
+                else -> {
                     markOnboardingFinished()
                     null
                 }
-            },
+            }
+        }
+
+        return AccountOnboardingScreenState(
+            userImage = user.data?.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+            personalCode = personalCode,
+            onboardingStep = onboardingStep,
             groupCount = groupCount,
             fullScreenLoading = previousState?.fullScreenLoading ?: false,
             isGroupModeChecked = previousState?.isGroupModeChecked ?: false,
@@ -221,8 +231,10 @@ class AccountOnboardingViewModel(
                 openPersonalSpaceSetup()
             }
 
-            // AccountOnboardingStart only has skip
-            is AccountOnboardingContent.AccountOnboardingStart,
+            is AccountOnboardingContent.AccountOnboardingStart -> {
+                skipAccountStartOnboarding()
+            }
+
             null -> {
             }
         }
@@ -255,15 +267,7 @@ class AccountOnboardingViewModel(
             }
 
             is AccountOnboardingContent.AccountOnboardingStart -> {
-                if (shouldProceedToPaywall) {
-                    _eventChannel.trySend(OpenPaywall(type = BillingScreenSourceType.SKIPPED_ONBOARDING))
-                    coroutineScope.launch {
-                        delay(1000)
-                        finishOnboarding()
-                    }
-                } else {
-                    finishOnboarding()
-                }
+                skipAccountStartOnboarding()
             }
 
             AccountOnboardingContent.PersonalSpaceNewUsersIntro -> {
@@ -284,18 +288,18 @@ class AccountOnboardingViewModel(
         // if there are no groups, history onboarding should not be shown ever
         // since if user creates or joins a groups, they will see history elsewhere
         val groupCount = uiState.value.data?.groupCount ?: 0
-        if (groupCount > 0) {
-            _uiState.update {
-                it.mapReady {
-                    it.copy(
-                        onboardingStep = AccountOnboardingContent.LocationHistoryIntro(
-                            isSharingActive = locationSharingManager.isGroupSharingActiveMaybe()
-                        )
+        _uiState.update {
+            it.mapReady {
+                it.copy(
+                    onboardingStep = AccountOnboardingContent.LocationHistoryIntro(
+                        isSharingActive = if (groupCount > 0) {
+                            locationSharingManager.isGroupSharingActiveMaybe()
+                        } else {
+                            false
+                        }
                     )
-                }
+                )
             }
-        } else {
-            finishOnboarding()
         }
     }
 
@@ -352,6 +356,18 @@ class AccountOnboardingViewModel(
                     it.copy(onboardingStep = AccountOnboardingContent.PushNotifications)
                 }
             }
+        }
+    }
+
+    private fun skipAccountStartOnboarding() {
+        if (shouldProceedToPaywall) {
+            _eventChannel.trySend(OpenPaywall(type = BillingScreenSourceType.SKIPPED_ONBOARDING))
+            coroutineScope.launch {
+                delay(1000)
+                finishOnboarding()
+            }
+        } else {
+            finishOnboarding()
         }
     }
 

@@ -61,11 +61,10 @@ fun AccountOnboardingStartPage(
             Text(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
-                    .padding(top = 20.dp, bottom = 8.dp),
+                    .padding(top = 20.dp, bottom = 2.dp),
                 text = stringResource(MR.strings.onboarding_step_accountStart_title),
-                style = MaterialTheme.typography.h6.copy(
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 22.sp
+                style = MaterialTheme.typography.h5.copy(
+                    fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colors.onBackground,
             )
@@ -146,10 +145,10 @@ private fun ModeButton(
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .size(70.dp)
+                    .size(85.dp)
                     .rotate(-10f)
                     .offset(x = (-20).dp, y = 10.dp),
-                tint = AppColors.accent.copy(alpha = 0.1f)
+                tint = AppColors.accent.copy(alpha = 0.3f)
             )
 
             Row(
@@ -175,9 +174,10 @@ private fun ModeButton(
                         modifier = Modifier
                             .padding(bottom = 4.dp),
                         text = title,
-                        style = MaterialTheme.typography.h6.copy(
+                        style = MaterialTheme.typography.h5.copy(
                             fontWeight = FontWeight.Bold,
-                            lineHeight = 22.sp
+                            fontSize = 28.sp,
+                            lineHeight = 28.sp,
                         ),
                         color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.high),
                     )
@@ -185,7 +185,7 @@ private fun ModeButton(
                     Text(
                         modifier = Modifier,
                         text = info,
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium),
                     )
                 }
@@ -195,8 +195,8 @@ private fun ModeButton(
                     contentDescription = null,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .size(22.dp),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                        .size(24.dp),
+                    tint = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.medium)
                 )
             }
         }
