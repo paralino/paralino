@@ -181,6 +181,38 @@ android {
         // from coroutines
         resources.excludes += "DebugProbesKt.bin"
     }
+    androidResources {
+        generateLocaleConfig = true
+        localeFilters.addAll(
+            listOf(
+                "en",  // base/English
+                "bs",  // Bosnian
+                "ca",  // Catalan
+                "cs",  // Czech
+                "da",  // Danish
+                "de",  // German
+                "el",  // Greek
+                "es",  // Spanish
+                "fi",  // Finnish
+                "fr",  // French
+                "hr",  // Croatian
+                "hu",  // Hungarian
+                "it",  // Italian
+                "nb",  // Norwegian Bokmål
+                "nl",  // Dutch
+                "pl",  // Polish
+                "pt",  // Portuguese
+                "ro",  // Romanian
+                "ru",  // Russian
+                "sk",  // Slovak
+                "sl",  // Slovenian
+                "sr",  // Serbian
+                "sv",  // Swedish
+                "tr",  // Turkish
+                "uk"   // Ukrainian
+            )
+        )
+    }
 }
 
 kotlin {
