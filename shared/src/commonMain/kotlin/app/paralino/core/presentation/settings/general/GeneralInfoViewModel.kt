@@ -32,6 +32,7 @@ class GeneralInfoViewModel(
             }
 
             GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding -> {
+                appPrefs.lastShowedAppRatingDialogAppVersion = 0
                 appPrefs.didHaveAccountWelcomeOnboarding = false
                 appPrefs.didHaveLocationHistoryIntroOnboarding = false
                 appPrefs.didHavePersonalSpaceIntroOnboarding = false
