@@ -97,7 +97,7 @@ class PersonalSpaceViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        appRatingManager.tryShowingAppRating(source = AppRatingSource.GROUP_DETAIL)
+        appRatingManager.tryShowingAppRating(source = AppRatingSource.PERSONAL_SPACE)
 
         updateSessions()
 

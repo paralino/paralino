@@ -18,6 +18,7 @@ class AppRatingManager(
     fun tryShowingAppRating(source: AppRatingSource) {
         if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(90.days) || shouldRetryAppRating(source)) {
             val canLaunch = when (source) {
+                AppRatingSource.PERSONAL_SPACE,
                 AppRatingSource.GROUP_DETAIL -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
                 AppRatingSource.MAIN_MAP -> appPrefs.appLaunchedCountWhenLoggedIn >= 3
                 AppRatingSource.APP_SETTINGS -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
@@ -56,6 +57,7 @@ class AppRatingManager(
 
 enum class AppRatingSource {
     GROUP_DETAIL,
+    PERSONAL_SPACE,
     MAIN_MAP,
     APP_SETTINGS,
     PAYWALL_ONBOARDING

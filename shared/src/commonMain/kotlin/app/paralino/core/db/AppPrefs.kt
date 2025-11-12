@@ -388,15 +388,15 @@ class AppPrefs(
         }
 
     var lastShowedAppRatingDialogUTC: Instant
-        get() = provider.appSettings.getLong(keyShowedAppRatingTime, 0).let { Instant.fromEpochMilliseconds(it) }
+        get() = provider.userSettings.getLong(keyShowedAppRatingTime, 0).let { Instant.fromEpochMilliseconds(it) }
         set(value) {
-            provider.appSettings.putLong(keyShowedAppRatingTime, value.toEpochMilliseconds())
+            provider.userSettings.putLong(keyShowedAppRatingTime, value.toEpochMilliseconds())
         }
 
     var lastShowedAppRatingDialogAppVersion: Long
-        get() = provider.appSettings.getLong(keyShowedAppRatingVersion, 0)
+        get() = provider.userSettings.getLong(keyShowedAppRatingVersion, 0)
         set(value) {
-            provider.appSettings.putLong(keyShowedAppRatingVersion, value)
+            provider.userSettings.putLong(keyShowedAppRatingVersion, value)
         }
 
     var appLaunchedCountWhenLoggedIn: Int
