@@ -319,9 +319,9 @@
     <string name="paywall_billing_loading_error_alert_message">Unable to initialize billing management, please try again.</string>
     <string name="paywall_purchase_error_alert_message">Unable to perform billing request, please try again.</string>
     <string name="paywall_discount_percentage_badge_text">%s OFF</string>
-    <string name="paywall_header_feature_list_screen_solo">You deserve privacy!</string>
-    <string name="paywall_header_feature_list_screen_family">Your family deserves privacy!</string>
-    <string name="paywall_header_feature_demo_screen">And so much more...</string>
+    <string name="paywall_header_feature_list_screen_solo">Made for you, not advertisers</string>
+    <string name="paywall_header_feature_list_screen_family">Don\'t let others track your family</string>
+    <string name="paywall_header_feature_demo_screen">Discover the power of Paralino</string>
     <string name="paywall_header_feature_history_title">Track your travels</string>
     <string name="paywall_header_feature_history_unlimited">Get unlimited personal location history with the **%1$s** plan!</string>
     <string name="paywall_header_feature_history_more">Unlock more days of location history</string>
@@ -331,7 +331,7 @@
     <string name="paywall_header_unlock_premium">Unlock full experience</string>
     <string name="paywall_header_choose_plan">Choose your plan duration</string>
     <string name="paywall_feature_privacy">Peace of mind</string>
-    <string name="paywall_feature_privacy_description">No ads, no spying, no shady business. What you see is what you get!</string>
+    <string name="paywall_feature_privacy_description">No ads, no spying, no shady business - backed only by your membership.</string>
     <string name="paywall_feature_premium_sharing">Premium location sharing</string>
     <string name="paywall_feature_premium_sharing_description">Fully featured and battery efficient.</string>
     <string name="paywall_feature_control">Complete sharing control</string>
