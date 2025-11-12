@@ -383,8 +383,8 @@ object KoinIOS {
         val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
         fun locationHistoryVM(groupId: String, memberUserId: String, deviceId: String?) = get<LocationHistoryViewModel> { parametersOf(groupId, memberUserId, deviceId) }
         fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
-        val personalSpaceVM = get<PersonalSpaceViewModel>()
-        val personalSpaceSettingsVM = get<PersonalSpaceSettingsViewModel>()
+        val personalSpaceVM get() = get<PersonalSpaceViewModel>()
+        val personalSpaceSettingsVM get() = get<PersonalSpaceSettingsViewModel>()
         fun placeSensitivityVM(groupId: String, placeId: String) = get<PlaceSensitivityViewModel>() { parametersOf(groupId, placeId) }
     }
 }
