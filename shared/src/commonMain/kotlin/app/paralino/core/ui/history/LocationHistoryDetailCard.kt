@@ -583,9 +583,9 @@ private fun UserDeviceChip(
     DataInfoChip(
         modifier = modifier
             .border(
-                width = if (!isSelected && hasLocations) 0.5.dp else 0.dp,
-                color = MaterialTheme.colors.secondary.copy(
-                    if (!isSelected && hasLocations) 1f else 0f
+                width = if (isCurrent) 0.5.dp else 0.dp,
+                color = MaterialTheme.colors.primary.copy(
+                    if (isCurrent) 0.8f else 0f
                 ),
                 shape = RoundedCornerShape(100)
             ),
@@ -602,7 +602,7 @@ private fun UserDeviceChip(
                     tint = contentColor
                 )
             }
-        } else if (isCurrent) {
+        } else if (hasLocations) {
             {
                 Box(
                     modifier = Modifier
