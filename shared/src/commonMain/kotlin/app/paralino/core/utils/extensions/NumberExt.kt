@@ -8,5 +8,5 @@ fun Float.roundToPrecision(decimalPlaces: Int): Float {
 }
 
 fun Float?.isLocationInaccurate(): Boolean {
-    return (this ?: 0f) > 200f
+    return (this ?: 0f) >= 200f || this == 100f
 }

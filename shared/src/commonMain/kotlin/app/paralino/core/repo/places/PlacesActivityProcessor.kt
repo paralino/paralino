@@ -3,6 +3,7 @@ package app.paralino.core.repo.places
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
@@ -16,6 +17,7 @@ import app.paralino.core.presentation.places.detail.PlaceSensitivityDelayType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityLocationRefreshType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
+import app.paralino.core.provider.current
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -593,12 +595,27 @@ class PlacesActivityProcessor(
                 2000f
             }
 
-            location.accuracy > 100 -> {
+            location.accuracy >= 100 -> {
                 // if accuracy is not that great, only consider exit if user is  somewhat far away
                 if (place.alertSensitivity.ignoreInaccurate) {
-                    location.accuracy
+                    location.accuracy * 2
                 } else {
-                    location.accuracy / 2
+                    when (DeviceType.current) {
+                        DeviceType.Android -> {
+                            when (location.accuracy) {
+                                // "magic numbers" because android devices sometimes produce completely wrong locations
+                                // with round number accuracy in low hundreds, while actual accuracy should be at least double that
+                                // In case that reported location is actually within that circle
+                                // this won't cause an issue since it will just cause device to request better location
+                                100f, 200f, 300f, 400f, 500f -> location.accuracy * 2f
+                                else -> location.accuracy / 2
+                            }
+                        }
+
+                        DeviceType.iOS -> {
+                            location.accuracy / 2
+                        }
+                    }
                 }
             }
 
