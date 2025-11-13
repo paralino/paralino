@@ -28,7 +28,7 @@ data class GroupPlaceRaw constructor(
                 userKeyVersion = (map["userKeyVersion"] as? Number)?.toLong(),
                 private = map["private"] as Boolean,
                 isInPersonalSpace = map["isInPersonalSpace"] as? Boolean,
-                data = map["data"] as String,
+                data = (map["resourceData"] as? String?) ?: (map["data"] as? String?) ?: "",
                 eventKeys = map["eventKeys"] as List<String>
             )
         }

@@ -27,7 +27,7 @@ data class GroupDocumentRaw constructor(
                 id = map["\$id"] as String,
                 ownerUserId = map["ownerUserId"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
-                data = map["data"] as String,
+                data = (map["resourceData"] as? String?) ?: (map["data"] as? String?) ?: "",
                 serverIntegrity = map["serverIntegrity"] as String,
                 schemeVersion = map["schemeVersion"] as String,
                 planType = map["planType"] as String,

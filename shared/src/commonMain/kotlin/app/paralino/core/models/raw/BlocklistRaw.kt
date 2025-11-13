@@ -21,7 +21,7 @@ data class BlocklistRaw(
                 ownerUserId = map["ownerUserId"] as String,
                 resourceId = map["resourceId"] as String,
                 resourceType = map["resourceType"] as String,
-                data = map["data"] as? String?,
+                data = (map["resourceData"] as? String?) ?: (map["data"] as? String?),
                 userKeyVersion = (map["userKeyVersion"] as? Number?)?.toLong()
             )
         }
