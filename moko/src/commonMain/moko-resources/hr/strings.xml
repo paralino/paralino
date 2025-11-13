@@ -117,7 +117,7 @@
     <string name="settings_account_guest_convert">Pretvorite račun</string>
     <string name="settings_account_guest_badge">Gostujući račun</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Više uređaja</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Dijelite svoju lokaciju s više uređaja i povežite ih s istim računom.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Povežite sve svoje uređaje s istim računom.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Oporavak računa</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Zadržite pristup svojim podacima čak i ako izbrišete aplikaciju ili promijenite telefon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Praćenje osobnih uređaja</string>
@@ -147,7 +147,7 @@
     <string name="setting_title_privacy">Pravila privatnosti</string>
     <string name="setting_title_terms">Uvjeti korištenja</string>
     <string name="setting_title_libraries">Licencije</string>
-    <string name="setting_title_onboarding">Prikaži uvod</string>
+    <string name="setting_title_onboarding">Ponovo pokrenite uvod.</string>
     <string name="setting_title_contactSupport">Kontaktirajte podršku</string>
     <string name="setting_title_logout">Odjava</string>
     <string name="setting_title_delete_account">Izbrišite račun</string>
@@ -271,18 +271,18 @@
     <string name="paywall_purchase_error_alert_message">Nije moguće izvršiti zahtjev, pokušajte ponovno.</string>
     <string name="paywall_discount_percentage_badge_text">%s sniženje</string>
     <string name="paywall_header_feature_list_screen">Možeš zaštititi privatnost svih članova u svojoj grupi</string>
-    <string name="paywall_header_feature_demo_screen">I još mnogo toga...</string>
+    <string name="paywall_header_feature_demo_screen">Otkrijte snagu Paralina</string>
     <string name="paywall_header_take_control">Preuzmite kontrolu nad svojom privatnošću</string>
     <string name="paywall_header_try_it">Otključano</string>
     <string name="paywall_header_user_reviews">Što kažu naši korisnici</string>
     <string name="paywall_header_unlock_premium">Otključajte sve mogućnosti uz Premium</string>
     <string name="paywall_header_choose_plan">Odaberite trajanje plana</string>
     <string name="paywall_feature_privacy">Budi bez brige</string>
-    <string name="paywall_feature_privacy_description">Paralino štiti vašu privatnost, kao i privatnost svih članova vaše grupe.</string>
+    <string name="paywall_feature_privacy_description">Nema oglasa, nema špijuniranja, nema sumnjivog posla - podržano samo vašim članstvom.</string>
     <string name="paywall_feature_premium_sharing">Premium dijeljenje lokacije</string>
-    <string name="paywall_feature_premium_sharing_description">Potpune funkcionalnosti, štednja baterije, bez oglasa – sve što ste željeli.</string>
+    <string name="paywall_feature_premium_sharing_description">Potpuno opremljen i energetski efikasan.</string>
     <string name="paywall_feature_control">Potpuna kontrola dijeljenja</string>
-    <string name="paywall_feature_control_description">Pristupite svim značajkama i kontrolirajte kako i što dijelite.</string>
+    <string name="paywall_feature_control_description">Vi odlučujete kako i što ćete dijeliti.</string>
     <string name="paywall_special_offer_description">**Poseban popust za početak**\nDostupan tijekom beta razdoblja – iskoristite poseban popust i zadržite ovu cijenu zauvijek.</string>
     <string name="paywall_price_per_member">Već od **%1$s** po članu mjesečno za %2$d članova</string>
     <string name="paywall_price_per_month">**≈ %1$s** mjesečno</string>
@@ -659,9 +659,9 @@
     <string name="onboarding_step_accountStart_groupMode_title">Prijatelji i obitelj</string>
     <string name="onboarding_step_accountStart_groupMode_info">Podijelite svoju lokaciju s drugima</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Samo ja</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Upravljajte i pratite svoje uređaje</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Ostanite prijavljeni na drugim uređajima</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Ako je onemogućeno, bit ćete odjavljeni sa svih svojih drugih uređaja, a dijeljenje lokacije će prestati.</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Pratite svoje uređaje</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Odjavite se s drugih uređaja</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Ako je omogućeno, bićete odjavljeni sa svih drugih uređaja, a oni će prestati dijeliti lokaciju.</string>
     <string name="setting_location_history_section_title">Povijest lokacije</string>
     <string name="setting_location_history_section_info">Odaberite točnost ažuriranja povijesti lokacije koja vam najviše odgovara. Što je veća točnost, to će više pojedinačnih točaka lokacije biti zabilježeno.</string>
     <string name="setting_location_history_level_1">Srednje</string>
@@ -674,7 +674,7 @@
     <string name="plans_management_info_wrong_platform_title">Ne možete upravljati svojom pretplatom na ovom uređaju!</string>
     <string name="plans_management_info_wrong_platform_message">Koristite uređaj koji ste prvotno koristili za kupnju.</string>
     <string name="plans_management_action_explore">Planovi</string>
-    <string name="paywall_header_feature_history_unlimited">Neograničena povijest lokacije za vaše uređaje sada je dostupna!</string>
+    <string name="paywall_header_feature_history_unlimited">Dobijte neograničenu osobnu povijest lokacije s planom **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Otključajte više dana povijesti lokacije</string>
     <string name="paywall_feature_personalSpace">Osobni prostor</string>
     <string name="paywall_feature_devices_member">Uređaji po članu</string>
@@ -835,4 +835,9 @@
     <string name="history_stats_elevation_gain">Uspon</string>
     <string name="history_stats_elevation_range">Raspon visine</string>
     <string name="group_members_item_history_button">Povijest</string>
+    <string name="notifications_tracking_active_message">Praćenje osobne lokacije je aktivno</string>
+    <string name="paywall_header_feature_list_screen_solo">Napravljen za vas, a ne za oglašivače</string>
+    <string name="paywall_header_feature_list_screen_family">Ne dopustite drugima da prate vašu obitelj</string>
+    <string name="paywall_header_feature_history_title">Pratite svoja putovanja</string>
+    <string name="group_members_item_tracking_button">Praćenje</string>
 </resources>

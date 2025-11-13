@@ -166,12 +166,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Τώρα έχετε έναν ειδικό χώρο για να διαχειρίζεστε και να παρακολουθείτε τις δικές σας συσκευές.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Ο προσωπικός χώρος σας επιτρέπει να διαχειρίζεστε και να παρακολουθείτε τις δικές σας συσκευές.</string>
     <string name="onboarding_step_accountStart_title_tag">Ετοιμαστείτε</string>
-    <string name="onboarding_step_accountStart_title">Επιλέξτε πώς θέλετε να ξεκινήσετε</string>
+    <string name="onboarding_step_accountStart_title">Επιλέξτε πώς να ξεκινήσετε</string>
     <string name="onboarding_step_accountStart_info">Αυτό είναι απλώς το πρώτο βήμα για να ξεκινήσετε.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Φίλοι και οικογένεια</string>
     <string name="onboarding_step_accountStart_groupMode_info">Μοιραστείτε την τοποθεσία σας με άλλους</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Μόνο εγώ</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Διαχειριστείτε και παρακολουθήστε τις δικές σας συσκευές</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Παρακολουθήστε τις δικές σας συσκευές</string>
     <string name="settings_section_account_title">Λογαριασμός</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Ανενεργοί κωδικοί</string>
@@ -187,7 +187,7 @@
     <string name="settings_account_guest_convert">Μετατροπή λογαριασμού</string>
     <string name="settings_account_guest_badge">Λογαριασμός επισκέπτη</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Πολλές συσκευές</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Μοιραστείτε την τοποθεσία σας από πολλές συσκευές και συνδέστε τις στον ίδιο λογαριασμό.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Συνδέστε όλες τις συσκευές σας στον ίδιο λογαριασμό.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Ανάκτηση λογαριασμού</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Διατηρήστε την πρόσβαση στα δεδομένα σας ακόμη και αν διαγράψετε την εφαρμογή ή αλλάξετε τηλέφωνο.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Παρακολούθηση προσωπικής συσκευής</string>
@@ -198,8 +198,8 @@
     <string name="settings_account_credentialsChange_step_change">Αλλαγή διαπιστευτηρίων</string>
     <string name="settings_account_credentialsChange_step_verify">Επαλήθευση κλειδιών</string>
     <string name="settings_account_credentialsChange_step_done">Ολοκληρώθηκε</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Μείνετε συνδεδεμένοι σε άλλες συσκευές</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Εάν απενεργοποιηθεί, θα αποσυνδεθείτε από όλες τις άλλες συσκευές σας και θα σταματήσει η κοινή χρήση τοποθεσίας.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Αποσύνδεση από άλλες συσκευές</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Εάν ενεργοποιηθεί, θα αποσυνδεθείτε από όλες τις άλλες συσκευές σας και θα σταματήσει η κοινή χρήση τοποθεσίας.</string>
     <string name="settings_account_logout_alert_title">Αποσύνδεση</string>
     <string name="settings_account_logout_alert_message">Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε;</string>
     <string name="settings_account_delete_alert_title">Διαγραφή λογαριασμού</string>
@@ -219,7 +219,7 @@
     <string name="setting_title_privacy">Πολιτική Απορρήτου</string>
     <string name="setting_title_terms">Όροι Χρήσης</string>
     <string name="setting_title_libraries">Ευχαριστίες</string>
-    <string name="setting_title_onboarding">Εμφάνιση εκπαίδευσης</string>
+    <string name="setting_title_onboarding">Επανεκκίνηση εισαγωγής</string>
     <string name="setting_title_contactSupport">Επικοινωνία με την υποστήριξη</string>
     <string name="setting_title_logout">Αποσύνδεση</string>
     <string name="setting_title_delete_account">Διαγραφή λογαριασμού</string>
@@ -365,8 +365,8 @@
     <string name="paywall_purchase_error_alert_message">Αδυναμία εκτέλεσης αιτήματος χρέωσης, παρακαλώ δοκιμάστε ξανά.</string>
     <string name="paywall_discount_percentage_badge_text">%s ΕΚΠΤΩΣΗ</string>
     <string name="paywall_header_feature_list_screen">Μπορείτε να προστατεύσετε την ιδιωτικότητα όλων των μελών στην ομάδα σας</string>
-    <string name="paywall_header_feature_demo_screen">Και να κάνετε τόσα πολλά περισσότερα...</string>
-    <string name="paywall_header_feature_history_unlimited">Η απεριόριστη ιστορία τοποθεσίας για τις συσκευές σας είναι τώρα διαθέσιμη!</string>
+    <string name="paywall_header_feature_demo_screen">Ανακαλύψτε τη δύναμη του Paralino</string>
+    <string name="paywall_header_feature_history_unlimited">Αποκτήστε απεριόριστο προσωπικό ιστορικό τοποθεσίας με το σχέδιο **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Ξεκλειδώστε περισσότερες ημέρες ιστορίας τοποθεσίας</string>
     <string name="paywall_header_take_control">Αναλάβετε τον έλεγχο της ιδιωτικότητάς σας</string>
     <string name="paywall_header_try_it">Ξεκλειδώθηκε</string>
@@ -374,11 +374,11 @@
     <string name="paywall_header_unlock_premium">Ξεκλειδώστε την πλήρη εμπειρία</string>
     <string name="paywall_header_choose_plan">Επιλέξτε τη διάρκεια του προγράμματός σας</string>
     <string name="paywall_feature_privacy">Ηρεμία</string>
-    <string name="paywall_feature_privacy_description">Το Paralino προστατεύει την ιδιωτικότητά σας καθώς και την ιδιωτικότητα όλων των μελών της ομάδας σας.</string>
+    <string name="paywall_feature_privacy_description">Χωρίς διαφημίσεις, χωρίς παρακολούθηση, χωρίς αμφίβολες επιχειρήσεις - υποστηριζόμενο μόνο από τη συνδρομή σας.</string>
     <string name="paywall_feature_premium_sharing">Premium κοινή χρήση τοποθεσίας</string>
-    <string name="paywall_feature_premium_sharing_description">Χωρίς διαφημίσεις, πλήρως λειτουργικό και αποδοτικό στην κατανάλωση μπαταρίας – όλα όσα ψάχνατε.</string>
+    <string name="paywall_feature_premium_sharing_description">Πλήρως λειτουργικός και αποδοτικός στην κατανάλωση μπαταρίας.</string>
     <string name="paywall_feature_control">Πλήρης έλεγχος κοινής χρήσης</string>
-    <string name="paywall_feature_control_description">Αποκτήστε πρόσβαση σε όλες τις δυνατότητες και ελέγξτε πώς και τι μοιράζεστε.</string>
+    <string name="paywall_feature_control_description">Αποφασίζετε πώς και τι θα μοιραστείτε.</string>
     <string name="paywall_special_offer_description">**Ειδική έκπτωση εκκίνησης**  \nΔιαθέσιμη κατά τη διάρκεια της περιόδου beta – διεκδικήστε την ειδική σας έκπτωση και διατηρήστε αυτή την τιμή για πάντα.</string>
     <string name="paywall_price_per_member">Μόλις **%1$s**/μέλος/μήνα για %2$d μέλη</string>
     <string name="paywall_price_per_month">**≈ %1$s** / μήνα</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Κέρδος Υψομέτρου</string>
     <string name="history_stats_elevation_range">Εύρος Υψομέτρου</string>
     <string name="group_members_item_history_button">Ιστορία</string>
+    <string name="notifications_tracking_active_message">Η παρακολούθηση προσωπικής τοποθεσίας είναι ενεργή</string>
+    <string name="paywall_header_feature_list_screen_solo">Δημιουργήθηκε για εσάς, όχι για διαφημιστές</string>
+    <string name="paywall_header_feature_list_screen_family">Μην αφήσετε άλλους να παρακολουθούν την οικογένειά σας</string>
+    <string name="paywall_header_feature_history_title">Παρακολουθήστε τα ταξίδια σας</string>
+    <string name="group_members_item_tracking_button">Παρακολούθηση</string>
 </resources>

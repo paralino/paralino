@@ -9,7 +9,7 @@
     <string name="settings_account_guest_convert">Muuta tili</string>
     <string name="settings_account_guest_badge">Vieraantili</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Useita laitteita</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Jaa sijaintisi useilta laitteilta ja linkitä ne samaan tiliin.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Yhdistä kaikki laitteesi samaan tiliin.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Tilin palautus</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Säilytä pääsy tietoihisi, vaikka poistaisit sovelluksen tai vaihdat uuteen puhelimeen.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Henkilökohtaisten laitteiden seuranta</string>
@@ -20,8 +20,8 @@
     <string name="settings_account_credentialsChange_step_change">Vaihtaa tunnistetietoja</string>
     <string name="settings_account_credentialsChange_step_verify">Vahvistetaan avaimia</string>
     <string name="settings_account_credentialsChange_step_done">Valmis</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Pysy kirjautuneena muilla laitteilla</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Jos tämä on pois päältä, sinut kirjataan ulos kaikista muista laitteistasi, ja sijainnin jakaminen lakkaa.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Kirjaudu ulos muilta laitteilta</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Jos tämä on käytössä, logouttaudut kaikilta muilta laitteiltasi, ja niiden paikannusjakaminen lopetetaan.</string>
     <string name="settings_account_logout_alert_title">Kirjaudu ulos</string>
     <string name="settings_account_logout_alert_message">Oletko varma, että haluat kirjautua ulos?</string>
     <string name="settings_account_delete_alert_title">Poista tili</string>
@@ -104,14 +104,14 @@
     <string name="button_ok">OK</string>
     <string name="app_version_alert_title">Uuden sovelluspäivityksen</string>
     <string name="error_location_sharing_start_notification_message">Sijainnin jakaminen ei voi alkaa! \nOle hyvä ja avaa sovellus uudelleen!</string>
-    <string name="onboarding_step_accountStart_title">Valitse, miten haluat aloittaa</string>
+    <string name="onboarding_step_accountStart_title">Valitse, miten aloitat.</string>
     <string name="onboarding_step_accountStart_info">Tämä on vain ensimmäinen askel, jotta pääset alkuun.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Ystävät ja perhe</string>
     <string name="onboarding_step_accountStart_groupMode_info">Jaa sijaintisi muiden kanssa</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Vain minä</string>
     <string name="error_load_data_generic">Pyyntöä ei voitu suorittaa.</string>
     <string name="paywall_screen_header">Valitse sinulle sopiva suunnitelma</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Hallitse ja seuraa omia laitteitasi</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Seuraa omia laitteitasi</string>
     <string name="settings_section_account_title">Tili</string>
     <string name="paywall_screen_title">Jäsenyys</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
@@ -236,7 +236,7 @@
     <string name="setting_title_privacy">Tietosuojakäytäntö</string>
     <string name="setting_title_terms">Käyttöehdot</string>
     <string name="setting_title_libraries">Kiitokset</string>
-    <string name="setting_title_onboarding">Näytä käyttöönotto</string>
+    <string name="setting_title_onboarding">Toista intro</string>
     <string name="setting_title_contactSupport">Ota yhteyttä tukeen</string>
     <string name="setting_title_logout">Kirjaudu ulos</string>
     <string name="setting_title_delete_account">Poista tili</string>
@@ -323,8 +323,8 @@
     <string name="plan_limit_locationRequest_groupMember_message">**Premium-ominaisuus**  \n\nOta yhteyttä ryhmäsi ylläpitäjään ottaaksesi käyttöön korkean prioriteetin sijaintipyyntöjä nopeampia päivityksiä varten.</string>
     <string name="paywall_onboarding_skip_button">Käytä ilmaista versiota</string>
     <string name="paywall_header_feature_list_screen">Voit suojata kaikkien ryhmäsi jäsenten yksityisyyden</string>
-    <string name="paywall_header_feature_demo_screen">Ja tehdä niin paljon enemmän...</string>
-    <string name="paywall_header_feature_history_unlimited">Rajoittamaton sijaintihistoria laitteillesi on nyt saatavilla!</string>
+    <string name="paywall_header_feature_demo_screen">Tutustu Paralino-voimaan</string>
+    <string name="paywall_header_feature_history_unlimited">Hanki rajaton henkilökohtainen sijaintihistoria **%1$s** -suunnitelmalla!</string>
     <string name="paywall_header_feature_history_more">Avaa lisää päiviä sijaintihistoriasta</string>
     <string name="paywall_header_take_control">Ota hallinta yksityisyydestäsi</string>
     <string name="paywall_header_try_it">Avoinna</string>
@@ -332,11 +332,11 @@
     <string name="paywall_header_unlock_premium">Avaa täydellinen kokemus</string>
     <string name="paywall_header_choose_plan">Valitse suunnitelmasi kesto</string>
     <string name="paywall_feature_privacy">Mielenrauha</string>
-    <string name="paywall_feature_privacy_description">Paralino suojaa yksityisyyttäsi sekä kaikkien ryhmän jäsenten yksityisyyttä.</string>
+    <string name="paywall_feature_privacy_description">Ei mainoksia, ei vakoilua, ei epäilyttävää toimintaa - tukena vain jäsenyytesi.</string>
     <string name="paywall_feature_premium_sharing">Premium-sijainnin jakaminen</string>
-    <string name="paywall_feature_premium_sharing_description">Ei mainoksia, täysin varusteltu ja akkuystävällinen – kaikkea, mitä olet etsinyt.</string>
+    <string name="paywall_feature_premium_sharing_description">Täysin varusteltu ja akkuystävällinen.</string>
     <string name="paywall_feature_control">Täydellinen jakamisen hallinta</string>
-    <string name="paywall_feature_control_description">Pääsy kaikkiin ominaisuuksiin ja hallinta siihen, miten ja mitä jaat.</string>
+    <string name="paywall_feature_control_description">Sinä päätät, miten ja mitä jaat.</string>
     <string name="paywall_special_offer_description">**Erityinen lanseerausalennus**  \nSaatavilla beta-jakson aikana – lunasta erityinen alennuksesi ja pidä tämä hinta ikuisesti.</string>
     <string name="paywall_price_per_member">Ainoastaan **%1$s**/jäsen/kuukausi %2$d jäsenelle</string>
     <string name="paywall_price_per_month">**≈ %1$s** / kuukausi</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Korkeusero</string>
     <string name="history_stats_elevation_range">Korkeuden Vaihtelu</string>
     <string name="group_members_item_history_button">Historia</string>
+    <string name="notifications_tracking_active_message">Henkilökohtainen sijaintiseuranta on aktiivinen</string>
+    <string name="paywall_header_feature_list_screen_solo">Sinulle tehty, ei mainostajille</string>
+    <string name="paywall_header_feature_list_screen_family">Älä anna muiden seurata perhettäsi</string>
+    <string name="paywall_header_feature_history_title">Seuraa matkojasi</string>
+    <string name="group_members_item_tracking_button">Seuranta</string>
 </resources>

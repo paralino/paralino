@@ -124,12 +124,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Artık kendi cihazlarınızı yönetmek ve takip etmek için özel bir alanınız var.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Kişisel alan, kendi cihazlarınızı yönetmenizi ve takip etmenizi sağlar.</string>
     <string name="onboarding_step_accountStart_title_tag">Hazırlanın</string>
-    <string name="onboarding_step_accountStart_title">Başlamak istediğiniz yolu seçin</string>
+    <string name="onboarding_step_accountStart_title">Başlamak için nasıl seçim yapacaksınız</string>
     <string name="onboarding_step_accountStart_info">Bu, sizi başlatmak için sadece bir ilk adımdır.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Arkadaşlar ve aile</string>
     <string name="onboarding_step_accountStart_groupMode_info">Konumunuzu başkalarıyla paylaşın</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Sadece ben</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Kendi cihazlarınızı yönetin ve takip edin</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Kendi cihazlarınızı takip edin</string>
     <string name="settings_section_account_title">Hesap</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Pasif kodlar</string>
@@ -145,7 +145,7 @@
     <string name="settings_account_guest_convert">Hesabı dönüştür</string>
     <string name="settings_account_guest_badge">Misafir hesabı</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Birden fazla cihaz</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Birden fazla cihazdan konumunuzu paylaşın ve bunları aynı hesaba bağlayın.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Tüm cihazlarınızı aynı hesaba bağlayın.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Hesap kurtarma</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Uygulamayı silseniz veya yeni bir telefona geçseniz bile verilerinize erişimi koruyun.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Kişisel cihaz takibi</string>
@@ -158,8 +158,8 @@
     <string name="settings_account_credentialsChange_step_verify">Anahtarları doğrulama</string>
     <string name="settings_account_credentialsChange_step_done">Tamamlandı</string>
     <string name="setting_navigationApp_moovit_title">Moovit</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Diğer cihazlarda oturumunuzu açık tutun</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Devre dışı bırakılırsa, diğer tüm cihazlarınızdan çıkış yapacaksınız ve konum paylaşımı duracaktır.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Diğer cihazlardan çıkış yapın.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Eğer etkinleştirilirse, diğer tüm cihazlarınızdan çıkış yapacaksınız ve konum paylaşımı duracaktır.</string>
     <string name="settings_account_logout_alert_title">Çıkış yap</string>
     <string name="settings_account_logout_alert_message">Çıkış yapmak istediğinizden emin misiniz?</string>
     <string name="settings_account_delete_alert_title">Hesabı sil</string>
@@ -179,7 +179,7 @@
     <string name="setting_title_privacy">Gizlilik Politikası</string>
     <string name="setting_title_terms">Kullanım Şartları</string>
     <string name="setting_title_libraries">Teşekkürler</string>
-    <string name="setting_title_onboarding">Eğitim göster</string>
+    <string name="setting_title_onboarding">Yanıtı tekrar et</string>
     <string name="setting_title_contactSupport">Destekle iletişime geç</string>
     <string name="setting_title_logout">Çıkış yap</string>
     <string name="setting_title_delete_account">Hesabı sil</string>
@@ -321,8 +321,8 @@
     <string name="paywall_purchase_error_alert_message">Faturalama talebini yerine getiremedik, lütfen tekrar deneyin.</string>
     <string name="paywall_discount_percentage_badge_text">%s İNDİRİM</string>
     <string name="paywall_header_feature_list_screen">Grubunuzdaki tüm üyelerin gizliliğini koruyabilirsiniz</string>
-    <string name="paywall_header_feature_demo_screen">Ve çok daha fazlasını yapabilirsiniz...</string>
-    <string name="paywall_header_feature_history_unlimited">Cihazlarınız için sınırsız konum geçmişi artık mevcut!</string>
+    <string name="paywall_header_feature_demo_screen">Paralino\'nun gücünü keşfedin</string>
+    <string name="paywall_header_feature_history_unlimited">**%1$s** plan ile sınırsız kişisel konum geçmişine erişim sağlayın!</string>
     <string name="paywall_header_feature_history_more">Daha fazla gün konum geçmişini açın</string>
     <string name="paywall_header_take_control">Gizliliğinizin kontrolünü elinize alın</string>
     <string name="paywall_header_try_it">Açıldı</string>
@@ -330,11 +330,11 @@
     <string name="paywall_header_unlock_premium">Tam deneyimi açın</string>
     <string name="paywall_header_choose_plan">Plan sürenizi seçin</string>
     <string name="paywall_feature_privacy">Huzur</string>
-    <string name="paywall_feature_privacy_description">Paralino, gizliliğinizi ve tüm grup üyelerinizin gizliliğini korur.</string>
+    <string name="paywall_feature_privacy_description">Hiçbir reklam, casusluk yok, karanlık işler yok - sadece üyeliğinizle destekleniyor.</string>
     <string name="paywall_feature_premium_sharing">Premium konum paylaşımı</string>
-    <string name="paywall_feature_premium_sharing_description">Reklamsız, tam özellikli ve pil verimli – aradığınız her şey.</string>
+    <string name="paywall_feature_premium_sharing_description">Tam donanımlı ve batarya verimli.</string>
     <string name="paywall_feature_control">Tam paylaşım kontrolü</string>
-    <string name="paywall_feature_control_description">Tüm özelliklere erişin ve neyi ve nasıl paylaştığınızı kontrol edin.</string>
+    <string name="paywall_feature_control_description">Paylaşım şeklinize ve içeriğinize siz karar verirsiniz.</string>
     <string name="paywall_special_offer_description">**Özel lansman indirimleri**\nBeta döneminde mevcut – özel indirimizi talep edin ve bu fiyatı sonsuza dek koruyun.</string>
     <string name="paywall_price_per_member">**%1$s**/üye/ay kadar düşük fiyatla %2$d üye için</string>
     <string name="paywall_price_per_month">**≈ %1$s** / ay</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Yükseklik Kazancı</string>
     <string name="history_stats_elevation_range">Yükseklik Menzili</string>
     <string name="group_members_item_history_button">Tarih</string>
+    <string name="notifications_tracking_active_message">Kişisel konum takibi etkin</string>
+    <string name="paywall_header_feature_list_screen_solo">Sizin için, reklamcılar için değil</string>
+    <string name="paywall_header_feature_list_screen_family">Başka kişilerin ailenizi takip etmesine izin vermeyin</string>
+    <string name="paywall_header_feature_history_title">Seyahatlerinizi takip edin</string>
+    <string name="group_members_item_tracking_button">Takip</string>
 </resources>

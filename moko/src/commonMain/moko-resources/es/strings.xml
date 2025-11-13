@@ -117,7 +117,7 @@
     <string name="settings_account_guest_convert">Convertir cuenta</string>
     <string name="settings_account_guest_badge">Cuenta de invitado</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Múltiples dispositivos</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Comparte tu ubicación desde múltiples dispositivos y vincúlalos a la misma cuenta.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Conecta todos tus dispositivos a la misma cuenta.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Recuperación de cuenta</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Mantén acceso a tus datos incluso si borras la aplicación o cambias a un nuevo teléfono.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Seguimiento de dispositivos personales</string>
@@ -147,7 +147,7 @@
     <string name="setting_title_privacy">Política de Privacidad</string>
     <string name="setting_title_terms">Términos de Uso</string>
     <string name="setting_title_libraries">Reconocimientos</string>
-    <string name="setting_title_onboarding">Mostrar introducción</string>
+    <string name="setting_title_onboarding">Repetir introducción</string>
     <string name="setting_title_contactSupport">Contactar soporte</string>
     <string name="setting_title_logout">Cerrar sesión</string>
     <string name="setting_title_delete_account">Eliminar cuenta</string>
@@ -271,18 +271,18 @@
     <string name="paywall_purchase_error_alert_message">No se pudo realizar la solicitud de facturación, por favor intenta de nuevo.</string>
     <string name="paywall_discount_percentage_badge_text">%s DESCUENTO</string>
     <string name="paywall_header_feature_list_screen">Puedes proteger la privacidad de todos los miembros en tu grupo</string>
-    <string name="paywall_header_feature_demo_screen">Y mucho más...</string>
+    <string name="paywall_header_feature_demo_screen">Descubre el poder de Paralino</string>
     <string name="paywall_header_take_control">Toma el control de tu privacidad</string>
     <string name="paywall_header_try_it">Desbloqueado</string>
     <string name="paywall_header_user_reviews">Lo que dicen nuestros usuarios</string>
     <string name="paywall_header_unlock_premium">Desbloquea la experiencia completa</string>
     <string name="paywall_header_choose_plan">Elige la duración de tu plan</string>
     <string name="paywall_feature_privacy">Tranquilidad</string>
-    <string name="paywall_feature_privacy_description">Paralino protege tu privacidad y la de todos los miembros de tu grupo.</string>
+    <string name="paywall_feature_privacy_description">Sin anuncios, sin espionaje, sin negocios turbios: respaldado únicamente por tu membresía.</string>
     <string name="paywall_feature_premium_sharing">Compartir ubicación premium</string>
-    <string name="paywall_feature_premium_sharing_description">Sin anuncios, con todas las funciones y eficiente en batería – todo lo que has estado buscando.</string>
+    <string name="paywall_feature_premium_sharing_description">Totalmente equipado y eficiente en el consumo de batería.</string>
     <string name="paywall_feature_control">Control completo de compartir</string>
-    <string name="paywall_feature_control_description">Accede a todas las funciones y controla cómo y qué compartes.</string>
+    <string name="paywall_feature_control_description">Usted decide cómo y qué comparte.</string>
     <string name="paywall_special_offer_description">**Descuento especial de lanzamiento**\nDisponible durante el período beta – aprovecha tu descuento especial y mantén este precio para siempre.</string>
     <string name="paywall_price_per_member">Desde solo **%1$s**/miembro/mes para %2$d miembros</string>
     <string name="paywall_price_per_month">**≈ %1$s** / mes</string>
@@ -640,9 +640,9 @@
     <string name="setting_navigationApp_moovit_title">Moovit</string>
     <string name="setting_navigationApp_title">Aplicación de navegación</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Solo yo</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Administre y rastree sus propios dispositivos</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Mantener sesión iniciada en otros dispositivos</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Si se desactiva, se cerrará la sesión en todos sus otros dispositivos y dejarán de compartir la ubicación.</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Rastrea tus propios dispositivos</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Cerrar sesión en otros dispositivos</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Si está habilitado, se cerrará la sesión de todos sus otros dispositivos y dejarán de compartir la ubicación.</string>
     <string name="setting_location_history_section_title">Historial de ubicaciones</string>
     <string name="setting_location_history_section_info">Elija la precisión de actualización del historial de ubicaciones que prefiera. Cuanto mayor sea la precisión, más puntos de ubicación individuales se registrarán.</string>
     <string name="setting_location_history_level_1">Medio</string>
@@ -655,7 +655,7 @@
     <string name="plans_management_info_wrong_platform_title">¡No puede administrar su suscripción en este dispositivo!</string>
     <string name="plans_management_info_wrong_platform_message">Utilice el dispositivo que utilizó originalmente para la compra.</string>
     <string name="plans_management_action_explore">Planes</string>
-    <string name="paywall_header_feature_history_unlimited">¡El historial de ubicación ilimitado para sus dispositivos ya está disponible!</string>
+    <string name="paywall_header_feature_history_unlimited">¡Obtén un historial de ubicación personal ilimitado con el plan **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Desbloquee más días de historial de ubicación</string>
     <string name="paywall_feature_personalSpace">Espacio personal</string>
     <string name="paywall_feature_devices_member">Dispositivos por miembro</string>
@@ -698,7 +698,7 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Ahora tienes un lugar especial para gestionar y hacer un seguimiento de tus propios dispositivos.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">El espacio personal te permite gestionar y hacer un seguimiento de tus propios dispositivos.</string>
     <string name="onboarding_step_accountStart_title_tag">Prepárate</string>
-    <string name="onboarding_step_accountStart_title">Elija cómo desea comenzar</string>
+    <string name="onboarding_step_accountStart_title">Elija cómo comenzar</string>
     <string name="onboarding_step_accountStart_info">Este es solo un primer paso para que comience.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Amigos y familia</string>
     <string name="onboarding_step_accountStart_groupMode_info">Comparta su ubicación con otros</string>
@@ -835,4 +835,9 @@
     <string name="history_stats_elevation_gain">Ganancia de Elevación</string>
     <string name="history_stats_elevation_range">Rango de Elevación</string>
     <string name="group_members_item_history_button">Historia</string>
+    <string name="notifications_tracking_active_message">El rastreo de ubicación personal está activo</string>
+    <string name="paywall_header_feature_list_screen_solo">Hecho para ti, no para anunciantes</string>
+    <string name="paywall_header_feature_list_screen_family">No dejes que otros rastreen a tu familia</string>
+    <string name="paywall_header_feature_history_title">Rastrea tus viajes</string>
+    <string name="group_members_item_tracking_button">Rastreo</string>
 </resources>

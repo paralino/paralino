@@ -146,12 +146,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Acum aveți un loc special pentru a gestiona și a urmări propriile dispozitive.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Spațiul personal vă permite să gestionați și să urmăriți propriile dispozitive.</string>
     <string name="onboarding_step_accountStart_title_tag">Pregătește-te</string>
-    <string name="onboarding_step_accountStart_title">Alege cum vrei să începi</string>
+    <string name="onboarding_step_accountStart_title">Alege cum să începi</string>
     <string name="onboarding_step_accountStart_info">Aceasta este doar un prim pas pentru a te pune în mișcare.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Prietenii și familia</string>
     <string name="onboarding_step_accountStart_groupMode_info">Împărtășește-ți locația cu alții</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Numai eu</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Gestionează și urmărește propriile dispozitive</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Urmați-vă propriile dispozitive</string>
     <string name="settings_section_account_title">Cont</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Coduri inactive</string>
@@ -167,7 +167,7 @@
     <string name="settings_account_guest_convert">Convertiți contul</string>
     <string name="settings_account_guest_badge">Cont de oaspeți</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Dispozitive multiple</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Partajați locația dvs. de pe mai multe dispozitive și legați-le la același cont.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Conectați toate dispozitivele dvs. la același cont.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Recuperarea contului</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Păstrați accesul la datele dvs. chiar dacă ștergeți aplicația sau treceți la un nou telefon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Urmărirea dispozitivelor personale</string>
@@ -178,8 +178,8 @@
     <string name="settings_account_credentialsChange_step_change">Schimbarea acreditivelor</string>
     <string name="settings_account_credentialsChange_step_verify">Verificarea cheilor</string>
     <string name="settings_account_credentialsChange_step_done">Finalizat</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Rămâneți conectat pe alte dispozitive</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Dacă este dezactivat, veți fi deconectat de pe toate celelalte dispozitive și acestea vor opri partajarea locației.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Deconectează-te de pe celelalte dispozitive</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Dacă este activat, vei fi deconectat de pe toate celelalte dispozitive și acestea vor înceta să partajeze locația.</string>
     <string name="settings_account_logout_alert_title">Deconectare</string>
     <string name="settings_account_logout_alert_message">Sunteți sigur că doriți să vă deconectați?</string>
     <string name="settings_account_delete_alert_title">Ștergeți contul</string>
@@ -199,7 +199,7 @@
     <string name="setting_title_privacy">Politica de confidențialitate</string>
     <string name="setting_title_terms">Termeni de utilizare</string>
     <string name="setting_title_libraries">Recunoașteri</string>
-    <string name="setting_title_onboarding">Afișează onboarding</string>
+    <string name="setting_title_onboarding">Redare introducere</string>
     <string name="setting_title_contactSupport">Contactează suportul</string>
     <string name="setting_title_logout">Deconectare</string>
     <string name="setting_title_delete_account">Ștergeți contul</string>
@@ -329,8 +329,8 @@
     <string name="paywall_purchase_error_alert_message">Imposibil de a efectua cererea de facturare, vă rugăm să încercați din nou.</string>
     <string name="paywall_discount_percentage_badge_text">%s OPRIT</string>
     <string name="paywall_header_feature_list_screen">Puteți proteja intimitatea tuturor membrilor din grupul dumneavoastră</string>
-    <string name="paywall_header_feature_demo_screen">Și faceți atât de multe altele...</string>
-    <string name="paywall_header_feature_history_unlimited">Istoricul locației nelimitat pentru dispozitivele dumneavoastră este acum disponibil!</string>
+    <string name="paywall_header_feature_demo_screen">Descoperiți puterea Paralino</string>
+    <string name="paywall_header_feature_history_unlimited">Obțineți istoric de locație personal nelimitat cu planul **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Dezvăluiți mai multe zile de istoric al locației</string>
     <string name="paywall_price_per_member">Atât de puțin cât **%1$s**/membru/lună pentru %2$d membri</string>
     <string name="paywall_price_per_month">**≈ %1$s** / lună</string>
@@ -785,11 +785,11 @@
     <string name="paywall_header_unlock_premium">Dezvăluiți experiența completă</string>
     <string name="paywall_header_choose_plan">Alegeți durata planului dumneavoastră</string>
     <string name="paywall_feature_privacy">Liniște sufletească</string>
-    <string name="paywall_feature_privacy_description">Paralino vă protejează intimitatea, precum și intimitatea tuturor membrilor grupului dumneavoastră.</string>
+    <string name="paywall_feature_privacy_description">Fără reclame, fără spionaj, fără afaceri dubioase - sprijinite doar de apartenența dumneavoastră.</string>
     <string name="paywall_feature_premium_sharing">Partajare premium a locației</string>
-    <string name="paywall_feature_premium_sharing_description">Fără reclame, complet funcțional și eficient din punct de vedere al bateriei – tot ce ați căutat.</string>
+    <string name="paywall_feature_premium_sharing_description">Complet dotat și eficient din punct de vedere al consumului de energie.</string>
     <string name="paywall_feature_control">Control complet al partajării</string>
-    <string name="paywall_feature_control_description">Accesați toate funcțiile și controlați cum și ce partajați.</string>
+    <string name="paywall_feature_control_description">Decizi tu cum și ce împărtășești.</string>
     <string name="paywall_special_offer_description">**Reducere specială de lansare**\nDisponibilă în perioada beta – revendicați reducerea specială și păstrați acest preț pentru totdeauna.</string>
     <string name="group_member_devices_section_title">Dispozitive</string>
     <string name="group_create_suggestion_bestGroup">Cea mai bună grupă vreodată</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Crestere de altitudine</string>
     <string name="history_stats_elevation_range">Interval de altitudine</string>
     <string name="group_members_item_history_button">Istorie</string>
+    <string name="notifications_tracking_active_message">Activarea urmării locației personale este activă</string>
+    <string name="paywall_header_feature_list_screen_solo">Creat pentru tine, nu pentru advertoriale</string>
+    <string name="paywall_header_feature_list_screen_family">Nu lăsa pe alții să-ți urmărească familia</string>
+    <string name="paywall_header_feature_history_title">Urmărește-ți călătoriile</string>
+    <string name="group_members_item_tracking_button">Urmărire</string>
 </resources>

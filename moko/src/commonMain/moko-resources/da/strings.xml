@@ -100,7 +100,7 @@
     <string name="onboarding_step_accountStart_groupMode_title">Venner og familie</string>
     <string name="onboarding_step_accountStart_groupMode_info">Del din placering med andre</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Kun mig</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Administrer og spor dine egne enheder</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Spor din egen enheder</string>
     <string name="settings_section_account_title">Konto</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inaktive koder</string>
@@ -116,7 +116,7 @@
     <string name="settings_account_guest_convert">Konverter konto</string>
     <string name="settings_account_guest_badge">Gæstekonto</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Flere enheder</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Del din placering fra flere enheder og link dem til den samme konto.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Forbind alle dine enheder til den samme konto.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Kontogendannelse</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Behold adgangen til dine data, selvom du sletter appen eller skifter til en ny telefon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Personlig enhedssporing</string>
@@ -127,8 +127,8 @@
     <string name="settings_account_credentialsChange_step_change">Ændrer legitimationsoplysninger</string>
     <string name="settings_account_credentialsChange_step_verify">Verificerer nøgler</string>
     <string name="settings_account_credentialsChange_step_done">Færdig</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Forbliv logget ind på andre enheder</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Hvis deaktiveret, vil du blive logget ud af alle dine andre enheder, og de vil stoppe med at dele din placering.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Log ud fra andre enheder</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Hvis dette er aktiveret, vil du blive logget ud af alle dine andre enheder, og de vil stoppe med at dele din placering.</string>
     <string name="settings_account_logout_alert_title">Log ud</string>
     <string name="settings_account_logout_alert_message">Er du sikker på, at du vil logge ud?</string>
     <string name="settings_account_delete_alert_title">Slet konto</string>
@@ -148,7 +148,7 @@
     <string name="setting_title_privacy">Privatlivspolitik</string>
     <string name="setting_title_terms">Brugsbetingelser</string>
     <string name="setting_title_libraries">Taknemmeligheder</string>
-    <string name="setting_title_onboarding">Vis onboarding</string>
+    <string name="setting_title_onboarding">Genoptagelse intro</string>
     <string name="setting_title_contactSupport">Kontakt support</string>
     <string name="setting_title_logout">Log ud</string>
     <string name="setting_title_delete_account">Slet konto</string>
@@ -295,8 +295,8 @@
     <string name="paywall_purchase_error_alert_message">Kunne ikke udføre faktureringsanmodning, prøv venligst igen.</string>
     <string name="paywall_discount_percentage_badge_text">%s RABAT</string>
     <string name="paywall_header_feature_list_screen">Du kan beskytte privatlivets fred for alle medlemmer i din gruppe</string>
-    <string name="paywall_header_feature_demo_screen">Og gøre så meget mere...</string>
-    <string name="paywall_header_feature_history_unlimited">Ubegrænset placering historie for dine enheder er nu tilgængelig!</string>
+    <string name="paywall_header_feature_demo_screen">Opdag kraften i Paralino</string>
+    <string name="paywall_header_feature_history_unlimited">Få ubegrænset personlig placeringhistorik med **%1$s** planen!</string>
     <string name="paywall_header_feature_history_more">Lås op for flere dages placering historie</string>
     <string name="paywall_header_take_control">Tag kontrol over dit privatliv</string>
     <string name="paywall_header_try_it">Låst op</string>
@@ -304,11 +304,11 @@
     <string name="paywall_header_unlock_premium">Lås op for den fulde oplevelse</string>
     <string name="paywall_header_choose_plan">Vælg din plan varighed</string>
     <string name="paywall_feature_privacy">Ro i sindet</string>
-    <string name="paywall_feature_privacy_description">Paralino beskytter dit privatliv såvel som privatlivet for alle dine gruppemedlemmer.</string>
+    <string name="paywall_feature_privacy_description">Ingen annoncer, ingen overvågning, ingen tvivlsom forretning - kun støttet af dit medlemskab.</string>
     <string name="paywall_feature_premium_sharing">Premium placering deling</string>
-    <string name="paywall_feature_premium_sharing_description">Ingen annoncer, fuldt udstyret og batterivenlig – alt hvad du har ledt efter.</string>
+    <string name="paywall_feature_premium_sharing_description">Fuld-brugte og batteri-effektive.</string>
     <string name="paywall_feature_control">Komplet delingskontrol</string>
-    <string name="paywall_feature_control_description">Få adgang til alle funktioner og kontroller hvordan og hvad du deler.</string>
+    <string name="paywall_feature_control_description">Du bestemmer, hvordan og hvad du deler.</string>
     <string name="paywall_special_offer_description">**Særlig lanceringsrabat**  \nTilgængelig i beta perioden – gør krav på din særlige rabat og behold denne pris for evigt.</string>
     <string name="paywall_price_per_member">Så lavt som **%1$s**/medlem/måned for %2$d medlemmer</string>
     <string name="paywall_price_per_month">**≈ %1$s** / måned</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Højdeforøgelse</string>
     <string name="history_stats_elevation_range">Højderækkevidde</string>
     <string name="group_members_item_history_button">Historie</string>
+    <string name="notifications_tracking_active_message">Personlig sporingslokation er aktiv</string>
+    <string name="paywall_header_feature_list_screen_solo">Lavet til dig, ikke annoncører</string>
+    <string name="paywall_header_feature_list_screen_family">Lad ikke andre spore din familie</string>
+    <string name="paywall_header_feature_history_title">Spor dine rejser</string>
+    <string name="group_members_item_tracking_button">Sporing</string>
 </resources>

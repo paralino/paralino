@@ -119,12 +119,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Mostantól van egy különleges helyed az eszközeid kezelésére és nyomon követésére.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">A személyes tér lehetővé teszi, hogy kezeld és nyomon kövesd a saját eszközeidet.</string>
     <string name="onboarding_step_accountStart_title_tag">Készülj fel</string>
-    <string name="onboarding_step_accountStart_title">Válaszd ki, hogyan szeretnél kezdeni</string>
+    <string name="onboarding_step_accountStart_title">Válassza ki, hogyan szeretné kezdeni</string>
     <string name="onboarding_step_accountStart_info">Ez csak egy első lépés, hogy elindulj.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Barátok és család</string>
     <string name="onboarding_step_accountStart_groupMode_info">Oszd meg a helyzeted másokkal</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Csak én</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Kezeld és kövesd nyomon a saját eszközeidet</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Kövesd a saját eszközeidet</string>
     <string name="settings_section_account_title">Fiók</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inaktív kódok</string>
@@ -140,7 +140,7 @@
     <string name="settings_account_guest_convert">Fiók átkonvertálása</string>
     <string name="settings_account_guest_badge">Vendégfiók</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Több eszköz</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Ossza meg helyét több eszközről, és kapcsolja össze őket ugyanazzal a fiókkal.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Csatlakoztassa az összes eszközét ugyanahhoz a fiókhoz.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Fiók helyreállítása</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Tartsa meg az adataihoz való hozzáférést, még akkor is, ha törli az alkalmazást vagy új telefonra vált.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Személyes eszköz nyomkövetés</string>
@@ -151,8 +151,8 @@
     <string name="settings_account_credentialsChange_step_change">Hitelesítő adatok módosítása</string>
     <string name="settings_account_credentialsChange_step_verify">Kulcsok ellenőrzése</string>
     <string name="settings_account_credentialsChange_step_done">Kész</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Maradjon bejelentkezve más eszközökön</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Ha le van tiltva, ki lesz jelentkezve az összes többi eszközéről, és meg fog szűnni a helymegosztás.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Kijelentkezés más eszközökről</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Ha engedélyezve van, ki leszel léptetve az összes többi eszközödről, és meg fogják szüntetni a helymegosztást.</string>
     <string name="settings_account_logout_alert_title">Kijelentkezés</string>
     <string name="settings_account_logout_alert_message">Biztos benne, hogy ki szeretne jelentkezni?</string>
     <string name="settings_account_delete_alert_title">Fiók törlése</string>
@@ -172,7 +172,7 @@
     <string name="setting_title_privacy">Adatvédelmi irányelvek</string>
     <string name="setting_title_terms">Felhasználási feltételek</string>
     <string name="setting_title_libraries">Köszönetnyilvánítás</string>
-    <string name="setting_title_onboarding">Onboarding megjelenítése</string>
+    <string name="setting_title_onboarding">Ismertesse a válasz bevezetőjét.</string>
     <string name="setting_title_contactSupport">Kapcsolat a támogatással</string>
     <string name="setting_title_logout">Kijelentkezés</string>
     <string name="setting_title_delete_account">Fiók törlése</string>
@@ -319,8 +319,8 @@
     <string name="paywall_purchase_error_alert_message">Nem sikerült végrehajtani a számlázási kérést, kérjük, próbálja újra.</string>
     <string name="paywall_discount_percentage_badge_text">%s KEDVEZMÉNY</string>
     <string name="paywall_header_feature_list_screen">Megvédheti a csoport összes tagjának magánéletét</string>
-    <string name="paywall_header_feature_demo_screen">És sok más dolgot is tehet...</string>
-    <string name="paywall_header_feature_history_unlimited">A készülékeid korlátlan helytörténete most elérhető!</string>
+    <string name="paywall_header_feature_demo_screen">Fedezd fel a Paralino erejét</string>
+    <string name="paywall_header_feature_history_unlimited">Szerezz korlátlan személyes helytörténetet a **%1$s** tervvel!</string>
     <string name="paywall_header_feature_history_more">Több nap helytörténet feloldása</string>
     <string name="paywall_header_take_control">Vedd kezedbe a magánéleted</string>
     <string name="paywall_header_try_it">Feloldva</string>
@@ -328,11 +328,11 @@
     <string name="paywall_header_unlock_premium">Teljes élmény feloldása</string>
     <string name="paywall_header_choose_plan">Válaszd ki a terv időtartamát</string>
     <string name="paywall_feature_privacy">Béke a léleknek</string>
-    <string name="paywall_feature_privacy_description">A Paralino védi a magánéletedet, valamint az összes csoporttag magánéletét.</string>
+    <string name="paywall_feature_privacy_description">Nincsenek hirdetések, nincsenek kémkedések, nincsenek gyanús üzletek - csak a tagságod támogat.</string>
     <string name="paywall_feature_premium_sharing">Prémium helymegosztás</string>
-    <string name="paywall_feature_premium_sharing_description">Nincsenek hirdetések, teljes funkcionalitás és energiatakarékos – minden, amire szükséged van.</string>
+    <string name="paywall_feature_premium_sharing_description">Teljes funkcionalitású és akkumulátor-hatékony.</string>
     <string name="paywall_feature_control">Teljes megosztási kontroll</string>
-    <string name="paywall_feature_control_description">Hozzáférés az összes funkcióhoz, és irányítsd, hogy mit és hogyan osztasz meg.</string>
+    <string name="paywall_feature_control_description">Te döntöd el, hogyan és mit osztasz meg.</string>
     <string name="paywall_special_offer_description">**Különleges indítási kedvezmény**\nElérhető a béta időszak alatt – igényeld a különleges kedvezményedet, és tartsd meg ezt az árat örökre.</string>
     <string name="paywall_price_per_member">Olyan alacsony, mint **%1$s**/tag/hónap %2$d tag számára</string>
     <string name="paywall_price_per_month">**≈ %1$s** / hónap</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Emelkedés</string>
     <string name="history_stats_elevation_range">Emelkedési Tartomány</string>
     <string name="group_members_item_history_button">Történelem</string>
+    <string name="notifications_tracking_active_message">A személyes helymeghatározás aktív</string>
+    <string name="paywall_header_feature_list_screen_solo">Önnek készült, nem hirdetőknek</string>
+    <string name="paywall_header_feature_list_screen_family">Ne hagyja, hogy mások követhessék a családját</string>
+    <string name="paywall_header_feature_history_title">Kövesse az utazásait</string>
+    <string name="group_members_item_tracking_button">Követés</string>
 </resources>

@@ -122,12 +122,12 @@
     <string name="onboarding_step_personalSpace_info_newUsers">L\'espai personal us permet gestionar i fer un seguiment dels vostres propis dispositius.</string>
     <string name="groups_sharing_devices">Dispositius</string>
     <string name="onboarding_step_accountStart_title_tag">Prepareu-vos</string>
-    <string name="onboarding_step_accountStart_title">Trieu com voleu començar</string>
+    <string name="onboarding_step_accountStart_title">Escolliu com començar</string>
     <string name="onboarding_step_accountStart_info">Això és només un primer pas per fer-te avançar.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Amics i família</string>
     <string name="onboarding_step_accountStart_groupMode_info">Comparteix la teva ubicació amb altres</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Només jo</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Gestiona i controla els teus propis dispositius</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Fes el seguiment dels teus propis dispositius</string>
     <string name="settings_section_account_title">Compte</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Codis inactius</string>
@@ -143,7 +143,7 @@
     <string name="settings_account_guest_convert">Converteix el compte</string>
     <string name="settings_account_guest_badge">Compte d\'hoste</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Múltiples dispositius</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Comparteix la teva ubicació des de múltiples dispositius i enllaça\'ls al mateix compte.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Connecta tots els teus dispositius al mateix compte.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Recuperació del compte</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Mantingues l\'accés a les teves dades fins i tot si esborres l\'aplicació o canvies a un nou telèfon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Seguiment de dispositius personals</string>
@@ -154,8 +154,8 @@
     <string name="settings_account_credentialsChange_step_change">Canviant credencials</string>
     <string name="settings_account_credentialsChange_step_verify">Verificant claus</string>
     <string name="settings_account_credentialsChange_step_done">Fet</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Mantingues la sessió iniciada en altres dispositius</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Si es desactiva, se\'t tancarà la sessió de tots els teus altres dispositius, i deixaran de compartir la ubicació.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Tanca la sessió en altres dispositius</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Si s\'activat, es tanarà la sessió de tots els teus altres dispositius, i aquests deixaran de compartir la ubicació.</string>
     <string name="settings_account_logout_alert_title">Tancar sessió</string>
     <string name="settings_account_logout_alert_message">Estàs segur que vols tancar sessió?</string>
     <string name="settings_account_delete_alert_title">Esborrar compte</string>
@@ -175,7 +175,7 @@
     <string name="setting_title_privacy">Política de privadesa</string>
     <string name="setting_title_terms">Termes d\'ús</string>
     <string name="setting_title_libraries">Agraïments</string>
-    <string name="setting_title_onboarding">Mostra la introducció</string>
+    <string name="setting_title_onboarding">Reproduir intro</string>
     <string name="setting_title_contactSupport">Contacta amb el suport</string>
     <string name="setting_title_logout">Tancar sessió</string>
     <string name="setting_title_delete_account">Esborrar compte</string>
@@ -321,9 +321,9 @@
     <string name="paywall_purchase_error_alert_message">No s\'ha pogut realitzar la sol·licitud de facturació, si us plau, torneu-ho a provar.</string>
     <string name="paywall_discount_percentage_badge_text">%s DESCOMPTE</string>
     <string name="paywall_header_feature_list_screen">Podeu protegir la privadesa de tots els membres del vostre grup</string>
-    <string name="paywall_header_feature_demo_screen">I fer molt més...</string>
+    <string name="paywall_header_feature_demo_screen">Descobreix el poder de Paralino</string>
     <string name="paywall_feature_history_days_minimum">&lt; 1 dia</string>
-    <string name="paywall_header_feature_history_unlimited">La història de localització il·limitada per als seus dispositius ja està disponible!</string>
+    <string name="paywall_header_feature_history_unlimited">Obté una història de localització personal il·limitada amb el pla **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Desbloqueu més dies d\'història de localització</string>
     <string name="paywall_header_take_control">Preneu el control de la vostra privadesa</string>
     <string name="paywall_header_try_it">Desbloquejat</string>
@@ -331,11 +331,11 @@
     <string name="paywall_header_unlock_premium">Desbloqueu l\'experiència completa</string>
     <string name="paywall_header_choose_plan">Trieu la durada del vostre pla</string>
     <string name="paywall_feature_privacy">Tranquil·litat</string>
-    <string name="paywall_feature_privacy_description">Paralino protegeix la vostra privadesa així com la privadesa de tots els membres del vostre grup.</string>
+    <string name="paywall_feature_privacy_description">Sense anuncis, sense espionatge, sense negocis dubtosos - només recolzat per la seva subscripció.</string>
     <string name="paywall_feature_premium_sharing">Compartició de localització premium</string>
-    <string name="paywall_feature_premium_sharing_description">Sense anuncis, completament funcional i eficient en bateria – tot el que heu estat buscant.</string>
+    <string name="paywall_feature_premium_sharing_description">Totalment funcional i eficient en bateria.</string>
     <string name="paywall_feature_control">Control complet de la compartició</string>
-    <string name="paywall_feature_control_description">Accediu a totes les funcions i controleu com i què compartiu.</string>
+    <string name="paywall_feature_control_description">Vostè decideix com i què comparteix.</string>
     <string name="paywall_special_offer_description">**Descompte especial de llançament**  \nDisponible durant el període beta – reclameu el vostre descompte especial i mantingueu aquest preu per sempre.</string>
     <string name="paywall_price_per_member">Tan sols **%1$s**/membre/mes per a %2$d membres</string>
     <string name="paywall_price_per_month">**≈ %1$s** / mes</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Guany d\'elevació</string>
     <string name="history_stats_elevation_range">Rang d\'elevació</string>
     <string name="group_members_item_history_button">Història</string>
+    <string name="notifications_tracking_active_message">El seguiment de la ubicació personal està activat</string>
+    <string name="paywall_header_feature_list_screen_solo">Fet per a tu, no per a anunciants</string>
+    <string name="paywall_header_feature_list_screen_family">No deixis que altres segueixin la teva família</string>
+    <string name="paywall_header_feature_history_title">Segueix els teus viatges</string>
+    <string name="group_members_item_tracking_button">Seguiment</string>
 </resources>

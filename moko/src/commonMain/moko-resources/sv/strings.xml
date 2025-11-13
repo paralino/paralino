@@ -180,7 +180,7 @@
     <string name="onboarding_step_accountStart_groupMode_title">Vänner och familj</string>
     <string name="onboarding_step_accountStart_groupMode_info">Dela din plats med andra</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Bara jag</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Hantera och spåra dina egna enheter</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Spåra dina egna enheter</string>
     <string name="settings_section_account_title">Konto</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inaktiva koder</string>
@@ -197,7 +197,7 @@
     <string name="settings_account_guest_convert">Konvertera konto</string>
     <string name="settings_account_guest_badge">Gästkonto</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Flera enheter</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Dela din plats från flera enheter och koppla dem till samma konto.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Anslut alla dina enheter till samma konto.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Kontogenvinning</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Behåll åtkomst till dina data även om du raderar appen eller byter till en ny telefon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Personlig enhetsspårning</string>
@@ -208,8 +208,8 @@
     <string name="settings_account_credentialsChange_step_change">Ändrar autentiseringsuppgifter</string>
     <string name="settings_account_credentialsChange_step_verify">Verifierar nycklar</string>
     <string name="settings_account_credentialsChange_step_done">Färdig</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Förbli inloggad på andra enheter</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Om det inaktiveras kommer du att loggas ut från alla dina andra enheter, och de kommer att sluta dela plats.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Logga ut från andra enheter</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Om det är aktiverat kommer du att loggas ut från alla dina andra enheter och de kommer att sluta dela plats.</string>
     <string name="settings_account_logout_alert_title">Logga ut</string>
     <string name="settings_account_logout_alert_message">Är du säker på att du vill logga ut?</string>
     <string name="settings_account_delete_alert_title">Radera konto</string>
@@ -229,7 +229,7 @@
     <string name="setting_title_privacy">Integritetspolicy</string>
     <string name="setting_title_terms">Användarvillkor</string>
     <string name="setting_title_libraries">Tack</string>
-    <string name="setting_title_onboarding">Visa onboarding</string>
+    <string name="setting_title_onboarding">Återspela intro</string>
     <string name="setting_title_contactSupport">Kontakta support</string>
     <string name="setting_title_logout">Logga ut</string>
     <string name="setting_title_delete_account">Radera konto</string>
@@ -378,8 +378,8 @@
     <string name="paywall_purchase_error_alert_message">Kunde inte utföra faktureringsbegäran, vänligen försök igen.</string>
     <string name="paywall_discount_percentage_badge_text">%s RABATT</string>
     <string name="paywall_header_feature_list_screen">Du kan skydda integriteten för alla medlemmar i din grupp</string>
-    <string name="paywall_header_feature_demo_screen">Och göra så mycket mer...</string>
-    <string name="paywall_header_feature_history_unlimited">Obegränsad plats historia för dina enheter är nu tillgänglig!</string>
+    <string name="paywall_header_feature_demo_screen">Upptäck kraften i Paralino</string>
+    <string name="paywall_header_feature_history_unlimited">Få obegränsad personlig platsinformation med **%1$s** planen!</string>
     <string name="paywall_header_feature_history_more">Lås upp fler dagar av plats historia</string>
     <string name="paywall_header_take_control">Ta kontroll över din integritet</string>
     <string name="paywall_header_try_it">Upplåst</string>
@@ -387,11 +387,11 @@
     <string name="paywall_header_unlock_premium">Lås upp fullständig upplevelse</string>
     <string name="paywall_header_choose_plan">Välj din planlängd</string>
     <string name="paywall_feature_privacy">Sinnesro</string>
-    <string name="paywall_feature_privacy_description">Paralino skyddar din integritet såväl som integriteten för alla dina gruppmedlemmar.</string>
+    <string name="paywall_feature_privacy_description">Inga annonser, ingen övervakning, inga oärliga affärer - stöds endast av ditt medlemskap.</string>
     <string name="paywall_feature_premium_sharing">Premium platsdelning</string>
-    <string name="paywall_feature_premium_sharing_description">Inga annonser, fullt utrustad och batterisnål – allt du har letat efter.</string>
+    <string name="paywall_feature_premium_sharing_description">Heltäckande och batterisnål.</string>
     <string name="paywall_feature_control">Fullständig delningskontroll</string>
-    <string name="paywall_feature_control_description">Få tillgång till alla funktioner och kontrollera hur och vad du delar.</string>
+    <string name="paywall_feature_control_description">Du bestämmer hur och vad du delar.</string>
     <string name="paywall_special_offer_description">**Speciell lanseringsrabatt**  \nTillgänglig under betaperioden – gör anspråk på din speciella rabatt och behåll detta pris för alltid.</string>
     <string name="paywall_price_per_member">Så lågt som **%1$s**/medlem/månad för %2$d medlemmar</string>
     <string name="paywall_price_per_month">**≈ %1$s** / månad</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Höjdförändring</string>
     <string name="history_stats_elevation_range">Höjdintervall</string>
     <string name="group_members_item_history_button">Historia</string>
+    <string name="notifications_tracking_active_message">Personlig platsövervakning är aktiv</string>
+    <string name="paywall_header_feature_list_screen_solo">Gjord för dig, inte för annonsörer</string>
+    <string name="paywall_header_feature_list_screen_family">Låt inte andra spåra din familj</string>
+    <string name="paywall_header_feature_history_title">Spåra dina resor</string>
+    <string name="group_members_item_tracking_button">Spårning</string>
 </resources>

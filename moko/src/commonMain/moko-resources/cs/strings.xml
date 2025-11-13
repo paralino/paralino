@@ -125,12 +125,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Nyní máte speciální místo pro správu a sledování svých vlastních zařízení.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Osobní prostor vám umožňuje spravovat a sledovat vaše vlastní zařízení.</string>
     <string name="onboarding_step_accountStart_title_tag">Připravte se</string>
-    <string name="onboarding_step_accountStart_title">Vyberte, jak chcete začít</string>
+    <string name="onboarding_step_accountStart_title">Vyberte, jak začít</string>
     <string name="onboarding_step_accountStart_info">Toto je pouze první krok, jak se dostat dál.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Přátelé a rodina</string>
     <string name="onboarding_step_accountStart_groupMode_info">Sdílejte svou polohu s ostatními</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Pouze já</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Spravujte a sledujte svá vlastní zařízení</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Sledujte svá vlastní zařízení</string>
     <string name="settings_section_account_title">Účet</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Neaktivní kódy</string>
@@ -146,7 +146,7 @@
     <string name="settings_account_guest_convert">Převést účet</string>
     <string name="settings_account_guest_badge">Hostující účet</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Více zařízení</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Sdílejte svou polohu z více zařízení a propojte je se stejným účtem.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Připojte všechna svá zařízení k stejnému účtu.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Obnovení účtu</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Zachovejte přístup k vašim datům, i když aplikaci odstraníte nebo přejdete na nový telefon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Sledování osobních zařízení</string>
@@ -157,8 +157,8 @@
     <string name="settings_account_credentialsChange_step_change">Změna přihlašovacích údajů</string>
     <string name="settings_account_credentialsChange_step_verify">Ověřování klíčů</string>
     <string name="settings_account_credentialsChange_step_done">Hotovo</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Zůstaňte přihlášeni na jiných zařízeních</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Pokud je tato možnost zakázána, budete odhlášeni ze všech ostatních zařízení a sdílení polohy se zastaví.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Odhlásit se z ostatních zařízení</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Pokud je povoleno, budete odhlášeni ze všech svých ostatních zařízení a ta přestanou sdílet polohu.</string>
     <string name="settings_account_logout_alert_title">Odhlásit se</string>
     <string name="settings_account_logout_alert_message">Jste si jisti, že se chcete odhlásit?</string>
     <string name="settings_account_delete_alert_title">Smazat účet</string>
@@ -178,7 +178,7 @@
     <string name="setting_title_privacy">Zásady ochrany osobních údajů</string>
     <string name="setting_title_terms">Podmínky použití</string>
     <string name="setting_title_libraries">Poděkování</string>
-    <string name="setting_title_onboarding">Zobrazit onboarding</string>
+    <string name="setting_title_onboarding">Odpovědět na úvod</string>
     <string name="setting_title_contactSupport">Kontaktovat podporu</string>
     <string name="setting_title_logout">Odhlásit se</string>
     <string name="setting_title_delete_account">Smazat účet</string>
@@ -326,8 +326,8 @@
     <string name="paywall_purchase_error_alert_message">Nelze provést žádost o fakturaci, zkuste to prosím znovu.</string>
     <string name="paywall_discount_percentage_badge_text">%s SLEVA</string>
     <string name="paywall_header_feature_list_screen">Můžete chránit soukromí všech členů ve vaší skupině</string>
-    <string name="paywall_header_feature_demo_screen">A dělat mnohem více...</string>
-    <string name="paywall_header_feature_history_unlimited">Neomezená historie polohy pro vaše zařízení je nyní k dispozici!</string>
+    <string name="paywall_header_feature_demo_screen">Objevte sílu Paralino</string>
+    <string name="paywall_header_feature_history_unlimited">Získejte neomezenou osobní historii polohy s plánem **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Odemkněte více dní historie polohy</string>
     <string name="paywall_header_take_control">Vezměte kontrolu nad svou ochranou soukromí</string>
     <string name="paywall_header_try_it">Odemčeno</string>
@@ -335,11 +335,11 @@
     <string name="paywall_header_unlock_premium">Odemkněte plný zážitek</string>
     <string name="paywall_header_choose_plan">Vyberte si délku svého plánu</string>
     <string name="paywall_feature_privacy">Klid na duši</string>
-    <string name="paywall_feature_privacy_description">Paralino chrání vaše soukromí stejně jako soukromí všech členů vaší skupiny.</string>
+    <string name="paywall_feature_privacy_description">Žádné reklamy, žádné špehování, žádné shady podnikání - podpořeno pouze vaším členstvím.</string>
     <string name="paywall_feature_premium_sharing">Prémiové sdílení polohy</string>
-    <string name="paywall_feature_premium_sharing_description">Žádné reklamy, plně funkční a šetrné k baterii – vše, co jste hledali.</string>
+    <string name="paywall_feature_premium_sharing_description">Plně vybavený a energeticky úsporný.</string>
     <string name="paywall_feature_control">Úplná kontrola nad sdílením</string>
-    <string name="paywall_feature_control_description">Získejte přístup ke všem funkcím a kontrolujte, jak a co sdílíte.</string>
+    <string name="paywall_feature_control_description">Rozhodujete o tom, jak a co sdílíte.</string>
     <string name="paywall_special_offer_description">**Speciální spuštění sleva**  \nK dispozici během beta období – uplatněte si svůj speciální slevu a udržte si tuto cenu navždy.</string>
     <string name="paywall_price_per_member">Pouze **%1$s**/člen/měsíc pro %2$d členů</string>
     <string name="paywall_price_per_month">**≈ %1$s** / měsíc</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Získání nadmořské výšky</string>
     <string name="history_stats_elevation_range">Rozsah nadmořské výšky</string>
     <string name="group_members_item_history_button">Historie</string>
+    <string name="notifications_tracking_active_message">Sledování osobní polohy je aktivní</string>
+    <string name="paywall_header_feature_list_screen_solo">Vytvořeno pro vás, ne pro inzerenty</string>
+    <string name="paywall_header_feature_list_screen_family">Nenechte ostatní sledovat vaši rodinu</string>
+    <string name="paywall_header_feature_history_title">Sledujte své cesty</string>
+    <string name="group_members_item_tracking_button">Sledování</string>
 </resources>

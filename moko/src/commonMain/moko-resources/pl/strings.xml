@@ -123,12 +123,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Teraz masz specjalne miejsce do zarządzania i śledzenia swoich urządzeń.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Przestrzeń osobista pozwala Ci zarządzać i śledzić swoje urządzenia.</string>
     <string name="onboarding_step_accountStart_title_tag">Przygotuj się</string>
-    <string name="onboarding_step_accountStart_title">Wybierz, jak chcesz zacząć</string>
+    <string name="onboarding_step_accountStart_title">Wybierz, jak zacząć</string>
     <string name="onboarding_step_accountStart_info">To tylko pierwszy krok, aby Cię wprowadzić.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Przyjaciele i rodzina</string>
     <string name="onboarding_step_accountStart_groupMode_info">Udostępnij swoją lokalizację innym</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Tylko ja</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Zarządzaj i śledź swoje urządzenia</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Śledź swoje własne urządzenia</string>
     <string name="settings_section_account_title">Konto</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Nieaktywne kody</string>
@@ -144,7 +144,7 @@
     <string name="settings_account_guest_convert">Przekształć konto</string>
     <string name="settings_account_guest_badge">Konto gościa</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Wiele urządzeń</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Udostępnij swoją lokalizację z wielu urządzeń i połącz je z tym samym kontem.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Połącz wszystkie swoje urządzenia z tym samym kontem.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Odzyskiwanie konta</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Zachowaj dostęp do swoich danych, nawet jeśli usuniesz aplikację lub przejdziesz na nowy telefon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Śledzenie urządzeń osobistych</string>
@@ -155,8 +155,8 @@
     <string name="settings_account_credentialsChange_step_change">Zmiana danych uwierzytelniających</string>
     <string name="settings_account_credentialsChange_step_verify">Weryfikacja kluczy</string>
     <string name="settings_account_credentialsChange_step_done">Zrobione</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Pozostań zalogowany na innych urządzeniach</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Jeśli wyłączone, zostaniesz wylogowany ze wszystkich innych urządzeń, a one przestaną udostępniać lokalizację.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Wyloguj się z innych urządzeń</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Jeśli jest włączone, zostaniesz wylogowany ze wszystkich swoich innych urządzeń, a one przestaną udostępniać lokalizację.</string>
     <string name="settings_account_logout_alert_title">Wyloguj się</string>
     <string name="settings_account_logout_alert_message">Czy na pewno chcesz się wylogować?</string>
     <string name="settings_account_delete_alert_title">Usuń konto</string>
@@ -176,7 +176,7 @@
     <string name="setting_title_privacy">Polityka prywatności</string>
     <string name="setting_title_terms">Warunki korzystania</string>
     <string name="setting_title_libraries">Podziękowania</string>
-    <string name="setting_title_onboarding">Pokaż wprowadzenie</string>
+    <string name="setting_title_onboarding">Odpowiedz na wstęp</string>
     <string name="setting_title_contactSupport">Skontaktuj się z pomocą techniczną</string>
     <string name="setting_title_logout">Wyloguj się</string>
     <string name="setting_title_delete_account">Usuń konto</string>
@@ -323,8 +323,8 @@
     <string name="paywall_purchase_error_alert_message">Nie można zrealizować żądania płatności, spróbuj ponownie.</string>
     <string name="paywall_discount_percentage_badge_text">%s ZNIŻKI</string>
     <string name="paywall_header_feature_list_screen">Możesz chronić prywatność wszystkich członków w swojej grupie</string>
-    <string name="paywall_header_feature_demo_screen">I robić znacznie więcej...</string>
-    <string name="paywall_header_feature_history_unlimited">Nieograniczona historia lokalizacji dla Twoich urządzeń jest teraz dostępna!</string>
+    <string name="paywall_header_feature_demo_screen">Odkryj moc Paralino</string>
+    <string name="paywall_header_feature_history_unlimited">Uzyskaj nielimitowaną osobistą historię lokalizacji z **%1$s** planem!</string>
     <string name="paywall_header_feature_history_more">Odblokuj więcej dni historii lokalizacji</string>
     <string name="paywall_header_take_control">Przejmij kontrolę nad swoją prywatnością</string>
     <string name="paywall_header_try_it">Odblokowane</string>
@@ -332,11 +332,11 @@
     <string name="paywall_header_unlock_premium">Odblokuj pełne doświadczenie</string>
     <string name="paywall_header_choose_plan">Wybierz czas trwania swojego planu</string>
     <string name="paywall_feature_privacy">Spokój umysłu</string>
-    <string name="paywall_feature_privacy_description">Paralino chroni Twoją prywatność, a także prywatność wszystkich członków Twojej grupy.</string>
+    <string name="paywall_feature_privacy_description">Brak reklam, brak szpiegowania, brak podejrzanych interesów - wspierane wyłącznie przez Twoje członkostwo.</string>
     <string name="paywall_feature_premium_sharing">Premium dzielenie lokalizacją</string>
-    <string name="paywall_feature_premium_sharing_description">Brak reklam, pełna funkcjonalność i oszczędność energii – wszystko, czego szukałeś.</string>
+    <string name="paywall_feature_premium_sharing_description">W pełni funkcjonalny i energooszczędny.</string>
     <string name="paywall_feature_control">Pełna kontrola nad udostępnianiem</string>
-    <string name="paywall_feature_control_description">Uzyskaj dostęp do wszystkich funkcji i kontroluj, jak i co udostępniasz.</string>
+    <string name="paywall_feature_control_description">Decydujesz, jak i co udostępniasz.</string>
     <string name="paywall_special_offer_description">**Specjalny rabat na start**  \nDostępny w okresie beta – zgarnij swój specjalny rabat i zachowaj tę cenę na zawsze.</string>
     <string name="paywall_price_per_member">Już od **%1$s**/członek/miesiąc dla %2$d członków</string>
     <string name="paywall_price_per_month">**≈ %1$s** / miesiąc</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Wzniesienie</string>
     <string name="history_stats_elevation_range">Zakres wysokości</string>
     <string name="group_members_item_history_button">Historia</string>
+    <string name="notifications_tracking_active_message">Śledzenie lokalizacji osobistej jest aktywne</string>
+    <string name="paywall_header_feature_list_screen_solo">Stworzone dla Ciebie, a nie dla reklamodawców</string>
+    <string name="paywall_header_feature_list_screen_family">Nie pozwól innym śledzić Twojej rodziny</string>
+    <string name="paywall_header_feature_history_title">Śledź swoje podróże</string>
+    <string name="group_members_item_tracking_button">Śledzenie</string>
 </resources>

@@ -112,12 +112,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Тепер у вас є спеціальне місце для управління та відстеження своїх пристроїв.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Особистий простір дозволяє вам управляти та відстежувати свої пристрої.</string>
     <string name="onboarding_step_accountStart_title_tag">Приготуйтеся</string>
-    <string name="onboarding_step_accountStart_title">Виберіть, як ви хочете почати</string>
+    <string name="onboarding_step_accountStart_title">Виберіть, як почати</string>
     <string name="onboarding_step_accountStart_info">Це лише перший крок, щоб ви могли почати.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Друзі та родина</string>
     <string name="onboarding_step_accountStart_groupMode_info">Поділіться своїм місцезнаходженням з іншими</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Тільки я</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Керуйте та відстежуйте свої власні пристрої</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Відстежуйте свої власні пристрої</string>
     <string name="settings_section_account_title">Обліковий запис</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Неактивні коди</string>
@@ -133,7 +133,7 @@
     <string name="settings_account_guest_convert">Конвертувати обліковий запис</string>
     <string name="settings_account_guest_badge">Гостьовий обліковий запис</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Кілька пристроїв</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Поділіться своїм місцезнаходженням з кількох пристроїв і прив\'яжіть їх до одного облікового запису.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Підключіть усі свої пристрої до одного й того ж облікового запису.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Відновлення облікового запису</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Зберігайте доступ до своїх даних, навіть якщо ви видалите додаток або перейдете на новий телефон.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Відстеження особистих пристроїв</string>
@@ -144,8 +144,8 @@
     <string name="settings_account_credentialsChange_step_change">Зміна облікових даних</string>
     <string name="settings_account_credentialsChange_step_verify">Перевірка ключів</string>
     <string name="settings_account_credentialsChange_step_done">Готово</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Залишайтеся в системі на інших пристроях</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Якщо вимкнено, ви будете вийдені з усіх інших пристроїв, і вони припинять обмін місцезнаходженням.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Вийти з інших пристроїв</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Якщо активувати, ви будете вийдені з усіх інших пристроїв, і вони припинять обмін даними про місцезнаходження.</string>
     <string name="settings_account_logout_alert_title">Вийти</string>
     <string name="settings_account_logout_alert_message">Ви впевнені, що хочете вийти?</string>
     <string name="settings_account_delete_alert_title">Видалити обліковий запис</string>
@@ -165,7 +165,7 @@
     <string name="setting_title_privacy">Політика конфіденційності</string>
     <string name="setting_title_terms">Умови використання</string>
     <string name="setting_title_libraries">Подяки</string>
-    <string name="setting_title_onboarding">Показати введення</string>
+    <string name="setting_title_onboarding">Відповісти на вступ</string>
     <string name="setting_title_contactSupport">Зв\'язатися з підтримкою</string>
     <string name="setting_title_delete_account">Видалити обліковий запис</string>
     <string name="setting_title_dangerZone">Небезпечна зона</string>
@@ -311,8 +311,8 @@
     <string name="paywall_purchase_error_alert_message">Не вдалося виконати запит на виставлення рахунків, будь ласка, спробуйте ще раз.</string>
     <string name="paywall_discount_percentage_badge_text">%s ЗНИЖКА</string>
     <string name="paywall_header_feature_list_screen">Ви можете захистити конфіденційність усіх учасників у вашій групі</string>
-    <string name="paywall_header_feature_demo_screen">І зробити ще багато іншого...</string>
-    <string name="paywall_header_feature_history_unlimited">Необмежена історія місцезнаходження для ваших пристроїв тепер доступна!</string>
+    <string name="paywall_header_feature_demo_screen">Відкрийте силу Paralino</string>
+    <string name="paywall_header_feature_history_unlimited">Отримайте необмежену особисту історію розташувань з планом **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Відкрийте більше днів історії місцезнаходження</string>
     <string name="paywall_header_take_control">Візьміть під контроль свою конфіденційність</string>
     <string name="paywall_header_try_it">Розблоковано</string>
@@ -320,12 +320,12 @@
     <string name="paywall_header_unlock_premium">Відкрийте повний досвід</string>
     <string name="paywall_header_choose_plan">Виберіть тривалість свого плану</string>
     <string name="paywall_feature_privacy">Спокій у душі</string>
-    <string name="paywall_feature_privacy_description">Paralino захищає вашу конфіденційність, а також конфіденційність усіх членів вашої групи.</string>
+    <string name="paywall_feature_privacy_description">Без реклами, без шпигування, без підозрілих справ - фінансування лише за рахунок вашої участі.</string>
     <string name="paywall_feature_premium_sharing">Преміум обмін місцезнаходженням</string>
-    <string name="paywall_feature_premium_sharing_description">Без реклами, з повним функціоналом та енергоефективністю – все, що ви шукали.</string>
+    <string name="paywall_feature_premium_sharing_description">Повністю функціональний та енергоефективний.</string>
     <string name="paywall_review_6_author">Младен</string>
     <string name="paywall_feature_control">Повний контроль над обміном</string>
-    <string name="paywall_feature_control_description">Отримайте доступ до всіх функцій і контролюйте, як і що ви ділитеся.</string>
+    <string name="paywall_feature_control_description">Ви вирішуєте, як і що ви ділитеся.</string>
     <string name="paywall_special_offer_description">**Спеціальна знижка на запуск**\nДоступна під час бета-періоду – отримайте свою спеціальну знижку та збережіть цю ціну назавжди.</string>
     <string name="paywall_price_per_member">Лише **%1$s**/член/місяць для %2$d членів</string>
     <string name="paywall_price_per_month">**≈ %1$s** / місяць</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Набір висоти</string>
     <string name="history_stats_elevation_range">Діапазон висоти</string>
     <string name="group_members_item_history_button">Історія</string>
+    <string name="notifications_tracking_active_message">Особисте відстеження місцезнаходження активне</string>
+    <string name="paywall_header_feature_list_screen_solo">Створено для вас, а не для рекламодавців</string>
+    <string name="paywall_header_feature_list_screen_family">Не дозволяйте іншим відстежувати вашу родину</string>
+    <string name="paywall_header_feature_history_title">Відстежуйте свої подорожі</string>
+    <string name="group_members_item_tracking_button">Відстеження</string>
 </resources>

@@ -119,12 +119,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Сада имате посебно место за управљање и праћење својих уређаја.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Лични простор вам омогућава да управљате и пратите своје уређаје.</string>
     <string name="onboarding_step_accountStart_title_tag">Спремите се</string>
-    <string name="onboarding_step_accountStart_title">Одаберите како желите да започнете</string>
+    <string name="onboarding_step_accountStart_title">Изаберите како да почнете</string>
     <string name="onboarding_step_accountStart_info">Ово је само први корак да бисте почели.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Пријатељи и породица</string>
     <string name="onboarding_step_accountStart_groupMode_info">Поделите своју локацију са другима</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Само ја</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Управљајте и пратите своје уређаје</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Пратите своје уређаје</string>
     <string name="settings_section_account_title">Налог</string>
     <string name="settings_section_personal_code_title">Паралино.ИД</string>
     <string name="settings_section_personal_code_inactive_title">Неактивни кодови</string>
@@ -140,7 +140,7 @@
     <string name="settings_account_guest_convert">Пређите на други тип налога</string>
     <string name="settings_account_guest_badge">Гостински налог</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Више уређаја</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Делите своју локацију са више уређаја и повежите их са истим налогом.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Повежите све своје уређаје на исти налог.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Опоравак налога</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Задржите приступ својим подацима чак и ако избришете апликацију или пређете на нови телефон.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Праћење личних уређаја</string>
@@ -151,8 +151,8 @@
     <string name="settings_account_credentialsChange_step_change">Промена акредитива</string>
     <string name="settings_account_credentialsChange_step_verify">Верификација кључева</string>
     <string name="settings_account_credentialsChange_step_done">Готово</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Останите пријављени на другим уређајима.</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Ако онемогућите ову опцију, бићете одјављени са свих осталих уређаја, а они ће престати да деле локацију.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Одјавите се са других уређаја</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Ако је омогућено, бићете одјављени са свих других уређаја и они ће престати да деле локацију.</string>
     <string name="settings_account_logout_alert_title">Одјава</string>
     <string name="settings_account_logout_alert_message">Да ли сте сигурни да желите да се одјавите?</string>
     <string name="settings_account_delete_alert_title">Обриши налог</string>
@@ -172,7 +172,7 @@
     <string name="setting_title_privacy">Политика приватности</string>
     <string name="setting_title_terms">Услови коришћења</string>
     <string name="setting_title_libraries">Захвалности</string>
-    <string name="setting_title_onboarding">Прикажите уводно упутство</string>
+    <string name="setting_title_onboarding">Поновите упутство</string>
     <string name="setting_title_contactSupport">Контактирајте подршку</string>
     <string name="setting_title_logout">Одјава</string>
     <string name="setting_title_delete_account">Обриши налог</string>
@@ -238,8 +238,8 @@
     <string name="paywall_purchase_error_alert_message">Није могуће извршити захтев за наплату, молимо покушајте поново.</string>
     <string name="paywall_discount_percentage_badge_text">%s ПОПУСТ</string>
     <string name="paywall_header_feature_list_screen">Можете заштитити приватност свих чланова у вашој групи</string>
-    <string name="paywall_header_feature_demo_screen">И још много тога...</string>
-    <string name="paywall_header_feature_history_unlimited">Неограничена историја локација за ваше уређаје је сада доступна!</string>
+    <string name="paywall_header_feature_demo_screen">Откријте моћ Паралино</string>
+    <string name="paywall_header_feature_history_unlimited">Добијте неограничену личну историју локација са планом **%1$s**!</string>
     <string name="paywall_header_feature_history_more">Откључајте више дана историје локација</string>
     <string name="paywall_header_take_control">Преузмите контролу над својом приватношћу</string>
     <string name="paywall_header_try_it">Откључано</string>
@@ -247,11 +247,11 @@
     <string name="paywall_header_unlock_premium">Откључајте пун доживљај</string>
     <string name="paywall_header_choose_plan">Одаберите трајање вашег плана</string>
     <string name="paywall_feature_privacy">Мир и сигурност</string>
-    <string name="paywall_feature_privacy_description">Paralino штити вашу приватност као и приватност свих чланова ваше групе.</string>
+    <string name="paywall_feature_privacy_description">Без реклама, без шпијунаже, без сумњивог пословања - подржано само вашим чланством.</string>
     <string name="paywall_feature_premium_sharing">Премиум дељење локације</string>
-    <string name="paywall_feature_premium_sharing_description">Без огласа, са свим функцијама и штедљиво према батерији – све што сте тражили.</string>
+    <string name="paywall_feature_premium_sharing_description">Потпуно фукнционалан и ефикасан у погледу потрошње батерије.</string>
     <string name="paywall_feature_control">Потпуна контрола дељења</string>
-    <string name="paywall_feature_control_description">Приступите свим функцијама и контролишите како и шта делите.</string>
+    <string name="paywall_feature_control_description">Ви одлучујете како и шта делите.</string>
     <string name="paywall_special_offer_description">**Специјални попуст за лансирање** Доступан током бета периода – искористите свој специјални попуст и задржите ову цену заувек.</string>
     <string name="paywall_price_per_member">Од само **%1$s** по члану/месечно за %2$d чланова</string>
     <string name="paywall_price_per_month">**≈ %1$s** / месец</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Надморска висина</string>
     <string name="history_stats_elevation_range">Опсег надморске висине</string>
     <string name="group_members_item_history_button">Историја</string>
+    <string name="group_members_item_tracking_button">Праћење</string>
+    <string name="notifications_tracking_active_message">Лично праћење локације је активно</string>
+    <string name="paywall_header_feature_list_screen_solo">Направљено за вас, а не за оглашиваче</string>
+    <string name="paywall_header_feature_list_screen_family">Не дозволите другима да прате вашу породицу</string>
+    <string name="paywall_header_feature_history_title">Пратите своје путовање</string>
 </resources>

@@ -122,12 +122,12 @@
     <string name="onboarding_step_personalSpace_info_currentUsers">Nå har du et spesielt sted for å administrere og holde oversikt over dine egne enheter.</string>
     <string name="onboarding_step_personalSpace_info_newUsers">Personlig rom lar deg administrere og holde oversikt over dine egne enheter.</string>
     <string name="onboarding_step_accountStart_title_tag">Gjør deg klar</string>
-    <string name="onboarding_step_accountStart_title">Velg hvordan du vil starte</string>
+    <string name="onboarding_step_accountStart_title">Velg hvordan du vil begynne</string>
     <string name="onboarding_step_accountStart_info">Dette er bare et første skritt for å komme i gang.</string>
     <string name="onboarding_step_accountStart_groupMode_title">Venner og familie</string>
     <string name="onboarding_step_accountStart_groupMode_info">Del din plassering med andre</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Bare meg</string>
-    <string name="onboarding_step_accountStart_personalSpaceMode_info">Administrer og spor dine egne enheter</string>
+    <string name="onboarding_step_accountStart_personalSpaceMode_info">Spor din egen enheter</string>
     <string name="settings_section_account_title">Konto</string>
     <string name="settings_section_personal_code_title">Paralino.ID</string>
     <string name="settings_section_personal_code_inactive_title">Inaktive koder</string>
@@ -143,7 +143,7 @@
     <string name="settings_account_guest_convert">Konverter konto</string>
     <string name="settings_account_guest_badge">Gjestekonto</string>
     <string name="settings_account_guest_convert_intro_multiple_devices">Flere enheter</string>
-    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Del din plassering fra flere enheter og koble dem til den samme kontoen.</string>
+    <string name="settings_account_guest_convert_intro_multiple_devices_tag">Koble alle enhetene dine til den samme kontoen.</string>
     <string name="settings_account_guest_convert_intro_account_recovery">Kont gjenoppretting</string>
     <string name="settings_account_guest_convert_intro_account_recovery_tag">Behold tilgangen til dataene dine selv om du sletter appen eller bytter til en ny telefon.</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Personlig enhetssporing</string>
@@ -154,8 +154,8 @@
     <string name="settings_account_credentialsChange_step_change">Endrer legitimasjon</string>
     <string name="settings_account_credentialsChange_step_verify">Verifiserer nøkler</string>
     <string name="settings_account_credentialsChange_step_done">Ferdig</string>
-    <string name="settings_account_credentialsChange_revokeSessions_title">Forbli innlogget på andre enheter</string>
-    <string name="settings_account_credentialsChange_revokeSessions_info">Hvis deaktivert, vil du bli logget ut av alle de andre enhetene dine, og de vil slutte å dele plassering.</string>
+    <string name="settings_account_credentialsChange_revokeSessions_title">Logg ut fra andre enheter</string>
+    <string name="settings_account_credentialsChange_revokeSessions_info">Hvis det er aktivert, vil du bli logget ut av alle andre enheter, og de vil stoppe deling av posisjon.</string>
     <string name="settings_account_logout_alert_title">Logg ut</string>
     <string name="settings_account_logout_alert_message">Er du sikker på at du vil logge ut?</string>
     <string name="settings_account_delete_alert_title">Slett konto</string>
@@ -175,7 +175,7 @@
     <string name="setting_title_privacy">Personvernerklæring</string>
     <string name="setting_title_terms">Bruksvilkår</string>
     <string name="setting_title_libraries">Takk</string>
-    <string name="setting_title_onboarding">Vis onboarding</string>
+    <string name="setting_title_onboarding">Gjenta intro</string>
     <string name="setting_title_contactSupport">Kontakt støtte</string>
     <string name="setting_title_logout">Logg ut</string>
     <string name="setting_title_delete_account">Slett konto</string>
@@ -322,8 +322,8 @@
     <string name="paywall_purchase_error_alert_message">Kan ikke utføre faktureringsforespørsel, vennligst prøv igjen.</string>
     <string name="paywall_discount_percentage_badge_text">%s AV</string>
     <string name="paywall_header_feature_list_screen">Du kan beskytte personvernet til alle medlemmene i gruppen din</string>
-    <string name="paywall_header_feature_demo_screen">Og gjøre så mye mer...</string>
-    <string name="paywall_header_feature_history_unlimited">Ubegrenset stedsinformasjon for enhetene dine er nå tilgjengelig!</string>
+    <string name="paywall_header_feature_demo_screen">Oppdag kraften til *Paralino*</string>
+    <string name="paywall_header_feature_history_unlimited">Få ubegrenset personlig lokasjonshistorikk med **%1$s** planen!</string>
     <string name="paywall_header_feature_history_more">Lås opp flere dager med stedsinformasjon</string>
     <string name="paywall_header_take_control">Ta kontroll over personvernet ditt</string>
     <string name="paywall_header_try_it">Låst opp</string>
@@ -331,11 +331,11 @@
     <string name="paywall_header_unlock_premium">Lås opp full opplevelse</string>
     <string name="paywall_header_choose_plan">Velg varighet på planen din</string>
     <string name="paywall_feature_privacy">Sinnsro</string>
-    <string name="paywall_feature_privacy_description">Paralino beskytter ditt personvern så vel som personvernet til alle medlemmene i gruppen din.</string>
+    <string name="paywall_feature_privacy_description">Ingen annonser, ingen spionasje, ingen skyggefulle forretninger - støttet kun av ditt medlemskap.</string>
     <string name="paywall_feature_premium_sharing">Premium deling av stedsinformasjon</string>
-    <string name="paywall_feature_premium_sharing_description">Ingen annonser, fullt utstyrt og batterivennlig – alt du har lett etter.</string>
+    <string name="paywall_feature_premium_sharing_description">Fult utstyrt og batterivennlig.</string>
     <string name="paywall_feature_control">Full kontroll over deling</string>
-    <string name="paywall_feature_control_description">Få tilgang til alle funksjoner og kontroller hvordan og hva du deler.</string>
+    <string name="paywall_feature_control_description">Du bestemmer hvordan og hva du deler.</string>
     <string name="paywall_special_offer_description">**Spesial lanseringsrabatt**  \nTilgjengelig i beta-perioden – krav din spesialrabatt og behold denne prisen for alltid.</string>
     <string name="paywall_price_per_member">Så lavt som **%1$s**/medlem/måned for %2$d medlemmer</string>
     <string name="paywall_price_per_month">**≈ %1$s** / måned</string>
@@ -820,4 +820,9 @@
     <string name="history_stats_elevation_gain">Høydemeter</string>
     <string name="history_stats_elevation_range">Høydeområde</string>
     <string name="group_members_item_history_button">Historie</string>
+    <string name="notifications_tracking_active_message">Personlig plasseringsovervåking er aktiv</string>
+    <string name="paywall_header_feature_list_screen_solo">Laget for deg, ikke annonsører</string>
+    <string name="paywall_header_feature_list_screen_family">Ikke la andre spore familien din</string>
+    <string name="paywall_header_feature_history_title">Spor reiseopplevelsene dine</string>
+    <string name="group_members_item_tracking_button">Sporing</string>
 </resources>
