@@ -86,6 +86,7 @@ class LocationHistoryPersonalStateMapper(
             if (list.count { it.isSelected } != 1) {
                 val firstSelected =
                     list.firstOrNull { it.deviceId == _uiState.value.preselectedDeviceId }
+                        ?: list.firstOrNull { it.isCurrent }
                         ?: list.firstOrNull()
                 list.map {
                     when (it) {
