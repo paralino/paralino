@@ -16,10 +16,10 @@ import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
 import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.BaseRemoteModule
 
@@ -28,7 +28,7 @@ class CryptoKEKLocalRepository(
     private val userKeyRepository: CryptoUserKeysLocalSource,
     private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs,
-    private val appBuildConfig: AppBuildConfig
+    private val appConfig: AppConfigRepository
 ) : BaseRepository() {
 
     suspend fun getGroupKey(groupId: String, keyVersion: Long?): GroupMasterKey {
@@ -275,7 +275,7 @@ class CryptoKEKLocalRepository(
             return GroupMemberSenderKey.Error.Invalid
         }
 
-        if (keyRaw.ownerUserId == appPrefs.userId && appBuildConfig.appHost == AppHost.MAIN_APP) {
+        if (keyRaw.ownerUserId == appPrefs.userId && appConfig.appHost == AppHost.MAIN_APP) {
             if (keyRaw.locationId == local.getCurrentDeviceLocationId(groupId = keyRaw.groupId)) {
                 logg.tag("tag_crypto_key_group_member")
                     .d("Save current device sender key to encrypted cache")

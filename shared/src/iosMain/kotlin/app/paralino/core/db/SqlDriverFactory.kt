@@ -8,7 +8,7 @@ import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.models.AppBuildConfig
 import platform.Foundation.NSFileManager
 
-actual class SqlDriverFactory(private val appBuildConfig: AppBuildConfig) {
+actual class SqlDriverFactory(private val appConfig: AppConfigRepository) {
     actual fun createMainDatabaseBuilder(): RoomDatabase.Builder<AppMainDatabase> {
         val documentDirectory = NSFileManager.defaultManager
             .containerURLForSecurityApplicationGroupIdentifier(groupIdentifier = appBuildConfig.iOSAppGroup)

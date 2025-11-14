@@ -4,7 +4,6 @@ import app.paralino.core.MR
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -12,6 +11,7 @@ import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
@@ -34,7 +34,7 @@ class RawCryptoPresentation constructor(
     private val userConfigRepo: UserConfigRepository,
     private val getHistoryUseCase: GetLocationHistoryUseCase,
     private val appPrefs: AppPrefs,
-    private val appBuildConfig: AppBuildConfig
+    private val appConfig: AppConfigRepository
 ) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -252,7 +252,7 @@ class RawCryptoPresentation constructor(
                         add(ContentIdItem(text = "Device ID:\n**${appPrefs.deviceId}**", separateWithPadding = true, canCopy = true))
                         add(ContentIdItem(text = "Diagnostics ID:\n**${appPrefs.errorReportingID}**", separateWithPadding = true, canCopy = true))
 
-                        if (appBuildConfig.isDevMode) {
+                        if (appConfig.isInAppDevMode) {
                             add(ContentIdItem(text = "Push token:\n**${appPrefs.pushTokenSynced}**", separateWithPadding = true, canCopy = true))
                         }
                     },

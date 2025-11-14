@@ -10,6 +10,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 
 class LocationSettingsViewModel(
     private val appPrefs: AppPrefs,
+    private val appConfig: AppConfigRepository,
     private val userRepository: UserRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val remoteConfigRepo: RemoteConfigRepository,
@@ -81,7 +83,7 @@ class LocationSettingsViewModel(
                     LocationPerformanceSettingsType.HighPerformance.Level2,
                     LocationPerformanceSettingsType.HighPerformance.Level3,
                     LocationPerformanceSettingsType.HighPerformance.LevelMax.takeIf {
-                        AppBuildConfig.instance.hasPreviewFeatures
+                        appConfig.isInAppDevMode
                     }
                 ).map { level ->
                     GroupOptionItem(

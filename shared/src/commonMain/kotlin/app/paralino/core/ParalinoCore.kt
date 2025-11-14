@@ -106,6 +106,7 @@ import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.GroupsRemoteSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -166,6 +167,7 @@ object ParalinoCore {
         AppPrefs.instance = appPrefs
 
         val appBuildConfig = koinApp.koin.get<AppBuildConfig>()
+        val appConfig = koinApp.koin.get<AppConfigRepository>()
         AppBuildConfig.instance = appBuildConfig
 
         val deviceApiProvider = koinApp.koin.get<IDeviceApiProvider>()
@@ -175,7 +177,7 @@ object ParalinoCore {
         logr.init(
             logrs = listOfNotNull(
                 deviceApiProvider.createSystemLogr(),
-                inAppLogger.takeIf { appBuildConfig.isDevMode },
+                inAppLogger.takeIf { appConfig.isInAppDevMode },
                 crashReportingLogger
             )
         )
@@ -268,7 +270,7 @@ val coreModule = module {
     factory { SessionRenewalHandler(get(), get(), get(), get()) }
     factory { LocationRequestUseCase(get(), get()) }
     factory { SaveLocationUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { SavePendingLocationUseCase(get(), get(), get(), get(), get()) }
+    factory { SavePendingLocationUseCase(get(), get(), get(), get()) }
     factory { ClearUserLocationUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
@@ -310,6 +312,7 @@ val coreModule = module {
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
     single { RemoteConfigRepository(get(), get(), get(), get()) }
     single { UserConfigRepository(get(), get(), get(), get()) }
+    single { AppConfigRepository(get(), get()) }
     single { PremiumStatusManager(get(), get(), get(), get(), get(), get()) }
 
     single { GroupValidityVerification(get(), get(), get(), get()) }

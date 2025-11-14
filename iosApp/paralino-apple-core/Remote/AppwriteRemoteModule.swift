@@ -36,6 +36,7 @@ class AppwriteRemoteModule: IRemoteModule {
     lazy var tablesDB: TablesDB = { return TablesDB(client) }()
     lazy var functions: Functions = { return Functions(client) }()
     lazy var realtime: Realtime = { return Realtime(client) }()
+    lazy var teams: Teams = { return Teams(client) }()
     
     func execute<T>(
         userApi: Bool = false,

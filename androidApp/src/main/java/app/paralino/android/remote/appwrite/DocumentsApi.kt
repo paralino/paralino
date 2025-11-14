@@ -21,7 +21,7 @@ class DocumentsApi constructor(
             tablesDB.createRow(
                 databaseId = databaseType.id,
                 tableId = collectionId,
-                rowId = docId ?: this.appBuildConfig.resourceIds.uniqueIdPlaceholder,
+                rowId = docId ?: this.appConfig.resourceIds.uniqueIdPlaceholder,
                 data = data
             ).parseDocument()
         }

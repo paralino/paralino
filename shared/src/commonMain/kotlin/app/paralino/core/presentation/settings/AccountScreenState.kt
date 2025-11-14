@@ -10,6 +10,8 @@ import app.paralino.core.utils.ConditionErrorType
 data class AccountScreenState constructor(
     val userState: UserState,
     val canUseEmail: Boolean,
+    val canBoostLocation: Boolean,
+    val canAccessDebugScreen: Boolean,
     val logoutState: Payload<Unit>? = null,
     val deleteAccountState: Payload<Unit>? = null,
     val versionName: String,

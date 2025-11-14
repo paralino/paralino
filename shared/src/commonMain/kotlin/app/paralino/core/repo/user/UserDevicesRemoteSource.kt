@@ -2,7 +2,6 @@ package app.paralino.core.repo.user
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.UserMemberIdUseCase
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceLocationRaw
@@ -13,6 +12,7 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.async
@@ -20,7 +20,7 @@ import kotlinx.coroutines.async
 class UserDevicesRemoteSource constructor(
     private val documentApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val userMemberIdUseCase: UserMemberIdUseCase,
     private val placesRemote: PlacesRemoteSource,
     private val appPrefs: AppPrefs
@@ -30,14 +30,14 @@ class UserDevicesRemoteSource constructor(
             val personalDevicesAsync = async {
                 documentApi.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionUserDevicesID,
+                    collectionId = appConfig.resourceIds.collectionUserDevicesID,
                 ).map { it.parsePersonalDevice() }
             }
 
             val personalLocationsAsync = async {
                 documentApi.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionPersonalLocationsID,
+                    collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
                 ).map { it.parsePersonalDeviceLocation() }
             }
 

@@ -6,7 +6,6 @@ import app.paralino.core.crypto.PersonalSpaceDeviceKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationDataModel
@@ -15,12 +14,12 @@ import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.MemberWithLocationsRaw
-import app.paralino.core.models.raw.PersonalLocationDeletePayload
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingMemberKeyException
 import app.paralino.core.utils.extensions.blocking
@@ -28,7 +27,7 @@ import app.paralino.core.utils.extensions.blocking
 class LocationRemoteSource constructor(
     private val documentApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
@@ -83,7 +82,7 @@ class LocationRemoteSource constructor(
 
                 documentApi.updateDocument(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionPersonalLocationsID,
+                    collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
                     docId = locationId,
                     data = mapOf(
                         "locationData" to locationData,
@@ -111,7 +110,7 @@ class LocationRemoteSource constructor(
 
                 documentApi.updateDocument(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
+                    collectionId = appConfig.resourceIds.collectionMemberLocationsID,
                     docId = locationId,
                     data = mapOf(
                         "locationData" to locationData,
@@ -127,14 +126,14 @@ class LocationRemoteSource constructor(
 
             val member = documentApi.getDocument(
                 databaseType = BackendDatabaseType.DATA,
-                collectionId = appBuildConfig.resourceIds.collectionGroupMembersID,
+                collectionId = appConfig.resourceIds.collectionGroupMembersID,
                 documentId = memberId
             ).let { MemberDocumentRaw.from(it) }
 
             val settings = if (member.ownerUserId == appPrefs.userId) {
                 documentApi.getDocument(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionGroupSettingsID,
+                    collectionId = appConfig.resourceIds.collectionGroupSettingsID,
                     documentId = memberId
                 ).let { GroupSettingsRaw.from(it) }
             } else {
@@ -143,7 +142,7 @@ class LocationRemoteSource constructor(
 
             val locations = documentApi.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
+                collectionId = appConfig.resourceIds.collectionMemberLocationsID,
                 queries = listOf(BackendQuery.Equals(key = "groupId", value = member.groupId))
             ).map { MemberLocationRaw.from(it) }
 

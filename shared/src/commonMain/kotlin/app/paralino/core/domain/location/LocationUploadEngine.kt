@@ -3,7 +3,6 @@ package app.paralino.core.domain.location
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
@@ -16,6 +15,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlaceActivityDataSource
@@ -32,10 +32,10 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
@@ -50,12 +50,12 @@ class LocationUploadEngine constructor(
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
     private val placeActivityRepo: PlaceActivityDataSource,
     private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
 ) : LimitedExecutionRepository() {
 
     private val maxUploadRate: Duration
         get() {
-            when (appBuildConfig.appHost) {
+            when (appConfig.appHost) {
                 AppHost.MAIN_APP,
                 AppHost.IOS_NOTIFICATION_EXTENSION -> {
                     return when (locationPerformanceManager.locationPerformanceType.value.current) {

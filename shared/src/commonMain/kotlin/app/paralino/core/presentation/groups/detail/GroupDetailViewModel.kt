@@ -10,7 +10,6 @@ import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
@@ -32,6 +31,7 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
@@ -74,6 +74,7 @@ class GroupDetailViewModel(
     private val valueFormatter: IValueFormatter,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
+    private val appConfig: AppConfigRepository,
     private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
@@ -134,7 +135,7 @@ class GroupDetailViewModel(
                                 ?.let {
                                     MemberActionItemState(MemberActionType.UNBLOCK_USER)
                                 },
-                            securityAction = AppBuildConfig.instance.hasPreviewFeatures
+                            securityAction = appConfig.isInAppDevMode
                         ),
                         allowShowingDevices = true,
                         lastLocationPing = valueFormatter.getLastLocationPing(member),

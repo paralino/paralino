@@ -6,7 +6,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.history.PendingLocationHistoryEntity
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.location.LocationHistoryPointModel
 import app.paralino.core.models.location.MemberGroupId
 import app.paralino.core.models.user.SymmetricCryptoKeyData
@@ -20,7 +19,6 @@ class SavePendingLocationUseCase(
     private val database: MainDatabaseHelper,
     private val cryptoCore: CryptoCore,
     private val cryptoUserKeysRepo: CryptoUserKeysLocalSource,
-    private val appBuildConfig: AppBuildConfig,
     private val appPrefs: AppPrefs
 ) {
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)

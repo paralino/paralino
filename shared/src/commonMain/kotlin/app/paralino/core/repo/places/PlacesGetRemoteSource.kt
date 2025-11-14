@@ -1,7 +1,6 @@
 package app.paralino.core.repo.places
 
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.raw.GroupPlaceRaw
@@ -9,12 +8,13 @@ import app.paralino.core.models.raw.GroupPlaceSettingRaw
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.extensions.blocking
 import kotlinx.coroutines.async
 
 class PlacesGetRemoteSource(
     private val api: IDocumentsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val appPrefs: AppPrefs
 ) {
     suspend fun getPlaceWithSettings(placeId: String): GroupPlaceWithSettingsRaw {
@@ -115,7 +115,7 @@ class PlacesGetRemoteSource(
             val places = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionPlacesID,
+                    collectionId = appConfig.resourceIds.collectionPlacesID,
                     queries = listOf()
                 ).map { it.parsePlace() }
             }
@@ -123,7 +123,7 @@ class PlacesGetRemoteSource(
             val settings = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionPlacesSettingsID
+                    collectionId = appConfig.resourceIds.collectionPlacesSettingsID
                 ).map { it.parsePlaceSettings() }
             }.await()
 

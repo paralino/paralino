@@ -75,6 +75,12 @@ class DocumentsApi: IDocumentApiIOS {
                     queries: mappedQueries
                 )
                 
+                let teamSection = try await module.teams.list(
+                    queries: mappedQueries
+                )
+                let teams = teamSection.teams.map { try! $0.parseTeam() }
+                
+                
                 let shouldLoadMore = onNewValues(results.rows.map { try! $0.parseRow() }) == true
                 if shouldLoadMore && results.rows.count >= Int(limit) {
                     cursor = results.rows.last?.id ?? ""
@@ -121,6 +127,13 @@ private extension Appwrite.Document {
 
 private extension Appwrite.Row {
     func parseRow() throws -> [String: Any]{
+        let result = try self.data.toJson()
+        return SerializationExtKt.fromJsonObjectToMapOfPrimitives(result)
+    }
+}
+
+private extension Appwrite.Team {
+    func parseTeam() throws -> [String: Any]{
         let result = try self.data.toJson()
         return SerializationExtKt.fromJsonObjectToMapOfPrimitives(result)
     }

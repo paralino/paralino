@@ -21,6 +21,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
@@ -62,6 +63,7 @@ class SettingsViewModel(
     private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs,
+    private val appConfig: AppConfigRepository,
     private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
@@ -137,7 +139,9 @@ class SettingsViewModel(
                             deleteAccountState = null,
                             versionName = deviceApiProvider.appVersionText,
                             boostTime = null,
-                            userPlan = userPlans.highestValidPlanConfig
+                            userPlan = userPlans.highestValidPlanConfig,
+                            canBoostLocation = appConfig.isInAppDevMode,
+                            canAccessDebugScreen = appConfig.isInAppDevMode
                         )
                     )
                 } else {

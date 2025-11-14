@@ -6,6 +6,7 @@ import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.AppSnackbarData
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SubscriptionViewModel(
+    private val appConfig: AppConfigRepository,
     private val userRepo: UserRepository,
     private val userConfigRepo: UserConfigRepository,
     private val deviceApi: IDeviceApiProvider,
@@ -31,7 +33,7 @@ class SubscriptionViewModel(
         SubscriptionScreenState(
             subscriptionState = getPlanState(userRepo.userPlans.value.highestValidPlan),
             isLoading = true,
-            canShowMoreInfo = false, //AppBuildConfig.instance.isDevMode,
+            canShowMoreInfo = appConfig.isInAppDevMode,
             featureTableState = constructFeatureTable()
         )
     )

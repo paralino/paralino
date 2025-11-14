@@ -196,7 +196,7 @@ object KoinSetup {
         single {
             AppWriteRemoteModule(
                 app = androidApplication(),
-                appBuildConfig = get(),
+                appConfig = get(),
                 sessionMonitor = get(),
                 networkQualityMonitor = get()
             )
@@ -204,14 +204,14 @@ object KoinSetup {
 
         viewModel { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get()) }
         viewModel { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { (groupId: String?, isOnboarding: Boolean) ->
             SharingStartViewModel(initialGroupId = groupId?.asGroupOrSpaceId(), isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         viewModel { LoggedOutViewModel(get(), get()) }
-        viewModel { PersonalCodeViewModel(get(), get(), get()) }
+        viewModel { PersonalCodeViewModel(get(), get(), get(), get()) }
         viewModel { (groupId: String?, code: String?, isOnboarding: Boolean) ->
             MemberInviteViewModel(
                 groupId = groupId,
@@ -224,7 +224,7 @@ object KoinSetup {
                 premiumStatusManager = get()
             )
         }
-        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { VerifyEmailViewModel(get(), get(), get(), get()) }
@@ -241,11 +241,11 @@ object KoinSetup {
         viewModel { (rawDataType: RawPresentationDataType) -> RawDataPresentationViewModel(rawDataType, get(), get()) }
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
-        viewModel { SubscriptionViewModel(get(), get(), get()) }
-        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { SubscriptionViewModel(get(), get(), get(), get()) }
+        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), get()) }
         viewModel { GeneralInfoViewModel(get(), get()) }
-        viewModel { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
+        viewModel { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { WelcomeOnboardingViewModel(get(), get()) }
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MeasurementSystemViewModel(get(), get()) }

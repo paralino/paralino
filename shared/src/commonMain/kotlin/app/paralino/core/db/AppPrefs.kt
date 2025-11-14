@@ -104,6 +104,7 @@ class AppPrefs(
         const val keyLocationHistoryPerformance = "prefs.location.history.performance"
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
         const val keyPlaceSensitivityType = "prefs.device.placeSensitivity"
+        const val keyDevModeEnabled = "prefs.device.devModeOverride"
     }
 
     val isTokenValid: Boolean
@@ -486,6 +487,12 @@ class AppPrefs(
             }
         }
     }
+
+    var isDevModeEnabled: Boolean
+        get() = provider.userSettings.getBoolean(keyDevModeEnabled, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyDevModeEnabled, value)
+        }
 
 
     fun hasGuestAccount(): Boolean {

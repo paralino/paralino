@@ -3,7 +3,6 @@ package app.paralino.core.repo.group
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -33,6 +32,7 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.places.PlacesRemoteSource
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.Emojis
@@ -47,7 +47,7 @@ class GroupsRemoteSource constructor(
     private val api: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val placesRemote: PlacesRemoteSource,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val mapper: GroupMapperCore,
     private val cryptoCore: CryptoCore,
     private val cryptoUserKeyRepo: CryptoUserKeysLocalSource,
@@ -131,7 +131,7 @@ class GroupsRemoteSource constructor(
         return blocking {
             val groups = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                collectionId = appBuildConfig.resourceIds.collectionGroupsID
+                collectionId = appConfig.resourceIds.collectionGroupsID
             )
                 .map { it.parseGroup() }
                 .filter {
@@ -149,21 +149,21 @@ class GroupsRemoteSource constructor(
             val membersAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionGroupMembersID
+                    collectionId = appConfig.resourceIds.collectionGroupMembersID
                 ).map { it.parseGroupMember() }
             }
 
             val settingsAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionGroupSettingsID
+                    collectionId = appConfig.resourceIds.collectionGroupSettingsID
                 ).map { it.parseGroupSettings() }
             }
 
             val locationsAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
+                    collectionId = appConfig.resourceIds.collectionMemberLocationsID,
                 ).map { it.parseMemberLocation() }
             }
 
@@ -193,7 +193,7 @@ class GroupsRemoteSource constructor(
         return blocking {
             val groups = api.listAllDocuments(
                 databaseType = BackendDatabaseType.DATA,
-                collectionId = appBuildConfig.resourceIds.collectionGroupsID
+                collectionId = appConfig.resourceIds.collectionGroupsID
             )
                 .map { it.parseGroup() }
                 .filter {
@@ -212,21 +212,21 @@ class GroupsRemoteSource constructor(
                 val membersAsync = async {
                     api.listAllDocuments(
                         databaseType = BackendDatabaseType.DATA,
-                        collectionId = appBuildConfig.resourceIds.collectionGroupMembersID
+                        collectionId = appConfig.resourceIds.collectionGroupMembersID
                     ).map { it.parseGroupMember() }
                 }
 
                 val settingsAsync = async {
                     api.listAllDocuments(
                         databaseType = BackendDatabaseType.DATA,
-                        collectionId = appBuildConfig.resourceIds.collectionGroupSettingsID
+                        collectionId = appConfig.resourceIds.collectionGroupSettingsID
                     ).map { it.parseGroupSettings() }
                 }
 
                 val locationsAsync = async {
                     api.listAllDocuments(
                         databaseType = BackendDatabaseType.DATA,
-                        collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
+                        collectionId = appConfig.resourceIds.collectionMemberLocationsID,
                     ).map { it.parseMemberLocation() }
                 }
 
@@ -259,14 +259,14 @@ class GroupsRemoteSource constructor(
             val personalDevicesAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionUserDevicesID,
+                    collectionId = appConfig.resourceIds.collectionUserDevicesID,
                 ).map { it.parsePersonalDevice() }
             }
 
             val personalLocationsAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionPersonalLocationsID,
+                    collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
                 ).map { it.parsePersonalDeviceLocation() }
             }
 
@@ -295,8 +295,8 @@ class GroupsRemoteSource constructor(
             val group = try {
                 api.getDocument(
                     databaseType = BackendDatabaseType.DATA,
-                    appBuildConfig.resourceIds.collectionGroupsID,
-                    groupId
+                    collectionId = appConfig.resourceIds.collectionGroupsID,
+                    documentId = groupId
                 ).parseGroup()
             } catch (e: Exception) {
                 if (e is NotFoundException) {
@@ -304,8 +304,8 @@ class GroupsRemoteSource constructor(
                     delay(200)
                     api.getDocument(
                         databaseType = BackendDatabaseType.DATA,
-                        appBuildConfig.resourceIds.collectionGroupsID,
-                        groupId
+                        collectionId = appConfig.resourceIds.collectionGroupsID,
+                        documentId = groupId
                     ).parseGroup()
                 } else {
                     throw e
@@ -327,7 +327,7 @@ class GroupsRemoteSource constructor(
             val membersAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionGroupMembersID,
+                    collectionId = appConfig.resourceIds.collectionGroupMembersID,
                     queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
                 ).map { it.parseGroupMember() }
             }
@@ -335,7 +335,7 @@ class GroupsRemoteSource constructor(
             val settingsAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionGroupSettingsID,
+                    collectionId = appConfig.resourceIds.collectionGroupSettingsID,
                     queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
                 ).map { it.parseGroupSettings() }
                     .takeIf { it.size == 1 && it.first().ownerUserId == appPrefs.userId }
@@ -345,7 +345,7 @@ class GroupsRemoteSource constructor(
             val locationsAsync = async {
                 api.listAllDocuments(
                     databaseType = BackendDatabaseType.DATA,
-                    collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
+                    collectionId = appConfig.resourceIds.collectionMemberLocationsID,
                     queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
                 ).map { it.parseMemberLocation() }
             }

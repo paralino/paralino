@@ -2,7 +2,6 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.data
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
@@ -10,6 +9,7 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.Job
@@ -38,7 +38,7 @@ class ActiveSharingEngine(
     private val locationUploadEngine: LocationUploadEngine,
     private val locationHistoryUploadEngine: ILocationHistoryUploadEngine,
     private val locationCache: LocationCacheRepository,
-    private val appBuildConfig: AppBuildConfig
+    private val appConfig: AppConfigRepository
 ): BaseRepository() {
 
     private var activePingJob: Job? = null
@@ -49,7 +49,7 @@ class ActiveSharingEngine(
         deviceStatusJob?.cancel()
         sharingStatusJob?.cancel()
 
-        when (appBuildConfig.appHost) {
+        when (appConfig.appHost) {
             AppHost.MAIN_APP -> {
                 deviceStatusJob = combine(
                     deviceApiProvider.deviceStatus,

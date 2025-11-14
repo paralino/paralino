@@ -9,6 +9,7 @@ import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -33,7 +34,8 @@ import kotlinx.coroutines.launch
 class PersonalCodeViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
     val deviceApiProvider: IDeviceApiProvider,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val appConfig: AppConfigRepository
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<PersonalCodeScreenState>(
@@ -100,7 +102,7 @@ class PersonalCodeViewModel(
         return PersonalCodeScreenState(
             activeCode = codeData.firstOrNull { it.isValid },
             inactiveCodes = inactiveCodes,
-            canCreateAlternativeId = AppBuildConfig.instance.hasPreviewFeatures && maxIDs > 0 && codeData.size < maxIDs,
+            canCreateAlternativeId = appConfig.hasPreviewFeatures && maxIDs > 0 && codeData.size < maxIDs,
             maxCodes = maxIDs,
             createLoading = false,
             alertDialog = activeAlertDialog,

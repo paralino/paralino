@@ -95,6 +95,7 @@ fun MainPreview() {
     AppTheme {
         Surface {
             SettingSectionInfo(
+                canAccessDebugScreen = false,
                 onAppStatusClick = {},
                 onGeneralInfoClick = {},
                 onShareApp = {},

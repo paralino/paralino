@@ -8,6 +8,7 @@ import app.paralino.core.models.base.PlanType
 import app.paralino.core.presentation.settings.billing.PurchaseErrorException
 import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.IBillingProvider
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserConfigRepository
 import com.revenuecat.purchases.CacheFetchPolicy
@@ -38,7 +39,7 @@ import java.util.Locale
 
 class BillingProviderAndroid(
     private val appClass: CoreAppClass,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val userConfigRepo: UserConfigRepository,
     private val remoteConfigRepo: RemoteConfigRepository
 ) : IBillingProvider {
@@ -93,7 +94,7 @@ class BillingProviderAndroid(
     }
 
     private fun configure(billingUserId: String): Boolean {
-        Purchases.logLevel = when (appBuildConfig.logToConsole) {
+        Purchases.logLevel = when (appConfig.logToConsole) {
             true -> LogLevel.DEBUG
             false -> LogLevel.ERROR
         }
@@ -105,7 +106,7 @@ class BillingProviderAndroid(
         Purchases.configure(
             PurchasesConfiguration.Builder(
                 context = appClass.applicationContext,
-                apiKey = appBuildConfig.billingRCApiKey
+                apiKey = appConfig.billingRCApiKey
             )
                 .appUserID(appUserID = billingUserId)
                 .build()

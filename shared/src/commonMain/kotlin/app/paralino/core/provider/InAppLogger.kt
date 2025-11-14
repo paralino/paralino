@@ -2,10 +2,10 @@ package app.paralino.core.provider
 
 import app.paralino.core.db.LogsDatabaseHelper
 import app.paralino.core.db.logs.debug.DebugLogsEntity
-import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
-import app.paralino.core.models.AppHost
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.logg
+import app.paralino.core.models.AppHost
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
@@ -16,17 +16,17 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class InAppLogger(
     private val database: LogsDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val appBuildConfig: AppBuildConfig
+    private val appConfig: AppConfigRepository
 ) : SystemLogr() {
 
     private val _pendingLogsFlow = MutableStateFlow<List<DebugLogsEntity>>(emptyList())
@@ -83,7 +83,7 @@ class InAppLogger(
         t: Throwable?
     ) {
 
-        if (!appBuildConfig.isDevMode) {
+        if (!appConfig.isInAppDevMode) {
             return
         }
 
@@ -91,7 +91,7 @@ class InAppLogger(
             return
         }
 
-        if (priority < LogPriority.INFO && appBuildConfig.appHost == AppHost.MAIN_APP) {
+        if (priority < LogPriority.INFO && appConfig.appHost == AppHost.MAIN_APP) {
             return
         }
 
@@ -128,14 +128,14 @@ class InAppLogger(
             id = 0,
             timeUTC = nowUTC().toString(),
             type = type.key,
-            host = appBuildConfig.appHost.key,
+            host = appConfig.appHost.key,
             priority = priority.key,
             tag = tag ?: "default",
             title = title,
             info = info,
         )
 
-        if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+        if (appConfig.appHost == AppHost.MAIN_APP) {
             _pendingLogsFlow.update { it + entry }
         } else {
             scopeProvider.defaultIOScope.launch {

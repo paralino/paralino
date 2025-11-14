@@ -11,7 +11,6 @@ import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.db.main.user.UserDeviceEntityLocationDataUpdate
 import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.MemberGroupIdForUpload
@@ -19,6 +18,7 @@ import app.paralino.core.models.mappers.PendingLocationHistoryMapper
 import app.paralino.core.models.raw.MemberLocationRaw
 import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingCryptoKeyException
@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.minutes
 class SaveLocationUseCase(
     private val database: MainDatabaseHelper,
     private val documentApi: IDocumentsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
@@ -75,7 +75,7 @@ class SaveLocationUseCase(
 
         val newData = documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = appBuildConfig.resourceIds.collectionPersonalLocationsID,
+            collectionId = appConfig.resourceIds.collectionPersonalLocationsID,
             docId = data.locationId,
             data = payload
         ).let { UserDeviceLocationRaw.from(it) }
@@ -124,7 +124,7 @@ class SaveLocationUseCase(
 
         val newData = documentApi.updateDocument(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = appBuildConfig.resourceIds.collectionMemberLocationsID,
+            collectionId = appConfig.resourceIds.collectionMemberLocationsID,
             docId = data.locationId,
             data = payloadWithKey
         ).let { MemberLocationRaw.from(it) }

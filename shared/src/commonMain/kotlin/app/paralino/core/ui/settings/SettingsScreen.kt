@@ -157,7 +157,7 @@ fun SettingsScreenCore(
                 openLocationSettings()
             }
 
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
+            if (readyState.canBoostLocation) {
                 SettingsActionItem(
                     name = stringResource(MR.strings.setting_title_locationBoost),
                     description = when (readyState.boostTime != null) {
@@ -177,6 +177,7 @@ fun SettingsScreenCore(
         }
 
         SettingSectionInfo(
+            canAccessDebugScreen = readyState?.canAccessDebugScreen == true,
             onAppStatusClick = openAppStatus,
             onGeneralInfoClick = openGeneralInfo,
             onShareApp = onShareApp
@@ -186,12 +187,13 @@ fun SettingsScreenCore(
 
 @Composable
 fun SettingSectionInfo(
+    canAccessDebugScreen: Boolean,
     onGeneralInfoClick: () -> Unit,
     onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
 ) {
     Column {
-        if (AppBuildConfig.instance.isDevMode) {
+        if (canAccessDebugScreen) {
             SettingsActionItem(
                 name = "App status",
                 icon = CoreAppIcons.Settings.asPainterResource()

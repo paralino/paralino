@@ -1,6 +1,5 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
@@ -8,18 +7,19 @@ import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
 import app.paralino.core.repo.api.BackendQuery
 import app.paralino.core.repo.api.IDocumentsApi
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.extensions.blocking
 
 class CryptoKeyRemoteDataSource constructor(
     private val api: IDocumentsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
 ) {
 
     suspend fun getAllGroupKeys(): List<GroupCryptoKeyDataRaw> {
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionGroupKeysID
+                collectionId = appConfig.resourceIds.collectionGroupKeysID
             ).map { it.parseGroupKey() }
         }
     }
@@ -28,7 +28,7 @@ class CryptoKeyRemoteDataSource constructor(
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionGroupKeysID,
+                collectionId = appConfig.resourceIds.collectionGroupKeysID,
                 queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGroupKey() }
         }
@@ -38,7 +38,7 @@ class CryptoKeyRemoteDataSource constructor(
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionGroupMembersKeysID
+                collectionId = appConfig.resourceIds.collectionGroupMembersKeysID
             ).map { it.parseGroupMemberKey() }
         }
     }
@@ -47,7 +47,7 @@ class CryptoKeyRemoteDataSource constructor(
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionGroupMembersKeysID,
+                collectionId = appConfig.resourceIds.collectionGroupMembersKeysID,
                 queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGroupMemberKey() }
         }
@@ -57,7 +57,7 @@ class CryptoKeyRemoteDataSource constructor(
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionGroupDeviceKeysID
+                collectionId = appConfig.resourceIds.collectionGroupDeviceKeysID
             ).map { it.parseGroupDeviceKey() }
         }
     }
@@ -66,7 +66,7 @@ class CryptoKeyRemoteDataSource constructor(
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionGroupDeviceKeysID,
+                collectionId = appConfig.resourceIds.collectionGroupDeviceKeysID,
                 queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGroupDeviceKey() }
         }
@@ -76,7 +76,7 @@ class CryptoKeyRemoteDataSource constructor(
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionPersonalGroupKeysID
+                collectionId = appConfig.resourceIds.collectionPersonalGroupKeysID
             ).map { it.parseGPersonalGroupKey() }
         }
     }
@@ -85,7 +85,7 @@ class CryptoKeyRemoteDataSource constructor(
         return blocking {
             api.listAllDocuments(
                 databaseType = BackendDatabaseType.KEYS,
-                collectionId = appBuildConfig.resourceIds.collectionPersonalGroupKeysID,
+                collectionId = appConfig.resourceIds.collectionPersonalGroupKeysID,
                 queries = listOf(BackendQuery.Equals(key = "groupId", value = groupId))
             ).map { it.parseGPersonalGroupKey() }
         }

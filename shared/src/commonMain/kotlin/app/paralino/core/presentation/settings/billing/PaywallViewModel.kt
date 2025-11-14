@@ -6,12 +6,10 @@ import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
-import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
@@ -19,6 +17,7 @@ import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.AppSnackbarData
@@ -42,7 +41,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.max
 import kotlin.time.Duration.Companion.seconds
 
 class PaywallViewModel(
@@ -52,6 +50,7 @@ class PaywallViewModel(
     private val remoteConfigRepo: RemoteConfigRepository,
     private val deviceApiProvider: IDeviceApiProvider,
     private val appRatingManager: AppRatingManager,
+    private val appConfig: AppConfigRepository,
     val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider
 ) : CoreViewModel() {
@@ -450,7 +449,7 @@ class PaywallViewModel(
         }
 
         return PaywallScreenState(
-            canShowMoreInfo = AppBuildConfig.instance.isDevMode,
+            canShowMoreInfo = appConfig.isInAppDevMode,
             freePlanInfo = freeUiPlan,
             plans = buildList {
 //                if (sourceType == BillingScreenSourceType.ONBOARDING && !plans.highestValidPlanConfig.planTypeEnum.isPremium) {

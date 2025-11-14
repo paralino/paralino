@@ -3,7 +3,6 @@ package app.paralino.core.models.mappers
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.raw.PersonalCodeRaw
@@ -11,13 +10,14 @@ import app.paralino.core.models.user.PersonalCodeKeyData
 import app.paralino.core.models.user.PersonalCodeUserData
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPersonalCodeData
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.DecryptionException
 
 class PersonalCodeMapperCore(
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeysLocalSource,
-    private val appBuildConfig: AppBuildConfig
+    private val appConfig: AppConfigRepository
 ) {
 
     suspend fun remote2CoreRead(
@@ -71,7 +71,7 @@ class PersonalCodeMapperCore(
         // TODO this triggers Argon2 key derivation on every change and every app start
         // and it can make app very slow
         // skip or encrypted with user master key which doesn't need constant key derivation
-        val derivedCode = if (appBuildConfig.appHost == AppHost.MAIN_APP) {
+        val derivedCode = if (appConfig.appHost == AppHost.MAIN_APP) {
             cryptoCore.deriveParalinoIdMasterKeys(
                 code = code,
                 userId = model.ownerUserId
