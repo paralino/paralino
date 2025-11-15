@@ -2,17 +2,13 @@ package app.paralino.core.presentation.history
 
 import app.paralino.core.MR
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
 import app.paralino.core.models.location.MemberModelWithLocationsAndGroup
-import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +19,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class LocationHistoryGroupStateMapper(
-    private val valueFormatter: IValueFormatter,
-    private val geofenceManager: IGeofenceManager,
     private val defaultMapper: ILocationHistoryStateMapper,
     private val clusteringService: LocationClusteringService,
     private val remoteConfig: RemoteConfigRepository,
@@ -82,6 +76,7 @@ class LocationHistoryGroupStateMapper(
             // ensure always one is selected
             if (list.count { it.isSelected } != 1) {
                 val firstSelected = list.firstOrNull { it.deviceId == _uiState.value.preselectedDeviceId }
+                    ?: list.firstOrNull { it.isCurrent }
                     ?: list.firstOrNull()
                 list.map {
                     when (it) {
@@ -146,30 +141,18 @@ class LocationHistoryGroupStateMapper(
             rangeEnd = endDate
         )
 
-        _uiState.update {
-            val newState = it.copy(
-                preselectedDeviceId = null,
+        _uiState.update { state ->
+            defaultMapper.mapFinalState(
+                currentState = state,
                 groupName = group.name,
                 groupImage = group.image,
                 isGroupOwner = group.isCurrentUserOwner,
                 userName = currentMember.member.name,
-                userImage = currentMember.member.image
-                    ?: ImageModel.emoji(Emojis.robot),
-                isLoadingLocations = false,
-                isLoadingData = false,
+                userImage = currentMember.member.image,
                 locations = processedLocations,
                 devices = devices,
-                stats = null,
                 planConfig = group.planConfig(remoteConfig.getConfigOnce())
             )
-
-            val stats = LocationHistoryStats.calculateStats(
-                state = newState,
-                valueFormatter = valueFormatter,
-                geofenceManager = geofenceManager,
-            )
-
-            newState.copy(stats = stats)
         }
     }
 }

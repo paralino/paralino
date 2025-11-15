@@ -302,7 +302,7 @@ fun LocationHistoryMapContent(
     }
 
     if (uiState.showPins) {
-        if (uiState.clusterPins) {
+        if (uiState.clusteringPinsMode.isClusteringOn) {
             val clusterPoints = remember(uiState.selectedLocations) {
                 uiState.selectedLocations.mapNotNull {
                     if (it.lat != null && it.lng != null) {

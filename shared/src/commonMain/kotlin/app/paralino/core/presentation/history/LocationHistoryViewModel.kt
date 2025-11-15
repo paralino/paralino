@@ -5,7 +5,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
-import app.paralino.core.logg
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
@@ -109,20 +108,17 @@ class LocationHistoryViewModelController(
 
     private val clusteringService = LocationClusteringService(valueFormatter)
     private val defaultMapper = ILocationHistoryStateMapper(
-        valueFormatter = valueFormatter
+        valueFormatter = valueFormatter,
+        geofenceManager = geofenceManager,
     )
 
     private val personalStateMapper = LocationHistoryPersonalStateMapper(
-        valueFormatter = valueFormatter,
-        geofenceManager = geofenceManager,
         defaultMapper = defaultMapper,
         clusteringService = clusteringService,
         _uiState = _uiState,
     )
 
     private val groupStateMapper = LocationHistoryGroupStateMapper(
-        valueFormatter = valueFormatter,
-        geofenceManager = geofenceManager,
         defaultMapper = defaultMapper,
         clusteringService = clusteringService,
         remoteConfig = remoteConfig,
@@ -466,9 +462,11 @@ class LocationHistoryViewModelController(
             LocationHistoryUiEvent.ToggleClusterLocations -> {
                 _uiState.update {
                     it.copy(
-                        viewMode = when (it.viewMode) {
-                            LocationHistoryPathViewMode.OVERVIEW -> LocationHistoryPathViewMode.DETAILED
-                            LocationHistoryPathViewMode.DETAILED -> LocationHistoryPathViewMode.OVERVIEW
+                        clusteringPointsMode = when (it.clusteringPointsMode) {
+                            LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
+                            LocationHistoryClusteringPointsViewMode.CLUSTERING -> LocationHistoryClusteringPointsViewMode.DETAILED
+                            LocationHistoryClusteringPointsViewMode.DEFAULT_DETAILED,
+                            LocationHistoryClusteringPointsViewMode.DETAILED -> LocationHistoryClusteringPointsViewMode.CLUSTERING
                         }
                     )
                 }
@@ -476,7 +474,14 @@ class LocationHistoryViewModelController(
 
             LocationHistoryUiEvent.ToggleClusterPins -> {
                 _uiState.update {
-                    it.copy(clusterPins = !it.clusterPins)
+                    it.copy(
+                        clusteringPinsMode = when (it.clusteringPinsMode) {
+                            LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING,
+                            LocationHistoryClusteringPinsViewMode.CLUSTERING -> LocationHistoryClusteringPinsViewMode.DETAILED
+                            LocationHistoryClusteringPinsViewMode.DEFAULT_DETAILED,
+                            LocationHistoryClusteringPinsViewMode.DETAILED -> LocationHistoryClusteringPinsViewMode.CLUSTERING
+                        }
+                    )
                 }
             }
 

@@ -46,12 +46,12 @@ data class LocationHistoryScreenState(
     val isLoadingLocations: Boolean,
     val showPolyline: Boolean,
     val showPins: Boolean,
-    val clusterPins: Boolean,
+    val clusteringPinsMode: LocationHistoryClusteringPinsViewMode,
+    val clusteringPointsMode: LocationHistoryClusteringPointsViewMode,
     val isFilterOpened: Boolean,
     private val devices: List<UserActiveLocationDeviceState>,
     val locations: List<LocationHistoryPointState>,
     val stats: LocationHistoryStats?,
-    val viewMode: LocationHistoryPathViewMode,
     val dataViewType: LocationHistoryDataViewType,
     val focusType: LocationHistoryScreenFocusType,
     val previousFocusType: LocationHistoryScreenFocusType,
@@ -72,12 +72,14 @@ data class LocationHistoryScreenState(
     val endDate: LocalDate = selectedDate
 
     val deviceType: DeviceType = DeviceType.current
-    private val displayLocations = when (viewMode) {
-        LocationHistoryPathViewMode.OVERVIEW -> {
+    private val displayLocations = when (clusteringPointsMode) {
+        LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
+        LocationHistoryClusteringPointsViewMode.CLUSTERING -> {
             locations
         }
 
-        LocationHistoryPathViewMode.DETAILED -> {
+        LocationHistoryClusteringPointsViewMode.DEFAULT_DETAILED,
+        LocationHistoryClusteringPointsViewMode.DETAILED -> {
             locations.flatMap {
                 when (it) {
                     is LocationHistoryPointState.Cluster -> it.points
@@ -279,12 +281,12 @@ data class LocationHistoryScreenState(
                 isLoadingData = true,
                 showPolyline = true,
                 showPins = true,
-                clusterPins = true,
+                clusteringPinsMode = LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING,
                 isFilterOpened = false,
                 locations = emptyList(),
                 devices = emptyList(),
                 stats = null,
-                viewMode = LocationHistoryPathViewMode.OVERVIEW,
+                clusteringPointsMode = LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
                 dataViewType = LocationHistoryDataViewType.Stats,
                 focusType = LocationHistoryScreenFocusType.OVERVIEW,
                 previousFocusType = LocationHistoryScreenFocusType.OVERVIEW,
@@ -314,10 +316,10 @@ data class LocationHistoryScreenUiState(
     val isLoadingLocations: Boolean,
     val showPolyline: Boolean,
     val showPins: Boolean,
-    val clusterPins: Boolean,
+    val clusteringPinsMode: LocationHistoryClusteringPinsViewMode,
     val isFilterOpened: Boolean,
     val stats: LocationHistoryStats?,
-    val viewMode: LocationHistoryPathViewMode,
+    val clusteringPointsMode: LocationHistoryClusteringPointsViewMode,
     val dataViewType: LocationHistoryDataViewType,
     val focusType: LocationHistoryScreenFocusType,
     val previousFocusType: LocationHistoryScreenFocusType,
@@ -356,10 +358,10 @@ data class LocationHistoryScreenUiState(
                 isLoadingLocations = screenState.isLoadingLocations,
                 showPolyline = screenState.showPolyline,
                 showPins = screenState.showPins,
-                clusterPins = screenState.clusterPins,
+                clusteringPinsMode = screenState.clusteringPinsMode,
+                clusteringPointsMode = screenState.clusteringPointsMode,
                 isFilterOpened = screenState.isFilterOpened,
                 stats = screenState.stats,
-                viewMode = screenState.viewMode,
                 dataViewType = screenState.dataViewType,
                 focusType = screenState.focusType,
                 previousFocusType = screenState.previousFocusType,
@@ -465,9 +467,22 @@ sealed interface LocationHistoryDataViewType {
     data object LocationPoint : LocationHistoryDataViewType
 }
 
-enum class LocationHistoryPathViewMode {
-    OVERVIEW,
-    DETAILED
+enum class LocationHistoryClusteringPointsViewMode {
+    DEFAULT_CLUSTERING,
+    DEFAULT_DETAILED,
+    CLUSTERING,
+    DETAILED;
+
+    val isClusteringOn: Boolean get() = this == DEFAULT_CLUSTERING || this == CLUSTERING
+}
+
+enum class LocationHistoryClusteringPinsViewMode {
+    DEFAULT_CLUSTERING,
+    DEFAULT_DETAILED,
+    CLUSTERING,
+    DETAILED;
+
+    val isClusteringOn: Boolean get() = this == DEFAULT_CLUSTERING || this == CLUSTERING
 }
 
 sealed interface LocationHistoryScreenFocusType {

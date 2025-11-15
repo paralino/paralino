@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
-import app.paralino.core.presentation.history.LocationHistoryPathViewMode
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
@@ -243,7 +242,7 @@ fun LocationHistoryMapCardUi(
             ) {
                 HistoryMapOptionChip(
                     modifier = Modifier.padding(top = 4.dp),
-                    selected = uiState.viewMode == LocationHistoryPathViewMode.OVERVIEW,
+                    selected = uiState.clusteringPointsMode.isClusteringOn,
                     name = stringResource(MR.strings.history_map_options_location_clustering),
                     icon = CoreAppIcons.TargetCircles.asPainterResource(),
                     onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterLocations) }
@@ -252,7 +251,7 @@ fun LocationHistoryMapCardUi(
                 AnimatedVisibility(uiState.showPins) {
                     HistoryMapOptionChip(
                         modifier = Modifier.padding(top = 4.dp),
-                        selected = uiState.clusterPins,
+                        selected = uiState.clusteringPinsMode.isClusteringOn,
                         name = stringResource(MR.strings.history_map_options_pin_clustering),
                         icon = CoreAppIcons.CircleCluster.asPainterResource(),
                         onClick = { onEvent(LocationHistoryUiEvent.ToggleClusterPins) }

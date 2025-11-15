@@ -3,17 +3,12 @@ package app.paralino.core.presentation.history
 import app.paralino.core.MR
 import app.paralino.core.logg
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryModel
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
 import app.paralino.core.models.location.UserPersonalSpaceModel
-import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
-import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,8 +19,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class LocationHistoryPersonalStateMapper(
-    private val valueFormatter: IValueFormatter,
-    private val geofenceManager: IGeofenceManager,
     private val defaultMapper: ILocationHistoryStateMapper,
     private val clusteringService: LocationClusteringService,
     private val _uiState: MutableStateFlow<LocationHistoryScreenState>
@@ -157,30 +150,18 @@ class LocationHistoryPersonalStateMapper(
         )
 
         logg.v("history_fetch", "History ready, start UI update")
-        _uiState.update {
-            val newState = it.copy(
-                preselectedDeviceId = null,
+        _uiState.update { state ->
+            defaultMapper.mapFinalState(
+                currentState = state,
                 groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
                 groupImage = user.data?.userImage,
                 isGroupOwner = true,
                 userName = user.name,
-                userImage = user.data?.userImage
-                    ?: ImageModel.emoji(Emojis.robot),
-                isLoadingLocations = false,
-                isLoadingData = false,
+                userImage = user.data?.userImage,
                 locations = processedLocations,
                 devices = devices,
-                stats = null,
                 planConfig = space.plan
             )
-
-            val stats = LocationHistoryStats.calculateStats(
-                state = newState,
-                valueFormatter = valueFormatter,
-                geofenceManager = geofenceManager,
-            )
-
-            newState.copy(stats = stats)
         }
     }
 }
