@@ -274,7 +274,7 @@ class PaywallViewModel(
             }
 
             PaywallScreenUiEvent.ApplyPromoCode -> {
-                if (uiState.value.canMakePurchaseOnThisPlatform) {
+                if (uiState.value.canMakePurchaseOnThisPlatform && uiState.value.promoCode.isNotBlank()) {
                     _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
                     coroutineScope.launch {
                         try {
