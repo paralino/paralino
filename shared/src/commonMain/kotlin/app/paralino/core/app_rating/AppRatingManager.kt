@@ -16,7 +16,7 @@ class AppRatingManager(
 ) : BaseRepository() {
 
     fun tryShowingAppRating(source: AppRatingSource) {
-        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(90.days) || shouldRetryAppRating(source)) {
+        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(30.days) || shouldRetryAppRating(source)) {
             val canLaunch = when (source) {
                 AppRatingSource.PERSONAL_SPACE,
                 AppRatingSource.GROUP_DETAIL -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
