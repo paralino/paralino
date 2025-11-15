@@ -313,10 +313,10 @@ class MapHomeViewModel constructor(
             uiState.map { it.asReady()?.mapHomeScreenFocusType }
                 .filterNotNull()
                 .distinctUntilChanged(),
-        ) { groupId, appState, isUiFocused, mapFocusType ->
+        ) { groupId, isAppFocused, isUiFocused, mapFocusType ->
             MapScreenLifecycleData(
                 groupId = groupId,
-                isAppFocused = appState,
+                isAppFocused = isAppFocused,
                 isUiFocused = isUiFocused,
                 mapFocusType = mapFocusType
             )
@@ -324,8 +324,14 @@ class MapHomeViewModel constructor(
             .debounce(2000)
             .distinctUntilChanged()
             .onEach {
-                locationFocusManager.initRealtime()
                 locationFocusManager.keepLocationFocusOn(lifecycleData = it)
+            }
+            .map {
+                it.isAppFocused
+            }
+            .distinctUntilChanged()
+            .onEach {
+                locationFocusManager.initRealtime()
             }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)

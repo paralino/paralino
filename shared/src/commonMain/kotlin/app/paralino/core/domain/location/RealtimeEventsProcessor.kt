@@ -45,19 +45,19 @@ class RealtimeEventsProcessor constructor(
 ) {
 
     val locationFocusChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionLocationFocusID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionLocationFocusID}.rows"
     val placesChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionPlacesID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPlacesID}.rows"
     val membersChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionGroupMembersID}.rows"
     val groupsLocationsChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionMemberLocationsID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionMemberLocationsID}.rows"
     val personalLocationsChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionPersonalLocationsID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPersonalLocationsID}.rows"
     val personalDevicesChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionUserDevicesID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionUserDevicesID}.rows"
     val pushNotificationsChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionPushNotificationID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPushNotificationID}.rows"
 
     private fun isPaused(groupId: String): Boolean = registerDeviceForSharing.isProcessing(key = groupId)
 
