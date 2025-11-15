@@ -158,7 +158,7 @@ fun PaywallScreenCore(
     var isOfferDialogVisible by remember { mutableStateOf(false) }
     LaunchedEffect(uiState.screenStep == PaywallScreenStep.PAYWALL) {
         delay(1500)
-        isOfferDialogVisible = uiState.screenStep == PaywallScreenStep.PAYWALL
+        isOfferDialogVisible = uiState.canMakePurchaseOnThisPlatform && uiState.screenStep == PaywallScreenStep.PAYWALL
     }
 
     if (isOfferDialogVisible) {
