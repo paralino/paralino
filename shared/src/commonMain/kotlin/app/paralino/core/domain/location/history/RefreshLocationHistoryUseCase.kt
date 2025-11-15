@@ -83,7 +83,7 @@ class RefreshLocationHistoryUseCase(
 
         val group = userGroupRepo.allGroupsState.value.data?.firstOrNull { it.group.id == groupId }
         if (group?.group?.planConfig(remoteConfig.getConfigOnce())?.isGroupHistoryEnabled != true) {
-            logg.d("history_refresh", "Skip history upload for group $groupId - history disabled")
+            logg.d("history_refresh", "Skip history refresh for group $groupId - history disabled")
             return null
         }
 
@@ -167,7 +167,7 @@ class RefreshLocationHistoryUseCase(
     ): PersonalLocationHistoryReadResponse? {
 
         if (personalSpaceRepo.personalSpaceState.value.data?.plan?.isPersonalHistoryEnabled != true) {
-            logg.d("history_refresh", "Skip history upload for personal space - history disabled")
+            logg.d("history_refresh", "Skip history refresh for personal space - history disabled")
             return null
         }
 
