@@ -53,7 +53,7 @@ class LocationHistoryMapState : BaseMapObservableObject {
                     self?.historyPinMarkers = []
                 }
                 
-                self?.clusterHistoryPins = state.clusterPins
+                self?.clusterHistoryPins = state.clusteringPinsMode.isClusteringOn
                 
                 if state.focusType is LocationHistoryScreenFocusTypeOVERVIEW {
                     if let region = self?.getFocusRegion(state.selectedLocations) {
