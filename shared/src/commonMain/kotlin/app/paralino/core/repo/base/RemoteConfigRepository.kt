@@ -3,6 +3,7 @@ package app.paralino.core.repo.base
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.common.RemoteConfigEntity
+import app.paralino.core.models.base.BillingConfigData
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.provider.IDeviceApiProvider
@@ -60,6 +61,15 @@ class RemoteConfigRepository(
 
     fun getCachedConfigOnce(): ConfigData {
         return cachedConfigState.value ?: ConfigData.init(emptyList())
+    }
+
+    suspend fun getBillingConfigFromRemote(): BillingConfigData? {
+        try {
+            return functionsApi.runAndWait(function = ServerFunction.BILLING_CONFIG)
+                .response<BillingConfigData>().data
+        } catch (e: Exception) {
+            return null
+        }
     }
 
     suspend fun getConfigOnce(): ConfigData {

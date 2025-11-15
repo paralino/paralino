@@ -43,8 +43,8 @@ class KoinSetup {
     }
     
     class BillingProviderIOS: IBillingProvider {
-        func configure() async throws -> [IBillingProviderSubscriptionPlanData] {
-            return []
+        func configure() async throws -> IBillingProviderSubscriptionProviderData {
+            return IBillingProviderSubscriptionProviderData(plans: [], billingConfig: nil)
         }
     }
     

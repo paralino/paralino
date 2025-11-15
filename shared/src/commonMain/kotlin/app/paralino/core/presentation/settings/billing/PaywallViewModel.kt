@@ -58,7 +58,7 @@ class PaywallViewModel(
     private val _uiState = MutableStateFlow(
         mapUserPlans(
             plans = userRepo.userPlans.value,
-            products = null,
+            billingConfig = null,
             currentState = null,
             config = remoteConfigRepo.getCachedConfigOnce()
         )
@@ -86,15 +86,15 @@ class PaywallViewModel(
             userRepo.userPlans,
             flow {
                 remoteConfigRepo.refreshConfig(cacheTimeMillis = 0)
-                val products = billingProvider.configure()
-                emit(products)
+                val billingConfig = billingProvider.configure()
+                emit(billingConfig)
                 _uiState.update { it.copy(isLoading = false) }
             }
-        ) { plans, products ->
+        ) { plans, billingConfig ->
             _uiState.update {
                 mapUserPlans(
                     plans = plans,
-                    products = products,
+                    billingConfig = billingConfig,
                     currentState = it,
                     config = remoteConfigRepo.getConfigOnce()
                 )
@@ -129,6 +129,10 @@ class PaywallViewModel(
 
                     else -> {}
                 }
+            }
+
+            is PaywallScreenUiEvent.OfferDialogAction -> {
+                _uiState.update { it.copy(subscriptionOfferDialog = null) }
             }
 
             PaywallScreenUiEvent.RefreshPlans -> {
@@ -327,7 +331,7 @@ class PaywallViewModel(
 
     private fun mapUserPlans(
         plans: UserPlans,
-        products: List<IBillingProvider.SubscriptionPlanData>?,
+        billingConfig: IBillingProvider.SubscriptionProviderData?,
         currentState: PaywallScreenState?,
         config: ConfigData
     ): PaywallScreenState {
@@ -336,7 +340,8 @@ class PaywallViewModel(
             ?.config
             ?: config.defaultFreePlanConfig()
 
-        val availableProducts = products
+        val availableProducts = billingConfig
+            ?.plans
             ?.filter { it.planConfig.isActive }
             ?.sortedBy { it.periods.minBy { it.price }.price }
             ?: emptyList()
@@ -474,7 +479,18 @@ class PaywallViewModel(
                 ?: ImageModel.emoji(Emojis.goat),
             memberDeviceName = deviceApiProvider.defaultDeviceName,
             locationHistoryStepMessage = locationHistoryMessage,
-            subscriptionNotice = remoteConfigRepo.getCachedConfigOnce().subscriptionNotice ?: emptyList()
+            subscriptionNotice = billingConfig?.billingConfig?.subscriptionNotice ?: emptyList(),
+            subscriptionOfferDialog = billingConfig?.billingConfig?.dialogOffer?.takeIf {
+                if (it.requiresTrial) {
+                    uiPlans.firstOrNull { it.isSelected }?.selectedBillingPeriod?.trialDurationDays?.let {
+                        it > 0
+                    } ?: false
+                } else {
+                    true
+                }
+            }?.let {
+                MainAlertDialog.SubscriptionOfferDialog(dialogOffer = it)
+            }
         )
     }
 

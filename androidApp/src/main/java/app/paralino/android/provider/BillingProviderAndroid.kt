@@ -1,7 +1,6 @@
 package app.paralino.android.provider
 
 import android.app.Activity
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanType
@@ -80,7 +79,7 @@ class BillingProviderAndroid(
             .also { currentUserPlan.value = it }
     }
 
-    override suspend fun configure(): List<IBillingProvider.SubscriptionPlanData> {
+    override suspend fun configure(): IBillingProvider.SubscriptionProviderData {
         val billingUserId = userConfigRepo.ensureAndGetBillingUserId()
         val result = configure(billingUserId = billingUserId)
 
@@ -115,10 +114,11 @@ class BillingProviderAndroid(
         return false
     }
 
-    private suspend fun loadAndGetProducts(): List<IBillingProvider.SubscriptionPlanData> {
+    private suspend fun loadAndGetProducts(): IBillingProvider.SubscriptionProviderData {
         val offerings = Purchases.sharedInstance.awaitOfferings()
         this.offerings.value = offerings
         val products = mutableMapOf<String, IBillingProvider.SubscriptionPlanData>()
+        val remoteBillingConfig = remoteConfigRepo.getBillingConfigFromRemote()
         offerings.current?.let { offering ->
             offering.availablePackages.forEach { data ->
 
@@ -182,7 +182,11 @@ class BillingProviderAndroid(
                 }
             }
         }
-        return products.values.toList()
+
+        return IBillingProvider.SubscriptionProviderData(
+            plans = products.values.toList(),
+            billingConfig = remoteBillingConfig
+        )
     }
 
     suspend fun startPurchase(

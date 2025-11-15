@@ -30,7 +30,8 @@ data class PaywallScreenState(
     val memberName: String,
     val memberDeviceName: String,
     val locationHistoryStepMessage: String,
-    val subscriptionNotice: List<SubscriptionInfoNotice>
+    val subscriptionNotice: List<SubscriptionInfoNotice>,
+    val subscriptionOfferDialog: MainAlertDialog.SubscriptionOfferDialog?
 ) {
 
     val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
@@ -186,6 +187,7 @@ sealed class PaywallScreenUiEvent() {
 
     data class SelectPlanType(val planType: PlanType) : PaywallScreenUiEvent()
     data class DialogAction(val action: AlertDialogAction) : PaywallScreenUiEvent()
+    data class OfferDialogAction(val action: AlertDialogAction) : PaywallScreenUiEvent()
     data class OnCellItemClick(val table: FeatureTableItemState, val cellItem: FeatureTableItemValue) : PaywallScreenUiEvent()
 }
 

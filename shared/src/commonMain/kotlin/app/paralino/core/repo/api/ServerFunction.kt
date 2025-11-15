@@ -75,6 +75,7 @@ enum class ServerFunction constructor(
     ACCOUNT_CHANGE_EMAIL(method = "PATCH", path = "/user/email"),
 
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
+    BILLING_CONFIG(method = "GET", path = "/billing-config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
     LOGIN(method = "POST", path = "/login", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false)
     ;
 

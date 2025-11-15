@@ -17,8 +17,7 @@ data class ConfigData(
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
     val defaultPremiumPlan: PlanType = PlanType.PRO,
-    val plans: List<PlanConfig> = emptyList(),
-    val subscriptionNotice: List<SubscriptionInfoNotice>? = null
+    val plans: List<PlanConfig> = emptyList()
 ) {
 
     val isEmailEnabled: Boolean get() = AppBuildConfig.instance.isDevMode || emailEnabled
@@ -47,15 +46,7 @@ data class ConfigData(
                         logg.e("Error parsing plans from remote: ${e.message}")
                         emptyList()
                     }
-                } ?: emptyList(),
-                subscriptionNotice = map.get("subscriptionNotice")?.let {
-                    try {
-                        BaseRemoteModule.formatter.decodeFromString(it)
-                    } catch (e: Exception) {
-                        logg.e("Error parsing plans subscription notice from remote: ${e.message}")
-                        null
-                    }
-                }
+                } ?: emptyList()
             )
         }
     }
@@ -80,6 +71,20 @@ data class ConfigData(
         return listOf(freePlan) + plans.filter { it.planTypeEnum.isPremium && it.isActive }
     }
 }
+
+@Serializable
+data class BillingConfigData(
+    val dialogOffer: SubscriptionOfferDialogContent? = null,
+    val subscriptionNotice: List<SubscriptionInfoNotice>? = null
+)
+
+@Serializable
+data class SubscriptionOfferDialogContent(
+    val requiresTrial: Boolean,
+    val emoji: String?,
+    val i18nTitle: Map<String, String>?,
+    val i18nMessage: Map<String, String>?
+)
 
 @Serializable
 data class SubscriptionInfoNotice(

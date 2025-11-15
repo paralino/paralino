@@ -110,13 +110,10 @@ import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.ui.theme.featureItemTitle
 import app.paralino.core.utils.extensions.annotatedBoldCompose
-import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun PaywallScreenCore(
@@ -155,6 +152,27 @@ fun PaywallScreenCore(
                     )
                 )
             )
+        }
+    }
+
+    var isOfferDialogVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(uiState.screenStep == PaywallScreenStep.PAYWALL) {
+        delay(1500)
+        isOfferDialogVisible = uiState.screenStep == PaywallScreenStep.PAYWALL
+    }
+
+    if (isOfferDialogVisible) {
+        uiState.subscriptionOfferDialog?.let { dialog ->
+            dialog.dialogOffer.Show {
+                vm.onEvent(
+                    PaywallScreenUiEvent.OfferDialogAction(
+                        AlertDialogAction(
+                            dialog = dialog,
+                            action = it
+                        )
+                    )
+                )
+            }
         }
     }
 

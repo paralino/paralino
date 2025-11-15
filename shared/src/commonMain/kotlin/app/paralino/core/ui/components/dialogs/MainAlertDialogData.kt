@@ -3,6 +3,7 @@ package app.paralino.core.ui.components.dialogs
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import app.paralino.core.MR
+import app.paralino.core.models.base.SubscriptionOfferDialogContent
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.models.user.UserSession
@@ -1054,6 +1055,24 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
                     text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class SubscriptionOfferDialog(
+        val dialogOffer: SubscriptionOfferDialogContent,
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = "",
+            message = "",
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor,
                 )
             )
         )
