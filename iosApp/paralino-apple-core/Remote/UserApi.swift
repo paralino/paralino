@@ -26,7 +26,7 @@ class UserApi: IUserApiIOS {
     
     func confirmEmail(userId: String, secret: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let _ = try await module.account.updateVerification(userId: userId, secret: secret)
+            let _ = try await module.account.updateEmailVerification(userId: userId, secret: secret)
             return KotlinUnit()
         }
     }
@@ -65,14 +65,14 @@ class UserApi: IUserApiIOS {
     
     func doInitEmailVerification() async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let _ = try await module.account.createVerification(url: module.appBuildConfig.resourceIds.emailConfirmationUrl)
+            let _ = try await module.account.createEmailVerification(url: module.appConfig.resourceIds.emailConfirmationUrl)
             return KotlinUnit()
         }
     }
     
     func doInitResetPassword(email: String) async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let _ = try await module.account.createRecovery(email: email, url: module.appBuildConfig.resourceIds.passwordResetUrl)
+            let _ = try await module.account.createRecovery(email: email, url: module.appConfig.resourceIds.passwordResetUrl)
             return KotlinUnit()
         }
     }
@@ -93,7 +93,7 @@ class UserApi: IUserApiIOS {
     func signUp(userName: String?, email: String, password: String) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
             try await module.account.create(
-                userId: module.appBuildConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
+                userId: module.appConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
             ).parseUser()
         }
     }

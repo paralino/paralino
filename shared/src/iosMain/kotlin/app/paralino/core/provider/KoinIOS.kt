@@ -95,6 +95,7 @@ import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.IUserApiIOS
 import app.paralino.core.repo.api.RealtimeApiWrapperIOS
 import app.paralino.core.repo.api.UserApiWrapperIOS
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -134,7 +135,11 @@ object KoinIOS {
             locationStatusProvider: ILocationStatusProvider,
             locationCacheRepo: LocationCacheRepository
         ) -> IOneTimeLocationProvider,
-        remoteModule: (sessionMonitor: UserSessionMonitor, networkQualityMonitor: NetworkQualityMonitor) -> IRemoteModule,
+        remoteModule: (
+            sessionMonitor: UserSessionMonitor,
+            networkQualityMonitor: NetworkQualityMonitor,
+            appConfig: AppConfigRepository
+        ) -> IRemoteModule,
         documentsApi: (IRemoteModule, AppBuildConfig) -> IDocumentApiIOS,
         userApi: (IRemoteModule, AppBuildConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
@@ -160,7 +165,7 @@ object KoinIOS {
                     factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
                     single { billingProvider() } bind IBillingProvider::class
                     single { geofenceManager() }
-                    single { remoteModule(get(), get()) }
+                    single { remoteModule(get(), get(), get()) }
                     single { appBuildConfig }
                     single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                     single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
@@ -211,7 +216,7 @@ object KoinIOS {
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
-            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
                 LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get())
             }
@@ -220,7 +225,7 @@ object KoinIOS {
                 SharingStartViewModel(groupID?.asGroupOrSpaceId(), isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get(), get()) }
-            factory { PersonalCodeViewModel(get(), get(), get()) }
+            factory { PersonalCodeViewModel(get(), get(), get(), get()) }
             factory { (groupId: String?, code: String?, isOnboarding: Boolean) ->
                 MemberInviteViewModel(
                     groupId = groupId,
@@ -234,7 +239,7 @@ object KoinIOS {
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
@@ -290,11 +295,11 @@ object KoinIOS {
             }
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
-            factory { SubscriptionViewModel(get(), get(), get()) }
-            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get()) }
+            factory { SubscriptionViewModel(get(), get(), get(), get()) }
+            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), get()) }
             factory { GeneralInfoViewModel(get(), get()) }
-            factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
+            factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
             factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { MeasurementSystemViewModel(get(), get()) }

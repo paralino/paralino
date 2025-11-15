@@ -12,7 +12,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 
 abstract class IConnectionStatusProvider(
-    protected val appConfig: AppConfigRepository
+    protected val appBuildConfig: AppBuildConfig
 ) {
     private val _status: MutableStateFlow<NetworkConnectionInfo> = MutableStateFlow(NetworkConnectionInfo(ConnectionStatus.CONNECTED))
     val status = _status.asStateFlow()
@@ -26,7 +26,7 @@ abstract class IConnectionStatusProvider(
                 logg.v("app_state", "Network status OFFLINE")
                 NetworkConnectionInfo(ConnectionStatus.OFFLINE)
             }
-            checkInternet(url = appConfig.serverUrl, forceCheck = forceCheck) -> {
+            checkInternet(url = appBuildConfig.serverUrl, forceCheck = forceCheck) -> {
                 NetworkConnectionInfo(ConnectionStatus.CONNECTED, getNetworkType())
             }
             else -> {

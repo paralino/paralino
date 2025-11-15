@@ -117,7 +117,7 @@ public class CoreKoinSetup {
                     locationCacheRepo: locationCacheRepository
                 )
             },
-            remoteModule: { sessionMonitor, networkQualityMonitor in AppwriteRemoteModule(sessionMonitor: sessionMonitor, appBuildConfig: appBuildConfig, networkQualityMonitor: networkQualityMonitor) },
+            remoteModule: { sessionMonitor, networkQualityMonitor, appConfig in AppwriteRemoteModule(sessionMonitor: sessionMonitor, appConfig: appConfig, networkQualityMonitor: networkQualityMonitor) },
             documentsApi: { module, _ in DocumentsApi(remoteModule: module as! AppwriteRemoteModule) },
             userApi: { module, _ in UserApi(remoteModule: module as! AppwriteRemoteModule) },
             functionsApi: { module, _ in FunctionsApi(remoteModule: module as! AppwriteRemoteModule, deviceApiProvider: deviceApiProvider) },

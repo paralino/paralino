@@ -21,8 +21,8 @@ import java.net.InetAddress
 
 class ConnectionStatusProvider constructor(
     private val context: Context,
-    appConfig: AppConfigRepository,
-) : IConnectionStatusProvider(appConfig) {
+    appBuildConfig: AppBuildConfig,
+) : IConnectionStatusProvider(appBuildConfig) {
 
     override suspend fun isInternetAvailable(url: String): Boolean {
         return withContext(Dispatchers.IO) {
