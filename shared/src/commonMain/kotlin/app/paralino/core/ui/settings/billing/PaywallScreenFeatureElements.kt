@@ -195,7 +195,7 @@ private fun MemberItem(
                 lastStatusPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(30.minutes).toLocalDateTime(TimeZone.UTC)
                 ),
-                accuracyMeters = 200f,
+                accuracyMeters = 50f,
                 deviceStatus = MemberDeviceStatusType.IDLE,
                 canEdit = false,
                 currentDevice = true,
