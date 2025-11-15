@@ -328,6 +328,7 @@ object KoinIOS {
         val deviceApiProvider: IDeviceApiProvider get() = get()
         val inAppLogger: InAppLogger get() = get()
         val appBuildConfig: AppBuildConfig get() = get()
+        val appConfig: AppConfigRepository get() = get()
         val remoteConfigRepo: RemoteConfigRepository get() = get()
         val userConfigRepo: UserConfigRepository get() = get()
         val nseNotificationHandler: IOSNSEPushNotificationHandler get() = get()

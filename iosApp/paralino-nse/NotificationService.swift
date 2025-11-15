@@ -15,6 +15,7 @@ class NotificationService: UNNotificationServiceExtension {
     var bestAttemptContent: UNMutableNotificationContent?
     lazy var pushHandler: IOSNSEPushNotificationHandler = { KoinIOS.Instances.shared.nseNotificationHandler }()
     lazy var inAppLogger: InAppLogger = { KoinIOS.Instances.shared.inAppLogger }()
+    lazy var appConfig: AppConfigRepository = { KoinIOS.Instances.shared.appConfig }()
     
     override init() {
 
@@ -53,14 +54,14 @@ class NotificationService: UNNotificationServiceExtension {
                             try? await pushHandler.deletePushNotification(notificationId: notificationId)
                             Logr.v(tag: "notification", message: "Display new alert notification (\(DeviceUtil.getMemoryPrintString()))")
                             
-                            if AppBuildConfig.companion.instance.isDevMode {
+                            if self?.appConfig.isInAppDevMode == true {
                                 content.title = "NSE: \(content.title)"
                             }
                             
                             contentHandler(content)
                         } else {
                             Logr.w(tag: "notification", message: "Notification not fetched")
-                            if AppBuildConfig.companion.instance.isDevMode {
+                            if self?.appConfig.isInAppDevMode == true {
                                 bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
                                 bestAttemptContent.body = "Not fetched: \(bestAttemptContent.body)"
                             }
@@ -68,7 +69,7 @@ class NotificationService: UNNotificationServiceExtension {
                         }
                     } else {
                         Logr.w(tag: "notification", message: "No notification id")
-                        if AppBuildConfig.companion.instance.isDevMode {
+                        if self?.appConfig.isInAppDevMode == true {
                             bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
                             bestAttemptContent.body = "Missing ID: \(bestAttemptContent.body)"
                         }
@@ -91,7 +92,7 @@ class NotificationService: UNNotificationServiceExtension {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
-            if AppBuildConfig.companion.instance.isDevMode {
+            if appConfig.isInAppDevMode {
                 bestAttemptContent.title = "NSE: \(bestAttemptContent.title)"
                 bestAttemptContent.body = "Expired: \(bestAttemptContent.body)"
             }
