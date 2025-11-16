@@ -33,6 +33,7 @@ abstract class IValueFormatter {
 
     fun getDistanceSmall(
         meters: Double,
+        distanceType: DistanceType,
         measurementSystem: MeasurementSystemType? = null,
     ): String {
         return when (measurementSystem ?: this.measurementSystem) {
@@ -45,15 +46,26 @@ abstract class IValueFormatter {
                     MR.strings.placeholder_unit_km.localizedString(value)
                 }
             }
+
             MeasurementSystemType.IMPERIAL -> {
-                if (meters / 1000 < kmInMile / 10) { // Less than 1/10 mile
-                    val feet = meters * 3.28084
-                    val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
-                    MR.strings.placeholder_unit_feet.localizedString(value)
-                } else {
-                    val miles = meters / 1000 / kmInMile
-                    val value = formatNumber(miles, minFractions = 0, maxFractions = 2)
-                    MR.strings.placeholder_unit_mile.localizedString(value)
+                when (distanceType) {
+                    DistanceType.ELEVATION -> {
+                        val feet = meters * 3.28084
+                        val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
+                        MR.strings.placeholder_unit_feet.localizedString(value)
+                    }
+
+                    DistanceType.DISTANCE -> {
+                        if (meters / 1000 < kmInMile / 5) { // Less than 1/10 mile
+                            val feet = meters * 3.28084
+                            val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
+                            MR.strings.placeholder_unit_feet.localizedString(value)
+                        } else {
+                            val miles = meters / 1000 / kmInMile
+                            val value = formatNumber(miles, minFractions = 0, maxFractions = 2)
+                            MR.strings.placeholder_unit_mile.localizedString(value)
+                        }
+                    }
                 }
             }
         }

@@ -15,6 +15,7 @@ import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
@@ -75,7 +76,10 @@ class CreatePlaceViewModel(
                             lat = lat,
                             lng = lng,
                             radiusMeters = CreatePlaceScreenState.defaultRadiusMeters,
-                            radiusText = valueFormatter.getDistanceSmall(meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble())
+                            radiusText = valueFormatter.getDistanceSmall(
+                                meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble(),
+                                distanceType = DistanceType.DISTANCE
+                            )
                         )
                     )
 
@@ -91,7 +95,8 @@ class CreatePlaceViewModel(
                             lng = place.data.data?.lng,
                             radiusMeters = place.data.data?.radiusMeters ?: 0,
                             radiusText = valueFormatter.getDistanceSmall(
-                                meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0
+                                meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0,
+                                distanceType = DistanceType.DISTANCE
                             ),
                             hintText = hintText(),
                             actionLoading = false,
@@ -295,7 +300,10 @@ class CreatePlaceViewModel(
             it.mapSuccess {
                 it.copy(
                     radiusMeters = radiusMeters,
-                    radiusText = valueFormatter.getDistanceSmall(meters = radiusMeters.toDouble()),
+                    radiusText = valueFormatter.getDistanceSmall(
+                        meters = radiusMeters.toDouble(),
+                        distanceType = DistanceType.DISTANCE
+                    ),
                 )
             }
         }

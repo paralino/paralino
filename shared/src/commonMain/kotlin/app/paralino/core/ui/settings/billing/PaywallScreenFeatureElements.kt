@@ -37,6 +37,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
@@ -188,7 +189,7 @@ private fun MemberItem(
                 adjustedBatteryLevel = 58,
                 isBatteryCharging = false,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
-                elevation = valueFormatter.getDistanceSmall(meters = 250.0),
+                elevation = valueFormatter.getDistanceSmall(meters = 250.0, distanceType = DistanceType.ELEVATION),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(30.minutes).toLocalDateTime(TimeZone.UTC)
                 ),
@@ -271,7 +272,7 @@ private fun MemberItem(
                         signalStrength = NetworkSignalStrength.GREAT,
                         lastLocationPing = MR.strings.group_members_last_active_status_now.localizedString(),
                         speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.2f),
-                        elevation = valueFormatter.getDistanceSmall(meters = 180.0),
+                        elevation = valueFormatter.getDistanceSmall(meters = 180.0, distanceType = DistanceType.ELEVATION),
                     )
                 }
             }
@@ -304,7 +305,7 @@ private fun MemberItemWithLocations(
                 adjustedBatteryLevel = 58,
                 isBatteryCharging = false,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
-                elevation = valueFormatter.getDistanceSmall(meters = 250.0),
+                elevation = valueFormatter.getDistanceSmall(meters = 250.0, distanceType = DistanceType.ELEVATION),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().toLocalDateTime(TimeZone.UTC)
                 ),
@@ -331,7 +332,7 @@ private fun MemberItemWithLocations(
                 adjustedBatteryLevel = 75,
                 isBatteryCharging = true,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.3f),
-                elevation = valueFormatter.getDistanceSmall(meters = 280.0),
+                elevation = valueFormatter.getDistanceSmall(meters = 280.0, distanceType = DistanceType.ELEVATION),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(20.minutes).toLocalDateTime(TimeZone.UTC)
                 ),

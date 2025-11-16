@@ -5,6 +5,7 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.MemberDeviceStatusType
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
@@ -75,7 +76,8 @@ class ILocationHistoryStateMapper(
                     },
                     formattedElevation = point.loc?.alt?.let {
                         valueFormatter.getDistanceSmall(
-                            meters = it.toDouble()
+                            meters = it.toDouble(),
+                            distanceType = DistanceType.ELEVATION
                         )
                     },
                     deviceStatus = MemberDeviceStatusType.fromShortId(id = point.status.sts),

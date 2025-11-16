@@ -19,6 +19,7 @@ import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.detail.LocationSharingState
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
@@ -138,7 +139,10 @@ class PersonalSpaceViewModel(
                     shareDeviceStatus = it.shareDeviceStatus,
                     saveToHistory = it.saveToHistory,
                     approximateLocation = it.approximateLocationInMeters?.let {
-                        valueFormatter.getDistanceSmall(it.toDouble())
+                        valueFormatter.getDistanceSmall(
+                            meters = it.toDouble(),
+                            distanceType = DistanceType.DISTANCE
+                        )
                     }
                 )
             }

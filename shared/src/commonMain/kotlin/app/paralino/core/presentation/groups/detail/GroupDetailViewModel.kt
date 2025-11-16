@@ -27,6 +27,7 @@ import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.groups.detail.GroupDetailScreenEvent.OpenRawMemberData
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
@@ -172,7 +173,10 @@ class GroupDetailViewModel(
                     shareDeviceStatus = it.shareDeviceStatus,
                     saveToHistory = it.saveToHistory,
                     approximateLocation = it.approximateLocationInMeters?.let {
-                        valueFormatter.getDistanceSmall(it.toDouble())
+                        valueFormatter.getDistanceSmall(
+                            meters = it.toDouble(),
+                            distanceType = DistanceType.DISTANCE
+                        )
                     }
                 )
             }

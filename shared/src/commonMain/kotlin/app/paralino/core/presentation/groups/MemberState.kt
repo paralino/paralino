@@ -7,6 +7,7 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
@@ -177,7 +178,14 @@ data class GroupMemberItemLocationState constructor(
         adjustedBatteryLevel = memberLocation.status.data?.validBatteryLevel(checkForTime = true),
         isBatteryCharging = memberLocation.status.data?.isCharging ?: false,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
-        elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it.toDouble()) },
+        elevation = memberLocation.locationData.data?.altitude
+            ?.takeIf { showSpeedAndElevation }
+            ?.let {
+                formatter.getDistanceSmall(
+                    meters = it.toDouble(),
+                    distanceType = DistanceType.ELEVATION
+                )
+            },
         lastLocationPing = formatter.getLastLocationPing(memberLocation),
         lastStatusPing = formatter.getLastStatusPing(memberLocation),
         accuracyMeters = memberLocation.locationData.data?.accuracy,

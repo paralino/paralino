@@ -13,3 +13,8 @@ enum class MeasurementSystemType constructor(val key: String) {
         fun fromKey(key: String): MeasurementSystemType? = entries.firstOrNull { it.key == key }
     }
 }
+
+enum class DistanceType constructor(val key: String) {
+    ELEVATION("elevation"),
+    DISTANCE("distance");
+}

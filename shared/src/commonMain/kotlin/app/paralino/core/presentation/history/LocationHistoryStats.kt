@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.history
 
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.repo.location.IGeofenceManager
@@ -92,15 +93,24 @@ data class LocationHistoryStats(
                     .distinct()
 
             // Format values
-            val formattedDistance = valueFormatter.getDistanceSmall(totalDistanceMeters.toDouble())
+            val formattedDistance = valueFormatter.getDistanceSmall(totalDistanceMeters.toDouble(), distanceType = DistanceType.DISTANCE)
             val formattedMaxSpeed = maxSpeedMps?.let { valueFormatter.getSpeedSmall(it) } ?: "-"
             val formattedElevationRange =
-                "${valueFormatter.getDistanceSmall(elevationRangeMeters.first.toDouble())} - ${
-                    valueFormatter.getDistanceSmall(elevationRangeMeters.second.toDouble())
+                "${valueFormatter.getDistanceSmall(
+                    meters = elevationRangeMeters.first.toDouble(),
+                    distanceType = DistanceType.ELEVATION
+                )} - ${
+                    valueFormatter.getDistanceSmall(
+                        meters = elevationRangeMeters.second.toDouble(),
+                        distanceType = DistanceType.ELEVATION
+                    )
                 }"
 
             val formattedElevationGain =
-                valueFormatter.getDistanceSmall(elevationGainMeters.toDouble())
+                valueFormatter.getDistanceSmall(
+                    meters = elevationGainMeters.toDouble(),
+                    distanceType = DistanceType.ELEVATION
+                )
 
             return LocationHistoryStats(
                 formattedTimeRange = formattedTimeRange,
