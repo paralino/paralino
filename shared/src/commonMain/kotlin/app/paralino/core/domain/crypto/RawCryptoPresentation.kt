@@ -107,7 +107,8 @@ class RawCryptoPresentation constructor(
                 fun locationDataPrint(
                     deviceData: String?,
                     locationData: String?,
-                    status: String?
+                    status: String?,
+                    locationHistory: String?,
                 ): String {
                     return buildString {
                         append("\"deviceData\": ")
@@ -118,6 +119,9 @@ class RawCryptoPresentation constructor(
                         append("\n\n")
                         append("\"status\": ")
                         append(status)
+                        append("\n\n")
+                        append("embedded history: ")
+                        append(locationHistory)
                     }
                 }
 
@@ -150,6 +154,13 @@ class RawCryptoPresentation constructor(
                                         }
 
                                         else -> it.status.toString()
+                                    },
+                                    locationHistory = when (it.locationHistory) {
+                                        is CryptoResource.Ready -> {
+                                            BaseRemoteModule.prettyPrintFormatter.encodeToString(it.locationHistory.data)
+                                        }
+
+                                        else -> it.locationHistory.toString()
                                     }
                                 )
                             )
@@ -170,7 +181,8 @@ class RawCryptoPresentation constructor(
                             rawData = locationDataPrint(
                                 deviceData = location.deviceData,
                                 locationData = location.locationData,
-                                status = location.status
+                                status = location.status,
+                                locationHistory = location.locationHistory,
                             ),
                             decryptedData = decryptedLocationData,
                             type = RawPresentationDataType.GroupMemberPresentation(memberId)
