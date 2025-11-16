@@ -136,6 +136,7 @@ internal fun HomeScreenMapWithElements(
                 if (historyUiState != null) {
                     LocationHistoryMapContent(
                         uiState = historyUiState,
+                        isSatelliteMode = uiState.isSatelliteMode,
                         onEvent = onHistoryEvent
                     )
                 } else {

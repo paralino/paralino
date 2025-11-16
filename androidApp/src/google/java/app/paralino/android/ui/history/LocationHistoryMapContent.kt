@@ -214,6 +214,7 @@ fun rememberLocationHistoryMapController(
 @Composable
 fun LocationHistoryMapContent(
     uiState: LocationHistoryScreenUiState,
+    isSatelliteMode: Boolean = uiState.isSatelliteMode,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     val polylineWidthPixels = with(LocalDensity.current) { 5.dp.toPx() }
@@ -283,7 +284,7 @@ fun LocationHistoryMapContent(
         Polyline(
             points = points,
             clickable = true,
-            color = if (uiState.isSatelliteMode || isSystemInDarkTheme()) {
+            color = if (isSatelliteMode || isSystemInDarkTheme()) {
                 AppColors.redMain
             } else {
                 MaterialTheme.colors.primary
@@ -357,7 +358,7 @@ fun LocationHistoryMapContent(
                             CoreAppIcons.LocationOnFilled.asPainterResource()
                         },
                         contentDescription = null,
-                        tint = if (uiState.isSatelliteMode || isSystemInDarkTheme()) {
+                        tint = if (isSatelliteMode || isSystemInDarkTheme()) {
                             AppColors.highlightGold
                         } else {
                             AppColors.redMain
@@ -371,7 +372,7 @@ fun LocationHistoryMapContent(
                     HistoryMapPin(
                         state = pin,
                         position = com.google.android.gms.maps.model.LatLng(pin.lat!!, pin.lng!!),
-                        isDarkMode = uiState.isSatelliteMode || isSystemInDarkTheme(),
+                        isDarkMode = isSatelliteMode || isSystemInDarkTheme(),
                         zIndex = 1f,
                         onClick = {
                             onEvent(LocationHistoryUiEvent.OnPointClicked(it))
