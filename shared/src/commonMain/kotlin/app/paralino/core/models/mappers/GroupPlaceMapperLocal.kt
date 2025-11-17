@@ -1,5 +1,6 @@
 package app.paralino.core.models.mappers
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.places.PlaceEntity
 import app.paralino.core.db.main.places.PlaceSettingsEntity
 import app.paralino.core.models.places.GroupPlace
@@ -11,7 +12,8 @@ import kotlinx.serialization.encodeToString
 
 class GroupPlaceMapperLocal(
     private val coreMapper: PlaceMapperCore,
-    private val settingsCoreMapper: PlaceSettingsMapperCore
+    private val settingsCoreMapper: PlaceSettingsMapperCore,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun local2Core(model: PlaceEntity): GroupPlace {
@@ -24,7 +26,9 @@ class GroupPlaceMapperLocal(
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
+            userKeyVersion = model.userKeyVersion,
             private = model.privatePlace,
+            isInPersonalSpace = model.isInPersonalSpace,
             data = model.data,
             eventKeys = try {
                 BaseRemoteModule.formatter.decodeFromString(model.eventKeys)
@@ -40,7 +44,9 @@ class GroupPlaceMapperLocal(
             groupId = model.groupId,
             ownerUserId = model.ownerUserId,
             groupKeyVersion = model.groupKeyVersion,
+            userKeyVersion = model.userKeyVersion,
             privatePlace = model.private,
+            isInPersonalSpace = model.isInPersonalSpace ?: false,
             data = model.data,
             eventKeys = BaseRemoteModule.formatter.encodeToString(model.eventKeys)
         )
@@ -55,6 +61,7 @@ class GroupPlaceMapperLocal(
             id = model.id,
             groupId = model.groupId,
             placeId = model.placeId,
+            deviceId = model.deviceId,
             ownerUserId = model.ownerUserId,
             alertData = model.alertData
         )
@@ -66,6 +73,8 @@ class GroupPlaceMapperLocal(
             groupId = model.groupId,
             placeId = model.placeId,
             ownerUserId = model.ownerUserId,
+            deviceId = model.deviceId,
+            isInPersonalSpace = model.groupId == appPrefs.userId && model.groupId == model.ownerUserId,
             alertData = model.alertData
         )
     }

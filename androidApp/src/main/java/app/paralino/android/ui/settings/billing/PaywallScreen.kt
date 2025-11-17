@@ -32,8 +32,15 @@ fun PaywallScreen(
 ) {
     fun goBack(isSuccess: Boolean) {
         when (type) {
+            BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING -> {
+                appState.navController.popBackStack(
+                    route = AppScreen.MainHome.MainMap.routeSignature,
+                    inclusive = false
+                )
+            }
+
             BillingScreenSourceType.GROUP_ONBOARDING,
-            BillingScreenSourceType.FREE_PLAN_NEW_USER -> {
+            BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER -> {
                 if (groupId.isNullOrBlank()) {
                     appState.navController.navigate(AppScreen.MainHome.MainMap.routeSignature)
                 } else {
@@ -44,18 +51,6 @@ fun PaywallScreen(
                             this.inclusive = false
                         }
                     }
-                }
-            }
-
-            BillingScreenSourceType.FREE_PLAN_NOTICE -> {
-                if (isSuccess) {
-                    appState.navController.navigate(AppScreen.MainHome.GroupCreate.route(groupId = null)) {
-                        this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                            this.inclusive = false
-                        }
-                    }
-                } else {
-                    appState.navController.popBackStack()
                 }
             }
 

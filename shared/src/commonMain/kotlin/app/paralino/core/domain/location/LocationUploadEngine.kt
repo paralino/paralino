@@ -1,26 +1,29 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.domain.LimitedExecutionRepository
+import app.paralino.core.domain.location.history.SavePendingLocationUseCase
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.models.location.MemberGroupIdForUpload
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.IPlacesActivityProcessor
 import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.utils.exceptions.DeviceSafetySignatureCorrupted
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.filterNotNull
@@ -29,15 +32,16 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val saveLocationUseCase: SaveLocationUseCase,
+    private val savePendingLocationUseCase: SavePendingLocationUseCase,
     private val placesActivityProcessor: IPlacesActivityProcessor,
     private val registerDeviceForSharing: IReRegisterDeviceUseCase,
     private val payloadProvider: LocationPayloadProvider,
@@ -46,12 +50,12 @@ class LocationUploadEngine constructor(
     private val oneTimeLocationProvider: IOneTimeLocationProvider,
     private val placeActivityRepo: PlaceActivityDataSource,
     private val batteryAlertUploadEngine: BatteryAlertUploadEngine,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
 ) : LimitedExecutionRepository() {
 
     private val maxUploadRate: Duration
         get() {
-            when (appBuildConfig.appHost) {
+            when (appConfig.appHost) {
                 AppHost.MAIN_APP,
                 AppHost.IOS_NOTIFICATION_EXTENSION -> {
                     return when (locationPerformanceManager.locationPerformanceType.value.current) {
@@ -172,44 +176,63 @@ class LocationUploadEngine constructor(
     }
 
     private suspend fun uploadLocation(data: LocationDataModel?) {
-        triggerRemoteOnly {
-            val contracts = locationSharingManager.allValidContracts()
-            val mapped = contracts.mapNotNull { contract ->
-                getLocationPayload(
-                    groupId = contract.groupId,
-                    data = data,
-                    contract = contract
+        val contracts = locationSharingManager.allValidContracts()
+        val payloads = contracts.mapNotNull { contract ->
+            getLocationPayload(
+                groupId = contract.groupOrSpaceId,
+                data = data,
+                contract = contract
+            )
+        }
+
+        // save location to history locally
+        try { savePendingLocationUseCase.saveNewLocations(payloads) }
+        catch (e: Exception) { }
+
+        // location upload
+        val uploadError = try {
+            triggerRemoteOnly {
+                logg.v(
+                    tag = "location_service",
+                    message = "Upload (${payloads.size}) new ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) with performance ${locationPerformanceManager.locationPerformanceType.value.current}"
+                )
+
+                payloads.forEach {
+                    try {
+                        saveLocationUseCase.uploadAndSaveCurrentLocation(
+                            MemberGroupIdForUpload(it)
+                        )
+                    } catch (e: Exception) {
+                        logg.w("location_service", "Error saving location for group ${it}", e)
+                    }
+                }
+
+                logg.v(
+                    tag = "location_service",
+                    message = "New ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) uploaded"
                 )
             }
+            null
+        } catch (e: Exception) {
+            e
+        }
 
+        // extra processing
+        triggerRemoteOnly {
             if (data != null) {
                 placesActivityProcessor.processLocation(data)
             }
 
-            batteryAlertUploadEngine.sendBatteryAlert(payloads = mapped)
+            batteryAlertUploadEngine.sendBatteryAlert(payloads = payloads)
+        }
 
-            logg.v(
-                tag = "location_service",
-                message = "Upload (${mapped.size}) new ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) with performance ${locationPerformanceManager.locationPerformanceType.value.current}"
-            )
-
-            mapped.forEach {
-                try {
-                    saveLocationUseCase.uploadAndSaveCurrentLocation(it)
-                } catch (e: Exception) {
-                    logg.w("location_service", "Error saving location for group ${it}", e)
-                }
-            }
-
-            logg.v(
-                tag = "location_service",
-                message = "New ${if (data != null) "location ${data.timeUTC}" else "status"} (${data.hashCode()}) uploaded"
-            )
+        if (uploadError != null) {
+            throw uploadError
         }
     }
 
     private suspend fun getLocationPayload(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         contract: LocationSharingContract,
     ): MemberGroupId? {
@@ -223,11 +246,25 @@ class LocationUploadEngine constructor(
             is LocationPayloadStatus.Success -> payload.payload
 
             LocationPayloadStatus.MissingLocationDocument -> {
-                val result = registerDeviceForSharing.tryRegisterDeviceAgain(
-                    groupId = groupId,
-                    data = data,
-                    contract = contract
-                )
+                val result = try {
+                    registerDeviceForSharing.tryRegisterDeviceAgain(
+                        groupId = groupId,
+                        data = data,
+                        contract = contract
+                    )
+                } catch (e: Exception) {
+                    if (e is DeviceSafetySignatureCorrupted) {
+                        logg.d(
+                            "location_service",
+                            "Location device safety signature is corrupted, abort sharing"
+                        )
+                        locationSharingManager.stopSharing(groupId = groupId, deleteContract = false)
+                        placeActivityRepo.clearForGroup(groupId = groupId)
+                        return null
+                    } else {
+                        false
+                    }
+                }
 
                 if (result) {
                     // retry once again
@@ -246,7 +283,7 @@ class LocationUploadEngine constructor(
                     "location_service",
                     "Location device can not be established for current device, abort sharing"
                 )
-                locationSharingManager.stopSharing(groupId = groupId)
+                locationSharingManager.stopSharing(groupId = groupId, deleteContract = false)
                 placeActivityRepo.clearForGroup(groupId = groupId)
                 null
             }

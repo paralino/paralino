@@ -10,12 +10,9 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 
 object AppIcons {
-    val Adjust @Composable get() = CoreAppIcons.Adjust.asPainterResource()
     val Warning @Composable get() = CoreAppIcons.Warning.asPainterResource()
     val Group @Composable get() = CoreAppIcons.Group.asPainterResource()
     val ExpandMore @Composable get() = CoreAppIcons.ExpandMore.asPainterResource()
-    val Save @Composable get() = CoreAppIcons.Save.asPainterResource()
-    val Close @Composable get() = CoreAppIcons.Close.asPainterResource()
 
     @Composable
     fun Int.asImageVector(): ImageVector {

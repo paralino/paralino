@@ -20,6 +20,7 @@ struct BlockListScreen: View {
                     vm: appState.vm
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.blocklist_screen_title.localizedString())
         }

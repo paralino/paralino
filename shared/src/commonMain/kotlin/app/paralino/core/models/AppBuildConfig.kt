@@ -9,6 +9,7 @@ data class AppBuildConfig constructor(
     val billingRCApiKey: String,
     val iOSTeamId: String,
     val iOSAppGroup: String,
+    val appPackageName: String,
     val appHost: AppHost,
     val isDevMode: Boolean,
     val hasPreviewFeatures: Boolean,

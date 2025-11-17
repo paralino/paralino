@@ -17,7 +17,9 @@ class LocationRepositoryWrapper(
         locationRepo.startLocationUploadEngine()
 
         scopeProvider.userSessionIOScope.launch {
-            locationRepo.updateDeviceStatusOnly(tryToFetchCachedLocation = false)
+            try {
+                locationRepo.updateDeviceStatusOnly(tryToFetchCachedLocation = false)
+            } catch (e: Exception) { }
         }
     }
 

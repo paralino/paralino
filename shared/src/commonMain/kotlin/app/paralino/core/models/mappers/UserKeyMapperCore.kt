@@ -102,4 +102,14 @@ class UserKeyMapperCore constructor(
             BaseRemoteModule.formatter.decodeFromString<OldMasterKeys>(it)
         }
     }
+
+    suspend fun unwrapDeviceSenderKey(
+        encryptedSenderKey: String,
+        userKey: String
+    ): String {
+        return cryptoCore.decryptDataWithKey(
+            data = encryptedSenderKey,
+            key = userKey
+        )
+    }
 }

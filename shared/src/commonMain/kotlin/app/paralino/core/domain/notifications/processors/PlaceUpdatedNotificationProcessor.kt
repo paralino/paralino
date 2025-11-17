@@ -1,7 +1,10 @@
 package app.paralino.core.domain.notifications.processors
 
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.PushNotificationRaw
+import app.paralino.core.models.raw.PushNotificationType
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.utils.extensions.tryParseFromJson
 import kotlinx.serialization.Serializable
@@ -15,11 +18,19 @@ class PlaceUpdatedNotificationProcessor(
         push: PushNotificationRaw,
         groupRefreshHook: (suspend (GroupRefreshHookPayload) -> Unit)?
     ): IPushNotificationPresenter.Payload? {
-        val payload = push.content?.tryParseFromJson<PlaceUpdatedNotificationPayload>()
-            ?: return null
+        val groupId = if (push.pushType == PushNotificationType.PERSONAL_PLACE_UPDATED) {
+            UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
+        } else {
+            push.content?.tryParseFromJson<PlaceUpdatedNotificationPayload>()?.groupId?.asGroupOrSpaceId()
+        }
+
+        if (groupId == null) {
+            return null
+        }
+
         groupRefreshHook?.invoke(
             GroupRefreshHookPayload(
-                groupId = payload.groupId,
+                groupId = groupId,
                 cacheTimeDuration = 20.seconds
             )
         )
@@ -29,6 +40,6 @@ class PlaceUpdatedNotificationProcessor(
     @Serializable
     private data class PlaceUpdatedNotificationPayload constructor(
         val groupId: String,
-        val memberUserId: String
+        val placeId: String
     )
 }

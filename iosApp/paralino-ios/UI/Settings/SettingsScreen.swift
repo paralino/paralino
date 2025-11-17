@@ -59,6 +59,7 @@ struct SettingsScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.title_settings.localizedString())
         }

@@ -29,7 +29,7 @@ data class MemberDocumentRaw constructor(
                 groupId = map["groupId"] as String,
                 groupKeyVersion = (map["groupKeyVersion"] as Number).toLong(),
                 memberKeyVersion = (map["memberKeyVersion"] as Number).toLong(),
-                data = map["data"] as String,
+                data = (map["resourceData"] as? String?) ?: (map["data"] as? String?) ?: "",
                 paralinoId = map["paralinoId"] as? String?,
                 verification = map["verification"] as String,
                 settingsRaw = null,

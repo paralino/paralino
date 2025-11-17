@@ -3,46 +3,46 @@ package app.paralino.android.remote.appwrite
 import android.app.Application
 import app.paralino.android.remote.RemoteClient
 import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.provider.isConnectionError
 import app.paralino.core.provider.isSocketTimeout
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.NetworkQualityMonitor
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.appwrite.Client
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.services.Account
-import io.appwrite.services.Databases
 import io.appwrite.services.Functions
 import io.appwrite.services.Realtime
+import io.appwrite.services.TablesDB
 import kotlinx.coroutines.delay
 import java.net.UnknownHostException
 import java.util.UUID
 
 class AppWriteRemoteModule(
     private val app: Application,
-    val appBuildConfig: AppBuildConfig,
+    val appConfig: AppConfigRepository,
     val sessionMonitor: UserSessionMonitor,
     val networkQualityMonitor: NetworkQualityMonitor
 ) {
 
     internal val account: Account by lazy { Account(client) }
-    internal val database: Databases by lazy { Databases(client) }
+    internal val tablesDB: TablesDB by lazy { TablesDB(client) }
     internal val functions: Functions by lazy { Functions(client) }
     internal val realtime: Realtime by lazy { Realtime(client) }
 
     private val client: Client by lazy {
         Client(
             context = app,
-            endpoint = appBuildConfig.endpoint,
+            endpoint = appConfig.endpoint,
             selfSigned = false
         )
-            .setEndpoint(appBuildConfig.endpoint)
-            .setProject(appBuildConfig.projectId)
+            .setEndpoint(appConfig.endpoint)
+            .setProject(appConfig.projectId)
             .run {
                 RemoteClient.setup(
                     client = this,
-                    logRequests = appBuildConfig.logToConsole
+                    logRequests = appConfig.logToConsole
                 )
             }
     }

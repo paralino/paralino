@@ -101,7 +101,7 @@ fun MainAlertDialog(
 }
 
 @Composable
-private fun MainAlertDialogActionButton(
+fun MainAlertDialogActionButton(
     modifier: Modifier = Modifier,
     dialogId: String,
     buttonData: AlertDialogButtonData,

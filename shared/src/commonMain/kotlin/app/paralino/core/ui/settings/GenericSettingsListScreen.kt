@@ -1,10 +1,15 @@
 package app.paralino.core.ui.settings
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -36,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
@@ -43,10 +50,12 @@ import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEv
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.CheckButtonIcon
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
+import app.paralino.core.ui.components.LargeSwitchSize
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
@@ -66,43 +75,56 @@ fun GenericSettingsListScreen(
         modifier = Modifier.fillMaxSize(),
         contentPadding = paddingValues
     ) {
-        state.items.forEach { item ->
+        state.items.forEachIndexed { index, item ->
             when (item) {
                 is GenericSettingListItem.GroupOptions -> {
                     this.item(key = item.keyId) {
                         GenericSettingsOptions(
-                            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                            items = item.items,
-                            onOptionSelected = {
+                            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth()
+                                .animateItem(),
+                            items = item.visibleItems,
+                            onOptionSelected = { option ->
                                 onEvent(
-                                    GenericSettingsScreenUiEvent.SelectOptionItem(it)
+                                    GenericSettingsScreenUiEvent.SelectOptionItem(
+                                        groupOptions = item,
+                                        option = option
+                                    )
                                 )
                             }
                         )
                     }
                 }
+
                 is GenericSettingListItem.Notice -> {
                     this.item(key = item.keyId) {
                         NoticeInfoChip(
-                            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth()
+                                .animateItem(),
                             icon = item.icon.asPainterResource(),
                             text = item.content
                         )
                     }
                 }
+
                 is GenericSettingListItem.Spacer -> {
                     this.item(key = item.keyId) {
-                        Spacer(modifier = Modifier.size(item.spacing))
+                        Spacer(modifier = Modifier.size(item.spacing).animateItem())
                     }
                 }
+
                 is GenericSettingListItem.StickyHeader -> {
                     this.stickyHeader(key = item.keyId) {
                         SettingsSectionHeader(
-                            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .zIndex(0f)
+                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
+                                .animateItem(),
                             name = item.content
                         )
                     }
                 }
+
                 is GenericSettingListItem.Subtitle -> {
                     this.item(key = item.keyId) {
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -110,7 +132,8 @@ fun GenericSettingsListScreen(
                                 modifier = Modifier
                                     .padding(bottom = 20.dp)
                                     .padding(horizontal = 20.dp)
-                                    .fillMaxWidth(),
+                                    .fillMaxWidth()
+                                    .animateItem(),
                                 text = item.content.annotatedBoldCompose(),
                                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Medium),
                                 textAlign = TextAlign.Start
@@ -118,29 +141,39 @@ fun GenericSettingsListScreen(
                         }
                     }
                 }
+
                 is GenericSettingListItem.Switch<*> -> {
-                    this.item(key = item.keyId) {
-                        LargeSeekbarSwitch(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 20.dp),
-                            icon = item.icon.asPainterResource(),
-                            title = item.title,
-                            description = item.description,
-                            state = rememberSeekbarState(
-                                key = state,
-                                state = LargeSeekbarSwitchState.SeekbarSwitchState(
-                                    seekbarState = null,
-                                    switchState = LargeSeekbarSwitchState.Switch(
-                                        checkState = item.isChecked,
-                                        loadingState = item.isLoading
+                    if (item.isVisible) {
+                        this.item(key = item.keyId) {
+                            LargeSeekbarSwitch(
+                                modifier = Modifier
+                                    .zIndex(index.toFloat())
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .padding(bottom = 20.dp)
+                                    .padding(horizontal = 20.dp),
+                                icon = item.icon?.asPainterResource(),
+                                title = item.title,
+                                description = item.description,
+                                enabled = true,
+                                size = LargeSwitchSize(
+                                    minHeight = 60.dp
+                                ),
+                                state = rememberSeekbarState(
+                                    key = item,
+                                    state = LargeSeekbarSwitchState.SeekbarSwitchState(
+                                        seekbarState = null,
+                                        switchState = LargeSeekbarSwitchState.Switch(
+                                            checkState = item.isChecked,
+                                            loadingState = item.isLoading
+                                        )
                                     )
-                                )
-                            ).value,
-                            onStateChange = {
-                                onEvent(GenericSettingsScreenUiEvent.ToggleSwitch(switch = item))
-                            }
-                        )
+                                ).value,
+                                onStateChange = {
+                                    onEvent(GenericSettingsScreenUiEvent.ToggleSwitch(switch = item))
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -175,6 +208,7 @@ fun GenericSettingsOptions(
                 batteryImpact = state.batteryImpact,
                 highBatteryImpact = state.highBatteryImpact,
                 isSelected = state.isSelected,
+                isLoading = state.isLoading,
                 isPremiumFeatureEnabled = state.isPremiumFeatureEnabled,
                 onClick = { onOptionSelected(state) }
             )
@@ -190,6 +224,7 @@ fun GenericSettingsOptionItem(
     batteryImpact: String?,
     highBatteryImpact: Boolean,
     isSelected: Boolean,
+    isLoading: Boolean,
     isPremiumFeatureEnabled: Boolean,
     onClick: () -> Unit
 ) {
@@ -206,31 +241,39 @@ fun GenericSettingsOptionItem(
             .padding(vertical = 12.dp, horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isSelected) {
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(24.dp)
-                    .background(
-                        MaterialTheme.colors.onPrimary,
-                        shape = CircleShape
-                    )
-                    .padding(1.dp),
-                painter = CoreAppIcons.CheckCircle.asPainterResource(),
-                contentDescription = null,
-                tint = MaterialTheme.colors.primary
-            )
-        } else {
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(24.dp)
-                    .background(backgroundColor, shape = CircleShape)
-                    .padding(2.dp),
-                painter = CoreAppIcons.RadioButtonUnchecked.asPainterResource(),
-                contentDescription = null,
-                tint = contentColor.copy(alpha = ContentAlpha.disabled)
-            )
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+        ) {
+            androidx.compose.animation.AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = isLoading,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                CircularProgressIndicator(
+                    color = contentColor,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(2.dp)
+                )
+            }
+            androidx.compose.animation.AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = !isLoading,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                CheckButtonIcon(
+                    modifier = Modifier.fillMaxSize(),
+                    isChecked = isSelected,
+                    backgroundCheckedColor = MaterialTheme.colors.onPrimary,
+                    contentCheckedColor = MaterialTheme.colors.primary,
+                    backgroundUncheckedColor = backgroundColor,
+                    contentUncheckedColor = contentColor.copy(alpha = ContentAlpha.disabled)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(8.dp))

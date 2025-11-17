@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +35,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -76,13 +78,14 @@ fun BaseOnboardingScreen(
         onNext = onNext,
         onSkip = onSkip
     ) {
-        BaseOnboardingContent(
+        BaseOnboardingScrollableContent(
             order = order,
             title = title,
             info = info,
             contentSizeRatio = contentSizeRatio,
             minHeaderSize = minHeaderSize,
             paddingValues = it,
+            innerPaddingValues = remember { PaddingValues() },
             headerContent = headerContent
         )
     }
@@ -93,22 +96,26 @@ fun BaseOnboardingScreen(
     modifier: Modifier = Modifier,
     buttonText: String = stringResource(MR.strings.button_next),
     skipButtonText: String = stringResource(MR.strings.button_skip),
-    onNext: () -> Unit,
+    onNext: (() -> Unit)?,
     onSkip: (() -> Unit)?,
     content: @Composable (PaddingValues) -> Unit
 ) {
     BaseOnboardingScreen(
         modifier = modifier,
-        nextButton = @Composable {
-            FilledButton(
-                modifier = Modifier,
-                style = ButtonStyle.BIG,
-                state = AppButtonState.CONTENT,
-                icon = null,
-                onClick = onNext
-            ) {
-                Text(text = buttonText)
+        nextButton = if (onNext != null) {
+            @Composable {
+                FilledButton(
+                    modifier = Modifier,
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.CONTENT,
+                    icon = null,
+                    onClick = onNext
+                ) {
+                    Text(text = buttonText)
+                }
             }
+        } else {
+            null
         },
         skipButton = if (onSkip != null) {
             @Composable {
@@ -158,7 +165,7 @@ fun BaseOnboardingScreen(
 }
 
 @Composable
-fun BaseOnboardingContent(
+fun BaseOnboardingScrollableContent(
     modifier: Modifier = Modifier,
     order: Int,
     title: String,
@@ -166,6 +173,7 @@ fun BaseOnboardingContent(
     contentSizeRatio: Float,
     minHeaderSize: Dp,
     paddingValues: PaddingValues,
+    innerPaddingValues: PaddingValues,
     headerContent: @Composable () -> Unit
 ) {
     BoxWithConstraints(
@@ -176,64 +184,91 @@ fun BaseOnboardingContent(
         Column(
             Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(innerPaddingValues),
             verticalArrangement = Arrangement.Top
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .conditional(minHeaderSize != Dp.Unspecified) {
-                        defaultMinSize(minHeight = minHeaderSize)
-                            .height(this@BoxWithConstraints.minHeight * (1f - contentSizeRatio))
-                    }
+            BaseOnboardingContent(
+                modifier = Modifier,
+                order = order,
+                title = title,
+                info = info,
+                contentSizeRatio = contentSizeRatio,
+                minHeaderSize = minHeaderSize,
+                containerHeight = this@BoxWithConstraints.minHeight,
+                headerContent = headerContent
+            )
+        }
+    }
+}
+
+@Composable
+fun ColumnScope.BaseOnboardingContent(
+    modifier: Modifier = Modifier,
+    order: Int,
+    title: String,
+    info: String?,
+    contentSizeRatio: Float,
+    containerHeight: Dp,
+    minHeaderSize: Dp,
+    headerContent: @Composable () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .conditional(minHeaderSize != Dp.Unspecified) {
+                defaultMinSize(minHeight = minHeaderSize)
+                    .height(containerHeight * (1f - contentSizeRatio))
+            }
+    ) {
+        headerContent()
+    }
+
+    Spacer(modifier.weight(1f))
+
+    if (contentSizeRatio > 0f) {
+        Column(
+            modifier = Modifier
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            AnimatedContent(
+                targetState = order,
+                label = "animated title",
+                transitionSpec = onboardingContentTransitionSpec()
             ) {
-                headerContent()
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = title,
+                    style = MaterialTheme.typography.h5,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
             }
 
-            Spacer(modifier.weight(1f))
-
-            Column(
-                modifier = Modifier
-                    .padding(20.dp)
-                ,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+            if (info != null) {
+                Spacer(modifier = Modifier.height(8.dp))
                 AnimatedContent(
                     targetState = order,
-                    label = "animated title",
+                    label = "animated info",
                     transitionSpec = onboardingContentTransitionSpec()
                 ) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = title,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Bold,
+                        text = info.annotatedBoldCompose(),
+                        style = MaterialTheme.typography.subtitle1,
                         textAlign = TextAlign.Center
                     )
                 }
-
-                if (info != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    AnimatedContent(
-                        targetState = order,
-                        label = "animated info",
-                        transitionSpec = onboardingContentTransitionSpec()
-                    ) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = info.annotatedBoldCompose(),
-                            style = MaterialTheme.typography.subtitle1,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
             }
-
-            Spacer(modifier.weight(1f))
         }
+
     }
+
+    Spacer(modifier.weight(1f))
 }
+
 
 @Composable
 fun BaseOnboardingHeaderContent(

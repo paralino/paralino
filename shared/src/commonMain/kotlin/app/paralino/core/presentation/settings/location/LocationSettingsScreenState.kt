@@ -9,6 +9,7 @@ data class LocationSettingsScreenState(
     val highPerformanceSettings: LocationSettingsHighPerformance,
     val batterySaverSettings: LocationSettingsBatterySaver,
     val balancedSettings: LocationSettingsBalanced,
+    val historySettings: LocationSettingsHistory,
     val alertDialog: MainAlertDialog?
 )
 
@@ -37,6 +38,14 @@ data class LocationSettingsBalanced(
 ) {
     val selectedItem: GroupOptionItem = items.firstOrNull { it.isSelected }
         ?: items.firstOrNull() { it.id == LocationPerformanceSettingsType.Balanced.default.key }
+        ?: items.first()
+}
+
+data class LocationSettingsHistory(
+    val items: List<GroupOptionItem>,
+) {
+    val selectedItem: GroupOptionItem = items.firstOrNull { it.isSelected }
+        ?: items.firstOrNull() { it.id == LocationPerformanceSettingsType.History.default.key }
         ?: items.first()
 }
 

@@ -1,4 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.gradle.kotlin.dsl.aboutLibraries
 import org.jetbrains.kotlin.daemon.common.trimQuotes
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import java.io.FileInputStream
@@ -82,11 +83,16 @@ kotlin {
             implementation(libs.network.ktor.client.darwin)
         }
     }
+
+    compilerOptions {
+        optIn.add("kotlin.RequiresOptIn")
+        optIn.add("kotlin.time.ExperimentalTime")
+    }
 }
 
 android {
-    namespace = "app.paralino"
-    compileSdk = 35
+    namespace = "app.paralino.android"
+    compileSdk = 36
 
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/moko-resources")
@@ -136,7 +142,7 @@ buildkonfig {
 }
 
 aboutLibraries {
-    configPath = "config"
-    additionalLicenses = arrayOf("svg_backgrounds")
-    prettyPrint = true
+    collect.configPath = file("../config")
+    license.additionalLicenses = setOf("svg_backgrounds")
+    export.prettyPrint = true
 }

@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.map.MapMarkerStyle
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.map.MapPinType
@@ -69,6 +70,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun PlacesEmptyState(
     modifier: Modifier = Modifier,
+    isPersonalSpace: Boolean,
     permissionError: ConditionErrorType.PermissionNotifications?,
     onPostSampleNotification: (String) -> Unit,
     onErrorItemClick: (ConditionErrorType) -> Unit
@@ -86,18 +88,26 @@ fun PlacesEmptyState(
         }
 
         PlaceEmptyStateNotificationItems(
+            isPersonalSpace = isPersonalSpace,
             notificationVisibility = notificationVisibility,
             permissionError = permissionError,
             onPostSampleNotification = onPostSampleNotification,
             onErrorItemClick = onErrorItemClick
         )
 
-        PlaceEmptyScreenMapContent(modifier = Modifier.padding(horizontal = 20.dp))
+        PlaceEmptyScreenMapContent(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            isPersonalSpace = isPersonalSpace
+        )
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 modifier = Modifier.padding(20.dp),
-                text = stringResource(MR.strings.places_list_screen_empty_info).annotatedBoldCompose(),
+                text = if (isPersonalSpace) {
+                    stringResource(MR.strings.places_list_screen_empty_info_personal).annotatedBoldCompose()
+                } else {
+                    stringResource(MR.strings.places_list_screen_empty_info_group).annotatedBoldCompose()
+                },
                 style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Medium),
                 textAlign = TextAlign.Center
             )
@@ -107,7 +117,12 @@ fun PlacesEmptyState(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .padding(vertical = 20.dp),
-            text = stringResource(MR.strings.places_list_screen_encryption_info)
+            text = if (isPersonalSpace) {
+                stringResource(MR.strings.places_list_screen_encryption_info_personal
+                )
+            } else {
+                stringResource(MR.strings.places_list_screen_encryption_info_group)
+            }
         )
     }
 }
@@ -115,7 +130,8 @@ fun PlacesEmptyState(
 @Composable
 fun PlaceEmptyScreenMapContent(
     modifier: Modifier = Modifier,
-    mapShadowElevation: Dp = 6.dp
+    mapShadowElevation: Dp = 6.dp,
+    isPersonalSpace: Boolean
 ) {
     Box(
         modifier = modifier
@@ -138,8 +154,20 @@ fun PlaceEmptyScreenMapContent(
             modifier = Modifier.fillMaxSize()
         )
 
-        val markers = remember {
-            PlacesEmptyStateMarkers()
+        val markers = remember(isPersonalSpace) {
+            val markers = PlacesEmptyStateMarkers()
+            if (isPersonalSpace) {
+                markers.copy(
+                    peter = markers.peter.copy(
+                        image = ImageModel.emoji(Emojis.mobilePhone)
+                    ),
+                    heidi = markers.heidi.copy(
+                        image = ImageModel.emoji(Emojis.mobilePhone)
+                    )
+                )
+            } else {
+                markers
+            }
         }
 
         Box(
@@ -243,6 +271,7 @@ fun PlaceEmptyScreenMapContent(
 
 @Composable
 fun ColumnScope.PlaceEmptyStateNotificationItems(
+    isPersonalSpace: Boolean,
     notificationVisibility: Boolean,
     permissionError: ConditionErrorType.PermissionNotifications?,
     onPostSampleNotification: (String) -> Unit,
@@ -250,13 +279,21 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
 ) {
     val notificationContentEnter = remember {
         MR.strings.place_notification_enter.localizedString(
-            "Peter",
+            if (isPersonalSpace) {
+                MR.strings.places_notification_personalDevice_placeholder.localizedString()
+            } else {
+                "Peter"
+            },
             MR.strings.places_notification_demo_school.localizedString()
         )
     }
     val notificationContentExit = remember {
         MR.strings.place_notification_exit.localizedString(
-            "Heidi",
+            if (isPersonalSpace) {
+                MR.strings.places_notification_personalDevice_placeholder.localizedString()
+            } else {
+                "Heidi"
+            },
             MR.strings.places_notification_demo_home.localizedString()
         )
     }
@@ -319,7 +356,7 @@ fun ColumnScope.PlaceEmptyStateNotificationItems(
 
 data class PlacesEmptyStateMarkers(
     val peter: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "peter",
         pinType = MapPinType.MEMBER,
         markerStyle = MapMarkerStyle.PIN,
@@ -335,7 +372,7 @@ data class PlacesEmptyStateMarkers(
         shouldShowApproximateCircle = false
     ),
     val heidi: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "heidi",
         pinType = MapPinType.MEMBER,
         markerStyle = MapMarkerStyle.PIN,
@@ -351,7 +388,7 @@ data class PlacesEmptyStateMarkers(
         shouldShowApproximateCircle = false
     ),
     val home: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "home",
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -367,7 +404,7 @@ data class PlacesEmptyStateMarkers(
         shouldShowApproximateCircle = true
     ),
     val school: MapPinData = MapPinData(
-        groupId = "",
+        groupOrSpaceId = "".asGroupOrSpaceId(),
         markerId = "school",
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,

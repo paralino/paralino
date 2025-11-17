@@ -31,6 +31,7 @@ data class UserCryptoKeyRaw constructor(
     fun checkKeysAreValid(
         backedUpKey: UserCryptoKeyRaw
     ) {
+        // not checking for userKeyVersion since that is set on backend
         check(this.encryptedSymmetricKey == backedUpKey.encryptedSymmetricKey)
         check(this.encryptedPrivateKey == backedUpKey.encryptedPrivateKey)
         check(this.encryptedPublicKey == backedUpKey.encryptedPublicKey)

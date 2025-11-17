@@ -1,0 +1,236 @@
+package app.paralino.core.presentation.history
+
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
+import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
+import app.paralino.core.logg
+import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
+import app.paralino.core.presentation.common.ICoreMessageDispatcher
+import app.paralino.core.provider.Logr
+import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.listOfDatesUntil
+import app.paralino.core.utils.extensions.nowUTC
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+
+class LocationHistoryDataFetchController(
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val userGroupRepo: UserGroupLocalDataSource,
+    private val getLocationHistory: GetLocationHistoryUseCase,
+    private val refreshLocationHistory: RefreshLocationHistoryUseCase,
+    private val appPrefs: AppPrefs,
+    private val remoteConfig: RemoteConfigRepository,
+    private val historyDateMapper: LocationHistoryDateMapper,
+    private val personalStateMapper: LocationHistoryPersonalStateMapper,
+    private val groupStateMapper: LocationHistoryGroupStateMapper,
+    private val _uiState: MutableStateFlow<LocationHistoryScreenState>,
+    private val messageDispatcher: ICoreMessageDispatcher,
+    private val coroutineScope: CoroutineScope
+) {
+    fun loadHistory(
+        groupId: String,
+        memberUserId: String,
+        preselectedDeviceId: String?
+    ): Flow<Unit> {
+        return flow {
+            val selectedDate = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val isPersonalHistory = groupId == UserGroup.groupPersonalDevicesId
+            val isCurrentUser = memberUserId.isBlank() || memberUserId == appPrefs.userId
+
+            val newState = _uiState.value.copy(
+                groupOrSpaceId = groupId.asGroupOrSpaceId(),
+                memberUserId = memberUserId.takeIf { it.isNotBlank() } ?: appPrefs.userId,
+                preselectedDeviceId = preselectedDeviceId,
+                isPersonalHistory = isPersonalHistory,
+                isCurrentUser = isCurrentUser,
+                isGroupOwner = false,
+                selectedDate = selectedDate,
+                locations = emptyList(),
+                devices = emptyList(),
+                isDeletingEntry = false,
+                deletionRangeStartIndex = null,
+                isLoadingLocations = true,
+                isLoadingData = true,
+                stats = null,
+                daySelectorState = historyDateMapper.createDateSelector(
+                    groupId = groupId,
+                    selectedDate = selectedDate,
+                    dateRangeDays = 1,
+                    daysInLoading = listOf(selectedDate)
+                ),
+                selectedLocationId = null,
+            )
+
+            _uiState.value = newState
+
+            emitAll(
+                reload(
+                    startDate = newState.startDate,
+                    endDate = newState.endDate,
+                    forceReload = false
+                )
+            )
+        }
+    }
+
+    fun reload(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        forceReload: Boolean
+    ): Flow<Unit> {
+        val groupId = _uiState.value.groupOrSpaceId
+        val memberUserId = _uiState.value.memberUserId
+
+        val job = if (groupId.isPersonalSpace) {
+            fetchPersonalLocationHistory(
+                startDate = startDate,
+                endDate = endDate
+            )
+        } else {
+            fetchGroupLocationHistory(
+                groupId = groupId.id,
+                memberUserId = memberUserId,
+                startDate = startDate,
+                endDate = endDate
+            )
+        }
+
+        coroutineScope.launch {
+            try {
+                refreshLocationHistory.refreshLocationHistory(
+                    groupId = groupId,
+                    memberUserId = memberUserId,
+                    locationId = null,
+                    startDate = startDate,
+                    endDate = endDate,
+                    requestCacheDuration = if (forceReload) 0.seconds else 10.minutes
+                )
+            } catch (e: Exception) {
+                logg.e(message = "Error refreshing location history: ${e.message}", t = e)
+                messageDispatcher.showSnackbar(text = e.errorString())
+            }
+
+            _uiState.update {
+                val daysInLoading =
+                    it.daySelectorState.daysInLoading - startDate.listOfDatesUntil(endDate)
+                it.copy(
+                    daySelectorState = it.daySelectorState.copy(
+                        daysInLoading = daysInLoading
+                    )
+                )
+            }
+        }
+
+        return job
+    }
+
+    private fun fetchPersonalLocationHistory(startDate: LocalDate, endDate: LocalDate): Flow<Unit> {
+        return personalSpaceRepo.personalSpaceState
+            .flatMapLatest { space ->
+
+                // if history is not enabled, allow reading up 2 days of cached history
+                val isHistoryEnabled = space.data?.plan?.isPersonalHistoryEnabled == true
+                val endDate = if (isHistoryEnabled) {
+                    endDate
+                } else {
+                    // today
+                    nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                }
+
+                val startDate = if (isHistoryEnabled) {
+                    startDate
+                } else {
+                    endDate.minus(DatePeriod(days = 1))
+                }
+
+                getLocationHistory.getLocationHistory(
+                    groupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                    memberUserId = appPrefs.userId,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+                    .map { history ->
+                        personalStateMapper.mapPersonalHistory(
+                            space = space.data,
+                            history = history,
+                            startDate = startDate,
+                            endDate = endDate
+                        )
+                    }
+            }
+            .catch {
+                Logr.d("Error loading history", it)
+            }
+            .flowOn(Dispatchers.IO)
+    }
+
+    private fun fetchGroupLocationHistory(
+        groupId: String,
+        memberUserId: String,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): Flow<Unit> {
+        return userGroupRepo.getMemberWithLocationsAndGroup(
+            groupId = groupId,
+            memberUserId = memberUserId
+        )
+            .flatMapLatest { memberData ->
+                // if history is not enabled, allow reading up 2 days of cached history
+                val isHistoryEnabled =
+                    memberData?.group?.planConfig(remoteConfig.getConfigOnce())?.isPersonalHistoryEnabled == true
+                val endDate = if (isHistoryEnabled) {
+                    endDate
+                } else {
+                    // today
+                    nowUTC().toLocalDateTime(TimeZone.currentSystemDefault()).date
+                }
+
+                val startDate = if (isHistoryEnabled) {
+                    startDate
+                } else {
+                    endDate.minus(DatePeriod(days = 1))
+                }
+
+                getLocationHistory.getLocationHistory(
+                    groupOrSpaceId = groupId.asGroupOrSpaceId(),
+                    memberUserId = memberUserId,
+                    startDate = startDate,
+                    endDate = endDate
+                ).map { history ->
+                    groupStateMapper.mapGroupHistory(
+                        memberData = memberData,
+                        history = history,
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                }
+            }
+            .catch {
+                Logr.d("Error loading history", it)
+            }
+            .flowOn(Dispatchers.IO)
+    }
+}

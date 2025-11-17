@@ -1,5 +1,6 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.jetbrains.kotlin.daemon.common.trimQuotes
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.Properties
@@ -18,7 +19,7 @@ plugins {
 
 android {
     namespace = "app.paralino.android"
-    compileSdk = 35
+    compileSdk = 36
 
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
@@ -46,7 +47,7 @@ android {
     defaultConfig {
         applicationId = "app.paralino.android"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -129,8 +130,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 60
-            versionName = "1.2.2"
+            versionCode = 67
+            versionName = "2.0.0"
 
             val fcmConfigFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
             if (!fcmConfigFile.exists()) {
@@ -146,8 +147,8 @@ android {
         }
         create("dev") {
             dimension = "version"
-            versionCode = 54
-            versionName = "1.1.1"
+            versionCode = 62
+            versionName = "2.1.0"
             versionNameSuffix = "-dev"
             applicationIdSuffix = ".dev"
         }
@@ -169,9 +170,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 
     buildFeatures {
         viewBinding = true
@@ -183,11 +181,45 @@ android {
         // from coroutines
         resources.excludes += "DebugProbesKt.bin"
     }
+    androidResources {
+        generateLocaleConfig = true
+        localeFilters.addAll(
+            listOf(
+                "en",  // base/English
+                "bs",  // Bosnian
+                "ca",  // Catalan
+                "cs",  // Czech
+                "da",  // Danish
+                "de",  // German
+                "el",  // Greek
+                "es",  // Spanish
+                "fi",  // Finnish
+                "fr",  // French
+                "hr",  // Croatian
+                "hu",  // Hungarian
+                "it",  // Italian
+                "nb",  // Norwegian Bokmål
+                "nl",  // Dutch
+                "pl",  // Polish
+                "pt",  // Portuguese
+                "ro",  // Romanian
+                "ru",  // Russian
+                "sk",  // Slovak
+                "sl",  // Slovenian
+                "sr",  // Serbian
+                "sv",  // Swedish
+                "tr",  // Turkish
+                "uk"   // Ukrainian
+            )
+        )
+    }
 }
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+        optIn.add("kotlin.RequiresOptIn")
+        optIn.add("kotlin.time.ExperimentalTime")
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

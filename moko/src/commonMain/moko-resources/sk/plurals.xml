@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minúta</item>
+        <item quantity="few">%d minúty</item>
+        <item quantity="other">%d minút</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d hodina</item>
+        <item quantity="few">%d hodiny</item>
+        <item quantity="other">%d hodín</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d deň</item>
+        <item quantity="few">%d dni</item>
+        <item quantity="other">%d dní</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d mesiac</item>
+        <item quantity="few">%d mesiace</item>
+        <item quantity="other">%d mesiacov</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d rok</item>
+        <item quantity="few">%d roky</item>
+        <item quantity="other">%d rokov</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Zdieľanie polohy s 1 skupinou</item>
+        <item quantity="few">Zdieľanie polohy s %d skupinami</item>
+        <item quantity="other">Zdieľanie polohy s %d skupinami</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Skupina</item>
+        <item quantity="few">Skupiny</item>
+        <item quantity="other">Skupín</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Zariadenie</item>
+        <item quantity="few">Zariadenia</item>
+        <item quantity="other">Zariadení</item>
+    </plurals>
+</resources>

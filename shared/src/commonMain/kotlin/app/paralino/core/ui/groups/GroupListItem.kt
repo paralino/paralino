@@ -3,10 +3,12 @@ package app.paralino.core.ui.groups
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +30,7 @@ import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.theme.AppColors
 
 @Composable
 fun GroupListItem(
@@ -35,11 +38,13 @@ fun GroupListItem(
     data: GroupItemState,
     onEdit: () -> Unit,
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colors.surface)
+            .background(
+                color = if (data.isPersonalSpace) AppColors.accent.copy(0.1f) else MaterialTheme.colors.surface
+            )
             .run {
                 if (data.isSelected) {
                     this.border(
@@ -48,85 +53,150 @@ fun GroupListItem(
                         shape = RoundedCornerShape(16.dp)
                     )
                 } else this
-            }
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            },
     ) {
-        ImageModelImage(
-            imageModel = data.image,
+        Row(
             modifier = Modifier
-                .size(if (data.isLarge) 72.dp else 50.dp)
-                .border(
-                    0.5.dp,
-                    MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
-                    RoundedCornerShape(10.dp)
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
+                .padding(
+                    start = if (data.isSelected) 0.dp else 12.dp,
+                    end = 12.dp
                 ),
-            clipShape = RoundedCornerShape(10.dp)
-        )
-
-        Spacer(modifier = Modifier.size(16.dp))
-        Column(
-            modifier = Modifier.weight(1f)
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = data.name,
-                style = MaterialTheme.typography.h5.copy(fontSize = if (data.isLarge) 20.sp else 16.sp),
+            if (data.isSelected) {
+                Icon(
+                    painter = CoreAppIcons.Check.asPainterResource(),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier
+                        .padding(end = 2.dp)
+                        .size(width = 16.dp, height = 20.dp)
+                        .clip(RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp))
+                        .background(MaterialTheme.colors.primary)
+                        .padding(1.dp)
+                )
+            }
+
+            ImageModelImage(
+                imageModel = data.image,
                 modifier = Modifier
+                    .size(if (data.isLarge) 72.dp else 50.dp)
+                    .border(
+                        width = if (data.isPersonalSpace) 2.dp else 0.5.dp,
+                        color = if (data.isPersonalSpace) {
+                            AppColors.accentDark.copy(0.3f)
+                        } else {
+                            MaterialTheme.colors.secondary.copy(
+                                alpha = ContentAlpha.disabled
+                            )
+                        },
+                        if (data.isPersonalSpace) CircleShape else RoundedCornerShape(10.dp)
+                    ),
+                useBackgroundForEmoji = false,
+                clipShape = if (data.isPersonalSpace) CircleShape else RoundedCornerShape(10.dp)
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Spacer(modifier = Modifier.size(16.dp))
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                    Icon(
-                        painter = CoreAppIcons.Group.asPainterResource(),
-                        modifier = Modifier.size(16.dp),
-                        contentDescription = null
-                    )
-                    Spacer(Modifier.size(2.dp))
-                    Text(
-                        text = "${data.userCount}",
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier
-                    )
+                Text(
+                    text = data.name,
+                    style = MaterialTheme.typography.h5.copy(
+                        fontSize = if (data.isLarge) 20.sp else 16.sp,
+                        fontWeight = if (data.isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                    ),
+                    modifier = Modifier
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (data.membersCount != null) {
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                            Icon(
+                                painter = CoreAppIcons.Group.asPainterResource(),
+                                modifier = Modifier.size(16.dp),
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "${data.membersCount}",
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                                modifier = Modifier
+                            )
+                        }
+                        Spacer(Modifier.size(10.dp))
+                    }
+
+                    if (data.devicesCount != null) {
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                            Icon(
+                                painter = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                                modifier = Modifier.size(16.dp),
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.size(2.dp))
+                            Text(
+                                text = "${data.devicesCount}",
+                                style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                                modifier = Modifier
+                            )
+                        }
+                        Spacer(Modifier.size(10.dp))
+                    }
+
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                        Icon(
+                            painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
+                            modifier = Modifier.size(16.dp),
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.size(2.dp))
+                        Text(
+                            text = "${data.placesCount}",
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier
+                        )
+                    }
                 }
-                Spacer(Modifier.size(10.dp))
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
-                    Icon(
-                        painter = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                        modifier = Modifier.size(16.dp),
-                        contentDescription = null
-                    )
-                    Spacer(Modifier.size(2.dp))
-                    Text(
-                        text = "${data.placesCount}",
-                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier
-                    )
+
+                val status = when (data.uiType) {
+                    GroupItemState.GroupUiType.OVER_LIMITS -> GroupStatusTagType.OVER_LIMITS
+                    GroupItemState.GroupUiType.UNVERIFIED -> GroupStatusTagType.UNVERIFIED
+                    GroupItemState.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
+                    GroupItemState.GroupUiType.INACTIVE -> null
                 }
+                GroupStatusTag(status)
             }
 
-            val status = when (data.uiType) {
-                GroupItemState.GroupUiType.OVER_LIMITS -> GroupStatusTagType.OVER_LIMITS
-                GroupItemState.GroupUiType.UNVERIFIED -> GroupStatusTagType.UNVERIFIED
-                GroupItemState.GroupUiType.ACTIVE -> GroupStatusTagType.SHARING_ACTIVE
-                GroupItemState.GroupUiType.INACTIVE -> null
+            if (data.canEdit) {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 2.dp, end = 12.dp)
+                        .size(height = 50.dp, width = 0.5.dp)
+                        .background(
+                            color = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
+                        )
+                )
+                Icon(
+                    painter = CoreAppIcons.Settings.asPainterResource(),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onSurface,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { onEdit() }
+                        .clip(CircleShape)
+                        .border(
+                            width = 0.5.dp,
+                            color = MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled),
+                            shape = CircleShape
+                        )
+                        .padding(8.dp)
+                )
             }
-            GroupStatusTag(status)
-        }
-
-        if (data.canEdit) {
-            Icon(
-                painter = CoreAppIcons.Settings.asPainterResource(),
-                contentDescription = null,
-                tint = MaterialTheme.colors.onPrimary,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clickable { onEdit() }
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colors.primary)
-                    .padding(10.dp)
-            )
         }
     }
 }

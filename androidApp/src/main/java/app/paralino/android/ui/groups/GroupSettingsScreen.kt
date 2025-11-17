@@ -61,6 +61,11 @@ fun GroupSettingsScreen(
                         RawPresentationDataType.GroupPresentation(vm.groupId)
                     )
                 )
+            },
+            openLocationHistorySettings = {
+                appState.navController.navigate(
+                    AppScreen.MainHome.LocationHistoryDelete.route(groupId = vm.groupId)
+                )
             }
         )
     }

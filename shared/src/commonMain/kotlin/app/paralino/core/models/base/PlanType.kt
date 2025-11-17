@@ -126,71 +126,27 @@ data class PlanConfig(
     val groupsLimit: Int,
     val membersLimit: Int,
     val devicesLimit: Int,
-    val placesLimit: Int,
-    val historyDaysLimit: Int,
-    val paralinoIdsLimit: Int,
     val personalDevicesLimit: Int,
+    val placesLimit: Int,
+    val personalPlacesLimit: Int,
+    val historyDaysLimit: Int,
+    val personalHistoryDaysLimit: Int,
+    val paralinoIdsLimit: Int,
     val isActive: Boolean = true,
     val productIds: List<String> = emptyList(),
     val productPlanIds: List<String> = emptyList(),
 ) {
 
     val planTypeEnum: PlanType = PlanType.fromKey(key = planType)
+    val hasUnlimitedPersonalHistory: Boolean = personalHistoryDaysLimit < 0
+    val hasUnlimitedGroupHistory: Boolean = historyDaysLimit < 0
+    val isPersonalHistoryEnabled: Boolean = personalHistoryDaysLimit != 0
+    val isGroupHistoryEnabled: Boolean = historyDaysLimit != 0
 
     val adjustedPlanName: String = when (planTypeEnum) {
         PlanType.SILVER -> MR.strings.paywall_silver_plan_name.localizedString()
         PlanType.FREE -> MR.strings.paywall_free_plan_name.localizedString()
         else -> planName
-    }
-
-    fun planBenefits(): List<PlanBenefit> {
-        val planConfig = this
-        return buildList {
-            add(
-                PlanBenefit(
-                    content = MR.plurals.plan_benefit_group.localizedString(
-                        planConfig.groupsLimit,
-                        planConfig.groupsLimit
-                    ),
-                    isHighlighted = true
-                )
-            )
-            add(
-                PlanBenefit(
-                    content = MR.plurals.plan_benefit_members.localizedString(
-                        planConfig.membersLimit,
-                        planConfig.membersLimit
-                    ),
-                    isHighlighted = true
-                )
-            )
-            add(
-                PlanBenefit(
-                    content = MR.plurals.plan_benefit_places.localizedString(
-                        planConfig.placesLimit,
-                        planConfig.placesLimit
-                    ),
-                    isHighlighted = true,
-                    separateLine = true
-                )
-            )
-            if (planTypeEnum.isPremium) {
-                add(
-                    PlanBenefit(
-                        content = "**${MR.strings.plans_benefit_location_requests.localizedString()}**",
-                        isHighlighted = true,
-                        separateLine = true
-                    )
-                )
-            }
-            add(
-                PlanBenefit(
-                    content = MR.strings.plans_benefit_sharing.localizedString(),
-                    isHighlighted = true,
-                    separateLine = true
-                )
-            )
-        }
     }
 
     companion object {
@@ -200,19 +156,15 @@ data class PlanConfig(
             groupsLimit = 1,
             membersLimit = 2,
             devicesLimit = 1,
-            placesLimit = 2,
-            historyDaysLimit = 2,
-            paralinoIdsLimit = 1,
             personalDevicesLimit = 1,
+            placesLimit = 2,
+            personalPlacesLimit = 1,
+            historyDaysLimit = 0,
+            personalHistoryDaysLimit = 0,
+            paralinoIdsLimit = 1,
             isActive = true,
             productIds = listOf("free"),
             productPlanIds = listOf("free")
         )
     }
-
-    data class PlanBenefit(
-        val content: String,
-        val isHighlighted: Boolean,
-        val separateLine: Boolean = false
-    )
 }

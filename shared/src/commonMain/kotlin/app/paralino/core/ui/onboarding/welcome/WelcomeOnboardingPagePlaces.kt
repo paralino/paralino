@@ -43,7 +43,8 @@ fun WelcomeOnboardingPagePlaces(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 20.dp, top = 12.dp),
-            mapShadowElevation = 8.dp
+            mapShadowElevation = 8.dp,
+            isPersonalSpace = false
         )
         Column(
             modifier = Modifier
@@ -72,6 +73,7 @@ fun WelcomeOnboardingPagePlaces(
             verticalArrangement = Arrangement.Center
         ) {
             PlaceEmptyStateNotificationItems(
+                isPersonalSpace = false,
                 notificationVisibility = notificationVisibility,
                 permissionError = null,
                 onPostSampleNotification = {},

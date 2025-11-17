@@ -5,6 +5,7 @@ import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
@@ -20,6 +21,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
@@ -58,8 +60,10 @@ class SettingsViewModel(
     private val personalCodeRepo: PersonalCodesRepository,
     private val deviceApiProvider: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
+    private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs,
+    private val appConfig: AppConfigRepository,
     private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
@@ -86,6 +90,10 @@ class SettingsViewModel(
                 try {
                     personalCodeRepo.refreshPersonalCodesAndRestockKeys()
                 } catch (_: Exception) { }
+            }
+            try {
+                premiumStatusManager.adjustDeviceSettingsForPlan()
+            } catch (e: Exception) {
             }
         }
 
@@ -122,7 +130,7 @@ class SettingsViewModel(
                                 email = userState.data.email,
                                 personalCode = personalCode?.formattedCode,
                                 isGuestUser = userState.data.isGuestUser,
-                                errorItem = if (userState.data.needsEmailVerification)
+                                errorItem = if (userState.data.canVerifyEmail)
                                     ConditionErrorType.EmailVerification(userState.data.email)
                                 else null
                             ),
@@ -131,8 +139,9 @@ class SettingsViewModel(
                             deleteAccountState = null,
                             versionName = deviceApiProvider.appVersionText,
                             boostTime = null,
-                            placeActivityThrottleEnabled = appPrefs.placeActivityThrottle,
-                            userPlan = userPlans.highestValidPlanConfig
+                            userPlan = userPlans.highestValidPlanConfig,
+                            canBoostLocation = appConfig.isInAppDevMode,
+                            canAccessDebugScreen = appConfig.isInAppDevMode
                         )
                     )
                 } else {
@@ -218,17 +227,6 @@ class SettingsViewModel(
         }
     }
 
-    private fun togglePlaceActivityThrottle() {
-        _accountState.update {
-            it.mapSuccess {
-                val newValue = !it.placeActivityThrottleEnabled
-                logg.v("Toggle place activity throttle: $newValue")
-                appPrefs.placeActivityThrottle = newValue
-                it.copy(placeActivityThrottleEnabled = newValue)
-            }
-        }
-    }
-
     private fun onShowDialog(dialog: MainAlertDialog?) {
         _accountState.update { it.mapSuccess { it.copy(alertDialog = dialog) } }
     }
@@ -238,7 +236,6 @@ class SettingsViewModel(
             AccountScreenUiEvent.DeleteAccount -> onShowDialog(MainAlertDialog.DeleteAccount)
             AccountScreenUiEvent.Logout -> onShowDialog(MainAlertDialog.Logout)
             AccountScreenUiEvent.ToggleLocationBoost -> toggleBoost()
-            AccountScreenUiEvent.TogglePlaceActivityThrottle -> togglePlaceActivityThrottle()
             is AccountScreenUiEvent.Copy -> copyToClipboard(event.content)
             AccountScreenUiEvent.SendEmailVerification -> {
                 _accountState.update {
@@ -308,7 +305,10 @@ class SettingsViewModel(
             it.mapSuccess {
                 it.copy(
                     boostTime = appPrefs.trackingBoostEndTime?.takeIf { it > nowUTC() }?.let {
-                        valueFormatter.formatTimeOnly(it.toLocalDateTime(TimeZone.UTC))
+                        valueFormatter.formatTimeOnly(
+                            timeUTC = it.toLocalDateTime(TimeZone.UTC),
+                            showSeconds = false
+                        )
                     }
                 )
             }

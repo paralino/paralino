@@ -10,9 +10,10 @@ import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
@@ -20,6 +21,7 @@ class PlaceActivityUploadEngine(
     private val remote: PlacesRemoteSource,
     private val local: PlacesLocalDataSource,
     private val groupLocal: UserGroupLocalDataSource,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val remoteConfig: RemoteConfigRepository,
     private val database: MainDatabaseHelper,
     private val scopeProvider: ICoroutineScopeProvider
@@ -54,7 +56,7 @@ class PlaceActivityUploadEngine(
                 PendingPlaceEventsEntity(
                     id = 0,
                     placeId = place.id,
-                    groupId = place.groupId,
+                    groupId = place.groupOrSpaceId.id,
                     isEnter = isEnter,
                     notifyTimeMillis = timeMillis
                 )
@@ -134,12 +136,18 @@ class PlaceActivityUploadEngine(
         timeMillis: Long
     ) {
         try {
-            val group = groupLocal.allGroupsState.value.data?.firstOrNull {
-                it.group.id == place.groupId
-            }
-            if (group?.arePlacesOverLimits(config = remoteConfig.getConfigOnce()) == true) {
-                logg.tag(executionKey).v("Group places are over limit, skip alert")
-                return
+            if (place.isInPersonalSpace) {
+                if (personalSpaceRepo.personalSpaceState.value.data?.arePlacesOverLimits() == true) {
+                    return
+                }
+            } else {
+                val group = groupLocal.allGroupsState.value.data?.firstOrNull {
+                    it.group.id == place.groupOrSpaceId.id
+                }
+                if (group?.arePlacesOverLimits(config = remoteConfig.getConfigOnce()) == true) {
+                    logg.tag(executionKey).v("Group places are over limit, skip alert")
+                    return
+                }
             }
         } catch (e: Exception) {
         }

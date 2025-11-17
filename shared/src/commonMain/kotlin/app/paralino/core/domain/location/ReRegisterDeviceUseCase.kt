@@ -4,18 +4,20 @@ import app.paralino.core.MR
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.localizedString
+import app.paralino.core.utils.exceptions.DeviceSafetySignatureCorrupted
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.time.Duration.Companion.minutes
 
 abstract class IReRegisterDeviceUseCase {
     abstract suspend fun tryRegisterDeviceAgain(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         contract: LocationSharingContract,
     ): Boolean
@@ -25,7 +27,7 @@ abstract class IReRegisterDeviceUseCase {
 
 class NoOpReRegisterDeviceUseCase: IReRegisterDeviceUseCase() {
     override suspend fun tryRegisterDeviceAgain(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         contract: LocationSharingContract
     ): Boolean {
@@ -40,11 +42,11 @@ class ReRegisterDeviceUseCase(
     private val infoNotificationPresenter: IInfoMessagesNotificationPresenter,
 ): IReRegisterDeviceUseCase() {
 
-    private val deviceRegisterTimeMillis = MutableStateFlow(mapOf<String, Long>())
-    private var failedRegistrationAttempts = MutableStateFlow(mapOf<String, Int>())
+    private val deviceRegisterTimeMillis = MutableStateFlow(mapOf<GroupOrSpaceId, Long>())
+    private var failedRegistrationAttempts = MutableStateFlow(mapOf<GroupOrSpaceId, Int>())
 
     override suspend fun tryRegisterDeviceAgain(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         contract: LocationSharingContract,
     ): Boolean {
@@ -67,7 +69,8 @@ class ReRegisterDeviceUseCase(
                     groupId = groupId,
                     deviceName = null,
                     contract = contract,
-                    notifyOthers = false
+                    notifyOthers = false,
+                    isRetry = true
                 )
                 logg.v("location_service", "Device registered, retry payload")
                 return true
@@ -104,6 +107,17 @@ class ReRegisterDeviceUseCase(
                     timeInfo = null
                 )
             )
+
+            if (e is DeviceSafetySignatureCorrupted) {
+                failedRegistrationAttempts.update {
+                    it.toMutableMap().apply { set(groupId, 0) }
+                }
+                deviceRegisterTimeMillis.update {
+                    it.toMutableMap().apply { set(groupId, 0) }
+                }
+                throw e
+            }
+
             return false
         }
     }

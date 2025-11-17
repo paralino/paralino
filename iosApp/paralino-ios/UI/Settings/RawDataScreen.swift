@@ -20,6 +20,7 @@ struct RawDataScreen: View {
                     vm: appState.vm
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.raw_data_screen_title.localizedString())
         }

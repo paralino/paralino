@@ -1,7 +1,7 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.data
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
@@ -9,6 +9,7 @@ import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.Job
@@ -26,6 +27,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class ActiveSharingEngine(
     private val deviceApiProvider: IDeviceApiProvider,
@@ -33,9 +35,10 @@ class ActiveSharingEngine(
     private val locationSharingManager: LocationSharingManager,
     private val geofenceRegistrationMonitor: GeofenceRegistrationMonitor,
     private val scopeProvider: ICoroutineScopeProvider,
-    private val locationRepo: LocationUploadEngine,
+    private val locationUploadEngine: LocationUploadEngine,
+    private val locationHistoryUploadEngine: ILocationHistoryUploadEngine,
     private val locationCache: LocationCacheRepository,
-    private val appBuildConfig: AppBuildConfig
+    private val appConfig: AppConfigRepository
 ): BaseRepository() {
 
     private var activePingJob: Job? = null
@@ -46,7 +49,7 @@ class ActiveSharingEngine(
         deviceStatusJob?.cancel()
         sharingStatusJob?.cancel()
 
-        when (appBuildConfig.appHost) {
+        when (appConfig.appHost) {
             AppHost.MAIN_APP -> {
                 deviceStatusJob = combine(
                     deviceApiProvider.deviceStatus,
@@ -70,12 +73,13 @@ class ActiveSharingEngine(
                         } else {
                             logg.v("location_service", "Cancel periodic location status update")
                             activePingJob?.cancel()
+                            locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 0.seconds)
                         }
                     }
                     .launchIn(scopeProvider.defaultIOScope)
 
                 geofenceRegistrationMonitor.startGeofenceRegistration(reRegisterPeriodically = true)
-                locationRepo.startLocationUploadEngine()
+                locationUploadEngine.startLocationUploadEngine()
             }
 
             AppHost.IOS_NOTIFICATION_EXTENSION -> {
@@ -121,7 +125,7 @@ class ActiveSharingEngine(
     private fun updateStatus() {
         scopeProvider.userSessionIOScope.launch {
             try {
-                locationRepo.updateDeviceStatusOnly()
+                locationUploadEngine.updateDeviceStatusOnly()
             } catch (e: Exception) {
                 logg.w("Error updating device status: ${e.message}")
             }

@@ -95,7 +95,7 @@ class MapAnnotatedItem: MKPointAnnotation, ObservableObject, Identifiable {
 
 struct MapPin_Previews: PreviewProvider {
     static let data = MapPinData(
-        groupId: "",
+        groupOrSpaceId: GroupOrSpaceIdHelper.shared.wrap(id: ""),
         markerId: "",
         pinType: MapPinType.member,
         markerStyle: MapMarkerStyle.pin,

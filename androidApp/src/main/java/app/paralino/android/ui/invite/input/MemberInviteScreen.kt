@@ -53,7 +53,7 @@ fun MemberInviteScreen(
                 appState.uiScope.launch { pickerState.show(it) }
             },
             onMemberAdded = {
-                if (isOnboarding) {
+                if (isOnboarding && groupId != null) {
                     appState.navController.navigate(
                         AppScreen.MainHome.PlacesList.route(
                             groupId = groupId, isOnboarding = isOnboarding
@@ -64,11 +64,13 @@ fun MemberInviteScreen(
                 }
             },
             onSkipOnboarding = {
-                appState.navController.navigate(
-                    AppScreen.MainHome.PlacesList.route(
-                        groupId = groupId, isOnboarding = isOnboarding
+                if (groupId != null) {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.PlacesList.route(
+                            groupId = groupId, isOnboarding = isOnboarding
+                        )
                     )
-                )
+                }
             },
             openPaywall = {
                 appState.navController.navigate(

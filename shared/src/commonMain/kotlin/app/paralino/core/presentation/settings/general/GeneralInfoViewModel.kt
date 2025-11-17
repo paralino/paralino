@@ -15,10 +15,12 @@ class GeneralInfoViewModel(
     private val _uiState = MutableStateFlow(
         GeneralInfoScreenState(
             isErrorReportingEnabled = appPrefs.errorReporting,
-            appVersion = deviceApiProvider.appVersionText
+            appVersion = deviceApiProvider.appVersionText,
+            debugInputText = null
         )
     )
     val uiState: StateFlow<GeneralInfoScreenState> = _uiState
+    private var versionInfoTapCount: Int = 0
 
     fun onEvent(event: GeneralInfoScreenStateUiEvent) {
         when (event) {
@@ -32,7 +34,40 @@ class GeneralInfoViewModel(
             }
 
             GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding -> {
+                appPrefs.lastShowedAppRatingDialogAppVersion = 0
                 appPrefs.didHaveAccountWelcomeOnboarding = false
+                appPrefs.didHaveLocationHistoryIntroOnboarding = false
+                appPrefs.didHavePersonalSpaceIntroOnboarding = false
+            }
+
+            GeneralInfoScreenStateUiEvent.OnVersionInfoTap -> {
+                if (versionInfoTapCount >= 10) {
+                    if (_uiState.value.debugInputText != null) {
+                        _uiState.update { it.copy(debugInputText = null) }
+                    } else {
+                        _uiState.update { it.copy(debugInputText = "") }
+                    }
+                    versionInfoTapCount = 0
+                } else {
+                    versionInfoTapCount++
+                }
+            }
+
+            is GeneralInfoScreenStateUiEvent.OnChangeDebugText -> {
+                _uiState.update { it.copy(debugInputText = event.content) }
+            }
+
+            GeneralInfoScreenStateUiEvent.OnSubmitDebugText -> {
+                when (_uiState.value.debugInputText) {
+                    "enableDevModeNowPrettyPlease" -> {
+                        appPrefs.isDevModeEnabled = true
+                    }
+
+                    "revert" -> {
+                        appPrefs.isDevModeEnabled = false
+                    }
+                }
+                _uiState.update { it.copy(debugInputText = null) }
             }
         }
     }

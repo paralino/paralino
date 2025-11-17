@@ -39,7 +39,7 @@ struct PlacesScreen: View {
                         path.append(.home(.sharingStart(groupId: appState.groupId, isOnboarding: appState.isOnboarding)))
                     },
                     openPlaceDetailScreen: { place in
-                        path.append(.home(.placeDetail(groupId: place.groupId, placeId: place.id)))
+                        path.append(.home(.placeDetail(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: place.groupOrSpaceId)!, placeId: place.id)))
                     },
                     askNotificationPermission: {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(

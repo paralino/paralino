@@ -5,14 +5,15 @@ import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
+import app.paralino.core.domain.user.SessionRenewalHandler
 import app.paralino.core.domain.user.UserSessionMonitor
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.repo.base.RemoteConfigRepository
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.AppUpdateType
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -30,7 +31,8 @@ class CoreAppManager(
     private val deviceApiProvider: IDeviceApiProvider,
     private val userRepo: UserRepository,
     private val expiredSessionHandler: ExpiredSessionHandler,
-    private val appBuildConfig: AppBuildConfig,
+    private val sessionRenewalHandler: SessionRenewalHandler,
+    private val appConfig: AppConfigRepository,
     private val appPrefs: AppPrefs
 ) {
 
@@ -44,7 +46,7 @@ class CoreAppManager(
         appLifecycleJob?.cancel()
         appUpdateTypeJob?.cancel()
 
-        when (appBuildConfig.appHost) {
+        when (appConfig.appHost) {
             AppHost.MAIN_APP -> {
                 sessionMonitorJob = sessionMonitor.listenForSessionExpired()
                     .onEach {
@@ -122,10 +124,11 @@ class CoreAppManager(
             return
         }
 
-        logg.tag("app_state").v("App is active but was in background, refresh user and groups")
+        logg.tag("app_state").v("App is active but was in background, refresh user, groups and session")
         scopeProvider.userSessionIOScope.launch {
             userRepo.refreshUserMaybe(timeDelayMillis = 30_000)
             refreshManager.scheduleRefreshAllGroupsWithPlaces(cacheTimeMillis = 60_000)
+            sessionRenewalHandler.processSessionRenewal()
         }
     }
 

@@ -30,6 +30,7 @@ struct PersonalCodeScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_section_personal_code_title.localizedString())
         }

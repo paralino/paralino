@@ -9,6 +9,7 @@ import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.logg
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.group.UserGroupWithMembers
@@ -81,7 +82,12 @@ class MemberCryptoKeyRotation(
             return false
         }
 
-        val shouldRotate = force || integrity.shouldChange
+        val shouldRotate = integrity.shouldChange(
+            force = force,
+            // assume true to always rotate member keys, for device keys we do the actual check
+            // also, this flag is ignored for member keys anyway
+            isSharingActive = true
+        )
 
         if (!shouldRotate) {
             logg.tag("tag_crypto_key_group_member_rotation")

@@ -45,6 +45,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
@@ -67,18 +69,26 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
+private val dividerHeight = 6.dp
+private val dividerTopPadding = 8.dp
+private val dividerBottomPadding = 6.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MapHomeSheetContent(
+    modifier: Modifier = Modifier,
+    screenPaddingValues: PaddingValues,
     swipeableState: SwipeableSheetState,
-    readyState: MapHomeScreenState.Ready?,
+    readyState: MapHomeScreenState.Ready,
     members: List<GroupMemberItemState>,
     places: List<PlaceListItemData>,
+    onMapGroupInfoHeightChange: (Float) -> Unit,
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     onWholeContentClick: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+
     LaunchedEffect(swipeableState) {
         snapshotFlow { swipeableState.settledValue }
             .distinctUntilChanged()
@@ -92,7 +102,7 @@ fun MapHomeSheetContent(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -104,36 +114,51 @@ fun MapHomeSheetContent(
 
         val contentAlpha by remember {
             derivedStateOf {
-                when (swipeableState.currentValue) {
-                    BottomSheetPosition.HALF_EXPANDED -> {
-                        1f - (swipeableState.progress.takeIf { it < 0.5f } ?: 0f)
-                    }
-
-                    BottomSheetPosition.COLLAPSED -> {
-                        1f - (swipeableState.progress.takeIf { it > 0.5f && !swipeableState.isPastCollapsed }
-                            ?: 1f)
-                    }
-
-                    else -> 1f
-                }
+               1f - swipeableState
+                   .progress(from = BottomSheetPosition.HALF_EXPANDED, to = BottomSheetPosition.COLLAPSED)
+                   .times(1.2f)
+                   .coerceIn(0f, 1f)
             }
+        }
+
+        if (readyState.hasPersonalSpaceIntroBanner) {
+            PersonalSpaceFeatureIntroContent(
+                modifier = modifier,
+                onEvent = onEvent,
+            )
         }
 
         Divider(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp, bottom = animateDpAsState(4.plus((1f - contentAlpha) * 8).dp).value)
+                .padding(
+                    top = dividerTopPadding,
+                    bottom = 0.dp //animateDpAsState(dividerBottomPadding.value.minus((1f - contentAlpha) * dividerBottomPadding.value).dp).value
+                )
+//                .padding(top = 8.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(percent = 50))
                 .width(30.dp),
-            thickness = 6.dp
+            thickness = dividerHeight
         )
 
         if (readyState != null) {
             MapGroupNameAndMemberInfo(
-                modifier = Modifier.padding(start = 16.dp, end = 20.dp),
-                groupName = readyState.groupName,
-                groupImage = readyState.groupImage,
+                modifier = Modifier
+                    .padding(start = 14.dp, end = 16.dp)
+                    .onGloballyPositioned { coordinates ->
+                        val height = with(density) {
+                            screenPaddingValues.calculateBottomPadding()
+                                .plus(SwipeableSheetState.sheetBottomCollapsedPadding)
+                                .plus(dividerTopPadding.times(2) + dividerHeight.times(2))
+                                .toPx()
+                        }
+                        onMapGroupInfoHeightChange(coordinates.size.height.plus(height))
+                    },
+                isPersonalSpace = readyState.isPersonalSpace,
+                groupName = readyState.groupOrSpaceName,
+                groupImage = readyState.groupOrSpaceImage,
                 userCount = readyState.userCount,
+                placesCount = places.size,
                 activeUserCount = readyState.activeUserCount,
                 inactiveUserCount = readyState.inactiveUserCount,
                 idleUserCount = readyState.idleUserCount,
@@ -159,16 +184,29 @@ fun MapHomeSheetContent(
                     .align(Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MapBottomSheetTab(
-                    modifier = Modifier,
-                    selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
-                    focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
-                    text = MR.strings.group_details_section_members_title.localizedString(),
-                    icon = CoreAppIcons.Group.asPainterResource(),
-                    onClick = {
-                        onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
-                    }
-                )
+                if (readyState.isPersonalSpace) {
+                    MapBottomSheetTab(
+                        modifier = Modifier,
+                        selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                        focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                        text = MR.strings.group_member_devices_section_title.localizedString(),
+                        icon = CoreAppIcons.PhoneAndroid.asPainterResource(),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
+                        }
+                    )
+                } else {
+                    MapBottomSheetTab(
+                        modifier = Modifier,
+                        selected = readyState?.mapSheetSelectedContentType == MapSheetSelectedContentType.MEMBERS,
+                        focused = readyState?.mapHomeScreenFocusType?.areMembersFocused == true,
+                        text = MR.strings.group_details_section_members_title.localizedString(),
+                        icon = CoreAppIcons.Group.asPainterResource(),
+                        onClick = {
+                            onEvent(MapHomeScreenUiEvent.OnFocusOnMembersClick)
+                        }
+                    )
+                }
                 Spacer(modifier = Modifier.size(8.dp))
                 MapBottomSheetTab(
                     modifier = Modifier,
@@ -215,6 +253,7 @@ fun MapHomeSheetContent(
             when (readyState?.mapSheetSelectedContentType) {
                 MapSheetSelectedContentType.PLACES -> {
                     placesList(
+                        isPersonalSpace = readyState.isPersonalSpace,
                         places = places,
                         onCreatePlace = {
                             onEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen)
@@ -256,13 +295,14 @@ private fun LazyListScope.membersList(
         GroupMember(
             state = itemState,
             collapseOnActionClick = true,
-            forceExpandAction = false,
+            forceExpandAction = itemState.locations.size > 1,
             onEvent = onEvent
         )
     }
 }
 
 private fun LazyListScope.placesList(
+    isPersonalSpace: Boolean,
     places: List<PlaceListItemData>,
     onCreatePlace: () -> Unit,
     onOpenPlaces: () -> Unit,
@@ -271,7 +311,11 @@ private fun LazyListScope.placesList(
     if (places.isEmpty()) {
         this.item {
             DefaultEmptyState(
-                content = stringResource(MR.strings.places_list_screen_empty_info),
+                content = if (isPersonalSpace) {
+                    stringResource(MR.strings.places_list_screen_empty_info_personal)
+                } else {
+                    stringResource(MR.strings.places_list_screen_empty_info_group)
+                },
                 icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
                 buttonText = stringResource(MR.strings.places_create_button_create),
                 buttonIcon = CoreAppIcons.Add.asPainterResource()
@@ -322,7 +366,7 @@ private fun LazyListScope.placesList(
 }
 
 @Composable
-fun MapBottomSheetTab(
+private fun MapBottomSheetTab(
     modifier: Modifier = Modifier,
     selected: Boolean,
     focused: Boolean,

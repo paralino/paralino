@@ -5,12 +5,13 @@ import app.paralino.core.crypto.EncodingType
 import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
+import app.paralino.core.domain.user.UserCryptoKeyState
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.domain.user.UserSessionState
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
-import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.data
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.LoginDetailsRaw
@@ -18,7 +19,6 @@ import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.models.raw.UserMeRaw
 import app.paralino.core.models.user.BlocklistModel
 import app.paralino.core.models.user.UserMe
-import app.paralino.core.models.user.UserMeData
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -27,7 +27,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.UnauthorizedException
-import app.paralino.core.utils.exceptions.UnverifiedUserException
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,6 +48,7 @@ class UserRepository constructor(
     private val userMapper: UserMapperCore,
     private val cryptoCore: CryptoCore,
     private val remoteConfigRepo: RemoteConfigRepository,
+    private val refreshUserKeys: UserCryptoKeyRefreshUseCase,
     private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
@@ -55,7 +56,7 @@ class UserRepository constructor(
         local.getMeRaw(),
         userKeyRepo.userKeyState()
     ) { user, keyState ->
-        if (!keyState) {
+        if (keyState != UserCryptoKeyState.OK) {
             Resource.NotInitialized
         } else {
             try {
@@ -107,17 +108,24 @@ class UserRepository constructor(
 
     val cachedUser: UserMe? get() = localUser.value.data
 
-    val shouldShowFreePlanNoticeScreen: Boolean get() {
-        return userPlans.value.highestValidPlanConfig.planTypeEnum == PlanType.SILVER
-                && !appPrefs.didStartedGroupOnboarding
-    }
-
     suspend fun login(email: String, password: String): UserSession {
         return triggerRemoteOnly { remote.login(email, password) }
     }
 
     suspend fun getAllSessionsFromRemote(): List<UserSession> {
         return triggerRemoteOnly { remote.getAllSessions() }
+            .also {
+                it.firstOrNull { it.current }?.let {
+                    appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+                }
+            }
+    }
+
+    suspend fun getCurrentSessionFromRemote(): UserSession {
+        return triggerRemoteOnly { remote.getCurrentSession() }
+            .also {
+                appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+            }
     }
 
     suspend fun remoteSignUp(
@@ -135,7 +143,7 @@ class UserRepository constructor(
             encodingType = EncodingType.BASE64_URL
         )
         appPrefs.sessionId = userSession.id
-        appPrefs.emailConfirmed = true
+        appPrefs.sessionExpiresAt = userSession.expire.isoWithOffsetToInstant()
         sessionMonitor.updateSessionState(state = UserSessionState.OK)
     }
 
@@ -148,14 +156,9 @@ class UserRepository constructor(
             )
 
         }.also {
+            appPrefs.emailVerificationSkipTime = null
             refreshUserMaybe(timeDelayMillis = 0)
         }
-    }
-
-    suspend fun updateUserEmail(newEmail: String, password: String) {
-        triggerRemoteOnly {
-            remote.updateEmail(newEmail, password)
-        }.also { updateLocalUser(it) }
     }
 
     suspend fun changePassword(oldPassword: String, newPassword: String) {
@@ -188,8 +191,6 @@ class UserRepository constructor(
             } else if (e is NotFoundException) {
                 logg.v("User does not exist")
             } else {
-                if (e is UnverifiedUserException)
-                    appPrefs.emailConfirmed = false
                 logg.e("Error refreshing user")
             }
             throw e
@@ -200,6 +201,7 @@ class UserRepository constructor(
         return getUserFromRemote()
             .also { updateLocalUser(it) }
             .also { sessionMonitor.updateSessionState(state = UserSessionState.OK) }
+            .also { refreshUserKeys.checkUserKeyStatus() }
             .also {
                 try {
                     remote.getPlans().also { local.savePlans(it) }
@@ -225,11 +227,12 @@ class UserRepository constructor(
         appPrefs.email = data.email
         appPrefs.wasUserLoggedIn = true
         local.update(data)
-    }
 
-    private suspend fun updateUserDataBlocking(data: UserMeData) {
-        triggerRemoteOnly { remote.updateUserData(data) }
-            .also { updateLocalUser(it) }
+        if (appPrefs.emailConfirmed != data.emailVerification) {
+            appPrefs.emailVerificationSkipTime = null
+        }
+
+        appPrefs.emailConfirmed = data.emailVerification
     }
 
     suspend fun initEmailVerification() {
@@ -277,12 +280,23 @@ class UserRepository constructor(
         triggerRemoteOnly { remote.redeemPromoCode(code = code) }
     }
 
-    suspend fun clearLocally() {
-        local.clear()
+    suspend fun clearUserAndPlansLocally() {
+        local.clearUserAndPlans()
+    }
+
+    suspend fun remoteLogout(sessionId: String) {
+        triggerRemoteOnly { remote.logoutSession(sessionId = sessionId) }
     }
 
     suspend fun remoteLogout() {
-        triggerRemoteOnly { remote.logout() }
+        triggerRemoteOnly { remote.logoutCurrentSession() }
+    }
+
+    suspend fun remoteLogoutForAllButCurrentSession() {
+        triggerRemoteOnly { remote.logoutAllButCurrentSession() }
+            .also {
+                appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+            }
     }
 
     suspend fun deleteAccount() {
@@ -302,5 +316,12 @@ class UserRepository constructor(
                 remote.getLoginDetails(key)
             }
         }
+    }
+
+    suspend fun renewCurrentSession() {
+        triggerRemoteOnly { remote.renewCurrentSession() }
+            .also {
+                appPrefs.sessionExpiresAt = it.expire.isoWithOffsetToInstant()
+            }
     }
 }

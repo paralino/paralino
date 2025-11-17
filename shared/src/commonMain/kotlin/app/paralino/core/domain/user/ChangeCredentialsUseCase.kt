@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 
 class ChangeCredentialsUseCase(
@@ -59,6 +60,7 @@ class ChangeCredentialsUseCase(
             oldPassword = password,
             newPassword = password,
             replaceKey = false,
+            keepSessions = true,
             action = { oldLoginKey, newLoginKey ->
                 val currentUser = userRepo.refreshUserIfAvailable()
                 val lastPasswordUpdate = currentUser.passwordUpdateTime
@@ -86,7 +88,11 @@ class ChangeCredentialsUseCase(
             .startProcessing("change_email")
     }
 
-    fun changePassword(oldPassword: String, newPassword: String): Flow<ChangeCredentialsStep> {
+    fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        keepSessions: Boolean
+    ): Flow<ChangeCredentialsStep> {
         return changeCredentials(
             userId = appPrefs.userId,
             oldEmail = appPrefs.email,
@@ -94,6 +100,7 @@ class ChangeCredentialsUseCase(
             oldPassword = oldPassword,
             newPassword = newPassword,
             replaceKey = true,
+            keepSessions = keepSessions,
             action = { oldLoginKey, newLoginKey ->
                 userRepo.changePassword(
                     oldPassword = oldLoginKey,
@@ -111,11 +118,12 @@ class ChangeCredentialsUseCase(
         oldPassword: String,
         newPassword: String,
         replaceKey: Boolean,
+        keepSessions: Boolean,
         action: suspend (String, String) -> Unit
     ): Flow<ChangeCredentialsStep> {
         return flow {
 
-            val oldKey = userKeyRepo.getLocalRawKey()
+            val oldKey = userKeyRepo.getActiveLocalRawKey()
                 ?: throw MissingUserKeyException(localCache = false)
 
             val oldKeys = GeneratedUserKeys(
@@ -132,6 +140,7 @@ class ChangeCredentialsUseCase(
                     oldPassword = oldPassword,
                     newPassword = newPassword,
                     replaceKey = replaceKey,
+                    keepSessions = keepSessions,
                     oldKeys = oldKeys,
                     action = action
                 )
@@ -146,6 +155,7 @@ class ChangeCredentialsUseCase(
         oldPassword: String,
         newPassword: String,
         replaceKey: Boolean,
+        keepSessions: Boolean,
         oldKeys: GeneratedUserKeys,
         action: (suspend (String, String) -> Unit)?
     ): Flow<ChangeCredentialsStep> {
@@ -202,6 +212,7 @@ class ChangeCredentialsUseCase(
                     loginKDFAlg = loginAlg,
                     newPassword = newPassword,
                     replaceKey = replaceKey,
+                    keepSessions = keepSessions,
                     action = if (action != null) {
                         {
                             val newMasterAuthKey = cryptoAccountOperationV2.deriveUserAuthKey(
@@ -230,6 +241,7 @@ class ChangeCredentialsUseCase(
         loginKDFAlg: KDFAlg,
         newPassword: String,
         replaceKey: Boolean,
+        keepSessions: Boolean,
         action: (suspend () -> Unit)?
     ): Flow<ChangeCredentialsStep> {
         return flow {
@@ -302,6 +314,12 @@ class ChangeCredentialsUseCase(
                 )
             } catch (e: Exception) {
                 throw InvalidRequestException(message = e.message, e)
+            }
+
+            // revoke sessions before any other operation
+            if (!keepSessions) {
+                emit(ChangeCredentialsStep.REVOKING_SESSIONS)
+                userRepo.remoteLogoutForAllButCurrentSession()
             }
 
             if (replaceKey) {
@@ -380,6 +398,7 @@ class ChangeCredentialsUseCase(
 enum class ChangeCredentialsStep {
     PREPARING,
     KEY_SETUP,
+    REVOKING_SESSIONS,
     CHANGING_CREDENTIALS,
     KEY_APPLY,
     DONE

@@ -2,16 +2,21 @@ package app.paralino.core.repo.places
 
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.places.PlaceActivityEntity
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.places.PlaceActivityState
 import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class PlaceActivityDataSource(
     private val database: MainDatabaseHelper
 ) {
 
     private val _placeActivityCache = MutableStateFlow(mapOf<String, PlaceActivityState>())
+    private val mutex = Mutex()
 
     suspend fun getPlaceActivity(placeId: String): PlaceActivityState? {
         return getPlaceActivity()?.get(placeId)
@@ -24,7 +29,7 @@ class PlaceActivityDataSource(
                 .mapValues {
                     PlaceActivityState(
                         placeId = it.value.placeId,
-                        groupId = it.value.groupId,
+                        groupId = it.value.groupId.asGroupOrSpaceId(),
                         isEnter = it.value.isEnter,
                         stateChangeTrigger = PlaceActivityTriggerType.fromKey(key = it.value.stateChangeTrigger),
                         stateChangeTimeMillis = it.value.stateChangeTimeMillis,
@@ -61,7 +66,8 @@ class PlaceActivityDataSource(
             database.placeActivityDao.createPlaceActivity(
                 PlaceActivityEntity(
                     placeId = placeId,
-                    groupId = state.groupId,
+                    groupId = state.groupId.id,
+                    isInPersonalSpace = state.groupId.isPersonalSpace,
                     isEnter = state.isEnter,
                     stateChangeTrigger = state.stateChangeTrigger.key,
                     stateChangeTimeMillis = state.stateChangeTimeMillis,
@@ -78,56 +84,58 @@ class PlaceActivityDataSource(
     }
 
     suspend fun recreatePlaces(places: List<GroupPlaceWithSettingsRaw>) {
-        _placeActivityCache.update {
-            it.toMutableMap().apply {
-                this.forEach { entry ->
-                    if (places.none { it.place.id == entry.value.placeId }) {
-                        remove(key = entry.key).also {
-                            it?.tryNotifyJob?.cancel()
-                        }
-                    }
+        mutex.withLock {
+            _placeActivityCache.update { state ->
+                val toRemove = state.filter { entry ->
+                    places.none { it.place.id == entry.value.placeId }
                 }
+                val newState = state.filter { entry ->
+                    toRemove.none { it.key == entry.key }
+                }
+                toRemove.forEach { it.value.tryNotifyJob?.cancel() }
+                newState
             }
+            database.placeActivityDao.clearMissingForGroups(placeIds = places.map { it.place.id })
         }
-        database.placeActivityDao.clearMissing(placeIds = places.map { it.place.id })
     }
 
     suspend fun recreatePlacesForGroup(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         places: List<GroupPlaceWithSettingsRaw>
     ) {
-        _placeActivityCache.update {
-            it.toMutableMap().apply {
-                this.filter { it.value.groupId == groupId }.forEach { entry ->
-                    if (places.none { it.place.id == entry.value.placeId }) {
-                        remove(key = entry.key).also {
-                            it?.tryNotifyJob?.cancel()
-                        }
-                    }
+        mutex.withLock {
+            _placeActivityCache.update { state ->
+                val toRemove = state.filter { entry ->
+                    entry.value.groupId == groupId && places.none { it.place.id == entry.value.placeId }
                 }
+                val newState = state.filter { entry ->
+                    toRemove.none { it.key == entry.key }
+                }
+                toRemove.forEach { it.value.tryNotifyJob?.cancel() }
+                newState
             }
+            database.placeActivityDao.clearMissing(groupId = groupId.id, placeIds = places.map { it.place.id })
         }
-        database.placeActivityDao.clearMissing(groupId = groupId, placeIds = places.map { it.place.id })
     }
 
-    suspend fun clearForGroup(groupId: String) {
-        _placeActivityCache.update {
-            it.toMutableMap().apply {
-                this.filter { it.value.groupId == groupId }.forEach { entry ->
-                    remove(key = entry.key).also {
-                        it?.tryNotifyJob?.cancel()
-                    }
-                }
+    suspend fun clearForGroup(groupId: GroupOrSpaceId) {
+        _placeActivityCache.update { state ->
+            val toRemove = state.filter { entry ->
+                entry.value.groupId == groupId
             }
+            val newState = state.filter { entry ->
+                toRemove.none { it.key == entry.key }
+            }
+            toRemove.forEach { it.value.tryNotifyJob?.cancel() }
+            newState
         }
-        database.placeActivityDao.deleteForGroup(groupId = groupId)
+        database.placeActivityDao.deleteForGroup(groupId = groupId.id)
     }
 
-    suspend fun clearAll() {
+    suspend fun clearCache() {
         _placeActivityCache.update {
             it.forEach { it.value.tryNotifyJob?.cancel() }
             emptyMap()
         }
-        database.placeActivityDao.clearAll()
     }
 }

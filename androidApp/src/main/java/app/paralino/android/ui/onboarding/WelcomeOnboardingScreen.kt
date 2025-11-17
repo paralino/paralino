@@ -17,7 +17,7 @@ fun WelcomeOnboardingScreen(
     isDemo: Boolean,
     onFinish: () -> Unit,
 ) {
-    val step = rememberSaveable { mutableStateOf(WelcomeOnboardingContent.STEP_LOCATION) }
+    val step = rememberSaveable { mutableStateOf(WelcomeOnboardingContent.entries.first()) }
     BackHandler(step.value.ordinal > 0) {
         val previous = step.value.previous()
         if (previous != null) {

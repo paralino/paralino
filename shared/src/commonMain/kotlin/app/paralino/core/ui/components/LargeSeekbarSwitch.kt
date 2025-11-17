@@ -11,7 +11,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
@@ -77,7 +75,8 @@ fun LargeSeekbarSwitch(
     description: String? = null,
     titleStyle: TextStyle = MaterialTheme.typography.body2,
     focusDescription: Boolean = false,
-    elevation: Dp = animateDpAsState(if (state.switchState?.checkState == true) 16.dp else 0.dp).value,
+    enabled: Boolean = true,
+    elevation: Dp = animateDpAsState(if (state.switchState?.checkState == true && enabled) 16.dp else 0.dp).value,
     size: LargeSwitchSize = LargeSwitchSize(),
     onLongClick: (() -> Unit)? = null,
     onProgressChange: ((Int) -> Unit)? = null,
@@ -85,7 +84,7 @@ fun LargeSeekbarSwitch(
 ) {
 
     val sourceColor =
-        if (state.switchState?.checkState == true && state.seekbarState == null) MaterialTheme.colors.primary else MaterialTheme.colors.surface
+        if (state.switchState?.checkState == true && state.seekbarState == null && enabled) MaterialTheme.colors.primary else MaterialTheme.colors.surface
     val backgroundColor by animateColorAsState(targetValue = sourceColor)
     val contentColor by animateColorAsState(targetValue = contentColorFor(backgroundColor = sourceColor))
 
@@ -228,9 +227,17 @@ fun LargeSeekbarSwitch(
                                 .padding(8.dp),
                             tint = contentColor
                         )
+                        Spacer(modifier = Modifier.weight(1f))
+                    } else {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .weight(1f),
+                            text = title,
+                            style = titleStyle,
+                            color = contentColor
+                        )
                     }
-
-                    Spacer(modifier = Modifier.weight(1f))
 
                     Box(
                         modifier = Modifier
@@ -258,30 +265,16 @@ fun LargeSeekbarSwitch(
                                 enter = fadeIn() + scaleIn(),
                                 exit = fadeOut() + scaleOut()
                             ) {
-                                if (state.switchState.checkState) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(
-                                                MaterialTheme.colors.onPrimary,
-                                                shape = CircleShape
-                                            )
-                                            .padding(1.dp),
-                                        painter = state.switchState.checkedIconRes.asPainterResource(),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colors.primary
-                                    )
-                                } else {
-                                    Icon(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(backgroundColor, shape = CircleShape)
-                                            .padding(2.dp),
-                                        painter = state.switchState.unCheckedIconRes.asPainterResource(),
-                                        contentDescription = null,
-                                        tint = contentColor.copy(alpha = ContentAlpha.disabled)
-                                    )
-                                }
+                                CheckButtonIcon(
+                                    modifier = Modifier.fillMaxSize(),
+                                    isChecked = state.switchState.checkState,
+                                    backgroundCheckedColor = MaterialTheme.colors.onPrimary,
+                                    contentCheckedColor = MaterialTheme.colors.primary,
+                                    backgroundUncheckedColor = backgroundColor,
+                                    contentUncheckedColor = contentColor.copy(alpha = ContentAlpha.disabled),
+                                    checkedIcon = state.switchState.checkedIconRes.asPainterResource(),
+                                    uncheckedIcon = state.switchState.unCheckedIconRes.asPainterResource(),
+                                )
                             }
                         }
                     }
@@ -298,11 +291,13 @@ fun LargeSeekbarSwitch(
                     .animateContentSize()
                     .padding(vertical = 2.dp, horizontal = 4.dp)
             ) {
-                Text(
-                    text = title,
-                    style = titleStyle,
-                    color = contentColor
-                )
+                if (icon != null) {
+                    Text(
+                        text = title,
+                        style = titleStyle,
+                        color = contentColor
+                    )
+                }
                 if (!description.isNullOrBlank()) {
                     if (focusDescription) {
                         Text(

@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.groups.GroupListItem
@@ -102,11 +103,13 @@ fun AccountOnboardingGroupCreate(
 private fun GroupContent1(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
-            id = "",
+            id = "".asGroupOrSpaceId(),
             name = MR.strings.onboarding_step_groupCreate_group_home.localizedString(),
             image = ImageModel.emoji(Emojis.heart),
-            userCount = 6,
+            membersCount = 6,
+            devicesCount = null,
             placesCount = 12,
+            isPersonalSpace = false,
             uiType = GroupItemState.GroupUiType.ACTIVE,
             canEdit = true,
             isCurrentUserOwner = true,
@@ -129,11 +132,13 @@ private fun GroupContent1(modifier: Modifier = Modifier) {
 private fun GroupContent2(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
-            id = "",
+            id = "".asGroupOrSpaceId(),
             name = MR.strings.onboarding_step_groupCreate_group_friends.localizedString(),
             image = ImageModel.emoji(Emojis.star),
-            userCount = 8,
+            membersCount = 8,
+            devicesCount = null,
             placesCount = 6,
+            isPersonalSpace = false,
             uiType = GroupItemState.GroupUiType.INACTIVE,
             canEdit = false,
             isCurrentUserOwner = true,
@@ -156,11 +161,13 @@ private fun GroupContent2(modifier: Modifier = Modifier) {
 private fun GroupContent3(modifier: Modifier = Modifier) {
     val data = remember {
         GroupItemState(
-            id = "",
+            id = "".asGroupOrSpaceId(),
             name = MR.strings.onboarding_step_groupCreate_group_work.localizedString(),
             image = ImageModel.emoji(Emojis.suitecase),
-            userCount = 10,
+            membersCount = 10,
+            devicesCount = null,
             placesCount = 3,
+            isPersonalSpace = false,
             uiType = GroupItemState.GroupUiType.INACTIVE,
             canEdit = true,
             isCurrentUserOwner = true,

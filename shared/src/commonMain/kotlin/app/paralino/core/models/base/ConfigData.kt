@@ -71,3 +71,29 @@ data class ConfigData(
         return listOf(freePlan) + plans.filter { it.planTypeEnum.isPremium && it.isActive }
     }
 }
+
+@Serializable
+data class BillingConfigData(
+    val dialogOffer: SubscriptionOfferDialogContent? = null,
+    val subscriptionNotice: List<SubscriptionInfoNotice>? = null
+)
+
+@Serializable
+data class SubscriptionOfferDialogContent(
+    val requiresTrial: Boolean,
+    val emoji: String?,
+    val i18nTitle: Map<String, String>?,
+    val i18nMessage: Map<String, String>?
+)
+
+@Serializable
+data class SubscriptionInfoNotice(
+    val keys: List<SubscriptionInfoNoticeValue>,
+    val i18nMessage: Map<String, String>?,
+)
+
+@Serializable
+data class SubscriptionInfoNoticeValue(
+    val plans: List<String>,
+    val periods: List<String>,
+)

@@ -1,15 +1,19 @@
 package app.paralino.core.crypto.group
 
-import app.paralino.core.appPrefs
+import androidx.compose.runtime.key
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.db.main.history.UnsyncedGroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.GroupLocalHistoryKeyEntity
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.models.mappers.GroupKeysMapper
 import app.paralino.core.models.raw.GroupCryptoKeyDataRaw
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
 import app.paralino.core.models.raw.PersonalGroupKeyRaw
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class CryptoKeyLocalDataSource constructor(
@@ -44,11 +48,17 @@ class CryptoKeyLocalDataSource constructor(
         }
     }
 
-    suspend fun getPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
-        return cachedPersonalGroupKeys.value.ifEmpty {
-            getAllPersonalGroupKeys()
-                .also { cachedPersonalGroupKeys.value = it }
+    suspend fun getPersonalGroupKeys(includeArchivedKeys: Boolean): List<PersonalGroupKeyRaw> {
+        val archivedKeys = if (includeArchivedKeys) {
+            getAllArchivedPersonalGroupKeys()
+        } else {
+            emptyList()
         }
+
+        return cachedPersonalGroupKeys.value.ifEmpty {
+            getAllActivePersonalGroupKeys()
+                .also { cachedPersonalGroupKeys.value = it }
+        } + archivedKeys
     }
 
     suspend fun getLocalGroupSenderKey(groupId: String): LocalGroupDeviceKeysEntity? {
@@ -151,14 +161,59 @@ class CryptoKeyLocalDataSource constructor(
     suspend fun updateGroupDeviceIntegrity(
         groupId: String,
         integrity: String,
+        safetySignature: String,
         userKeyVersion: Long
     ) {
         database.groupRelatedKeysDao.createGroupDeviceIntegrityKey(
             GroupDeviceIntegrityEntity(
                 id = groupId,
                 integrity = integrity,
+                safetySignature = safetySignature,
                 userKeyVersion = userKeyVersion
             )
+        )
+    }
+
+    suspend fun saveAndActivateGroupHistoryKey(
+        groupId: String,
+        userKeyVersion: Long,
+        historyKeyVersion: String,
+        encryptedHistoryKey: String
+    ) {
+        database.groupLocalHistoryKeyDao.saveAndActivateHistoryKey(
+            key = GroupLocalHistoryKeyEntity(
+                groupId = groupId,
+                createdAt = nowUTC().toString(),
+                userKeyVersion = userKeyVersion,
+                historyKeyVersion = historyKeyVersion,
+                encryptedHistoryKey = encryptedHistoryKey,
+                isActive = true
+            )
+        )
+    }
+
+    suspend fun deactivateGroupHistoryKey(groupId: String) {
+        database.groupLocalHistoryKeyDao.markKeysAsInactive(groupId)
+    }
+
+    suspend fun savePendingGroupHistoryMemberKeys(
+        groupId: String,
+        keys: List<MemberDeviceKeyRotation.GroupHistoryKeyPayload>
+    ) {
+        database.unsyncedGroupHistoryKeysDao.saveLocalHistoryKeys(
+            keys = keys.map { key ->
+                UnsyncedGroupHistoryKeyEntity(
+                    id = 0,
+                    groupId = groupId,
+                    memberUserId = key.userId,
+                    memberId = key.memberId,
+                    memberVerification = key.memberVerification,
+                    memberKeyVersion = key.memberKeyVersion,
+                    historyKeyVersion = key.historyKeyVersion,
+                    encryptedHistoryKey = key.encryptedHistoryKey,
+                    isSyncedOnce = false
+                )
+            }
         )
     }
 
@@ -177,8 +232,13 @@ class CryptoKeyLocalDataSource constructor(
             .map { keysMapper.local2Remote(it) }
     }
 
-    private suspend fun getAllPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
-        return database.groupRelatedKeysDao.getAllPersonalGroupKeys()
+    private suspend fun getAllArchivedPersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return database.groupRelatedKeysDao.getAllArchivedPersonalGroupKeys()
+            .map { keysMapper.local2Remote(it) }
+    }
+
+    private suspend fun getAllActivePersonalGroupKeys(): List<PersonalGroupKeyRaw> {
+        return database.groupRelatedKeysDao.getAllActivePersonalGroupKeys()
             .map { keysMapper.local2Remote(it) }
     }
 
@@ -205,12 +265,10 @@ class CryptoKeyLocalDataSource constructor(
         database.groupRelatedKeysDao.clearAllKeysForUser(groupId = groupId, userId = userId)
     }
 
-    suspend fun deleteAllKeys() {
+    suspend fun clearCache() {
         cachedMemberKeys.value = emptyList()
         cachedGroupKeys.value = emptyList()
         cachedGroupDeviceKeys.value = emptyList()
         cachedPersonalGroupKeys.value = emptyList()
-
-        database.groupRelatedKeysDao.clearAllGroupRelatedKeys()
     }
 }

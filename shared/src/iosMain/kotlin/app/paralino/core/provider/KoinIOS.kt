@@ -1,7 +1,6 @@
 package app.paralino.core.provider
 
 import app.paralino.core.CoreAppManager
-import app.paralino.core.appPrefs
 import app.paralino.core.app_rating.IAppRatingPresenter
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.crypto.ICryptoServiceProvider
@@ -14,12 +13,18 @@ import app.paralino.core.db.logs.AppLogsDatabase
 import app.paralino.core.db.main.AppMainDatabase
 import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.NoOpPersonalDeviceKeyRotation
+import app.paralino.core.domain.crypto.PersonalDeviceCryptoKeyRotation
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.IOSLocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
+import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.NoOpReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
@@ -31,26 +36,33 @@ import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
-import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
+import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
+import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.login.LoginViewModel
 import app.paralino.core.presentation.login.emailverify.VerifyEmailViewModel
+import app.paralino.core.presentation.login.password_confirmation.PasswordConfirmationViewModel
 import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
+import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
+import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
+import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
@@ -83,6 +95,7 @@ import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.IUserApiIOS
 import app.paralino.core.repo.api.RealtimeApiWrapperIOS
 import app.paralino.core.repo.api.UserApiWrapperIOS
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -103,6 +116,7 @@ import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+@Suppress("unused")
 object KoinIOS {
 
     fun createIOSKoinModules(
@@ -121,7 +135,11 @@ object KoinIOS {
             locationStatusProvider: ILocationStatusProvider,
             locationCacheRepo: LocationCacheRepository
         ) -> IOneTimeLocationProvider,
-        remoteModule: (sessionMonitor: UserSessionMonitor, networkQualityMonitor: NetworkQualityMonitor) -> IRemoteModule,
+        remoteModule: (
+            sessionMonitor: UserSessionMonitor,
+            networkQualityMonitor: NetworkQualityMonitor,
+            appConfig: AppConfigRepository
+        ) -> IRemoteModule,
         documentsApi: (IRemoteModule, AppBuildConfig) -> IDocumentApiIOS,
         userApi: (IRemoteModule, AppBuildConfig) -> IUserApiIOS,
         functionsApi: (IRemoteModule, AppBuildConfig) -> IFunctionsApiIOS,
@@ -147,7 +165,7 @@ object KoinIOS {
                     factory { infoNotificationPresenter(get()) } bind IInfoMessagesNotificationPresenter::class
                     single { billingProvider() } bind IBillingProvider::class
                     single { geofenceManager() }
-                    single { remoteModule(get(), get()) }
+                    single { remoteModule(get(), get(), get()) }
                     single { appBuildConfig }
                     single { DocumentApiWrapper(documentsApi(get(), get())) } bind IDocumentsApi::class
                     single { UserApiWrapperIOS(userApi(get(), get())) } bind IUserApi::class
@@ -168,15 +186,19 @@ object KoinIOS {
                     when (appBuildConfig.appHost) {
                         AppHost.MAIN_APP -> {
                             single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
-                            single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
+                            single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
+                            single { PersonalDeviceCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IPersonalDeviceCryptoKeyRotation::class
                             single { ReRegisterDeviceUseCase(get(), get()) } bind IReRegisterDeviceUseCase::class
-                            single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+                            single { PlacesActivityProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind IPlacesActivityProcessor::class
+                            single { LocationHistoryUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) } bind ILocationHistoryUploadEngine::class
                         }
                         else -> {
                             single { NoOpMemberCryptoKeyRotation() } bind IMemberCryptoKeyRotation::class
                             single { NoOpMemberDeviceKeyRotation() } bind IMemberDeviceKeyRotation::class
+                            single { NoOpPersonalDeviceKeyRotation() } bind IPersonalDeviceCryptoKeyRotation::class
                             single { NoOpReRegisterDeviceUseCase() } bind IReRegisterDeviceUseCase::class
                             single { IOSLSEPlacesActivityProcessor() } bind IPlacesActivityProcessor::class
+                            single { IOSLocationHistoryUploadEngine() } bind ILocationHistoryUploadEngine::class
                         }
                     }
                 }
@@ -190,20 +212,20 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { GroupInitViewModel(get(), get(), get(), get(), get()) }
+            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
-            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
                 LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get())
             }
             factory { (groupID: String?) -> CreateGroupViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { (groupID: String?, isOnboarding: Boolean) ->
-                SharingStartViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get())
+                SharingStartViewModel(groupID?.asGroupOrSpaceId(), isOnboarding, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { LoggedOutViewModel(get(), get()) }
-            factory { PersonalCodeViewModel(get(), get(), get()) }
+            factory { PersonalCodeViewModel(get(), get(), get(), get()) }
             factory { (groupId: String?, code: String?, isOnboarding: Boolean) ->
                 MemberInviteViewModel(
                     groupId = groupId,
@@ -212,14 +234,15 @@ object KoinIOS {
                     codeRepo = get(),
                     groupRepo = get(),
                     groupMemberAdd = get(),
-                    userRepo = get()
+                    userRepo = get(),
+                    premiumStatusManager = get()
                 )
             }
             factory { (groupID: String) ->
-                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { (groupID: String) ->
-                GroupSettingsViewModel(groupID, get(), get(), get(), get(), get())
+                GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get())
             }
             factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get(), get()) }
@@ -227,7 +250,8 @@ object KoinIOS {
             factory { ConvertAccountViewModel(get(), get(), get()) }
             factory { EditProfileViewModel(get(), get()) }
             factory { RecoverKeysViewModel(get(), get(), get(), get()) }
-            factory { VerifyEmailViewModel(get(), get()) }
+            factory { PasswordConfirmationViewModel(get(), get(), get()) }
+            factory { VerifyEmailViewModel(get(), get(), get(), get()) }
             factory { (userId: String, secret: String) ->
                 ResetPasswordViewModel(
                     userId = userId,
@@ -235,7 +259,7 @@ object KoinIOS {
                     resetPassword = get()
                 )
             }
-            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get()) }
+            factory { (groupID: String, isOnboarding: Boolean) -> PlacesViewModel(groupID, isOnboarding, get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (groupID: String, placeId: String) ->
                 PlaceDetailViewModel(
                     groupId = groupID,
@@ -243,6 +267,7 @@ object KoinIOS {
                     placesRepo = get(),
                     updatePlaceAlerts = get(),
                     groupRepo = get(),
+                    personalSpaceRepo = get(),
                     cryptoCore = get(),
                     appPrefs = get()
                 )
@@ -255,9 +280,9 @@ object KoinIOS {
                     lng = lng,
                     placesRepo = get(),
                     placesLocalDataSource = get(),
-                    groupLocal = get(),
-                    remoteConfig = get(),
+                    premiumStatusManager = get(),
                     deviceApiProvider = get(),
+                    refreshEverythingUseCase = get(),
                     valueFormatter = get()
                 )
             }
@@ -270,16 +295,21 @@ object KoinIOS {
             }
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
-            factory { SubscriptionViewModel(get(), get(), get()) }
-            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get()) }
-            factory { PlanInfoViewModel(get(), appPrefs) }
+            factory { SubscriptionViewModel(get(), get(), get(), get()) }
+            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { PlanInfoViewModel(get(), get()) }
             factory { GeneralInfoViewModel(get(), get()) }
-            factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get()) }
+            factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory { WelcomeOnboardingViewModel(get(), get()) }
-            factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get()) }
+            factory { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
             factory { DefaultNavigationAppViewModel(get()) }
+            factory { (groupId: String, memberUserId: String, deviceId: String?) -> LocationHistoryViewModel(groupId = groupId, memberUserId = memberUserId, deviceId = deviceId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
+            factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { PersonalSpaceSettingsViewModel(get()) }
+            factory { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
         }
     }
 
@@ -298,6 +328,7 @@ object KoinIOS {
         val deviceApiProvider: IDeviceApiProvider get() = get()
         val inAppLogger: InAppLogger get() = get()
         val appBuildConfig: AppBuildConfig get() = get()
+        val appConfig: AppConfigRepository get() = get()
         val remoteConfigRepo: RemoteConfigRepository get() = get()
         val userConfigRepo: UserConfigRepository get() = get()
         val nseNotificationHandler: IOSNSEPushNotificationHandler get() = get()
@@ -311,8 +342,9 @@ object KoinIOS {
 
         val welcomeVM get() = get<LoggedOutViewModel>()
         val editProfileVM get() = get<EditProfileViewModel>()
-        val groupInitVM get() = get<GroupInitViewModel>()
+        val accountOnboardingVM get() = get<AccountOnboardingViewModel>()
         val recoverKeysVM get() = get<RecoverKeysViewModel>()
+        val passwordConfirmationVM get() = get<PasswordConfirmationViewModel>()
         fun resetPasswordVM(userId: String, secret: String) = get<ResetPasswordViewModel> {
             parametersOf(userId, secret)
         }
@@ -355,5 +387,10 @@ object KoinIOS {
         val measurementSystemVM get() = get<MeasurementSystemViewModel>()
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
         val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
+        fun locationHistoryVM(groupId: String, memberUserId: String, deviceId: String?) = get<LocationHistoryViewModel> { parametersOf(groupId, memberUserId, deviceId) }
+        fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
+        val personalSpaceVM get() = get<PersonalSpaceViewModel>()
+        val personalSpaceSettingsVM get() = get<PersonalSpaceSettingsViewModel>()
+        fun placeSensitivityVM(groupId: String, placeId: String) = get<PlaceSensitivityViewModel>() { parametersOf(groupId, placeId) }
     }
 }

@@ -1,13 +1,14 @@
 package app.paralino.core.presentation.places.create
 
 import androidx.compose.ui.text.AnnotatedString
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 
 data class CreatePlaceScreenState constructor(
-    val groupId: String,
+    val groupId: GroupOrSpaceId,
     val isNewPlace: Boolean,
     val name: String,
     val image: ImageModel,
@@ -38,7 +39,7 @@ data class CreatePlaceScreenState constructor(
         }
 
         fun empty(
-            groupId: String,
+            groupId: GroupOrSpaceId,
             hintText: AnnotatedString,
             lat: Double? = null,
             lng: Double? = null,
@@ -67,7 +68,6 @@ data class CreatePlaceScreenState constructor(
 }
 
 sealed class CreatePlaceScreenEvent() {
-    data class Error(val error: Throwable): CreatePlaceScreenEvent()
     object MissingInfo: CreatePlaceScreenEvent()
     object MissingLocation: CreatePlaceScreenEvent()
     object PlaceUpdated: CreatePlaceScreenEvent()

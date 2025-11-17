@@ -15,6 +15,7 @@ data class MemberLocationEntity(
     @ColumnInfo(name = "deviceKeyVersion") val deviceKeyVersion: Long,
     @ColumnInfo(name = "deviceData") val deviceData: String?,
     @ColumnInfo(name = "locationData") val locationData: String?,
+    @ColumnInfo(name = "locationHistory") val locationHistory: String? = null,
     @ColumnInfo(name = "status") val status: String?
 )
 
@@ -26,5 +27,6 @@ data class MemberLocationEntityDataUpdate(
     @ColumnInfo(name = "deviceId") val deviceId: String,
     @ColumnInfo(name = "deviceData") val deviceData: String?,
     @ColumnInfo(name = "locationData") val locationData: String?,
-    @ColumnInfo(name = "status") val status: String?
+    @ColumnInfo(name = "status") val status: String?,
+    @ColumnInfo(name = "locationHistory") val locationHistory: String?
 )

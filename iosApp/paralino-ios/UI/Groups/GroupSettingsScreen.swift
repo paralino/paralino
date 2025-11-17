@@ -30,9 +30,13 @@ struct GroupSettingsScreen: View {
                     },
                     openBatteryNotificationsSettings: {
                         path.append(.home(.batteryNotificationsSettings(groupId: appState.vm.groupId)))
+                    },
+                    openLocationHistorySettings: {
+                        path.append(.home(.locationHistorySettings(groupId: appState.vm.groupId)))
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.title_settings.localizedString())
         }

@@ -2,6 +2,7 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.mappers.GroupsMapperLocal
@@ -50,12 +51,19 @@ class GetMemberWithLocationsUseCase(
         )
     }
 
-    suspend fun getCurrentLocationIdForGroup(groupId: String): String? {
-        return database.groupRelatedDao.getSingleLocationForMemberAndDeviceOnce(
-            groupId = groupId,
-            userId = appPrefs.userId,
-            deviceId = appPrefs.deviceId
-        )?.id
+    suspend fun getCurrentLocationIdForGroup(groupId: GroupOrSpaceId): String? {
+        if (groupId.isPersonalSpace) {
+            return database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId = appPrefs.deviceId)
+                ?.takeIf { entity ->
+                    entity.hasValidLocation
+                }?.locationId
+        } else {
+            return database.groupRelatedDao.getSingleLocationForMemberAndDeviceOnce(
+                groupId = groupId.id,
+                userId = appPrefs.userId,
+                deviceId = appPrefs.deviceId
+            )?.id
+        }
     }
 
     suspend fun getGroupOnce(groupId: String): UserGroup? {

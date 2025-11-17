@@ -8,10 +8,13 @@ import androidx.room.PrimaryKey
 data class SharingContractEntity(
     @PrimaryKey val groupId: String,
     @ColumnInfo(name = "endTimeUTC") val endTimeUTC: String?,
+    @ColumnInfo(name = "endTimeUTCOverride") val endTimeUTCOverride: String? = null,
     @ColumnInfo(name = "shareBattery") val shareBattery: Boolean,
     @ColumnInfo(name = "shareSpeed") val shareSpeed: Boolean,
     @ColumnInfo(name = "shareElevation") val shareElevation: Boolean,
     @ColumnInfo(name = "approximateLocationInMeters") val approximateLocationInMeters: Int?,
     @ColumnInfo(name = "shareNetwork") val shareNetwork: Boolean,
-    @ColumnInfo(name = "shareDeviceStatus") val shareDeviceStatus: Boolean = true
+    @ColumnInfo(name = "shareDeviceStatus") val shareDeviceStatus: Boolean = true,
+    @ColumnInfo(name = "saveToHistory") val saveToHistory: Boolean = false,
+    @ColumnInfo(name = "isEnabled") val isEnabled: Boolean = true
 )

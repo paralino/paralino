@@ -1,14 +1,15 @@
 package app.paralino.core.db
 
-import app.paralino.core.appPrefs
+import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
+import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 expect class AppPrefsProvider {
     val userSettings: Settings
@@ -50,10 +51,12 @@ class AppPrefs(
             }
         }
 
-        const val keyToken = "prefs.profile.token"
+        const val keySessionId = "prefs.profile.token"
+        const val keySessionExpiresAt = "prefs.profile.sessionExpiration"
+        const val keySessionRenewalCheckTime = "prefs.profile.sessionRenewalCheckTime"
         const val keyUserKey = "prefs.user.masterKey"
         const val keyUserKeyVersion = "prefs.user.masterKey.version"
-        const val keySessionKey = "prefs.user.sessionKey"
+        const val keyAppSessionKey = "prefs.user.sessionKey"
         const val keyEmail = "prefs.profile.email"
         const val keyUserId = "prefs.profile.user_id"
         const val keyTempPassword = "prefs.user.temp_password"
@@ -69,9 +72,9 @@ class AppPrefs(
         const val keyDeviceID = "prefs.device.ID"
         const val keyDeviceIDSeed = "prefs.device.ID.seed"
         const val keySelectedGroupID = "prefs.group.selectedGroupID"
+        const val keyIsPersonalSpaceSelected = "prefs.device.isPersonalSpaceSelected"
         const val keyDismissedAppVersionID = "prefs.device.dismissedAppVersion"
         const val keyTrackingBoost = "prefs.device.trackingBoostEndTimeUTC"
-        const val keyPlaceActivityThrottle = "prefs.device.PlaceActivityThrottle"
         const val keyWasUserLoggedIn = "prefs.device.hadUser"
         const val keyDidEverFullyRefreshed = "prefs.device.everRefreshedData"
         const val keyDidStartedGroupOnboarding = "prefs.group.onboardingStarted"
@@ -87,6 +90,8 @@ class AppPrefs(
         const val keyWelcomeOnboarding = "prefs.device.onboarding.welcome"
         const val keyAccountWelcomeOnboarding = "prefs.device.onboarding.account"
         const val keyAccountWelcomeOnboardingNotifications = "prefs.device.onboarding.notifications"
+        const val keyLocationHistoryFeatureOnboarding = "prefs.device.onboarding.locationHistory"
+        const val keyPersonalSpaceFeatureOnboarding = "prefs.device.onboarding.personalSpace"
         const val keyLoggedInAppLaunchCount = "prefs.device.appLaunchCount.account"
         const val keyShowedAppRatingTime = "prefs.user.appRating.shownTime"
         const val keyShowedAppRatingVersion = "prefs.user.appRating.appVersion"
@@ -96,6 +101,10 @@ class AppPrefs(
         const val keyNotificationGrouping = "prefs.device.notificationGrouping"
         const val keyNavigatioApp = "prefs.device.navigationApp"
         const val keyDeviceTheme = "prefs.device.theme"
+        const val keyLocationHistoryPerformance = "prefs.location.history.performance"
+        const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
+        const val keyPlaceSensitivityType = "prefs.device.placeSensitivity"
+        const val keyDevModeEnabled = "prefs.device.devModeOverride"
     }
 
     val isTokenValid: Boolean
@@ -120,9 +129,29 @@ class AppPrefs(
         }
 
     var sessionId: String
-        get() = provider.userSettings.getString(keyToken, "")
+        get() = provider.userSettings.getString(keySessionId, "")
         set(value) {
-            provider.userSettings.putString(keyToken, value)
+            provider.userSettings.putString(keySessionId, value)
+        }
+
+    var sessionExpiresAt: Instant?
+        get() = provider.userSettings.getString(keySessionExpiresAt, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keySessionExpiresAt, value.toString())
+            } else {
+                provider.userSettings.remove(keySessionExpiresAt)
+            }
+        }
+
+    var sessionRenewalCheckTime: Instant?
+        get() = provider.userSettings.getString(keySessionRenewalCheckTime, "").isoWithOffsetToInstant()
+        set(value) {
+            if (value != null) {
+                provider.userSettings.putString(keySessionRenewalCheckTime, value.toString())
+            } else {
+                provider.userSettings.remove(keySessionRenewalCheckTime)
+            }
         }
 
     var email: String
@@ -190,9 +219,9 @@ class AppPrefs(
         }
 
     var sessionMasterKey: String
-        get() = provider.userSettings.getString(keySessionKey, "")
+        get() = provider.userSettings.getString(keyAppSessionKey, "")
         set(value) {
-            provider.userSettings.putString(keySessionKey, value)
+            provider.userSettings.putString(keyAppSessionKey, value)
         }
 
     var pushTokenUnsynced: String
@@ -225,6 +254,12 @@ class AppPrefs(
             provider.userSettings.set(keySelectedGroupID, value)
         }
 
+    var isPersonalSpaceSelected: Boolean
+        get() = provider.userSettings.getBoolean(keyIsPersonalSpaceSelected, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyIsPersonalSpaceSelected, value)
+        }
+
     var dismissedAppVersion: Long
         get() = provider.appSettings.getLong(keyDismissedAppVersionID, 0)
         set(value) {
@@ -239,12 +274,6 @@ class AppPrefs(
             } else {
                 provider.userSettings.remove(keyTrackingBoost)
             }
-        }
-
-    var placeActivityThrottle: Boolean
-        get() = provider.userSettings.getBoolean(keyPlaceActivityThrottle, true)
-        set(value) {
-            provider.userSettings.putBoolean(keyPlaceActivityThrottle, value)
         }
 
     var didEverFullyRefreshData: Boolean
@@ -313,6 +342,12 @@ class AppPrefs(
             provider.userSettings.putString(keyBalancedPerformance, value ?: "")
         }
 
+    var locationSettingsHistoryPerformanceType: String?
+        get() = provider.userSettings.getStringOrNull(keyLocationHistoryPerformance).takeIf { !it.isNullOrBlank() }
+        set(value) {
+            provider.userSettings.putString(keyLocationHistoryPerformance, value ?: "")
+        }
+
     var didHaveWelcomeOnboarding: Boolean
         get() = provider.appSettings.getBoolean(keyWelcomeOnboarding, false)
         set(value) {
@@ -325,22 +360,44 @@ class AppPrefs(
             provider.userSettings.putBoolean(keyAccountWelcomeOnboarding, value)
         }
 
+    var didHaveLocationHistoryIntroOnboarding: Boolean
+        get() = provider.userSettings.getBoolean(keyLocationHistoryFeatureOnboarding, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyLocationHistoryFeatureOnboarding, value)
+        }
+
+    var didHavePersonalSpaceIntroOnboarding: Boolean
+        get() = provider.userSettings.getBoolean(keyPersonalSpaceFeatureOnboarding, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyPersonalSpaceFeatureOnboarding, value)
+        }
+
     var didAskForNotificationPermissions: Boolean
         get() = provider.userSettings.getBoolean(keyAccountWelcomeOnboardingNotifications, false)
         set(value) {
             provider.userSettings.putBoolean(keyAccountWelcomeOnboardingNotifications, value)
         }
 
-    var lastShowedAppRatingDialogUTC: Instant
-        get() = provider.appSettings.getLong(keyShowedAppRatingTime, 0).let { Instant.fromEpochMilliseconds(it) }
+    var emailVerificationSkipTime: Instant?
+        get() = provider.userSettings.getString(keyEmailVerificationSkipTime, "").isoWithOffsetToInstant()
         set(value) {
-            provider.appSettings.putLong(keyShowedAppRatingTime, value.toEpochMilliseconds())
+            if (value != null) {
+                provider.userSettings.putString(keyEmailVerificationSkipTime, value.toString())
+            } else {
+                provider.userSettings.remove(keyEmailVerificationSkipTime)
+            }
+        }
+
+    var lastShowedAppRatingDialogUTC: Instant
+        get() = provider.userSettings.getLong(keyShowedAppRatingTime, 0).let { Instant.fromEpochMilliseconds(it) }
+        set(value) {
+            provider.userSettings.putLong(keyShowedAppRatingTime, value.toEpochMilliseconds())
         }
 
     var lastShowedAppRatingDialogAppVersion: Long
-        get() = provider.appSettings.getLong(keyShowedAppRatingVersion, 0)
+        get() = provider.userSettings.getLong(keyShowedAppRatingVersion, 0)
         set(value) {
-            provider.appSettings.putLong(keyShowedAppRatingVersion, value)
+            provider.userSettings.putLong(keyShowedAppRatingVersion, value)
         }
 
     var appLaunchedCountWhenLoggedIn: Int
@@ -412,6 +469,31 @@ class AppPrefs(
             provider.appSettings.putString(keyDeviceTheme, value)
         }
 
+    fun setPlaceSensitivityForPlace(placeId: String, sensitivity: GroupPlaceSensitivityData?) {
+        if (sensitivity != null) {
+            val model = BaseRemoteModule.formatter.encodeToString(sensitivity)
+            provider.userSettings.putString("${keyPlaceSensitivityType}_${placeId}", model)
+        } else {
+            provider.userSettings.remove("${keyPlaceSensitivityType}_${placeId}")
+        }
+    }
+
+    fun getPlaceSensitivityForPlace(placeId: String): GroupPlaceSensitivityData? {
+        return provider.userSettings.getStringOrNull("${keyPlaceSensitivityType}_${placeId}")?.let {
+            try {
+                BaseRemoteModule.formatter.decodeFromString(it)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    var isDevModeEnabled: Boolean
+        get() = provider.userSettings.getBoolean(keyDevModeEnabled, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyDevModeEnabled, value)
+        }
+
 
     fun hasGuestAccount(): Boolean {
         return hasV1GuestAccount() || hasV2GuestAccount()
@@ -435,10 +517,10 @@ class AppPrefs(
     }
 
     fun invalidateGuestAccount() {
-        appPrefs.guestEmailV1 = ""
-        appPrefs.guestPasswordV1 = ""
-        appPrefs.guestEmailV2 = ""
-        appPrefs.guestPasswordV2 = ""
+        guestEmailV1 = ""
+        guestPasswordV1 = ""
+        guestEmailV2 = ""
+        guestPasswordV2 = ""
     }
 
     fun clearPushTokens() {

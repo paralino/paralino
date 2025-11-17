@@ -3,7 +3,7 @@ package app.paralino.core.models.raw
 import app.paralino.core.utils.extensions.isInPast
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.days
@@ -77,11 +77,19 @@ enum class PushNotificationImportance constructor(val key: String) {
 }
 
 enum class PushNotificationType constructor(val key: String) {
-    LOW_BATTERY_ALERT("low_battery_alert"),
-    PLACE_ALERT("place_activity"),
-    PLACE_CREATED("place_created"),
-    PLACE_UPDATED("place_updated"),
-    PLACE_DELETED("place_deleted"),
+    GROUP_LOW_BATTERY_ALERT("low_battery_alert"),
+    PERSONAL_LOW_BATTERY_ALERT("personal_low_battery_alert"),
+
+    GROUP_PLACE_ALERT("place_activity"),
+    GROUP_PLACE_CREATED("place_created"),
+    GROUP_PLACE_UPDATED("place_updated"),
+    GROUP_PLACE_DELETED("place_deleted"),
+
+    PERSONAL_PLACE_ALERT("personal_place_activity"),
+    PERSONAL_PLACE_CREATED("personal_place_created"),
+    PERSONAL_PLACE_UPDATED("personal_place_updated"),
+    PERSONAL_PLACE_DELETED("personal_place_deleted"),
+
     GROUP_MEMBER_ADDED("group_member_added"),
     GROUP_MEMBER_DELETED("group_member_deleted"),
     LOCATION_STARTED("location_sharing_start"),

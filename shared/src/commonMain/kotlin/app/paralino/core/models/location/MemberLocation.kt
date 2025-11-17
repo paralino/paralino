@@ -1,6 +1,7 @@
 package app.paralino.core.models.location
 
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
@@ -15,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 @Serializable
 data class MemberLocation constructor(
     val id: String,
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val memberId: String,
     val userId: String,
     val deviceId: String,
@@ -28,6 +29,9 @@ data class MemberLocation constructor(
     val locationData: CryptoResource<LocationDataModel>,
 
     @Contextual
+    val locationHistory: CryptoResource<LocationHistoryModel>,
+
+    @Contextual
     val status: CryptoResource<MemberDeviceStatus>
 ) {
     val name: String get() = nameOrNull ?: "---"
@@ -38,7 +42,7 @@ data class MemberLocation constructor(
         return (adaptedStatus != MemberDeviceStatusType.TOO_MANY_REQUESTS || isStatusOlderThan(1.minutes))
                 && adaptedStatus != MemberDeviceStatusType.ACTIVE
                 && adaptedStatus?.isDeviceSetupWrong != true
-                && ((isOlderThan(2.minutes) || !hasLocation) || ((isOlderThan(40.seconds) || !hasLocation) && adaptedStatus != MemberDeviceStatusType.BATTERY_SAVER_ON))
+                && ((isOlderThan(1.minutes) || !hasLocation) || ((isOlderThan(30.seconds) || !hasLocation) && adaptedStatus != MemberDeviceStatusType.BATTERY_SAVER_ON))
                 && status.data?.statusType != MemberDeviceStatusType.NOT_SHARING
     }
 

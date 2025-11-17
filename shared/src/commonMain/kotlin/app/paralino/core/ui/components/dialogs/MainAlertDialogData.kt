@@ -3,7 +3,10 @@ package app.paralino.core.ui.components.dialogs
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import app.paralino.core.MR
+import app.paralino.core.models.base.SubscriptionOfferDialogContent
+import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.BlocklistType
+import app.paralino.core.models.user.UserSession
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.StringResource
@@ -40,7 +43,10 @@ data class AlertDialogData(
 data class AlertDialogAction(
     val dialog: MainAlertDialog,
     val action: String?,
-)
+) {
+    val isOk = action == MainAlertDialog.Buttons.buttonOk
+    val isCancel = action == MainAlertDialog.Buttons.buttonCancel
+}
 
 @Serializable
 sealed interface MainAlertDialog {
@@ -283,7 +289,7 @@ sealed interface MainAlertDialog {
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(resource = MR.strings.group_details_remove_member_alert_button),
+                    text = stringResource(resource = MR.strings.group_members_item_remove_button),
                     color = AlertDialogButtonData.destructiveColor,
                     needsLongConfirmation = true
                 ),
@@ -314,7 +320,32 @@ sealed interface MainAlertDialog {
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
-                    text = stringResource(resource = MR.strings.group_details_remove_member_alert_button),
+                    text = stringResource(resource = MR.strings.group_details_remove_member_alert_button)
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                ),
+            ),
+        )
+    }
+
+    data class DeleteMemberLocationConfirm(
+        val memberId: String,
+        val locationId: String,
+        val isUserOwnDevice: Boolean,
+        val memberName: String,
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = stringResource(resource = MR.strings.group_members_device_confirm_remove_alert_title),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.group_members_device_confirm_remove_button),
                     color = AlertDialogButtonData.destructiveColor,
                     needsLongConfirmation = true
                 ),
@@ -610,7 +641,7 @@ sealed interface MainAlertDialog {
         )
     }
 
-    data class PlanLimit(
+    data class ServiceMaxLimit(
         val content: String,
         val limit: Int
     ) : MainAlertDialog {
@@ -619,7 +650,27 @@ sealed interface MainAlertDialog {
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = stringResource(resource = MR.strings.plan_limit_alert_title),
-            message = MR.strings.plan_limit_alert_message.localizedString(content, limit),
+            message = MR.strings.plan_limit_serviceMax_alert_message.localizedString(content, limit),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor
+                ),
+            ),
+        )
+    }
+
+    data class PlanLimitForOwner(
+        val content: String,
+        val limit: Int
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.plan_limit_alert_title),
+            message = MR.strings.plan_limit_info_alert_message.localizedString(content, limit),
             buttons = listOf(
                 AlertDialogButtonData(
                     id = Buttons.buttonOk,
@@ -638,7 +689,7 @@ sealed interface MainAlertDialog {
 
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
-            title = stringResource(resource = MR.strings.plan_limit_contact_owner_alert_title),
+            title = stringResource(resource = MR.strings.plan_limit_alert_title),
             message = MR.strings.plan_limit_contact_owner_alert_message.localizedString(content, limit),
             buttons = listOf(
                 AlertDialogButtonData(
@@ -750,6 +801,278 @@ sealed interface MainAlertDialog {
                 AlertDialogButtonData(
                     id = Buttons.buttonCancel,
                     text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class DeleteLocationHistoryEntry(
+        val info: String,
+        val canDeleteRange: Boolean
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        companion object {
+            const val buttonMarkAsRangeId = "markAsRange"
+        }
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = buildString {
+                append(MR.strings.history_entry_delete_alert_message.localizedString(info))
+                append("\n\n")
+                append(MR.strings.history_delete_irreversible_action_notice.localizedString())
+            },
+            buttons = buildList {
+                add(
+                    AlertDialogButtonData(
+                        id = Buttons.buttonOk,
+                        text = stringResource(resource = MR.strings.button_delete),
+                        color = AlertDialogButtonData.destructiveColor,
+                        needsLongConfirmation = true
+                    )
+                )
+
+                if (canDeleteRange) {
+                    add(
+                        AlertDialogButtonData(
+                            id = buttonMarkAsRangeId,
+                            text = "Delete range..."
+                        )
+                    )
+                }
+
+                add(
+                    AlertDialogButtonData(
+                        id = Buttons.buttonCancel,
+                        text = stringResource(resource = MR.strings.button_cancel)
+                    )
+                )
+            }
+        )
+    }
+
+    data class DeleteLocationHistoryRange(
+        val startInfo: String,
+        val endInfo: String,
+        val count: String,
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        companion object {
+            const val buttonClearSelection = "buttonClearSelection"
+        }
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.history_entry_range_delete_alert_title),
+            message = buildString {
+                append(MR.strings.history_entry_range_delete_alert_message.localizedString(startInfo, endInfo, count))
+                append("\n\n")
+                append(MR.strings.history_delete_irreversible_action_notice.localizedString())
+            },
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = "Delete selected",
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = buttonClearSelection,
+                    text = "Clear selection",
+                    color = AlertDialogButtonData.positiveColor,
+                    needsLongConfirmation = false
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class DeleteLocationHistoryDays(
+        val content: String
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.alert_title_confirm),
+            message = buildString {
+                append(content)
+                append("\n\n")
+                append(MR.strings.history_delete_irreversible_action_notice.localizedString())
+            },
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.button_delete),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class SessionInfo(
+        val content: String,
+        val canDelete: Boolean,
+        val session: UserSession
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.personalSpace_session_title),
+            message = buildString {
+                append(content)
+            },
+            buttons = buildList {
+                if (canDelete) {
+                    add(
+                        AlertDialogButtonData(
+                            id = Buttons.buttonOk,
+                            text = stringResource(MR.strings.setting_title_logout),
+                            color = AlertDialogButtonData.destructiveColor,
+                            needsLongConfirmation = false
+                        )
+                    )
+                    add(
+                        AlertDialogButtonData(
+                            id = Buttons.buttonCancel,
+                            text = stringResource(resource = MR.strings.button_cancel)
+                        )
+                    )
+                } else {
+                    add(
+                        AlertDialogButtonData(
+                            id = Buttons.buttonCancel,
+                            text = stringResource(resource = MR.strings.button_ok)
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    data class SessionDeleteConfirmation(
+        val content: String,
+        val session: UserSession
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.personalSpace_device_logout_titleConfirm),
+            message = buildString {
+                append(content)
+            },
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.personalSpace_device_logout_actionConfirm),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class DeleteInactiveUserOwnDevice(
+        val device: UserDeviceModel
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.alert_title_confirm),
+            message = stringResource(MR.strings.personalSpace_device_delete_dialogMessage),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.personalSpace_device_delete_dialogButton)
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class DeleteInactiveUserOwnDeviceConfirm(
+        val device: UserDeviceModel
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.alert_title_confirm),
+            message = stringResource(MR.strings.personalSpace_device_delete_confirm_dialogMessage),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.group_members_device_confirm_remove_button),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class DeactivateUserOwnDevice(
+        val device: UserDeviceModel,
+        val isCurrentDevice: Boolean
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.alert_title_confirm),
+            message = stringResource(MR.strings.personalSpace_device_deactivate_dialogMessage),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.personalSpace_device_deactivate_action),
+                    color = AlertDialogButtonData.destructiveColor,
+                    needsLongConfirmation = true
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class SubscriptionOfferDialog(
+        val dialogOffer: SubscriptionOfferDialogContent,
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = "",
+            message = "",
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor,
                 )
             )
         )

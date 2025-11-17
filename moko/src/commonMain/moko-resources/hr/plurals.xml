@@ -35,14 +35,19 @@
         <item quantity="few">**%d grupe**</item>
         <item quantity="other">**%d grupa**</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">**%d član**</item>
-        <item quantity="few">**%d člana**</item>
-        <item quantity="other">**%d članova**</item>
-    </plurals>
     <plurals name="plan_benefit_places">
         <item quantity="one">**%d mjesto** s neograničenim obavijestima</item>
         <item quantity="few">**%d mjesta** s neograničenim obavijestima</item>
         <item quantity="other">**%d mjesta** s neograničenim obavijestima</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grupa</item>
+        <item quantity="few">Grupe</item>
+        <item quantity="other">Grupa</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Uređaj</item>
+        <item quantity="few">Uređaja</item>
+        <item quantity="other">Uređaja</item>
     </plurals>
 </resources>

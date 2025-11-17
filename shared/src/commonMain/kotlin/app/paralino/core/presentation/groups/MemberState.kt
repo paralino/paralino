@@ -7,22 +7,30 @@ import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
 import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModel
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.isOlderThan
-import kotlinx.datetime.Instant
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
-sealed interface GroupMemberItemState {
-    val memberState: GroupMemberState
-    val keyId: String
-    val lastLocationPing: String?
-    val lastStatusPing: String?
-    val actions: MemberActionsState
-    val singleLocation: GroupMemberItemLocationState?
-    val singleVisibleLocation: GroupMemberItemLocationState?
+sealed class GroupMemberItemState() {
+    abstract val memberState: GroupMemberState
+    abstract val keyId: String
+    abstract val lastLocationPing: String?
+    abstract val lastStatusPing: String?
+    abstract val actions: MemberActionsState
+    abstract val singleLocation: GroupMemberItemLocationState?
+    abstract val allowShowingDevices: Boolean
+    abstract val compactMultiDeviceMode: Boolean
+    abstract val isHighlighted: Boolean
+    abstract val locations: List<GroupMemberItemLocationState>
+
+    abstract val singleVisibleLocation: GroupMemberItemLocationState?
+    abstract val filteredLastPing: String?
+    abstract val statusTag: MemberDeviceStatusType?
 }
 
 data class GroupMemberState constructor(
@@ -55,54 +63,80 @@ data class GroupMemberState constructor(
 
 data class GroupMemberItemStateWithOneLocation constructor(
     override val memberState: GroupMemberState,
-    val location: GroupMemberItemLocationState?,
+    val deviceId: String?,
+    override val singleLocation: GroupMemberItemLocationState?,
     override val actions: MemberActionsState,
-) : GroupMemberItemState {
-    override val keyId: String
-        get() = location?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
-            ?: memberState.memberId
+    override val isHighlighted: Boolean
+) : GroupMemberItemState() {
+    override val keyId: String = singleLocation?.keyId
+        ?.takeIf { it.isNotBlank() }
+//        ?.plus(memberState.memberId)
+        ?: deviceId
+        ?: memberState.memberId
 
-    override val singleLocation: GroupMemberItemLocationState?
-        get() = location
-    override val singleVisibleLocation: GroupMemberItemLocationState?
-        get() = location?.takeIf { it.visibility.isVisible() }
-    override val lastLocationPing: String? get() = singleLocation?.lastLocationPing
-    override val lastStatusPing: String? get() = singleVisibleLocation?.lastStatusPing
+    override val lastLocationPing: String? = singleLocation?.lastLocationPing
+    override val locations = listOfNotNull(singleLocation)
+
+    override val singleVisibleLocation: GroupMemberItemLocationState? = singleLocation?.takeIf { it.visibility.isVisible() }
+    override val filteredLastPing: String? = lastLocationPing?.takeIf { singleLocation != null }
+    override val statusTag: MemberDeviceStatusType? = singleLocation?.deviceStatus
+        ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
+
+    override val lastStatusPing: String? = singleVisibleLocation?.lastStatusPing
+    override val allowShowingDevices: Boolean = false
+    override val compactMultiDeviceMode: Boolean = false
+}
+
+data class GroupMemberItemStateWithFullStateLocations constructor(
+    override val memberState: GroupMemberState,
+    val items: List<GroupMemberItemStateWithOneLocation>,
+    override val actions: MemberActionsState,
+    override val allowShowingDevices: Boolean,
+    override val lastLocationPing: String?,
+    override val lastStatusPing: String?
+) : GroupMemberItemState() {
+
+    override val isHighlighted: Boolean = memberState.isCurrentUser
+    override val locations = items.mapNotNull { it.singleLocation }
+    override val singleLocation = locations.takeIf { it.size == 1 }?.first()
+    override val keyId: String = singleLocation?.keyId
+        ?.takeIf { it.isNotBlank() }
+//        ?.plus(memberState.memberId)
+        ?: memberState.memberId
+
+    override val singleVisibleLocation: GroupMemberItemLocationState? = singleLocation?.takeIf { it.visibility.isVisible() }
+    override val filteredLastPing: String? = lastLocationPing?.takeIf { singleLocation != null }
+    override val statusTag: MemberDeviceStatusType? = singleLocation?.deviceStatus
+        ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
+    override val compactMultiDeviceMode: Boolean = true
 }
 
 data class GroupMemberItemStateWithLocations constructor(
     override val memberState: GroupMemberState,
-    val locations: List<GroupMemberItemLocationState>,
+    override val locations: List<GroupMemberItemLocationState>,
     override val actions: MemberActionsState,
-    val allowShowingDevices: Boolean,
+    override val allowShowingDevices: Boolean,
     override val lastLocationPing: String?,
     override val lastStatusPing: String?
-) : GroupMemberItemState {
+) : GroupMemberItemState() {
 
-    override val keyId: String
-        get() = singleLocation?.locationId?.takeIf { it.isNotBlank() }?.plus(memberState.memberId)
-            ?: memberState.memberId
-
+    override val isHighlighted: Boolean = memberState.isCurrentUser
     override val singleLocation = locations.takeIf { it.size == 1 }?.first()
-    override val singleVisibleLocation = singleLocation?.takeIf { it.visibility.isVisible() }
+    override val keyId: String = singleLocation?.keyId
+        ?.takeIf { it.isNotBlank() }
+//        ?.plus(memberState.memberId)
+        ?: memberState.memberId
 
-    val filteredLastPing: String? = lastLocationPing?.takeIf { singleLocation != null }
-
-    val statusTag: MemberDeviceStatusType?
-        get() = singleLocation?.deviceStatus
-            ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
-
-    val asSingleLocationState = singleLocation?.let {
-        GroupMemberItemStateWithOneLocation(
-            memberState = memberState,
-            location = it,
-            actions = actions
-        )
-    }
+    override val singleVisibleLocation: GroupMemberItemLocationState? = singleLocation?.takeIf { it.visibility.isVisible() }
+    override val filteredLastPing: String? = lastLocationPing?.takeIf { singleLocation != null }
+    override val statusTag: MemberDeviceStatusType? = singleLocation?.deviceStatus
+        ?: locations.firstOrNull { it.deviceStatus == MemberDeviceStatusType.ACTIVE }?.deviceStatus
+    override val compactMultiDeviceMode: Boolean = false
 }
 
 data class GroupMemberItemLocationState constructor(
     val locationId: String,
+    val deviceId: String,
     val name: String?,
     val image: ImageModel,
     val lat: Double?,
@@ -123,6 +157,7 @@ data class GroupMemberItemLocationState constructor(
     val currentDevice: Boolean,
     val visibility: MemberLocationVisibilityType
 ) {
+    val keyId = locationId
     constructor(
         memberLocation: MemberLocation,
         name: String? = memberLocation.name,
@@ -134,6 +169,7 @@ data class GroupMemberItemLocationState constructor(
         formatter: IValueFormatter
     ) : this(
         locationId = memberLocation.id,
+        deviceId = memberLocation.deviceId,
         name = name,
         image = image ?: ImageModel.emoji(Emojis.lock),
         lat = memberLocation.locationData.data?.lat,
@@ -142,14 +178,21 @@ data class GroupMemberItemLocationState constructor(
         adjustedBatteryLevel = memberLocation.status.data?.validBatteryLevel(checkForTime = true),
         isBatteryCharging = memberLocation.status.data?.isCharging ?: false,
         speed = memberLocation.locationData.data?.speed?.takeIf { showSpeedAndElevation }?.let { formatter.getSpeedSmall(it) },
-        elevation = memberLocation.locationData.data?.altitude?.takeIf { showSpeedAndElevation }?.let { formatter.getDistanceSmall(it.toDouble()) },
+        elevation = memberLocation.locationData.data?.altitude
+            ?.takeIf { showSpeedAndElevation }
+            ?.let {
+                formatter.getDistanceSmall(
+                    meters = it.toDouble(),
+                    distanceType = DistanceType.ELEVATION
+                )
+            },
         lastLocationPing = formatter.getLastLocationPing(memberLocation),
         lastStatusPing = formatter.getLastStatusPing(memberLocation),
         accuracyMeters = memberLocation.locationData.data?.accuracy,
         deviceStatus = memberLocation.locationAwareStatusType,
         onlineStatus = memberLocation.status.data?.onlineStatus,
-        networkType = memberLocation.status.data?.networkType?.takeIf { showSpeedAndElevation },
-        signalStrength = memberLocation.status.data?.signalStrength?.takeIf { showSpeedAndElevation },
+        networkType = memberLocation.status.data?.networkType,
+        signalStrength = memberLocation.status.data?.signalStrength,
         canEdit = canEdit,
         currentDevice = currentDevice,
         visibility = visibility
@@ -168,6 +211,7 @@ data class MemberActionsState(
     val deleteLocation: MemberActionItemState? = null,
     val blockUser: MemberActionItemState? = null,
     val unblockUser: MemberActionItemState? = null,
+    val history: MemberActionItemState? = null,
     val navigate: MemberNavigateItemState? = null,
     val locationRequest: LocationRequestItemState? = null,
     val securityAction: Boolean = false
@@ -178,6 +222,7 @@ data class MemberActionsState(
         blockUser,
         unblockUser,
         locationRequest,
+        history,
         navigate,
         securityAction.takeIf { it }
     ).isNotEmpty()
@@ -213,7 +258,7 @@ data class LocationRequestItemState(
 }
 
 enum class MemberActionType {
-    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
+    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER, LOCATION_HISTORY;
 }
 
 enum class MemberLocationVisibilityType {

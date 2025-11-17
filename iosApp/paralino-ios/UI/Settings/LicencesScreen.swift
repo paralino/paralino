@@ -17,6 +17,7 @@ struct LicencesScreen: View {
             ComposeRepresentable {
                 ScreensIOS.shared.settings.LicencesScreenVC()
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.setting_title_libraries.localizedString())
         }

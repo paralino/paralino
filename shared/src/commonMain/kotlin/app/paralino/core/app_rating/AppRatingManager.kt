@@ -16,8 +16,9 @@ class AppRatingManager(
 ) : BaseRepository() {
 
     fun tryShowingAppRating(source: AppRatingSource) {
-        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(90.days) || shouldRetryAppRating(source)) {
+        if (appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(30.days) || shouldRetryAppRating(source)) {
             val canLaunch = when (source) {
+                AppRatingSource.PERSONAL_SPACE,
                 AppRatingSource.GROUP_DETAIL -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
                 AppRatingSource.MAIN_MAP -> appPrefs.appLaunchedCountWhenLoggedIn >= 3
                 AppRatingSource.APP_SETTINGS -> appPrefs.appLaunchedCountWhenLoggedIn >= 2
@@ -42,11 +43,11 @@ class AppRatingManager(
             else -> {
                 when (deviceApiProvider.deviceType) {
                     DeviceType.Android -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion < 56
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 65
                     }
 
                     DeviceType.iOS -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion < 34
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 40
                     }
                 }
             }
@@ -55,5 +56,9 @@ class AppRatingManager(
 }
 
 enum class AppRatingSource {
-    GROUP_DETAIL, MAIN_MAP, APP_SETTINGS, PAYWALL_ONBOARDING
+    GROUP_DETAIL,
+    PERSONAL_SPACE,
+    MAIN_MAP,
+    APP_SETTINGS,
+    PAYWALL_ONBOARDING
 }

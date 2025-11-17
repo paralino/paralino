@@ -20,6 +20,7 @@ struct AppStatusDebugScreen: View {
                     vm: appState.vm
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle("App status")
         }

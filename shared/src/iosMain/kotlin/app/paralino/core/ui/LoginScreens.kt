@@ -104,7 +104,7 @@ object LoginScreens {
         onFinish: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
-            val step = rememberSaveable { mutableStateOf(WelcomeOnboardingContent.STEP_LOCATION) }
+            val step = rememberSaveable { mutableStateOf(WelcomeOnboardingContent.entries.first()) }
             WelcomeOnboardingScreenCore(
                 vm = vm,
                 isDemo = isDemo,

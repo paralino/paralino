@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,23 +23,31 @@ import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
-import app.paralino.core.presentation.groups.edit.GroupInitViewModel
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
+import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
+import app.paralino.core.presentation.history.LocationHistoryScreenEvent
+import app.paralino.core.presentation.history.LocationHistoryUiEvent
+import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asReady
+import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
+import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.places.list.PlacesListScreenState
 import app.paralino.core.presentation.places.list.PlacesViewModel
+import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
 import app.paralino.core.ui.components.BottomSheetPickerType
@@ -49,13 +58,17 @@ import app.paralino.core.ui.groups.BatteryNotificationsScreenCore
 import app.paralino.core.ui.groups.GroupCreateScreenCore
 import app.paralino.core.ui.groups.GroupDetailScreenCore
 import app.paralino.core.ui.groups.GroupSettingsScreenCore
+import app.paralino.core.ui.history.LocationHistoryDeleteScreenCore
+import app.paralino.core.ui.history.LocationHistoryScreenElements
 import app.paralino.core.ui.invite.MemberInviteScreenCore
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.rememberSwipeableSheetState
 import app.paralino.core.ui.onboarding.FreePlanInfoScreenCore
-import app.paralino.core.ui.onboarding.account.GroupInitScreenCore
+import app.paralino.core.ui.onboarding.account.AccountOnboardingScreenCore
+import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
+import app.paralino.core.ui.personal_space.PersonalSpaceSettingsScreenCore
 import app.paralino.core.ui.places.CreatePlaceScreenCore
 import app.paralino.core.ui.places.PlaceAlertsSettingsScreenCore
 import app.paralino.core.ui.places.PlaceDetailScreenCore
@@ -68,28 +81,26 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import platform.UIKit.UIViewController
 
 object HomeScreens {
-    fun GroupInitScreenVC(
-        vm: GroupInitViewModel,
+    fun AccountOnboardingScreenVC(
+        vm: AccountOnboardingViewModel,
         paddingValues: AppleScreenPaddingValues,
-        openSettings: () -> Unit,
         onCreateGroup: () -> Unit,
-        openFreePlanInfo: () -> Unit,
         openPersonalCodes: () -> Unit,
         openPaywall: (BillingScreenSourceType) -> Unit,
         onSharePersonalCode: (String) -> Unit,
+        openSharingScreen: (GroupOrSpaceId) -> Unit,
         askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
-            GroupInitScreenCore(
+            AccountOnboardingScreenCore(
                 modifier = Modifier.padding(paddingValues.toComposePaddingValues()),
                 appState = it,
                 vm = vm,
-                openSettings = openSettings,
                 onCreateGroup = onCreateGroup,
-                openFreePlanInfo = openFreePlanInfo,
                 openPersonalCodes = openPersonalCodes,
                 openPaywall = openPaywall,
                 onSharePersonalCode = onSharePersonalCode,
+                openSharingScreen = openSharingScreen,
                 askNotificationPermission = askNotificationPermission,
             )
         }
@@ -155,6 +166,7 @@ object HomeScreens {
         onGroupDeleted: () -> Unit,
         openRawDataScreen: () -> Unit,
         openBatteryNotificationsSettings: () -> Unit,
+        openLocationHistorySettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GroupSettingsScreenCore(
@@ -163,7 +175,8 @@ object HomeScreens {
                 openEditGroup = openEditGroup,
                 onGroupDeleted = onGroupDeleted,
                 openRawDataScreen = openRawDataScreen,
-                openBatteryNotificationsSettings = openBatteryNotificationsSettings
+                openBatteryNotificationsSettings = openBatteryNotificationsSettings,
+                openLocationHistorySettings = openLocationHistorySettings
             )
         }
     }
@@ -205,6 +218,56 @@ object HomeScreens {
         }
     }
 
+    fun PersonalSpaceScreenVC(
+        vm: PersonalSpaceViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        openSettings: () -> Unit,
+        openTimeline: () -> Unit,
+        openMap: () -> Unit,
+        openPlaces: () -> Unit,
+        openSharing: () -> Unit,
+        openPaywall: () -> Unit,
+        askNotificationPermission: () -> Unit,
+        askLocationService: () -> Unit,
+        askLocationPermission: () -> Unit,
+        askBackgroundLocationPermission: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            PersonalSpaceScreenCore(
+                appState = it,
+                vm = vm,
+                contentPadding = paddingValues.toComposePaddingValues(),
+                openSettings = openSettings,
+                openTimeline = openTimeline,
+                openMap = openMap,
+                openPlaces = openPlaces,
+                openSharing = openSharing,
+                openPaywall = openPaywall,
+                askNotificationPermission = askNotificationPermission,
+                askLocationService = askLocationService,
+                askLocationPermission = askLocationPermission,
+                askBackgroundLocationPermission = askBackgroundLocationPermission
+            )
+        }
+    }
+
+    fun PersonalSpaceSettingsScreenVC(
+        vm: PersonalSpaceSettingsViewModel,
+        openRawDataScreen: () -> Unit,
+        openBatteryNotificationsSettings: () -> Unit,
+        openLocationHistorySettings: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            PersonalSpaceSettingsScreenCore(
+                appState = it,
+                vm = vm,
+                openRawDataScreen = openRawDataScreen,
+                openBatteryNotificationsSettings = openBatteryNotificationsSettings,
+                openLocationHistorySettings = openLocationHistorySettings
+            )
+        }
+    }
+
     fun StartSharingScreenVC(
         vm: SharingStartViewModel,
         onPickGroup: (BottomSheetPickerType.GroupPickerBottomSheet) -> Unit,
@@ -229,126 +292,6 @@ object HomeScreens {
                 askLocationPermission = askLocationPermission,
                 askBackgroundLocationPermission = askBackgroundLocationPermission
             )
-        }
-    }
-
-    @OptIn(ExperimentalComposeUiApi::class)
-    fun MapSheet(
-        vm: MapHomeViewModel,
-        paddingValues: AppleScreenPaddingValues,
-        initialUiState: MapHomeScreenState,
-        onOpenPlacesScreen: (String) -> Unit,
-        onOpenCreatePlaceScreen: (String) -> Unit,
-        onSheetOffsetChange: (Float) -> Unit,
-        onGroupPickerClick: () -> Unit,
-        onGroupDetailsClick: (String) -> Unit,
-        onSharingStartClick: (String) -> Unit,
-        onSettingsClick: () -> Unit,
-        onPlaceClick: (MapHomeScreenEvent.OpenPlaceDetails) -> Unit,
-        onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
-        onCreateGroup: () -> Unit,
-        openFreePlanInfo: () -> Unit,
-        openPaywall: () -> Unit,
-        mapUIView: () -> UIViewController,
-    ) = ComposeUIViewController() {
-        RootScreenIOS {
-            MessageDispatcherEffect(vm, it)
-
-            val uiState by vm.uiState.collectAsState(initialUiState)
-            val readyState = rememberUpdatedState(uiState.asReady()).value
-
-            BoxWithConstraints {
-                val height = this.maxHeight
-                val density = LocalDensity.current
-
-                val collapsedAnchorBottomPaddingPixels = with(LocalDensity.current) {
-                    15.dp.toPx()
-                }
-
-                val sheetState = rememberSwipeableSheetState(
-                    initialValue = if (readyState?.mapHomeScreenFocusType?.isMemberOrPlaceFocused != false) {
-                        BottomSheetPosition.HIDDEN
-                    } else {
-                        BottomSheetPosition.HIDDEN
-                    },
-                    collapsedAnchorBottomPaddingPixels = collapsedAnchorBottomPaddingPixels,
-                    confirmValueChange = {
-                        it != BottomSheetPosition.HIDDEN
-                    }
-                )
-
-                val bottomOffset = density.run {
-                    try {
-                        sheetState.offset.toDp()
-                    } catch (e: Exception) {
-                        0.dp
-                    }
-                }
-
-                LaunchedEffect(key1 = Unit) {
-                    vm.events.collectLatest { event ->
-                        when (event) {
-                            MapHomeScreenEvent.AddGroup -> onCreateGroup()
-                            MapHomeScreenEvent.ShowFreePlanInfo -> openFreePlanInfo()
-                            MapHomeScreenEvent.OpenPaywall -> openPaywall()
-                            is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId)
-                            is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
-                            MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick()
-                            is MapHomeScreenEvent.OpenPlaceDetails -> onPlaceClick(event)
-                            is MapHomeScreenEvent.OpenPlaces -> onOpenPlacesScreen(event.groupId)
-                            MapHomeScreenEvent.OpenSettings -> onSettingsClick()
-                            is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
-                            is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)
-                            null -> {}
-                        }
-                    }
-                }
-
-                LaunchedEffect(bottomOffset) {
-                    snapshotFlow { bottomOffset }
-                        .distinctUntilChanged()
-                        .collectLatest {
-                            val bottomOffset = (height - bottomOffset).coerceIn(
-                                0.dp,
-                                height * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                            )
-                            onSheetOffsetChange(bottomOffset.value)
-                        }
-                }
-
-                val dialog = uiState.alertDialog
-                dialog?.Show {
-                    vm.onEvent(MapHomeScreenUiEvent.DialogAction(AlertDialogAction(dialog, it)))
-                }
-
-                MainMapSheet(
-                    appState = it,
-                    swipeableState = sheetState,
-                    readyState = readyState,
-                    onEvent = { vm.onEvent(it) },
-                    screenContent = {
-                        UIKitViewController(
-                            modifier = Modifier.fillMaxSize(),
-                            factory = mapUIView,
-                            properties = UIKitInteropProperties(
-                                interactionMode = UIKitInteropInteractionMode.NonCooperative,
-                                isNativeAccessibilityEnabled = true
-                            )
-                        )
-
-                        MapHomeScreenElements(
-                            modifier = Modifier,
-                            state = uiState,
-                            topPadding = paddingValues.top.dp,
-                            sheetPeekHeight = (this.maxHeight - bottomOffset).coerceIn(
-                                minimumValue = if (sheetState.currentValue == BottomSheetPosition.HIDDEN) paddingValues.bottom.dp else 0.dp,
-                                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                            ),
-                            onEvent = { vm.onEvent(it) },
-                        )
-                    }
-                )
-            }
         }
     }
 
@@ -403,6 +346,7 @@ object HomeScreens {
         paddingValues: AppleScreenPaddingValues,
         openPlaceRawDataScreen: () -> Unit,
         openPlaceAlertsScreen: () -> Unit,
+        openPlaceSensitivityScreen: () -> Unit,
         openPlaceEditScreen: () -> Unit,
         onNavigateBack: () -> Unit,
         mapUIView: (PlaceDetailScreenState) -> UIViewController,
@@ -421,6 +365,7 @@ object HomeScreens {
                 onNavigateBack = onNavigateBack,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
+                openPlaceSensitivityScreen = openPlaceSensitivityScreen,
                 openPlaceEditScreen = openPlaceEditScreen,
                 mapContent = { state ->
                     Box(
@@ -480,6 +425,20 @@ object HomeScreens {
                         )
                     }
                 }
+            )
+        }
+    }
+
+    fun LocationHistoryDeleteScreenVC(
+        vm: LocationHistoryDeleteViewModel,
+        paddingValues: AppleScreenPaddingValues,
+        onNavigateBack: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            LocationHistoryDeleteScreenCore(
+                appState = it,
+                vm = vm,
+                onNavigateBack = onNavigateBack,
             )
         }
     }

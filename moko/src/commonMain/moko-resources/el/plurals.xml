@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d λεπτό</item>
+        <item quantity="other">%d λεπτά</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d ώρα</item>
+        <item quantity="other">%d ώρες</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d ημέρα</item>
+        <item quantity="other">%d ημέρες</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d μήνας</item>
+        <item quantity="other">%d μήνες</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d χρόνος</item>
+        <item quantity="other">%d χρόνια</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Κοινοποίηση τοποθεσίας με 1 ομάδα</item>
+        <item quantity="other">Κοινοποίηση τοποθεσίας με %d ομάδες</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Ομάδα</item>
+        <item quantity="other">Ομάδες</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Συσκευή</item>
+        <item quantity="other">Συσκευές</item>
+    </plurals>
+</resources>

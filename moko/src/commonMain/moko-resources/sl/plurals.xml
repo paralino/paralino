@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minuta</item>
+        <item quantity="two">%d minuti</item>
+        <item quantity="few">%d minute</item>
+        <item quantity="other">%d minut</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d ura</item>
+        <item quantity="two">%d uri</item>
+        <item quantity="few">%d ure</item>
+        <item quantity="other">%d ur</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d dan</item>
+        <item quantity="two">%d dneva</item>
+        <item quantity="few">%d dni</item>
+        <item quantity="other">%d dni</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d mesec</item>
+        <item quantity="two">%d meseca</item>
+        <item quantity="few">%d meseci</item>
+        <item quantity="other">%d mesecev</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d leto</item>
+        <item quantity="two">%d leti</item>
+        <item quantity="few">%d leta</item>
+        <item quantity="other">%d let</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Deljenje lokacije z 1 skupino</item>
+        <item quantity="two">Deljenje lokacije z %d skupinama</item>
+        <item quantity="few">Deljenje lokacije z %d skupinami</item>
+        <item quantity="other">Deljenje lokacije z %d skupinami</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Skupina</item>
+        <item quantity="two">Skupini</item>
+        <item quantity="few">Skupine</item>
+        <item quantity="other">Skupin</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Naprava</item>
+        <item quantity="two">Napravi</item>
+        <item quantity="few">Naprave</item>
+        <item quantity="other">Naprav</item>
+    </plurals>
+</resources>

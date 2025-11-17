@@ -5,17 +5,21 @@ import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.GroupMemberIdentityKey
 import app.paralino.core.crypto.GroupMemberMainPublicKey
 import app.paralino.core.crypto.GroupMemberSenderKey
+import app.paralino.core.crypto.LocationHistoryKey
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.UserGroupPersonalKeyPair
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.main.keys.GroupDeviceIntegrityEntity
+import app.paralino.core.db.main.keys.GroupHistoryKeyEntity
 import app.paralino.core.db.main.keys.LocalGroupDeviceKeysEntity
+import app.paralino.core.db.main.keys.PersonalHistoryKeyEntity
+import app.paralino.core.domain.crypto.MemberDeviceKeyRotation
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.raw.GroupDeviceCryptoKeyRaw
 import app.paralino.core.models.raw.GroupMemberCryptoKeyDataRaw
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.BaseRemoteModule
 
@@ -24,7 +28,7 @@ class CryptoKEKLocalRepository(
     private val userKeyRepository: CryptoUserKeysLocalSource,
     private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs,
-    private val appBuildConfig: AppBuildConfig
+    private val appConfig: AppConfigRepository
 ) : BaseRepository() {
 
     suspend fun getGroupKey(groupId: String, keyVersion: Long?): GroupMasterKey {
@@ -171,7 +175,7 @@ class CryptoKEKLocalRepository(
     }
 
     suspend fun hasPersonalGroupKeyByVersion(groupId: String, version: Long): Boolean {
-        return local.getPersonalGroupKeys().any {
+        return local.getPersonalGroupKeys(includeArchivedKeys = false).any {
             it.groupId == groupId && it.personalGroupKeyVersion == version
         }
     }
@@ -271,7 +275,7 @@ class CryptoKEKLocalRepository(
             return GroupMemberSenderKey.Error.Invalid
         }
 
-        if (keyRaw.ownerUserId == appPrefs.userId && appBuildConfig.appHost == AppHost.MAIN_APP) {
+        if (keyRaw.ownerUserId == appPrefs.userId && appConfig.appHost == AppHost.MAIN_APP) {
             if (keyRaw.locationId == local.getCurrentDeviceLocationId(groupId = keyRaw.groupId)) {
                 logg.tag("tag_crypto_key_group_member")
                     .d("Save current device sender key to encrypted cache")
@@ -295,6 +299,92 @@ class CryptoKEKLocalRepository(
             key = memberKey,
             deviceKeyVersion = keyRaw.deviceKeyVersion,
             memberKeyVersion = keyRaw.memberKeyVersion
+        )
+    }
+
+    suspend fun parseGroupLocationHistoryKey(
+        keyRaw: GroupHistoryKeyEntity
+    ): LocationHistoryKey {
+        if (keyRaw.encryptedHistoryKey.isBlank()) {
+            logg.tag("tag_crypto_key_history")
+                .w("No history keys available for user ${keyRaw.ownerUserId} in group ${keyRaw.groupId}")
+            return LocationHistoryKey.Error.MissingHistoryKey
+        }
+
+        val memberPublicKey = when (
+            val memberPublicKey = getMemberPublicKey(groupId = keyRaw.groupId, memberUserId = keyRaw.ownerUserId)
+        ) {
+            is GroupMemberMainPublicKey.Error -> {
+                return LocationHistoryKey.Error.InvalidOwnerPublicKey(memberPublicKey)
+            }
+
+            is GroupMemberMainPublicKey.Valid -> {
+                memberPublicKey
+            }
+        }
+
+        val myPreKey =
+            when (
+                val myPreKey = getMyPreKeyForGroup(
+                    groupId = keyRaw.groupId,
+                    version = keyRaw.memberKeyVersion,
+                    includeArchivedKeys = true
+                )
+            ) {
+                is UserGroupPersonalKeyPair.Error -> {
+                    return LocationHistoryKey.Error.InvalidPersonalKeyPair(myPreKey)
+                }
+
+                is UserGroupPersonalKeyPair.Valid -> {
+                    myPreKey
+                }
+            }
+
+        val historyKey = try {
+            cryptoCore.decryptKeyWithKeyPair(
+                key = keyRaw.encryptedHistoryKey,
+                myPrivateKey = myPreKey.key.privateKey,
+                publicKey = memberPublicKey.membershipKey
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_history")
+                .w("Invalid history key for group ${keyRaw.groupId} & member ${keyRaw.ownerUserId} (${e.message})")
+            return LocationHistoryKey.Error.Invalid
+        }
+
+        return LocationHistoryKey.Valid(
+            key = historyKey,
+            historyKeyVersion = keyRaw.historyKeyVersion,
+            memberKeyVersion = keyRaw.memberKeyVersion
+        )
+    }
+
+    suspend fun parsePersonalLocationHistoryKey(
+        keyRaw: PersonalHistoryKeyEntity
+    ): LocationHistoryKey {
+        if (keyRaw.encryptedHistoryKey.isBlank()) {
+            logg.tag("tag_crypto_key_history")
+                .w("No private history keys available")
+            return LocationHistoryKey.Error.MissingHistoryKey
+        }
+
+        val userKey = userKeyRepository.personalKey(version = keyRaw.userKeyVersion)
+
+        val historyKey = try {
+            cryptoCore.decryptDataWithKey(
+                data = keyRaw.encryptedHistoryKey,
+                key = userKey.key
+            )
+        } catch (e: Exception) {
+            logg.tag("tag_crypto_key_history")
+                .w("Invalid personal history key (${e.message})")
+            return LocationHistoryKey.Error.Invalid
+        }
+
+        return LocationHistoryKey.Valid(
+            key = historyKey,
+            historyKeyVersion = keyRaw.historyKeyVersion,
+            memberKeyVersion = userKey.version
         )
     }
 
@@ -430,9 +520,10 @@ class CryptoKEKLocalRepository(
 
     suspend fun getMyPreKeyForGroup(
         groupId: String,
-        version: Long?
+        version: Long?,
+        includeArchivedKeys: Boolean = false
     ): UserGroupPersonalKeyPair {
-        val allKeys = local.getPersonalGroupKeys()
+        val allKeys = local.getPersonalGroupKeys(includeArchivedKeys = includeArchivedKeys)
             .filter { it.groupId == groupId }
         val keyRaw = allKeys
             .let { keys ->
@@ -504,13 +595,40 @@ class CryptoKEKLocalRepository(
     suspend fun updateIntegrity(
         groupId: String,
         integrity: String,
+        safetySignature: String,
         userKeyVersion: Long
     ) {
         local.updateGroupDeviceIntegrity(
             groupId = groupId,
             integrity = integrity,
+            safetySignature = safetySignature,
             userKeyVersion = userKeyVersion
         )
+    }
+
+    suspend fun saveAndActivateGroupHistoryKey(
+        groupId: String,
+        userKeyVersion: Long,
+        historyKeyVersion: String,
+        encryptedHistoryKey: String,
+    ) {
+        local.saveAndActivateGroupHistoryKey(
+            groupId = groupId,
+            userKeyVersion = userKeyVersion,
+            historyKeyVersion = historyKeyVersion,
+            encryptedHistoryKey = encryptedHistoryKey,
+        )
+    }
+
+    suspend fun deactivateGroupHistoryKey(groupId: String) {
+        local.deactivateGroupHistoryKey(groupId = groupId)
+    }
+
+    suspend fun savePendingGroupHistoryMemberKeys(
+        groupId: String,
+        keys: List<MemberDeviceKeyRotation.GroupHistoryKeyPayload>
+    ) {
+        local.savePendingGroupHistoryMemberKeys(groupId = groupId, keys = keys)
     }
 
     suspend fun getDeviceIntegrityForGroup(groupId: String): GroupDeviceIntegrityEntity? {
@@ -525,7 +643,7 @@ class CryptoKEKLocalRepository(
         local.deleteKeysForUser(groupId, userId)
     }
 
-    suspend fun clearKeys() {
-        local.deleteAllKeys()
+    suspend fun clearCachedKeys() {
+        local.clearCache()
     }
 }

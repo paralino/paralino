@@ -19,7 +19,7 @@ interface GroupRelatedKeysDao {
         clearAllGroupKeys()
         clearAllGroupMembersKeys()
         clearAllGroupDeviceKeys()
-        clearAllPersonalGroupKeys()
+        clearAllActivePersonalGroupKeys()
 
         createGroupKeys(groupKeys)
         createGroupMemberKeys(memberKeys)
@@ -38,7 +38,7 @@ interface GroupRelatedKeysDao {
         clearAllGroupKeys(groupId = groupId)
         clearAllGroupMembersKeys(groupId = groupId)
         clearAllGroupDeviceKeys(groupId = groupId)
-        clearAllPersonalGroupKeys(groupId = groupId)
+        clearAllActivePersonalGroupKeys(groupId = groupId)
 
         createGroupKeys(groupKeys)
         createGroupMemberKeys(memberKeys)
@@ -62,7 +62,7 @@ interface GroupRelatedKeysDao {
         personalKeys: List<PersonalGroupKeyEntity>
     ) {
         clearAllGroupMembersKeys(groupId = groupId)
-        clearAllPersonalGroupKeys(groupId = groupId)
+        clearAllActivePersonalGroupKeys(groupId = groupId)
 
         createGroupMemberKeys(memberKeys)
         createPersonalGroupKeys(personalKeys)
@@ -75,16 +75,6 @@ interface GroupRelatedKeysDao {
     ) {
         clearAllGroupDeviceKeys(groupId = groupId)
         createGroupDeviceKeys(deviceKeys)
-    }
-
-    @Transaction
-    suspend fun clearAllGroupRelatedKeys() {
-        clearAllGroupKeys()
-        clearAllGroupMembersKeys()
-        clearAllGroupDeviceKeys()
-        clearAllPersonalGroupKeys()
-        clearAllGroupDeviceIntegrityKeys()
-        clearAllLocalGroupDeviceSenderKeys()
     }
 
     @Transaction
@@ -133,8 +123,11 @@ interface GroupRelatedKeysDao {
     @Query("SELECT * FROM groupDeviceKeysEntity")
     suspend fun getAllGroupDeviceKeys(): List<GroupDeviceKeysEntity>
 
-    @Query("SELECT * FROM personalGroupKeyEntity")
-    suspend fun getAllPersonalGroupKeys(): List<PersonalGroupKeyEntity>
+    @Query("SELECT * FROM personalGroupKeyEntity WHERE isArchived = 1")
+    suspend fun getAllArchivedPersonalGroupKeys(): List<PersonalGroupKeyEntity>
+
+    @Query("SELECT * FROM personalGroupKeyEntity WHERE isArchived = 0")
+    suspend fun getAllActivePersonalGroupKeys(): List<PersonalGroupKeyEntity>
 
     @Query("SELECT * FROM groupDeviceIntegrityEntity WHERE id = :groupId")
     suspend fun getGroupDeviceIntegrityKey(groupId: String): GroupDeviceIntegrityEntity?
@@ -156,6 +149,9 @@ interface GroupRelatedKeysDao {
     @Query("DELETE FROM personalGroupKeyEntity")
     suspend fun clearAllPersonalGroupKeys()
 
+    @Query("DELETE FROM personalGroupKeyEntity WHERE isArchived = 0")
+    suspend fun clearAllActivePersonalGroupKeys()
+
     @Query("DELETE FROM groupDeviceIntegrityEntity")
     suspend fun clearAllGroupDeviceIntegrityKeys()
 
@@ -175,6 +171,9 @@ interface GroupRelatedKeysDao {
 
     @Query("DELETE FROM personalGroupKeyEntity WHERE groupId = :groupId")
     suspend fun clearAllPersonalGroupKeys(groupId: String)
+
+    @Query("DELETE FROM personalGroupKeyEntity WHERE groupId = :groupId AND isArchived = 0")
+    suspend fun clearAllActivePersonalGroupKeys(groupId: String)
 
     @Query("DELETE FROM groupDeviceIntegrityEntity WHERE id = :groupId")
     suspend fun clearAllGroupDeviceIntegrityKeys(groupId: String)

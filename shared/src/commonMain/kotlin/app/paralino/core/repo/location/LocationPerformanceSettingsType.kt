@@ -120,16 +120,16 @@ sealed interface LocationPerformanceSettingsType {
         }
 
         data object Level4 : Balanced {
-            override val updateInterval: Duration = 30.minutes
-            override val minUpdateInterval: Duration = 10.minutes
-            override val minUpdateDistanceMeters: Int = 100
+            override val updateInterval: Duration = 20.minutes
+            override val minUpdateInterval: Duration = 5.minutes
+            override val minUpdateDistanceMeters: Int = 70
             override val isPremiumFeature: Boolean = true
             override val key: String = "balanced_level_400"
         }
 
         data object Level5 : Balanced {
-            override val updateInterval: Duration = 15.minutes
-            override val minUpdateInterval: Duration = 2.minutes
+            override val updateInterval: Duration = 5.minutes
+            override val minUpdateInterval: Duration = 1.minutes
             override val minUpdateDistanceMeters: Int = 0
             override val isPremiumFeature: Boolean = true
             override val key: String = "balanced_level_500"
@@ -144,6 +144,52 @@ sealed interface LocationPerformanceSettingsType {
                     Level3.key -> Level3
                     Level4.key -> Level4
                     Level5.key -> Level5
+                    else -> default
+                }
+            }
+        }
+    }
+
+
+    sealed class History : LocationPerformanceSettingsType {
+        abstract val speedThresholdMs: Float
+        abstract val elevationThreshold: Int
+        abstract val accuracyThreshold: Int
+        override val updateInterval: Duration = 3.seconds
+        override val minUpdateInterval: Duration = 2.seconds
+        override val isPremiumFeature: Boolean = false
+
+        data object Level1 : History() {
+            override val minUpdateDistanceMeters: Int = 80
+            override val accuracyThreshold: Int = 60
+            override val elevationThreshold: Int = 30
+            override val speedThresholdMs: Float = 1f
+            override val key: String = "history_100"
+        }
+
+        data object Level2 : History() {
+            override val minUpdateDistanceMeters: Int = 20
+            override val accuracyThreshold: Int = 20
+            override val elevationThreshold: Int = 20
+            override val speedThresholdMs: Float = 0.5f
+            override val key: String = "history_200"
+        }
+
+        data object Level3 : History() {
+            override val minUpdateDistanceMeters: Int = 10
+            override val accuracyThreshold: Int = 5
+            override val elevationThreshold: Int = 10
+            override val speedThresholdMs: Float = 0.1f
+            override val key: String = "history_300"
+        }
+
+        companion object {
+            val default: History = Level2
+            fun fromKey(key: String?): History {
+                return when (key) {
+                    Level1.key -> Level1
+                    Level2.key -> Level2
+                    Level3.key -> Level3
                     else -> default
                 }
             }

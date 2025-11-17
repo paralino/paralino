@@ -11,10 +11,13 @@ import app.paralino.android.ui.groups.BatteryNotificationsScreen
 import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.groups.GroupSettingsScreen
+import app.paralino.android.ui.history.LocationHistoryDeleteScreen
+import app.paralino.android.ui.history.LocationHistoryScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
 import app.paralino.android.ui.login.LoggedOutScreen
 import app.paralino.android.ui.login.LoginScreen
+import app.paralino.android.ui.login.PasswordConfirmationScreen
 import app.paralino.android.ui.login.ProfileSetupScreen
 import app.paralino.android.ui.login.RecoverKeysScreen
 import app.paralino.android.ui.login.ResetPasswordScreen
@@ -23,6 +26,8 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.MapHomeScreen
 import app.paralino.android.ui.onboarding.FreePlanInfoScreen
 import app.paralino.android.ui.onboarding.WelcomeOnboardingScreen
+import app.paralino.android.ui.personal_space.PersonalSpaceScreen
+import app.paralino.android.ui.personal_space.PersonalSpaceSettingsScreen
 import app.paralino.android.ui.places.CreatePlaceScreen
 import app.paralino.android.ui.places.PlaceAlertsSettingsScreen
 import app.paralino.android.ui.places.PlaceDetailScreen
@@ -46,11 +51,13 @@ import app.paralino.android.ui.settings.profile.EditProfileScreen
 import app.paralino.android.ui.share.SharingStartScreen
 import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
+import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 
 @Composable
@@ -179,6 +186,40 @@ fun NavGraphBuilder.homeGraph(
                 it.arguments?.getString(AppScreen.MainHome.FreePlanNoticeScreen.argumentGroupId)
             FreePlanInfoScreen(appState)
         }
+        composable(AppScreen.MainHome.LocationHistory.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentGroupId)!!
+            val memberUserId = it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentMemberUserId)!!
+            val deviceId = it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentDeviceId)
+            LocationHistoryScreen(
+                appState = appState,
+                groupId = groupId,
+                memberUserId = memberUserId,
+                deviceId = deviceId
+            )
+        }
+        composable(AppScreen.MainHome.LocationHistoryDelete.routeSignature) {
+            val groupId =
+                it.arguments?.getString(AppScreen.MainHome.LocationHistoryDelete.argumentGroupId)!!
+            LocationHistoryDeleteScreen(
+                appState = appState,
+                groupId = groupId
+            )
+        }
+        composable(AppScreen.MainHome.PersonalSpace.routeSignature) {
+            PersonalSpaceScreen(appState = appState)
+        }
+        composable(AppScreen.MainHome.PersonalSpaceSettings.routeSignature) {
+            PersonalSpaceSettingsScreen(appState = appState)
+        }
+        composable(AppScreen.MainHome.PlaceSensitivity.routeSignature) {
+            val groupId = it.arguments?.getString(AppScreen.MainHome.PlaceSensitivity.argumentGroupId)!!
+            val placeId = it.arguments?.getString(AppScreen.MainHome.PlaceSensitivity.argumentPlaceId)!!
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<PlaceSensitivityViewModel> { parametersOf(groupId, placeId) }
+            )
+        }
     }
 }
 
@@ -304,6 +345,9 @@ fun NavGraphBuilder.loggedOutGraph(
         }
         composable(AppScreen.LoggedOut.AccountRecovery.routeSignature) {
             RecoverKeysScreen(appState)
+        }
+        composable(AppScreen.LoggedOut.PasswordConfirmation.routeSignature) {
+            PasswordConfirmationScreen(appState)
         }
         composable(
             route = AppScreen.LoggedOut.EmailVerification.routeSignature,

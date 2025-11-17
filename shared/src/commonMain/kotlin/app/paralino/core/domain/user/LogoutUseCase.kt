@@ -3,6 +3,7 @@ package app.paralino.core.domain.user
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.LimitedExecution
 import app.paralino.core.domain.LimitedExecutionParentManager
 import app.paralino.core.domain.location.LocationUploadEngine
@@ -24,22 +25,19 @@ import kotlinx.coroutines.cancelChildren
 
 class LogoutUseCase(
     private val userRepo: UserRepository,
-    private val groupsRepo: UserGroupLocalDataSource,
     private val placeActivityRepo: PlaceActivityDataSource,
-    private val sharingManager: LocationSharingManager,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val userKeyRepo: CryptoUserKeysLocalSource,
-    private val codeRepo: PersonalCodesRepository,
     private val pushManager: IPushProviderManager,
-    private val deviceStatus: IDeviceApiProvider,
+    private val deviceApiProvider: IDeviceApiProvider,
     private val locationRepo: LocationUploadEngine,
     private val scopeProvider: ICoroutineScopeProvider,
     private val geofenceManager: IGeofenceManager,
     private val sessionMonitor: UserSessionMonitor,
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
-    private val userConfigRepo: UserConfigRepository,
     private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
+    private val appMainDatabase: MainDatabaseHelper
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 
     private val executionKey = "logout_or_delete"
@@ -108,18 +106,15 @@ class LogoutUseCase(
         appPrefs.clear()
         scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
 
+        appMainDatabase.logoutDao.logout()
+
         userKeyRepo.clearAllKeys()
-        cryptoKEKRepo.clearKeys()
+        cryptoKEKRepo.clearCachedKeys()
         pushManager.logout()
-        deviceStatus.logout()
+        deviceApiProvider.logout()
         locationRepo.logout()
-        groupsRepo.clearAll()
-        placeActivityRepo.clearAll()
-        codeRepo.clearLocally()
-        sharingManager.stopAllSharing()
+        placeActivityRepo.clearCache()
         geofenceManager.deleteAllGeofences()
-        userRepo.clearLocally()
-        userConfigRepo.logout()
         accessLogs.clearAll()
         logg.i("account_state", "Cleared all data on logout")
     }

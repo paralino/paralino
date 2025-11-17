@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.places.list
 
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.places.GroupPlace
@@ -10,10 +11,10 @@ import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 
 data class PlacesListScreenState constructor(
-    val groupId: String,
+    val groupId: GroupOrSpaceId,
     val groupImage: ImageModel,
     val groupName: String,
-    val placesLimit: Int,
+    val placesLimit: Int?,
     val isGroupOwner: Boolean,
     val canShowPlacesLimit: Boolean,
     val shouldShowPlanBanner: Boolean,
@@ -24,13 +25,14 @@ data class PlacesListScreenState constructor(
     val markers: List<MapPinData> = places.filter { it.lat != null && it.lng != null }
         .map { MapPinData(groupId, it) }
 
-    val placesLimitReached: Boolean = placesLimit <= places.size
-    val isOverLimit: Boolean = places.size > placesLimit
+    val placesLimitReached: Boolean = placesLimit != null && placesLimit <= places.size
+    val isOverLimit: Boolean = placesLimit != null && places.size > placesLimit
+    val isPersonalSpace = groupId.isPersonalSpace
 }
 
 data class PlaceListItemData constructor(
     val id: String,
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val name: String,
     val image: ImageModel,
     val private: Boolean,
@@ -40,7 +42,7 @@ data class PlaceListItemData constructor(
 ) {
     constructor(place: GroupPlace) : this(
         id = place.id,
-        groupId = place.groupId,
+        groupOrSpaceId = place.groupOrSpaceId,
         name = place.data.data?.name ?: "---",
         image = place.data.data?.image ?: ImageModel.emoji(Emojis.robot),
         private = place.private,
@@ -51,9 +53,8 @@ data class PlaceListItemData constructor(
 }
 
 sealed class PlacesScreenEvent() {
-    data class Error(val error: Throwable) : PlacesScreenEvent()
     object AddPlace : PlacesScreenEvent()
-    data class GroupPlacesLimitReached(val limit: Int) : PlacesScreenEvent()
+    data object OpenPaywall : PlacesScreenEvent()
     data object MissingNotificationPermission : PlacesScreenEvent()
 }
 

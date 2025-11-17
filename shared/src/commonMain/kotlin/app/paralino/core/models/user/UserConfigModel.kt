@@ -30,7 +30,7 @@ data class UserConfigModel(
                         id = document["\$id"] as String,
                         ownerUserId = document["ownerUserId"] as String,
                         type = document["type"] as String,
-                        data = document["data"] as? String
+                        data = (document["resourceData"] as? String?) ?: (document["data"] as? String?),
                     )
                 }
             )

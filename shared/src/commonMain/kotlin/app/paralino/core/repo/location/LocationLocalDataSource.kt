@@ -4,6 +4,7 @@ import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberEntityBatterySettingsUpdate
 import app.paralino.core.db.main.groups.MemberLocationEntityDataUpdate
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
@@ -57,7 +58,11 @@ class LocationLocalDataSource(
         return database.groupRelatedDao.getUserMemberId(groupId = groupId, userId = userId)
     }
 
-    suspend fun clearMemberLocationData(locationId: String) {
-        database.groupRelatedDao.clearLocationDataForLocation(locationId = locationId)
+    suspend fun clearMemberLocationData(groupOrSpaceId: GroupOrSpaceId, locationId: String) {
+        if (groupOrSpaceId.isPersonalSpace) {
+            database.userDeviceDao.clearLocationDataForDevice(locationId = locationId)
+        } else {
+            database.groupRelatedDao.clearLocationDataForLocation(locationId = locationId)
+        }
     }
 }

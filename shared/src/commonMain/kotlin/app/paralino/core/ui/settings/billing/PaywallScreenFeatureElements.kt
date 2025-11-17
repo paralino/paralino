@@ -1,7 +1,11 @@
 package app.paralino.core.ui.settings.billing
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +37,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
@@ -43,6 +49,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.dummyMemberState
+import app.paralino.core.ui.onboarding.welcome.HistoryMapOnboardingContent
 import app.paralino.core.ui.settings.GenericSettingsOptionItem
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
@@ -60,6 +67,7 @@ fun PaywallScreenFeatureElements(
     memberName: String,
     memberDeviceName: String,
     displayTitle: Boolean,
+    displayLocationHistory: Boolean,
     valueFormatter: IValueFormatter
 ) {
     Column(
@@ -88,10 +96,29 @@ fun PaywallScreenFeatureElements(
             contentDescription = null
         )
 
+        if (displayLocationHistory) {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .height(400.dp)
+                    .rotate(2f)
+                    .shadow(8.dp, RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colors.surface)
+                    .padding(6.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                HistoryMapOnboardingContent(
+                    modifier = Modifier.fillMaxSize(),
+                    animate = false,
+                )
+            }
+        }
+
         MemberItem(
             modifier = Modifier
                 .padding(top = 20.dp)
-                .rotate(2f),
+                .rotate(-2f),
             memberName = memberName,
             memberImageModel = memberImageModel,
             memberDeviceName = memberDeviceName,
@@ -103,8 +130,7 @@ fun PaywallScreenFeatureElements(
 
         BatteryPerformance1Switch(
             modifier = Modifier
-                .padding(top = 12.dp)
-                .rotate(-2f),
+                .rotate(2f),
             itemState = itemState1,
             onClick = {
                 itemState1 = true
@@ -114,7 +140,7 @@ fun PaywallScreenFeatureElements(
 
         BatteryPerformance2Switch(
             modifier = Modifier
-                .rotate(3f),
+                .rotate(-3f),
             itemState = itemState2,
             onClick = {
                 itemState1 = false
@@ -125,13 +151,13 @@ fun PaywallScreenFeatureElements(
         NotifyMembersSwitch(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .rotate(-2f),
+                .rotate(2f),
         )
 
         MemberItemWithLocations(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .rotate(2f),
+                .rotate(-2f),
             memberName = memberName,
             memberImageModel = memberImageModel,
             memberDeviceName = memberDeviceName,
@@ -154,6 +180,7 @@ private fun MemberItem(
         mutableStateOf(
             GroupMemberItemLocationState(
                 locationId = "",
+                deviceId = "",
                 name = memberDeviceName,
                 image = ImageModel.emoji(Emojis.lock),
                 lat = null,
@@ -162,14 +189,14 @@ private fun MemberItem(
                 adjustedBatteryLevel = 58,
                 isBatteryCharging = false,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
-                elevation = valueFormatter.getDistanceSmall(meters = 250.0),
+                elevation = valueFormatter.getDistanceSmall(meters = 250.0, distanceType = DistanceType.ELEVATION),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(30.minutes).toLocalDateTime(TimeZone.UTC)
                 ),
                 lastStatusPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(30.minutes).toLocalDateTime(TimeZone.UTC)
                 ),
-                accuracyMeters = 200f,
+                accuracyMeters = 50f,
                 deviceStatus = MemberDeviceStatusType.IDLE,
                 canEdit = false,
                 currentDevice = true,
@@ -200,8 +227,10 @@ private fun MemberItem(
             memberState = dummyMemberState.copy(
                 name = memberName, image = memberImageModel
             ),
-            location = location,
-            actions = memberActions
+            singleLocation = location,
+            deviceId = "",
+            actions = memberActions,
+            isHighlighted = true
         ),
         forceExpandAction = true,
         collapseOnActionClick = false,
@@ -243,7 +272,7 @@ private fun MemberItem(
                         signalStrength = NetworkSignalStrength.GREAT,
                         lastLocationPing = MR.strings.group_members_last_active_status_now.localizedString(),
                         speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.2f),
-                        elevation = valueFormatter.getDistanceSmall(meters = 180.0),
+                        elevation = valueFormatter.getDistanceSmall(meters = 180.0, distanceType = DistanceType.ELEVATION),
                     )
                 }
             }
@@ -267,6 +296,7 @@ private fun MemberItemWithLocations(
         listOf(
             GroupMemberItemLocationState(
                 locationId = "",
+                deviceId = "",
                 name = memberDeviceName,
                 image = ImageModel.emoji(Emojis.lock),
                 lat = null,
@@ -275,7 +305,7 @@ private fun MemberItemWithLocations(
                 adjustedBatteryLevel = 58,
                 isBatteryCharging = false,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.4f),
-                elevation = valueFormatter.getDistanceSmall(meters = 250.0),
+                elevation = valueFormatter.getDistanceSmall(meters = 250.0, distanceType = DistanceType.ELEVATION),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().toLocalDateTime(TimeZone.UTC)
                 ),
@@ -293,6 +323,7 @@ private fun MemberItemWithLocations(
             ),
             GroupMemberItemLocationState(
                 locationId = "",
+                deviceId = "",
                 name = "$memberDeviceName #2",
                 image = ImageModel.emoji(Emojis.lock),
                 lat = null,
@@ -301,7 +332,7 @@ private fun MemberItemWithLocations(
                 adjustedBatteryLevel = 75,
                 isBatteryCharging = true,
                 speed = valueFormatter.getSpeedSmall(metersPerSecond = 1.3f),
-                elevation = valueFormatter.getDistanceSmall(meters = 280.0),
+                elevation = valueFormatter.getDistanceSmall(meters = 280.0, distanceType = DistanceType.ELEVATION),
                 lastLocationPing = valueFormatter.formatRelativeDateTime(
                     nowUTC().minus(20.minutes).toLocalDateTime(TimeZone.UTC)
                 ),
@@ -359,6 +390,7 @@ private fun BatteryPerformance1Switch(
         highBatteryImpact = true,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = onClick
     )
 }
@@ -377,6 +409,7 @@ private fun BatteryPerformance2Switch(
         highBatteryImpact = true,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = onClick
     )
 }

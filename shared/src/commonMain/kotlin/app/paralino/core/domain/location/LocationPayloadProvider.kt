@@ -1,15 +1,25 @@
 package app.paralino.core.domain.location
 
+import app.paralino.core.crypto.AlphabetType
+import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.db.main.groups.MemberEntity
 import app.paralino.core.db.main.groups.MemberLocationEntity
 import app.paralino.core.domain.crypto.IMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.IMemberDeviceKeyRotation
+import app.paralino.core.domain.crypto.IPersonalDeviceCryptoKeyRotation
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationDataModel
+import app.paralino.core.models.location.LocationHistoryPointLocationModel
+import app.paralino.core.models.location.LocationHistoryPointModel
+import app.paralino.core.models.location.LocationHistoryPointStatusModel
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.MemberGroupId
+import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
 
 class LocationPayloadProvider(
@@ -18,21 +28,95 @@ class LocationPayloadProvider(
     private val appPrefs: AppPrefs,
     private val memberDeviceStatusProvider: MemberDeviceStatusProvider,
     private val memberCryptoKeyRotation: IMemberCryptoKeyRotation,
-    private val deviceKeyRotation: IMemberDeviceKeyRotation,
+    private val memberDeviceKeyRotation: IMemberDeviceKeyRotation,
+    private val personalDeviceKeyRotation: IPersonalDeviceCryptoKeyRotation,
+    private val cryptoCore: CryptoCore,
 ) {
 
     suspend fun getLocationPayload(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         data: LocationDataModel?,
         /**
          * if there is no contract, location data is ignored
          */
         contract: LocationSharingContract?
     ): LocationPayloadStatus {
+
+        val result = if (groupId.isPersonalSpace) {
+            personalPayloadPrecheck()
+        } else {
+            groupPayloadPrecheck(groupId = groupId.id)
+        }
+
+        when (result) {
+            is LocationPayloadStatus.Success -> {
+                val status = memberDeviceStatusProvider.getStatus(groupId = groupId, contract = contract)
+                val locationData = safeLet(data, contract) { data, contract ->
+                    LocationDataModel(
+                        timeUTC = data.timeUTC,
+                        endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
+                        lat = data.lat,
+                        lng = data.lng,
+                        accuracy = data.accuracy,
+                        speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
+                        altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
+                        isMasked = false
+                    )
+                }
+
+                val locationHistory = safeLet(
+                    locationData,
+                    contract?.takeIf { it.saveToHistory }
+                ) { data, contract ->
+                    if (data.timeUTC != null && status.timeUTC != null) {
+                        LocationHistoryPointModel(
+                            id = cryptoCore.randomId(length = 8, alphabet = AlphabetType.EXTENDED),
+                            loc = LocationHistoryPointLocationModel(
+                                tA = data.timeUTC,
+                                tB = null,
+                                lat = data.lat,
+                                lng = data.lng,
+                                // we only need partial decimal places for accuracy, speed and elevation
+                                // that is already more than enough
+                                acc = data.accuracy.roundToPrecision(decimalPlaces = -1),
+                                spd = data.speed?.roundToPrecision(decimalPlaces = 1),
+                                alt = data.altitude?.roundToPrecision(decimalPlaces = -1)
+                            ),
+                            status = LocationHistoryPointStatusModel(
+                                tA = status.timeUTC,
+                                tB = null,
+                                tz = status.tz,
+                                sts = status.statusType?.id,
+                                bat = status.batteryLevel,
+                                chr = if (status.isCharging == null) null else if (status.isCharging) 1 else 0,
+                                net = status.network,
+                                sig = status.signal
+                            ),
+                        )
+                    } else {
+                        null
+                    }
+                }
+
+                return result.copy(
+                    payload = result.payload.copy(
+                        locationData = locationData,
+                        deviceStatus = status,
+                        locationHistory = locationHistory
+                    )
+                )
+            }
+            else -> return result
+        }
+    }
+
+    private suspend fun groupPayloadPrecheck(
+        groupId: String,
+    ): LocationPayloadStatus {
         // skip location update if key rotation is in progress
         if (
             memberCryptoKeyRotation.isProcessing(groupId) ||
-            deviceKeyRotation.isProcessing(groupId)
+            memberDeviceKeyRotation.isProcessing(groupId)
         ) {
             return LocationPayloadStatus.Processing
         }
@@ -53,23 +137,42 @@ class LocationPayloadProvider(
         }
 
         return LocationPayloadStatus.Success(
-            payload = MemberGroupId(
-                groupId = groupId,
-                memberId = member.id,
+            MemberGroupId(
                 locationId = location.id,
-                locationData = safeLet(data, contract) { data, contract ->
-                    LocationDataModel(
-                        timeUTC = data.timeUTC,
-                        endTimeUTC = contract.endTimeUTC,
-                        lat = data.lat,
-                        lng = data.lng,
-                        accuracy = data.accuracy,
-                        speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
-                        altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
-                        isMasked = false
-                    )
-                },
-                deviceStatus = memberDeviceStatusProvider.getStatus(groupId = groupId, contract  = contract)
+                memberId = member.id,
+                groupId = groupId.asGroupOrSpaceId(),
+                locationData = null,
+                deviceStatus = null,
+                locationHistory = null
+            )
+        )
+    }
+
+
+    private suspend fun personalPayloadPrecheck(): LocationPayloadStatus {
+        // skip location update if key rotation is in progress
+        if (personalDeviceKeyRotation.isProcessingAny()) {
+            return LocationPayloadStatus.Processing
+        }
+
+        val device = database.userDeviceDao.getUserDeviceByDeviceIdOnce(deviceId = appPrefs.deviceId)
+        val locationId = device?.locationId
+
+        if (device != null && locationId.isNullOrBlank()) {
+            logg.d("Location is null for personal space")
+            return LocationPayloadStatus.MissingLocationDocument
+        } else if (device?.hasValidLocation != true || locationId.isNullOrBlank()) {
+            return LocationPayloadStatus.MissingData
+        }
+
+        return LocationPayloadStatus.Success(
+            MemberGroupId(
+                locationId = locationId,
+                memberId = appPrefs.userId,
+                groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                locationData = null,
+                deviceStatus = null,
+                locationHistory = null
             )
         )
     }

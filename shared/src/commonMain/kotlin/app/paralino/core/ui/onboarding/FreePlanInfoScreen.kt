@@ -10,7 +10,7 @@ import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.onboarding.account.AccountOnboardingContent
-import app.paralino.core.ui.onboarding.account.AccountOnboardingScreen
+import app.paralino.core.ui.onboarding.account.AccountOnboardingScreenContent
 import app.paralino.core.ui.onboarding.account.AccountOnboardingUiEvent
 
 @Composable
@@ -22,10 +22,13 @@ fun FreePlanInfoScreenCore(
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
-    AccountOnboardingScreen(
+    AccountOnboardingScreenContent(
         modifier = Modifier.padding(paddingValues),
         coreUiState = coreUiState,
-        step = AccountOnboardingContent.SilverPlan(planConfig = uiState),
+        step = AccountOnboardingContent.AccountOnboardingStart(
+            isGroupChecked = false,
+            isPersonalSpaceChecked = false
+        ),
         onEvent = {
             if (it == AccountOnboardingUiEvent.ConfirmOnboarding) {
                 vm.confirmFreePlan()

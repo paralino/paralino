@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.NetworkType
+import app.paralino.core.repo.base.AppConfigRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.InetAddress

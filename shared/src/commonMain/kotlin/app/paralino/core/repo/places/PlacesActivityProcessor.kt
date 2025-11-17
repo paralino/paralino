@@ -3,32 +3,41 @@ package app.paralino.core.repo.places
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.logg
+import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationDataModel
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.places.GroupPlace
+import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceGeofenceData
 import app.paralino.core.models.places.PlaceActivityState
+import app.paralino.core.presentation.places.detail.PlaceSensitivityDelayType
+import app.paralino.core.presentation.places.detail.PlaceSensitivityLocationRefreshType
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.provider.IOneTimeLocationProvider
+import app.paralino.core.provider.current
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.IGeofenceManager
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.utils.extensions.isLocationInaccurate
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import kotlin.math.absoluteValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 abstract class IPlacesActivityProcessor {
     abstract suspend fun processLocation(data: LocationDataModel)
 }
 
-class IOSLSEPlacesActivityProcessor: IPlacesActivityProcessor() {
+class IOSLSEPlacesActivityProcessor : IPlacesActivityProcessor() {
     override suspend fun processLocation(data: LocationDataModel) {}
 }
 
@@ -41,8 +50,9 @@ class PlacesActivityProcessor(
     private val geofenceManager: IGeofenceManager,
     private val scopeProvider: ICoroutineScopeProvider,
     private val locationSharingManager: LocationSharingManager,
+    private val oneTimeLocation: IOneTimeLocationProvider,
     private val appPrefs: AppPrefs
-): IPlacesActivityProcessor() {
+) : IPlacesActivityProcessor() {
 
     override suspend fun processLocation(data: LocationDataModel) {
         // TODO filter out frequent calls and calculations of distance between points
@@ -51,93 +61,55 @@ class PlacesActivityProcessor(
         placeActivityUploadEngine.syncPendingEventsInBackground()
 
         val places = local.getAllPlacesOnce().filter {
-            locationSharingManager.isSharingActiveForGroup(it.groupId) && it.canSendAlert
+            locationSharingManager.isSharingActiveForGroup(it.groupOrSpaceId) && it.canSendAlert
         }
         places.forEach { place ->
             place.data.data?.let { placeData ->
-                val distance = geofenceManager.distanceBetweenPoints(
-                    data = data,
-                    geofence = GroupPlaceGeofenceData(
-                        groupId = place.groupId,
-                        placeId = place.id,
-                        lat = placeData.lat,
-                        lng = placeData.lng,
-                        radiusMeters = placeData.radiusMeters
-                    )
+                val movementType = getMovementType(
+                    location = data,
+                    place = place,
+                    placeData = placeData
                 )
-
-                // user entered place only if location (lat, lng) fully entered place circle
-                // if user accuracy is not great, accept place enter only if user center is closer to place center
-                val accuracyThreshold = if (data.accuracy > 50) data.accuracy * 0.1f else 0f
-                val radiusMatch = when {
-                    // full user location fits inside place
-                    placeData.radiusMeters > data.accuracy -> true
-                    // > 80% of area can overlap (place circle is at least 80% of user radius)
-                    placeData.radiusMeters / data.accuracy > 0.8 -> {
-                        // allow not so accurate location only if it has decent overlap
-                        distance < data.accuracy - placeData.radiusMeters
-                    }
-
-                    else -> false
-                }
-                val isEnter = (distance + accuracyThreshold) < placeData.radiusMeters && radiusMatch
-
-                // user exited place if user's accuracy circle is not overlapping place circle
-                // this is used to help filter location jumping when user stays in one closed place (like house)
-                // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
-                // also adding few meters of buffer to improve filter
-                val exitThreshold = when {
-                    // TODO check for coarse location
-                    data.accuracy > 500 -> {
-                        // if accuracy is quite bad, only consider exit if user is very far away
-                        2000f
-                    }
-
-                    data.accuracy > 100 -> {
-                        // if accuracy is not that great, only consider exit if user is  somewhat far away
-                        if (appPrefs.placeActivityThrottle) data.accuracy else data.accuracy / 2
-                    }
-
-                    else -> {
-                        // if accuracy is decent,
-                        if (appPrefs.placeActivityThrottle) (data.accuracy / 10).coerceAtLeast(5f) else 0f
-                    }
-                }
-                val isExit = distance > placeData.radiusMeters + data.accuracy + exitThreshold
                 val previousState = placeActivityRepo.getPlaceActivity(placeId = place.id)
 
 //                logg.tag("place_activity").d("Process place activity (enter: $isEnter - exit: $isExit - previous: ${previousState?.enter}) - ${place.id}")
 
-                if (isEnter) {
-                    startPlaceNotifySchedule(
-                        placeId = place.id,
-                        groupId = place.groupId,
-                        enter = true,
-                        trigger = PlaceActivityTriggerType.LOCATION
-                    )
-                } else if (isExit) {
-                    startPlaceNotifySchedule(
-                        placeId = place.id,
-                        groupId = place.groupId,
-                        enter = false,
-                        trigger = PlaceActivityTriggerType.LOCATION
-                    )
-                } else {
-                    // else -> there is no certain change to place activity, or it is the same as previous one
-                    if (previousState?.isEnter == true) {
+                when (movementType) {
+                    PlaceActivityMovementType.ENTER -> {
                         startPlaceNotifySchedule(
                             placeId = place.id,
-                            groupId = place.groupId,
+                            groupId = place.groupOrSpaceId,
                             enter = true,
                             trigger = PlaceActivityTriggerType.LOCATION
                         )
-                    } else if (previousState?.isEnter == false) {
+                    }
+
+                    PlaceActivityMovementType.EXIT -> {
                         startPlaceNotifySchedule(
                             placeId = place.id,
-                            groupId = place.groupId,
+                            groupId = place.groupOrSpaceId,
                             enter = false,
                             trigger = PlaceActivityTriggerType.LOCATION
                         )
+                    }
+
+                    PlaceActivityMovementType.UNKNOWN -> {
+                        // else -> there is no certain change to place activity, or it is the same as previous one
+                        if (previousState?.isEnter == true) {
+                            startPlaceNotifySchedule(
+                                placeId = place.id,
+                                groupId = place.groupOrSpaceId,
+                                enter = true,
+                                trigger = PlaceActivityTriggerType.LOCATION
+                            )
+                        } else if (previousState?.isEnter == false) {
+                            startPlaceNotifySchedule(
+                                placeId = place.id,
+                                groupId = place.groupOrSpaceId,
+                                enter = false,
+                                trigger = PlaceActivityTriggerType.LOCATION
+                            )
+                        }
                     }
                 }
             }
@@ -149,7 +121,7 @@ class PlacesActivityProcessor(
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
-                    val groupId = local.getGroupId(placeId = placeId)!!
+                    val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
                     startPlaceNotifySchedule(
                         placeId = placeId,
                         groupId = groupId,
@@ -168,7 +140,7 @@ class PlacesActivityProcessor(
         scopeProvider.userSessionIOScope.launch {
             placesIds.forEach { placeId ->
                 try {
-                    val groupId = local.getGroupId(placeId = placeId)!!
+                    val groupId = local.getGroupIdFromPlaceId(placeId = placeId)!!
                     startPlaceNotifySchedule(
                         placeId = placeId,
                         groupId = groupId,
@@ -184,7 +156,7 @@ class PlacesActivityProcessor(
 
     private suspend fun startPlaceNotifySchedule(
         placeId: String,
-        groupId: String,
+        groupId: GroupOrSpaceId,
         enter: Boolean,
         trigger: PlaceActivityTriggerType
     ) {
@@ -285,19 +257,43 @@ class PlacesActivityProcessor(
     ) {
         logg.tag("place_activity").i("Schedule place notify $activityTag - $placeId")
         oldState.tryNotifyJob?.cancel()
+
+        val place = local.getPlaceWithoutSettingsOnce(placeId)
+        if (place == null) {
+            logg.tag("place_activity")
+                .d("Cancel place $activityTag notify (place null) - $placeId")
+            placeActivityRepo.updatePlaceActivity(
+                placeId = placeId,
+                state = null
+            )
+            return
+        }
+
         val updateJob = scopeProvider.userSessionIOScope.launch {
-            val delay = placeActivityDelay(trigger = trigger)
+            val delay = placeActivityDelay(
+                place = place,
+                trigger = trigger
+            )
+
             logg.tag("place_activity")
                 .i("Delay place notify $activityTag - $placeId for ${delay?.inWholeSeconds}")
 
             if (delay != null) {
+                if (place.alertSensitivity.sensitivityRefresh == PlaceSensitivityLocationRefreshType.BEFORE) {
+                    updateDeviceStatusAndLocation(
+                        activityTag = activityTag,
+                        trigger = trigger,
+                        place = place
+                    )
+                }
+
                 delay(delay)
             }
 
             try {
                 processPlaceActivity(
                     activityTag = activityTag,
-                    placeId = placeId
+                    place = place
                 )
             } catch (e: Exception) {
                 logg.w("place_activity", "Error notifying place exit: ${e.message}")
@@ -316,8 +312,9 @@ class PlacesActivityProcessor(
 
     private suspend fun processPlaceActivity(
         activityTag: String,
-        placeId: String
+        place: GroupPlace
     ) {
+        val placeId = place.id
         val currentState = placeActivityRepo.getPlaceActivity(placeId = placeId)
 
         if (currentState == null) {
@@ -357,19 +354,7 @@ class PlacesActivityProcessor(
             return
         }
 
-        val place = local.getPlaceWithoutSettingsOnce(placeId)
-
-        if (place == null) {
-            logg.tag("place_activity")
-                .d("Cancel place $activityTag notify (place null) - $placeId")
-            placeActivityRepo.updatePlaceActivity(
-                placeId = placeId,
-                state = null
-            )
-            return
-        }
-
-        if (!locationSharingManager.isSharingActiveForGroup(place.groupId)) {
+        if (!locationSharingManager.isSharingActiveForGroup(place.groupOrSpaceId)) {
             // reset place activity if sharing stops
             placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
             logg.tag("place_activity")
@@ -383,6 +368,36 @@ class PlacesActivityProcessor(
             logg.tag("place_activity")
                 .d("Cancel place $activityTag notify (place without alerts) - $placeId")
             return
+        }
+
+        if (place.alertSensitivity.ignoreInaccurate) {
+            val location = oneTimeLocation.getLastLocation(
+                requestType = IOneTimeLocationProvider.RequestType.CacheOnly
+            )
+            val placeData = place.data.data
+            val isLocationInaccurate = if (location != null && placeData != null) {
+
+                val movementType = getMovementType(
+                    location = location,
+                    place = place,
+                    placeData = placeData
+                )
+
+                when (movementType) {
+                    PlaceActivityMovementType.ENTER -> !currentState.isEnter
+                    PlaceActivityMovementType.EXIT -> currentState.isEnter
+                    PlaceActivityMovementType.UNKNOWN -> true
+                }
+            } else {
+                true
+            }
+
+            if (isLocationInaccurate) {
+                placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
+                logg.tag("place_activity")
+                    .d("Cancel place $activityTag notify (location not accurate) - $placeId")
+                return
+            }
         }
 
         logg.tag("place_activity").i("Trigger notify place $activityTag - $placeId")
@@ -405,55 +420,222 @@ class PlacesActivityProcessor(
             )
 
             // update device status with last location if place activity came from geofence
-            if (currentState.scheduleTrigger == PlaceActivityTriggerType.GOEFENCE) {
+            if (place.alertSensitivity.sensitivityRefresh == PlaceSensitivityLocationRefreshType.AFTER) {
                 updateDeviceStatusAndLocation(
                     activityTag = activityTag,
+                    trigger = currentState.scheduleTrigger,
                     place = place
                 )
             }
         } catch (e: Exception) {
-            placeActivityRepo.updatePlaceActivity(placeId, null)
+            placeActivityRepo.updatePlaceActivity(placeId = placeId, state = null)
             throw e
         }
     }
 
-    private fun updateDeviceStatusAndLocation(
+    private suspend fun updateDeviceStatusAndLocation(
         activityTag: String,
+        trigger: PlaceActivityTriggerType?,
         place: GroupPlace
     ) {
-        scopeProvider.userSessionIOScope.launch {
-            // update device status with last location if place activity came from geofence
-            try {
-                deviceStatusProcessor.pushDeviceStatus(groupId = place.groupId)
-            } catch (e: Exception) {
-                logg.tag("place_activity")
-                    .w("Error updating member status in ${place.groupId} from $activityTag - ${place.id}: ${e.message}")
+        if (trigger == PlaceActivityTriggerType.GOEFENCE) {
+            scopeProvider.userSessionIOScope.launch {
+                // update device status with last location if place activity came from geofence
+                try {
+                    deviceStatusProcessor.pushDeviceStatus(groupId = place.groupOrSpaceId)
+                } catch (e: Exception) {
+                    logg.tag("place_activity")
+                        .w("Error updating member status in ${place.groupOrSpaceId} from $activityTag - ${place.id}: ${e.message}")
+                }
             }
         }
-        locationPerformanceManager.locationBoostRequested(
-            request = LocationPerformanceRequest(
-                type = LocationPerformanceType.HIGH,
-                durationMillis = 12.seconds.inWholeMilliseconds
-            ),
-            groupId = place.groupId,
-            from = "place $activityTag"
-        )
+
+        val shouldRefresh = if (place.alertSensitivity.refreshOnlyInaccurate) {
+            val location = oneTimeLocation.getLastLocation(
+                requestType = IOneTimeLocationProvider.RequestType.CacheOnly
+            )
+
+            when {
+                location == null -> true
+                location.accuracy.isLocationInaccurate() -> true
+                location.timeUTCInstant?.isOlderThan(5.minutes) != false -> true
+                else -> false
+            }
+        } else {
+            true
+        }
+
+        if (shouldRefresh) {
+            val duration = when (place.alertSensitivity.sensitivityDelay) {
+                PlaceSensitivityDelayType.NONE -> 12.seconds
+                PlaceSensitivityDelayType.MINIMUM -> 6.seconds
+                PlaceSensitivityDelayType.BALANCED -> 12.seconds
+                PlaceSensitivityDelayType.LONG -> 20.seconds
+            }
+
+            locationPerformanceManager.locationBoostRequested(
+                request = LocationPerformanceRequest(
+                    type = LocationPerformanceType.HIGH,
+                    durationMillis = duration.inWholeMilliseconds
+                ),
+                groupId = place.groupOrSpaceId,
+                from = "place $activityTag"
+            )
+        }
     }
 
-    private fun placeActivityDelay(trigger: PlaceActivityTriggerType): Duration? {
+    private suspend fun placeActivityDelay(
+        place: GroupPlace?,
+        trigger: PlaceActivityTriggerType
+    ): Duration? {
+        if (place == null) {
+            return null
+        }
+
+        val location = oneTimeLocation.getLastLocation(
+            requestType = IOneTimeLocationProvider.RequestType.CacheOnly
+        )
+        val isLocationVeryAccurate = location?.let {
+            it.accuracy < 30 && !it.isOlderThan(10.seconds)
+        } ?: false
+
         return when (trigger) {
             PlaceActivityTriggerType.GOEFENCE -> {
-                if (appPrefs.placeActivityThrottle) null
-                else null
+                when (place.alertSensitivity.sensitivityDelay) {
+                    PlaceSensitivityDelayType.NONE -> {
+                        null
+                    }
+
+                    PlaceSensitivityDelayType.MINIMUM -> {
+                        if (isLocationVeryAccurate) null
+                        else 6.seconds
+                    }
+
+                    PlaceSensitivityDelayType.BALANCED -> {
+                        if (isLocationVeryAccurate) 4.seconds
+                        else 12.seconds
+                    }
+
+                    PlaceSensitivityDelayType.LONG -> {
+                        20.seconds
+                    }
+                }
             }
 
             else -> {
-                if (appPrefs.placeActivityThrottle) 20.seconds
-                else 5.seconds
+                when (place.alertSensitivity.sensitivityDelay) {
+                    PlaceSensitivityDelayType.NONE -> {
+                        if (isLocationVeryAccurate) null
+                        else 5.seconds
+                    }
+
+                    PlaceSensitivityDelayType.MINIMUM -> {
+                        if (isLocationVeryAccurate) 5.seconds
+                        else 10.seconds
+                    }
+
+                    PlaceSensitivityDelayType.BALANCED -> {
+                        if (isLocationVeryAccurate) 10.seconds
+                        else 15.seconds
+                    }
+
+                    PlaceSensitivityDelayType.LONG -> {
+                        if (isLocationVeryAccurate) 15.seconds
+                        else 25.seconds
+                    }
+                }
             }
         }
     }
 
+    private fun getMovementType(
+        location: LocationDataModel,
+        place: GroupPlace,
+        placeData: GroupPlaceData
+    ): PlaceActivityMovementType {
+        val distance = geofenceManager.distanceBetweenPoints(
+            data = location,
+            geofence = GroupPlaceGeofenceData(
+                groupId = place.groupOrSpaceId,
+                placeId = place.id,
+                lat = placeData.lat,
+                lng = placeData.lng,
+                radiusMeters = placeData.radiusMeters
+            )
+        )
+
+        // user entered place only if location (lat, lng) fully entered place circle
+        // if user accuracy is not great, accept place enter only if user center is closer to place center
+        val accuracyThreshold = if (location.accuracy > 50) location.accuracy * 0.1f else 0f
+        val radiusMatch = when {
+            // full user location fits inside place
+            placeData.radiusMeters > location.accuracy -> true
+            // > 80% of area can overlap (place circle is at least 80% of user radius)
+            placeData.radiusMeters / location.accuracy > 0.8 -> {
+                // allow not so accurate location only if it has decent overlap
+                distance < location.accuracy - placeData.radiusMeters
+            }
+
+            else -> false
+        }
+        val isEnter = (distance + accuracyThreshold) < placeData.radiusMeters && radiusMatch
+
+        if (isEnter) {
+            return PlaceActivityMovementType.ENTER
+        }
+
+        // user exited place if user's accuracy circle is not overlapping place circle
+        // this is used to help filter location jumping when user stays in one closed place (like house)
+        // in that case accuracy tends to worsen so in order to check for place exit we want to make sure user definitely left place
+        // also adding few meters of buffer to improve filter
+        val exitThreshold = when {
+            // TODO check for coarse location
+            location.accuracy > 500 -> {
+                // if accuracy is quite bad, only consider exit if user is very far away
+                2000f
+            }
+
+            location.accuracy >= 100 -> {
+                // if accuracy is not that great, only consider exit if user is  somewhat far away
+                if (place.alertSensitivity.ignoreInaccurate) {
+                    location.accuracy * 2
+                } else {
+                    when (DeviceType.current) {
+                        DeviceType.Android -> {
+                            when (location.accuracy) {
+                                // "magic numbers" because android devices sometimes produce completely wrong locations
+                                // with round number accuracy in low hundreds, while actual accuracy should be at least double that
+                                // In case that reported location is actually within that circle
+                                // this won't cause an issue since it will just cause device to request better location
+                                100f, 200f, 300f, 400f, 500f -> location.accuracy * 2f
+                                else -> location.accuracy / 2
+                            }
+                        }
+
+                        DeviceType.iOS -> {
+                            location.accuracy / 2
+                        }
+                    }
+                }
+            }
+
+            else -> {
+                // if accuracy is decent,
+                if (place.alertSensitivity.ignoreInaccurate) {
+                    (location.accuracy / 10).coerceAtLeast(5f)
+                } else {
+                    0f
+                }
+            }
+        }
+        val isExit = distance > placeData.radiusMeters + location.accuracy + exitThreshold
+
+        if (isExit) {
+            return PlaceActivityMovementType.EXIT
+        }
+
+        return PlaceActivityMovementType.UNKNOWN
+    }
 }
 
 enum class PlaceActivityTriggerType constructor(val key: String) {
@@ -466,4 +648,8 @@ enum class PlaceActivityTriggerType constructor(val key: String) {
             return entries.firstOrNull { it.key == key } ?: GENERIC
         }
     }
+}
+
+private enum class PlaceActivityMovementType {
+    ENTER, EXIT, UNKNOWN
 }

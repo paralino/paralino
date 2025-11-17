@@ -5,8 +5,6 @@ import android.content.Context
 import android.location.Location
 import android.os.Looper
 import app.paralino.android.provider.getLocationStatus
-import app.paralino.android.utils.extensions.millisToDateTimeUTC
-import app.paralino.android.utils.extensions.toLocalString
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -16,6 +14,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.LocationStatusException
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.utils.extensions.stripNanoseconds
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
@@ -25,10 +24,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 @SuppressLint("MissingPermission")
 class LocationInitHandler constructor(
@@ -174,7 +176,10 @@ class LocationInitHandler constructor(
             lat = this.latitude,
             lng = this.longitude,
             accuracy = this.accuracy.adaptAccuracy(),
-            timeUTC = this.time.millisToDateTimeUTC().toLocalString(),
+            timeUTC = Instant.fromEpochMilliseconds(this.time)
+                .toLocalDateTime(TimeZone.UTC)
+                .stripNanoseconds()
+                .toString(),
             speed = if (this.hasSpeed()) this.speed else null,
             altitude = if (this.hasAltitude()) this.altitude.toFloat() else null,
             isMasked = false

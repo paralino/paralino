@@ -57,15 +57,24 @@ struct SharingStartScreen: View {
                 )
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                    .onChanged { _ in /* no-op, just to claim */ }
+                    .onEnded { _ in }
+            )
         }
         .toolbarTitleDisplayMode(.inline)
-        .navigationTitle(MR.shared.strings.groups_sharing_title.localizedString())
+        .navigationTitle(
+            appState.vm.isPersonalSpace
+            ? MR.shared.strings.personalSpace_spaceTitle.localizedString()
+            : MR.shared.strings.groups_sharing_title.localizedString()
+        )
         .navigationBarBackButtonHidden(appState.isOnboarding)
         .groupPickerSheet(
             $groupPicker,
             onSelectGroup: { state in
                 groupPicker = nil
-                appState.vm.setSelectedGroup(groupId: state.id)
+                appState.vm.setSelectedGroup(groupOrSpaceId: state.id)
             },
             onEditGroup: { group in },
             onCreateGroup: {},
@@ -79,17 +88,35 @@ struct SharingStartScreen: View {
             if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                 path.removeSubrange(index+1..<path.count)
             }
-            path.append(
-                .settings(
-                    .paywall(groupId: appState.currentGroupId, type: isOnboarding ? BillingScreenSourceType.groupOnboarding : BillingScreenSourceType.upgrade)
+            
+            if appState.vm.isPersonalSpace {
+                path.append(
+                    .settings(
+                        .paywall(
+                            groupId: appState.currentGroupId,
+                            type: isOnboarding ? BillingScreenSourceType.personalSpaceOnboarding : BillingScreenSourceType.upgrade
+                        )
+                    )
                 )
-            )
+            } else {
+                path.append(
+                    .settings(
+                        .paywall(
+                            groupId: appState.currentGroupId,
+                            type: isOnboarding ? BillingScreenSourceType.groupOnboarding : BillingScreenSourceType.upgrade
+                        )
+                    )
+                )
+            }
         } else if isOnboarding {
             if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                 path.removeSubrange(index+1..<path.count)
             }
-            if let groupId = appState.currentGroupId {
-                path.append(.home(.groupDetail(groupId: groupId)))
+            
+            if !appState.vm.isPersonalSpace {
+                if let groupId = appState.currentGroupId {
+                    path.append(.home(.groupDetail(groupId: groupId)))
+                }
             }
         } else {
             path.removeLast()

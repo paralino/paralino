@@ -1,6 +1,5 @@
 package app.paralino.core.utils.exceptions
 
-import app.paralino.core.appPrefs
 import app.paralino.core.domain.user.UserSessionMonitor
 import app.paralino.core.models.raw.FunctionErrorBody
 import app.paralino.core.provider.NetworkConnectionInfo
@@ -37,8 +36,7 @@ open class BaseRemoteException constructor(
                 400 -> InvalidRequestException(message, cause)
                 401 -> UnauthorizedException(code, type, message, cause)
                 403, 402 -> {
-                    if(!appPrefs.emailConfirmed) UnverifiedUserException(code, message, cause)
-                    else PermissionDeniedException(
+                    PermissionDeniedException(
                         code = code,
                         message = message,
                         type = type,

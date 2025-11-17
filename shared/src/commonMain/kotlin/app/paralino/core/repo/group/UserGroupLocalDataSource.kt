@@ -4,12 +4,14 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.MemberModel
 import app.paralino.core.models.location.MemberModelWithLocations
+import app.paralino.core.models.location.MemberModelWithLocationsAndGroup
 import app.paralino.core.models.mappers.GroupPlaceMapperLocal
 import app.paralino.core.models.mappers.GroupsMapperLocal
 import app.paralino.core.models.mappers.MemberWithLocationsMapperLocal
@@ -83,7 +85,7 @@ class UserGroupLocalDataSource constructor(
             places = group.places.map { placeMapper.remote2Local(it.place) },
             placeSettings = group.places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } }
         )
-        placeActivity.recreatePlacesForGroup(groupId = group.group.group.id, places = group.places)
+        placeActivity.recreatePlacesForGroup(groupId = group.group.group.id.asGroupOrSpaceId(), places = group.places)
     }
 
     suspend fun updateOrCreateMember(member: MemberWithLocationsRaw) {
@@ -120,7 +122,7 @@ class UserGroupLocalDataSource constructor(
             placeEntity = places.map { placeMapper.remote2Local(it.place) },
             placeSettings = places.mapNotNull { it.settings?.let { placeMapper.remote2Local(it) } }
         )
-        placeActivity.recreatePlacesForGroup(groupId = groupId, places = places)
+        placeActivity.recreatePlacesForGroup(groupId = groupId.asGroupOrSpaceId(), places = places)
     }
 
     // TODO if group is deleted, changes are not propagated because of filterNotNull()
@@ -191,6 +193,27 @@ class UserGroupLocalDataSource constructor(
         }
     }
 
+    suspend fun getGroupWithMembersOnce(groupId: String): UserGroupWithMembers? {
+        val groupEntity = database.groupRelatedDao.getGroupOnce(groupId = groupId)
+        val members = database.groupRelatedDao.getAllMembersForGroupOnce(groupId = groupId)
+        val locations = database.groupRelatedDao.getMemberLocationsForGroupOnce(groupId = groupId)
+
+        if (groupEntity != null && members.isNotEmpty()) {
+            val group = mapper.local2Core(groupEntity)
+            val mappedMembers = members.map { member ->
+                val memberLocations = locations.filter { it.memberId == member.id }
+                memberMapper.local2Core(member, memberLocations, group)
+            }
+
+            return UserGroupWithMembers(
+                group = mapper.local2Core(groupEntity),
+                members = mappedMembers
+            )
+        } else {
+            return null
+        }
+    }
+
     fun getAllGroupsWithMetadata(): Flow<List<UserGroupWithMetadata>> {
         return database.groupRelatedDao.getAllGroups()
             .flatMapLatest { groups ->
@@ -249,6 +272,19 @@ class UserGroupLocalDataSource constructor(
         }
     }
 
+    fun getMemberWithLocationsAndGroup(groupId: String, memberUserId: String): Flow<MemberModelWithLocationsAndGroup?> {
+        return combine(
+            getGroupWithoutMembers(groupId = groupId),
+            database.groupRelatedDao.getMember(groupId = groupId, userId = memberUserId).filterNotNull(),
+            database.groupRelatedDao.getMemberLocations(groupId = groupId, userId = memberUserId)
+        ) { group, member, locations ->
+            MemberModelWithLocationsAndGroup(
+                group = group,
+                member = memberMapper.local2Core(member = member, memberLocations = locations, group = group)
+            )
+        }
+    }
+
     suspend fun getMemberModelsForUser(userId: String): List<MemberModel> {
         return database.groupRelatedDao.getAllMembersForUserOnce(userId = userId).map {
             val group = getGroupOnce(it.groupId)!!
@@ -299,9 +335,5 @@ class UserGroupLocalDataSource constructor(
 
     suspend fun deletePlace(placeId: String) {
         database.groupRelatedDao.deletePlaceData(placeId = placeId)
-    }
-
-    suspend fun clearAll() {
-        database.groupRelatedDao.clearAllEntities()
     }
 }

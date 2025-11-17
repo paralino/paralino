@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class AppAccountStateMonitor constructor(
     private val userRepo: UserRepository,
@@ -39,7 +40,8 @@ class AppAccountStateMonitor constructor(
     private val scopeProvider: ICoroutineScopeProvider,
     private val userSessionMonitor: UserSessionMonitor,
     private val cryptoCore: CryptoCore,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val userCryptoKeyRefreshUseCase: UserCryptoKeyRefreshUseCase
 ) {
     private val manualTrigger = MutableStateFlow("")
     private var oldUserState: Resource<AppAccountState> = Resource.NotInitialized
@@ -48,12 +50,14 @@ class AppAccountStateMonitor constructor(
     val userState: Flow<Resource<AppAccountState>> =
         combine(
             userRepo.localUserRaw,
+            userCryptoKeyRefreshUseCase.keyStatus,
             manualTrigger
-        ) { userState, _ ->
+        ) { userState, keyStatus, _ ->
             when (userState) {
                 Resource.NotInitialized -> Resource.NotInitialized
                 is Resource.Ready -> {
                     val user = userState.data
+                    val keyState = userKeyRepo.userKeyState().firstOrNull()
                     when {
                         user == null -> {
                             if (appPrefs.isTokenValid) {
@@ -67,22 +71,34 @@ class AppAccountStateMonitor constructor(
                             }
                         }
 
-                        userKeyRepo.userKeyState().firstOrNull() != true -> {
-                            if (appPrefs.accountRecoveryFlag) {
-                                logg.tag("account_state")
-                                    .v("Key is not valid but backup password is active")
-                                Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
-                            } else {
-                                logg.tag("account_state")
-                                    .v("Key is not valid and no backup password")
-                                Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = appPrefs.hasGuestAccount()))
+                        keyState != UserCryptoKeyState.OK -> {
+                            when (keyState) {
+                                UserCryptoKeyState.EXPIRED -> {
+                                    logg.tag("account_state").v("User key is expired - needs password confirmation")
+                                    Resource.Ready(data = AppAccountState.KEY_EXPIRED)
+                                }
+
+                                else -> {
+                                    if (appPrefs.accountRecoveryFlag) {
+                                        logg.tag("account_state")
+                                            .v("Key is not valid but backup password is active")
+                                        Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
+                                    } else {
+                                        logg.tag("account_state")
+                                            .v("Key is not valid and no backup password")
+                                        Resource.Ready(data = AppAccountState.NO_USER(canRecoverGuest = appPrefs.hasGuestAccount()))
+                                    }
+                                }
                             }
                         }
 
                         else -> {
                             try {
                                 val decryptedUser = userMapper.remote2Core(user)
-                                if (decryptedUser.needsEmailVerification) {
+                                if (keyStatus.data?.isExpired == true) {
+                                    logg.tag("account_state").v("User key is expired - needs password confirmation")
+                                    Resource.Ready(data = AppAccountState.KEY_EXPIRED)
+                                } else if (decryptedUser.needsToVerifyEmail) {
                                     logg.tag("account_state").v("User is ready but needs email verification")
                                     Resource.Ready(data = AppAccountState.EMAIL_VERIFICATION(decryptedUser))
                                 } else if (!decryptedUser.hasValidData) {
@@ -98,6 +114,9 @@ class AppAccountStateMonitor constructor(
                                 if (appPrefs.accountRecoveryFlag) {
                                     logg.tag("account_state").v("User needs to reset account")
                                     Resource.Ready(data = AppAccountState.ACCOUNT_RESET(user))
+                                } else if (keyStatus.data?.isExpired == true) {
+                                    logg.tag("account_state").v("User key is expired - needs password confirmation")
+                                    Resource.Ready(data = AppAccountState.KEY_EXPIRED)
                                 } else {
                                     logg.tag("account_state")
                                         .w("User can not be initialized (${e.message})")
@@ -140,7 +159,10 @@ class AppAccountStateMonitor constructor(
                         scopeProvider.userSessionIOScope.launch {
                             try {
                                 logg.tag("account_state").v("Refresh everything on different scope")
-                                refreshEverything.refreshEverything(forceGroupRefresh = false)
+                                refreshEverything.refreshEverything(
+                                    forceGroupRefresh = false,
+                                    minimumDelayMillis = 5.seconds.inWholeMilliseconds
+                                )
                             } catch (e: Exception) {
                                 logg.tag("account_state").v("Unable to refresh everything: ${e.message}")
                             }
@@ -153,6 +175,9 @@ class AppAccountStateMonitor constructor(
                     }
                 } else if (it.data is AppAccountState.NO_PROFILE || it.data is AppAccountState.EMAIL_VERIFICATION) {
                     logg.tag("account_state").v("${it.data} - Refresh user and profile")
+                    userRepo.refreshUserMaybe()
+                } else if (it.data is AppAccountState.KEY_EXPIRED) {
+                    logg.tag("account_state").v("${it.data} - User key is changed, refresh")
                     userRepo.refreshUserMaybe()
                 } else if (!everHadUser && it.data is AppAccountState.NO_USER) {
                     logg.tag("account_state")
@@ -200,5 +225,6 @@ sealed class AppAccountState {
     data class ACCOUNT_RESET(val userRaw: UserMeRaw) : AppAccountState()
     data class NO_PROFILE(val user: UserMe) : AppAccountState()
     data class EMAIL_VERIFICATION(val user: UserMe) : AppAccountState()
+    data object KEY_EXPIRED : AppAccountState()
     data class USER_READY(val user: UserMe) : AppAccountState()
 }

@@ -2,6 +2,7 @@ package app.paralino.core.provider
 
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,7 +84,7 @@ enum class NetworkType {
     WIFI, G2, G3, G4, G5, GENERIC_CELL;
     val key: String = name
     val networkName: String get() = when (this){
-        WIFI -> "WiFi"
+        WIFI -> "Wi-Fi"
         G2 -> "2G"
         G3 -> "3G"
         G4 -> "4G"

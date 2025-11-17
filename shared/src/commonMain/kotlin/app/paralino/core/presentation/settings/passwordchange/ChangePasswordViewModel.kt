@@ -113,21 +113,30 @@ class ChangePasswordViewModel(
             if (firstValidation != null) {
                 showSnackbar(getFormValidationErrorText(validation = firstValidation.type))
             } else {
-                changePasswordAction(passwordOld = passwordOld, passwordNew = passwordNew)
+                changePasswordAction(
+                    passwordOld = passwordOld,
+                    passwordNew = passwordNew,
+                    keepSessions = !_uiState.value.logoutOtherDevices
+                )
             }
         }
     }
 
     private fun changePasswordAction(
         passwordOld: String,
-        passwordNew: String
+        passwordNew: String,
+        keepSessions: Boolean
     ){
 
         if (changePassword.isProcessingAny() || uiState.value.actionLoading == true) {
             return
         }
 
-        changePassword.changePassword(oldPassword = passwordOld, newPassword = passwordNew)
+        changePassword.changePassword(
+            oldPassword = passwordOld,
+            newPassword = passwordNew,
+            keepSessions = keepSessions
+        )
             .mapToPayload { it }
             .onEach { result ->
                 when (result) {
@@ -183,6 +192,11 @@ class ChangePasswordViewModel(
     fun onConfirmPasswordChange(password: String) {
         if (_uiState.value.actionLoading == true) return
         _uiState.update { it.copy(confirmPassword = password, hasConfirmPasswordError = false) }
+    }
+
+    fun onDeviceSessionToggleChange(enabled: Boolean) {
+        if (_uiState.value.actionLoading == true) return
+        _uiState.update { it.copy(logoutOtherDevices = enabled) }
     }
 
     private fun getLastPasswordUpdateDate(): AnnotatedString? {

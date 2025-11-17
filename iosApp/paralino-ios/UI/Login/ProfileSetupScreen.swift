@@ -23,6 +23,7 @@ struct ProfileSetupScreen: View {
                     bottomSheet = screen
                 }
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .photoPickerSheet($bottomSheet) { image in

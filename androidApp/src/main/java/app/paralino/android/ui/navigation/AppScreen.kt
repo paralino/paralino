@@ -4,6 +4,7 @@ import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import app.paralino.core.utils.BaseRemoteModule
 
 sealed class AppScreen {
 
@@ -52,6 +53,10 @@ sealed class AppScreen {
             override val routeSignature: String = "recover-account"
         }
 
+        object PasswordConfirmation : AppScreen() {
+            override val routeSignature: String = "password-confirmation"
+        }
+
         object PasswordReset : AppScreen() {
             val argumentUserId: String = DeeplinkType.PasswordReset.argumentUserId
             val argumentSecret: String = DeeplinkType.PasswordReset.argumentSecret
@@ -84,6 +89,8 @@ sealed class AppScreen {
             }
         }
 
+        object LocationHistory : Common.LocationHistory("home")
+
         object SharingStart : AppScreen() {
             val argumentOnboarding: String = "onboarding"
             override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentOnboarding={$argumentOnboarding}"
@@ -98,6 +105,20 @@ sealed class AppScreen {
                 if (args.isEmpty())
                     return "home-share"
                 return "home-share?$args"
+            }
+        }
+
+        object PersonalSpace : AppScreen() {
+            override val routeSignature: String = "home-personal-space"
+            fun route(): String {
+                return "home-personal-space"
+            }
+        }
+
+        object PersonalSpaceSettings : AppScreen() {
+            override val routeSignature: String = "home-personal-space-settings"
+            fun route(): String {
+                return "home-personal-space-settings"
             }
         }
 
@@ -155,7 +176,7 @@ sealed class AppScreen {
         object PlacesList : AppScreen() {
             val argumentOnboarding: String = "onboarding"
             override val routeSignature: String = "places-list?$argumentGroupId={$argumentGroupId}&${argumentOnboarding}={$argumentOnboarding}"
-            fun route(groupId: String? = null, isOnboarding: Boolean = false): String {
+            fun route(groupId: String, isOnboarding: Boolean = false): String {
                 val args = arrayOf(
                     groupId?.let { "$argumentGroupId=$groupId" },
                     "${argumentOnboarding}=$isOnboarding",
@@ -196,6 +217,20 @@ sealed class AppScreen {
 
         object PlaceDetail : Common.PlaceDetail("home")
         object PlaceAlerts : Common.PlaceDetail("place-alerts")
+        object PlaceSensitivity : Common.PlaceDetail("place-sensitivity")
+
+        object LocationHistoryDelete : AppScreen() {
+            override val routeSignature: String =
+                "location-history-delete?$argumentGroupId={$argumentGroupId}"
+
+            fun route(groupId: String): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId"
+                )
+                    .joinToString(separator = "&")
+                return "location-history-delete?$args"
+            }
+        }
 
         object RawDataScreen : Common.RawDataScreen("home")
 
@@ -299,16 +334,20 @@ sealed class AppScreen {
 
             fun route(type: RawPresentationDataType): String {
 
-                val id = when (type) {
+                val dataPayload = when (type) {
                     is RawPresentationDataType.GroupMemberPresentation -> type.memberId
                     is RawPresentationDataType.GroupPlacePresentation -> type.placeId
                     is RawPresentationDataType.GroupPresentation -> type.groupId
+                    is RawPresentationDataType.LocationHistoryPointPresentation -> {
+                        BaseRemoteModule.formatter.encodeToString(type)
+                    }
                     RawPresentationDataType.UserPresentation -> ""
+                    RawPresentationDataType.PersonalSpacePresentation -> ""
                 }
 
                 val args = arrayOf(
                     "$argumentDataType=${type.key}",
-                    "$argumentDataId=$id"
+                    "$argumentDataId=$dataPayload"
                 ).joinToString(separator = "&")
 
                 return "${parent}-raw-data-screen?$args"
@@ -351,6 +390,24 @@ sealed class AppScreen {
                 if (args.isEmpty())
                     return "$parent-subscriptions-paywall"
                 return "$parent-subscriptions-paywall?$args"
+            }
+        }
+
+        open class LocationHistory(private val parent: String) : AppScreen() {
+            val argumentMemberUserId: String = "memberUserId"
+            val argumentDeviceId: String = "deviceId"
+            override val routeSignature: String =
+                "$parent-location-history?$argumentGroupId={$argumentGroupId}&$argumentMemberUserId={$argumentMemberUserId}&$argumentDeviceId={$argumentDeviceId}"
+
+            fun route(groupId: String, memberUserId: String, deviceId: String?): String {
+                val args = arrayOf(
+                    "$argumentGroupId=$groupId",
+                    "${argumentMemberUserId}=$memberUserId",
+                    deviceId?.let { "${argumentDeviceId}=$it" }
+                )
+                    .filterNotNull()
+                    .joinToString(separator = "&")
+                return "$parent-location-history?$args"
             }
         }
     }

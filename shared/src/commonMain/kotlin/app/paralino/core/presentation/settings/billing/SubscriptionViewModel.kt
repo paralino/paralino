@@ -1,14 +1,17 @@
 package app.paralino.core.presentation.settings.billing
 
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarPayload
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SubscriptionViewModel(
+    private val appConfig: AppConfigRepository,
     private val userRepo: UserRepository,
     private val userConfigRepo: UserConfigRepository,
     private val deviceApi: IDeviceApiProvider,
@@ -29,7 +33,7 @@ class SubscriptionViewModel(
         SubscriptionScreenState(
             subscriptionState = getPlanState(userRepo.userPlans.value.highestValidPlan),
             isLoading = true,
-            canShowMoreInfo = false, //AppBuildConfig.instance.isDevMode,
+            canShowMoreInfo = appConfig.isInAppDevMode,
             featureTableState = constructFeatureTable()
         )
     )
@@ -71,7 +75,7 @@ class SubscriptionViewModel(
     private fun getPlanState(plan: UserPlan?): SubscriptionInfoState? {
         return plan?.let {
             SubscriptionInfoState(
-                name = it.config.planName,
+                name = it.config.adjustedPlanName,
                 expiresAt = it.plan.expiresAt?.toString() ?: "N/A",
                 billingPeriod = it.plan.billingPeriod.name,
                 hasPremiumPlan = it.plan.planTypeEnum.isPremium,
@@ -88,12 +92,14 @@ class SubscriptionViewModel(
     private fun constructFeatureTable(): FeatureTableState {
         val currentPlan = userRepo.userPlans.value.highestValidPlanConfig
         return FeatureTableState.constructFeaturesTable(
+            isGroupPlanOnly = false,
             plans = listOf(
                 PlanInfoState(
                     productId = "",
                     name = currentPlan.adjustedPlanName,
                     config = currentPlan,
                     isCurrentPlan = true,
+                    currentPlanProvider = userRepo.userPlans.value.highestValidPlan?.plan?.provider,
                     hasSpecialOffer = false,
                     isSelected = true,
                     isExpanded = true,
@@ -112,6 +118,24 @@ class SubscriptionViewModel(
                         _eventChannel.trySend(SubscriptionScreenEvent.OnNavigateBack)
                     }
 
+                    else -> {}
+                }
+            }
+
+            is SubscriptionScreenUiEvent.OnCellItemClick -> {
+                when (event.cellItem) {
+                    is FeatureTableItemValue.MoreInfo -> {
+                        showSnackbar(
+                            data = AppSnackbarData(
+                                payload = AppSnackbarPayload(
+                                    title = event.cellItem.title,
+                                    text = event.cellItem.content,
+                                    hasCloseButton = true
+                                ),
+                                duration = SnackbarDuration.Long
+                            )
+                        )
+                    }
                     else -> {}
                 }
             }

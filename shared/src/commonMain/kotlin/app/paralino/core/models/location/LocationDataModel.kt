@@ -4,8 +4,9 @@ import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.math.absoluteValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -21,10 +22,16 @@ data class LocationDataModel constructor(
     val endTimeUTC: String? = null,
     val speed: Float? = null,
     val altitude: Float? = null,
+
+    /**
+     * Indicate if location data in this model is fake
+     * Used when user clears their location so we put dummy data and encrypt it
+     */
     val isMasked: Boolean = false
 ) {
     val shouldShowApproximateCircle get() = accuracy > 2f
     val isAccurate get() = accuracy < 50f
+    @Transient
     val timeUTCInstant: Instant? = timeUTC?.fromUTCtoInstant()
 
     fun isOlderThan(duration: Duration): Boolean {
@@ -74,13 +81,14 @@ data class MemberDeviceData constructor(
 @Serializable
 data class MemberDeviceStatus constructor(
     val timeUTC: String? = null,
+    val tz: String? = null,
     val batteryLevel: Int? = null,
     val isCharging: Boolean? = null,
     val network: String? = null,
     val signal: Int? = null,
     val status: String? = null,
 ) {
-    val statusType: MemberDeviceStatusType? get() = MemberDeviceStatusType.fromKey(status)
+    val statusType: MemberDeviceStatusType? get() = MemberDeviceStatusType.fromFullKey(status)
     val networkType: NetworkType? get() = NetworkType.fromKey(network)
     val signalStrength: NetworkSignalStrength? get() = NetworkSignalStrength.fromLevel(signal)
     val onlineStatus: MemberDeviceOnlineStatusType get() {
@@ -112,22 +120,22 @@ enum class MemberDeviceOnlineStatusType {
     ONLINE, BUSY, OFFLINE, UNKNOWN
 }
 
-enum class MemberDeviceStatusType {
-    INACTIVE,
-    ACTIVE_NO_LOCATION,
-    IDLE_NO_LOCATION,
+enum class MemberDeviceStatusType constructor(val id: String) {
+    INACTIVE("na"),
+    ACTIVE_NO_LOCATION("anl"),
+    IDLE_NO_LOCATION("inl"),
 
-    NOT_SHARING,
-    ACTIVE,
-    GPS_OFF,
-    MISSING_PERMISSIONS,
-    BATTERY_SAVER_ON,
-    TOO_MANY_REQUESTS,
-    THROTTLING,
-    IDLE,
+    NOT_SHARING("ns"),
+    ACTIVE("awl"),
+    GPS_OFF("gof"),
+    MISSING_PERMISSIONS("mp"),
+    BATTERY_SAVER_ON("bson"),
+    TOO_MANY_REQUESTS("tmr"),
+    THROTTLING("thr"),
+    IDLE("iwl"),
     ;
 
-    val key: String = name
+    val fullKey: String = name
 
     val isDeviceSetupWrong: Boolean get() = when(this) {
         GPS_OFF, MISSING_PERMISSIONS, NOT_SHARING -> true
@@ -142,8 +150,14 @@ enum class MemberDeviceStatusType {
     }
 
     companion object {
-        fun fromKey(key: String?): MemberDeviceStatusType? {
-            return values().firstOrNull { it.key == key }
+        fun fromFullKey(key: String?): MemberDeviceStatusType? {
+            return entries.firstOrNull { it.fullKey == key }
+        }
+
+        fun fromShortId(id: String?): MemberDeviceStatusType? {
+            return entries.firstOrNull { it.id == id }
         }
     }
 }
+
+data class LatLng(val lat: Double, val lng: Double)

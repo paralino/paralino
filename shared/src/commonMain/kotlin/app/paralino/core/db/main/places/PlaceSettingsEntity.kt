@@ -10,5 +10,7 @@ data class PlaceSettingsEntity(
     @ColumnInfo(name = "groupId") val groupId: String,
     @ColumnInfo(name = "placeId") val placeId: String,
     @ColumnInfo(name = "ownerUserId") val ownerUserId: String,
+    @ColumnInfo(name = "deviceId") val deviceId: String?,
+    @ColumnInfo(name = "isInPersonalSpace") val isInPersonalSpace: Boolean,
     @ColumnInfo(name = "alertData") val alertData: String
 )

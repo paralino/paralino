@@ -2,6 +2,7 @@ package app.paralino.core.repo
 
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.toResource
@@ -34,24 +35,28 @@ class LocationSharingManager(
             Resource.NotInitialized
         )
 
-    fun sharingStatusForGroup(id: String): Flow<Boolean> {
-        return allContractsFlow.map {
-            it.data?.any { it.groupId == id } ?: false
-        }.distinctUntilChanged()
-    }
-
     fun locationSharingStatus(onChange: (Resource<Boolean>) -> Unit) {
         sharingStatus.onEach { onChange(it) }.launchIn(scopeProvider.defaultIOScope)
     }
 
-    fun sharingContractForGroup(id: String): Flow<LocationSharingContract?> {
+    fun sharingContractForGroup(id: GroupOrSpaceId): Flow<LocationSharingContract?> {
         return allContractsFlow.map {
-            it.data?.firstOrNull { it.groupId == id }
+            it.data?.firstOrNull { it.groupOrSpaceId == id }
         }.distinctUntilChanged()
     }
 
-    suspend fun currentSharingContractForGroup(id: String): LocationSharingContract? {
-        return contractsDataSource.getContractOnce(groupId = id)?.asValidContract()
+    suspend fun unfilteredContractForGroup(id: GroupOrSpaceId): LocationSharingContract? {
+        return contractsDataSource.getContractOnce(groupId = id.id)
+    }
+
+    suspend fun currentSharingContractForGroup(id: GroupOrSpaceId): LocationSharingContract? {
+        return contractsDataSource.getContractOnce(groupId = id.id)?.asValidContract()
+    }
+
+    fun isGroupSharingActiveMaybe(): Boolean {
+        return allContractsFlow.value.data?.any {
+            it.groupOrSpaceId.isGroup && it.asValidContract() != null
+        } ?: false
     }
 
     fun isSharingActiveMaybe(): Boolean {
@@ -62,11 +67,11 @@ class LocationSharingManager(
         return sharingStatus.value.data ?: allValidContracts().isNotEmpty()
     }
 
-    fun isSharingActiveForGroupMaybe(id: String): Boolean {
-        return allContractsFlow.value.data?.firstOrNull { it.groupId == id }?.asValidContract() != null
+    fun isSharingActiveForGroupMaybe(id: GroupOrSpaceId): Boolean {
+        return allContractsFlow.value.data?.firstOrNull { it.groupOrSpaceId == id }?.asValidContract() != null
     }
 
-    suspend fun isSharingActiveForGroup(id: String): Boolean {
+    suspend fun isSharingActiveForGroup(id: GroupOrSpaceId): Boolean {
         return currentSharingContractForGroup(id = id) != null
     }
 
@@ -76,27 +81,17 @@ class LocationSharingManager(
         }
     }
 
-    suspend fun stopAllSharing() {
-        contractsDataSource.cancelAll()
-    }
-
-    suspend fun stopSharing(groupId: String) {
-        contractsDataSource.cancelContracts(listOf(groupId))
+    suspend fun stopSharing(groupId: GroupOrSpaceId, deleteContract: Boolean) {
+        if (deleteContract) {
+            contractsDataSource.deleteContract(id = groupId.id)
+        } else {
+            contractsDataSource.cancelContract(id = groupId.id)
+        }
     }
 
     suspend fun allValidContracts(): List<LocationSharingContract> {
-        val all = contractsDataSource.getAllContractsOnce()
-
-        val valid = all.mapNotNull { it.asValidContract() }
-        val expired = all.subtract(valid)
-
-        expired.takeIf { it.isNotEmpty() }
-            ?.map { it.groupId }
-            ?.let { contractsDataSource.cancelContracts(it) }
-
-        return valid
+        return contractsDataSource.getAllContractsOnce().mapNotNull { it.asValidContract() }
     }
-
 }
 
 class NoValidContractsException: Exception("No valid location sharing contracts")

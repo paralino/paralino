@@ -1,6 +1,6 @@
 package app.paralino.core.repo.user
 
-import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.mappers.UserMapperCore
 import app.paralino.core.models.raw.AccountResetCryptoKeyPayload
@@ -18,13 +18,14 @@ import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IUserApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.extensions.blocking
 
 class UserRemoteSource constructor(
     private val api: IUserApi,
     private val functionsApi: IFunctionsApi,
     private val docApi: IDocumentsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val userMapper: UserMapperCore,
 ) {
 
@@ -42,6 +43,10 @@ class UserRemoteSource constructor(
 
     suspend fun getCurrentSession(): UserSession {
         return api.getCurrentSession()
+    }
+
+    suspend fun renewCurrentSession(): UserSession {
+        return api.renewCurrentSession()
     }
 
     suspend fun getAllSessions(): List<UserSession> {
@@ -95,7 +100,7 @@ class UserRemoteSource constructor(
     suspend fun getBlocklist(): List<BlocklistRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = appBuildConfig.resourceIds.collectionBlockedID
+            collectionId = appConfig.resourceIds.collectionBlockedID
         ).map {
             BlocklistRaw.from(it)
         }
@@ -104,7 +109,7 @@ class UserRemoteSource constructor(
     suspend fun unblock(blockId: String) {
         docApi.deleteDocument(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = appBuildConfig.resourceIds.collectionBlockedID,
+            collectionId = appConfig.resourceIds.collectionBlockedID,
             documentId = blockId
         )
     }
@@ -112,7 +117,7 @@ class UserRemoteSource constructor(
     suspend fun getPlans(): List<UserPlanRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.PRODUCT,
-            collectionId = appBuildConfig.resourceIds.collectionUserPlansID
+            collectionId = appConfig.resourceIds.collectionUserPlansID
         ).map { UserPlanRaw.from(it) }
     }
 
@@ -180,7 +185,27 @@ class UserRemoteSource constructor(
         return response.response<LoginDetailsRaw>().data
     }
 
-    suspend fun logout() {
-        api.logout()
+    suspend fun logoutSession(sessionId: String) {
+        api.logoutSession(sessionId = sessionId)
+    }
+
+    suspend fun logoutCurrentSession() {
+        api.logoutCurrentSession()
+    }
+
+    suspend fun logoutAllButCurrentSession(): UserSession {
+        val allSessions = getAllSessions()
+        if (allSessions.size <= 1) {
+            logg.v("account_session", "No other sessions to revoke, renew current one")
+            return renewCurrentSession()
+        }
+
+        allSessions.forEach { session ->
+            if (!session.current) {
+                logoutSession(sessionId = session.id)
+            }
+        }
+
+        return renewCurrentSession()
     }
 }

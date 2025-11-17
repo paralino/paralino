@@ -13,6 +13,7 @@ import app.paralino.core.ui.theme.AppTheme
 object ScreensIOS {
     val login = LoginScreens
     val home = HomeScreens
+    val map = MainMapScreen
     val settings = SettingsScreens
 }
 
@@ -43,7 +44,7 @@ data class AppleScreenPaddingValues(
 )
 
 @Composable
-fun AppleScreenPaddingValues.toComposePaddingValues() = remember {
+fun AppleScreenPaddingValues.toComposePaddingValues() = remember (this) {
     PaddingValues(
         start = start.dp,
         top = top.dp,

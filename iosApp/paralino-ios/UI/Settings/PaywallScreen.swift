@@ -33,6 +33,7 @@ struct PaywallScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .navigationTitle(MR.shared.strings.plan_limit_alert_title.localizedString())
             .toolbar(.hidden, for: .navigationBar)
             .ignoresSafeArea(.all, edges: .vertical)
@@ -41,7 +42,14 @@ struct PaywallScreen: View {
     
     private func goBack(isSuccess: Bool) {
         switch state.type {
-        case .groupOnboarding, .freePlanNewUser:
+        case .personalSpaceOnboarding:
+            if let index = path.firstIndex(where: { $0 == .home(.map) }) {
+                path.removeSubrange(index+1..<path.count)
+            } else {
+                path = [.home(.map)]
+            }
+            
+        case .groupOnboarding, .freePlanNewGroupMember:
             if let groupId = state.groupId, !groupId.isEmpty {
                 if let index = path.firstIndex(where: { $0 == .home(.map) }) {
                     path.removeSubrange(index+1..<path.count)
@@ -49,16 +57,6 @@ struct PaywallScreen: View {
                 path.append(.home(.groupDetail(groupId: groupId)))
             } else {
                 path.append(.home(.map))
-            }
-
-        case .freePlanNotice:
-            if isSuccess {
-                if let index = path.firstIndex(where: { $0 == .home(.map) }) {
-                    path.removeSubrange(index+1..<path.count)
-                }
-                path.append(.home(.groupCreate(groupId: nil)))
-            } else {
-                path.removeLast()
             }
 
         case .skippedOnboarding, .normal, .upgrade:

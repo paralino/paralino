@@ -12,28 +12,28 @@ import Appwrite
 class AppwriteRemoteModule: IRemoteModule {
     
     let sessionMonitor: UserSessionMonitor
-    let appBuildConfig: AppBuildConfig
+    let appConfig: AppConfigRepository
     let networkQualityMonitor: NetworkQualityMonitor
     
     init(
         sessionMonitor: UserSessionMonitor,
-        appBuildConfig: AppBuildConfig,
+        appConfig: AppConfigRepository,
         networkQualityMonitor: NetworkQualityMonitor
     ) {
         self.sessionMonitor = sessionMonitor
-        self.appBuildConfig = appBuildConfig
+        self.appConfig = appConfig
         self.networkQualityMonitor = networkQualityMonitor
     }
     
     lazy var client: Client = {
         return Client(userDefaultsGroup: "group.app.paralino.ios")
-            .setEndpoint(appBuildConfig.endpoint)
-            .setProject(appBuildConfig.projectId)
+            .setEndpoint(appConfig.endpoint)
+            .setProject(appConfig.projectId)
             .setSelfSigned(false)
     }()
     
     lazy var account: Account = { return Account(client) }()
-    lazy var database: Databases = { return Databases(client) }()
+    lazy var tablesDB: TablesDB = { return TablesDB(client) }()
     lazy var functions: Functions = { return Functions(client) }()
     lazy var realtime: Realtime = { return Realtime(client) }()
     

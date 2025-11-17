@@ -124,7 +124,8 @@ class CreateGroupViewModel(
 
             is CreateGroupScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
-                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                    is MainAlertDialog.ServiceMaxLimit,
+                    is MainAlertDialog.PlanLimitForOwner -> {
                         _uiState.update {
                             it.mapSuccess { it.copy(alertDialog = null) }
                         }
@@ -165,8 +166,13 @@ class CreateGroupViewModel(
             val newData = when (group.data) {
                 is CryptoResource.Ready, is CryptoResource.WrongKeyOrData, is CryptoResource.NotInitialized -> {
                     CryptoResource.Ready(
-                        group.data.data?.copy(name = filteredName, image = image)
-                            ?: UserGroupData(filteredName, image, UserGroup.groupPrivateGroupId)
+                        group.data.data
+                            ?.copy(name = filteredName, image = image)
+                            ?: UserGroupData(
+                                name = filteredName,
+                                image = image,
+                                type = UserGroup.groupPrivateGroupId
+                            )
                     )
                 }
 
@@ -252,7 +258,7 @@ class CreateGroupViewModel(
             _uiState.update {
                 it.mapSuccess {
                     it.copy(
-                        alertDialog = MainAlertDialog.PlanLimit(
+                        alertDialog = MainAlertDialog.ServiceMaxLimit(
                             content = MR.strings.plan_limit_groups_alert_info.localizedString(),
                             limit = limit
                         )
@@ -262,6 +268,16 @@ class CreateGroupViewModel(
             return false
         } else if (limit in 0..groupCount) {
             showSnackbar(MR.strings.dashboard_groups_create_plan_limit.localizedString())
+            _uiState.update {
+                it.mapSuccess {
+                    it.copy(
+                        alertDialog = MainAlertDialog.PlanLimitForOwner(
+                            content = MR.strings.plan_limit_groups_alert_info.localizedString(),
+                            limit = limit
+                        )
+                    )
+                }
+            }
             return false
         } else {
             return true

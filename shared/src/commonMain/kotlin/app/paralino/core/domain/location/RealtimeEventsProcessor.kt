@@ -1,44 +1,63 @@
 package app.paralino.core.domain.location
 
 import app.paralino.core.crypto.GroupMemberMainPublicKey
+import app.paralino.core.crypto.PersonalSpaceDeviceKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
+import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
+import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.RealtimeResponse
+import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.models.raw.MemberLocationRaw
+import app.paralino.core.models.raw.UserDeviceLocationRaw
+import app.paralino.core.models.raw.UserDeviceRaw
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.location.LocationLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
+import kotlin.time.Duration.Companion.seconds
 
 class RealtimeEventsProcessor constructor(
     private val groupPreRefreshUseCase: GroupPreRefreshUseCase,
     private val registerDeviceForSharing: RegisterDeviceForSharingUseCase,
+    private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
+    private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val placesRepo: PlacesRepository,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
+    private val userKeyRepo: CryptoUserKeysLocalSource,
     private val memberLocal: LocationLocalDataSource,
     private val saveLocationUseCase: SaveLocationUseCase,
     private val locationSharingManager: LocationSharingManager,
     private val locationPerformanceManager: LocationPerformanceManager,
+    private val refreshUserKey: UserCryptoKeyRefreshUseCase,
     private val pushProvider: IPushProviderManager
 ) {
 
     val locationFocusChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionLocationFocusID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionLocationFocusID}.rows"
     val placesChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionPlacesID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPlacesID}.rows"
     val membersChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionGroupMembersID}.documents"
-    val locationsChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionMemberLocationsID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionGroupMembersID}.rows"
+    val groupsLocationsChannel =
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionMemberLocationsID}.rows"
+    val personalLocationsChannel =
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPersonalLocationsID}.rows"
+    val personalDevicesChannel =
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionUserDevicesID}.rows"
     val pushNotificationsChannel =
-        "databases.${BackendDatabaseType.DATA.id}.collections.${BackendResourceIDs.collectionPushNotificationID}.documents"
+        "databases.${BackendDatabaseType.DATA.id}.tables.${BackendResourceIDs.collectionPushNotificationID}.rows"
 
     private fun isPaused(groupId: String): Boolean = registerDeviceForSharing.isProcessing(key = groupId)
 
@@ -56,12 +75,20 @@ class RealtimeEventsProcessor constructor(
                 processMemberChannelEvent(response)
             }
 
-            response.channels.contains(locationsChannel) -> {
+            response.channels.contains(groupsLocationsChannel) -> {
                 processMemberLocationChannelEvent(response)
             }
 
             response.channels.contains(pushNotificationsChannel) -> {
                 processPushNotificationEvent(response)
+            }
+
+            response.channels.contains(personalDevicesChannel) -> {
+                processUserDeviceChannelEvent(response)
+            }
+
+            response.channels.contains(personalLocationsChannel) -> {
+                processUserDeviceLocationChannelEvent(response)
             }
         }
     }
@@ -72,11 +99,11 @@ class RealtimeEventsProcessor constructor(
 
         if (isPaused(groupId)) return
 
-        if (locationSharingManager.isSharingActiveForGroup(groupId)) {
+        if (locationSharingManager.isSharingActiveForGroup(groupId.asGroupOrSpaceId())) {
             logg.tag("location_performance").v("Boosting location from location focus realtime event")
             locationPerformanceManager.locationBoostRequested(
                 performanceType = LocationPerformanceType.MEDIUM_HIGH,
-                groupId = groupId,
+                groupId = groupId.asGroupOrSpaceId(),
                 from = "realtime location focus event"
             )
         }
@@ -193,10 +220,10 @@ class RealtimeEventsProcessor constructor(
                     cacheTimeMillis = 15_000
                 )
                 if (!result) {
-                    saveLocationUseCase.saveLocationLocally(location)
+                    saveLocationUseCase.saveGroupLocationLocally(location)
                 }
             } else {
-                saveLocationUseCase.saveLocationLocally(location)
+                saveLocationUseCase.saveGroupLocationLocally(location)
             }
 
         } else {
@@ -211,6 +238,70 @@ class RealtimeEventsProcessor constructor(
             }
             logg.tag("realtime_events").v("Delete location event in group $groupId")
             groupPreRefreshUseCase.refreshGroupWithMembers(groupId)
+        }
+    }
+
+    private suspend fun processUserDeviceChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
+        val device = if (response.events.any { it.endsWith(".delete") }) {
+            logg.tag("realtime_events").v("Got device delete event")
+            null
+        } else {
+            logg.tag("realtime_events").v("Got device create/update event")
+            UserDeviceRaw.from(response.payload)
+        }
+
+        if (device != null) {
+
+            if (isPaused(UserGroup.groupPersonalDevicesId)) return
+
+            if (device.userKeyVersion != null) {
+                val hasUserKey = try {
+                    userKeyRepo.personalKey(version = device.userKeyVersion)
+                    true
+                } catch (e: Exception) {
+                    false
+                }
+
+                if (!hasUserKey) {
+                    refreshUserKey.checkUserKeyStatus()
+                }
+            }
+
+            personalDevicesLocal.updateUserDeviceData(device)
+        } else {
+            if (isPaused(UserGroup.groupPersonalDevicesId)) {
+                return
+            }
+
+            personalSpaceRefresh.refreshPersonalSpace(cacheTimeMillis = 10.seconds.inWholeMilliseconds)
+        }
+    }
+
+    private suspend fun processUserDeviceLocationChannelEvent(response: RealtimeResponse<Map<String, Any>>) {
+        val location = if (response.events.any { it.endsWith(".delete") }) {
+            logg.tag("realtime_events").v("Got location delete event")
+            null
+        } else {
+            logg.tag("realtime_events").v("Got location create/update event")
+            UserDeviceLocationRaw.from(response.payload)
+        }
+
+        if (location != null) {
+
+            if (isPaused(UserGroup.groupPersonalDevicesId)) return
+
+            val deviceKey = userKeyRepo.getDeviceSenderKeyForLocationId(locationId = location.id)
+            if (deviceKey !is PersonalSpaceDeviceKey.Valid) {
+                personalSpaceRefresh.refreshPersonalSpace(cacheTimeMillis = 10.seconds.inWholeMilliseconds)
+            }
+
+            saveLocationUseCase.savePersonalLocationLocally(location)
+        } else {
+            if (isPaused(UserGroup.groupPersonalDevicesId)) {
+                return
+            }
+
+            personalSpaceRefresh.refreshPersonalSpace(cacheTimeMillis = 10.seconds.inWholeMilliseconds)
         }
     }
 

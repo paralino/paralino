@@ -36,7 +36,7 @@ class PlaceAlertsSettingsUpdateUseCase(
                     )
                 }
                 remote.updatePlaceSettings(
-                    groupId = place.place.groupId,
+                    groupId = place.place.groupOrSpaceId,
                     placeId = place.place.id,
                     placeSettingsId = place.settings?.id,
                     alertData = settings
@@ -61,11 +61,15 @@ class PlaceAlertsSettingsUpdateUseCase(
 
                 val settings = if (currentSettings != null) {
                     val currentAlert =
-                        currentSettings.settings.firstOrNull { it.memberUserId == data.memberUserId }
+                        currentSettings.settings.firstOrNull {
+                            it.memberUserId == data.memberUserId && it.deviceId == data.deviceId
+                        }
 
                     val newAlerts = if (currentAlert != null) {
                         currentSettings.settings.toMutableList().apply {
-                            removeAll { it.memberUserId == data.memberUserId }
+                            removeAll {
+                                it.memberUserId == data.memberUserId && it.deviceId == data.deviceId
+                            }
                             add(data)
                         }
                     } else {
@@ -80,7 +84,7 @@ class PlaceAlertsSettingsUpdateUseCase(
                     )
                 }
                 remote.updatePlaceSettings(
-                    groupId = place.place.groupId,
+                    groupId = place.place.groupOrSpaceId,
                     placeId = place.place.id,
                     placeSettingsId = place.settings?.id,
                     alertData = settings

@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -54,7 +56,8 @@ fun FilledButton(
     modifier: Modifier = Modifier,
     style: ButtonStyle,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
-    elevation: Dp = 4.dp,
+    enabled: Boolean = true,
+    elevation: Dp = if (enabled) 4.dp else 0.dp,
     icon: Painter? = null,
     state: AppButtonState = AppButtonState.CONTENT,
     onClick: () -> Unit,
@@ -97,7 +100,8 @@ fun FilledButton(
             })
             .shadow(elevation = elevation, shape = style.shape, spotColor = Color.DarkGray)
             .clip(style.shape)
-            .background(color = colors.backgroundColor(enabled = true).value)
+            .background(color = colors.backgroundColor(enabled = enabled).value)
+            .alpha(if (enabled) 1f else 0.4f)
             .padding(style.paddingValues),
         contentAlignment = Alignment.Center
     ) {
@@ -114,7 +118,7 @@ fun FilledButton(
             animationSpec = tween(durationMillis = 300)
         )
 
-        CompositionLocalProvider(LocalContentColor provides colors.contentColor(enabled = true).value) {
+        CompositionLocalProvider(LocalContentColor provides colors.contentColor(enabled = enabled).value) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -139,7 +143,7 @@ fun FilledButton(
 
             if (newState == AppButtonState.LOADING || loadingAlpha > 0f) {
                 CircularProgressIndicator(
-                    color = colors.contentColor(enabled = true).value,
+                    color = colors.contentColor(enabled = enabled).value,
                     strokeWidth = 2.dp,
                     modifier = Modifier
                         .size(style.minContentHeight)
@@ -151,7 +155,7 @@ fun FilledButton(
                 Icon(
                     painter = CoreAppIcons.Check.asPainterResource(),
                     contentDescription = null,
-                    tint = colors.contentColor(enabled = true).value,
+                    tint = colors.contentColor(enabled = enabled).value,
                     modifier = Modifier
                         .size(style.minContentHeight)
                         .alpha(checkAlpha)
@@ -191,8 +195,8 @@ fun FullWidthActionButton(
             text = text,
             color = contentColor,
             fontWeight = FontWeight.Normal,
-            fontSize = 12.sp,
-            lineHeight = 14.sp,
+            fontSize = 14.sp,
+            lineHeight = 16.sp,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
@@ -209,6 +213,52 @@ fun FullWidthActionButton(
         } else {
             Spacer(Modifier.size(8.dp))
         }
+    }
+}
+
+@Composable
+fun CheckButtonIcon(
+    modifier: Modifier = Modifier,
+    isChecked: Boolean,
+    size: Dp = 24.dp,
+    backgroundCheckedColor: Color = if (isSystemInDarkTheme()) {
+        MaterialTheme.colors.onPrimary
+    } else {
+        MaterialTheme.colors.primary
+    },
+    contentCheckedColor: Color = if (isSystemInDarkTheme()) {
+        MaterialTheme.colors.primary
+    } else {
+        MaterialTheme.colors.onPrimary
+    },
+    backgroundUncheckedColor: Color = MaterialTheme.colors.surface,
+    contentUncheckedColor: Color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+    checkedIcon: Painter = CoreAppIcons.CheckCircle.asPainterResource(),
+    uncheckedIcon: Painter = CoreAppIcons.RadioButtonUnchecked.asPainterResource(),
+) {
+    if (isChecked) {
+        Icon(
+            modifier = modifier
+                .size(size)
+                .background(
+                    color = backgroundCheckedColor,
+                    shape = CircleShape
+                )
+                .padding(1.dp),
+            painter = checkedIcon,
+            contentDescription = null,
+            tint = contentCheckedColor
+        )
+    } else {
+        Icon(
+            modifier = modifier
+                .size(size)
+                .background(color = backgroundUncheckedColor, shape = CircleShape)
+                .padding(2.dp),
+            painter = uncheckedIcon,
+            contentDescription = null,
+            tint = contentUncheckedColor
+        )
     }
 }
 

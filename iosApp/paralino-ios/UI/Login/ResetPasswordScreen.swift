@@ -23,6 +23,7 @@ struct ResetPasswordScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.reset_password_screen_title.localizedString())
         }

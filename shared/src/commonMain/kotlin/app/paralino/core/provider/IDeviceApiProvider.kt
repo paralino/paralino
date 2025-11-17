@@ -82,6 +82,7 @@ abstract class IDeviceApiProvider(
     abstract val defaultDeviceName: String
     abstract val packageName: String
     abstract fun createSystemLogr(): SystemLogr
+    abstract fun deviceCornerRadius(): Float
     abstract fun copyToClipboard(data: String)
     abstract suspend fun logout()
 }

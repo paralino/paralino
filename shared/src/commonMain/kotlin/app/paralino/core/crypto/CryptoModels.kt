@@ -249,3 +249,32 @@ sealed class UserGroupPersonalKeyPair {
         val version: Long
     ) : UserGroupPersonalKeyPair()
 }
+
+sealed class PersonalSpaceDeviceKey {
+    open val key: String? = null
+
+    sealed class Error : PersonalSpaceDeviceKey() {
+        object Missing : Error()
+        object Invalid : Error()
+        object InvalidMainKey : Error()
+        object MissingMainKey : Error()
+    }
+
+    data class Valid(override val key: String) : PersonalSpaceDeviceKey()
+}
+
+sealed class LocationHistoryKey {
+    sealed class Error : LocationHistoryKey() {
+        object MissingKeys : Error()
+        object MissingHistoryKey : Error()
+        object Invalid : Error()
+        data class InvalidPersonalKeyPair(val reason: UserGroupPersonalKeyPair.Error) : Error()
+        data class InvalidOwnerPublicKey(val reason: GroupMemberMainPublicKey.Error) : Error()
+    }
+
+    data class Valid(
+        val key: String,
+        val historyKeyVersion: String,
+        val memberKeyVersion: Long
+    ) : LocationHistoryKey()
+}

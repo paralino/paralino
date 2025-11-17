@@ -44,7 +44,7 @@ class BillingProviderIOS: IBillingProvider {
         return false
     }
     
-    func configure() async throws -> [IBillingProviderSubscriptionPlanData] {
+    func configure() async throws -> IBillingProviderSubscriptionProviderData {
         let billingUserId = try await userConfigRepo.ensureAndGetBillingUserId()
         let result = configure(billingUserId: billingUserId)
         
@@ -76,10 +76,11 @@ class BillingProviderIOS: IBillingProvider {
         currentUserPlan.value = highestPlan
     }
     
-    private func loadAndGetProducts() async throws -> [IBillingProviderSubscriptionPlanData] {
+    private func loadAndGetProducts() async throws -> IBillingProviderSubscriptionProviderData {
         let offerings = try await Purchases.shared.offerings()
         self.offerings.value = offerings
         var products: [String: IBillingProviderSubscriptionPlanData] = [:]
+        let billingConfig = try? await remoteConfigRepo.getBillingConfigFromRemote()
 
         if let offering = offerings.current {
             for package in offering.availablePackages {
@@ -161,7 +162,11 @@ class BillingProviderIOS: IBillingProvider {
                 }
             }
         }
-        return Array(products.values)
+        
+        return IBillingProviderSubscriptionProviderData(
+            plans: Array(products.values),
+            billingConfig: billingConfig
+        )
     }
 
     

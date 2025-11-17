@@ -34,6 +34,9 @@ struct PlaceDetailScreen: View {
                     openPlaceAlertsScreen: {
                         path.append(.home(.placeAlertsSettings(groupId: appState.groupId, placeId: appState.placeId)))
                     },
+                    openPlaceSensitivityScreen: {
+                        path.append(.home(.placeSensitivitySettings(groupId: appState.groupId, placeId: appState.placeId)))
+                    },
                     openPlaceEditScreen: {
                         path.append(.home(.placeCreate(groupId: appState.groupId, placeId: appState.placeId, lat: nil, lng: nil)))
                     },
@@ -48,6 +51,7 @@ struct PlaceDetailScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationBarBackButtonHidden(false)
         }

@@ -2,18 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>comgooglemaps</string>
-		<string>osmandmaps</string>
-		<string>waze</string>
-		<string>here-route</string>
-		<string>com.sygic.aura</string>
-		<string>citymapper</string>
-		<string>yandexmaps</string>
-		<string>moovit</string>
-		<string>maps</string>
-	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>app.paralino.ios.task.refresh.full</string>
@@ -26,6 +14,18 @@
 		<string>en</string>
 		<string>de</string>
 		<string>hr</string>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+		<string>osmandmaps</string>
+		<string>waze</string>
+		<string>here-route</string>
+		<string>com.sygic.aura</string>
+		<string>citymapper</string>
+		<string>yandexmaps</string>
+		<string>moovit</string>
+		<string>maps</string>
 	</array>
 	<key>TEAM_ID</key>
 	<string>$(TEAM_ID)</string>

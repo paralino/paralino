@@ -16,10 +16,6 @@
         <item quantity="one">%d uur</item>
         <item quantity="other">%d uren</item>
     </plurals>
-    <plurals name="plan_benefit_members">
-        <item quantity="one">**%d lid**</item>
-        <item quantity="other">**%d leden**</item>
-    </plurals>
     <plurals name="plan_benefit_group">
         <item quantity="one">**%d groep**</item>
         <item quantity="other">**%d groepen**</item>
@@ -35,5 +31,13 @@
     <plurals name="groups_sharing_duration_type_years">
         <item quantity="one">%d jaar</item>
         <item quantity="other">%d jaren</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Groep</item>
+        <item quantity="other">Groepen</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Apparaat</item>
+        <item quantity="other">Apparaten</item>
     </plurals>
 </resources>

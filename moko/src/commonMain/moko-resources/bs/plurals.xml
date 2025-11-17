@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minuta</item>
+        <item quantity="few">%d minute</item>
+        <item quantity="other">%d minuta</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d sat</item>
+        <item quantity="few">%d sata</item>
+        <item quantity="other">%d sati</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d dan</item>
+        <item quantity="few">%d dana</item>
+        <item quantity="other">%d dana</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d mjesec</item>
+        <item quantity="few">%d mjeseca</item>
+        <item quantity="other">%d mjeseci</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d godina</item>
+        <item quantity="few">%d godine</item>
+        <item quantity="other">%d godina</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Dijeljenje lokacije sa %d grupom</item>
+        <item quantity="few">Dijeljenje lokacije sa %d grupe</item>
+        <item quantity="other">Dijeljenje lokacije sa %d grupa</item>
+    </plurals>
+    <plurals name="plan_benefit_group">
+        <item quantity="one">**%d grupa**</item>
+        <item quantity="few">**%d grupe**</item>
+        <item quantity="other">**%d grupa**</item>
+    </plurals>
+    <plurals name="plan_benefit_places">
+        <item quantity="one">**%d mjesto** s neograničenim obavijestima</item>
+        <item quantity="few">**%d mjesta** s neograničenim obavijestima</item>
+        <item quantity="other">**%d mjesta** s neograničenim obavijestima</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grupa</item>
+        <item quantity="few">Grupe</item>
+        <item quantity="other">Grupa</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Uređaj</item>
+        <item quantity="few">Uređaja</item>
+        <item quantity="other">Uređaja</item>
+    </plurals>
+</resources>

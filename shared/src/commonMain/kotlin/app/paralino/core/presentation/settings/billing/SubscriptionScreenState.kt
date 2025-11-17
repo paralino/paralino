@@ -28,4 +28,5 @@ sealed class SubscriptionScreenEvent() {
 
 sealed class SubscriptionScreenUiEvent() {
     data class DialogAction(val action: AlertDialogAction) : SubscriptionScreenUiEvent()
+    data class OnCellItemClick(val table: FeatureTableItemState, val cellItem: FeatureTableItemValue) : SubscriptionScreenUiEvent()
 }

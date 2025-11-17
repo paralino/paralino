@@ -1,9 +1,9 @@
 package app.paralino.android.provider
 
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.LogPriority
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import io.sentry.Sentry
@@ -12,7 +12,7 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 
 class CrashReportingLogr(
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val appPrefs: AppPrefs
 ): ICrashReportingLogr() {
     override fun systemLog(
@@ -26,7 +26,7 @@ class CrashReportingLogr(
             return
         }
 
-        if (priority != LogPriority.ERROR || !appBuildConfig.logErrorsToRemote) {
+        if (priority != LogPriority.ERROR || !appConfig.logErrorsToRemote) {
             return
         }
 

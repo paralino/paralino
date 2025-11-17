@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minută</item>
+        <item quantity="few">%d minute</item>
+        <item quantity="other">%d minute</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d oră</item>
+        <item quantity="few">%d ore</item>
+        <item quantity="other">%d ore</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d zi</item>
+        <item quantity="few">%d zile</item>
+        <item quantity="other">%d zile</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d lună</item>
+        <item quantity="few">%d luni</item>
+        <item quantity="other">%d luni</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d an</item>
+        <item quantity="few">%d ani</item>
+        <item quantity="other">%d ani</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Partajare locație cu 1 grup</item>
+        <item quantity="few">Partajare locație cu %d grupuri</item>
+        <item quantity="other">Partajare locație cu %d grupuri</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grup</item>
+        <item quantity="few">Grupuri</item>
+        <item quantity="other">Grupuri</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Dispozitiv</item>
+        <item quantity="few">Dispozitive</item>
+        <item quantity="other">Dispozitive</item>
+    </plurals>
+</resources>

@@ -14,6 +14,7 @@ import app.paralino.core.domain.notifications.processors.PlaceActivityNotificati
 import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceDeletedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceUpdatedNotificationProcessor
+import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.base.BackendResourceIDs
@@ -41,6 +42,7 @@ class PushNotificationHandler constructor(
     private val groupPresenter: IGroupActivityNotificationPresenter,
     private val docApi: IDocumentsApi,
     private val preRefreshUseCase: GroupPreRefreshUseCase,
+    private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
     private val notificationDelete: PushNotificationDeleteUseCase,
     private val appPrefs: AppPrefs,
 ) : LimitedExecutionRepository() {
@@ -197,10 +199,16 @@ class PushNotificationHandler constructor(
                 push = push,
                 presenter = presenter,
                 groupRefreshHook = {
-                    preRefreshUseCase.refreshGroupWithMembers(
-                        groupId = it.groupId,
-                        cacheTimeMillis = it.cacheTimeDuration.inWholeMilliseconds
-                    )
+                    if (it.groupId.isPersonalSpace) {
+                        personalSpaceRefresh.refreshPersonalSpace(
+                            cacheTimeMillis = it.cacheTimeDuration.inWholeMilliseconds
+                        )
+                    } else {
+                        preRefreshUseCase.refreshGroupWithMembers(
+                            groupId = it.groupId.id,
+                            cacheTimeMillis = it.cacheTimeDuration.inWholeMilliseconds
+                        )
+                    }
                 },
                 onDelete = onDelete
             )
@@ -211,11 +219,19 @@ class PushNotificationHandler constructor(
 
     private fun PushNotificationType.processor(): INotificationProcessor<*> {
         return when (this) {
-            PushNotificationType.LOW_BATTERY_ALERT -> lowBatteryNotificationProcessor
-            PushNotificationType.PLACE_ALERT -> placeActivityNotification
-            PushNotificationType.PLACE_CREATED -> placeCreatedNotification
-            PushNotificationType.PLACE_UPDATED -> placeUpdatedNotification
-            PushNotificationType.PLACE_DELETED -> placeDeletedNotification
+            PushNotificationType.GROUP_LOW_BATTERY_ALERT -> lowBatteryNotificationProcessor
+            PushNotificationType.PERSONAL_LOW_BATTERY_ALERT -> lowBatteryNotificationProcessor
+
+            PushNotificationType.GROUP_PLACE_ALERT -> placeActivityNotification
+            PushNotificationType.GROUP_PLACE_CREATED -> placeCreatedNotification
+            PushNotificationType.GROUP_PLACE_UPDATED -> placeUpdatedNotification
+            PushNotificationType.GROUP_PLACE_DELETED -> placeDeletedNotification
+
+            PushNotificationType.PERSONAL_PLACE_ALERT -> placeActivityNotification
+            PushNotificationType.PERSONAL_PLACE_CREATED -> placeCreatedNotification
+            PushNotificationType.PERSONAL_PLACE_UPDATED -> placeUpdatedNotification
+            PushNotificationType.PERSONAL_PLACE_DELETED -> placeDeletedNotification
+
             PushNotificationType.GROUP_MEMBER_ADDED -> memberAddedNotification
             PushNotificationType.GROUP_MEMBER_DELETED -> memberDeletedNotification
             PushNotificationType.LOCATION_STARTED -> sharingStartedNotification
@@ -226,11 +242,19 @@ class PushNotificationHandler constructor(
 
     private fun PushNotificationType.presenter(): IPushNotificationPresenter? {
         return when (this) {
-            PushNotificationType.LOW_BATTERY_ALERT -> groupPresenter
-            PushNotificationType.PLACE_ALERT -> placePresenter
-            PushNotificationType.PLACE_CREATED -> groupPresenter
-            PushNotificationType.PLACE_UPDATED -> null
-            PushNotificationType.PLACE_DELETED -> null
+            PushNotificationType.GROUP_LOW_BATTERY_ALERT -> groupPresenter
+            PushNotificationType.PERSONAL_LOW_BATTERY_ALERT -> groupPresenter
+
+            PushNotificationType.GROUP_PLACE_ALERT -> placePresenter
+            PushNotificationType.GROUP_PLACE_CREATED -> groupPresenter
+            PushNotificationType.GROUP_PLACE_UPDATED -> null
+            PushNotificationType.GROUP_PLACE_DELETED -> null
+
+            PushNotificationType.PERSONAL_PLACE_ALERT -> placePresenter
+            PushNotificationType.PERSONAL_PLACE_CREATED -> groupPresenter
+            PushNotificationType.PERSONAL_PLACE_UPDATED -> null
+            PushNotificationType.PERSONAL_PLACE_DELETED -> null
+
             PushNotificationType.GROUP_MEMBER_ADDED -> groupPresenter
             PushNotificationType.GROUP_MEMBER_DELETED -> null
             PushNotificationType.LOCATION_STARTED -> groupPresenter

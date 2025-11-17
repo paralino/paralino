@@ -80,6 +80,7 @@ object SettingsScreens {
         openChangeEmail: () -> Unit,
         openChangePassword: () -> Unit,
         openProfileRawScreen: () -> Unit,
+        openBlockList: () -> Unit,
         onShare: (String) -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
@@ -91,6 +92,7 @@ object SettingsScreens {
                 openChangePassword = openChangePassword,
                 openChangeEmail = openChangeEmail,
                 openProfileRawScreen = openProfileRawScreen,
+                openBlockList = openBlockList,
                 onShare = onShare
             )
         }

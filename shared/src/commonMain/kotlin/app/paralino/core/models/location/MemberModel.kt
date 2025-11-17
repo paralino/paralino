@@ -6,6 +6,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.models.group.GroupSettings
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.utils.Emojis
 import kotlinx.serialization.Contextual
@@ -44,6 +45,12 @@ data class MemberModelWithLocations(
         return locations.firstOrNull { it.deviceId == appPrefs.deviceId && it.userId == appPrefs.userId }
     }
 }
+
+@Serializable
+data class MemberModelWithLocationsAndGroup(
+    val group: UserGroup,
+    val member: MemberModelWithLocations
+)
 
 @Serializable
 data class MemberModelData constructor(

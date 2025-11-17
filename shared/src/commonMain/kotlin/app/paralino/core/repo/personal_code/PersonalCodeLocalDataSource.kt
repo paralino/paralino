@@ -32,9 +32,4 @@ class PersonalCodeLocalDataSource(
                 }
             }
     }
-
-
-    suspend fun clear() {
-        database.personalCodeDao.clearAll()
-    }
 }

@@ -3,6 +3,7 @@ package app.paralino.core.domain.notifications.processors
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.raw.PushNotificationRaw
@@ -32,7 +33,7 @@ class GroupMemberAddedNotificationProcessor(
 
         groupRefreshHook?.invoke(
             GroupRefreshHookPayload(
-                groupId = payload.groupId,
+                groupId = payload.groupId.asGroupOrSpaceId(),
                 cacheTimeDuration = 10.seconds
             )
         )

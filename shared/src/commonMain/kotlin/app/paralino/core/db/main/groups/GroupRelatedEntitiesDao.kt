@@ -40,7 +40,7 @@ interface GroupRelatedEntitiesDao {
     suspend fun deleteGroup(groupId: String)
 
     @Query("DELETE FROM groupEntity")
-    suspend fun clearAllGroups()
+    suspend fun clearAllGroupsObject()
 
 
 
@@ -123,18 +123,6 @@ interface GroupRelatedEntitiesDao {
 
     @Transaction
     suspend fun recreateAllPlacesWithSettings(
-        placeEntity: List<PlaceEntity>,
-        placeSettings: List<PlaceSettingsEntity>
-    ) {
-        clearAllPlaces()
-        clearAllPlaceSettings()
-
-        createPlaces(placeEntity)
-        createPlaceSettings(placeSettings)
-    }
-
-    @Transaction
-    suspend fun recreateAllPlacesWithSettings(
         groupId: String,
         placeEntity: List<PlaceEntity>,
         placeSettings: List<PlaceSettingsEntity>
@@ -168,6 +156,9 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT COUNT(id) FROM placeEntity WHERE groupId = :groupId")
     fun getPlacesCountForGroup(groupId: String): Flow<Int?>
 
+    @Query("SELECT COUNT(id) FROM placeEntity WHERE isInPersonalSpace = 1")
+    fun getPlacesCountForPersonalSpace(): Flow<Int?>
+
     @Query("SELECT * FROM placeEntity")
     suspend fun getAllPlacesOnce(): List<PlaceEntity>
 
@@ -189,8 +180,8 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM placeEntity WHERE groupId = :groupId")
     suspend fun deletePlacesForGroup(groupId: String)
 
-    @Query("DELETE FROM placeEntity")
-    suspend fun clearAllPlaces()
+    @Query("DELETE FROM placeEntity WHERE isInPersonalSpace = 0")
+    suspend fun clearAllGroupPlaces()
 
 
 
@@ -210,8 +201,8 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM placeSettingsEntity WHERE groupId = :groupId")
     suspend fun deleteSettingsForGroup(groupId: String)
 
-    @Query("DELETE FROM placeSettingsEntity")
-    suspend fun clearAllPlaceSettings()
+    @Query("DELETE FROM placeSettingsEntity WHERE isInPersonalSpace = 0")
+    suspend fun clearAllGroupPlaceSettings()
 
 
 
@@ -222,8 +213,14 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT * FROM memberLocationEntity WHERE memberId = :memberId")
     fun getMemberLocations(memberId: String): Flow<List<MemberLocationEntity>>
 
+    @Query("SELECT * FROM memberLocationEntity WHERE groupId = :groupId AND userId = :userId")
+    fun getMemberLocations(groupId: String, userId: String): Flow<List<MemberLocationEntity>>
+
     @Query("SELECT * FROM memberLocationEntity WHERE groupId = :groupId")
     fun getMemberLocationsForGroup(groupId: String): Flow<List<MemberLocationEntity>>
+
+    @Query("SELECT * FROM memberLocationEntity WHERE groupId = :groupId")
+    suspend fun getMemberLocationsForGroupOnce(groupId: String): List<MemberLocationEntity>
 
     @Query("SELECT * FROM memberLocationEntity WHERE memberId = :memberId")
     suspend fun getMemberLocationsOnce(memberId: String): List<MemberLocationEntity>
@@ -255,7 +252,7 @@ interface GroupRelatedEntitiesDao {
     @Query("SELECT COUNT(id) FROM memberLocationEntity WHERE groupId = :groupId AND userId = :userId")
     fun getLocationCountForUserInGroup(groupId: String, userId: String): Flow<Int?>
 
-    @Query("UPDATE OR IGNORE memberLocationEntity SET locationData = NULL WHERE id = :locationId")
+    @Query("UPDATE OR IGNORE memberLocationEntity SET locationData = NULL, locationHistory = NULL WHERE id = :locationId")
     suspend fun clearLocationDataForLocation(locationId: String)
 
     @Query("DELETE FROM memberLocationEntity")
@@ -300,8 +297,23 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM batteryAlertEvent WHERE groupId = :groupId")
     suspend fun deleteBatteryAlertEvent(groupId: String)
 
-    @Query("DELETE FROM batteryAlertEvent")
-    suspend fun clearAllBatteryAlertEvents()
+
+
+    // location history
+    @Query("DELETE FROM groupHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllLocationHistoryForGroup(groupId: String)
+
+    @Query("DELETE FROM pendingLocationHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllPendingHistoryForGroup(groupId: String)
+
+    @Query("DELETE FROM unconfirmedLocationHistoryEntity WHERE groupId = :groupId")
+    suspend fun clearAllUnconfirmedLocationHistoryForGroup(groupId: String)
+
+    @Query("DELETE FROM groupLocalHistoryKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllLocalHistoryKeysForGroup(groupId: String)
+
+    @Query("DELETE FROM unsyncedGroupHistoryKeyEntity WHERE groupId = :groupId")
+    suspend fun clearAllUnsyncedHistoryKeysForGroup(groupId: String)
 
 
 
@@ -315,11 +327,11 @@ interface GroupRelatedEntitiesDao {
         places: List<PlaceEntity>,
         placeSettings: List<PlaceSettingsEntity>
     ) {
-        clearAllGroups()
+        clearAllGroupsObject()
         clearAllMembers()
         clearAllMemberLocations()
-        clearAllPlaces()
-        clearAllPlaceSettings()
+        clearAllGroupPlaces()
+        clearAllGroupPlaceSettings()
 
         createGroups(groups)
         createMembers(members)
@@ -349,17 +361,6 @@ interface GroupRelatedEntitiesDao {
     }
 
     @Transaction
-    suspend fun clearAllEntities() {
-        clearAllGroups()
-        clearAllMembers()
-        clearAllPlaces()
-        clearAllPlaceSettings()
-        clearAllMemberLocations()
-        clearAllPendingEvents()
-        clearAllBatteryAlertEvents()
-    }
-
-    @Transaction
     suspend fun deleteAllGroupDataForGroup(groupId: String) {
         deleteGroup(groupId = groupId)
         clearMembersForGroup(groupId = groupId)
@@ -368,6 +369,11 @@ interface GroupRelatedEntitiesDao {
         clearLocationsForGroup(groupId = groupId)
         deletePendingEventsForGroup(groupId = groupId)
         deleteBatteryAlertEvent(groupId = groupId)
+        clearAllLocationHistoryForGroup(groupId = groupId)
+        clearAllPendingHistoryForGroup(groupId = groupId)
+        clearAllUnconfirmedLocationHistoryForGroup(groupId = groupId)
+        clearAllLocalHistoryKeysForGroup(groupId = groupId)
+        clearAllUnsyncedHistoryKeysForGroup(groupId = groupId)
     }
 
     @Transaction

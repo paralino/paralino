@@ -2,6 +2,7 @@ package app.paralino.core.repo.location
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -63,7 +64,7 @@ class LocationPerformanceManager constructor(
 
     fun locationBoostRequested(
         performanceType: LocationPerformanceType,
-        groupId: String?,
+        groupId: GroupOrSpaceId?,
         from: String?,
     ) {
         locationBoostRequested(
@@ -78,7 +79,7 @@ class LocationPerformanceManager constructor(
 
     fun locationBoostRequested(
         request: LocationPerformanceRequest,
-        groupId: String?,
+        groupId: GroupOrSpaceId?,
         from: String?,
     ) {
         logg.tag("location_performance")
@@ -120,7 +121,6 @@ class LocationPerformanceManager constructor(
     private fun preparePerformanceReset(
         request: LocationPerformanceRequest
     ) {
-        // TODO check if someone is requesting location multiple times and don't reset performance in that case
         // if locations is not yet resolved and someone requests location multiple times, cancel or increase reset
         // that way device will get more time to fetch high quality location
 
@@ -182,7 +182,6 @@ class LocationPerformanceManager constructor(
 
     /**
      * will adjust performance flag based on battery and current time spent in performance mode
-     * TODO: when user battery settings are added, take them in account here
      */
     private fun setPerformance(type: LocationPerformanceType, allowDowngrade: Boolean = true) {
 

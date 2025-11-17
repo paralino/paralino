@@ -44,7 +44,7 @@ class ExpiredSessionRecovery(
         try {
             blocking {
                 // clearing user here will disable any further potential actions until session is refreshed
-                userRepo.clearLocally()
+                userRepo.clearUserAndPlansLocally()
 
                 // also clearing push tokens, so those will be synced again after new login
                 appPrefs.clearPushTokens()

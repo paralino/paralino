@@ -94,13 +94,6 @@ data class GroupKeysPayload(
 )
 
 @Serializable
-data class GroupMemberPublicKeyPayload(
-    val userId: String,
-    val signedPublicKey: String,
-    val ownerIdentityKey: String,
-)
-
-@Serializable
 data class UpdateGroupMemberSenderKeysPayload(
     val groupId: String,
     val locationData: MemberLocationDataPayload,
@@ -127,6 +120,7 @@ data class MemberLocationDataPayload constructor(
     val deviceData: String,
     val locationData: String,
     val status: String,
+    val locationHistory: String,
     val encryptedSenderKeys: List<GroupSenderKeyPayload>,
 )
 
@@ -134,7 +128,7 @@ data class MemberLocationDataPayload constructor(
 data class GroupSenderKeyPayload constructor(
     val userId: String,
     val memberKeyVersion: Long,
-    val encryptedSenderKey: String,
+    val encryptedSenderKey: String
 )
 
 @Serializable
@@ -155,6 +149,7 @@ data class CreatePlacePayload(
     val keyVersion: Long,
     val private: Boolean,
     val data: String,
+    val isInPersonalSpace: Boolean,
     val eventKeys: List<String>
 )
 
@@ -162,7 +157,8 @@ data class CreatePlacePayload(
 data class UpdatePlacePayload constructor(
     val placeId: String,
     val placeData: String,
-    val groupKeyVersion: Long,
+    val groupKeyVersion: Long?,
+    val userKeyVersion: Long?,
     val eventKeys: List<String>?
 )
 
@@ -170,7 +166,6 @@ data class UpdatePlacePayload constructor(
 data class PlaceEventPayload constructor(
     val placeId: String,
     val locationId: String?,
-    val enter: Boolean?,
     val event: String?,
     val timeDifferenceMillis: Long
 )
@@ -205,7 +200,7 @@ data class AccountResetCryptoKeyPayload constructor(
 )
 
 @Serializable
-data class LocationCreatePayload constructor(
+data class LocationCreateGroupPayload constructor(
     val groupId: String,
     val deviceId: String,
     val deviceData: String?,
@@ -217,9 +212,27 @@ data class LocationCreatePayload constructor(
 )
 
 @Serializable
-data class LocationDeletePayload constructor(
+data class LocationCreatePersonalPayload(
+    val deviceId: String,
+    val sessionId: String,
+    val deviceData: String?,
+    val deviceType: String,
+    val locationData: String?,
+    val status: String,
+    val notify: Boolean,
+    val encryptedSenderKey: String,
+    val userKeyVersion: Long,
+)
+
+@Serializable
+data class GroupLocationDeletePayload constructor(
     val memberId: String,
     val locationId: String,
+)
+
+@Serializable
+data class PersonalLocationDeletePayload(
+    val deviceId: String
 )
 
 @Serializable
@@ -270,16 +283,26 @@ data class PersonalCodeResponse constructor(
 )
 
 @Serializable
-data class LocationRequestPayload constructor(
+data class LocationRequestGroupPayload constructor(
     val groupId: String,
     val userId: String,
     val locationId: String,
 )
 
 @Serializable
-data class LocationFocusPayload constructor(
+data class LocationFocusGroupPayload constructor(
     val groupId: String,
     val userId: String?,
+    val locationId: String?
+)
+
+@Serializable
+data class LocationRequestSpacePayload constructor(
+    val locationId: String,
+)
+
+@Serializable
+data class LocationFocusSpacePayload constructor(
     val locationId: String?
 )
 
@@ -289,9 +312,15 @@ data class PromoCodeRedeemPayload(
 )
 
 @Serializable
-data class BatteryNotificationsUpdatePayload(
+data class GroupBatteryNotificationsUpdatePayload(
     val groupId: String,
     val memberId: String,
+    val alertData: String
+)
+
+@Serializable
+data class PersonalBatteryNotificationsUpdatePayload(
+    val deviceId: String,
     val alertData: String
 )
 
@@ -300,14 +329,20 @@ data class PlaceNotificationsUpdatePayload(
     val groupId: String,
     val placeId: String,
     val placeSettingsId: String?,
+    val deviceId: String?,
     val alertData: String
 )
 
 @Serializable
-data class BatteryAlertPayload constructor(
+data class GroupBatteryAlertPayload constructor(
     val groupId: String,
     val memberId: String,
     val locationId: String
+)
+
+@Serializable
+data class PersonalBatteryAlertPayload constructor(
+    val deviceId: String
 )
 
 @Serializable
@@ -320,4 +355,154 @@ data class UserEmailChangePayload(
     val email: String,
     val oldPassword: String,
     val newPassword: String
+)
+
+@Serializable
+data class LocationHistoryUploadPayload(
+    val deviceId: String,
+    val groupHistory: List<LocationHistoryGroupPayload>,
+    val personalHistory: LocationHistoryPersonalPayload?,
+)
+
+@Serializable
+data class LocationHistoryPersonalPayload(
+    val entries: List<LocationHistoryPayloadEntry>,
+    val keys: List<LocationHistoryPersonalKeyPayload>,
+    val retryEntries: List<LocationHistoryPayloadEntry>,
+    val retryKeys: List<LocationHistoryPersonalKeyPayload>,
+    val usedHistoryKeys: List<String>
+)
+
+@Serializable
+data class LocationHistoryGroupPayload(
+    val groupId: String,
+    val locationId: String,
+    val entries: List<LocationHistoryPayloadEntry>,
+    val retryEntries: List<LocationHistoryPayloadEntry>,
+    val historyKeys: List<LocationHistoryGroupKeyPayload>,
+    val retryHistoryKeys: List<LocationHistoryGroupKeyPayload>,
+    val usedHistoryKeys: List<String>
+)
+
+@Serializable
+data class LocationHistoryPayloadEntry(
+    val dateIdentifier: String,
+    val pendingUploadId: String,
+    val historyData: String,
+    val historyKeyVersion: String
+)
+
+@Serializable
+data class LocationHistoryPersonalKeyPayload constructor(
+    val historyKeyVersion: String,
+    val userKeyVersion: Long,
+    val encryptedHistoryKey: String,
+)
+
+@Serializable
+data class LocationHistoryGroupKeyPayload constructor(
+    val memberId: String,
+    val historyKeyVersion: String,
+    val memberKeyVersion: Long,
+    val encryptedHistoryKey: String,
+)
+
+@Serializable
+data class HistoryUploadResponse(
+    val personalHistoryResult: PersonalHistoryUploadResponse? = null,
+    val groupHistoryResult: GroupHistoryUploadResponse? = null
+)
+
+@Serializable
+data class PersonalHistoryUploadResponse(
+    val uploadedEntries: List<String>,
+    val uploadedHistoryKeys: List<String>,
+    val errors: List<HistoryUploadError>
+)
+
+@Serializable
+data class GroupHistoryUploadResponse(
+    val uploadedEntries: List<String>,
+    val uploadedHistoryKeys: List<GroupHistoryKeyUploadResult>,
+    val errors: List<HistoryUploadError>
+)
+
+@Serializable
+data class GroupHistoryKeyUploadResult(
+    val groupId: String,
+    val memberId: String,
+    val historyKeyVersion: String,
+)
+
+@Serializable
+data class HistoryUploadError(
+    val groupId: String? = null,
+    val key: String,
+    val error: FunctionErrorBody?
+)
+
+@Serializable
+data class GroupLocationHistoryReadPayload(
+    val groupId: String,
+    val memberUserId: String,
+    val locationId: String?,
+    val dateKeys: List<String>
+)
+
+@Serializable
+data class PersonalLocationHistoryReadPayload(
+    val locationId: String?,
+    val dateKeys: List<String>
+)
+
+@Serializable
+data class LocationHistoryDeleteGroupPayload(
+    val groupId: String,
+    val entries: List<LocationHistoryDeletePayloadEntry>,
+)
+
+@Serializable
+data class LocationHistoryDeletePersonalPayload(
+    val entries: List<LocationHistoryDeletePayloadEntry>,
+)
+
+@Serializable
+data class LocationHistoryDeletePayloadEntry(
+    val id: String,
+    val dateIdentifier: String,
+    val historyData: String,
+    val historyKeyVersion: String
+)
+
+@Serializable
+data class LocationHistoryDeletePeriodGroupPayload(
+    val groupId: String,
+    val startDateKey: String?,
+    val endDateKey: String?,
+    val locationIds: List<String>,
+    val deleteForAllDevices: Boolean
+)
+
+@Serializable
+data class LocationHistoryDeletePeriodPersonalPayload(
+    val startDateKey: String?,
+    val endDateKey: String?,
+    val locationIds: List<String>,
+    val deleteForAllDevices: Boolean
+)
+
+@Serializable
+data class PersonalDeviceDeletePayload(
+    val deviceId: String
+)
+
+@Serializable
+data class PersonalDeviceKeyUpdatePayload(
+    val deviceId: String,
+    val userKeyVersion: Long,
+    val encryptedSenderKey: String,
+    val deviceData: String,
+    val locationData: String,
+    val status: String,
+    val locationHistory: String?
 )

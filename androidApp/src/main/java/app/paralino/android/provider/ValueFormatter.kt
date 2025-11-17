@@ -9,7 +9,9 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.provider.MeasurementSystemType
+import app.paralino.core.utils.extensions.stripNanoseconds
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -50,9 +52,9 @@ class ValueFormatter(
         return formatter.format(number)
     }
 
-    override fun formatTimeOnly(timeUTC: LocalDateTime?): String? {
+    override fun formatTimeOnly(timeUTC: LocalDateTime?, showSeconds: Boolean): String? {
         val local = timeUTC?.toJavaLocalDateTime()?.fromUTCtoLocal() ?: return null
-        return local.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+        return local.format(DateTimeFormatter.ofLocalizedTime(if (showSeconds) FormatStyle.MEDIUM else FormatStyle.SHORT))
     }
 
     override fun formatBestPattern(timeUTC: LocalDateTime, pattern: String): String {
@@ -68,7 +70,10 @@ class ValueFormatter(
     }
 
     override fun currentTimeForApi(): String {
-        return nowUTC().toLocalDateTime(TimeZone.UTC).toJavaLocalDateTime()
+        return nowUTC()
+            .toLocalDateTime(TimeZone.UTC)
+            .stripNanoseconds()
+            .toJavaLocalDateTime()
             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     }
 }

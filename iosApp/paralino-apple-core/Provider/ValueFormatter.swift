@@ -40,13 +40,13 @@ class ValueFormatter: IValueFormatter {
         return formatter.string(from: NSNumber(value: number)) ?? ""
     }
     
-    override func formatTimeOnly(timeUTC: Kotlinx_datetimeLocalDateTime?) -> String? {
+    override func formatTimeOnly(timeUTC: Kotlinx_datetimeLocalDateTime?, showSeconds: Bool) -> String? {
         guard let date = timeUTC?.toDate() else { return nil }
         
         let format = DateFormatter()
         format.dateStyle = .none
-        format.timeStyle = .short
-
+        format.timeStyle = showSeconds ? .medium : .short
+        
         return format.string(from: date)
     }
     

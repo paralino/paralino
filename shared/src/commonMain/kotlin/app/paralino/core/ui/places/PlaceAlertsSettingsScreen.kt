@@ -139,7 +139,11 @@ private fun PlaceAlertsScreen(
                         CoreAppIcons.NotificationsOff.asPainterResource()
                     },
                     title = stringResource(MR.strings.place_detail_notification_settings_title),
-                    description = stringResource(MR.strings.place_detail_notification_settings_info),
+                    description = if (state.isPersonalSpace) {
+                        stringResource(MR.strings.place_detail_notification_settings_info_personal)
+                    } else {
+                        stringResource(MR.strings.place_detail_notification_settings_info_group)
+                    },
                     state = notificationState,
                     elevation = animateDpAsState(if (state.arePlaceAlertsActive) 16.dp else 0.dp).value,
                     onLongClick = onTogglePlaceAlertsSeparately,
@@ -152,7 +156,7 @@ private fun PlaceAlertsScreen(
 
         this.itemsIndexed(
             items = state.settings,
-            key = { index, item -> item.memberUserId }
+            key = { index, item -> item.alertItemId }
         ) { index, item ->
             PlaceDetailUserListItem(
                 modifier = Modifier

@@ -15,7 +15,7 @@ import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration.Companion.hours
@@ -87,13 +87,13 @@ data class UserGroup constructor(
         }
     }
 
-    fun placesLimit(config: ConfigData): Int {
-        if (isPlanExpired) {
-            return config.planConfigForPlanTypeOrDefault(fallbackPlanType).placesLimit
+    fun placesLimit(config: ConfigData): Int? {
+        return if (isPlanExpired) {
+            config.planConfigForPlanTypeOrDefault(fallbackPlanType).placesLimit
         } else {
-            return placesLimitOverride?.toInt()
+            placesLimitOverride?.toInt()
                 ?: config.planConfigForPlanTypeOrDefault(planType).placesLimit
-        }
+        }.takeIf { it >= 0 }
     }
 
     fun planConfig(config: ConfigData): PlanConfig {
@@ -105,9 +105,9 @@ data class UserGroup constructor(
     }
 
     companion object {
-        const val groupPublicSharingId = "publicSharing"
+        const val groupPublicSharingId = "public_sharing"
+        const val groupPersonalDevicesId = "personal_devices"
         const val groupPrivateGroupId = "privateGroup"
-        const val groupPersonalDevicesId = "personalDevices"
     }
 }
 
@@ -126,7 +126,8 @@ data class UserGroupWithMetadata constructor(
     val image: ImageModel get() = group.image
 
     fun arePlacesOverLimits(config: ConfigData): Boolean {
-        return placesCount > group.placesLimit(config)
+        val limit = group.placesLimit(config) ?: return true
+        return placesCount > limit
     }
 
     fun isGroupOverLimits(config: ConfigData): Boolean {
@@ -160,7 +161,7 @@ data class UserGroupWithMembers constructor(
                 throw IllegalArgumentException("Missing current user id from preferences")
             }
 
-            val currentUser = memberByUserId(userId)
+            val currentUser = memberByUserId(userId)?.member
                 ?: throw IllegalArgumentException("Missing current user in group members")
 
             return currentUser.isVerified
@@ -177,9 +178,12 @@ data class UserGroupWithMembers constructor(
 
     val isCurrentUserOwner: Boolean get() = group.isCurrentUserOwner
 
-    fun memberByUserId(userId: String): MemberModel? {
-        return members.firstOrNull { it.member.userId == userId }?.member
+    fun memberByUserId(userId: String): MemberModelWithLocations? {
+        return members.firstOrNull { it.member.userId == userId }
     }
+
+    val currentUserMemberWithLocations: MemberModelWithLocations? = memberByUserId(userId = appPrefs.userId)
+    val currentUserMember: MemberModel? = currentUserMemberWithLocations?.member
 
     val currentDeviceLocation: MemberLocation?
         get() {

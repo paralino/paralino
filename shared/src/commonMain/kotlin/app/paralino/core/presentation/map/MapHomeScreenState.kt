@@ -1,58 +1,100 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.group.UserGroup
+import app.paralino.core.models.group.UserGroupWithMembers
 import app.paralino.core.models.location.LocationSharingContract
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
+import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
-import app.paralino.core.utils.Emojis
+import app.paralino.core.ui.map.BottomSheetPosition
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
     abstract val isSatelliteMode: Boolean
     abstract val alertDialog: MainAlertDialog?
+    abstract val selectedGroupId: String?
+    abstract val selectedGroupImage: ImageModel?
+    abstract val isPersonalSpace: Boolean
+    abstract val isSheetEnabled: Boolean
+    abstract val defaultSheetPosition: BottomSheetPosition
 
     val deviceType: DeviceType = DeviceType.current
 
     data class Ready constructor(
-        val groupId: String,
-        val groupName: String,
-        val groupImage: ImageModel,
+        val groupOrSpaceId: GroupOrSpaceId,
+        val groupOrSpaceName: String,
+        val groupOrSpaceImage: ImageModel,
+
+        override val selectedGroupId: String?,
+        override val selectedGroupImage: ImageModel?,
+        override val currentUserImage: ImageModel,
+
+        val isFirstTimeInPersonalSpace: Boolean,
+
         val userCount: Int,
         val activeUserCount: Int,
         val idleUserCount: Int,
-        override val currentUserImage: ImageModel,
 
-        val members: List<GroupMemberItemStateWithOneLocation>,
+        val allMembersOrDevices: List<GroupMemberItemStateWithOneLocation>,
         val places: List<PlaceListItemData>,
         val markers: List<MapPinData>,
         val trackingMarker: FocusedMarkerData?,
         val mapHomeScreenFocusType: MapHomeScreenFocusType,
         val mapSheetSelectedContentType: MapSheetSelectedContentType,
 
-        val sharingStatus: LocationSharingContract?,
+        val personalSpaceSharingContract: LocationSharingContract?,
+        val selectedGroupSharingContract: LocationSharingContract?,
+
         val sharingEndTime: String?,
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
+        override val isPersonalSpace = groupOrSpaceId.isPersonalSpace
+        val hasPersonalSpaceIntroBanner = isPersonalSpace && isFirstTimeInPersonalSpace
+
+        val selectedSharingContract = if (isPersonalSpace) {
+            personalSpaceSharingContract
+        } else {
+            selectedGroupSharingContract
+        }
+
+        val membersWithDevices: List<GroupMemberItemState> = allMembersOrDevices
+            .groupBy { it.memberState }
+            .map {
+                if (it.value.size > 1) {
+                    GroupMemberItemStateWithFullStateLocations(
+                        memberState = it.key,
+                        items = it.value,
+                        actions = MemberActionsState(),
+                        allowShowingDevices = true,
+                        lastLocationPing = null,
+                        lastStatusPing = null
+                    )
+                } else {
+                    it.value.first()
+                }
+            }
+
         val visibleMarkers: List<MapPinData> = markers.filter { !it.hidden }
-        val allMembersVerified: Boolean get() = members.all { it.memberState.isVerified }
+        val allMembersVerified: Boolean get() = allMembersOrDevices.all { it.memberState.isVerified }
         val inactiveUserCount: Int get() = userCount - activeUserCount - idleUserCount
 
-        val focusedTypeId: String = when (mapHomeScreenFocusType) {
-            is MapHomeScreenFocusType.PLACE -> mapHomeScreenFocusType.placeId
-            is MapHomeScreenFocusType.MEMBER -> mapHomeScreenFocusType.memberKeyId
-            else -> mapHomeScreenFocusType.toString()
-        }
         val focusedPlace: PlaceListItemData? =
             (mapHomeScreenFocusType as? MapHomeScreenFocusType.PLACE)?.let { item ->
                 places.firstOrNull { it.id == item.placeId }
@@ -60,30 +102,68 @@ sealed class MapHomeScreenState {
 
         val focusedMember: GroupMemberItemState? =
             (mapHomeScreenFocusType as? MapHomeScreenFocusType.MEMBER)?.let { item ->
-                members.firstOrNull { it.keyId == item.memberKeyId }
+                allMembersOrDevices.firstOrNull { it.keyId == item.memberKeyId }
             }
+
+        val locationHistoryMode: MapHomeScreenFocusType.LOCATION_HISTORY? = mapHomeScreenFocusType.asLocationHistory
+
+        override val isSheetEnabled: Boolean = if (isPersonalSpace) {
+            !isFirstTimeInPersonalSpace
+        } else {
+            true
+        }
+
+        override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
+            BottomSheetPosition.HIDDEN
+        } else {
+            if (isPersonalSpace && isFirstTimeInPersonalSpace) {
+                BottomSheetPosition.EXPANDED
+            } else {
+                BottomSheetPosition.HALF_EXPANDED
+            }
+        }
     }
 
     data class Empty(
-        override val currentUserImage: ImageModel = ImageModel.emoji(Emojis.robot),
+        val groupsEmptyState: GroupsInitEmptyScreenState?,
+        override val selectedGroupId: String?,
+        override val selectedGroupImage: ImageModel?,
+        override val currentUserImage: ImageModel,
+        override val isPersonalSpace: Boolean,
         override val isSatelliteMode: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,
-    ) : MapHomeScreenState()
+    ) : MapHomeScreenState() {
+        override val isSheetEnabled: Boolean = false
+        override val defaultSheetPosition: BottomSheetPosition = if (groupsEmptyState != null) {
+            BottomSheetPosition.EXPANDED
+        } else {
+            BottomSheetPosition.HIDDEN
+        }
+    }
 }
 
 fun MapHomeScreenState.asReady(): MapHomeScreenState.Ready? = this as? MapHomeScreenState.Ready?
 
 sealed class MapHomeScreenEvent {
-    data object AddGroup : MapHomeScreenEvent()
-    data object ShowFreePlanInfo : MapHomeScreenEvent()
+    data object AskNotificationPermission: MapHomeScreenEvent()
+    data object OpenPersonalCodes: MapHomeScreenEvent()
+    data object OpenGroupCreateScreen : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
-    data object OpenGroupPicker : MapHomeScreenEvent()
+    data class OpenGroupPicker(val showPersonalSpace: Boolean) : MapHomeScreenEvent()
+    data object OpenPersonalSpace : MapHomeScreenEvent()
+    data class SharePersonalCode(val content: String): MapHomeScreenEvent()
+    data class ShowPlanLimitAlert(val limit: Int?) : MapHomeScreenEvent()
     data class OpenSharingStart(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaces(val groupId: String) : MapHomeScreenEvent()
     data class OpenCreatePlace(val groupId: String) : MapHomeScreenEvent()
     data class OpenGroupDetails(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaceDetails(val groupId: String, val placeId: String) : MapHomeScreenEvent()
+    data class OpenLocationHistory(
+        val groupId: String,
+        val memberUserId: String,
+        val deviceId: String?
+    ) : MapHomeScreenEvent()
     data class OpenExternalNavigation(
         val lat: Double,
         val lng: Double,
@@ -98,6 +178,13 @@ sealed interface MapHomeScreenUiEvent {
     data class OnMarkerClick(val pin: MapPinData) : MapHomeScreenUiEvent
     data class OnPlaceClick(val place: PlaceListItemData) : MapHomeScreenUiEvent
     data class OnMemberItemEvent(val event: GroupMemberItemEvent) : MapHomeScreenUiEvent
+    data class OnGroupsEmptyStateEvent(val event: GroupsInitEmptyScreenUiEvent) : MapHomeScreenUiEvent
+    data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
+    data class SwitchViewSource(val viewSource: MapScreenViewSourceType) : MapHomeScreenUiEvent
+    data object OpenPersonalLocationHistory : MapHomeScreenUiEvent
+    data object SwitchToPersonalSpace : MapHomeScreenUiEvent
+    data object SwitchToGroups : MapHomeScreenUiEvent
+    data object TryCreateGroup : MapHomeScreenUiEvent
     data object OnFocusOnMembersClick : MapHomeScreenUiEvent
     data object OnFocusOnPlacesClick : MapHomeScreenUiEvent
     data object OnOpenPlacesScreen : MapHomeScreenUiEvent
@@ -109,6 +196,9 @@ sealed interface MapHomeScreenUiEvent {
     data object OnSettingsClick : MapHomeScreenUiEvent
     data object OnMapModeSwitch : MapHomeScreenUiEvent
     data object OnCloseFocusedItemClick : MapHomeScreenUiEvent
+    data object OnBackClicked : MapHomeScreenUiEvent
+    data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
+    data object CloseLocationHistory : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {
@@ -127,24 +217,49 @@ sealed interface MapHomeScreenFocusType {
         val forceZoom: Boolean
     ) : MapHomeScreenFocusType
 
+    data class LOCATION_HISTORY(
+        val member: MapHomeScreenFocusType.MEMBER?,
+        val groupId: String,
+        val memberUserId: String,
+        val deviceId: String?
+    ) : MapHomeScreenFocusType
+
     data object ALL_PLACES : MapHomeScreenFocusType
     data object ALL_MEMBERS : MapHomeScreenFocusType
 
     val areMembersFocused: Boolean get() = this == ALL_MEMBERS
     val arePlacesFocused: Boolean get() = this == ALL_PLACES
+    val asLocationHistory: LOCATION_HISTORY? get() = this as? LOCATION_HISTORY
+    val asMember: MEMBER? get() = this as? MEMBER
+    val isLocationHistoryFocused: Boolean get() = this is LOCATION_HISTORY
     val isMemberOrPlaceFocused: Boolean get() = this is MEMBER || this is PLACE
+    val isMemberPlaceOrHistoryFocused: Boolean get() = isMemberOrPlaceFocused || isLocationHistoryFocused
+}
 
-    fun toggle(target: MapHomeScreenFocusType): MapHomeScreenFocusType {
-        return when (this) {
-            NONE -> target
-            else -> if (target != this) target else NONE
-        }
+sealed interface MapScreenViewSourceType {
+    val id: GroupOrSpaceId?
+
+    data class DefaultGroupOrSpace(override val id: GroupOrSpaceId?) : MapScreenViewSourceType
+    data class DefaultGroup(override val id: GroupOrSpaceId?) : MapScreenViewSourceType
+
+    data object PersonalSpace : MapScreenViewSourceType {
+        override val id: GroupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
     }
 }
 
 data class MapScreenLifecycleData(
-    val groupId: String,
+    val groupId: GroupOrSpaceId,
     val isAppFocused: Boolean,
     val isUiFocused: Boolean,
     val mapFocusType: MapHomeScreenFocusType,
 )
+
+sealed interface GroupWithMembersOrUserSpace {
+    val id: GroupOrSpaceId
+    data class Group(val group: UserGroupWithMembers): GroupWithMembersOrUserSpace {
+        override val id: GroupOrSpaceId = group.id.asGroupOrSpaceId()
+    }
+    data class PersonalSpace(val space: UserPersonalSpaceModel): GroupWithMembersOrUserSpace {
+        override val id: GroupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
+    }
+}

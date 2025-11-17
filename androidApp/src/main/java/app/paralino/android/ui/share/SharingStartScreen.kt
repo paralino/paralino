@@ -57,7 +57,13 @@ fun SharingStartScreen(
                 AppScreen.MainHome.BillingPaywall.route(
                     groupId = vm.currentGroupId,
                     type = when (isOnboarding) {
-                        true -> BillingScreenSourceType.GROUP_ONBOARDING
+                        true -> {
+                            if (vm.isPersonalSpace) {
+                                BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING
+                            } else {
+                                BillingScreenSourceType.GROUP_ONBOARDING
+                            }
+                        }
                         false -> BillingScreenSourceType.UPGRADE
                     }
                 )
@@ -67,11 +73,18 @@ fun SharingStartScreen(
                 }
             }
         } else if(isOnboarding) {
-            appState.navController.navigate(
-                AppScreen.MainHome.GroupDetails.route(groupId = vm.currentGroupId!!)
-            ) {
-                this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
-                    this.inclusive = false
+            if (vm.isPersonalSpace) {
+                appState.navController.popBackStack(
+                    route = AppScreen.MainHome.MainMap.routeSignature,
+                    inclusive = false
+                )
+            } else {
+                appState.navController.navigate(
+                    AppScreen.MainHome.GroupDetails.route(groupId = vm.currentGroupId!!)
+                ) {
+                    this.popUpTo(route = AppScreen.MainHome.MainMap.routeSignature) {
+                        this.inclusive = false
+                    }
                 }
             }
         } else {
@@ -83,7 +96,11 @@ fun SharingStartScreen(
         modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
-                title = stringResource(resource = MR.strings.groups_sharing_title),
+                title = if(vm.initialGroupId?.isPersonalSpace == true) {
+                    stringResource(resource = MR.strings.personalSpace_tracking_title)
+                } else {
+                    stringResource(resource = MR.strings.groups_sharing_title)
+                },
                 navigationIcon = if (isOnboarding) {
                     null
                 } else {

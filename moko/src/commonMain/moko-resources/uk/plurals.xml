@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d хвилина</item>
+        <item quantity="few">%d хвилини</item>
+        <item quantity="other">%d хвилин</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d година</item>
+        <item quantity="few">%d години</item>
+        <item quantity="other">%d годин</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d день</item>
+        <item quantity="few">%d дні</item>
+        <item quantity="other">%d днів</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d місяць</item>
+        <item quantity="few">%d місяці</item>
+        <item quantity="other">%d місяців</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d рік</item>
+        <item quantity="few">%d роки</item>
+        <item quantity="other">%d років</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Обмін місцезнаходженням з 1 групою</item>
+        <item quantity="few">Обмін місцезнаходженням з %d групами</item>
+        <item quantity="other">Обмін місцезнаходженням з %d групами</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Група</item>
+        <item quantity="few">Групи</item>
+        <item quantity="other">Груп</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Пристрій</item>
+        <item quantity="few">Пристрої</item>
+        <item quantity="other">Пристроїв</item>
+    </plurals>
+</resources>

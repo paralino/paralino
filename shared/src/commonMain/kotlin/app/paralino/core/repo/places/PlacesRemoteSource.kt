@@ -4,8 +4,11 @@ import app.paralino.core.crypto.AlphabetType
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
+import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.GetMemberWithLocationsUseCase
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceSettingsData
@@ -16,6 +19,7 @@ import app.paralino.core.models.raw.GroupPlaceWithSettingsRaw
 import app.paralino.core.models.raw.PlaceEventPayload
 import app.paralino.core.models.raw.PlaceNotificationsUpdatePayload
 import app.paralino.core.models.raw.UpdatePlacePayload
+import app.paralino.core.models.user.SymmetricCryptoKeyData
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
@@ -25,23 +29,23 @@ import app.paralino.core.utils.exceptions.CryptoException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
 import app.paralino.core.utils.extensions.blocking
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.serialization.encodeToString
 
 class PlacesRemoteSource(
     private val functionsApi: IFunctionsApi,
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val groupLocal: GetMemberWithLocationsUseCase,
-    private val placesGet: PlacesGetRemoteSource
+    private val userKeyRepo: CryptoUserKeysLocalSource,
+    private val placesGet: PlacesGetRemoteSource,
+    private val appPrefs: AppPrefs
 ) {
 
     suspend fun createPlace(
         groupId: String,
         private: Boolean,
+        isInPersonalSpace: Boolean,
         data: GroupPlaceData,
     ): GroupPlaceWithSettingsRaw {
-        val groupKey =
-            cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
 
         val eventSeed = cryptoCore.randomId(length = 32, AlphabetType.EXTENDED)
 
@@ -49,19 +53,34 @@ class PlacesRemoteSource(
             eventSeed = eventSeed
         )
 
-        val encryptedData = cryptoCore.encryptModel(
-            data = mappedData,
-            key = groupKey.key
-        )
+        val encryptedData = if (isInPersonalSpace) {
+            val userKey = userKeyRepo.activePersonalKeyWithVersion()
+            val encryptedData = cryptoCore.encryptModel(
+                data = mappedData,
+                key = userKey.key
+            )
+
+            encryptedData to userKey.version
+        } else {
+            val groupKey =
+                cryptoKEKRepo.getGroupKey(groupId, keyVersion = null) as GroupMasterKey.Valid
+
+            val encryptedData = cryptoCore.encryptModel(
+                data = mappedData,
+                key = groupKey.key
+            )
+            encryptedData to groupKey.version
+        }
 
         val enterEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true)
         val exitEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = false)
 
         val payload = CreatePlacePayload(
-            groupId = groupId,
-            keyVersion = groupKey.version,
+            groupId = if (isInPersonalSpace) appPrefs.userId else groupId,
+            keyVersion = encryptedData.second,
             private = private,
-            data = encryptedData,
+            data = encryptedData.first,
+            isInPersonalSpace = isInPersonalSpace,
             eventKeys = listOf(enterEvent, exitEvent)
         )
 
@@ -87,6 +106,10 @@ class PlacesRemoteSource(
         return placesGet.getPlacesForGroup(groupId)
     }
 
+    suspend fun getAllPersonalPlaces(): List<GroupPlaceWithSettingsRaw> {
+        return placesGet.getPersonalPlaces()
+    }
+
     suspend fun getAllPlaces(): List<GroupPlaceWithSettingsRaw> {
         return placesGet.getAllPlaces()
     }
@@ -96,18 +119,26 @@ class PlacesRemoteSource(
     ): GroupPlaceRaw {
         return blocking {
 
-            // get latest group key
-            val groupKey = cryptoKEKRepo.getGroupKey(
-                groupId = place.groupId,
-                keyVersion = null
-            )
-
-            if (groupKey !is GroupMasterKey.Valid)
-                throw MissingGroupKeyException(place.groupId, null)
-
             val placeData = when (place.data) {
                 is CryptoResource.Ready -> place.data.data
                 else -> throw CryptoException("Place data is missing: ${place.id}")
+            }
+
+            val key = if (place.isInPersonalSpace) {
+                userKeyRepo.activePersonalKeyWithVersion()
+            } else {
+                val groupKey = cryptoKEKRepo.getGroupKey(
+                    groupId = place.groupOrSpaceId.id,
+                    keyVersion = null
+                )
+
+                if (groupKey !is GroupMasterKey.Valid)
+                    throw MissingGroupKeyException(
+                        groupId = place.groupOrSpaceId.id,
+                        keyVersion = null
+                    )
+
+                SymmetricCryptoKeyData(key = groupKey.key, version = groupKey.version)
             }
 
             val payload: UpdatePlacePayload =
@@ -123,7 +154,7 @@ class PlacesRemoteSource(
 
                     val encryptedPlaceData = cryptoCore.encryptDataWithKey(
                         data = BaseRemoteModule.formatter.encodeToString(mappedData),
-                        key = groupKey.key
+                        key = key.key
                     )
 
                     val enterEvent = cryptoCore.getPlaceEventKey(seed = eventSeed, isEnter = true)
@@ -132,18 +163,20 @@ class PlacesRemoteSource(
                     UpdatePlacePayload(
                         placeId = place.id,
                         placeData = encryptedPlaceData,
-                        groupKeyVersion = groupKey.version,
+                        groupKeyVersion = if (place.isInPersonalSpace) null else key.version,
+                        userKeyVersion = if (place.isInPersonalSpace) key.version else null,
                         eventKeys = listOf(enterEvent, exitEvent)
                     )
                 } else {
                     val encryptedPlaceData = cryptoCore.encryptDataWithKey(
                         data = BaseRemoteModule.formatter.encodeToString(placeData),
-                        key = groupKey.key
+                        key = key.key
                     )
                     UpdatePlacePayload(
                         placeId = place.id,
                         placeData = encryptedPlaceData,
-                        groupKeyVersion = groupKey.version,
+                        groupKeyVersion = if (place.isInPersonalSpace) null else key.version,
+                        userKeyVersion = if (place.isInPersonalSpace) key.version else null,
                         eventKeys = null
                     )
                 }
@@ -162,21 +195,27 @@ class PlacesRemoteSource(
     }
 
     suspend fun updatePlaceSettings(
-        groupId: String,
+        groupId: GroupOrSpaceId,
         placeId: String,
         placeSettingsId: String?,
         alertData: GroupPlaceSettingsData
     ): GroupPlaceSettingRaw {
         return blocking {
             val payload = PlaceNotificationsUpdatePayload(
-                groupId = groupId,
+                groupId = groupId.id,
                 placeId = placeId,
                 placeSettingsId = placeSettingsId,
+                // for now, personal space allows only per device settings
+                deviceId = if (groupId.isPersonalSpace) {
+                    appPrefs.deviceId
+                } else {
+                    null
+                },
                 alertData = BaseRemoteModule.formatter.encodeToString(alertData)
             )
 
             val response = functionsApi.runAndWait(
-                function = ServerFunction.SETTINGS_NOTIFICATIONS_PLACES_UPDATE,
+                function = ServerFunction.ALERTS_PLACES_UPDATE,
                 data = payload
             )
 
@@ -211,8 +250,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
-                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupId),
-                enter = true,
+                locationId = groupLocal.getCurrentLocationIdForGroup(groupId = place.groupOrSpaceId),
                 event = enterEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )
@@ -229,8 +267,7 @@ class PlacesRemoteSource(
         notifyPlaceEvent(
             PlaceEventPayload(
                 placeId = place.id,
-                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupId),
-                enter = false,
+                locationId = groupLocal.getCurrentLocationIdForGroup(place.groupOrSpaceId),
                 event = exitEvent,
                 timeDifferenceMillis = nowUTC().toEpochMilliseconds() - timeMillis
             )

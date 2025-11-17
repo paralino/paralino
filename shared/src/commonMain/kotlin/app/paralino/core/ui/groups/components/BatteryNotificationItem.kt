@@ -4,10 +4,12 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +22,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.presentation.groups.settings.BatteryNotificationMemberState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
@@ -39,7 +43,7 @@ fun BatteryNotificationItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { if (!state.loading) onNotifyChange(state.memberUserId) }
+            .clickable { if (!state.loading) onNotifyChange(state.alertItemId) }
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colors.surface)
             .padding(horizontal = 6.dp)
@@ -55,8 +59,8 @@ fun BatteryNotificationItem(
                 modifier = Modifier
                     .size(42.dp)
                     .border(
-                        width = if (state.isCurrentUser) 2.dp else 0.5.dp,
-                        color = if (state.isCurrentUser) {
+                        width = if (state.isCurrentUserOrDevice) 2.dp else 0.5.dp,
+                        color = if (state.isCurrentUserOrDevice) {
                             MaterialTheme.colors.primary
                         } else {
                             MaterialTheme.colors.secondary.copy(alpha = ContentAlpha.disabled)
@@ -66,24 +70,42 @@ fun BatteryNotificationItem(
             )
 
             Spacer(modifier = Modifier.size(12.dp))
-            Text(
-                text = state.name,
-                style = MaterialTheme.typography.subtitle1,
+            Column(
                 modifier = Modifier
-            )
+                    .offset(y = if (state.tag.isNullOrBlank()) 0.dp else (-2).dp)
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = state.name,
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                if (!state.tag.isNullOrBlank()) {
+                    Text(
+                        text = state.tag,
+                        style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colors.onSecondary,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colors.secondary,
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .padding(horizontal = 6.dp, vertical = 1.dp)
+                    )
+                }
+            }
         }
 
         BatteryNotificationToggle(
             modifier = Modifier.size(42.dp, 42.dp),
             state = state.notify,
             loading = state.loading,
-            onChange = { onNotifyChange(state.memberUserId) }
+            onChange = { onNotifyChange(state.alertItemId) }
         )
     }
 }
 
 @Composable
-fun BatteryNotificationToggle(
+private fun BatteryNotificationToggle(
     modifier: Modifier = Modifier,
     state: Boolean,
     loading: Boolean,

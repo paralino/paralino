@@ -1,5 +1,7 @@
 package app.paralino.core.repo.places
 
+import app.paralino.core.appPrefs
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.models.places.GroupPlaceWithSettings
@@ -7,6 +9,7 @@ import app.paralino.core.models.raw.GroupPlaceRaw
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -15,7 +18,8 @@ class PlacesRepository constructor(
     private val remote: PlacesRemoteSource,
     private val groupLocal: UserGroupLocalDataSource,
     private val placeActivityRepo: PlaceActivityDataSource,
-
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
     fun getAllPlacesLocally(): Flow<List<GroupPlace>> {
@@ -54,12 +58,30 @@ class PlacesRepository constructor(
         )
     }
 
-    fun createPlace(groupId: String, private: Boolean, data: GroupPlaceData): Flow<Unit> {
+    fun getAndRefreshPersonalPlaces(): Flow<List<GroupPlace>> {
+        return mergeDataWithRemote(
+            local = local.getPlacesForGroup(groupId = appPrefs.userId),
+            remote = {
+                remote.getAllPersonalPlaces()
+            },
+            localUpdate = {
+                personalSpaceRepo.recreatePersonalPlaces(it)
+            }
+        )
+    }
+
+    fun createPlace(
+        groupId: String,
+        private: Boolean,
+        isInPersonalSpace: Boolean,
+        data: GroupPlaceData
+    ): Flow<Unit> {
         return getDataOnce(
             remote = {
                 remote.createPlace(
                     groupId = groupId,
                     data = data,
+                    isInPersonalSpace = isInPersonalSpace,
                     private = private
                 )
             },

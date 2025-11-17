@@ -26,7 +26,7 @@ class UserApi: IUserApiIOS {
     
     func confirmEmail(userId: String, secret: String) async throws -> Payload<KotlinUnit> {
         await remoteModule.executeUserApi { module in
-            let _ = try await module.account.updateVerification(userId: userId, secret: secret)
+            let _ = try await module.account.updateEmailVerification(userId: userId, secret: secret)
             return KotlinUnit()
         }
     }
@@ -51,6 +51,12 @@ class UserApi: IUserApiIOS {
         }
     }
     
+    func renewCurrentSession() async throws -> Payload<UserSession> {
+        return await remoteModule.executeUserApi { module in
+            try await module.account.updateSession(sessionId: "current").parseSession()
+        }
+    }
+    
     func getMe() async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
             try await module.account.get().parseUser()
@@ -59,14 +65,14 @@ class UserApi: IUserApiIOS {
     
     func doInitEmailVerification() async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let _ = try await module.account.createVerification(url: module.appBuildConfig.resourceIds.emailConfirmationUrl)
+            let _ = try await module.account.createEmailVerification(url: module.appConfig.resourceIds.emailConfirmationUrl)
             return KotlinUnit()
         }
     }
     
     func doInitResetPassword(email: String) async throws -> Payload<KotlinUnit> {
         return await remoteModule.executeUserApi { module in
-            let _ = try await module.account.createRecovery(email: email, url: module.appBuildConfig.resourceIds.passwordResetUrl)
+            let _ = try await module.account.createRecovery(email: email, url: module.appConfig.resourceIds.passwordResetUrl)
             return KotlinUnit()
         }
     }
@@ -74,13 +80,6 @@ class UserApi: IUserApiIOS {
     func login(email: String, password: String) async throws -> Payload<UserSession> {
         return await remoteModule.executeUserApi { module in
             try await module.account.createEmailPasswordSession(email: email, password: password).parseSession()
-        }
-    }
-    
-    func logout() async throws -> Payload<KotlinUnit> {
-        await remoteModule.executeUserApi { module in
-            let _ = try await module.account.deleteSession(sessionId: "current")
-            return KotlinUnit()
         }
     }
     
@@ -94,7 +93,7 @@ class UserApi: IUserApiIOS {
     func signUp(userName: String?, email: String, password: String) async throws -> Payload<UserMeRaw> {
         return await remoteModule.executeUserApi { module in
             try await module.account.create(
-                userId: module.appBuildConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
+                userId: module.appConfig.resourceIds.uniqueIdPlaceholder, email: email, password: password, name: userName
             ).parseUser()
         }
     }
@@ -110,6 +109,20 @@ class UserApi: IUserApiIOS {
             try await module.account.updatePrefs(prefs: data).parseUser()
         }
     }
+    
+    func logoutCurrentSession() async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let _ = try await module.account.deleteSession(sessionId: "current")
+            return KotlinUnit()
+        }
+    }
+    
+    func logoutSession(sessionId: String) async throws -> Payload<KotlinUnit> {
+        await remoteModule.executeUserApi { module in
+            let _ = try await module.account.deleteSession(sessionId: sessionId)
+            return KotlinUnit()
+        }
+    }
 }
 
 extension AppwriteModels.User {
@@ -122,6 +135,28 @@ extension AppwriteModels.User {
 
 extension AppwriteModels.Session {
     func parseSession() -> UserSession {
-        return UserSession(id: self.id, expire: self.expire, deviceType: "ios")
+        return UserSession(
+            id: self.id,
+            createdAt: self.createdAt,
+            updatedAt: self.updatedAt,
+            expire: self.expire,
+            provider: self.provider,
+            ip: self.ip,
+            osCode: self.osCode,
+            osName: self.osName,
+            osVersion: self.osVersion,
+            clientType: self.clientType,
+            clientCode: self.clientCode,
+            clientName: self.clientName,
+            clientVersion: self.clientVersion,
+            clientEngine: self.clientEngine,
+            clientEngineVersion: self.clientEngineVersion,
+            deviceName: self.deviceName,
+            deviceBrand: self.deviceBrand,
+            deviceModel: self.deviceModel,
+            countryCode: self.countryCode,
+            countryName: self.countryName,
+            current: self.current
+        )
     }
 }

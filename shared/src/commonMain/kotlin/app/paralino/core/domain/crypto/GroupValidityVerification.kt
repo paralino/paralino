@@ -10,10 +10,14 @@ import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
 import app.paralino.core.models.group.GroupIntegrity
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.UserDeviceModel
+import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.raw.GroupSettingsRaw
 import app.paralino.core.models.raw.MemberDocumentRaw
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.exceptions.MissingMemberKeyException
 
 class GroupValidityVerification(
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
@@ -198,7 +202,7 @@ class GroupValidityVerification(
         if (ownerSettings.groupIntegrity.isNullOrBlank()) {
             // allow missing integrity for now
             logg.tag("integrity_check_group").v("VALID_CHANGED (empty) for ${group.id}")
-            return IntegrityResult.VALID_CHANGED
+            return IntegrityResult.MISSING
         }
 
         val integrity = getIntegrity(
@@ -249,16 +253,41 @@ class GroupValidityVerification(
 
     suspend fun checkIntegrityForDeviceKey(group: UserGroupWithMembers): IntegrityResult {
         val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = group.id)
+
         if (keyIntegrity?.integrity.isNullOrBlank()) {
-            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id} (missing)")
-            return IntegrityResult.VALID_EXPIRED
+            logg.tag("integrity_check_device").v("MISSING for ${group.id} (missing)")
+            return IntegrityResult.MISSING
+        }
+
+        if (keyIntegrity.safetySignature != null) {
+            val member = group.currentUserMember ?: return IntegrityResult.CORRUPTED
+            val publicKey = cryptoKEKRepo.getMemberPublicKey(groupId = group.id, memberUserId = member.userId)
+
+            if (publicKey !is GroupMemberMainPublicKey.Valid) {
+                logg.tag("integrity_check_device").e("Member public key is not valid for ${group.id}")
+                return IntegrityResult.CORRUPTED
+            }
+
+            val safetySignature = GroupIntegrity.createDeviceSafetySignature(
+                hashProvider = cryptoCore.hashProvider,
+                groupId = group.id,
+                memberId = member.id,
+                memberVerification = member.verification,
+                identityKey = publicKey.identityKey.key,
+                membershipKey = publicKey.membershipKey,
+            )
+
+            if (safetySignature != keyIntegrity.safetySignature) {
+                logg.tag("integrity_check_device").e("Device safety signature is not valid for ${group.id}")
+                return IntegrityResult.CORRUPTED
+            }
         }
 
         val integrity = getIntegrity(
             groupId = group.group.id,
             serverIntegrity = group.group.serverIntegrity,
-            myIntegrity = keyIntegrity?.integrity,
-            userKeyVersion = keyIntegrity?.userKeyVersion,
+            myIntegrity = keyIntegrity.integrity,
+            userKeyVersion = keyIntegrity.userKeyVersion,
             memberVerifications = group.members.map { it.member.verification },
             forGroup = false
         )
@@ -272,6 +301,40 @@ class GroupValidityVerification(
             return IntegrityResult.VALID_CHANGED
         } else {
             logg.tag("integrity_check_device").v("VALID_EXPIRED for ${group.id}")
+            return IntegrityResult.VALID_EXPIRED
+        }
+    }
+
+    suspend fun checkIntegrityForPersonalSpace(currentDevice: UserDeviceModel?): IntegrityResult {
+        val groupId = UserGroup.groupPersonalDevicesId
+        val currentDevice = currentDevice ?: return IntegrityResult.CORRUPTED
+        val keyIntegrity = cryptoKEKRepo.getDeviceIntegrityForGroup(groupId = groupId)
+
+        if (keyIntegrity?.integrity.isNullOrBlank()) {
+            logg.tag("integrity_check_device").v("MISSING for ${groupId} (missing)")
+            return IntegrityResult.MISSING
+        }
+
+        // INFO: not using safetySignature here since it is only used for groups
+
+        val integrity = getIntegrity(
+            groupId = groupId,
+            serverIntegrity = currentDevice.sessionId ?: "",
+            myIntegrity = keyIntegrity.integrity,
+            userKeyVersion = keyIntegrity.userKeyVersion,
+            memberVerifications = listOf(userKeyRepo.signatureKeyPair().publicKey),
+            forGroup = false
+        )
+            ?: return IntegrityResult.CORRUPTED
+
+        if (integrity.first.isValidForPersonalSpace(integrity.second)) {
+            logg.tag("integrity_check_device").v("VALID for ${groupId}")
+            return IntegrityResult.VALID
+        } else if (integrity.first.signature != integrity.second) {
+            logg.tag("integrity_check_device").v("VALID_CHANGED for ${groupId}")
+            return IntegrityResult.VALID_CHANGED
+        } else {
+            logg.tag("integrity_check_device").v("VALID_EXPIRED for ${groupId}")
             return IntegrityResult.VALID_EXPIRED
         }
     }
@@ -305,9 +368,11 @@ class GroupValidityVerification(
                 hashProvider = cryptoCore.hashProvider,
                 serverIntegrity = serverIntegrity,
                 memberVerifications = memberVerifications,
-                encryptedMemberPublicKeys = cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(
-                    groupId = groupId
-                )
+                encryptedMemberPublicKeys = if (groupId == UserGroup.groupPersonalDevicesId) {
+                    listOf(userKeyRepo.signatureKeyPair().publicKey)
+                } else {
+                    cryptoKEKRepo.getAllEncryptedMembershipPublicKeys(groupId = groupId)
+                }
             )
         } catch (e: Exception) {
             logg.tag(tag).w("CORRUPTED for $groupId - Generic error: ${e.message}")
@@ -322,9 +387,21 @@ enum class IntegrityResult {
     VALID,
     VALID_EXPIRED,
     VALID_CHANGED,
+    MISSING,
     CORRUPTED;
 
-    val shouldChange: Boolean get() = this == VALID_EXPIRED || this == VALID_CHANGED
+    fun shouldChange(
+        force: Boolean,
+        isSharingActive: Boolean
+    ): Boolean {
+        return when (this) {
+            IntegrityResult.VALID -> force
+            IntegrityResult.VALID_EXPIRED -> true
+            IntegrityResult.VALID_CHANGED -> true
+            IntegrityResult.MISSING -> isSharingActive
+            IntegrityResult.CORRUPTED -> false
+        }
+    }
 }
 
 sealed interface VerificationResult {
@@ -341,12 +418,12 @@ sealed interface VerificationResult {
                 if (includeMemberVerification) {
                     return false
                 } else {
-                    return errors.filter {
+                    return errors.none {
                         it != VerificationResultError.MEMBER_VERIFICATION_MISSING
                                 && it != VerificationResultError.WRONG_OWNER_VERIFICATION
                                 && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_SIGNATURE
                                 && it != VerificationResultError.WRONG_MEMBER_VERIFICATION_FORM
-                    }.isEmpty()
+                    }
                 }
             }
             Verified -> return true

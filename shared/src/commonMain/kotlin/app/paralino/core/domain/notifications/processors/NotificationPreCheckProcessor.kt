@@ -6,9 +6,10 @@ import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.repo.base.AccessLogDataSource
+import app.paralino.core.repo.base.AppConfigRepository
 
 class NotificationPreCheckProcessor(
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val accessLogSource: AccessLogDataSource,
     private val appPrefs: AppPrefs,
 ) {
@@ -30,7 +31,7 @@ class NotificationPreCheckProcessor(
             return false
         }
 
-        if (appBuildConfig.appHost == AppHost.MAIN_APP && accessLogSource.canProcessAlertNotification(notificationId = push.id)) {
+        if (appConfig.appHost == AppHost.MAIN_APP && accessLogSource.canProcessAlertNotification(notificationId = push.id)) {
             accessLogSource.saveAlertNotificationAccessLog(notificationId = push.id)
         }
 

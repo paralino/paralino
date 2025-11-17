@@ -24,6 +24,10 @@ class UserApiWrapperIOS(
         return userApi.getCurrentSession().getOrThrow()
     }
 
+    override suspend fun renewCurrentSession(): UserSession {
+        return userApi.renewCurrentSession().getOrThrow()
+    }
+
     override suspend fun getAllSessions(): List<UserSession> {
         return userApi.getAllSessions().getOrThrow()
     }
@@ -60,8 +64,12 @@ class UserApiWrapperIOS(
         userApi.deleteAccount().getOrThrow()
     }
 
-    override suspend fun logout() {
-        userApi.logout().getOrThrow()
+    override suspend fun logoutSession(sessionId: String) {
+        userApi.logoutSession(sessionId = sessionId).getOrThrow()
+    }
+
+    override suspend fun logoutCurrentSession() {
+        userApi.logoutCurrentSession().getOrThrow()
     }
 }
 
@@ -70,6 +78,7 @@ interface IUserApiIOS {
     suspend fun login(email: String, password: String): Payload<UserSession>
     suspend fun getMe(): Payload<UserMeRaw>
     suspend fun getCurrentSession(): Payload<UserSession>
+    suspend fun renewCurrentSession(): Payload<UserSession>
     suspend fun getAllSessions(): Payload<List<UserSession>>
     suspend fun updateUserData(data: Map<String, Any>): Payload<UserMeRaw>
     suspend fun changePassword(newPassword: String, oldPassword: String?): Payload<UserMeRaw>
@@ -79,5 +88,6 @@ interface IUserApiIOS {
     suspend fun confirmEmail(userId: String, secret: String): Payload<Unit>
     suspend fun updateEmail(email: String, password: String): Payload<UserMeRaw>
     suspend fun deleteAccount(): Payload<Unit>
-    suspend fun logout(): Payload<Unit>
+    suspend fun logoutSession(sessionId: String): Payload<Unit>
+    suspend fun logoutCurrentSession(): Payload<Unit>
 }

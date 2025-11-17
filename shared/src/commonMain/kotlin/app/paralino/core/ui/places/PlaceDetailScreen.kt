@@ -54,6 +54,7 @@ fun PlaceDetailScreenCore(
     onNavigateBack: () -> Unit,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
+    openPlaceSensitivityScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
 ) {
@@ -119,6 +120,7 @@ fun PlaceDetailScreenCore(
                 openPlaceEditScreen = openPlaceEditScreen,
                 openPlaceRawDataScreen = openPlaceRawDataScreen,
                 openPlaceAlertsScreen = openPlaceAlertsScreen,
+                openPlaceSensitivityScreen = openPlaceSensitivityScreen,
                 onPlaceDelete = {
                     showDialog = MainAlertDialog.DeletePlace
                 },
@@ -145,6 +147,7 @@ private fun PlaceDetailScreen(
     userScrollEnabled: Boolean,
     openPlaceRawDataScreen: () -> Unit,
     openPlaceAlertsScreen: () -> Unit,
+    openPlaceSensitivityScreen: () -> Unit,
     openPlaceEditScreen: () -> Unit,
     onPlaceDelete: () -> Unit,
     mapContent: @Composable (PlaceDetailScreenState) -> Unit,
@@ -160,16 +163,18 @@ private fun PlaceDetailScreen(
         this.item(key = "main_header") {
             PlaceListItem(
                 modifier = Modifier.padding(top = 26.dp).padding(horizontal = 20.dp),
-                state = PlaceListItemData(
-                    id = state.placeId,
-                    groupId = state.groupId,
-                    name = state.name,
-                    image = state.image,
-                    private = state.private,
-                    lat = 0.0,
-                    lng = 0.0,
-                    radiusMeters = 0
-                ),
+                state = remember(state) {
+                    PlaceListItemData(
+                        id = state.placeId,
+                        groupOrSpaceId = state.groupOrSpaceId,
+                        name = state.name,
+                        image = state.image,
+                        private = state.private,
+                        lat = 0.0,
+                        lng = 0.0,
+                        radiusMeters = 0
+                    )
+                },
                 hasEndArrow = false,
                 backgroundColor = Color.Transparent
             )
@@ -216,6 +221,12 @@ private fun PlaceDetailScreen(
                         icon = CoreAppIcons.NotificationsActive.asPainterResource(),
                     ) {
                         openPlaceAlertsScreen()
+                    }
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.place_sensitivity_screen_title),
+                        icon = CoreAppIcons.ShareLocation.asPainterResource(),
+                    ) {
+                        openPlaceSensitivityScreen()
                     }
                 }
 

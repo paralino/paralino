@@ -4,6 +4,7 @@ import app.paralino.core.MR
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
@@ -12,6 +13,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.tryParseFromJson
@@ -26,6 +28,7 @@ class PlaceActivityNotificationProcessor(
     private val valueFormatter: IValueFormatter,
     private val cryptoCore: CryptoCore,
     private val accessLogSource: AccessLogDataSource,
+    private val personalDevicesLocal: PersonalDevicesLocalDataSource,
     private val appPrefs: AppPrefs
 ) : BaseNotificationProcessor(accessLogSource) {
 
@@ -38,20 +41,37 @@ class PlaceActivityNotificationProcessor(
             ?: return null
 
         var placeName: String? = null
-        var userName: String? = null
+        var objectName: String? = null
         var eventSeed: String? = null
-        var groupId: String? = null
+        var groupId: GroupOrSpaceId? = null
 
         try {
             val place = placeRepo.getPlaceWithoutSettingsOnce(payload.placeId)
-            groupId = place?.groupId
+            groupId = place?.groupOrSpaceId
             placeName = place?.data?.data?.name
-            userName = groupRepo.getMemberNameOnce(place!!.groupId, payload.memberUserId)
+            if (groupId?.isPersonalSpace == true) {
+                val deviceName = if (payload.locationId.isNullOrBlank()) {
+                    null
+                } else {
+                    val device = personalDevicesLocal.getUserDeviceByIdOnce(payload.locationId)
+                    device?.deviceNameOrNull
+                }
+                if (deviceName.isNullOrBlank()) {
+                    objectName = MR.strings.places_notification_personalDevice_placeholder.localizedString()
+                } else {
+                    objectName = MR.strings.places_notification_personalDeviceName_placeholder.localizedString(deviceName)
+                }
+            } else {
+                objectName = groupRepo.getMemberNameOnce(
+                    groupId = groupId!!.id,
+                    userId = payload.memberUserId
+                )
+            }
             eventSeed = place.eventSeed
         } catch (_: Exception) {
         }
 
-        val title = if (placeName.isNullOrBlank() || userName.isNullOrBlank()) {
+        val title = if (placeName.isNullOrBlank() || objectName.isNullOrBlank()) {
             MR.strings.place_notification_default.localizedString()
         } else {
             val isEnter = when {
@@ -67,10 +87,18 @@ class PlaceActivityNotificationProcessor(
                 else -> null
             }
 
-            when (isEnter) {
-                true -> MR.strings.place_notification_enter.localizedString(userName, placeName)
-                false -> MR.strings.place_notification_exit.localizedString(userName, placeName)
-                else -> MR.strings.place_notification_default.localizedString()
+            if (groupId?.isPersonalSpace == true) {
+                when (isEnter) {
+                    true -> MR.strings.place_notification_device_enter.localizedString(objectName, placeName)
+                    false -> MR.strings.place_notification_device_exit.localizedString(objectName, placeName)
+                    else -> MR.strings.place_notification_personal_default.localizedString()
+                }
+            } else {
+                when (isEnter) {
+                    true -> MR.strings.place_notification_enter.localizedString(objectName, placeName)
+                    false -> MR.strings.place_notification_exit.localizedString(objectName, placeName)
+                    else -> MR.strings.place_notification_default.localizedString()
+                }
             }
         }
 
@@ -91,7 +119,7 @@ class PlaceActivityNotificationProcessor(
             NotificationGroupingType.NONE -> null
             NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
             NotificationGroupingType.TYPE -> "place_activity"
-            NotificationGroupingType.GROUP -> groupId ?: payload.placeId
+            NotificationGroupingType.GROUP -> groupId?.id ?: payload.placeId
             NotificationGroupingType.PERSON -> payload.memberUserId
         }
 
@@ -111,7 +139,7 @@ class PlaceActivityNotificationProcessor(
     @Serializable
     private data class PlaceActivityNotificationPayload constructor(
         val memberUserId: String,
-        val locationId: String,
+        val locationId: String?,
         val placeId: String,
 
         @Deprecated("Use event instead")

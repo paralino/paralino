@@ -3,6 +3,7 @@ package app.paralino.core.domain.notifications.processors
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
 import app.paralino.core.logg
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.raw.PushNotificationRaw
 import app.paralino.core.repo.base.AccessLogDataSource
 import kotlin.time.Duration
@@ -11,12 +12,12 @@ abstract class BaseNotificationProcessor(
     accessLogSource: AccessLogDataSource
 ) : INotificationProcessor<BaseNotificationProcessor.GroupRefreshHookPayload>(accessLogSource) {
     interface IGroupRefreshHookPayload {
-        val groupId: String
+        val groupId: GroupOrSpaceId
         val cacheTimeDuration: Duration
     }
 
     data class GroupRefreshHookPayload(
-        override val groupId: String,
+        override val groupId: GroupOrSpaceId,
         override val cacheTimeDuration: Duration
     ) : IGroupRefreshHookPayload
 }

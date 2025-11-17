@@ -43,7 +43,7 @@ struct MapRootScreen: View {
                                 onFinish: {
                                     mainAppState.userReadyGraph.removeLast()
                                 }
-                            )
+                            ) 
                             case .appSettings: AppSettingsScreen(path: $mainAppState.userReadyGraph)
                             case .measurementSystemSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.measurementSystemVM))
                             case .notificationGroupingSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.notificationGroupingVM))
@@ -61,7 +61,7 @@ struct MapRootScreen: View {
                                     appState: SharingStartScreen.createState(groupId: groupId, isOnboarding: isOnboarding)
                                 )
                             case .map: MapHomeScreen(path: $mainAppState.userReadyGraph)
-                            case .groupInit: GroupInitScreen(path: $mainAppState.userReadyGraph, appState: initState)
+                            case .groupInit: AccountOnboardingScreen(path: $mainAppState.userReadyGraph, appState: initState)
                             case .memberInvite(let groupId, let code, let isOnboarding):
                                 MemberInviteScreen(
                                     path: $mainAppState.userReadyGraph,
@@ -76,9 +76,21 @@ struct MapRootScreen: View {
                                 PlaceDetailScreen(path: $mainAppState.userReadyGraph, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
                             case .placeAlertsSettings(groupId: let groupId, placeId: let placeId):
                                 PlaceAlertsSettingsScreen(path: $mainAppState.userReadyGraph, appState: PlaceDetailScreen.createState(groupId: groupId, placeId: placeId))
+                            case .placeSensitivitySettings(groupId: let groupId, placeId: let placeId):
+                                GenericSettingsScreen(
+                                    path: $mainAppState.userReadyGraph,
+                                    appState: GenericSettingsScreenState(
+                                        vm: KoinIOS.ViewModels.shared.placeSensitivityVM(groupId: groupId, placeId: placeId)
+                                    )
+                                )
                             case .placeCreate(groupId: let groupId, placeId: let placeId, lat: let lat, lng: let lng):
                                 PlaceCreateScreen(path: $mainAppState.userReadyGraph, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
                             case .freePlanInfo: FreePlanInfoScreen(path: $mainAppState.userReadyGraph)
+                            case .locationHistorySettings(groupId: let groupId): LocationHistoryDeleteScreen(path: $mainAppState.userReadyGraph, appState: LocationHistoryDeleteScreen.createState(groupId: groupId))
+                            case .locationHistory(groupId: let groupId, memberUserId: let memberUserId, deviceId: let deviceId):
+                                LocationHistoryMapScreen(path: $mainAppState.userReadyGraph, mapState: LocationHistoryMapState(groupId: groupId, memberUserId: memberUserId, deviceId: deviceId))
+                            case .personalSpace: PersonalSpaceScreen(path: $mainAppState.userReadyGraph, appState: PersonalSpaceScreen.createState())
+                            case .personalSpaceSettings: PersonalSpaceSettingsScreen(path: $mainAppState.userReadyGraph)
                             }
                         }
                     }.onAppear {

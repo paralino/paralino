@@ -1,22 +1,30 @@
 package app.paralino.core.presentation.share
 
 import app.paralino.core.MR
-import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.location.MemberDeviceStatusProcessor
 import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.user.PremiumStatusLimitState
+import app.paralino.core.domain.user.PremiumStatusManager
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.GroupOrUserSpace
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroupWithMetadata
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.GroupItemState
+import app.paralino.core.presentation.share.SharingStartScreenEvent.AskForPermission
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.location.LocationLocalDataSource
+import app.paralino.core.repo.places.PlaceActivityDataSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.SnackbarDuration
@@ -25,6 +33,7 @@ import app.paralino.core.ui.components.nameRes
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
+import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.poll
 import kotlinx.coroutines.Dispatchers
@@ -32,11 +41,9 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapMerge
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -45,42 +52,53 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SharingStartViewModel(
-    val initialGroupId: String?,
+    val initialGroupId: GroupOrSpaceId?,
     val isOnboarding: Boolean,
     private val remoteConfigRepo: RemoteConfigRepository,
     private val groupRepo: UserGroupLocalDataSource,
     private val sharingManager: LocationSharingManager,
+    private val deviceStatusProcessor: MemberDeviceStatusProcessor,
+    private val placeActivityRepo: PlaceActivityDataSource,
     val deviceApiProvider: IDeviceApiProvider,
     private val registerDevice: RegisterDeviceForSharingUseCase,
     private val userMemberIdUseCase: UserMemberIdUseCase,
-    private val locationRepo: LocationLocalDataSource,
     private val userRepo: UserRepository,
-    private val appPrefs: AppPrefs
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val premiumStatusManager: PremiumStatusManager,
+    private val refreshEverythingUseCase: RefreshEverythingUseCase,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState =
         MutableStateFlow(
             SharingStartScreenState(
-                groupState = if (initialGroupId.isNullOrBlank()) {
+                groupState = if (initialGroupId?.id.isNullOrBlank()) {
                     Payload.Success(null)
                 } else {
                     Payload.Loading
                 },
-                canChangeGroup = initialGroupId.isNullOrBlank()
+                canChangeGroup = initialGroupId?.id.isNullOrBlank()
             )
         )
     val uiState: StateFlow<SharingStartScreenState> = _uiState
 
-    private val currentGroup = MutableStateFlow<UserGroupWithMetadata?>(null)
+    private val currentGroup = MutableStateFlow<GroupOrUserSpace?>(null)
     val currentGroupId: String? get() = currentGroup.value?.id
 
     private val _eventChannel = Channel<SharingStartScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
 
+    val isPersonalSpace: Boolean get() = currentGroup.value is GroupOrUserSpace.PersonalSpace
+
     val shouldProceedToPaywall: Boolean
         get() {
+            val isOwner = when (val item = currentGroup.value) {
+                is GroupOrUserSpace.Group -> item.group.group.isCurrentUserOwner
+                is GroupOrUserSpace.PersonalSpace -> true
+                null -> false
+            }
             return isOnboarding
-                    && currentGroup.value?.group?.isCurrentUserOwner == true
+                    && isOwner
                     && !userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
         }
 
@@ -90,63 +108,81 @@ class SharingStartViewModel(
 
         coroutineScope.launch(Dispatchers.IO) {
             _uiState.update {
+                val deviceName = userMemberIdUseCase.getDefaultDeviceName(
+                    groupId = currentGroup.value?.id?.asGroupOrSpaceId()
+                )
                 it.copy(
-                    deviceName = userMemberIdUseCase.getDefaultDeviceName(currentGroup.value?.id)
+                    deviceName = deviceName,
+                    initialDeviceName = deviceName
                 )
             }
         }
 
-        combine(
-            deviceApiProvider.deviceStatus,
-            currentGroup.flatMapMerge {
-                if (it == null) {
-                    flowOf(null)
-                } else {
-                    locationRepo.getLocationCountForMember(
-                        groupId = it.id,
-                        userId = appPrefs.userId
+        deviceApiProvider.deviceStatus
+            .onEach { deviceStatus ->
+                _uiState.update {
+                    it.copy(
+                        errors = getErrors(it.isLongTerm),
+                        warnings = buildList {
+                            if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                                add(ConditionErrorType.PermissionNotifications)
+                            }
+                        }
                     )
                 }
             }
-        ) { deviceStatus, locationCount ->
-            _uiState.update {
-                it.copy(
-                    devicesCount = locationCount,
-                    errors = buildList {
-                        addAll(deviceStatus.locationStatus.getPossibleErrors(it.isLongTerm))
-
-                        if (!deviceStatus.networkStatus.isOnline) {
-                            add(ConditionErrorType.Network)
-                        }
-                    },
-                    warnings = buildList {
-                        if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                            add(ConditionErrorType.PermissionNotifications)
-                        }
-                    }
-                )
-            }
-        }
-            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
         currentGroup
             .filterNotNull()
             .onEach {
-                if (it.isGroupOverLimits(remoteConfigRepo.getConfigOnce())) {
-                    if (it.group.isCurrentUserOwner) {
-                        showSnackbar(
-                            text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
-                            duration = SnackbarDuration.Forever
-                        )
-                    } else {
-                        showSnackbar(
-                            text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
-                            duration = SnackbarDuration.Forever
-                        )
+                when (it) {
+                    is GroupOrUserSpace.Group -> {
+                        if (it.group.isGroupOverLimits(remoteConfigRepo.getConfigOnce())) {
+                            if (it.group.group.isCurrentUserOwner) {
+                                showSnackbar(
+                                    text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                                    duration = SnackbarDuration.Forever
+                                )
+                            } else {
+                                showSnackbar(
+                                    text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                                    duration = SnackbarDuration.Forever
+                                )
+                            }
+                        }
+                    }
+
+                    is GroupOrUserSpace.PersonalSpace -> {
+                        if (it.space.isSpaceOverLimits()) {
+                            showSnackbar(
+                                text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
+                                duration = SnackbarDuration.Forever
+                            )
+                        }
                     }
                 }
             }
+            .flatMapLatest {
+                sharingManager.sharingContractForGroup(id = it.id.asGroupOrSpaceId())
+                    .onEach { currentContract ->
+                        _uiState.update { state ->
+                            state.copy(
+                                currentContract = currentContract,
+                                saveToHistory = currentContract?.saveToHistory
+                                    ?: state.saveToHistory,
+                                shareSpeed = currentContract?.shareSpeed ?: state.shareSpeed,
+                                shareElevation = currentContract?.shareElevation
+                                    ?: state.shareElevation,
+                                shareBattery = currentContract?.shareBattery ?: state.shareBattery,
+                                shareNetwork = currentContract?.shareNetwork ?: state.shareNetwork,
+                                shareDeviceStatus = currentContract?.shareDeviceStatus
+                                    ?: state.shareDeviceStatus,
+                            )
+                        }
+                    }
+            }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 
@@ -154,7 +190,7 @@ class SharingStartViewModel(
         when (event) {
             is SharingStartScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
-                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                    is MainAlertDialog.ServiceMaxLimit, is MainAlertDialog.PlanLimitForMembers -> {
                         _uiState.update { it.copy(alertDialog = null) }
                     }
 
@@ -163,7 +199,7 @@ class SharingStartViewModel(
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             coroutineScope.launch {
                                 _eventChannel.send(
-                                    SharingStartScreenEvent.AskForPermission(
+                                    AskForPermission(
                                         ConditionErrorType.PermissionLocationBackground
                                     )
                                 )
@@ -181,7 +217,7 @@ class SharingStartViewModel(
                             _eventChannel.send(SharingStartScreenEvent.AdjustScrollPosition)
                             if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                                 uiState.value.errors.firstOrNull()?.let {
-                                    _eventChannel.send(SharingStartScreenEvent.AskForPermission(it))
+                                    _eventChannel.send(AskForPermission(it))
                                 }
                             }
                         }
@@ -190,14 +226,30 @@ class SharingStartViewModel(
                     else -> {}
                 }
             }
+
+            SharingStartScreenUiEvent.StopSharing -> {
+                stopSharing()
+            }
+
+            SharingStartScreenUiEvent.StartSharing -> {
+                startSharing()
+            }
         }
     }
 
     suspend fun getGroupPickerState(): BottomSheetPickerType.GroupPickerBottomSheet {
         val allGroups = groupRepo.getAllGroupsWithMetadata().firstOrNull() ?: emptyList()
+        val personalSpace = personalSpaceRepo.personalSpaceState.value.data
         return BottomSheetPickerType.GroupPickerBottomSheet(
             onlyShowGroups = true,
+            showPersonalSpace = true,
             userPlan = null,
+            personalSpace = personalSpace?.let {
+                GroupItemState(
+                    space = it,
+                    config = remoteConfigRepo.getConfigOnce()
+                )
+            },
             createdGroups = allGroups.filter { it.group.isCurrentUserOwner }
                 .map { GroupItemState(it, remoteConfigRepo.getConfigOnce()) },
             joinedGroups = allGroups.filter { !it.group.isCurrentUserOwner }
@@ -205,41 +257,171 @@ class SharingStartViewModel(
         )
     }
 
-    fun setSelectedGroup(groupId: String) {
+    fun setSelectedGroup(groupOrSpaceId: GroupOrSpaceId) {
         coroutineScope.launch(Dispatchers.IO) {
-            groupRepo.getGroupWithMetadata(groupId = groupId).firstOrNull().let { group ->
-                setSelectedGroup(group)
+            if (groupOrSpaceId.isPersonalSpace) {
+                personalSpaceRepo.personalSpaceState.value.data.let { space ->
+                    setSelectedGroup(space?.let { GroupOrUserSpace.PersonalSpace(it) })
+                }
+            } else {
+                groupRepo.getGroupWithMetadata(groupId = groupOrSpaceId.id).firstOrNull()
+                    .let { group ->
+                        setSelectedGroup(group?.let { GroupOrUserSpace.Group(it) })
+                    }
             }
         }
     }
 
-    private suspend fun setSelectedGroup(group: UserGroupWithMetadata?) {
+    private suspend fun setSelectedGroup(group: GroupOrUserSpace?) {
         currentGroup.update { group }
-        val isGroupPremium = group?.group
-            ?.hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce())
-            ?: false
-        val isGroupOverLimits = group?.isGroupOverLimits(remoteConfigRepo.getConfigOnce()) ?: false
-        val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
-        _uiState.update {
-            it.copy(
-                groupState = Payload.Success(group?.let { GroupItemState(it, remoteConfigRepo.getConfigOnce()) }),
-                devicesLimit = group?.group?.devicesLimit(remoteConfigRepo.getConfigOnce()) ?: 0,
-                showNotifyOthers = isGroupPremium || group?.group?.isCurrentUserOwner == true,
-                isPremiumSectionVisible = !isGroupPremium && group?.group?.isCurrentUserOwner == true,
-                notifyOthers = if (isGroupPremium) it.notifyOthers else false,
-                sharingPresetsMillis = presets,
-                sharingTimeMillis = it.sharingTimeMillis.let {
-                    if (!isGroupOverLimits) it
-                    else it.coerceIn(presets.first(), presets.last())
+
+        if (group == null) {
+            val presets = SharingDurationPreset.presets(isWithLimits = false)
+            _uiState.update { state ->
+                state.copy(
+                    groupState = Payload.Success(null),
+                    devicesLimit = 0,
+                    showNotifyOthers = false,
+                    showDeviceStatus = false,
+                    isPremiumSectionVisible = false,
+                    notifyOthers = false,
+                    sharingPresetsMillis = presets
+                )
+            }
+            return
+        }
+
+        val currentContract = group.let {
+            sharingManager.currentSharingContractForGroup(it.id.asGroupOrSpaceId())
+        }
+        val isSharingActive = currentContract != null
+        val endTime = currentContract?.let {
+            if (it.isAlwaysOn) {
+                if (group is GroupOrUserSpace.PersonalSpace) {
+                    MR.strings.personalSpace_tracking_status_infinite.localizedString()
+                } else {
+                    MR.strings.group_details_sharing_status_infinite.localizedString()
                 }
-            )
+            } else {
+                valueFormatter.fromUTCtoMapSharingTime(
+                    timeUTC = it.endTimeUTC ?: "",
+                    splitTimeToOneLine = false
+                )?.let {
+                    MR.strings.group_details_sharing_status_time.localizedString(it)
+                }
+            }
+        }
+
+        val premiumStatus = premiumStatusManager.checkDeviceCountLimits(groupId = group.id.asGroupOrSpaceId())
+        val isDeviceRegistered = registerDevice.isDeviceAlreadyRegistered(groupId = group.id.asGroupOrSpaceId())
+
+        when (group) {
+            is GroupOrUserSpace.Group -> {
+                val isGroupPremium = group.group.group
+                    .hasPremiumSharingFeatures(remoteConfigRepo.getConfigOnce())
+                val isGroupOverLimits = group.group.isGroupOverLimits(remoteConfigRepo.getConfigOnce())
+                val presets = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits)
+
+                _uiState.update { state ->
+                    state.copy(
+                        groupState = Payload.Success(
+                            GroupItemState(
+                                group = group.group,
+                                config = remoteConfigRepo.getConfigOnce()
+                            )
+                        ),
+                        devicesCount = premiumStatus?.payload?.count,
+                        premiumStatus = premiumStatus,
+                        areLimitsExceeded = isGroupOverLimits,
+                        devicesLimit = group.group.group.devicesLimit(remoteConfigRepo.getConfigOnce()),
+                        isDeviceRegistered = isDeviceRegistered,
+
+                        showNotifyOthers = !isSharingActive && (isGroupPremium || group.group.group.isCurrentUserOwner),
+                        showDeviceStatus = true,
+                        showDuration = !isSharingActive,
+                        showMetadata = true,
+
+                        formattedEndTime = endTime,
+                        isPremiumSectionVisible = !isSharingActive && !isGroupPremium && group.group.group.isCurrentUserOwner,
+                        notifyOthers = if (isGroupPremium) state.notifyOthers else false,
+
+                        sharingPresetsMillis = presets,
+                        sharingTimeMillis = state.sharingTimeMillis.let {
+                            if (!isGroupOverLimits) it
+                            else it.coerceIn(presets.first(), presets.last())
+                        }
+                    )
+                }
+            }
+
+            is GroupOrUserSpace.PersonalSpace -> {
+                val isOverLimits = group.space.isSpaceOverLimits()
+                val presets = SharingDurationPreset.presets(isWithLimits = isOverLimits)
+                _uiState.update { state ->
+                    state.copy(
+                        groupState = Payload.Success(
+                            GroupItemState(
+                                space = group.space,
+                                config = remoteConfigRepo.getConfigOnce()
+                            )
+                        ),
+                        devicesCount = premiumStatus?.payload?.count,
+                        premiumStatus = premiumStatus,
+                        areLimitsExceeded = isOverLimits,
+                        devicesLimit = group.space.plan.personalDevicesLimit,
+                        isDeviceRegistered = isDeviceRegistered,
+                        showNotifyOthers = false,
+                        showDeviceStatus = false,
+                        showDuration = false,
+                        showMetadata = false,
+                        formattedEndTime = endTime,
+                        // nothing premium for personal space
+                        isPremiumSectionVisible = false,
+                        notifyOthers = false,
+                        sharingPresetsMillis = presets,
+                        sharingTimeMillis = state.sharingTimeMillis.let {
+                            if (!isOverLimits) it
+                            else it.coerceIn(presets.first(), presets.last())
+                        }
+                    )
+                }
+            }
+
+            null -> {
+
+            }
         }
     }
 
-    fun startSharing() {
+    private fun startSharing() {
+        if (_uiState.value.shouldRegisterDevice) {
+            if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty() && _uiState.value.canShare) {
+                proceedWithSharing()
+                return
+            }
+        } else {
+            // update
+            coroutineScope.launch {
+                val currentGroup = currentGroup.value
+                if (currentGroup != null) {
+                    val contract =
+                        sharingManager.currentSharingContractForGroup(id = currentGroup.id.asGroupOrSpaceId())
+                    val newContract = contract?.copy(
+                        shareBattery = _uiState.value.shareBattery,
+                        shareSpeed = _uiState.value.shareSpeed,
+                        shareElevation = _uiState.value.shareElevation,
+                        shareNetwork = _uiState.value.shareNetwork,
+                        shareDeviceStatus = _uiState.value.shareDeviceStatus,
+                        approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
+                        saveToHistory = _uiState.value.saveToHistory,
+                    )
 
-        if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty() && _uiState.value.canShare) {
-            proceedWithSharing()
+                    if (newContract != null) {
+                        sharingManager.startSharing(newContract)
+                        _eventChannel.send(SharingStartScreenEvent.Updated)
+                    }
+                }
+            }
             return
         }
 
@@ -271,95 +453,125 @@ class SharingStartViewModel(
 
         coroutineScope.launch {
             _uiState.update { it.copy(loadingAction = true) }
-
-            val limit = _uiState.value.devicesLimit
-            val devicesCount = _uiState.value.devicesCount ?: 0
-            val maxDeviceLimit =
-                remoteConfigRepo.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.devicesLimit
-            val isDeviceRegistered = registerDevice.isDeviceAlreadyRegistered(groupId = group.id)
-
-            if (group.isCurrentUserOwner && maxDeviceLimit != null && devicesCount >= maxDeviceLimit && !isDeviceRegistered) {
-                _uiState.update {
-                    it.copy(
-                        alertDialog = MainAlertDialog.PlanLimit(
-                            content = MR.strings.plan_limit_devices_alert_info.localizedString(),
-                            limit = limit
-                        )
-                    )
-                }
+            if (didPassPlanLimits(group)) {
+                registerDeviceAndStartSharing(group)
+            } else {
                 _uiState.update { it.copy(loadingAction = false) }
-                return@launch
-            } else if (limit in 0..devicesCount && !isDeviceRegistered) {
-                if (group.isCurrentUserOwner) {
-                    _eventChannel.send(SharingStartScreenEvent.OpenPaywall)
+            }
+        }
+    }
+
+    private suspend fun didPassPlanLimits(group: GroupItemState): Boolean {
+        val isDeviceRegistered = registerDevice.isDeviceAlreadyRegistered(groupId = group.id)
+
+        when (val premiumStatus = _uiState.value.premiumStatus) {
+            is PremiumStatusLimitState.PlanLimitReached -> {
+                if (isDeviceRegistered) {
+                    return true
+                } else {
+                    if (group.isCurrentUserOwner) {
+                        _eventChannel.send(SharingStartScreenEvent.OpenPaywall)
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                alertDialog = MainAlertDialog.PlanLimitForMembers(
+                                    content = MR.strings.plan_limit_devices_alert_info.localizedString(),
+                                    limit = premiumStatus.payload.limit ?: -1
+                                )
+                            )
+                        }
+                    }
+                    return false
+                }
+            }
+
+            is PremiumStatusLimitState.ServiceLimitReached -> {
+                if (isDeviceRegistered) {
+                    return true
                 } else {
                     _uiState.update {
                         it.copy(
-                            alertDialog = MainAlertDialog.PlanLimitForMembers(
+                            alertDialog = MainAlertDialog.ServiceMaxLimit(
                                 content = MR.strings.plan_limit_devices_alert_info.localizedString(),
-                                limit = limit
+                                limit = premiumStatus.payload.limit ?: -1
                             )
                         )
                     }
+                    return false
                 }
-                _uiState.update { it.copy(loadingAction = false) }
-                return@launch
             }
 
-            val contract = LocationSharingContract(
+            is PremiumStatusLimitState.WithinLimits -> return true
+            null -> return false
+        }
+    }
+
+    private suspend fun registerDeviceAndStartSharing(group: GroupItemState) {
+        val contract = LocationSharingContract(
+            groupOrSpaceId = group.id,
+            endTimeUTCPreference = _uiState.value.currentContract?.endTimeUTC ?: LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
+            endTimeUTCOverride = null,
+            shareBattery = _uiState.value.shareBattery,
+            shareSpeed = _uiState.value.shareSpeed,
+            shareElevation = _uiState.value.shareElevation,
+            shareNetwork = _uiState.value.shareNetwork,
+            shareDeviceStatus = _uiState.value.shareDeviceStatus,
+            approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
+            saveToHistory = _uiState.value.saveToHistory,
+            isEnabled = true
+        )
+
+        try {
+            registerDevice.registerDevice(
                 groupId = group.id,
-                endTimeUTC = LocationSharingContract.forDuration(_uiState.value.sharingTimeMillis),
-                shareBattery = _uiState.value.shareBattery,
-                shareSpeed = _uiState.value.shareSpeed,
-                shareElevation = _uiState.value.shareElevation,
-                shareNetwork = _uiState.value.shareNetwork,
-                shareDeviceStatus = _uiState.value.shareDeviceStatus,
-                approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation }
+                deviceName = _uiState.value.deviceName,
+                contract = contract,
+                notifyOthers = _uiState.value.notifyOthers,
+                isRetry = false
             )
-
-            try {
-                registerDevice.registerDevice(
-                    groupId = group.id,
-                    deviceName = _uiState.value.deviceName,
-                    contract = contract,
-                    notifyOthers = _uiState.value.notifyOthers
-                )
-            } catch (e: Exception) {
-                logg.e("Unable to register device", e)
-                _uiState.update { it.copy(loadingAction = false) }
-                showSnackbar(MR.strings.error_generic_snacbar.localizedString())
-                return@launch
-            }
-
-            logg.tag("sharing_start").d("Device registered - register sharing contract")
-            sharingManager.startSharing(contract)
-
-            logg.tag("sharing_start").d("Check sharing contract validity")
-            val active = try {
-                poll(
-                    firstDelayMillis = 500,
-                    delay = 1000,
-                    timeout = 3000
-                ) {
-                    sharingManager.isSharingActiveForGroup(group.id).takeIf { it }
-                }
-            } catch (e: TimeoutException) {
-                logg.e("Sharing timeout", e)
-                false
-            }
-
-            logg.tag("sharing_start").d("Sharing location setup finished")
-
+        } catch (e: Exception) {
+            logg.e("Unable to register device", e)
             _uiState.update { it.copy(loadingAction = false) }
-            coroutineScope.launch {
-                if (active) {
-                    _eventChannel.send(SharingStartScreenEvent.Started)
-                } else {
-                    showSnackbar(Exception("Unable to start sharing").errorString())
+
+            if (e.asRemoteException()?.code == 402) {
+                if (didPassPlanLimits(group)) {
+                    refreshEverythingUseCase.scheduleRefreshAllGroupsWithPlaces()
+                    showSnackbar(e.errorString())
+                    didPassPlanLimits(group)
                 }
+            } else {
+                showSnackbar(e.errorString())
             }
+            return
         }
 
+        logg.tag("sharing_start").d("Device registered - register sharing contract")
+        sharingManager.startSharing(contract)
+
+        logg.tag("sharing_start").d("Check sharing contract validity")
+        val active = try {
+            poll(
+                firstDelayMillis = 500,
+                delay = 1000,
+                timeout = 3000
+            ) {
+                sharingManager.isSharingActiveForGroup(group.id).takeIf { it }
+            }
+        } catch (e: TimeoutException) {
+            logg.e("Sharing timeout", e)
+            false
+        }
+
+        logg.tag("sharing_start").d("Sharing location setup finished")
+
+        _uiState.update { it.copy(loadingAction = false) }
+        coroutineScope.launch {
+            if (active) {
+                _eventChannel.send(SharingStartScreenEvent.Started)
+            } else {
+                showSnackbar(Exception("Unable to start sharing").errorString())
+            }
+        }
     }
 
     fun turnOnApproximateLocationSharing(state: Boolean) {
@@ -385,21 +597,30 @@ class SharingStartViewModel(
 
     fun sharingDurationChanged(index: Int) {
         _uiState.update {
-            val isGroupOverLimits = currentGroup.value
-                ?.isGroupOverLimits(remoteConfigRepo.getCachedConfigOnce())
-                ?: false
-            val time = SharingDurationPreset.presets(isWithLimits = isGroupOverLimits).getOrNull(index)
-                ?.let {
-                    if (!isGroupOverLimits) {
-                        it
-                    } else {
-                        it.coerceIn(
-                            SharingDurationPreset.freePresets.first(),
-                            SharingDurationPreset.freePresets.last()
-                        )
-                    }
+            val isOverLimits = when (val item = currentGroup.value) {
+                is GroupOrUserSpace.Group -> {
+                    item.group.isGroupOverLimits(remoteConfigRepo.getCachedConfigOnce())
                 }
-                ?: SharingDurationPreset.hour
+
+                is GroupOrUserSpace.PersonalSpace -> {
+                    item.space.isSpaceOverLimits()
+                }
+
+                null -> false
+            }
+            val time =
+                SharingDurationPreset.presets(isWithLimits = isOverLimits).getOrNull(index)
+                    ?.let {
+                        if (!isOverLimits) {
+                            it
+                        } else {
+                            it.coerceIn(
+                                SharingDurationPreset.freePresets.first(),
+                                SharingDurationPreset.freePresets.last()
+                            )
+                        }
+                    }
+                    ?: SharingDurationPreset.hour
             it.copy(
                 sharingTimeMillis = time,
                 errors = getErrors(LocationSharingContract.isLongTerm(time))
@@ -431,6 +652,12 @@ class SharingStartViewModel(
         }
     }
 
+    fun turnOnLocationHistory(state: Boolean) {
+        _uiState.update {
+            it.copy(saveToHistory = state)
+        }
+    }
+
     fun toggleNotifyOthers(state: Boolean) {
         if (_uiState.value.showNotifyOthers) {
             if (_uiState.value.isPremiumSectionVisible) {
@@ -459,6 +686,20 @@ class SharingStartViewModel(
             if (!deviceStatus.networkStatus.isOnline) {
                 add(ConditionErrorType.Network)
             }
+        }
+    }
+
+    private fun stopSharing() {
+        val groupId = currentGroupId ?: return
+        coroutineScope.launch {
+            sharingManager.stopSharing(groupId = groupId.asGroupOrSpaceId(), deleteContract = false)
+            placeActivityRepo.clearForGroup(groupId = groupId.asGroupOrSpaceId())
+            try {
+                deviceStatusProcessor.pushDeviceStatus(groupId = groupId.asGroupOrSpaceId())
+            } catch (e: Exception) {
+                logg.w("Error while updating user status", e)
+            }
+            setSelectedGroup(currentGroup.value)
         }
     }
 }

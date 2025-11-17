@@ -1,0 +1,14 @@
+{
+  "images" : [
+    {
+      "filename" : "paralino_logo_1024_zoomed_RED.jpg",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

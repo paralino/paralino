@@ -10,6 +10,7 @@ import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceManager
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 
 class LocationSettingsViewModel(
     private val appPrefs: AppPrefs,
+    private val appConfig: AppConfigRepository,
     private val userRepository: UserRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val remoteConfigRepo: RemoteConfigRepository,
@@ -81,7 +83,7 @@ class LocationSettingsViewModel(
                     LocationPerformanceSettingsType.HighPerformance.Level2,
                     LocationPerformanceSettingsType.HighPerformance.Level3,
                     LocationPerformanceSettingsType.HighPerformance.LevelMax.takeIf {
-                        AppBuildConfig.instance.hasPreviewFeatures
+                        appConfig.isInAppDevMode
                     }
                 ).map { level ->
                     GroupOptionItem(
@@ -144,6 +146,25 @@ class LocationSettingsViewModel(
                         highBatteryImpact = level is LocationPerformanceSettingsType.Balanced.Level5,
                         isSelected = level.key == (appPrefs.locationSettingsBalancedPerformanceType
                             ?: LocationPerformanceSettingsType.Balanced.default.key)
+                    )
+                }
+            ),
+            historySettings = LocationSettingsHistory(
+                items = listOfNotNull(
+                    LocationPerformanceSettingsType.History.Level1,
+                    LocationPerformanceSettingsType.History.Level2,
+                    LocationPerformanceSettingsType.History.Level3
+                ).map { level ->
+                    GroupOptionItem(
+                        key = level,
+                        id = level.key,
+                        isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
+                        title = getOptionTitle(level),
+                        description = getOptionDescription(level),
+                        batteryImpact = null,
+                        highBatteryImpact = false,
+                        isSelected = level.key == (appPrefs.locationSettingsHistoryPerformanceType
+                            ?: LocationPerformanceSettingsType.History.default.key)
                     )
                 }
             ),
@@ -261,6 +282,18 @@ class LocationSettingsViewModel(
                     batterySaverPerformanceSettings = newSettings.selectedItem.key as LocationPerformanceSettingsType
                 )
             }
+
+            is LocationPerformanceSettingsType.History -> {
+                appPrefs.locationSettingsHistoryPerformanceType = type.key
+                val newSettings = uiState.value.historySettings.copy(
+                    items = uiState.value.historySettings.items.map {
+                        it.copy(isSelected = type.key == it.id)
+                    }
+                )
+                _uiState.update {
+                    it.copy(historySettings = newSettings)
+                }
+            }
         }
     }
 
@@ -286,6 +319,9 @@ class LocationSettingsViewModel(
             is LocationPerformanceSettingsType.BatterySaver.Level1 -> MR.strings.setting_location_batterySaver_level_1.localizedString()
             is LocationPerformanceSettingsType.BatterySaver.Level2 -> MR.strings.setting_location_batterySaver_level_2.localizedString()
             is LocationPerformanceSettingsType.BatterySaver.Level3 -> MR.strings.setting_location_batterySaver_level_3.localizedString()
+            LocationPerformanceSettingsType.History.Level1 -> MR.strings.setting_location_history_level_1.localizedString()
+            LocationPerformanceSettingsType.History.Level2 -> MR.strings.setting_location_history_level_2.localizedString()
+            LocationPerformanceSettingsType.History.Level3 -> MR.strings.setting_location_history_level_3.localizedString()
         }
     }
 
@@ -303,6 +339,9 @@ class LocationSettingsViewModel(
             is LocationPerformanceSettingsType.BatterySaver.Level1 -> MR.strings.setting_location_batterySaver_level_1_info.localizedString()
             is LocationPerformanceSettingsType.BatterySaver.Level2 -> MR.strings.setting_location_batterySaver_level_2_info.localizedString()
             is LocationPerformanceSettingsType.BatterySaver.Level3 -> MR.strings.setting_location_batterySaver_level_3_info.localizedString()
+            LocationPerformanceSettingsType.History.Level1 -> MR.strings.setting_location_history_level_1_info.localizedString()
+            LocationPerformanceSettingsType.History.Level2 -> MR.strings.setting_location_history_level_2_info.localizedString()
+            LocationPerformanceSettingsType.History.Level3 -> MR.strings.setting_location_history_level_3_info.localizedString()
         }
     }
 
@@ -325,6 +364,10 @@ class LocationSettingsViewModel(
             is LocationPerformanceSettingsType.BatterySaver.Level2 -> null
 
             is LocationPerformanceSettingsType.BatterySaver.Level3 -> MR.strings.setting_location_batteryImpact_level_4.localizedString()
+
+            LocationPerformanceSettingsType.History.Level1,
+            LocationPerformanceSettingsType.History.Level2,
+            LocationPerformanceSettingsType.History.Level3 -> null
         }
     }
 }

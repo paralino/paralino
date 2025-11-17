@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.LargeSeekbarSwitch
@@ -39,7 +38,7 @@ import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchDefaults
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.settings.GenericSettingsOptionItem
-import app.paralino.core.ui.share.getTime
+import app.paralino.core.ui.share.getSharingTimeString
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.SharingDurationPreset
 import dev.icerock.moko.resources.compose.stringResource
@@ -65,6 +64,9 @@ fun WelcomeOnboardingPageControl(
 
     BoxWithConstraints(
         modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp)
+            .padding(top = 12.dp)
             .padding(bottom = 20.dp)
             .shadow(8.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
@@ -242,7 +244,7 @@ private fun ElevationSwitch(modifier: Modifier = Modifier, animationStarted: Boo
         modifier = modifier
             .height(LargeSwitchDefaults.minHeight)
             .fillMaxWidth(0.45f),
-        icon = CoreAppIcons.StackedLineChart.asPainterResource(),
+        icon = CoreAppIcons.Elevation.asPainterResource(),
         title = stringResource(MR.strings.groups_sharing_setting_elevation_share),
         description = null,
         state = rememberSeekbarState(
@@ -321,6 +323,7 @@ private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationSta
         highBatteryImpact = true,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = { itemState = !itemState }
     )
 }
@@ -336,6 +339,7 @@ private fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
         highBatteryImpact = false,
         isSelected = itemState,
         isPremiumFeatureEnabled = true,
+        isLoading = false,
         onClick = { itemState = !itemState }
     )
 }
@@ -354,7 +358,7 @@ private fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: B
     if (itemState) {
         ExtendedFloatingActionButton(
             modifier = modifier,
-            text = { Text(text = stringResource(MR.strings.location_banner_info_stop)) },
+            text = { Text(text = stringResource(MR.strings.location_sharing_button_stop_groups)) },
             icon = {
                 Icon(
                     painter = CoreAppIcons.StopCircle.asPainterResource(),
@@ -371,7 +375,7 @@ private fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: B
     } else {
         ExtendedFloatingActionButton(
             modifier = modifier,
-            text = { Text(text = stringResource(MR.strings.groups_sharing_button_start)) },
+            text = { Text(text = stringResource(MR.strings.location_sharing_button_start_groups)) },
             icon = {
                 Icon(
                     painter = CoreAppIcons.ShareLocation.asPainterResource(),
@@ -417,7 +421,7 @@ private fun DurationSwitch(modifier: Modifier = Modifier) {
         ).value,
         icon = CoreAppIcons.AccessTime.asPainterResource(),
         title = stringResource(MR.strings.groups_sharing_section_title_duration),
-        description = getTime(itemState),
+        description = getSharingTimeString(itemState),
         focusDescription = true,
         onProgressChange = {
             itemState =

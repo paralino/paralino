@@ -22,11 +22,11 @@ actual class AppPrefsProvider(appBuildConfig: AppBuildConfig) {
 
     private val _userSetting = KeychainSettingsFix(
         service = "paralino_prefs_user",
-        accessGroup = "${appBuildConfig.iOSTeamId}.app.paralino.ios.SharedItems"
+        accessGroup = "${appBuildConfig.iOSTeamId}.${appBuildConfig.appPackageName}.SharedItems"
     )
     private val _appSettings = KeychainSettingsFix(
         service = "paralino_prefs_app",
-        accessGroup = "${appBuildConfig.iOSTeamId}.app.paralino.ios.SharedItems"
+        accessGroup = "${appBuildConfig.iOSTeamId}.${appBuildConfig.appPackageName}.SharedItems"
     )
 
     @OptIn(ExperimentalSettingsImplementation::class)

@@ -159,7 +159,7 @@ fun RecoverKeysScreenCore(
 }
 
 @Composable
-fun RecoverKeysScreen(
+private fun RecoverKeysScreen(
     modifier: Modifier = Modifier,
     state: RecoverKeysScreenState,
     onOldPasswordChange: (String) -> Unit,

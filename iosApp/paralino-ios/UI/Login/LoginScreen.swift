@@ -26,6 +26,7 @@ struct LoginScreen: View {
                         }
                     )
                 }
+                .toolbarTitleDisplayMode(.inline)
                 .ignoresSafeArea(.all, edges: .bottom)
                 .navigationBarBackButtonHidden(true)
             }

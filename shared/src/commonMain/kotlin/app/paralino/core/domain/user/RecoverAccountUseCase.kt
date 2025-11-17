@@ -193,6 +193,7 @@ class RecoverAccountUseCase(
                 newPassword = password,
                 oldKeys = key,
                 replaceKey = true,
+                keepSessions = true,
                 action = { oldLoginKey, newLoginKey ->
                     userRepo.changePassword(
                         oldPassword = oldLoginKey,
@@ -231,6 +232,7 @@ class RecoverAccountUseCase(
                 oldPassword = oldPassword,
                 newPassword = currentPassword,
                 replaceKey = true,
+                keepSessions = true,
                 oldKeys = key,
                 action = { oldLoginKey, newLoginKey ->
                     // using same password here to confirm recovery

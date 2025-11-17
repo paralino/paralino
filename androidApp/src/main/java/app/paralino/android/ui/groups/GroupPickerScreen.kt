@@ -1,10 +1,12 @@
 package app.paralino.android.ui.groups
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,14 +24,18 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -129,24 +135,12 @@ private fun GroupPickerScreen(
                     .padding(bottom = 0.dp, top = 10.dp)
                     .padding(horizontal = 10.dp),
                 elevation = 0.dp,
-                titleComposable = {
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = stringResource(MR.strings.title_dashboard),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                        if (state != null) {
-                            PlanLimitCount(
-                                count = state.createdGroups.size + state.joinedGroups.size,
-                                limit = null
-                            )
-                        }
+                titleComposable = if (state?.personalSpace == null || !state.showPersonalSpace) {
+                    {
+                        GroupTitle(state = state)
                     }
+                } else {
+                    null
                 },
                 navigationIcon = { ToolbarButtons.Close(onClick = { onClick(GroupPickerAction.Close) }) },
                 actions = {}
@@ -154,6 +148,41 @@ private fun GroupPickerScreen(
         }
 
         if (state != null) {
+
+            if (state.personalSpace != null && state.showPersonalSpace) {
+                item(key = "personal_space") {
+                    GroupListItem(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp, vertical = 4.dp)
+                            .clickable { onClick(GroupPickerAction.GroupPicked(state.personalSpace!!)) },
+                        data = state.personalSpace!!,
+                        onEdit = { onClick(GroupPickerAction.GroupEditPicked(state.personalSpace!!)) }
+                    )
+                }
+
+                stickyHeader(key = "groups_title") {
+                    CompositionLocalProvider(
+                        LocalContentAlpha provides ContentAlpha.high,
+                        content = {
+                            ProvideTextStyle(
+                                value = MaterialTheme.typography.h6.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth()
+                                        .padding(horizontal = 20.dp, vertical = 4.dp)
+                                        .padding(top = 20.dp, bottom = 8.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    GroupTitle(state = state)
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+
             groupSection(
                 id = "created_groups_section",
                 title = MR.strings.dashboard_groups_title_created.localizedString(),
@@ -187,6 +216,30 @@ private fun GroupPickerScreen(
                     onClick = onClick
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun GroupTitle(
+    modifier: Modifier = Modifier,
+    state: BottomSheetPickerType.GroupPickerBottomSheet?,
+) {
+    Row(
+        modifier = Modifier.padding(start = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(MR.strings.title_dashboard_groups),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        if (state != null) {
+            PlanLimitCount(
+                count = state.createdGroups.size + state.joinedGroups.size,
+                limit = null
+            )
         }
     }
 }
@@ -319,7 +372,7 @@ private fun LazyListScope.groupSection(
         }
     }
 
-    items(groups, key = { it.id }) { group ->
+    items(groups, key = { it.id.id }) { group ->
         GroupListItem(
             modifier = Modifier
                 .padding(horizontal = 20.dp, vertical = 4.dp)

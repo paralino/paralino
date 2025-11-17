@@ -13,7 +13,7 @@ class UserApi constructor(
 
     override suspend fun signUp(userName: String?, email: String, password: String): UserMeRaw {
         return remoteModule.execute {
-            account.create(this.appBuildConfig.resourceIds.uniqueIdPlaceholder, email, password, userName).parseUser()
+            account.create(this.appConfig.resourceIds.uniqueIdPlaceholder, email, password, userName).parseUser()
         }
     }
 
@@ -25,6 +25,10 @@ class UserApi constructor(
 
     override suspend fun getCurrentSession(): UserSession {
         return remoteModule.execute { account.getSession("current").parseSession() }
+    }
+
+    override suspend fun renewCurrentSession(): UserSession {
+        return remoteModule.execute { account.updateSession("current").parseSession() }
     }
 
     override suspend fun getAllSessions(): List<UserSession> {
@@ -49,7 +53,7 @@ class UserApi constructor(
 
     override suspend fun initResetPassword(email: String) {
         remoteModule.execute {
-            account.createRecovery(email, remoteModule.appBuildConfig.resourceIds.passwordResetUrl)
+            account.createRecovery(email, remoteModule.appConfig.resourceIds.passwordResetUrl)
         }
     }
 
@@ -65,7 +69,7 @@ class UserApi constructor(
 
     override suspend fun initEmailVerification() {
         return remoteModule.execute {
-            account.createVerification(remoteModule.appBuildConfig.resourceIds.emailConfirmationUrl)
+            account.createVerification(remoteModule.appConfig.resourceIds.emailConfirmationUrl)
         }
     }
 
@@ -83,8 +87,12 @@ class UserApi constructor(
         return remoteModule.execute { account.updateStatus() }
     }
 
-    override suspend fun logout() {
-        return remoteModule.execute { account.deleteSession("current") }
+    override suspend fun logoutSession(sessionId: String) {
+        return remoteModule.execute { account.deleteSession(sessionId = sessionId) }
+    }
+
+    override suspend fun logoutCurrentSession() {
+        return remoteModule.execute { account.deleteSession(sessionId = "current") }
     }
 
     private fun User<Map<String, Any>>.parseUser(): UserMeRaw {
@@ -101,9 +109,26 @@ class UserApi constructor(
     private fun Session.parseSession(): UserSession {
         return UserSession(
             id = this.id,
+            createdAt = this.createdAt,
+            updatedAt = this.updatedAt,
             expire = this.expire,
-            deviceType = "android"
+            provider = this.provider,
+            ip = this.ip,
+            osCode = this.osCode,
+            osName = this.osName,
+            osVersion = this.osVersion,
+            clientType = this.clientType,
+            clientCode = this.clientCode,
+            clientName = this.clientName,
+            clientVersion = this.clientVersion,
+            clientEngine = this.clientEngine,
+            clientEngineVersion = this.clientEngineVersion,
+            deviceName = this.deviceName,
+            deviceBrand = this.deviceBrand,
+            deviceModel = this.deviceModel,
+            countryCode = this.countryCode,
+            countryName = this.countryName,
+            current = this.current
         )
     }
-
 }

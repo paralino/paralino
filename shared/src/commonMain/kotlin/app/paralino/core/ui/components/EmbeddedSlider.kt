@@ -1,14 +1,16 @@
 package app.paralino.core.ui.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,22 +19,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
@@ -43,26 +42,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun rememberAnchoredDraggableState(
+    key: Any,
+    initialValue: Int,
+    anchors: DraggableAnchors<Int>
+): AnchoredDraggableState<Int> {
+    return remember(key) {
+        AnchoredDraggableState(
+            initialValue = initialValue,
+            anchors = anchors
+        )
+    }
+}
+
 @Composable
 fun EmbeddedSlider(
     modifier: Modifier = Modifier,
-    title: String? = null,
-    value: String? = null,
     shape: Shape = RoundedCornerShape(12.dp),
     size: EmbeddedSliderSize = EmbeddedSliderSize(),
+    backgroundColor: Color = MaterialTheme.colors.surface,
+    swipeEnabled: Boolean = true,
     progress: Int,
     steps: Int,
+    infoContent: @Composable () -> Unit,
     onProgressChange: ((Int) -> Unit)? = null,
 ) {
-
-    val sourceColor = MaterialTheme.colors.surface
-    val backgroundColor by animateColorAsState(targetValue = sourceColor)
-    val contentColor by animateColorAsState(targetValue = contentColorFor(backgroundColor = sourceColor))
-
     BoxWithConstraints(
         modifier = modifier
             .defaultMinSize(
@@ -71,25 +80,42 @@ fun EmbeddedSlider(
             .clip(shape)
             .background(backgroundColor)
     ) {
-        val swipeableState = rememberSwipeableState(progress)
-
-        LaunchedEffect(Unit) {
-            snapshotFlow { swipeableState.targetValue }
-                .distinctUntilChanged()
-                .collectLatest { onProgressChange?.invoke(it) }
-        }
-
         val (viewWidthPx, contentWidthPx) = with(LocalDensity.current) {
             maxWidth.toPx() to size.minStepWidth.toPx()
         }
 
         val stepPx = (viewWidthPx - contentWidthPx) / steps.minus(1)
         val anchors = remember(steps, stepPx, contentWidthPx) {
-            mutableMapOf<Float, Int>().apply {
+            DraggableAnchors {
                 repeat(steps) {
-                    this.put(it * stepPx + contentWidthPx, it)
+                    it at (it * stepPx + contentWidthPx)
                 }
             }
+        }
+        
+        val anchoredDraggableState = rememberAnchoredDraggableState(
+            key = steps,
+            initialValue = progress,
+            anchors = anchors
+        )
+
+        // Handle progress changes from external source
+        LaunchedEffect(progress) {
+            snapshotFlow { progress }
+                .distinctUntilChanged()
+                .collectLatest {
+                    delay(300)
+                    if (anchoredDraggableState.currentValue != it && anchoredDraggableState.targetValue != it) {
+                        anchoredDraggableState.animateTo(progress)
+                    }
+                }
+        }
+
+        // Handle drag completion and notify parent
+        LaunchedEffect(steps) {
+            snapshotFlow { anchoredDraggableState.targetValue }
+                .distinctUntilChanged()
+                .collectLatest { onProgressChange?.invoke(it) }
         }
 
         Box(
@@ -98,13 +124,13 @@ fun EmbeddedSlider(
                     minHeight = size.minHeight
                 )
                 .fillMaxSize()
-                .swipeable(
-                    state = swipeableState,
-                    anchors = anchors,
-                    orientation = Orientation.Horizontal
+                .anchoredDraggable(
+                    state = anchoredDraggableState,
+                    orientation = Orientation.Horizontal,
+                    enabled = swipeEnabled,
+                    overscrollEffect = rememberOverscrollEffect()
                 )
         ) {
-
             Row(
                 modifier = Modifier
                     .defaultMinSize(
@@ -113,10 +139,10 @@ fun EmbeddedSlider(
                     .fillMaxHeight()
                     .width(
                         with(LocalDensity.current) {
-                            swipeableState.offset.value.toDp()
+                            anchoredDraggableState.offset.toDp()
                         }
                     )
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(shape)
                     .background(MaterialTheme.colors.primary),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
@@ -145,37 +171,65 @@ fun EmbeddedSlider(
             }
         }
 
-        if (!title.isNullOrBlank() || !value.isNullOrBlank()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(6.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(backgroundColor.copy(alpha = 0.9f))
-                    .animateContentSize()
-                    .padding(vertical = 3.dp, horizontal = 6.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                if (!title.isNullOrBlank()) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.caption,
-                        color = contentColor
-                    )
-                }
+        infoContent()
+    }
+}
 
-                if (!value.isNullOrBlank()) {
-                    Text(
-                        text = value,
-                        maxLines = 1,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = contentColor
-                    )
+@Composable
+fun EmbeddedSlider(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    value: String? = null,
+    shape: Shape = RoundedCornerShape(12.dp),
+    size: EmbeddedSliderSize = EmbeddedSliderSize(),
+    swipeEnabled: Boolean = true,
+    progress: Int,
+    steps: Int,
+    onProgressChange: ((Int) -> Unit)? = null,
+) {
+    EmbeddedSlider(
+        modifier = modifier,
+        shape = shape,
+        size = size,
+        swipeEnabled = swipeEnabled,
+        progress = progress,
+        steps = steps,
+        infoContent = {
+            if (!title.isNullOrBlank() || !value.isNullOrBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colors.surface.copy(alpha = 0.9f))
+                        .animateContentSize()
+                        .padding(vertical = 3.dp, horizontal = 6.dp),
+
+                    ) {
+                    if (!title.isNullOrBlank()) {
+                        Text(
+                            modifier = Modifier.align(Alignment.TopStart),
+                            text = title,
+                            style = MaterialTheme.typography.caption,
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
+
+                    if (!value.isNullOrBlank()) {
+                        Text(
+                            modifier = Modifier.align(Alignment.BottomStart),
+                            text = value,
+                            maxLines = 1,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
                 }
             }
-        }
-    }
+        },
+        onProgressChange = onProgressChange
+    )
 }
 
 data class EmbeddedSliderSize(

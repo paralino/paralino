@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d minuta</item>
+        <item quantity="few">%d minuty</item>
+        <item quantity="other">%d minut</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d godzina</item>
+        <item quantity="few">%d godziny</item>
+        <item quantity="other">%d godzin</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d dzień</item>
+        <item quantity="few">%d dni</item>
+        <item quantity="other">%d dni</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d miesiąc</item>
+        <item quantity="few">%d miesiące</item>
+        <item quantity="other">%d miesięcy</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d rok</item>
+        <item quantity="few">%d lata</item>
+        <item quantity="other">%d lat</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Udostępnianie lokalizacji do 1 grupy</item>
+        <item quantity="few">Udostępnianie lokalizacji do %d grup</item>
+        <item quantity="other">Udostępnianie lokalizacji do %d grup</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Grupa</item>
+        <item quantity="few">Grupy</item>
+        <item quantity="other">Grup</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Urządzenie</item>
+        <item quantity="few">Urządzenia</item>
+        <item quantity="other">Urządzeń</item>
+    </plurals>
+</resources>

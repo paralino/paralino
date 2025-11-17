@@ -20,17 +20,23 @@ class RealtimeEventsMaker constructor(
         return realtimeApi.subscribeWithFilter(
             channels = listOf(
                 realtimeEventsProcessor.membersChannel,
-                realtimeEventsProcessor.locationsChannel,
+                realtimeEventsProcessor.groupsLocationsChannel,
+                realtimeEventsProcessor.personalLocationsChannel,
+                realtimeEventsProcessor.personalDevicesChannel,
                 realtimeEventsProcessor.placesChannel,
                 realtimeEventsProcessor.locationFocusChannel,
+                realtimeEventsProcessor.pushNotificationsChannel,
             ),
             filters = listOf(
                 "${realtimeEventsProcessor.membersChannel}.*",
-                "${realtimeEventsProcessor.locationsChannel}.*",
+                "${realtimeEventsProcessor.groupsLocationsChannel}.*",
+                "${realtimeEventsProcessor.personalLocationsChannel}.*",
+                "${realtimeEventsProcessor.personalDevicesChannel}.*",
                 "${realtimeEventsProcessor.placesChannel}.*.create",
                 "${realtimeEventsProcessor.placesChannel}.*.update",
                 "${realtimeEventsProcessor.locationFocusChannel}.*.create",
                 "${realtimeEventsProcessor.locationFocusChannel}.*.update",
+                "${realtimeEventsProcessor.pushNotificationsChannel}.*.create",
             )
         )
             .onEach {

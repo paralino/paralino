@@ -6,7 +6,6 @@ import app.paralino.core.crypto.HashType
 import app.paralino.core.crypto.SimpleKeyPairData
 import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendDatabaseType
 import app.paralino.core.models.group.GroupIntegrity
 import app.paralino.core.models.mappers.PersonalCodeMapperCore
@@ -27,15 +26,15 @@ import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.serialization.encodeToString
 
 class PersonalCodesRemoteSource constructor(
     private val functionsApi: IFunctionsApi,
     private val docApi: IDocumentsApi,
-    private val appBuildConfig: AppBuildConfig,
+    private val appConfig: AppConfigRepository,
     private val personalCodeMapper: PersonalCodeMapperCore,
     private val cryptoCore: CryptoCore,
     private val userKeyRepo: CryptoUserKeysLocalSource
@@ -150,7 +149,7 @@ class PersonalCodesRemoteSource constructor(
     ) {
         val currentUnusedKeys = docApi.listAllDocuments(
             databaseType = BackendDatabaseType.KEYS,
-            collectionId = appBuildConfig.resourceIds.collectionPersonalIdKeysID,
+            collectionId = appConfig.resourceIds.collectionPersonalIdKeysID,
         ).map { it.parsePreKey() }
             .filter { !it.encryptedCodeKeyData.isNullOrBlank() }
 
@@ -252,7 +251,7 @@ class PersonalCodesRemoteSource constructor(
     suspend fun getMyPersonalCodes(): List<PersonalCodeRaw> {
         return docApi.listAllDocuments(
             databaseType = BackendDatabaseType.DATA,
-            collectionId = appBuildConfig.resourceIds.collectionPersonalCodeID
+            collectionId = appConfig.resourceIds.collectionPersonalCodeID
         )
             .map { PersonalCodeRaw.from(it) }
     }

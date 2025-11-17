@@ -6,10 +6,12 @@ import app.paralino.core.models.location.MemberLocation
 import app.paralino.core.models.location.MemberModelWithLocations
 import app.paralino.core.utils.extensions.isoToLocalDateTime
 import app.paralino.core.utils.extensions.nowUTC
-import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -23,7 +25,7 @@ abstract class IValueFormatter {
     abstract val deviceDefaultMeasurementSystem: MeasurementSystemType
     private val kmInMile = 1.609344
 
-    abstract fun formatTimeOnly(timeUTC: LocalDateTime?): String?
+    abstract fun formatTimeOnly(timeUTC: LocalDateTime?, showSeconds: Boolean): String?
     abstract fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String
     abstract fun formatBestPattern(timeUTC: LocalDateTime, pattern: String): String
     abstract fun formatWithPattern(timeUTC: LocalDateTime, pattern: String): String
@@ -31,6 +33,7 @@ abstract class IValueFormatter {
 
     fun getDistanceSmall(
         meters: Double,
+        distanceType: DistanceType,
         measurementSystem: MeasurementSystemType? = null,
     ): String {
         return when (measurementSystem ?: this.measurementSystem) {
@@ -43,15 +46,26 @@ abstract class IValueFormatter {
                     MR.strings.placeholder_unit_km.localizedString(value)
                 }
             }
+
             MeasurementSystemType.IMPERIAL -> {
-                if (meters / 1000 < kmInMile / 10) { // Less than 1/10 mile
-                    val feet = meters * 3.28084
-                    val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
-                    MR.strings.placeholder_unit_feet.localizedString(value)
-                } else {
-                    val miles = meters / 1000 / kmInMile
-                    val value = formatNumber(miles, minFractions = 0, maxFractions = 2)
-                    MR.strings.placeholder_unit_mile.localizedString(value)
+                when (distanceType) {
+                    DistanceType.ELEVATION -> {
+                        val feet = meters * 3.28084
+                        val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
+                        MR.strings.placeholder_unit_feet.localizedString(value)
+                    }
+
+                    DistanceType.DISTANCE -> {
+                        if (meters / 1000 < kmInMile / 5) { // Less than 1/10 mile
+                            val feet = meters * 3.28084
+                            val value = formatNumber(feet, minFractions = 0, maxFractions = 0)
+                            MR.strings.placeholder_unit_feet.localizedString(value)
+                        } else {
+                            val miles = meters / 1000 / kmInMile
+                            val value = formatNumber(miles, minFractions = 0, maxFractions = 2)
+                            MR.strings.placeholder_unit_mile.localizedString(value)
+                        }
+                    }
                 }
             }
         }
@@ -90,7 +104,7 @@ abstract class IValueFormatter {
         val sameDay = sameYear && local.dayOfYear == nowTime.dayOfYear
         val isYesterday = sameYear && local.dayOfYear == now.minus(1.days)
             .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfYear
-        val formattedTime = formatTimeOnly(timeUTC)
+        val formattedTime = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
 
         return when {
             timeInstant > now.minus(20.seconds) -> {
@@ -139,7 +153,7 @@ abstract class IValueFormatter {
         val nowTime = nowUTC().toLocalDateTime(TimeZone.currentSystemDefault())
         val sameYear = local.year == nowTime.year
         val sameDay = sameYear && local.dayOfYear == nowTime.dayOfYear
-        val formattedTime = formatTimeOnly(timeUTC)
+        val formattedTime = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
 
         return when {
             sameDay && optionalMonth -> {
@@ -185,16 +199,16 @@ abstract class IValueFormatter {
 
     fun fromUTCtoMapSharingTime(timeUTC: String, splitTimeToOneLine: Boolean = true): String? {
         val dateTimeUTC = timeUTC.isoToLocalDateTime() ?: return null
-        val local = dateTimeUTC.fromUTCtoLocal()
-        val now = Clock.System.now()
         val timeZone = TimeZone.currentSystemDefault()
+        val local = dateTimeUTC.fromUTCtoLocal(timeZone)
+        val now = nowUTC()
         val nowDate = now.toLocalDateTime(TimeZone.currentSystemDefault())
         val sameYear = local.year == nowDate.year
         val sameDay = sameYear && local.dayOfYear == nowDate.dayOfYear
         val isTomorrow = sameYear && local.dayOfYear == now.plus(1, DateTimeUnit.DAY, timeZone)
             .toLocalDateTime(timeZone).dayOfYear
 
-        val time = formatTimeOnly(dateTimeUTC)
+        val time = formatTimeOnly(timeUTC = dateTimeUTC, showSeconds = false)
         return when {
             sameDay -> "${MR.strings.date_name_today.localizedString()}, $time"
             isTomorrow -> "${MR.strings.date_name_tomorrow.localizedString()}, $time"
@@ -213,11 +227,174 @@ abstract class IValueFormatter {
         }
     }
 
+    fun formatTimeRangeForLocationHistory(
+        startTimeUTC: LocalDateTime?,
+        endTimeUTC: LocalDateTime?,
+        rangeStart: LocalDate,
+        rangeEnd: LocalDate,
+        timeZone: TimeZone = TimeZone.currentSystemDefault(),
+        nowDate: LocalDateTime = nowUTC().toLocalDateTime(timeZone),
+        yesterday: LocalDate = nowDate.date.minus(DatePeriod(days = 1))
+    ): String? {
+        if (startTimeUTC == null && endTimeUTC == null) return null
+
+        val startTimeCorrect = startTimeUTC ?: endTimeUTC ?: return null
+        val endTimeCorrect = endTimeUTC ?: startTimeUTC ?: return null
+
+        val currentYear = nowDate.year
+
+        val localStart = startTimeCorrect.fromUTCtoLocal(timeZone = timeZone)
+        val localEnd = endTimeCorrect.fromUTCtoLocal(timeZone = timeZone)
+
+        // Determine if we should show years based on context
+        val shouldShowYear = shouldShowYearInContext(
+            itemStartYear = localStart.year,
+            itemEndYear = localEnd.year,
+            currentYear = currentYear,
+            rangeStartYear = rangeStart.year,
+            rangeEndYear = rangeEnd.year
+        )
+
+        // Check if start and end are exactly the same
+        if (localStart == localEnd) {
+            return formatSingleDateTime(
+                dateTime = localStart,
+                timeUTC = startTimeCorrect,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+        }
+
+        // Check if same day (different times)
+        val isSameDay = localStart.date == localEnd.date
+
+        return if (isSameDay) {
+            // Same day, different times: "June 3, 2025 12:14:23 - 12:16:20"
+            val datePart = formatDatePart(
+                date = localStart,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+            val startTime = formatTimeOnly(timeUTC = startTimeCorrect, showSeconds = false)
+            val endTime = formatTimeOnly(timeUTC = endTimeCorrect, showSeconds = false)
+            val time = listOf(startTime, endTime).distinct().joinToString(separator = " - ")
+            "$datePart $time"
+        } else {
+            // Different days: "June 3, 2025 12:14:23 - June 4, 2025 12:16:20"
+            val startPart = formatDateTimePart(
+                dateTime = localStart,
+                timeUTC = startTimeCorrect,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+            val endPart = formatDateTimePart(
+                dateTime = localEnd,
+                timeUTC = endTimeCorrect,
+                nowDate = nowDate.date,
+                yesterday = yesterday,
+                shouldShowYear = shouldShowYear
+            )
+            "$startPart - $endPart"
+        }
+    }
+
+    private fun shouldShowYearInContext(
+        itemStartYear: Int,
+        itemEndYear: Int,
+        currentYear: Int,
+        rangeStartYear: Int,
+        rangeEndYear: Int
+    ): Boolean {
+        // Show year if:
+        // 1. Any item year is different from current year, OR
+        // 2. Range spans different years from current year, OR
+        // 3. Multiple different years are involved
+        val allYears = setOf(itemStartYear, itemEndYear, currentYear, rangeStartYear, rangeEndYear)
+
+        return allYears.size > 1 ||
+                rangeStartYear != currentYear ||
+                rangeEndYear != currentYear ||
+                itemStartYear != currentYear ||
+                itemEndYear != currentYear
+    }
+
+    private fun formatSingleDateTime(
+        dateTime: LocalDateTime,
+        timeUTC: LocalDateTime,
+        nowDate: LocalDate,
+        yesterday: LocalDate,
+        shouldShowYear: Boolean
+    ): String {
+        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
+
+        return when {
+            dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
+            dateTime.date == yesterday -> MR.strings.date_name_yesterday.localizedString() + " $timeStr"
+            else -> {
+                val datePart = formatDatePart(
+                    date = dateTime,
+                    nowDate = nowDate,
+                    yesterday = yesterday,
+                    shouldShowYear = shouldShowYear
+                )
+                "$datePart $timeStr"
+            }
+        }
+    }
+
+    private fun formatDateTimePart(
+        dateTime: LocalDateTime,
+        timeUTC: LocalDateTime,
+        nowDate: LocalDate,
+        yesterday: LocalDate,
+        shouldShowYear: Boolean
+    ): String {
+        val timeStr = formatTimeOnly(timeUTC = timeUTC, showSeconds = false)
+
+        return when {
+            dateTime.date == nowDate -> MR.strings.date_name_today.localizedString() + " $timeStr"
+            dateTime.date == yesterday -> MR.strings.date_name_yesterday.localizedString() + " $timeStr"
+            else -> {
+                val datePart = formatDatePart(
+                    date = dateTime,
+                    nowDate = nowDate,
+                    yesterday = yesterday,
+                    shouldShowYear = shouldShowYear
+                )
+                "$datePart $timeStr"
+            }
+        }
+    }
+
+    private fun formatDatePart(
+        date: LocalDateTime,
+        nowDate: LocalDate,
+        yesterday: LocalDate,
+        shouldShowYear: Boolean
+    ): String {
+        return when {
+            date.date == nowDate -> MR.strings.date_name_today.localizedString()
+            date.date == yesterday -> MR.strings.date_name_yesterday.localizedString()
+            else -> {
+                val pattern = if (shouldShowYear) "MMMd, yyyy" else "MMMd"
+                formatBestPattern(
+                    timeUTC = date,
+                    pattern = pattern
+                )
+            }
+        }
+    }
+
     fun LocalDateTime.fromLocalToUTC(): LocalDateTime {
         return this.toInstant(TimeZone.currentSystemDefault()).toLocalDateTime(TimeZone.UTC)
     }
 
-    fun LocalDateTime.fromUTCtoLocal(): LocalDateTime {
-        return this.toInstant(TimeZone.UTC).toLocalDateTime(TimeZone.currentSystemDefault())
+    fun LocalDateTime.fromUTCtoLocal(
+        timeZone: TimeZone = TimeZone.currentSystemDefault()
+    ): LocalDateTime {
+        return this.toInstant(TimeZone.UTC).toLocalDateTime(timeZone)
     }
 }

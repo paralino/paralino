@@ -2,26 +2,30 @@ package app.paralino.core.presentation.places.create
 
 import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
+import app.paralino.core.domain.user.PremiumStatusLimitState
+import app.paralino.core.domain.user.PremiumStatusManager
+import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.DistanceType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.RemoteConfigRepository
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.annotatedBold
+import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -39,9 +43,9 @@ class CreatePlaceViewModel(
     lng: Double? = null,
     private val placesRepo: PlacesRepository,
     private val placesLocalDataSource: PlacesLocalDataSource,
-    private val groupLocal: UserGroupLocalDataSource,
-    private val remoteConfig: RemoteConfigRepository,
     private val deviceApiProvider: IDeviceApiProvider,
+    private val premiumStatusManager: PremiumStatusManager,
+    private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
@@ -67,18 +71,21 @@ class CreatePlaceViewModel(
                 when {
                     placeId.isNullOrBlank() -> Payload.Success(
                         CreatePlaceScreenState.empty(
-                            groupId = groupId,
+                            groupId = groupId.asGroupOrSpaceId(),
                             hintText = hintText(),
                             lat = lat,
                             lng = lng,
                             radiusMeters = CreatePlaceScreenState.defaultRadiusMeters,
-                            radiusText = valueFormatter.getDistanceSmall(meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble())
+                            radiusText = valueFormatter.getDistanceSmall(
+                                meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble(),
+                                distanceType = DistanceType.DISTANCE
+                            )
                         )
                     )
 
                     else -> value.mapSuccess { place ->
                         CreatePlaceScreenState(
-                            groupId = groupId,
+                            groupId = groupId.asGroupOrSpaceId(),
                             isNewPlace = false,
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
@@ -88,7 +95,8 @@ class CreatePlaceViewModel(
                             lng = place.data.data?.lng,
                             radiusMeters = place.data.data?.radiusMeters ?: 0,
                             radiusText = valueFormatter.getDistanceSmall(
-                                meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0
+                                meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0,
+                                distanceType = DistanceType.DISTANCE
                             ),
                             hintText = hintText(),
                             actionLoading = false,
@@ -109,7 +117,9 @@ class CreatePlaceViewModel(
 
             is CreatePlaceScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
-                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                    is MainAlertDialog.ServiceMaxLimit,
+                    is MainAlertDialog.PlanLimitForOwner,
+                    is MainAlertDialog.PlanLimitForMembers -> {
                         _uiState.update {
                             it.mapSuccess { it.copy(alertDialog = null) }
                         }
@@ -170,6 +180,7 @@ class CreatePlaceViewModel(
                     placesRepo.createPlace(
                         groupId = groupId,
                         private = data.private,
+                        isInPersonalSpace = groupId.asGroupOrSpaceId().isPersonalSpace,
                         data = placeData
                     ).processPlaceFlow()
                 }
@@ -178,44 +189,56 @@ class CreatePlaceViewModel(
     }
 
     private suspend fun checkPlaceLimits(): Boolean {
-        val group = groupLocal.getGroupOnce(groupId) ?: return false
-        val limit = group.placesLimit(remoteConfig.getConfigOnce())
-        val placeCount = placesLocalDataSource.getPlacesCountForGroupOnce(groupId) ?: 0
-        val isGroupOwner = group.isCurrentUserOwner
-        val maxPlaceLimit =
-            remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.placesLimit
-
-        if (maxPlaceLimit != null && isGroupOwner && placeCount >= maxPlaceLimit) {
-            _uiState.update {
-                it.mapSuccess {
-                    it.copy(
-                        alertDialog = MainAlertDialog.PlanLimit(
-                            content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                            limit = limit
-                        )
-                    )
-                }
-            }
-            return false
-        } else if (limit in 0..placeCount) {
-            if (isGroupOwner) {
-                messageDispatcher.showSnackbar(MR.strings.places_create_plan_limit_info.localizedString())
-            } else {
+        val premiumStatus = premiumStatusManager.checkPlaceCountLimits(groupId.asGroupOrSpaceId())
+        when (premiumStatus) {
+            is PremiumStatusLimitState.ServiceLimitReached -> {
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
-                            alertDialog = MainAlertDialog.PlanLimitForMembers(
+                            alertDialog = MainAlertDialog.ServiceMaxLimit(
                                 content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                                limit = limit
+                                limit = premiumStatus.payload.limit ?: -1
                             )
                         )
                     }
                 }
+                return false
             }
-            return false
-        } else {
-            return true
+
+            is PremiumStatusLimitState.PlanLimitReached -> {
+                if (premiumStatus.payload.isOwner) {
+                    messageDispatcher.showSnackbar(MR.strings.places_create_plan_limit_info.localizedString())
+                    _uiState.update {
+                        it.mapSuccess {
+                            it.copy(
+                                alertDialog = MainAlertDialog.PlanLimitForOwner(
+                                    content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                                    limit = premiumStatus.payload.limit ?: -1
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    _uiState.update {
+                        it.mapSuccess {
+                            it.copy(
+                                alertDialog = MainAlertDialog.PlanLimitForMembers(
+                                    content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                                    limit = premiumStatus.payload.limit ?: -1
+                                )
+                            )
+                        }
+                    }
+                }
+                return false
+            }
+
+            is PremiumStatusLimitState.WithinLimits,
+            null -> {
+            }
         }
+
+        return premiumStatus is PremiumStatusLimitState.WithinLimits
     }
 
     private fun Flow<Unit>.processPlaceFlow() {
@@ -234,10 +257,12 @@ class CreatePlaceViewModel(
                     is Payload.Error -> {
                         if (data.exception.asRemoteException()?.code == 402) {
                             if (checkPlaceLimits()) {
-                                _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
+                                refreshEverythingUseCase.scheduleRefreshAllGroupsWithPlaces()
+                                showSnackbar(data.exception.errorString())
+                                checkPlaceLimits()
                             }
                         } else {
-                            _eventChannel.send(CreatePlaceScreenEvent.Error(data.exception))
+                            showSnackbar(data.exception.errorString())
                         }
                     }
 
@@ -275,7 +300,10 @@ class CreatePlaceViewModel(
             it.mapSuccess {
                 it.copy(
                     radiusMeters = radiusMeters,
-                    radiusText = valueFormatter.getDistanceSmall(meters = radiusMeters.toDouble()),
+                    radiusText = valueFormatter.getDistanceSmall(
+                        meters = radiusMeters.toDouble(),
+                        distanceType = DistanceType.DISTANCE
+                    ),
                 )
             }
         }

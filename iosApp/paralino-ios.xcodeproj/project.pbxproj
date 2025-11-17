@@ -19,6 +19,7 @@
 		252EA00729DD89C800338956 /* KoinSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EA00629DD89C800338956 /* KoinSetup.swift */; };
 		25356A9A29EAB8E100CD32F5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25356A9929EAB8E100CD32F5 /* Colors.swift */; };
 		25395C1F2B630042000394DA /* BaseMapObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25395C1E2B630042000394DA /* BaseMapObservableObject.swift */; };
+		253D77632E38B002006E38C6 /* PersonalSpaceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253D77622E38B002006E38C6 /* PersonalSpaceScreen.swift */; };
 		254729E62CB5967000172F55 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 254729E52CB5967000172F55 /* Sentry */; };
 		254B6F2429EC7C1B008B1458 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */; };
 		254B6F2829EC7C50008B1458 /* Image+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254B6F2729EC7C50008B1458 /* Image+Extensions.swift */; };
@@ -31,6 +32,9 @@
 		2556E2472ACFFC7500A1BACE /* NotificationPermissionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */; };
 		25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */; };
 		25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */; };
+		255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */; };
+		255B0CA42E20568C001426C3 /* HistoryClusterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA22E20568C001426C3 /* HistoryClusterView.swift */; };
+		255B0CA52E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255B0CA32E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift */; };
 		2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */; };
 		2568AF5E2CB5342B007EE00F /* NIO in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5D2CB5342B007EE00F /* NIO */; };
 		2568AF602CB5342B007EE00F /* NIOConcurrencyHelpers in Frameworks */ = {isa = PBXBuildFile; productRef = 2568AF5F2CB5342B007EE00F /* NIOConcurrencyHelpers */; };
@@ -51,7 +55,7 @@
 		259AEF972A3A59070083FF4B /* ProfileSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */; };
 		259AEF992A3C68580083FF4B /* ComposeRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF982A3C68580083FF4B /* ComposeRepresentable.swift */; };
 		259AEF9C2A3DB1C70083FF4B /* MapRootScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF9B2A3DB1C70083FF4B /* MapRootScreen.swift */; };
-		259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF9D2A3DB1E40083FF4B /* GroupInitScreen.swift */; };
+		259AEF9E2A3DB1E40083FF4B /* AccountOnboardingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF9D2A3DB1E40083FF4B /* AccountOnboardingScreen.swift */; };
 		259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEF9F2A3E0D0A0083FF4B /* RecoverKeysScreen.swift */; };
 		259AEFA22A3E0F860083FF4B /* ResetPasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */; };
 		259AEFA42A3E19740083FF4B /* Sharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259AEFA32A3E19740083FF4B /* Sharing.swift */; };
@@ -62,11 +66,15 @@
 		25A2286A2CC809C8004577BE /* ValueAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A228692CC809C4004577BE /* ValueAnimator.swift */; };
 		25A812102CD51216002DF3E5 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 25A8120F2CD51216002DF3E5 /* RevenueCat */; };
 		25A812122CD5122B002DF3E5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A812112CD5122B002DF3E5 /* StoreKit.framework */; };
+		25AC7F472E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AC7F462E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift */; };
 		25AFAD4F2BBACDB3001909CA /* AppUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */; };
 		25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB422A44D7F60007E89D /* SettingsScreen.swift */; };
 		25B2DB452A44D89B0007E89D /* AccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB442A44D89B0007E89D /* AccountScreen.swift */; };
 		25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */; };
 		25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */; };
+		25BFB32B2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BFB32A2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift */; };
+		25BFB32D2E0D865700298B20 /* LocationHistoryMapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BFB32C2E0D864E00298B20 /* LocationHistoryMapScreen.swift */; };
+		25BFB32F2E0D866800298B20 /* LocationHistoryMapState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BFB32E2E0D866300298B20 /* LocationHistoryMapState.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
 		25C03A6F29CCE77200646364 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6E29CCE77200646364 /* Preview Assets.xcassets */; };
@@ -92,7 +100,6 @@
 		25F234CB2CE12F16007208CD /* PlanLimitCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234CA2CE12F12007208CD /* PlanLimitCount.swift */; };
 		25F234CD2CE12FAA007208CD /* GroupPickerGroupCreateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */; };
 		25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F37E332A5AC6EE00317D85 /* ImageModelImage.swift */; };
-		25F37E362A5AE1EB00317D85 /* MapGroupPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F37E352A5AE1EB00317D85 /* MapGroupPicker.swift */; };
 		25F8DB902DB91268007AECEB /* AppSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F8DB8F2DB91268007AECEB /* AppSettingsScreen.swift */; };
 		25F8DB922DB912E3007AECEB /* GenericSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F8DB912DB912E3007AECEB /* GenericSettingsScreen.swift */; };
 		25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FC5CA52A4580930006E796 /* ChangePasswordScreen.swift */; };
@@ -181,6 +188,7 @@
 		252EA00629DD89C800338956 /* KoinSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinSetup.swift; sourceTree = "<group>"; };
 		25356A9929EAB8E100CD32F5 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		25395C1E2B630042000394DA /* BaseMapObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMapObservableObject.swift; sourceTree = "<group>"; };
+		253D77622E38B002006E38C6 /* PersonalSpaceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalSpaceScreen.swift; sourceTree = "<group>"; };
 		254B6F2329EC7C1B008B1458 /* WelcomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		254B6F2729EC7C50008B1458 /* Image+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Extensions.swift"; sourceTree = "<group>"; };
 		254B6F2929EC7F6A008B1458 /* LoginScreenObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginScreenObject.swift; sourceTree = "<group>"; };
@@ -191,10 +199,30 @@
 		2556E2462ACFFC7500A1BACE /* NotificationPermissionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionHandler.swift; sourceTree = "<group>"; };
 		25592FAF2D11E370003EECCB /* AppRatingPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRatingPresenter.swift; sourceTree = "<group>"; };
 		25592FB12D11EAA0003EECCB /* WelcomeOnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeOnboardingScreen.swift; sourceTree = "<group>"; };
+		255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryMapMarker.swift; sourceTree = "<group>"; };
+		255B0CA22E20568C001426C3 /* HistoryClusterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryClusterView.swift; sourceTree = "<group>"; };
+		255B0CA32E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIHistoryClusterAnnotationView.swift; sourceTree = "<group>"; };
 		2565B5A72CD8D2C2006DFB88 /* LicencesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicencesScreen.swift; sourceTree = "<group>"; };
 		256C5A5A29E8938900FCF0B7 /* MainAppObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppObject.swift; sourceTree = "<group>"; };
 		256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSettingsScreen.swift; sourceTree = "<group>"; };
 		257DCAD32CB4407700402562 /* paralino_apple_core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = paralino_apple_core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2581E1142EC114E200E00386 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ../ca.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1152EC1153900E00386 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = ../cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1162EC1154B00E00386 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = ../da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1172EC1155500E00386 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = ../fi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1182EC1155900E00386 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = ../el.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1192EC1157A00E00386 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = ../hu.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E11A2EC1158500E00386 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = ../nb.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E11B2EC1159A00E00386 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = ../pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E11C2EC115A100E00386 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ../ro.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E11D2EC115A900E00386 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ../ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E11E2EC115AD00E00386 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = ../sk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E11F2EC115B100E00386 /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = ../sl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1202EC115B800E00386 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = ../tr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1212EC115BC00E00386 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = ../uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1222EC115E800E00386 /* bs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bs; path = ../bs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1232EC115F600E00386 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = ../sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2581E1242EC1173300E00386 /* sr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sr; path = ../sr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2585A9E92C7733DE00BC04AA /* production-config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "production-config.xcconfig"; sourceTree = "<group>"; };
 		2585A9ED2C777EB000BC04AA /* staging-config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "staging-config.xcconfig"; sourceTree = "<group>"; };
 		2585A9EF2C777EF300BC04AA /* debugConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debugConfig.xcconfig; sourceTree = "<group>"; };
@@ -204,7 +232,7 @@
 		259AEF962A3A59070083FF4B /* ProfileSetupScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupScreen.swift; sourceTree = "<group>"; };
 		259AEF982A3C68580083FF4B /* ComposeRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRepresentable.swift; sourceTree = "<group>"; };
 		259AEF9B2A3DB1C70083FF4B /* MapRootScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRootScreen.swift; sourceTree = "<group>"; };
-		259AEF9D2A3DB1E40083FF4B /* GroupInitScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupInitScreen.swift; sourceTree = "<group>"; };
+		259AEF9D2A3DB1E40083FF4B /* AccountOnboardingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountOnboardingScreen.swift; sourceTree = "<group>"; };
 		259AEF9F2A3E0D0A0083FF4B /* RecoverKeysScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverKeysScreen.swift; sourceTree = "<group>"; };
 		259AEFA12A3E0F860083FF4B /* ResetPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordScreen.swift; sourceTree = "<group>"; };
 		259AEFA32A3E19740083FF4B /* Sharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharing.swift; sourceTree = "<group>"; };
@@ -215,11 +243,15 @@
 		25A228692CC809C4004577BE /* ValueAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueAnimator.swift; sourceTree = "<group>"; };
 		25A5A6202CB7E14B00D3D160 /* paralino-ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "paralino-ios.entitlements"; sourceTree = "<group>"; };
 		25A812112CD5122B002DF3E5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		25AC7F462E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalSpaceSettingsScreen.swift; sourceTree = "<group>"; };
 		25AFAD4E2BBACDB3001909CA /* AppUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateManager.swift; sourceTree = "<group>"; };
 		25B2DB422A44D7F60007E89D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		25B2DB442A44D89B0007E89D /* AccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountScreen.swift; sourceTree = "<group>"; };
 		25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCodeScreen.swift; sourceTree = "<group>"; };
 		25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCreateScreen.swift; sourceTree = "<group>"; };
+		25BFB32A2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHistoryDeleteScreen.swift; sourceTree = "<group>"; };
+		25BFB32C2E0D864E00298B20 /* LocationHistoryMapScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHistoryMapScreen.swift; sourceTree = "<group>"; };
+		25BFB32E2E0D866300298B20 /* LocationHistoryMapState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHistoryMapState.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
 		25C03A6B29CCE77200646364 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -246,7 +278,6 @@
 		25F234CA2CE12F12007208CD /* PlanLimitCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanLimitCount.swift; sourceTree = "<group>"; };
 		25F234CC2CE12F9D007208CD /* GroupPickerGroupCreateSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerGroupCreateSection.swift; sourceTree = "<group>"; };
 		25F37E332A5AC6EE00317D85 /* ImageModelImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageModelImage.swift; sourceTree = "<group>"; };
-		25F37E352A5AE1EB00317D85 /* MapGroupPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGroupPicker.swift; sourceTree = "<group>"; };
 		25F8DB8F2DB91268007AECEB /* AppSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsScreen.swift; sourceTree = "<group>"; };
 		25F8DB912DB912E3007AECEB /* GenericSettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericSettingsScreen.swift; sourceTree = "<group>"; };
 		25F8DB932DB994A4007AECEB /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = ../hr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -515,15 +546,19 @@
 		259AEF9A2A3DB1AB0083FF4B /* Map */ = {
 			isa = PBXGroup;
 			children = (
+				255B0CA22E20568C001426C3 /* HistoryClusterView.swift */,
+				255B0CA32E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift */,
+				25BFB32E2E0D866300298B20 /* LocationHistoryMapState.swift */,
+				25BFB32C2E0D864E00298B20 /* LocationHistoryMapScreen.swift */,
 				25A228672CC7F7BF004577BE /* MapComponentVC.swift */,
 				259AEF9B2A3DB1C70083FF4B /* MapRootScreen.swift */,
-				259AEF9D2A3DB1E40083FF4B /* GroupInitScreen.swift */,
+				259AEF9D2A3DB1E40083FF4B /* AccountOnboardingScreen.swift */,
 				259AEFA52A3E2EF30083FF4B /* MapHomeScreen.swift */,
 				259AEFA72A3E2F960083FF4B /* MapHomeState.swift */,
-				25F37E352A5AE1EB00317D85 /* MapGroupPicker.swift */,
 				25EFDE272A5AF6DF00522293 /* GroupStatusTag.swift */,
 				25EFDE292A5B0DCA00522293 /* GroupListItem.swift */,
 				25EFDE2F2A5B45C300522293 /* MapMarker.swift */,
+				255B0CA02E203D95001426C3 /* HistoryMapMarker.swift */,
 				25395C1E2B630042000394DA /* BaseMapObservableObject.swift */,
 			);
 			path = Map;
@@ -607,6 +642,7 @@
 			children = (
 				25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */,
 				25C91A332A580CBA00A49F06 /* GroupDetailScreen.swift */,
+				253D77622E38B002006E38C6 /* PersonalSpaceScreen.swift */,
 				25C91A352A5890B400A49F06 /* MemberInviteScreen.swift */,
 				2529CAA82B10BFD200D88042 /* SharingStartScreen.swift */,
 				2507A96F2B5D6E3F008E9FF0 /* PlacesScreen.swift */,
@@ -614,6 +650,8 @@
 				252035C72D311D8900926962 /* PlaceAlertsSettingsScreen.swift */,
 				25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */,
 				256FCA682BCD445300DCD2FE /* GroupSettingsScreen.swift */,
+				25AC7F462E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift */,
+				25BFB32A2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift */,
 				25DA00922D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift */,
 			);
 			path = Groups;
@@ -795,6 +833,23 @@
 				nl,
 				fr,
 				it,
+				ca,
+				cs,
+				da,
+				fi,
+				el,
+				hu,
+				nb,
+				pl,
+				ro,
+				ru,
+				sk,
+				sl,
+				tr,
+				uk,
+				bs,
+				sv,
+				sr,
 			);
 			mainGroup = 25C03A5B29CCE77100646364;
 			packageReferences = (
@@ -1011,12 +1066,15 @@
 			files = (
 				256C5A5B29E8938900FCF0B7 /* MainAppObject.swift in Sources */,
 				25C9E5672CCB75C200C3C58A /* LocationPermissionHandler.swift in Sources */,
+				255B0CA12E203D95001426C3 /* HistoryMapMarker.swift in Sources */,
 				25C9E5692CD0300E00C3C58A /* LoadingOverlay.swift in Sources */,
 				25A228682CC7F7D0004577BE /* MapComponentVC.swift in Sources */,
 				25F8DB902DB91268007AECEB /* AppSettingsScreen.swift in Sources */,
 				25EFDE302A5B45C300522293 /* MapMarker.swift in Sources */,
 				2565B5A82CD8D2C8006DFB88 /* LicencesScreen.swift in Sources */,
-				259AEF9E2A3DB1E40083FF4B /* GroupInitScreen.swift in Sources */,
+				259AEF9E2A3DB1E40083FF4B /* AccountOnboardingScreen.swift in Sources */,
+				255B0CA42E20568C001426C3 /* HistoryClusterView.swift in Sources */,
+				255B0CA52E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift in Sources */,
 				25FC5CA62A4580930006E796 /* ChangePasswordScreen.swift in Sources */,
 				25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */,
 				259AEFA02A3E0D0A0083FF4B /* RecoverKeysScreen.swift in Sources */,
@@ -1038,15 +1096,16 @@
 				25FC5CAC2A45F8CC0006E796 /* ConvertAccountScreen.swift in Sources */,
 				25592FB22D11EAA7003EECCB /* WelcomeOnboardingScreen.swift in Sources */,
 				25C03A6829CCE77100646364 /* MainApp.swift in Sources */,
+				253D77632E38B002006E38C6 /* PersonalSpaceScreen.swift in Sources */,
 				259AEF9C2A3DB1C70083FF4B /* MapRootScreen.swift in Sources */,
 				25C91A2F2A57EFC600A49F06 /* PhotoPickerSheet.swift in Sources */,
 				259AEFA62A3E2EF30083FF4B /* MapHomeScreen.swift in Sources */,
 				2529CAA92B10BFD200D88042 /* SharingStartScreen.swift in Sources */,
 				254B6F2B29EC7F6A008B1458 /* LoginScreenObject.swift in Sources */,
 				25FC5CB22A4612A40006E796 /* EditProfileScreen.swift in Sources */,
+				25AC7F472E5F887800A7C57E /* PersonalSpaceSettingsScreen.swift in Sources */,
 				25A228662CC7D3AE004577BE /* Number+Extension.swift in Sources */,
 				256FCA692BCD445300DCD2FE /* GroupSettingsScreen.swift in Sources */,
-				25F37E362A5AE1EB00317D85 /* MapGroupPicker.swift in Sources */,
 				25FC5CA82A45811C0006E796 /* ChangeEmailScreen.swift in Sources */,
 				25FC5CAA2A458D970006E796 /* NavigationGraph.swift in Sources */,
 				25C91A342A580CBA00A49F06 /* GroupDetailScreen.swift in Sources */,
@@ -1067,6 +1126,8 @@
 				25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */,
 				25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */,
 				25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */,
+				25BFB32F2E0D866800298B20 /* LocationHistoryMapState.swift in Sources */,
+				25BFB32B2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift in Sources */,
 				2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */,
 				25DA00932D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift in Sources */,
 				25EF802D2CAEABB800DFC890 /* PaywallScreen.swift in Sources */,
@@ -1074,6 +1135,7 @@
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
 				25F8DB922DB912E3007AECEB /* GenericSettingsScreen.swift in Sources */,
 				25F234CB2CE12F16007208CD /* PlanLimitCount.swift in Sources */,
+				25BFB32D2E0D865700298B20 /* LocationHistoryMapScreen.swift in Sources */,
 				252035C82D311D8900926962 /* PlaceAlertsSettingsScreen.swift in Sources */,
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,
 				25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */,
@@ -1124,6 +1186,23 @@
 				25F8DB962DBA7D89007AECEB /* nl */,
 				25F8DB972DBA7D8D007AECEB /* fr */,
 				25F8DB982DBA7D96007AECEB /* it */,
+				2581E1142EC114E200E00386 /* ca */,
+				2581E1152EC1153900E00386 /* cs */,
+				2581E1162EC1154B00E00386 /* da */,
+				2581E1172EC1155500E00386 /* fi */,
+				2581E1182EC1155900E00386 /* el */,
+				2581E1192EC1157A00E00386 /* hu */,
+				2581E11A2EC1158500E00386 /* nb */,
+				2581E11B2EC1159A00E00386 /* pl */,
+				2581E11C2EC115A100E00386 /* ro */,
+				2581E11D2EC115A900E00386 /* ru */,
+				2581E11E2EC115AD00E00386 /* sk */,
+				2581E11F2EC115B100E00386 /* sl */,
+				2581E1202EC115B800E00386 /* tr */,
+				2581E1212EC115BC00E00386 /* uk */,
+				2581E1222EC115E800E00386 /* bs */,
+				2581E1232EC115F600E00386 /* sv */,
+				2581E1242EC1173300E00386 /* sr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1143,7 +1222,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CODE_SIGN_ENTITLEMENTS = "paralino-lse/paralino-lse.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "paralino-lse/paralino-lseDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1166,7 +1245,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.paralinolse;
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.test.paralinolse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1228,7 +1307,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CODE_SIGN_ENTITLEMENTS = "paralino-nse/paralino-nse.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "paralino-nse/paralino-nseDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1254,7 +1333,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.paralinonse;
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.test.paralinonse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1355,7 +1434,7 @@
 					shared,
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.core;
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.test.core;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1553,12 +1632,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-iosDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1569,7 +1648,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "paralino-ios/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Paralino;
+				INFOPLIST_KEY_CFBundleDisplayName = ParalinoTEST;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always on and when in use location permission is required to post updates";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Always on location permission is required to post updates";
@@ -1584,12 +1663,12 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 2.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = app.paralino.ios.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1613,7 +1692,7 @@
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1639,7 +1718,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 2.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
@@ -1730,7 +1809,7 @@
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
 			requirement = {
 				kind = exactVersion;
-				version = 5.20.0;
+				version = 5.45.0;
 			};
 		};
 		25129FEB2BBDE6B800D1A5AE /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
@@ -1738,7 +1817,7 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
 				kind = exactVersion;
-				version = 8.43.0;
+				version = 8.57.1;
 			};
 		};
 		252EA01E29E03B4D00338956 /* XCRemoteSwiftPackageReference "swift-sodium" */ = {
@@ -1746,7 +1825,7 @@
 			repositoryURL = "https://github.com/jedisct1/swift-sodium.git";
 			requirement = {
 				kind = revision;
-				revision = 5b7e71852a1c1b46dd51c3f31c76747d9c82016e;
+				revision = ec71f90b271108c71783fba8685c32f88f6c52af;
 			};
 		};
 		2568AF5C2CB5342B007EE00F /* XCRemoteSwiftPackageReference "swift-nio" */ = {
@@ -1754,7 +1833,7 @@
 			repositoryURL = "https://github.com/apple/swift-nio.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.74.0;
+				minimumVersion = 2.88.0;
 			};
 		};
 		257B6E092CB5717B004F5438 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
@@ -1762,7 +1841,7 @@
 			repositoryURL = "https://github.com/apple/swift-atomics.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 1.3.0;
 			};
 		};
 		25B3A0C62BBF08E7002F1CB4 /* XCRemoteSwiftPackageReference "async-http-client" */ = {
@@ -1770,7 +1849,7 @@
 			repositoryURL = "https://github.com/swift-server/async-http-client.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.20.1;
+				minimumVersion = 1.29.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

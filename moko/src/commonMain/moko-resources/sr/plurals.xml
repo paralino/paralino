@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="groups_sharing_duration_type_minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуте</item>
+        <item quantity="other">%d минута</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_hours">
+        <item quantity="one">%d сат</item>
+        <item quantity="few">%d сата</item>
+        <item quantity="other">%d сати</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_days">
+        <item quantity="one">%d дан</item>
+        <item quantity="few">%d дана</item>
+        <item quantity="other">%d дана</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_months">
+        <item quantity="one">%d месец</item>
+        <item quantity="few">%d месеца</item>
+        <item quantity="other">%d месеци</item>
+    </plurals>
+    <plurals name="groups_sharing_duration_type_years">
+        <item quantity="one">%d година</item>
+        <item quantity="few">%d године</item>
+        <item quantity="other">%d година</item>
+    </plurals>
+    <plurals name="notifications_sharing_active_message">
+        <item quantity="one">Дељење локације са %d групом</item>
+        <item quantity="few">Дељење локације са %d групе</item>
+        <item quantity="other">Дељење локације са %d група</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_groups">
+        <item quantity="one">Група</item>
+        <item quantity="few">Групе</item>
+        <item quantity="other">Група</item>
+    </plurals>
+    <plurals name="paywall_feature_summary_devices">
+        <item quantity="one">Уређај</item>
+        <item quantity="few">Уређаја</item>
+        <item quantity="other">Уређаја</item>
+    </plurals>
+</resources>

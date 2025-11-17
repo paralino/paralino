@@ -1,9 +1,10 @@
 package app.paralino.core.presentation.places.detail
 
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 
 data class PlaceDetailScreenState constructor(
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val placeId: String,
     val groupName: String,
     val name: String,
@@ -18,15 +19,20 @@ data class PlaceDetailScreenState constructor(
     val isPlaceAlertsSwitchLoading: Boolean,
     val arePlaceAlertsActive: Boolean,
     val settings: List<PlaceSettingsState>
-)
+) {
+    val isPersonalSpace = groupOrSpaceId.isPersonalSpace
+}
 
 data class PlaceSettingsState constructor(
     val groupId: String,
     val placeId: String,
-    val memberUserId: String,
-    val isCurrentUser: Boolean,
+    val userId: String,
+    val deviceId: String?,
+    val alertItemId: String,
+    val isCurrentUserOrDevice: Boolean,
     val name: String,
     val image: ImageModel,
+    val tag: String?,
     val notifyEnter: Boolean,
     val notifyExit: Boolean,
     val loadingEnter: Boolean,

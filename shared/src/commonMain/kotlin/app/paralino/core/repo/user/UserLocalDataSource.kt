@@ -57,8 +57,7 @@ class UserLocalDataSource(
             .map { it.map { mapper.local2Remote(it) } }
     }
 
-    suspend fun clear() {
-        database.userDao.clearUserData()
-        database.blocklistDao.clearAll()
+    suspend fun clearUserAndPlans() {
+        database.userDao.clearUserAndPlans()
     }
 }

@@ -1,11 +1,8 @@
 package app.paralino.core.ui.onboarding.welcome
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -20,9 +17,7 @@ fun WelcomeOnboardingScreenCore(
     modifier: Modifier = Modifier,
     vm: WelcomeOnboardingViewModel,
     isDemo: Boolean,
-    step: MutableState<WelcomeOnboardingContent> = rememberSaveable {
-        mutableStateOf(WelcomeOnboardingContent.STEP_LOCATION)
-    },
+    step: MutableState<WelcomeOnboardingContent>,
     onFinish: () -> Unit
 ) {
     BaseOnboardingScreen(
@@ -60,10 +55,6 @@ fun WelcomeOnboardingScreenCore(
                         WelcomeOnboardingContent.STEP_OPTIONS,
                         WelcomeOnboardingContent.STEP_OPTIONS_2 -> {
                             WelcomeOnboardingPageControl(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 20.dp)
-                                    .padding(top = 12.dp),
                                 animationStarted = step.value == WelcomeOnboardingContent.STEP_OPTIONS_2
                             )
                         }
@@ -72,10 +63,13 @@ fun WelcomeOnboardingScreenCore(
                         WelcomeOnboardingContent.STEP_LOCATION_ENCRYPTION,
                         null -> {
                             WelcomeOnboardingPageLocation(
-                                modifier = Modifier.padding(top = 12.dp),
                                 isEncryptionOn = step.value == WelcomeOnboardingContent.STEP_LOCATION_ENCRYPTION,
                                 onNewRandomString = { vm.provideRandomString() }
                             )
+                        }
+                        
+                        WelcomeOnboardingContent.STEP_LOCATION_HISTORY -> {
+                            WelcomeOnboardingPageLocationHistory()
                         }
                     }
                 }
@@ -114,6 +108,14 @@ enum class WelcomeOnboardingContent(
         titleTag = MR.strings.onboarding_step_places_title_tag,
         title = MR.strings.onboarding_step_places_title,
         info = MR.strings.onboarding_step_places_info,
+        buttonText = MR.strings.button_next
+    ),
+    STEP_LOCATION_HISTORY(
+        parentKey = 250,
+        titleKey = 250,
+        titleTag = MR.strings.onboarding_step_locationHistory_title_tag,
+        title = MR.strings.onboarding_step_locationHistory_title,
+        info = MR.strings.onboarding_step_locationHistory_info,
         buttonText = MR.strings.button_next
     ),
     STEP_OPTIONS(

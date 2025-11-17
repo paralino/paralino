@@ -27,8 +27,9 @@ struct AppSettingsScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
-            .navigationTitle(MR.shared.strings.title_settings.localizedString())
+            .navigationTitle(MR.shared.strings.setting_appSettings_title.localizedString())
         }
     }
 }

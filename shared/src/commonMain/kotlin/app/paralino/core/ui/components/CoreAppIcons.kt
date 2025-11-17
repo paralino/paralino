@@ -14,6 +14,7 @@ import paralino.shared.generated.resources.ic_adjust
 import paralino.shared.generated.resources.ic_arrow_open_in_new
 import paralino.shared.generated.resources.ic_arrow_spinny
 import paralino.shared.generated.resources.ic_auto_fix_high
+import paralino.shared.generated.resources.ic_bar_chart_stats
 import paralino.shared.generated.resources.ic_battery_charging_full
 import paralino.shared.generated.resources.ic_battery_full
 import paralino.shared.generated.resources.ic_block
@@ -21,30 +22,39 @@ import paralino.shared.generated.resources.ic_check
 import paralino.shared.generated.resources.ic_check_circle
 import paralino.shared.generated.resources.ic_chevron_left
 import paralino.shared.generated.resources.ic_chevron_right
+import paralino.shared.generated.resources.ic_circle_cluster_dots
 import paralino.shared.generated.resources.ic_circle_only_outline
 import paralino.shared.generated.resources.ic_circle_with_outline
 import paralino.shared.generated.resources.ic_close
 import paralino.shared.generated.resources.ic_code
+import paralino.shared.generated.resources.ic_communication
 import paralino.shared.generated.resources.ic_content_copy
 import paralino.shared.generated.resources.ic_delete
 import paralino.shared.generated.resources.ic_delete_forever
 import paralino.shared.generated.resources.ic_devices
+import paralino.shared.generated.resources.ic_directions
 import paralino.shared.generated.resources.ic_drag_indicator
 import paralino.shared.generated.resources.ic_edit
+import paralino.shared.generated.resources.ic_elevation_2
 import paralino.shared.generated.resources.ic_expand_less
 import paralino.shared.generated.resources.ic_expand_more
 import paralino.shared.generated.resources.ic_family_star
+import paralino.shared.generated.resources.ic_filter_tune
+import paralino.shared.generated.resources.ic_focus_person_off
+import paralino.shared.generated.resources.ic_focus_person_on
 import paralino.shared.generated.resources.ic_group
 import paralino.shared.generated.resources.ic_groups
 import paralino.shared.generated.resources.ic_home
 import paralino.shared.generated.resources.ic_home_work
 import paralino.shared.generated.resources.ic_how_to_reg
 import paralino.shared.generated.resources.ic_incognito
+import paralino.shared.generated.resources.ic_info_circle
 import paralino.shared.generated.resources.ic_key
 import paralino.shared.generated.resources.ic_launcher_foreground
 import paralino.shared.generated.resources.ic_library_books
 import paralino.shared.generated.resources.ic_location_off
 import paralino.shared.generated.resources.ic_location_on
+import paralino.shared.generated.resources.ic_location_on_filled
 import paralino.shared.generated.resources.ic_lock
 import paralino.shared.generated.resources.ic_lock_open
 import paralino.shared.generated.resources.ic_login
@@ -53,6 +63,7 @@ import paralino.shared.generated.resources.ic_mail
 import paralino.shared.generated.resources.ic_map
 import paralino.shared.generated.resources.ic_more_vert
 import paralino.shared.generated.resources.ic_not_listed_location
+import paralino.shared.generated.resources.ic_not_listed_location_filled
 import paralino.shared.generated.resources.ic_notifications_active
 import paralino.shared.generated.resources.ic_notifications_off
 import paralino.shared.generated.resources.ic_password
@@ -61,7 +72,9 @@ import paralino.shared.generated.resources.ic_person_add
 import paralino.shared.generated.resources.ic_person_remove
 import paralino.shared.generated.resources.ic_phone_android
 import paralino.shared.generated.resources.ic_phonelink_setup
+import paralino.shared.generated.resources.ic_polyline
 import paralino.shared.generated.resources.ic_privacy_tip
+import paralino.shared.generated.resources.ic_question_mark_circle
 import paralino.shared.generated.resources.ic_radio_button_unchecked
 import paralino.shared.generated.resources.ic_refresh
 import paralino.shared.generated.resources.ic_replay
@@ -89,10 +102,19 @@ import paralino.shared.generated.resources.ic_wifi_2
 import paralino.shared.generated.resources.ic_wifi_3
 import paralino.shared.generated.resources.ic_wifi_off
 import paralino.shared.generated.resources.ic_ruler
+import paralino.shared.generated.resources.ic_target_circles
+import paralino.shared.generated.resources.ic_timeline
+import paralino.shared.generated.resources.ic_timeline_path
 import paralino.shared.generated.resources.image_map_mockup_dark
 import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
 import paralino.shared.generated.resources.paralino_start_background
+import paralino.shared.generated.resources.ic_route_dots
+import paralino.shared.generated.resources.ic_zoom_focus_full
+import paralino.shared.generated.resources.ic_zoom_focus_large
+import paralino.shared.generated.resources.ic_zoom_focus_small
+import paralino.shared.generated.resources.ic_zoom_in_map
+import paralino.shared.generated.resources.ic_zoom_out_map
 
 object CoreAppIcons {
     val LauncherLogo get() = Res.drawable.ic_launcher_foreground
@@ -113,6 +135,7 @@ object CoreAppIcons {
     val ChevronRight get() = Res.drawable.ic_chevron_right
     val Warning get() = Res.drawable.ic_warning
     val LocationOn get() = Res.drawable.ic_location_on
+    val LocationOnFilled get() = Res.drawable.ic_location_on_filled
     val Group get() = Res.drawable.ic_group
     val Close get() = Res.drawable.ic_close
     val Add get() = Res.drawable.ic_add
@@ -157,6 +180,10 @@ object CoreAppIcons {
     val PersonAdd get() = Res.drawable.ic_person_add
     val Settings get() = Res.drawable.ic_settings
     val Ruler get() = Res.drawable.ic_ruler
+    val Communication get() = Res.drawable.ic_communication
+    val FilterTune get() = Res.drawable.ic_filter_tune
+    val QuestionCircle get() = Res.drawable.ic_question_mark_circle
+    val InfoCircle get() = Res.drawable.ic_info_circle
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay
@@ -168,9 +195,28 @@ object CoreAppIcons {
     val StarCircle get() = Res.drawable.ic_star_circle_filled
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
+    val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled
     val NotificationsOff get() = Res.drawable.ic_notifications_off
-    val Adjust get() = Res.drawable.ic_adjust
+    val CircleWithDot get() = Res.drawable.ic_adjust
     val Groups get() = Res.drawable.ic_groups
+
+    val Elevation get() = Res.drawable.ic_elevation_2
+    val PolylineWithDots get() = Res.drawable.ic_timeline
+    val TimelinePathWithPins get() = Res.drawable.ic_timeline_path
+    val Directions get() = Res.drawable.ic_directions
+    val BarChartStats get() = Res.drawable.ic_bar_chart_stats
+    val CircleCluster get() = Res.drawable.ic_circle_cluster_dots
+    val PolylineWithCircles get() = Res.drawable.ic_polyline
+    val TargetCircles get() = Res.drawable.ic_target_circles
+    val RouteLineWithDotsOnEnds get() = Res.drawable.ic_route_dots
+
+    val FocusPersonOn get() = Res.drawable.ic_focus_person_on
+    val FocusPersonOff get() = Res.drawable.ic_focus_person_off
+    val ZoomInFocusMap get() = Res.drawable.ic_zoom_in_map
+    val ZoomOutFocusMap get() = Res.drawable.ic_zoom_out_map
+    val ZoomFocusSmall get() = Res.drawable.ic_zoom_focus_small
+    val ZoomFocusLarge get() = Res.drawable.ic_zoom_focus_large
+    val ZoomFocusFull get() = Res.drawable.ic_zoom_focus_full
 
     val SignalWifi3 get() = Res.drawable.ic_wifi_3
     val SignalWifi2 get() = Res.drawable.ic_wifi_2

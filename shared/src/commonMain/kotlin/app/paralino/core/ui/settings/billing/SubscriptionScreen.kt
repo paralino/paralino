@@ -25,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
-import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.SubscriptionScreenEvent
 import app.paralino.core.presentation.settings.billing.SubscriptionScreenUiEvent
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
@@ -138,10 +137,23 @@ fun SubscriptionScreenCore(
                     }
                 } else {
                     Text(
-                        text = stringResource(MR.strings.plans_management_info_wrong_platform),
+                        text = stringResource(MR.strings.plans_management_info_wrong_platform_title),
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    Text(
+                        text = stringResource(MR.strings.plans_management_info_wrong_platform_message),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    )
+                    Spacer(Modifier.size(20.dp))
+                    SettingsActionItem(
+                        name = stringResource(MR.strings.plans_management_action_explore),
+                        icon = CoreAppIcons.StarFamily.asPainterResource(),
+                        type = SettingsActionItemType.Navigation
+                    ) {
+                        openPaywall()
+                    }
                 }
             } else {
                 NotSubscribedSection(openPaywall = openPaywall)
@@ -152,7 +164,10 @@ fun SubscriptionScreenCore(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 4.dp, top = 40.dp),
-                text = stringResource(MR.strings.paywall_current_plan_label, uiState.subscriptionState?.name ?: ""),
+                text = stringResource(
+                    MR.strings.paywall_current_plan_label,
+                    uiState.subscriptionState?.name ?: ""
+                ),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
             )
@@ -162,7 +177,15 @@ fun SubscriptionScreenCore(
                 table = uiState.featureTableState,
                 canExpand = false,
                 isExpanded = true,
-                onExpandPlans = {}
+                onExpandPlans = {},
+                onCellClick = { table, cell ->
+                    vm.onEvent(
+                        SubscriptionScreenUiEvent.OnCellItemClick(
+                            table = table,
+                            cellItem = cell
+                        )
+                    )
+                }
             )
         }
     }

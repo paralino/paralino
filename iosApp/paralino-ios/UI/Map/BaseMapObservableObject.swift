@@ -14,28 +14,38 @@ import paralino_apple_core
 class BaseMapObservableObject : ObservableObject {
     
     @Published var markers: [MapAnnotatedItem] = []
+    @Published var polylinePoints: [CLLocationCoordinate2D] = []
+    @Published var historyPinMarkers: [HistoryMapMarkerData] = []
+    @Published var pendingFocusedMarker: PendingFocusedMarkerData? = nil
     
     @Published var cameraPosition: MapCameraState = MapCameraState(animate: false, cameraRect: MapCameraPosition.automatic.rect)
     
     @Published var isUpdatingRegion: Bool = false
     @Published var isSatelliteMode: Bool = false
+    @Published var clusterHistoryPins: Bool = true
     
     @Published var bottomSafeArea: CGFloat = 0
     @Published var previousBottomSafeArea: CGFloat = 0
     
     func onMarkerTap(markerData: MapPinData) {}
+    func onHistoryMarkerTap(markerData: HistoryMapMarkerData) {}
     
-    func focusToMarker(data: FocusedMarkerData?, forceZoom: Bool = true) {
+    func focusToMarker(
+        data: FocusedMarkerData?,
+        forceZoom: Bool = true,
+        animate: Bool = true,
+        canInteruptAnimation: Bool = false
+    ) {
         guard let data = data else { return }
         let marker = markers.first { $0.id == data.markerId }
         guard let marker = marker else { return }
         
         if forceZoom {
-            focusToMarkers([marker], animate: true)
+            focusToMarkers([marker], animate: animate, canInteruptAnimation: canInteruptAnimation)
         } else {
             // mapping from region to rect and vice-versa to get proper center and map size
             guard let rect = cameraPosition.cameraRect else {
-                focusToMarkers([marker], animate: true)
+                focusToMarkers([marker], animate: animate, canInteruptAnimation: canInteruptAnimation)
                 return
             }
             let region = MKCoordinateRegion.init(rect)
@@ -44,7 +54,7 @@ class BaseMapObservableObject : ObservableObject {
                 span: region.span
             )
             let newRect = MKMapRect(origin: newRegion.rect.origin, size: rect.size)
-            focusCamera(rect: newRect, animate: true)
+            focusCamera(rect: newRect, animate: animate, canInteruptAnimation: canInteruptAnimation)
         }
     }
     
@@ -94,6 +104,12 @@ class BaseMapObservableObject : ObservableObject {
 struct MapCameraState {
     let animate: Bool
     let cameraRect: MKMapRect?
+}
+
+struct PendingFocusedMarkerData {
+    let marker: FocusedMarkerData
+    let animate: Bool
+    let forceZoom: Bool
 }
 
 // credit: https://stackoverflow.com/a/73201022

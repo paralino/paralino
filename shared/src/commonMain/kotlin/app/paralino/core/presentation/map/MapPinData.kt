@@ -1,18 +1,22 @@
 package app.paralino.core.presentation.map
 
 import androidx.compose.runtime.Stable
+import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LocationHistoryPointLocationModel
 import app.paralino.core.models.location.MemberLocation
+import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
+import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 
 @Stable
 data class MapPinData constructor(
-    val groupId: String,
+    val groupOrSpaceId: GroupOrSpaceId,
     val markerId: String,
     val pinType: MapPinType,
     val markerStyle: MapMarkerStyle,
@@ -30,7 +34,7 @@ data class MapPinData constructor(
 ) {
 
     constructor(state: CreatePlaceScreenState) : this(
-        groupId = state.groupId,
+        groupOrSpaceId = state.groupId,
         markerId = "place_marker",
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -47,7 +51,7 @@ data class MapPinData constructor(
     )
 
     constructor(state: PlaceDetailScreenState) : this(
-        groupId = state.groupId,
+        groupOrSpaceId = state.groupOrSpaceId,
         markerId = state.placeId,
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -63,8 +67,8 @@ data class MapPinData constructor(
         shouldShowApproximateCircle = true
     )
 
-    constructor(groupId: String, state: PlaceListItemData) : this(
-        groupId = groupId,
+    constructor(groupId: GroupOrSpaceId, state: PlaceListItemData) : this(
+        groupOrSpaceId = groupId,
         markerId = state.id,
         pinType = MapPinType.PLACE,
         markerStyle = MapMarkerStyle.CIRCLE,
@@ -86,7 +90,7 @@ data class MapPinData constructor(
         image: ImageModel?,
         timeInfo: String?
     ) : this(
-        groupId = location.groupId,
+        groupOrSpaceId = location.groupOrSpaceId,
         markerId = location.id,
         pinType = MapPinType.MEMBER,
         markerStyle = if(location.locationData.data?.isAccurate == true) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
@@ -101,6 +105,56 @@ data class MapPinData constructor(
         lng = location.locationData.data!!.lng,
         accuracy = location.locationData.data?.accuracy ?: 0f,
         shouldShowApproximateCircle = location.locationData.data?.shouldShowApproximateCircle ?: false
+    )
+
+    constructor(
+        id: String,
+        groupId: GroupOrSpaceId,
+        location: LocationHistoryPointLocationModel,
+        name: String?,
+        image: ImageModel?,
+        timeInfo: String?
+    ) : this(
+        groupOrSpaceId = groupId,
+        markerId = id,
+        pinType = MapPinType.MEMBER,
+        markerStyle = if(location.acc < 100) MapMarkerStyle.PIN else MapMarkerStyle.CIRCLE,
+        focused = false,
+        active = true,
+        obsolete = false,
+        hidden = false,
+        title = name,
+        image = image,
+        timeInfo = timeInfo,
+        lat = location.lat,
+        lng = location.lng,
+        accuracy = location.acc,
+        shouldShowApproximateCircle = location.acc > 5
+    )
+
+    constructor(
+        id: String,
+        groupId: GroupOrSpaceId,
+        cluster: LocationHistoryPointState.Cluster,
+        name: String?,
+        image: ImageModel?,
+        timeInfo: String?
+    ) : this(
+        groupOrSpaceId = groupId,
+        markerId = id,
+        pinType = MapPinType.MEMBER,
+        markerStyle = MapMarkerStyle.CIRCLE,
+        focused = false,
+        active = true,
+        obsolete = false,
+        hidden = false,
+        title = name,
+        image = image,
+        timeInfo = timeInfo,
+        lat = cluster.lat,
+        lng = cluster.lng,
+        accuracy = cluster.accuracy,
+        shouldShowApproximateCircle = cluster.accuracy > 5
     )
 
     @Stable
@@ -153,6 +207,10 @@ fun MapPinData.asFocusedMarker(): FocusedMarkerData {
 }
 
 fun GroupMemberItemState.asFocusedMarker(): FocusedMarkerData {
+    return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)
+}
+
+fun GroupMemberItemLocationState.asFocusedMarker(): FocusedMarkerData {
     return FocusedMarkerData(markerId = this.keyId, type = MapPinType.MEMBER)
 }
 

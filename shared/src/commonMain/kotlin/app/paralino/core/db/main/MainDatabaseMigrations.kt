@@ -80,6 +80,54 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_12_13 = object : Migration(12, 13) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `saveToHistory` INTEGER NOT NULL DEFAULT 0")
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `endTimeUTCOverride` TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE sharingContractEntity ADD COLUMN `isEnabled` INTEGER NOT NULL DEFAULT 1")
+            connection.execSQL("ALTER TABLE groupDeviceIntegrityEntity ADD COLUMN safetySignature TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE memberLocationEntity ADD COLUMN locationHistory TEXT DEFAULT NULL")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `pendingLocationHistoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `locationId` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `groupHistoryKeyId` INTEGER)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `unconfirmedLocationHistoryEntity` (`pendingUploadId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationHistoryData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`pendingUploadId`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryKeysEntity` (`id` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryKeysEntity` (`id` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `locationId` TEXT, `historyData` TEXT NOT NULL, `historyKeyVersion` TEXT NOT NULL, PRIMARY KEY(`id`))")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupHistoryEntity` (`id` TEXT NOT NULL, `dateIdentifier` TEXT NOT NULL, `groupId` TEXT NOT NULL, `ownerUserId` TEXT NOT NULL, `locationId` TEXT, `historyKeyVersion` TEXT NOT NULL, `historyData` TEXT NOT NULL, PRIMARY KEY(`id`))")
+
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `personalLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSynced` INTEGER NOT NULL)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `groupLocalHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `createdAt` TEXT NOT NULL, `userKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isActive` INTEGER NOT NULL)")
+            connection.execSQL("CREATE TABLE IF NOT EXISTS `unsyncedGroupHistoryKeyEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` TEXT NOT NULL, `memberUserId` TEXT NOT NULL, `memberId` TEXT NOT NULL, `memberVerification` TEXT NOT NULL, `memberKeyVersion` INTEGER NOT NULL, `historyKeyVersion` TEXT NOT NULL, `encryptedHistoryKey` TEXT NOT NULL, `isSyncedOnce` INTEGER NOT NULL)")
+            connection.execSQL("ALTER TABLE personalGroupKeyEntity ADD COLUMN `isArchived` INTEGER NOT NULL DEFAULT 0")
+
+            connection.execSQL("""
+                CREATE TABLE IF NOT EXISTS `userDeviceEntity` (
+                    `id` TEXT NOT NULL,
+                    `pushTargetId` TEXT,
+                    `sessionId` TEXT,
+                    `deviceType` TEXT NOT NULL,
+                    `ownerUserId` TEXT NOT NULL,
+                    `deviceId` TEXT NOT NULL,
+                    `locationPushToken` TEXT,
+                    `batteryAlertSettings` TEXT DEFAULT NULL,
+                    `encryptedSenderKey` TEXT,
+                    `userKeyVersion` INTEGER,
+                    `locationId` TEXT DEFAULT NULL,
+                    `deviceData` TEXT,
+                    `locationData` TEXT,
+                    `status` TEXT,
+                    `locationHistory` TEXT,
+                    PRIMARY KEY(`id`)
+                )
+            """.trimIndent())
+
+            connection.execSQL("ALTER TABLE placeEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
+            connection.execSQL("ALTER TABLE placeEntity ADD COLUMN `userKeyVersion` INTEGER DEFAULT NULL")
+            connection.execSQL("ALTER TABLE placeSettingsEntity ADD COLUMN `deviceId` TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE placeSettingsEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
+            connection.execSQL("ALTER TABLE placeActivityEntity ADD COLUMN `isInPersonalSpace` INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -92,6 +140,7 @@ object MainDatabaseMigrations {
         MIGRATION_8_9,
         MIGRATION_9_10,
         MIGRATION_10_11,
-        MIGRATION_11_12
+        MIGRATION_11_12,
+        MIGRATION_12_13
     )
 }

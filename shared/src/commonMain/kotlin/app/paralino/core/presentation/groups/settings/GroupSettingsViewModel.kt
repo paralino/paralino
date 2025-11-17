@@ -7,14 +7,25 @@ import app.paralino.core.domain.group.GroupRemoveUseCase
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
+import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.presentation.settings.billing.FeatureTableItemValue
+import app.paralino.core.presentation.settings.billing.FeatureTableState
+import app.paralino.core.presentation.settings.billing.PlanInfoState
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarPayload
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.dialogs.MainAlertDialog.ToggleMemberVerification
 import app.paralino.core.utils.exceptions.DataStillLoadingException
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -23,7 +34,6 @@ import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,11 +42,12 @@ import kotlinx.coroutines.flow.update
 
 class GroupSettingsViewModel(
     val groupId: String,
-    private val userRepo: UserRepository,
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val groupRemove: GroupRemoveUseCase,
     private val createGroup: GroupCreateUseCase,
-    private val groupPreRefresh: GroupPreRefreshUseCase
+    private val groupPreRefresh: GroupPreRefreshUseCase,
+    private val remoteConfigRepo: RemoteConfigRepository,
+    private val appConfig: AppConfigRepository
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroup?>(null)
@@ -48,24 +59,29 @@ class GroupSettingsViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        combine(
-            groupLocalDataSource.getGroupWithoutMembers(groupId),
-            userRepo.getBlocklistLocally()
-        ) { group, blocklist ->
-            groupData.update { group }
+        groupLocalDataSource.getGroupWithoutMembers(groupId)
+            .mapToPayload { group ->
+                groupData.update { group }
+                val planConfig = group.planConfig(remoteConfigRepo.getConfigOnce())
 
-            GroupSettingsScreenState(
-                id = groupId,
-                canEdit = group.isCurrentUserOwner,
-                isMemberVerificationEnabled = group.data.data?.enforceMemberAuthentication != null,
-                isMemberVerificationOn = group.data.data?.enforceMemberAuthentication == true,
-                loadingAction = false,
-                name = group.name,
-                image = group.image,
-                alertDialog = _uiState.value.data?.alertDialog
-            )
-        }
-            .mapToPayload { it }
+                GroupSettingsScreenState(
+                    id = groupId,
+                    canEdit = group.isCurrentUserOwner,
+                    hasDevFeatures = appConfig.isInAppDevMode,
+                    isMemberVerificationEnabled = group.data.data?.enforceMemberAuthentication != null,
+                    isMemberVerificationOn = group.data.data?.enforceMemberAuthentication == true,
+                    loadingAction = false,
+                    name = group.name,
+                    image = group.image,
+                    planName = planConfig.adjustedPlanName,
+                    featureTableState = constructFeatureTable(
+                        planConfig = planConfig,
+                        group = group,
+                        config = remoteConfigRepo.getConfigOnce()
+                    ),
+                    alertDialog = _uiState.value.data?.alertDialog
+                )
+            }
             .onEach { result ->
                 when (result) {
                     is Payload.Success -> {
@@ -95,7 +111,7 @@ class GroupSettingsViewModel(
                 _uiState.value.data?.let { data ->
                     if (data.canEdit && data.isMemberVerificationEnabled) {
                         updateDialog(
-                            MainAlertDialog.ToggleMemberVerification(turnOn = !data.isMemberVerificationOn)
+                            ToggleMemberVerification(turnOn = !data.isMemberVerificationOn)
                         )
                     }
                 }
@@ -128,6 +144,24 @@ class GroupSettingsViewModel(
                         }
                     }
 
+                    else -> {}
+                }
+            }
+
+            is GroupSettingsUiEvent.OnCellItemClick -> {
+                when (event.cellItem) {
+                    is FeatureTableItemValue.MoreInfo -> {
+                        showSnackbar(
+                            data = AppSnackbarData(
+                                payload = AppSnackbarPayload(
+                                    title = event.cellItem.title,
+                                    text = event.cellItem.content,
+                                    hasCloseButton = true
+                                ),
+                                duration = SnackbarDuration.Long
+                            )
+                        )
+                    }
                     else -> {}
                 }
             }
@@ -212,5 +246,33 @@ class GroupSettingsViewModel(
                 }
             }
             .launchIn(coroutineScope)
+    }
+
+    private fun constructFeatureTable(
+        planConfig: PlanConfig,
+        group: UserGroup,
+        config: ConfigData
+    ): FeatureTableState {
+        val currentPlan = planConfig.copy(
+            membersLimit = group.membersLimit(config),
+            devicesLimit = group.devicesLimit(config),
+            placesLimit = group.placesLimit(config) ?: -1
+        )
+        return FeatureTableState.constructFeaturesTable(
+            isGroupPlanOnly = true,
+            plans = listOf(
+                PlanInfoState(
+                    productId = "",
+                    name = currentPlan.adjustedPlanName,
+                    config = currentPlan,
+                    isCurrentPlan = true,
+                    currentPlanProvider = PlanProvider.fromKey(group.provider),
+                    hasSpecialOffer = false,
+                    isSelected = true,
+                    isExpanded = true,
+                    billingPeriods = emptyList()
+                )
+            )
+        )
     }
 }

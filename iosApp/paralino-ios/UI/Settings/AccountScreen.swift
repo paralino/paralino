@@ -35,11 +35,15 @@ struct AccountScreen: View {
                     openProfileRawScreen: {
                         path.append(.settings(.rawData(type: .UserPresentation())))
                     },
+                    openBlockList: {
+                        path.append(.settings(.blocklist))
+                    },
                     onShare: { data in
                         shareText = ShareText(text: data)
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_section_account_title.localizedString())
         }

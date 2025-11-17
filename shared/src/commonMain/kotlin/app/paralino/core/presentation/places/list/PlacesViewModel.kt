@@ -4,8 +4,13 @@ import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IPushNotificationPresenter
+import app.paralino.core.domain.user.PremiumStatusLimitState
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
@@ -14,12 +19,16 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.errorString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -30,6 +39,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -41,7 +51,9 @@ class PlacesViewModel(
     private val remoteConfig: RemoteConfigRepository,
     private val placesRepo: PlacesRepository,
     private val groupRepo: UserGroupLocalDataSource,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val notificationPresenter: IGroupActivityNotificationPresenter,
+    private val premiumStatusManager: PremiumStatusManager,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
@@ -53,52 +65,13 @@ class PlacesViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     init {
-        combine(
-            groupRepo.getGroupWithoutMembers(groupId),
-            placesRepo.getAndRefreshPlacesForGroup(groupId),
-            deviceApiProvider.deviceStatus
-        ) { group, places, deviceStatus ->
-
-            val placesState = places.map {
-                PlaceListItemData(it)
-            }
-
-            val error = if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
-                ConditionErrorType.PermissionNotifications
-            } else {
-                null
-            }
-
-            val placesLimit = group.placesLimit(remoteConfig.getConfigOnce())
-            val canShowPlanBanner = group.isCurrentUserOwner && !group.isGroupPremium(
-                config = remoteConfig.getConfigOnce()
-            )
-            val state = PlacesListScreenState(
-                groupId = groupId,
-                groupImage = group.image,
-                groupName = group.name,
-                placesLimit = placesLimit,
-                isGroupOwner = group.isCurrentUserOwner,
-                places = placesState,
-                canShowPlacesLimit = if (group.isCurrentUserOwner) {
-                    true
-                } else {
-                    // only show places limit to other members if close to limit
-                    placesState.size >= placesLimit.minus(2)
-                },
-                shouldShowPlanBanner = if (isOnboarding) {
-                    // in onboarding only show upgrade banner if places limit is reached
-                    canShowPlanBanner && placesState.size >= placesLimit
-                } else {
-                    canShowPlanBanner
-                },
-                error = error,
-                alertDialog = _uiState.value.data?.alertDialog
-            )
-            state
+        if (groupId.asGroupOrSpaceId().isPersonalSpace) {
+            loadPersonalPlaces()
+        } else {
+            loadGroupPlaces(groupId = groupId)
         }
             .onEach { state -> _uiState.update { Payload.Success(state) } }
-            .catch { _eventChannel.send(PlacesScreenEvent.Error(it)) }
+            .catch { showSnackbar(it.errorString()) }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
@@ -124,12 +97,103 @@ class PlacesViewModel(
             .launchIn(coroutineScope)
     }
 
+    private fun loadPersonalPlaces(): Flow<PlacesListScreenState> {
+        return combine(
+            personalSpaceRepo.personalSpaceState.mapNotNull { it.data },
+            placesRepo.getAndRefreshPersonalPlaces(),
+            deviceApiProvider.deviceStatus
+        ) { space, places, deviceStatus ->
+
+            val placesState = places.map {
+                PlaceListItemData(it)
+            }
+
+            val error = if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                ConditionErrorType.PermissionNotifications
+            } else {
+                null
+            }
+
+            val placesLimit = space.plan.personalPlacesLimit
+                .takeIf { it >= 0 }
+            val canShowPlanBanner = !space.plan.planTypeEnum.isPremium
+            val state = PlacesListScreenState(
+                groupId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId(),
+                groupImage = space.user.data?.userImage ?: ImageModel.emoji(Emojis.robot),
+                groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
+                placesLimit = placesLimit,
+                isGroupOwner = true,
+                places = placesState,
+                canShowPlacesLimit = placesLimit != null,
+                shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
+                    // in onboarding only show upgrade banner if places limit is reached
+                    canShowPlanBanner && placesState.size >= placesLimit
+                } else {
+                    canShowPlanBanner
+                },
+                error = error,
+                alertDialog = _uiState.value.data?.alertDialog
+            )
+            state
+        }
+    }
+
+    private fun loadGroupPlaces(groupId: String): Flow<PlacesListScreenState> {
+        return combine(
+            groupRepo.getGroupWithoutMembers(groupId),
+            placesRepo.getAndRefreshPlacesForGroup(groupId),
+            deviceApiProvider.deviceStatus
+        ) { group, places, deviceStatus ->
+
+            val placesState = places.map {
+                PlaceListItemData(it)
+            }
+
+            val error = if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                ConditionErrorType.PermissionNotifications
+            } else {
+                null
+            }
+
+            val placesLimit = group.placesLimit(remoteConfig.getConfigOnce())
+            val canShowPlanBanner = group.isCurrentUserOwner && !group.isGroupPremium(
+                config = remoteConfig.getConfigOnce()
+            )
+            val state = PlacesListScreenState(
+                groupId = groupId.asGroupOrSpaceId(),
+                groupImage = group.image,
+                groupName = group.name,
+                placesLimit = placesLimit,
+                isGroupOwner = group.isCurrentUserOwner,
+                places = placesState,
+                canShowPlacesLimit = if (placesLimit == null) {
+                    false
+                } else if (group.isCurrentUserOwner) {
+                    true
+                } else {
+                    // only show places limit to other members if close to limit
+                    placesState.size >= placesLimit.minus(2)
+                },
+                shouldShowPlanBanner = if (isOnboarding && placesLimit != null) {
+                    // in onboarding only show upgrade banner if places limit is reached
+                    canShowPlanBanner && placesState.size >= placesLimit
+                } else {
+                    canShowPlanBanner
+                },
+                error = error,
+                alertDialog = _uiState.value.data?.alertDialog
+            )
+            state
+        }
+    }
+
     fun onEvent(event: PlacesScreenUiEvent) {
         when (event) {
             PlacesScreenUiEvent.CreatePlace -> tryCreatePlace()
             is PlacesScreenUiEvent.DialogAction -> {
                 when (event.action.dialog) {
-                    is MainAlertDialog.PlanLimit, is MainAlertDialog.PlanLimitForMembers -> {
+                    is MainAlertDialog.ServiceMaxLimit,
+                    is MainAlertDialog.PlanLimitForMembers -> {
                         _uiState.update {
                             it.mapSuccess { it.copy(alertDialog = null) }
                         }
@@ -147,12 +211,14 @@ class PlacesViewModel(
                         payload = IPushNotificationPresenter.Payload(
                             notificationId = event.content.hashCode(),
                             notificationGroupId = when (appPrefs.notificationGrouping) {
-                            NotificationGroupingType.NONE -> null
-                            NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
-                            NotificationGroupingType.TYPE -> "place_activity"
-                            NotificationGroupingType.GROUP -> _uiState.value.data?.groupId ?: "place_activity"
-                            NotificationGroupingType.PERSON -> appPrefs.userId
-                        },
+                                NotificationGroupingType.NONE -> null
+                                NotificationGroupingType.EVERYTHING -> IPushNotificationPresenter.notificationGroupSystem
+                                NotificationGroupingType.TYPE -> "place_activity"
+                                NotificationGroupingType.GROUP -> _uiState.value.data?.groupId?.id
+                                    ?: "place_activity"
+
+                                NotificationGroupingType.PERSON -> appPrefs.userId
+                            },
                             title = event.content,
                             message = null,
                             timeMillis = null,
@@ -168,39 +234,44 @@ class PlacesViewModel(
     private fun tryCreatePlace() {
         val state = _uiState.value.data ?: return
         coroutineScope.launch {
-            val limit = state.placesLimit
-            val placeCount = state.places.size
-            val maxPlaceLimit =
-                remoteConfig.getConfigOnce().plans.maxByOrNull { it.planTypeEnum.order }?.placesLimit
+            val premiumStatus = premiumStatusManager.checkPlaceCountLimits(groupId = state.groupId)
 
-            if (maxPlaceLimit != null && state.isGroupOwner && placeCount >= maxPlaceLimit) {
-                _uiState.update {
-                    it.mapSuccess {
-                        it.copy(
-                            alertDialog = MainAlertDialog.PlanLimit(
-                                content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                                limit = limit
-                            )
-                        )
+            when (premiumStatus) {
+                is PremiumStatusLimitState.PlanLimitReached -> {
+                    if (premiumStatus.payload.isOwner) {
+                        _eventChannel.send(PlacesScreenEvent.OpenPaywall)
+                    } else {
+                        _uiState.update {
+                            it.mapSuccess {
+                                it.copy(
+                                    alertDialog = MainAlertDialog.PlanLimitForMembers(
+                                        content = MR.strings.plan_limit_places_alert_info.localizedString(),
+                                        limit = premiumStatus.payload.limit ?: -1
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
-            } else if (limit in 0..placeCount) {
-                if (state.isGroupOwner) {
-                    _eventChannel.send(PlacesScreenEvent.GroupPlacesLimitReached(limit = limit))
-                } else {
+
+                is PremiumStatusLimitState.ServiceLimitReached -> {
                     _uiState.update {
                         it.mapSuccess {
                             it.copy(
-                                alertDialog = MainAlertDialog.PlanLimitForMembers(
+                                alertDialog = MainAlertDialog.ServiceMaxLimit(
                                     content = MR.strings.plan_limit_places_alert_info.localizedString(),
-                                    limit = limit
+                                    limit = premiumStatus.payload.limit ?: -1
                                 )
                             )
                         }
                     }
                 }
-            } else {
-                _eventChannel.send(PlacesScreenEvent.AddPlace)
+
+                is PremiumStatusLimitState.WithinLimits -> {
+                    _eventChannel.send(PlacesScreenEvent.AddPlace)
+                }
+
+                null -> {}
             }
         }
     }

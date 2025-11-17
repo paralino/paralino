@@ -137,10 +137,10 @@ fun SettingsScreenCore(
             }
 
             SettingsActionItem(
-                name = stringResource(MR.strings.blocklist_screen_title),
-                icon = CoreAppIcons.Block.asPainterResource()
+                name = stringResource(MR.strings.plans_management_screen_title),
+                icon = CoreAppIcons.StarFamily.asPainterResource()
             ) {
-                openBlockList()
+                openSubscriptions()
             }
 
             SettingsActionItem(
@@ -157,14 +157,7 @@ fun SettingsScreenCore(
                 openLocationSettings()
             }
 
-            SettingsActionItem(
-                name = stringResource(MR.strings.plans_management_screen_title),
-                icon = CoreAppIcons.StarFamily.asPainterResource()
-            ) {
-                openSubscriptions()
-            }
-
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
+            if (readyState.canBoostLocation) {
                 SettingsActionItem(
                     name = stringResource(MR.strings.setting_title_locationBoost),
                     description = when (readyState.boostTime != null) {
@@ -181,23 +174,10 @@ fun SettingsScreenCore(
                     viewModel.onEvent(AccountScreenUiEvent.ToggleLocationBoost)
                 }
             }
-
-            if (AppBuildConfig.instance.hasPreviewFeatures) {
-                SettingsActionItem(
-                    name = stringResource(MR.strings.setting_title_placeActivityThrottle),
-                    description = when (readyState.placeActivityThrottleEnabled) {
-                        true -> stringResource(MR.strings.setting_description_placeActivityThrottle_enabled)
-                        false -> stringResource(MR.strings.setting_description_placeActivityThrottle_disabled)
-                    },
-                    icon = CoreAppIcons.MapsHomeWork.asPainterResource(),
-                    type = SettingsActionItemType.Switch(readyState.placeActivityThrottleEnabled)
-                ) {
-                    viewModel.onEvent(AccountScreenUiEvent.TogglePlaceActivityThrottle)
-                }
-            }
         }
 
         SettingSectionInfo(
+            canAccessDebugScreen = readyState?.canAccessDebugScreen == true,
             onAppStatusClick = openAppStatus,
             onGeneralInfoClick = openGeneralInfo,
             onShareApp = onShareApp
@@ -207,12 +187,13 @@ fun SettingsScreenCore(
 
 @Composable
 fun SettingSectionInfo(
+    canAccessDebugScreen: Boolean,
     onGeneralInfoClick: () -> Unit,
     onAppStatusClick: () -> Unit,
     onShareApp: (String) -> Unit,
 ) {
     Column {
-        if (AppBuildConfig.instance.isDevMode) {
+        if (canAccessDebugScreen) {
             SettingsActionItem(
                 name = "App status",
                 icon = CoreAppIcons.Settings.asPainterResource()

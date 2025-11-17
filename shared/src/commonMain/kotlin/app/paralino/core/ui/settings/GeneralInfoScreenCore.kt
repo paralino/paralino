@@ -1,10 +1,15 @@
 package app.paralino.core.ui.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
@@ -15,8 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
@@ -24,9 +34,13 @@ import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.settings.general.GeneralInfoScreenStateUiEvent
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.FilledButton
+import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.theme.ButtonStyle
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -42,9 +56,18 @@ fun GeneralInfoScreenCore(
     val uiState by vm.uiState.collectAsState()
 
     val uriHandler = LocalUriHandler.current
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {
+                    focusManager.clearFocus()
+                }
+            )
             .verticalScroll(state = rememberScrollState())
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
@@ -106,10 +129,44 @@ fun GeneralInfoScreenCore(
                 text = uiState.appVersion,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp),
+                    .padding(top = 20.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {
+                            vm.onEvent(GeneralInfoScreenStateUiEvent.OnVersionInfoTap)
+                        }
+                    ),
                 style = MaterialTheme.typography.caption,
                 textAlign = TextAlign.Center
             )
+        }
+
+        AnimatedVisibility(uiState.debugInputText != null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp)
+            ) {
+                MainInputField(
+                    text = uiState.debugInputText ?: "",
+                    hint = "Input",
+                    hasError = false,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done,
+                    capitalization = KeyboardCapitalization.None,
+                    focusManager = focusManager,
+                    onInputChange = { vm.onEvent(GeneralInfoScreenStateUiEvent.OnChangeDebugText(it)) }
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                FilledButton(
+                    style = ButtonStyle.BIG,
+                    state = AppButtonState.CONTENT,
+                    onClick = { vm.onEvent(GeneralInfoScreenStateUiEvent.OnSubmitDebugText) }
+                ) {
+                    Text(text = stringResource(MR.strings.button_confirm))
+                }
+            }
         }
     }
 }

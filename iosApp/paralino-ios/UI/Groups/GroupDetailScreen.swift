@@ -77,6 +77,7 @@ struct GroupDetailScreen: View {
                     }
                 )
             }
+            .toolbarTitleDisplayMode(.inline)
             .ignoresSafeArea(.all, edges: .bottom)
         }
     }

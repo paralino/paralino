@@ -22,6 +22,7 @@ struct AppColors {
         
         static let errorBackground = 0x33F44336
         static let redMain = 0xFFB3261E
+        static let highlightGold = 0xFFFFC107
         
         static let darkBackground = 0xFF000E0A
         static let darkSurface = 0xFF0B1A17
@@ -58,6 +59,7 @@ extension Color {
     
     static let errorBackground = Color(withAlphaRGB: AppColors.Raw.errorBackground)
     static let redMain = Color(withAlphaRGB: AppColors.Raw.redMain)
+    static let highlightGold = Color(withAlphaRGB: AppColors.Raw.highlightGold)
     
     static let darkBackground = Color(withAlphaRGB: AppColors.Raw.darkBackground)
     static let darkSurface = Color(withAlphaRGB: AppColors.Raw.darkSurface)
