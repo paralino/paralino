@@ -18,6 +18,7 @@ import app.paralino.core.presentation.settings.billing.FeatureTableItemValue
 import app.paralino.core.presentation.settings.billing.FeatureTableState
 import app.paralino.core.presentation.settings.billing.PlanInfoState
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.ui.components.AppSnackbarData
@@ -46,6 +47,7 @@ class GroupSettingsViewModel(
     private val createGroup: GroupCreateUseCase,
     private val groupPreRefresh: GroupPreRefreshUseCase,
     private val remoteConfigRepo: RemoteConfigRepository,
+    private val appConfig: AppConfigRepository
 ) : CoreViewModel() {
 
     private val groupData = MutableStateFlow<UserGroup?>(null)
@@ -65,6 +67,7 @@ class GroupSettingsViewModel(
                 GroupSettingsScreenState(
                     id = groupId,
                     canEdit = group.isCurrentUserOwner,
+                    hasDevFeatures = appConfig.isInAppDevMode,
                     isMemberVerificationEnabled = group.data.data?.enforceMemberAuthentication != null,
                     isMemberVerificationOn = group.data.data?.enforceMemberAuthentication == true,
                     loadingAction = false,

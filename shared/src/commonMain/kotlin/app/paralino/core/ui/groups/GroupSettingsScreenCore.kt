@@ -107,12 +107,14 @@ fun GroupSettingsScreenCore(
 //                        vm.onEvent(GroupSettingsUiEvent.ToggleMemberVerification)
 //                    }
 
-                    SettingsActionItem(
-                        name = stringResource(MR.strings.history_delete_screen_title),
-                        icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                        iconTint = AppColors.errorBackground
-                    ) {
-                        openLocationHistorySettings()
+                    if (state.data.hasDevFeatures) {
+                        SettingsActionItem(
+                            name = stringResource(MR.strings.history_delete_screen_title),
+                            icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                            iconTint = AppColors.errorBackground
+                        ) {
+                            openLocationHistorySettings()
+                        }
                     }
 
                     SettingsActionItem(
@@ -123,12 +125,14 @@ fun GroupSettingsScreenCore(
                         vm.onEvent(GroupSettingsUiEvent.DeleteGroup)
                     }
                 } else {
-                    SettingsActionItem(
-                        name = stringResource(MR.strings.history_delete_screen_title),
-                        icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                        iconTint = AppColors.errorBackground
-                    ) {
-                        openLocationHistorySettings()
+                    if (state.data.hasDevFeatures) {
+                        SettingsActionItem(
+                            name = stringResource(MR.strings.history_delete_screen_title),
+                            icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                            iconTint = AppColors.errorBackground
+                        ) {
+                            openLocationHistorySettings()
+                        }
                     }
                     SettingsActionItem(
                         name = stringResource(MR.strings.group_details_menu_block),

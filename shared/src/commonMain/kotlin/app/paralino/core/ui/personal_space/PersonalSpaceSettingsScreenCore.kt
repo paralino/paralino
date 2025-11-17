@@ -54,12 +54,14 @@ fun PersonalSpaceSettingsScreenCore(
             openBatteryNotificationsSettings()
         }
 
-        SettingsActionItem(
-            name = stringResource(MR.strings.history_delete_screen_title),
-            icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-            iconTint = AppColors.errorBackground
-        ) {
-            openLocationHistorySettings()
+        if (state.hasDevFeatures) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.history_delete_screen_title),
+                icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
+                iconTint = AppColors.errorBackground
+            ) {
+                openLocationHistorySettings()
+            }
         }
     }
 

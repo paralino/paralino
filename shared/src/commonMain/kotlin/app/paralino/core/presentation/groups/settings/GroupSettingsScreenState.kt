@@ -10,6 +10,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 data class GroupSettingsScreenState(
     val id: String,
     val canEdit: Boolean,
+    val hasDevFeatures: Boolean,
     val isMemberVerificationEnabled: Boolean,
     val isMemberVerificationOn: Boolean,
     val loadingAction: Boolean,
