@@ -482,8 +482,8 @@
     <string name="place_sensitivity_optionRefresh2_info">Добија прецизну локацију унапред, али може да прикрије или одложи нека упозорења. Уверите се да сте повезани на Интернет и да апликација може да ради у позадини без ограничења.</string>
     <string name="place_sensitivity_optionRefresh3_title">Након што је упозорење послато</string>
     <string name="place_sensitivity_optionRefresh3_info">За последњи корак тражи се прецизна локација како бисте били сигурни да нећете пропустити ниједно упозорење, али то може изазвати додатна или лажна упозорења.</string>
-    <string name="place_notification_enter">%s је стигао на %s</string>
-    <string name="place_notification_exit">%s је напустио %s</string>
+    <string name="place_notification_enter">%s је стигао/лa у местo %s</string>
+    <string name="place_notification_exit">%s је напустио/лa местo %s</string>
     <string name="place_notification_device_enter">%s је стигао на %s</string>
     <string name="place_notification_device_exit">%s је напустио %s</string>
     <string name="place_notification_default">У вашем месту је забележена активност</string>
