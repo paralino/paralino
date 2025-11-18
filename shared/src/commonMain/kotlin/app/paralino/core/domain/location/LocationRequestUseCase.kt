@@ -3,6 +3,7 @@ package app.paralino.core.domain.location
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.location.LocationPerformanceType
+import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.models.raw.LocationFocusGroupPayload
 import app.paralino.core.models.raw.LocationFocusSpacePayload
 import app.paralino.core.models.raw.LocationRequestGroupPayload
@@ -147,33 +148,53 @@ class LocationRequestUseCase constructor(
         locationId: String
     ) {
         triggerRemoteOnly {
-            val response = if (groupId.isPersonalSpace) {
-                val requestPayload = LocationRequestSpacePayload(
-                    locationId = locationId
-                )
+            suspend fun makeRequest(isAlternatePath: Boolean): FunctionExecutionRaw {
+                return if (groupId.isPersonalSpace) {
+                    val requestPayload = LocationRequestSpacePayload(
+                        locationId = locationId
+                    )
 
-                functionsApi.runAndWait(
-                    function = ServerFunction.LOCATION_REQUEST_DEVICE,
-                    data = requestPayload
-                )
-            } else {
-                val requestPayload = LocationRequestGroupPayload(
-                    groupId = groupId.id,
-                    userId = memberUserId,
-                    locationId = locationId
-                )
+                    functionsApi.runAndWait(
+                        function = if (isAlternatePath) {
+                            ServerFunction.LOCATION_REQUEST_DEVICE_ALT
+                        } else {
+                            ServerFunction.LOCATION_REQUEST_DEVICE
+                        },
+                        data = requestPayload
+                    )
+                } else {
+                    val requestPayload = LocationRequestGroupPayload(
+                        groupId = groupId.id,
+                        userId = memberUserId,
+                        locationId = locationId
+                    )
 
-                functionsApi.runAndWait(
-                    function = ServerFunction.LOCATION_REQUEST_MEMBER,
-                    data = requestPayload
-                )
+                    functionsApi.runAndWait(
+                        function = if (isAlternatePath) {
+                            ServerFunction.LOCATION_REQUEST_MEMBER_ALT
+                        } else {
+                            ServerFunction.LOCATION_REQUEST_MEMBER
+                        },
+                        data = requestPayload
+                    )
+                }
             }
 
-            if (!response.isSuccess) {
-                throw BaseRemoteException.fromRemote(
-                    code = response.statusCode,
-                    error = response.errorResponse
-                )
+            val responseOne = makeRequest(isAlternatePath = false)
+
+            if (!responseOne.isSuccess) {
+                val response = if (responseOne.statusCode in listOf(500, 502, 503, 504)) {
+                    makeRequest(isAlternatePath = true)
+                } else {
+                    responseOne
+                }
+
+                if (!responseOne.isSuccess) {
+                    throw BaseRemoteException.fromRemote(
+                        code = response.statusCode,
+                        error = response.errorResponse
+                    )
+                }
             }
         }
     }
