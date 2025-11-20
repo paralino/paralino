@@ -113,13 +113,13 @@ class RefreshEverythingUseCase(
         }
 
         try {
+            userRepository.refreshUserMaybe(timeDelayMillis = cacheTimeMillis)
             triggerRemoteMaybe(
                 remotePreference = RemotePreference.CACHE(key = groupRefreshExecutionKey, timeMillis = cacheTimeMillis),
                 remote = {
                     refreshAllGroupsWithPlaces()
                 }
             )
-            userRepository.refreshUserMaybe(timeDelayMillis = cacheTimeMillis)
             placeActivityUploadEngine.syncPendingEventsNow()
         } catch (e: Exception) {
             logg.tag("full_refresh").w("Error refreshing all groups - ${e.message}")
@@ -133,10 +133,14 @@ class RefreshEverythingUseCase(
             logg.tag("full_refresh").d("refreshing all groups and user devices")
             val allData = remote.getAllLocationResources()
 
-            val newPersonalData = allData.personal
-                .let { personalSpaceRefreshUseCase.handleKeysUpdate(it) }
+            try {
+                val newPersonalData = allData.personal
+                    .let { personalSpaceRefreshUseCase.handleKeysUpdate(it) }
 
-            personalSpaceLocal.recreateDevicesWithPlaces(data = newPersonalData)
+                personalSpaceLocal.recreateDevicesWithPlaces(data = newPersonalData)
+            } catch (e: Exception) {
+                logg.tag("full_refresh").w("Error refreshing personal space - ${e.message}")
+            }
 
             val newGroups = allData.groups
                 .also { cryptoKEKRefreshUseCase.refreshAllKeys(it, force = false) }
