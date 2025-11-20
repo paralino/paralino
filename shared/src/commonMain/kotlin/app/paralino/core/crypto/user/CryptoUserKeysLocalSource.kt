@@ -30,7 +30,7 @@ class CryptoUserKeysLocalSource(
     }
 
     suspend fun personalKey(version: Long? = null): SymmetricCryptoKeyData {
-        val rawKey = getActiveLocalRawKey() ?: throw MissingUserKeyException(localCache = false)
+        val rawKey = getActiveLocalRawKey() ?: throw MissingUserKeyException(localCache = false, version = version)
 
         if (version == rawKey.userKeyVersion || version == 0L || version == null) {
             return activePersonalKeyWithVersion()
@@ -38,11 +38,11 @@ class CryptoUserKeysLocalSource(
 
         val oldKeys = rawKey.oldMasterKeys?.let {
             userKeyMapper.remote2Core(oldMasterKeys = it, userKey = activePersonalKeyWithVersion().key)
-        } ?: throw MissingUserKeyException(localCache = false)
+        } ?: throw MissingUserKeyException(localCache = false, version = version)
 
         val key = oldKeys.keys.firstOrNull {
             it.version == version
-        } ?: throw MissingUserKeyException(localCache = false)
+        } ?: throw MissingUserKeyException(localCache = false, version = version)
 
         return key
     }
@@ -79,7 +79,7 @@ class CryptoUserKeysLocalSource(
         return getActiveLocalRawKey()?.let {
             userKeyMapper.mapKeyPair(
                 model = it,
-                userKey = getCachedUserKey()?.key ?: throw MissingUserKeyException(localCache = true)
+                userKey = getCachedUserKey()?.key ?: throw MissingUserKeyException(localCache = true, version = it.userKeyVersion)
             )
         }
     }
