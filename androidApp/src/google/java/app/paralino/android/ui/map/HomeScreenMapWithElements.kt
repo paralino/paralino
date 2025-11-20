@@ -64,15 +64,27 @@ internal fun HomeScreenMapWithElements(
                 PaddingValues(
                     top = screenAreaPadding.calculateTopPadding() + 64.dp,
                     bottom = if (readyState?.mapHomeScreenFocusType?.isMemberPlaceOrHistoryFocused == true) {
-                        (cardHeight + bottomPadding).coerceIn(
-                            minimumValue = bottomPadding,
-                            maximumValue = this.maxHeight
-                        )
+                        if (bottomPadding <= this.maxHeight) {
+                            (cardHeight + bottomPadding).coerceIn(
+                                minimumValue = bottomPadding,
+                                maximumValue = this.maxHeight
+                            )
+                        } else {
+                            (cardHeight + bottomPadding).coerceAtLeast(
+                                minimumValue = bottomPadding
+                            )
+                        }
                     } else {
-                        (this.maxHeight - bottomOffset).coerceIn(
-                            minimumValue = bottomPadding,
-                            maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
-                        )
+                        if (bottomPadding <= this.maxHeight) {
+                            (this.maxHeight - bottomOffset).coerceIn(
+                                minimumValue = bottomPadding,
+                                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                            )
+                        } else {
+                            (this.maxHeight - bottomOffset).coerceAtLeast(
+                                minimumValue = bottomPadding
+                            )
+                        }
                     }
                 )
             }
