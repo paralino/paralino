@@ -203,7 +203,7 @@ class LocationUploadEngine constructor(
                             MemberGroupIdForUpload(it)
                         )
                     } catch (e: Exception) {
-                        logg.w("location_service", "Error saving location for group ${it}", e)
+                        logg.w("location_service", "Error saving location for group ${it.groupId}", e)
                     }
                 }
 

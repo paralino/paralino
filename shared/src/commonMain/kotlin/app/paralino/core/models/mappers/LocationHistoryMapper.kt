@@ -121,7 +121,7 @@ class LocationHistoryMapper(
                         CryptoResource.MissingKey
                     } else {
                         logg.tag("tag_crypto_key_group_member")
-                            .e(
+                            .w(
                                 message = "Error decrypting location history data for user ${memberUserId} in group ${groupId}\n" +
                                         "History key version: ${historyKey.memberKeyVersion} - ${e::class}: ${e.message}",
                                 t = DecryptionException(

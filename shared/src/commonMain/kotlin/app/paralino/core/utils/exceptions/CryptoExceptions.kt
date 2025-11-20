@@ -28,7 +28,7 @@ class MissingMemberKeyException constructor(
     val keyError: String? = null
 ) : MissingCryptoKeyException("Missing member key${if (keyError != null) " ($keyError)" else " "} for member ($memberId) in: ($groupId) for key version $keyVersion")
 
-class MissingUserKeyException(val localCache: Boolean) : MissingCryptoKeyException("Missing main user key from ${if(localCache) "cache" else "storage" }")
+class MissingUserKeyException(val localCache: Boolean, version: Long? = null) : MissingCryptoKeyException("Missing main user key ($version) from ${if(localCache) "cache" else "storage" }")
 
 class UnsupportedGroupEncryptionSchemeException(val groupId: String, val schemeVersion: String): CryptoException("Encryption scheme $schemeVersion in group $groupId not supported")
 class UnsupportedEncryptionSchemeException(val scheme: String): CryptoException("Encryption scheme $scheme not supported")

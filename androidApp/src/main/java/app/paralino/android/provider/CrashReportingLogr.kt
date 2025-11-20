@@ -6,6 +6,7 @@ import app.paralino.core.provider.LogPriority
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.exceptions.InternalConnectionException
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.exceptions.RemoteConnectionException
 import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import java.net.ConnectException
@@ -32,7 +33,7 @@ class CrashReportingLogr(
 
         val exceptionAllowed =
             t != null && t !is SocketTimeoutException && t !is InternalConnectionException && t !is ConnectException &&
-                    t !is MissingGroupKeyException && t !is CancellationException
+                    t !is MissingGroupKeyException && t !is CancellationException && t !is RemoteConnectionException
         if (exceptionAllowed) {
             Sentry.captureException(t!!)
         }

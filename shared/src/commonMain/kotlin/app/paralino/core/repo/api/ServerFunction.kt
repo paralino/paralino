@@ -31,10 +31,12 @@ enum class ServerFunction constructor(
     LOCATION_FOCUS_MEMBER(method = "POST", path = "/focus/member", functionId = "ping"),
     LOCATION_FOCUS_GROUP(method = "POST", path = "/focus/group", functionId = "ping"),
     LOCATION_REQUEST_MEMBER(method = "POST", path = "/refresh/member", functionId = "ping"),
+    LOCATION_REQUEST_MEMBER_ALT(method = "POST", path = "/refresh/member", functionId = "api"),
 
     LOCATION_FOCUS_DEVICE(method = "POST", path = "/focus/device", functionId = "ping"),
     LOCATION_FOCUS_SPACE(method = "POST", path = "/focus/space", functionId = "ping"),
     LOCATION_REQUEST_DEVICE(method = "POST", path = "/refresh/device", functionId = "ping"),
+    LOCATION_REQUEST_DEVICE_ALT(method = "POST", path = "/refresh/device", functionId = "api"),
 
     HISTORY_CREATE(method = "POST", path = "/history"),
     HISTORY_READ_GROUP(method = "POST", path = "/history/group/read"),
