@@ -99,7 +99,7 @@ class LocationService : Service() {
                     alwaysOnSharing = locationSharingManager.allContractsFlow.value.data?.any { it.isAlwaysOn }
                 )
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException) {
-                    logg.e(
+                    logg.w(
                         tag = "location_service_${this.hashCode()}",
                         message = "Unable to start as foreground service due to ForegroundServiceStartNotAllowedException",
                         t = wrappedError

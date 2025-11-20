@@ -113,7 +113,7 @@ class MemberMapperCore constructor(
                             }
                         } catch (e: Exception) {
                             logg.tag("tag_crypto_key_group_member")
-                                .e(
+                                .w(
                                     message = "Error decrypting device data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "location group key: ${location.groupKeyVersion} - main group key: ${groupKey.version} - used group key: ${deviceGroupKey.version}",
                                     t = DecryptionException(
@@ -166,7 +166,7 @@ class MemberMapperCore constructor(
                             CryptoResource.MissingKey
                         } else {
                             logg.tag("tag_crypto_key_group_member")
-                                .e(
+                                .w(
                                     message = "Error decrypting location data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
                                     t = DecryptionException(
@@ -209,7 +209,7 @@ class MemberMapperCore constructor(
                             CryptoResource.MissingKey
                         } else {
                             logg.tag("tag_crypto_key_group_member")
-                                .e(
+                                .w(
                                     message = "Error decrypting device status data for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
                                     t = DecryptionException(
@@ -252,7 +252,7 @@ class MemberMapperCore constructor(
                             CryptoResource.MissingKey
                         } else {
                             logg.tag("tag_crypto_key_group_member")
-                                .e(
+                                .w(
                                     message = "Error decrypting location history for user ${model.member.ownerUserId} - member ${model.member.id} in group ${model.member.groupId}\n" +
                                             "Member key version: ${memberKey.memberKeyVersion} - ${e::class}: ${e.message}",
                                     t = DecryptionException(
