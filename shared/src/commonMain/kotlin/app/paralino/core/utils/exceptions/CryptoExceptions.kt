@@ -32,4 +32,4 @@ class MissingUserKeyException(val localCache: Boolean, version: Long? = null) : 
 
 class UnsupportedGroupEncryptionSchemeException(val groupId: String, val schemeVersion: String): CryptoException("Encryption scheme $schemeVersion in group $groupId not supported")
 class UnsupportedEncryptionSchemeException(val scheme: String): CryptoException("Encryption scheme $scheme not supported")
-class DeviceSafetySignatureCorrupted(val groupId: String): CryptoException("Device safety signature corrupted for group $groupId")
+class DeviceSafetySignatureCorrupted(message: String): CryptoException("Device safety signature corrupted: $message")

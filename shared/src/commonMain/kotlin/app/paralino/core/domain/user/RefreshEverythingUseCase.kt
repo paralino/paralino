@@ -139,7 +139,7 @@ class RefreshEverythingUseCase(
 
                 personalSpaceLocal.recreateDevicesWithPlaces(data = newPersonalData)
             } catch (e: Exception) {
-                logg.tag("full_refresh").w("Error refreshing personal space - ${e.message}")
+                logg.tag("full_refresh").e("Error refreshing personal space - ${e.message}")
             }
 
             val newGroups = allData.groups
