@@ -107,7 +107,7 @@ class RegisterDeviceForSharingUseCase constructor(
                 if (isRetry) {
                     if (space.currentDevice?.location == null) {
                         logg.tag("sharing_start").d("Device not registered anymore")
-                        throw DeviceSafetySignatureCorrupted(groupId = UserGroup.groupPersonalDevicesId)
+                        throw DeviceSafetySignatureCorrupted(message = "Personal device not registered")
                     }
                 }
 
@@ -223,14 +223,14 @@ class RegisterDeviceForSharingUseCase constructor(
                 if (isRetry) {
                     if (group.currentDeviceLocation == null) {
                         logg.tag("sharing_start").d("Device not registered anymore")
-                        throw DeviceSafetySignatureCorrupted(groupId = groupId)
+                        throw DeviceSafetySignatureCorrupted(message = "Group device not registered")
                     }
 
                     // block location sharing if safety signature is enforced
                     // this should be used for all background device registration
                     val integrity = validityVerification.checkIntegrityForDeviceKey(group = group)
                     if (integrity == IntegrityResult.CORRUPTED) {
-                        throw DeviceSafetySignatureCorrupted(groupId = groupId)
+                        throw DeviceSafetySignatureCorrupted(message = "Group device integrity corrupted")
                     }
                 }
 

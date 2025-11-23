@@ -46,7 +46,7 @@ class FunctionsApi: IFunctionsApiIOS {
             return FunctionExecutionRaw(
                 id: result.id,
                 functionId: result.functionId,
-                status: result.status.rawValue,
+                status: result.status,
                 statusCode: Int32(result.responseStatusCode),
                 response: result.responseBody,
                 errors: result.errors
