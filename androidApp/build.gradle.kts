@@ -130,8 +130,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 68
-            versionName = "2.0.1"
+            versionCode = 69
+            versionName = "2.0.2"
 
             val fcmConfigFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
             if (!fcmConfigFile.exists()) {

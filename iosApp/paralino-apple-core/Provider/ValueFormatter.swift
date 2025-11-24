@@ -41,7 +41,7 @@ class ValueFormatter: IValueFormatter {
     }
     
     override func formatTimeOnly(timeUTC: Kotlinx_datetimeLocalDateTime?, showSeconds: Bool) -> String? {
-        guard let date = timeUTC?.toDate() else { return nil }
+        guard let date = timeUTC?.toDate(timeZone: .gmt) else { return nil }
         
         let format = DateFormatter()
         format.dateStyle = .none
@@ -55,14 +55,30 @@ class ValueFormatter: IValueFormatter {
     }
     
     override func formatBestPattern(timeUTC: Kotlinx_datetimeLocalDateTime, pattern: String) -> String {
-        let date = timeUTC.toDate()!
+        let date = timeUTC.toDate(timeZone: .gmt)!
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: pattern, options: 0, locale: Locale.current)!
+        return dateFormatter.string(from: date)
+    }
+    
+    override func formatBestPatternLocal(timeLocal: Kotlinx_datetimeLocalDateTime, pattern: String) -> String {
+        let date = timeLocal.toDate(timeZone: .current)!
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: pattern, options: 0, locale: Locale.current)!
         return dateFormatter.string(from: date)
     }
     
     override func formatWithPattern(timeUTC: Kotlinx_datetimeLocalDateTime, pattern: String) -> String {
-        let date = timeUTC.toDate()!
+        let date = timeUTC.toDate(timeZone: .gmt)!
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = pattern
+        dateFormatter.locale = Locale.current
+        dateFormatter.timeZone = TimeZone.current
+        return dateFormatter.string(from: date)
+    }
+    
+    override func formatWithPattern(dateUTC: Kotlinx_datetimeLocalDate, pattern: String) -> String {
+        let date = dateUTC.toDate(timeZone: .gmt)!
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = pattern
         dateFormatter.locale = Locale.current
@@ -72,12 +88,12 @@ class ValueFormatter: IValueFormatter {
 }
 
 extension Kotlinx_datetimeLocalDateTime {
-    func toDateComponents() -> DateComponents {
+    func toDateComponents(timeZone: TimeZone) -> DateComponents {
         DateComponents(
-            timeZone: .gmt,
+            timeZone: timeZone,
             year: Int(year),
-            month: Int(monthNumber),
-            day: Int(dayOfMonth),
+            month: Int(month.ordinal + 1),
+            day: Int(day),
             hour: Int(hour),
             minute: Int(minute),
             second: Int(second),
@@ -85,7 +101,22 @@ extension Kotlinx_datetimeLocalDateTime {
         )
     }
     
-    func toDate() -> Date? {
-        Calendar.current.date(from: toDateComponents())
+    func toDate(timeZone: TimeZone) -> Date? {
+        Calendar.current.date(from: toDateComponents(timeZone: timeZone))
+    }
+}
+
+extension Kotlinx_datetimeLocalDate {
+    func toDateComponents(timeZone: TimeZone) -> DateComponents {
+        DateComponents(
+            timeZone: timeZone,
+            year: Int(year),
+            month: Int(month.ordinal + 1),
+            day: Int(day)
+        )
+    }
+    
+    func toDate(timeZone: TimeZone) -> Date? {
+        Calendar.current.date(from: toDateComponents(timeZone: timeZone))
     }
 }

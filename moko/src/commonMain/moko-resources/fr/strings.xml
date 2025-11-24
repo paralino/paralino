@@ -19,7 +19,7 @@
     <string name="place_detail_notification_settings_title">Alertes de lieu</string>
     <string name="place_detail_notification_settings_info">Choisissez si vous souhaitez recevoir des notifications lorsque chaque membre du groupe entre ou sort de cet endroit.</string>
     <string name="place_notification_enter">%s est arrivé à %s</string>
-    <string name="place_notification_exit">%s restant %s</string>
+    <string name="place_notification_exit">%s a quitté %s</string>
     <string name="place_notification_default">Votre lieu a eu une activité</string>
     <string name="place_created_notification">Le groupe %1$s vient d\'obtenir un nouvel endroit : %2$s</string>
     <string name="place_created_notification_default">Un nouvel endroit a été créé dans votre groupe</string>
@@ -354,7 +354,7 @@
     <string name="paywall_silver_plan_name">Démarrage</string>
     <string name="paywall_billing_loading_error_alert_message">Impossible d\'initialiser la gestion de la facturation, veuillez réessayer.</string>
     <string name="paywall_purchase_error_alert_message">Impossible d\'effectuer la demande de facturation, veuillez réessayer.</string>
-    <string name="paywall_discount_percentage_badge_text">%s DÉSACTIVÉ</string>
+    <string name="paywall_discount_percentage_badge_text">%s d'économie</string>
     <string name="paywall_header_feature_list_screen">Vous pouvez protéger la vie privée de tous les membres de votre groupe</string>
     <string name="paywall_header_feature_demo_screen">Découvrez la puissance de Paralino</string>
     <string name="paywall_header_take_control">Prenez le contrôle de votre vie privée</string>

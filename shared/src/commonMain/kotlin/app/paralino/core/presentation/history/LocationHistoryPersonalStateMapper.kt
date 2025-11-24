@@ -9,12 +9,15 @@ import app.paralino.core.models.location.LocationHistoryModelForDevice
 import app.paralino.core.models.location.LocationHistoryModelForUser
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.provider.localizedString
-import app.paralino.core.utils.extensions.isoToLocalDateTime
+import app.paralino.core.utils.extensions.isoToLocalDateTimeAtTimezone
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
@@ -92,16 +95,22 @@ class LocationHistoryPersonalStateMapper(
             }
         }
 
+        val timeStart = startDate.atTime(0, 0)
+        val timeEndExclusive = endDate
+            .plus(DatePeriod(days = 1))
+            .atTime(0, 0)
+        val localTimezone = TimeZone.currentSystemDefault()
+
         val cachedHistory = space.devices
             .flatMap { device ->
                 device.location?.locationHistory?.data?.let {
                     it.history
                         .filter {
-                            val date = it.status.tA.isoToLocalDateTime()?.date
+                            val date = it.status.tA.isoToLocalDateTimeAtTimezone(timezone = localTimezone)
                             if (date == null) {
                                 false
                             } else {
-                                date in startDate..endDate
+                                date >= timeStart && date < timeEndExclusive
                             }
                         }
                         .groupBy { it.dayKey }
@@ -123,9 +132,8 @@ class LocationHistoryPersonalStateMapper(
         logg.v("history_fetch", "Devices mapped, map points")
 
         val now = nowUTC()
-        val timeZone = TimeZone.currentSystemDefault()
-        val nowDate = now.toLocalDateTime(timeZone)
-        val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
+        val nowDate = now.toLocalDateTime(localTimezone)
+        val yesterday = now.minus(1.days).toLocalDateTime(localTimezone).date
         val locations = history.history
             .plus(cachedHistory)
             .flatMap { entry ->
@@ -133,7 +141,7 @@ class LocationHistoryPersonalStateMapper(
                     entry = entry,
                     startDate = startDate,
                     endDate = endDate,
-                    timeZone = timeZone,
+                    timeZone = localTimezone,
                     nowDate = nowDate,
                     yesterday = yesterday,
                 )

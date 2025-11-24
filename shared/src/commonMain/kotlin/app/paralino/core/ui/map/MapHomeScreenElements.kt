@@ -87,24 +87,22 @@ fun MapHomeScreenElements(
     onEvent: (MapHomeScreenUiEvent) -> Unit,
     bottomCards: @Composable BoxScope.(sheetPeekHeight: Dp) -> Unit
 ) {
-    val sheetPeekHeight = if (containerHeight > 0.dp) {
+    val minBottomValue = when (DeviceType.current) {
+        DeviceType.Android -> screenPaddingValues.calculateBottomPadding()
+        DeviceType.iOS -> {
+            if (isSheetHidden) screenPaddingValues.calculateBottomPadding() else 0.dp
+        }
+    }
+    val maxTopValue = containerHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+
+    val sheetPeekHeight = if (minBottomValue <= maxTopValue) {
         (containerHeight - bottomOffset).coerceIn(
-            minimumValue = when (DeviceType.current) {
-                DeviceType.Android -> screenPaddingValues.calculateBottomPadding()
-                DeviceType.iOS -> {
-                    if (isSheetHidden) screenPaddingValues.calculateBottomPadding() else 0.dp
-                }
-            },
-            maximumValue = containerHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+            minimumValue = minBottomValue,
+            maximumValue = maxTopValue
         )
     } else {
         (containerHeight - bottomOffset).coerceAtLeast(
-            minimumValue = when (DeviceType.current) {
-                DeviceType.Android -> screenPaddingValues.calculateBottomPadding()
-                DeviceType.iOS -> {
-                    if (isSheetHidden) screenPaddingValues.calculateBottomPadding() else 0.dp
-                }
-            }
+            minimumValue = minBottomValue
         )
     }
 

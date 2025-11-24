@@ -28,7 +28,9 @@ abstract class IValueFormatter {
     abstract fun formatTimeOnly(timeUTC: LocalDateTime?, showSeconds: Boolean): String?
     abstract fun formatNumber(number: Double, minFractions: Int, maxFractions: Int): String
     abstract fun formatBestPattern(timeUTC: LocalDateTime, pattern: String): String
+    abstract fun formatBestPatternLocal(timeLocal: LocalDateTime, pattern: String): String
     abstract fun formatWithPattern(timeUTC: LocalDateTime, pattern: String): String
+    abstract fun formatWithPattern(dateUTC: LocalDate, pattern: String): String
     abstract fun currentTimeForApi(): String
 
     fun getDistanceSmall(
@@ -380,8 +382,8 @@ abstract class IValueFormatter {
             date.date == yesterday -> MR.strings.date_name_yesterday.localizedString()
             else -> {
                 val pattern = if (shouldShowYear) "MMMd, yyyy" else "MMMd"
-                formatBestPattern(
-                    timeUTC = date,
+                formatBestPatternLocal(
+                    timeLocal = date,
                     pattern = pattern
                 )
             }

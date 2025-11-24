@@ -148,11 +148,11 @@ class LocationHistoryDateMapper(
                     isLoading = false,
                     date = currentDate,
                     formattedMonth = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
+                        dateUTC = currentDate,
                         pattern = "MMM"
                     ),
                     formattedDay = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
+                        dateUTC = currentDate,
                         pattern = "EEE"
                     ),
                     isWeekend = currentDate.dayOfWeek == DayOfWeek.SATURDAY || currentDate.dayOfWeek == DayOfWeek.SUNDAY,
@@ -198,11 +198,11 @@ class LocationHistoryDateMapper(
                     isLoading = false,
                     date = currentDate,
                     formattedMonth = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
+                        dateUTC = currentDate,
                         pattern = "MMM"
                     ),
                     formattedDay = valueFormatter.formatWithPattern(
-                        timeUTC = currentDate.atTime(0, 0),
+                        dateUTC = currentDate,
                         pattern = "EEE"
                     ),
                     isWeekend = currentDate.dayOfWeek == DayOfWeek.SATURDAY || currentDate.dayOfWeek == DayOfWeek.SUNDAY,
