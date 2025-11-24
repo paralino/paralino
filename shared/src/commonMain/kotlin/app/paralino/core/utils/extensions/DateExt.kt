@@ -11,6 +11,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Duration
 
@@ -26,6 +27,16 @@ fun String.isoToLocalDateTime(): LocalDateTime? {
         } catch (e: Exception) {
             null
         }
+    }
+}
+
+fun String.isoToLocalDateTimeAtTimezone(timezone: TimeZone): LocalDateTime? {
+    try {
+        return isoToLocalDateTime()
+            ?.toInstant(TimeZone.UTC)
+            ?.toLocalDateTime(timezone)
+    } catch (e: Exception) {
+        return null
     }
 }
 

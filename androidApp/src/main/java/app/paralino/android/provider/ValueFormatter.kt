@@ -10,9 +10,11 @@ import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.utils.extensions.nowUTC
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.extensions.stripNanoseconds
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
@@ -65,8 +67,20 @@ class ValueFormatter(
         )
     }
 
+    override fun formatBestPatternLocal(timeLocal: LocalDateTime, pattern: String): String {
+        return timeLocal.toJavaLocalDateTime().format(
+            DateTimeFormatter.ofPattern(
+                DateFormat.getBestDateTimePattern(Locale.getDefault(), pattern)
+            )
+        )
+    }
+
     override fun formatWithPattern(timeUTC: LocalDateTime, pattern: String): String {
         return timeUTC.toJavaLocalDateTime().fromUTCtoLocal().format(DateTimeFormatter.ofPattern(pattern))
+    }
+
+    override fun formatWithPattern(dateUTC: LocalDate, pattern: String): String {
+        return dateUTC.toJavaLocalDate().format(DateTimeFormatter.ofPattern(pattern))
     }
 
     override fun currentTimeForApi(): String {

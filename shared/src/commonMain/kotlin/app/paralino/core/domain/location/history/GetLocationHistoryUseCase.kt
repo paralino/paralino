@@ -12,10 +12,16 @@ import app.paralino.core.models.mappers.LocationHistoryMapper
 import app.paralino.core.models.raw.LocationHistoryReadEntry
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.extensions.historyDateKeyForApi
+import app.paralino.core.utils.extensions.isoToLocalDateTimeAtTimezone
 import app.paralino.core.utils.extensions.listOfDatesUntil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 
 class GetLocationHistoryUseCase(
     private val database: MainDatabaseHelper,
@@ -28,12 +34,24 @@ class GetLocationHistoryUseCase(
         startDate: LocalDate,
         endDate: LocalDate,
     ): Flow<LocationHistoryModelForUser> {
-        val dateList = startDate.listOfDatesUntil(endDate).map { it.historyDateKeyForApi() }
-        if (groupOrSpaceId.isPersonalSpace) {
-            return database.locationHistoryDao.getPersonalHistory(dates = dateList)
+        // reading extra date for each side to capture time outside UTC-0
+        val dateList = startDate
+            .minus(DatePeriod(days = 1))
+            .listOfDatesUntil(
+                endDate.plus(DatePeriod(days = 1))
+            )
+            .map { it.historyDateKeyForApi() }
+        val timeStart = startDate.atTime(0, 0)
+        val timeEndExclusive = endDate
+            .plus(DatePeriod(days = 1))
+            .atTime(0, 0)
+        val localTimezone = TimeZone.currentSystemDefault()
+
+        return if (groupOrSpaceId.isPersonalSpace) {
+            database.locationHistoryDao.getPersonalHistory(dates = dateList)
                 .map { mapPersonalLocationHistory(history = it) }
         } else {
-            return database.locationHistoryDao.getGroupHistory(
+            database.locationHistoryDao.getGroupHistory(
                 groupId = groupOrSpaceId.id,
                 ownerUserId = memberUserId,
                 dates = dateList
@@ -45,6 +63,26 @@ class GetLocationHistoryUseCase(
                 )
             }
         }
+            .map {
+                it.copy(
+                    history = it.history.map {
+                        it.copy(
+                            history = it.history.mapSuccess {
+                                it.copy(
+                                    history = it.history.filter {
+                                        val date = it.status.tA.isoToLocalDateTimeAtTimezone(timezone = localTimezone)
+                                        if (date == null) {
+                                            false
+                                        } else {
+                                            date >= timeStart && date < timeEndExclusive
+                                        }
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            }
     }
 
     fun getLocationHistoryRawPresentationByIds(
