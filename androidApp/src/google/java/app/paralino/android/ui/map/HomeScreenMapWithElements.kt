@@ -75,10 +75,11 @@ internal fun HomeScreenMapWithElements(
                             )
                         }
                     } else {
-                        if (bottomPadding <= this.maxHeight) {
+                        val bottomMax = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                        if (bottomPadding <= bottomMax) {
                             (this.maxHeight - bottomOffset).coerceIn(
                                 minimumValue = bottomPadding,
-                                maximumValue = this.maxHeight * BottomSheetPosition.HALF_EXPANDED.screenHeightPercent
+                                maximumValue = bottomMax
                             )
                         } else {
                             (this.maxHeight - bottomOffset).coerceAtLeast(
