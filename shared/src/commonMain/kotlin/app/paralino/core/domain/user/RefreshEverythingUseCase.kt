@@ -22,6 +22,7 @@ import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 class RefreshEverythingUseCase(
@@ -90,7 +91,7 @@ class RefreshEverythingUseCase(
                     clearUserLocationUseCase.deleteOldLocations()
                     premiumStatusManager.adjustDeviceSettingsForPlan()
                     deleteObsoleteLocationHistoryUseCase.deleteObsoleteHistory()
-                    locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 10.minutes)
+                    locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 2.hours)
                     sessionRenewalHandler.processSessionRenewal()
                 }
             )

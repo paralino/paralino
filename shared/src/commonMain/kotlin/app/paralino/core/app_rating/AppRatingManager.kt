@@ -55,7 +55,7 @@ class AppRatingManager(
                     }
 
                     DeviceType.iOS -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion < 40
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 46
                     }
                 }
             }

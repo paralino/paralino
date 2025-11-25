@@ -462,6 +462,18 @@ class PaywallViewModel(
 //                }
                 addAll(uiPlans)
             },
+            canCloseScreen = if (billingConfig?.canCloseOnboardingPaywall == false) {
+                when (sourceType) {
+                    BillingScreenSourceType.GROUP_ONBOARDING,
+                    BillingScreenSourceType.PERSONAL_SPACE_ONBOARDING -> false
+                    BillingScreenSourceType.SKIPPED_ONBOARDING,
+                    BillingScreenSourceType.FREE_PLAN_NEW_GROUP_MEMBER,
+                    BillingScreenSourceType.UPGRADE,
+                    BillingScreenSourceType.NORMAL -> true
+                }
+            } else {
+                true
+            },
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
