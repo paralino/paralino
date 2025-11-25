@@ -1,8 +1,8 @@
 package app.paralino.core.ui.settings.billing
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
@@ -77,8 +76,14 @@ fun FeatureTable(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colors.surface)
-            .padding(4.dp)
+            .background(
+                if (isExpanded) {
+                    MaterialTheme.colors.surface
+                } else {
+                    Color.Transparent
+                }
+            )
+            .padding(animateDpAsState(if (isExpanded) 4.dp else 0.dp).value)
             .clip(RoundedCornerShape(10.dp))
     ) {
         val maxWidth = this.maxWidth
@@ -452,7 +457,15 @@ private fun FeatureSummaryChip(
             modifier = Modifier
                 .defaultMinSize(minWidth = 24.dp)
                 .background(
-                    color = MaterialTheme.colors.surface,
+                    color = if (isSystemInDarkTheme()) {
+                        if (state.isHighlighted) {
+                            MaterialTheme.colors.background
+                        } else {
+                            AppColors.accentDark.copy(alpha = 0.25f)
+                        }
+                    } else {
+                        MaterialTheme.colors.surface
+                    },
                     shape = RoundedCornerShape(100)
                 )
                 .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -464,7 +477,9 @@ private fun FeatureSummaryChip(
         Spacer(Modifier.size(4.dp))
         Text(
             text = state.content,
-            style = MaterialTheme.typography.caption,
+            style = MaterialTheme.typography.caption.copy(
+                fontWeight = FontWeight.Medium
+            ),
             color = if (state.isHighlighted) {
                 AppColors.darkBackground.copy(alpha = 0.8f)
             } else {

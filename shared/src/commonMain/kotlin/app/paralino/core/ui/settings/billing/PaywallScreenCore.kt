@@ -457,7 +457,7 @@ private fun ColumnScope.PaywallScreen(
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
             BillingPeriodOptions(
                 modifier = Modifier
-                    .padding(top = 8.dp, bottom = 20.dp)
+                    .padding(top = 8.dp, bottom = 12.dp)
                     .padding(horizontal = 20.dp),
                 selectedPlan = state.selectedPlan!!,
                 onPeriodSelected = {
@@ -531,7 +531,7 @@ private fun ColumnScope.PaywallScreen(
     FeatureTable(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
+            .padding(vertical = animateDpAsState(if (arePlansExpanded) 10.dp else 0.dp).value)
             .padding(horizontal = 20.dp),
         table = if (arePlansExpanded) {
             state.fullFeatureTable
