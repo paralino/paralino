@@ -44,7 +44,7 @@ class KoinSetup {
     
     class BillingProviderIOS: IBillingProvider {
         func configure() async throws -> IBillingProviderSubscriptionProviderData {
-            return IBillingProviderSubscriptionProviderData(plans: [], billingConfig: nil)
+            return IBillingProviderSubscriptionProviderData(plans: [], billingConfig: nil, canCloseOnboardingPaywall: true)
         }
     }
     

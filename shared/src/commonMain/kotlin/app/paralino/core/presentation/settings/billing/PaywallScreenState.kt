@@ -18,6 +18,7 @@ data class PaywallScreenState(
     val freePlanInfo: PlanInfoState,
     val plans: List<PlanInfoState>,
     val canShowMoreInfo: Boolean,
+    val canCloseScreen: Boolean,
     val isLoading: Boolean,
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,

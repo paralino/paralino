@@ -346,7 +346,7 @@ fun PaywallScreenCore(
                         } else {
                             stringResource(MR.strings.paywall_screen_title)
                         },
-                        navigationIcon = if (uiState.isLoading) {
+                        navigationIcon = if (uiState.isLoading || !uiState.canCloseScreen) {
                             null
                         } else {
                             { ToolbarButtons.Close { onNavigateBack(false) } }
