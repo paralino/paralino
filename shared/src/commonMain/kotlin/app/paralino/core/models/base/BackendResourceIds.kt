@@ -25,6 +25,8 @@ object BackendResourceIDs {
     const val subscriptionUrlAppleAppStore = "https://apps.apple.com/account/subscriptions"
 
     const val supportEmail = "contact@paralino.com"
+    const val feedbackPortalHome = "https://portal.paralino.com/"
+    const val feedbackPortalChangelog = "https://portal.paralino.com/changelog"
 
     const val uniqueIdPlaceholder = "unique()"
 

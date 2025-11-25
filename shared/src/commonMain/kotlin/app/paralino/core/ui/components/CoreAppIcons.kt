@@ -13,11 +13,13 @@ import paralino.shared.generated.resources.ic_add_link
 import paralino.shared.generated.resources.ic_adjust
 import paralino.shared.generated.resources.ic_arrow_open_in_new
 import paralino.shared.generated.resources.ic_arrow_spinny
+import paralino.shared.generated.resources.ic_assignment_list
 import paralino.shared.generated.resources.ic_auto_fix_high
 import paralino.shared.generated.resources.ic_bar_chart_stats
 import paralino.shared.generated.resources.ic_battery_charging_full
 import paralino.shared.generated.resources.ic_battery_full
 import paralino.shared.generated.resources.ic_block
+import paralino.shared.generated.resources.ic_chat_bubble_list
 import paralino.shared.generated.resources.ic_check
 import paralino.shared.generated.resources.ic_check_circle
 import paralino.shared.generated.resources.ic_chevron_left
@@ -66,6 +68,7 @@ import paralino.shared.generated.resources.ic_not_listed_location
 import paralino.shared.generated.resources.ic_not_listed_location_filled
 import paralino.shared.generated.resources.ic_notifications_active
 import paralino.shared.generated.resources.ic_notifications_off
+import paralino.shared.generated.resources.ic_open_book
 import paralino.shared.generated.resources.ic_password
 import paralino.shared.generated.resources.ic_person
 import paralino.shared.generated.resources.ic_person_add
@@ -185,6 +188,9 @@ object CoreAppIcons {
     val FilterTune get() = Res.drawable.ic_filter_tune
     val QuestionCircle get() = Res.drawable.ic_question_mark_circle
     val InfoCircle get() = Res.drawable.ic_info_circle
+    val OpenBook get() = Res.drawable.ic_open_book
+    val ChatBubbleList get() = Res.drawable.ic_chat_bubble_list
+    val AssignmentList get() = Res.drawable.ic_assignment_list
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay

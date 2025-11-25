@@ -75,7 +75,7 @@ fun GeneralInfoScreenCore(
     ) {
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_help),
-            icon = CoreAppIcons.LibraryBooks.asPainterResource(),
+            icon = CoreAppIcons.OpenBook.asPainterResource(),
             type = SettingsActionItemType.Link
         ) {
             uriHandler.openUri(BackendResourceIDs.helpSupportUrl)
@@ -88,13 +88,19 @@ fun GeneralInfoScreenCore(
             onContactSupport()
         }
         SettingsActionItem(
-            name = stringResource(MR.strings.setting_title_onboarding),
-            icon = CoreAppIcons.Replay.asPainterResource(),
-            onLongClick = {
-                vm.onEvent(GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding)
-            }
+            name = stringResource(MR.strings.setting_feedbackPortal_title),
+            icon = CoreAppIcons.ChatBubbleList.asPainterResource(),
+            type = SettingsActionItemType.Link,
+            tag = stringResource(MR.strings.setting_feedbackPortal_info)
         ) {
-            onShowOnboarding()
+            uriHandler.openUri(BackendResourceIDs.feedbackPortalHome)
+        }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_feedbackChangelog_title),
+            icon = CoreAppIcons.AssignmentList.asPainterResource(),
+            type = SettingsActionItemType.Link
+        ) {
+            uriHandler.openUri(BackendResourceIDs.feedbackPortalChangelog)
         }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_privacy),
@@ -115,6 +121,15 @@ fun GeneralInfoScreenCore(
             icon = CoreAppIcons.LibraryBooks.asPainterResource()
         ) {
             onLicencesClick()
+        }
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_title_onboarding),
+            icon = CoreAppIcons.Replay.asPainterResource(),
+            onLongClick = {
+                vm.onEvent(GeneralInfoScreenStateUiEvent.ResetAccountWelcomeOnboarding)
+            }
+        ) {
+            onShowOnboarding()
         }
         SettingsActionItem(
             name = stringResource(MR.strings.setting_title_errorReporting),
