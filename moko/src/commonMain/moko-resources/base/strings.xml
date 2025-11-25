@@ -179,6 +179,8 @@
     <string name="setting_title_delete_account">Delete account</string>
     <string name="setting_title_dangerZone">Danger zone</string>
     <string name="setting_title_errorReporting">Anonymous crash logs</string>
+    <string name="setting_appReview_title">Do you like Paralino?</string>
+    <string name="setting_appReview_info">Would you mind giving it a review 🥺</string>
     <string name="setting_description_errorReporting">Share anonymous error logs, in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_location_title">Location Settings</string>
     <string name="setting_location_premium_banner_title">Premium</string>

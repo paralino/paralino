@@ -58,7 +58,7 @@ fun PersonalSpaceSettingsScreenCore(
             SettingsActionItem(
                 name = stringResource(MR.strings.history_delete_screen_title),
                 icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                iconTint = AppColors.errorBackground
+                iconBackgroundTint = AppColors.errorBackground
             ) {
                 openLocationHistorySettings()
             }

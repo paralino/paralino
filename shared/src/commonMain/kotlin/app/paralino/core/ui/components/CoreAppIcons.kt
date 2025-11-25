@@ -110,6 +110,7 @@ import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
 import paralino.shared.generated.resources.paralino_start_background
 import paralino.shared.generated.resources.ic_route_dots
+import paralino.shared.generated.resources.ic_star_shine
 import paralino.shared.generated.resources.ic_zoom_focus_full
 import paralino.shared.generated.resources.ic_zoom_focus_large
 import paralino.shared.generated.resources.ic_zoom_focus_small
@@ -193,6 +194,7 @@ object CoreAppIcons {
     val StarFamily get() = Res.drawable.ic_family_star
     val Star get() = Res.drawable.ic_star
     val StarCircle get() = Res.drawable.ic_star_circle_filled
+    val StarShine get() = Res.drawable.ic_star_shine
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled

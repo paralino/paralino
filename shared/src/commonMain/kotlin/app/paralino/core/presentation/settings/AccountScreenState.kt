@@ -17,7 +17,8 @@ data class AccountScreenState constructor(
     val versionName: String,
     val alertDialog: MainAlertDialog? = null,
     val boostTime: String? = null,
-    val userPlan: PlanConfig
+    val userPlan: PlanConfig,
+    val appReviewUrl: String
 ) {
     val loadingAction get() = logoutState is Payload.Loading || deleteAccountState is Payload.Loading
 }

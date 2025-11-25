@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -176,7 +175,7 @@ fun AccountScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.setting_title_logout),
                         icon = CoreAppIcons.Logout.asPainterResource(),
-                        iconTint = AppColors.errorBackground,
+                        iconBackgroundTint = AppColors.errorBackground,
                         type = SettingsActionItemType.Action
                     ) {
                         viewModel.onEvent(AccountScreenUiEvent.Logout)
@@ -189,7 +188,7 @@ fun AccountScreenCore(
                         SettingsActionItem(
                             name = stringResource(MR.strings.setting_title_delete_account),
                             icon = CoreAppIcons.DeleteForever.asPainterResource(),
-                            iconTint = AppColors.errorBackground,
+                            iconBackgroundTint = AppColors.errorBackground,
                             type = SettingsActionItemType.Action
                         ) {
                             viewModel.onEvent(AccountScreenUiEvent.DeleteAccount)
@@ -201,7 +200,7 @@ fun AccountScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.setting_title_dangerZone),
                         icon = CoreAppIcons.Warning.asPainterResource(),
-                        iconTint = AppColors.errorBackground,
+                        iconBackgroundTint = AppColors.errorBackground,
                         type = SettingsActionItemType.Action
                     ) {
                         showDangerZoneContent = true

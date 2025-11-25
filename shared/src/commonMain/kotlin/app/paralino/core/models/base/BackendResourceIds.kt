@@ -17,10 +17,13 @@ object BackendResourceIDs {
     const val helpSupportUrl = "https://paralino.com/help/"
     const val privacyPolicyUrl = "https://paralino.com/privacy"
     const val termsOfUseUrl = "https://paralino.com/terms"
+
     const val storeUrlGooglePlay = "https://play.google.com/store/apps/details?id=app.paralino.android"
-    const val storeUrlDeeplinkAppStore = "https://apps.apple.com/app/id6736908747"
+    const val storeUrlDeeplinkAppleAppStore = "https://apps.apple.com/app/id6736908747"
+    const val storeUrlDeeplinkAppleAppStoreReview = "https://apps.apple.com/app/id6736908747?action=write-review"
     const val subscriptionUrlGooglePlay = "https://play.google.com/store/account/subscriptions"
     const val subscriptionUrlAppleAppStore = "https://apps.apple.com/account/subscriptions"
+
     const val supportEmail = "contact@paralino.com"
 
     const val uniqueIdPlaceholder = "unique()"

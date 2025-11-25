@@ -11,7 +11,7 @@ import UIKit
 
 class AppUpdateManager: IAppUpdateManager {
     override func startUpdateProcess(data: ConfigData) {
-        if let url = URL(string: BackendResourceIDs.shared.storeUrlDeeplinkAppStore) {
+        if let url = URL(string: BackendResourceIDs.shared.storeUrlDeeplinkAppleAppStore) {
             UIApplication.shared.open(url)
         }
     }

@@ -9,7 +9,9 @@ import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ConfigData
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.location.LocationPerformanceType
@@ -141,7 +143,11 @@ class SettingsViewModel(
                             boostTime = null,
                             userPlan = userPlans.highestValidPlanConfig,
                             canBoostLocation = appConfig.isInAppDevMode,
-                            canAccessDebugScreen = appConfig.isInAppDevMode
+                            canAccessDebugScreen = appConfig.isInAppDevMode,
+                            appReviewUrl = when (deviceApiProvider.deviceType) {
+                                DeviceType.Android -> BackendResourceIDs.storeUrlGooglePlay
+                                DeviceType.iOS -> BackendResourceIDs.storeUrlDeeplinkAppleAppStoreReview
+                            }
                         )
                     )
                 } else {

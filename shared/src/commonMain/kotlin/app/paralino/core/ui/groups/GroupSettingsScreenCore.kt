@@ -111,7 +111,7 @@ fun GroupSettingsScreenCore(
                         SettingsActionItem(
                             name = stringResource(MR.strings.history_delete_screen_title),
                             icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                            iconTint = AppColors.errorBackground
+                            iconBackgroundTint = AppColors.errorBackground
                         ) {
                             openLocationHistorySettings()
                         }
@@ -120,7 +120,7 @@ fun GroupSettingsScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.group_details_menu_delete),
                         icon = CoreAppIcons.Delete.asPainterResource(),
-                        iconTint = AppColors.errorBackground
+                        iconBackgroundTint = AppColors.errorBackground
                     ) {
                         vm.onEvent(GroupSettingsUiEvent.DeleteGroup)
                     }
@@ -129,7 +129,7 @@ fun GroupSettingsScreenCore(
                         SettingsActionItem(
                             name = stringResource(MR.strings.history_delete_screen_title),
                             icon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
-                            iconTint = AppColors.errorBackground
+                            iconBackgroundTint = AppColors.errorBackground
                         ) {
                             openLocationHistorySettings()
                         }
@@ -137,14 +137,14 @@ fun GroupSettingsScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.group_details_menu_block),
                         icon = CoreAppIcons.Block.asPainterResource(),
-                        iconTint = AppColors.errorBackground
+                        iconBackgroundTint = AppColors.errorBackground
                     ) {
                         vm.onEvent(GroupSettingsUiEvent.BlockGroup)
                     }
                     SettingsActionItem(
                         name = stringResource(MR.strings.group_details_menu_leave),
                         icon = CoreAppIcons.Logout.asPainterResource(),
-                        iconTint = AppColors.errorBackground
+                        iconBackgroundTint = AppColors.errorBackground
                     ) {
                         vm.onEvent(GroupSettingsUiEvent.LeaveGroup)
                     }
