@@ -25,6 +25,32 @@ sealed class DeeplinkType() {
         }
     }
 
+    data class PaywallScreen(
+        override val deeplink: String,
+        val type: String?
+    ) : DeeplinkType() {
+
+        companion object {
+            const val argumentType: String = "type"
+            fun buildUrl(): String {
+                return "https://$host/$pathBilling"
+            }
+        }
+    }
+
+    data class HomeScreen(
+        override val deeplink: String,
+        val type: String?
+    ) : DeeplinkType() {
+
+        companion object {
+            const val argumentType: String = "type"
+            fun buildUrl(): String {
+                return "https://$host/$linkHome"
+            }
+        }
+    }
+
     data class PasswordReset(
         override val deeplink: String,
         val userId: String,
@@ -59,6 +85,7 @@ sealed class DeeplinkType() {
         private const val pathPasswordReset = "recover"
         private const val pathEmailVerify = "verify"
         private const val pathParalinoID = "id"
+        private const val pathBilling = "billing"
 
         private fun cleanDeepLink(deeplink: String?): Url? {
 
@@ -75,9 +102,11 @@ sealed class DeeplinkType() {
             if (!isValidDeeplink) return null
 
             val canUseDeeplink = arrayOf(
+                linkHome,
                 pathPasswordReset,
                 pathEmailVerify,
-                pathParalinoID
+                pathParalinoID,
+                pathBilling
             ).any {
                 data.encodedPath.matches(it)
             }
@@ -96,6 +125,7 @@ sealed class DeeplinkType() {
         private fun String.matches(deeplinkRoute: String): Boolean {
             val currentComponents = this.split("/").filter { it.isNotBlank() }
             val otherComponents = deeplinkRoute.split("/").filter { it.isNotBlank() }
+            if (currentComponents.size != otherComponents.size) return false
             if (currentComponents.firstOrNull() != otherComponents.firstOrNull()) return false
 
             return currentComponents.zip(otherComponents).all {
@@ -148,6 +178,16 @@ sealed class DeeplinkType() {
                         ?: return null
                     val paralinoId = segments.getOrNull(pathIndex + 1) ?: return null
                     ParalinoID(deeplink = deeplink, paralinoID = paralinoId)
+                }
+
+                path.matches(linkHome) -> {
+                    val type = cleanDeeplink.parameters.get(HomeScreen.argumentType)
+                    DeeplinkType.HomeScreen(deeplink = deeplink, type = type)
+                }
+
+                path.matches(pathBilling) -> {
+                    val type = cleanDeeplink.parameters.get(PaywallScreen.argumentType)
+                    DeeplinkType.PaywallScreen(deeplink = deeplink, type = type)
                 }
 
                 else -> null
