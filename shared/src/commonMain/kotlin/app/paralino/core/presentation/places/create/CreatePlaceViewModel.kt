@@ -1,22 +1,21 @@
 package app.paralino.core.presentation.places.create
 
-import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
+import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlace
 import app.paralino.core.models.places.GroupPlaceData
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.DistanceType
-import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.places.PlacesLocalDataSource
@@ -24,12 +23,16 @@ import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
-import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.mapToPayload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -43,18 +46,19 @@ class CreatePlaceViewModel(
     lng: Double? = null,
     private val placesRepo: PlacesRepository,
     private val placesLocalDataSource: PlacesLocalDataSource,
-    private val deviceApiProvider: IDeviceApiProvider,
     private val premiumStatusManager: PremiumStatusManager,
     private val refreshEverythingUseCase: RefreshEverythingUseCase,
-    private val valueFormatter: IValueFormatter
+    private val valueFormatter: IValueFormatter,
+    private val placeAddressSearch: PlaceAddressSearchUseCase
 ) : CoreViewModel() {
 
     private val placeFlow = MutableStateFlow<Payload<GroupPlace>>(Payload.Loading)
     private val _uiState = MutableStateFlow<Payload<CreatePlaceScreenState>>(Payload.Loading)
-    val uiState: Flow<Payload<CreatePlaceScreenState>> = _uiState
+    val uiState: StateFlow<Payload<CreatePlaceScreenState>> = _uiState
 
     private val _eventChannel = Channel<CreatePlaceScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
+    private var addressSearchJob: Job? = null
 
     val placeNameLengthLimit = 30
 
@@ -72,7 +76,6 @@ class CreatePlaceViewModel(
                     placeId.isNullOrBlank() -> Payload.Success(
                         CreatePlaceScreenState.empty(
                             groupId = groupId.asGroupOrSpaceId(),
-                            hintText = hintText(),
                             lat = lat,
                             lng = lng,
                             radiusMeters = CreatePlaceScreenState.defaultRadiusMeters,
@@ -87,8 +90,13 @@ class CreatePlaceViewModel(
                         CreatePlaceScreenState(
                             groupId = groupId.asGroupOrSpaceId(),
                             isNewPlace = false,
+                            screenStep = CreatePlaceScreenStep.FULL,
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
+                            address = "",
+                            addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
+                            addressSuggestions = emptyList(),
+                            isAddressLoading = false,
                             hasNameError = false,
                             private = false,
                             lat = place.data.data?.lat,
@@ -98,7 +106,6 @@ class CreatePlaceViewModel(
                                 meters = place.data.data?.radiusMeters?.toDouble() ?: 0.0,
                                 distanceType = DistanceType.DISTANCE
                             ),
-                            hintText = hintText(),
                             actionLoading = false,
                             fullLoading = false,
                             alertDialog = null
@@ -112,7 +119,11 @@ class CreatePlaceViewModel(
     fun onEvent(event: CreatePlaceScreenUiEvent) {
         when (event) {
             CreatePlaceScreenUiEvent.CreatePlace -> {
-                tryCreatePlace()
+                when (uiState.value.data?.screenStep) {
+                    CreatePlaceScreenStep.NAME_SUGGESTION -> goToFinalCreateStep()
+                    CreatePlaceScreenStep.FULL -> tryCreatePlace()
+                    null -> {}
+                }
             }
 
             is CreatePlaceScreenUiEvent.DialogAction -> {
@@ -128,6 +139,70 @@ class CreatePlaceViewModel(
                     else -> {}
                 }
             }
+
+            is CreatePlaceScreenUiEvent.OnAddressSuggestionSelected -> selectSuggestion(event.suggestion)
+            is CreatePlaceScreenUiEvent.OnAddressChanged -> searchAddress(event.address)
+            is CreatePlaceScreenUiEvent.OnImageChanged -> updateImage(event.image)
+            is CreatePlaceScreenUiEvent.OnNameChanged -> updateName(event.name)
+            is CreatePlaceScreenUiEvent.OnRadiusChanged -> updateRadius(event.radiusMeters)
+            is CreatePlaceScreenUiEvent.OnMapTap -> updatePosition(lat = event.lat, lng = event.lng)
+
+            is CreatePlaceScreenUiEvent.ChangeSearchFieldFocus -> {
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(
+                            addressUiMode = if (event.isFocused) {
+                                if (it.addressSuggestions.isEmpty()) {
+                                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                                } else {
+                                    CreatePlaceAddressSearchUiMode.FULLY_EXPANDED
+                                }
+                            } else {
+                                CreatePlaceAddressSearchUiMode.HIDDEN
+                            }
+                        )
+                    }
+                }
+
+                if (event.isFocused) {
+                    _eventChannel.trySend(CreatePlaceScreenEvent.RequestKeyboardFocusOnAddressInput)
+                }
+            }
+
+            CreatePlaceScreenUiEvent.ToggleSearchFieldFocus -> {
+                val shouldFocus =
+                    _uiState.value.data?.addressUiMode == CreatePlaceAddressSearchUiMode.HIDDEN
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(
+                            addressUiMode = if (shouldFocus) {
+                                if (it.addressSuggestions.isEmpty()) {
+                                    CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                                } else {
+                                    CreatePlaceAddressSearchUiMode.FULLY_EXPANDED
+                                }
+                            } else {
+                                CreatePlaceAddressSearchUiMode.HIDDEN
+                            },
+                            address = if (shouldFocus) {
+                                it.address
+                            } else {
+                                ""
+                            },
+                            addressSuggestions = if (shouldFocus) {
+                                it.addressSuggestions
+                            } else {
+                                emptyList()
+                            },
+                            isAddressLoading = false
+                        )
+                    }
+                }
+
+                if (shouldFocus) {
+                    _eventChannel.trySend(CreatePlaceScreenEvent.RequestKeyboardFocusOnAddressInput)
+                }
+            }
         }
     }
 
@@ -139,8 +214,6 @@ class CreatePlaceViewModel(
             return
         }
 
-        val filteredName = data.name.trim().replace("\n", " ")
-
         if (data.lat == null || data.lng == null) {
             coroutineScope.launch {
                 _eventChannel.send(CreatePlaceScreenEvent.MissingLocation)
@@ -148,6 +221,7 @@ class CreatePlaceViewModel(
             return
         }
 
+        val filteredName = data.name.trim().replace("\n", " ")
         if (filteredName.isBlank()) {
             coroutineScope.launch {
                 _eventChannel.send(CreatePlaceScreenEvent.MissingInfo)
@@ -275,13 +349,40 @@ class CreatePlaceViewModel(
             .launchIn(coroutineScope)
     }
 
-    fun updateImage(image: ImageModel) {
+    private fun goToFinalCreateStep() {
+        val data = _uiState.value.data ?: return
+
+        if (data.fullLoading || data.actionLoading) {
+            return
+        }
+
+        val filteredName = data.name.trim().replace("\n", " ")
+        if (filteredName.isBlank()) {
+            coroutineScope.launch {
+                _eventChannel.send(CreatePlaceScreenEvent.MissingInfo)
+            }
+            _uiState.update {
+                it.mapSuccess { it.copy(hasNameError = true) }
+            }
+            return
+        }
+
+        _uiState.update {
+            it.mapSuccess {
+                it.copy(screenStep = CreatePlaceScreenStep.FULL)
+            }
+        }
+
+        _eventChannel.trySend(CreatePlaceScreenEvent.RequestKeyboardFocusOnAddressInput)
+    }
+
+    private fun updateImage(image: ImageModel) {
         _uiState.update {
             it.mapSuccess { it.copy(image = image) }
         }
     }
 
-    fun updateName(name: String) {
+    private fun updateName(name: String) {
         if (name.trim().length > placeNameLengthLimit)
             return
         _uiState.update {
@@ -289,13 +390,24 @@ class CreatePlaceViewModel(
         }
     }
 
-    fun updatePosition(lat: Double, lng: Double) {
+    private fun updatePosition(lat: Double, lng: Double) {
         _uiState.update {
-            it.mapSuccess { it.copy(lat = lat, lng = lng) }
+            it.mapSuccess {
+                it.copy(
+                    lat = lat,
+                    lng = lng,
+                    addressUiMode = if (it.lat == null || it.lng == null) {
+                        // if previous state didn't have location, hide search proceed
+                        CreatePlaceAddressSearchUiMode.HIDDEN
+                    } else {
+                        it.addressUiMode
+                    }
+                )
+            }
         }
     }
 
-    fun updateRadius(radiusMeters: Int) {
+    private fun updateRadius(radiusMeters: Int) {
         _uiState.update {
             it.mapSuccess {
                 it.copy(
@@ -303,19 +415,97 @@ class CreatePlaceViewModel(
                     radiusText = valueFormatter.getDistanceSmall(
                         meters = radiusMeters.toDouble(),
                         distanceType = DistanceType.DISTANCE
-                    ),
+                    )
                 )
             }
         }
     }
 
-    private fun hintText(): AnnotatedString {
-        return when (deviceApiProvider.deviceType) {
-            DeviceType.Android -> MR.strings.places_create_location_hint_longpress.localizedString()
-                .annotatedBold()
+    private fun searchAddress(address: String) {
+        addressSearchJob?.cancel()
+        addressSearchJob = null
 
-            DeviceType.iOS -> MR.strings.places_create_location_hint_tap.localizedString()
-                .annotatedBold()
+        val address = address.replace("\n", " ")
+
+        _uiState.update {
+            it.mapSuccess {
+                it.copy(
+                    address = address,
+                    isAddressLoading = false,
+                    addressSuggestions = emptyList()
+                )
+            }
         }
+
+        if (address.isBlank()) {
+            return
+        }
+
+        addressSearchJob = coroutineScope.launch(Dispatchers.IO) {
+            delay(500)
+            _uiState.update {
+                it.mapSuccess {
+                    it.copy(
+                        isAddressLoading = true,
+                        addressSuggestions = emptyList()
+                    )
+                }
+            }
+            try {
+                val result = placeAddressSearch.searchAddress(
+                    address = address.trim(),
+                    latLng = null
+                )
+                val suggestions = result.results.map {
+                    PlaceAddressSuggestion(
+                        title = it.title,
+                        info = it.address,
+                        latLng = LatLng(
+                            lat = it.lat,
+                            lng = it.lng
+                        )
+                    )
+                }
+
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(
+                            isAddressLoading = false,
+                            addressUiMode = CreatePlaceAddressSearchUiMode.FULLY_EXPANDED,
+                            addressSuggestions = suggestions
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                showSnackbar(e.errorString())
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(
+                            isAddressLoading = false,
+                            addressSuggestions = emptyList()
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun selectSuggestion(suggestion: PlaceAddressSuggestion) {
+        _uiState.update {
+            it.mapSuccess {
+                it.copy(
+                    isAddressLoading = false,
+                    addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
+                    lat = suggestion.latLng.lat,
+                    lng = suggestion.latLng.lng,
+                )
+            }
+        }
+    }
+
+    override fun onCleared() {
+        addressSearchJob?.cancel()
+        addressSearchJob = null
+        super.onCleared()
     }
 }

@@ -629,7 +629,11 @@
     <string name="places_create_error_no_place">Please add location by long pressing on the map</string>
     <string name="places_create_location_hint_longpress">**TIP:** Long press on the map to add or adjust your place</string>
     <string name="places_create_location_hint_tap">**TIP:** Tap on the map to add or adjust your place</string>
+    <string name="places_create_location_hint_searchTap">**TIP:** Search or tap on the map to adjust your place</string>
+    <string name="places_create_location_hint_searchOnly">**TIP:** Start typing the address to find your place</string>
     <string name="places_create_plan_limit_info">To create more places, upgrade your plan.</string>
+    <string name="places_create_name_placeholder">Name*</string>
+    <string name="places_create_address_placeholder">Address</string>
     <string name="place_list_menu_delete">Delete place</string>
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>

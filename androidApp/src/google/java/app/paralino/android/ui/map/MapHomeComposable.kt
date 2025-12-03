@@ -224,6 +224,7 @@ private fun MapHomeMarkerComposable(
     MapMarkerComposable(
         state = model,
         position = LatLng(latValue, lngValue),
+        canTapOnMarker = true,
         zIndex = zIndex,
         onClick = onMarkerClick
     )

@@ -281,9 +281,9 @@ object KoinIOS {
                     placesRepo = get(),
                     placesLocalDataSource = get(),
                     premiumStatusManager = get(),
-                    deviceApiProvider = get(),
                     refreshEverythingUseCase = get(),
-                    valueFormatter = get()
+                    valueFormatter = get(),
+                    placeAddressSearch = get()
                 )
             }
             factory { (rawDataType: RawPresentationDataType) ->

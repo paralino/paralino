@@ -52,6 +52,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun MapMarkerComposable(
     state: MapPinData,
     position: LatLng,
+    canTapOnMarker: Boolean,
     zIndex: Float,
     onClick: (MapPinData) -> Unit
 ) {
@@ -65,13 +66,15 @@ fun MapMarkerComposable(
             MapMarkerStyle.CIRCLE -> Offset(0.5f, 0.5f)
         },
         onClick = {
-            if (it.isInfoWindowShown) {
-                it.hideInfoWindow()
-            } else {
-                it.showInfoWindow()
+            if (canTapOnMarker) {
+                if (it.isInfoWindowShown) {
+                    it.hideInfoWindow()
+                } else {
+                    it.showInfoWindow()
+                }
+                onClick(state)
             }
-            onClick(state)
-            true
+            canTapOnMarker
         },
         infoWindowAnchor = Offset(0.5f, 0f),
         icon = mapMarkerIcon(state = state),

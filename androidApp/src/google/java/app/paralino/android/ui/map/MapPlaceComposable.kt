@@ -46,6 +46,7 @@ fun PlaceCreateMapComposable(
     SimplePlaceMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
+        canTapOnCircles = false,
         onMapInteraction = onMapInteraction,
         onMapTap = onMapTap,
         onMapLongPress = onMapLongPress
@@ -66,6 +67,7 @@ fun PlaceDetailMapComposable(
     SimplePlaceMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
+        canTapOnCircles = true,
         onMapInteraction = onMapInteraction,
         onMapTap = { lat, lng -> },
         onMapLongPress = { lat, lng -> }
@@ -77,6 +79,7 @@ fun PlaceDetailMapComposable(
 fun SimplePlaceMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
+    canTapOnCircles: Boolean,
     onMapInteraction: (Boolean) -> Unit,
     onMapTap: (lat: Double, lng: Double) -> Unit,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
@@ -153,7 +156,7 @@ fun SimplePlaceMapComposable(
                 if (model.shouldShowApproximateCircle) {
                     Circle(
                         center = LatLng(latAnim, lngAnim),
-                        clickable = true,
+                        clickable = canTapOnCircles,
                         fillColor = Color.Blue.copy(alpha = 0.4f),
                         radius = accuracyAnim,
                         strokeColor = Color.Blue,
@@ -168,6 +171,7 @@ fun SimplePlaceMapComposable(
                 MapMarkerComposable(
                     state = model,
                     position = LatLng(latAnim, lngAnim),
+                    canTapOnMarker = canTapOnCircles,
                     zIndex = 20f,
                     onClick = {
                         cameraPositionState.refocus(scope = scope, markers = markers)

@@ -23,6 +23,7 @@ import app.paralino.core.domain.group.GroupMemberRemoveUseCase
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.group.GroupRefreshUseCase
 import app.paralino.core.domain.group.GroupRemoveUseCase
+import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.group.PlaceAlertsSettingsUpdateUseCase
 import app.paralino.core.domain.location.ActiveSharingEngine
 import app.paralino.core.domain.location.BatteryAlertUploadEngine
@@ -303,6 +304,7 @@ val coreModule = module {
     single { PersonalSpaceRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { DeletePersonalDeviceUseCase(get(), get()) }
     single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }
+    single { PlaceAddressSearchUseCase(get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
