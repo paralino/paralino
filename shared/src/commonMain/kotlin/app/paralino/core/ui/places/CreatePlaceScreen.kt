@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
+import app.paralino.core.presentation.groups.edit.CreateGroupScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -90,6 +91,7 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.ShakeEffect
+import app.paralino.core.ui.groups.components.ChipsSuggestionsSection
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.compose.stringResource
@@ -329,15 +331,15 @@ private fun CreatePlaceNameSuggestionStep(
             }
         )
 
-//        if (state.suggestions.isNotEmpty()) {
-//            GroupNameSuggestions(
-//                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
-//                suggestions = state.suggestions,
-//                onSuggestionClick = {
-//                    onEvent(CreateGroupScreenUiEvent.OnGroupSuggestionClicked(it))
-//                }
-//            )
-//        }
+        if (state.nameSuggestions.isNotEmpty()) {
+            ChipsSuggestionsSection(
+                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                suggestions = state.nameSuggestions,
+                onSuggestionClick = {
+                    onEvent(CreatePlaceScreenUiEvent.OnNameSuggestionSelected(it))
+                }
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
     }

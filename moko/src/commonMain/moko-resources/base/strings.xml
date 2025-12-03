@@ -634,6 +634,14 @@
     <string name="places_create_plan_limit_info">To create more places, upgrade your plan.</string>
     <string name="places_create_name_placeholder">Name*</string>
     <string name="places_create_address_placeholder">Address</string>
+    <string name="place_create_suggestion_home">Home</string>
+    <string name="place_create_suggestion_work">Work</string>
+    <string name="place_create_suggestion_school">School</string>
+    <string name="place_create_suggestion_playground">Playground</string>
+    <string name="place_create_suggestion_gym">Gym</string>
+    <string name="place_create_suggestion_shopping">Shopping Mall</string>
+    <string name="place_create_suggestion_bakery">Sweet Corner</string>
+    <string name="place_create_suggestion_coffee">Best Coffee</string>
     <string name="place_list_menu_delete">Delete place</string>
     <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>

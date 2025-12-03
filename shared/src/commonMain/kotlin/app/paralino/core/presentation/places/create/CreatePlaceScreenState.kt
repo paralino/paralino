@@ -10,6 +10,7 @@ import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.groups.components.SuggestionSectionChipData
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 
@@ -19,6 +20,7 @@ data class CreatePlaceScreenState constructor(
     val screenStep: CreatePlaceScreenStep,
     val name: String,
     val image: ImageModel,
+    val nameSuggestions: List<SuggestionSectionChipData>,
     val address: String,
     val addressUiMode: CreatePlaceAddressSearchUiMode,
     val addressSuggestions: List<PlaceAddressSuggestion>,
@@ -83,7 +85,8 @@ data class CreatePlaceScreenState constructor(
             lat: Double? = null,
             lng: Double? = null,
             radiusMeters: Int,
-            radiusText: String
+            radiusText: String,
+            nameSuggestions: List<SuggestionSectionChipData>
         ): CreatePlaceScreenState {
             return CreatePlaceScreenState(
                 groupId = groupId,
@@ -91,6 +94,7 @@ data class CreatePlaceScreenState constructor(
                 screenStep = CreatePlaceScreenStep.NAME_SUGGESTION,
                 name = "",
                 image = ImageModel.emoji(Emojis.circles.random()),
+                nameSuggestions = nameSuggestions,
                 address = "",
                 addressUiMode = if (lat == null || lng == null) {
                     CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
@@ -140,8 +144,8 @@ sealed interface CreatePlaceScreenUiEvent {
     data class OnRadiusChanged(val radiusMeters: Int) : CreatePlaceScreenUiEvent
     data class OnImageChanged(val image: ImageModel) : CreatePlaceScreenUiEvent
     data class OnAddressChanged(val address: String) : CreatePlaceScreenUiEvent
-    data class OnAddressSuggestionSelected(val suggestion: PlaceAddressSuggestion) :
-        CreatePlaceScreenUiEvent
+    data class OnNameSuggestionSelected(val suggestion: SuggestionSectionChipData) : CreatePlaceScreenUiEvent
+    data class OnAddressSuggestionSelected(val suggestion: PlaceAddressSuggestion) : CreatePlaceScreenUiEvent
 
     data class ChangeSearchFieldFocus(val isFocused: Boolean) : CreatePlaceScreenUiEvent
     data object ToggleSearchFieldFocus : CreatePlaceScreenUiEvent

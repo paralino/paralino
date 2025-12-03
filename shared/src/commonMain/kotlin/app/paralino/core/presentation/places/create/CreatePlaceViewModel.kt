@@ -21,6 +21,7 @@ import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.places.PlacesLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.groups.components.SuggestionSectionChipData
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -82,7 +83,8 @@ class CreatePlaceViewModel(
                             radiusText = valueFormatter.getDistanceSmall(
                                 meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble(),
                                 distanceType = DistanceType.DISTANCE
-                            )
+                            ),
+                            nameSuggestions = getNameSuggestions()
                         )
                     )
 
@@ -93,6 +95,7 @@ class CreatePlaceViewModel(
                             screenStep = CreatePlaceScreenStep.FULL,
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
+                            nameSuggestions = getNameSuggestions(),
                             address = "",
                             addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
                             addressSuggestions = emptyList(),
@@ -140,10 +143,17 @@ class CreatePlaceViewModel(
                 }
             }
 
+            is CreatePlaceScreenUiEvent.OnNameSuggestionSelected -> {
+                updateNameAndImage(
+                    name = event.suggestion.name,
+                    image = event.suggestion.image
+                )
+            }
+
             is CreatePlaceScreenUiEvent.OnAddressSuggestionSelected -> selectSuggestion(event.suggestion)
             is CreatePlaceScreenUiEvent.OnAddressChanged -> searchAddress(event.address)
-            is CreatePlaceScreenUiEvent.OnImageChanged -> updateImage(event.image)
-            is CreatePlaceScreenUiEvent.OnNameChanged -> updateName(event.name)
+            is CreatePlaceScreenUiEvent.OnImageChanged -> updateNameAndImage(image = event.image)
+            is CreatePlaceScreenUiEvent.OnNameChanged -> updateNameAndImage(name = event.name)
             is CreatePlaceScreenUiEvent.OnRadiusChanged -> updateRadius(event.radiusMeters)
             is CreatePlaceScreenUiEvent.OnMapTap -> updatePosition(lat = event.lat, lng = event.lng)
 
@@ -380,13 +390,33 @@ class CreatePlaceViewModel(
         _uiState.update {
             it.mapSuccess { it.copy(image = image) }
         }
+        updateNameAndImage(image = image)
     }
 
     private fun updateName(name: String) {
-        if (name.trim().length > placeNameLengthLimit)
-            return
+        updateNameAndImage(name = name)
+    }
+
+    private fun updateNameAndImage(
+        name: String? = uiState.value.data?.name,
+        image: ImageModel? = uiState.value.data?.image
+    ) {
+        val name = if ((name?.trim()?.length ?: 0) > placeNameLengthLimit) {
+            uiState.value.data?.name ?: ""
+        } else {
+            name ?: ""
+        }
+
+        val image = image ?: uiState.value.data?.image ?: ImageModel.emoji(Emojis.circles.random())
+
         _uiState.update {
-            it.mapSuccess { it.copy(name = name, hasNameError = false) }
+            it.mapSuccess {
+                it.copy(
+                    name = name,
+                    hasNameError = false,
+                    image = image
+                )
+            }
         }
     }
 
@@ -500,6 +530,66 @@ class CreatePlaceViewModel(
                     lng = suggestion.latLng.lng,
                 )
             }
+        }
+    }
+
+    private fun getNameSuggestions(): List<SuggestionSectionChipData> {
+        return buildList {
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.home),
+                    name = MR.strings.place_create_suggestion_home.localizedString()
+                )
+            )
+
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.moneyBag),
+                    name = MR.strings.place_create_suggestion_work.localizedString()
+                )
+            )
+
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.schoolBooks),
+                    name = MR.strings.place_create_suggestion_school.localizedString()
+                )
+            )
+
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.personGym),
+                    name = MR.strings.place_create_suggestion_gym.localizedString()
+                )
+            )
+
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.basketball),
+                    name = MR.strings.place_create_suggestion_playground.localizedString()
+                )
+            )
+
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.shoppingCart),
+                    name = MR.strings.place_create_suggestion_shopping.localizedString()
+                )
+            )
+
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.croissant),
+                    name = MR.strings.place_create_suggestion_bakery.localizedString()
+                )
+            )
+
+            add(
+                SuggestionSectionChipData(
+                    image = ImageModel.emoji(Emojis.coffee),
+                    name = MR.strings.place_create_suggestion_coffee.localizedString()
+                )
+            )
         }
     }
 

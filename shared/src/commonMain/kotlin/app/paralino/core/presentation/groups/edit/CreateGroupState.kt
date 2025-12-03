@@ -3,6 +3,7 @@ package app.paralino.core.presentation.groups.edit
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.groups.components.SuggestionSectionChipData
 import app.paralino.core.utils.Emojis
 
 data class CreateGroupState(
@@ -12,11 +13,11 @@ data class CreateGroupState(
     val hasNameError: Boolean,
     val isLoading: Boolean,
     val alertDialog: MainAlertDialog?,
-    val suggestions: List<NewGroupSuggestionChipData>
+    val suggestions: List<SuggestionSectionChipData>
 ) {
     companion object {
         fun empty(
-            suggestions: List<NewGroupSuggestionChipData>
+            suggestions: List<SuggestionSectionChipData>
         ): CreateGroupState {
             return CreateGroupState(
                 isNewGroup = true,
@@ -31,11 +32,6 @@ data class CreateGroupState(
     }
 }
 
-data class NewGroupSuggestionChipData(
-    val image: ImageModel,
-    val name: String,
-)
-
 sealed class CreateGroupScreenEvent() {
     data class GroupUpdated(val groupId: String): CreateGroupScreenEvent()
 }
@@ -43,6 +39,6 @@ sealed class CreateGroupScreenEvent() {
 sealed interface CreateGroupScreenUiEvent {
     data object CreateGroup : CreateGroupScreenUiEvent
     data class OnGroupNameChange(val name: String) : CreateGroupScreenUiEvent
-    data class OnGroupSuggestionClicked(val suggestionChipData: NewGroupSuggestionChipData) : CreateGroupScreenUiEvent
+    data class OnGroupSuggestionClicked(val suggestionChipData: SuggestionSectionChipData) : CreateGroupScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : CreateGroupScreenUiEvent
 }
