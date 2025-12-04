@@ -66,6 +66,7 @@ fun CreatePlaceScreen(
                 PlaceCreateMapComposable(
                     modifier = Modifier.fillMaxSize(),
                     state = state,
+                    onMapCameraSettled = { vm.onEvent(CreatePlaceScreenUiEvent.OnMapPositionChanged(it)) },
                     onMapInteraction = { },
                     onMapTap = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) },
                     onMapLongPress = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) }

@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.places.create
 
+import androidx.compose.ui.text.input.TextFieldValue
 import app.paralino.core.MR
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
 import app.paralino.core.domain.user.PremiumStatusLimitState
@@ -60,6 +61,7 @@ class CreatePlaceViewModel(
     private val _eventChannel = Channel<CreatePlaceScreenEvent?>()
     val events = _eventChannel.receiveAsFlow()
     private var addressSearchJob: Job? = null
+    private var mapPosition: LatLng? = null
 
     val placeNameLengthLimit = 30
 
@@ -96,7 +98,7 @@ class CreatePlaceViewModel(
                             name = place.data.data?.name ?: "---",
                             image = place.data.data?.image ?: ImageModel.emoji(Emojis.lock),
                             nameSuggestions = getNameSuggestions(),
-                            address = "",
+                            address = TextFieldValue(text = ""),
                             addressUiMode = CreatePlaceAddressSearchUiMode.HIDDEN,
                             addressSuggestions = emptyList(),
                             isAddressLoading = false,
@@ -156,6 +158,7 @@ class CreatePlaceViewModel(
             is CreatePlaceScreenUiEvent.OnNameChanged -> updateNameAndImage(name = event.name)
             is CreatePlaceScreenUiEvent.OnRadiusChanged -> updateRadius(event.radiusMeters)
             is CreatePlaceScreenUiEvent.OnMapTap -> updatePosition(lat = event.lat, lng = event.lng)
+            is CreatePlaceScreenUiEvent.OnMapPositionChanged -> mapPosition = event.position
 
             is CreatePlaceScreenUiEvent.ChangeSearchFieldFocus -> {
                 _uiState.update {
@@ -193,16 +196,6 @@ class CreatePlaceViewModel(
                                 }
                             } else {
                                 CreatePlaceAddressSearchUiMode.HIDDEN
-                            },
-                            address = if (shouldFocus) {
-                                it.address
-                            } else {
-                                ""
-                            },
-                            addressSuggestions = if (shouldFocus) {
-                                it.addressSuggestions
-                            } else {
-                                emptyList()
                             },
                             isAddressLoading = false
                         )
@@ -451,40 +444,48 @@ class CreatePlaceViewModel(
         }
     }
 
-    private fun searchAddress(address: String) {
+    private fun searchAddress(address: TextFieldValue) {
         addressSearchJob?.cancel()
         addressSearchJob = null
 
-        val address = address.replace("\n", " ")
+        val address = address.copy(text = address.text.replace("\n", " "))
 
         _uiState.update {
             it.mapSuccess {
                 it.copy(
                     address = address,
                     isAddressLoading = false,
-                    addressSuggestions = emptyList()
+                    addressSuggestions = if (address.text.isBlank()) {
+                        emptyList()
+                    } else {
+                        it.addressSuggestions
+                    },
+                    addressUiMode = if (address.text.isBlank()) {
+                        CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
+                    } else {
+                        it.addressUiMode
+                    }
                 )
             }
         }
 
-        if (address.isBlank()) {
+        if (address.text.isBlank()) {
             return
         }
 
         addressSearchJob = coroutineScope.launch(Dispatchers.IO) {
-            delay(500)
+            delay(300)
             _uiState.update {
                 it.mapSuccess {
                     it.copy(
-                        isAddressLoading = true,
-                        addressSuggestions = emptyList()
+                        isAddressLoading = true
                     )
                 }
             }
             try {
                 val result = placeAddressSearch.searchAddress(
-                    address = address.trim(),
-                    latLng = null
+                    address = address.text.trim(),
+                    latLng = mapPosition
                 )
                 val suggestions = result.results.map {
                     PlaceAddressSuggestion(

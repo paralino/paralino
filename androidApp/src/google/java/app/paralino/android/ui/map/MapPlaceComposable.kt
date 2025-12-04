@@ -19,10 +19,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
-import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -35,6 +35,7 @@ fun PlaceCreateMapComposable(
     modifier: Modifier = Modifier,
     state: CreatePlaceScreenState,
     onMapInteraction: (Boolean) -> Unit,
+    onMapCameraSettled: (LatLng) -> Unit,
     onMapTap: (lat: Double, lng: Double) -> Unit,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
 ) {
@@ -47,6 +48,7 @@ fun PlaceCreateMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
         canTapOnCircles = false,
+        onMapCameraSettled = onMapCameraSettled,
         onMapInteraction = onMapInteraction,
         onMapTap = onMapTap,
         onMapLongPress = onMapLongPress
@@ -68,6 +70,7 @@ fun PlaceDetailMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
         canTapOnCircles = true,
+        onMapCameraSettled = {},
         onMapInteraction = onMapInteraction,
         onMapTap = { lat, lng -> },
         onMapLongPress = { lat, lng -> }
@@ -80,6 +83,7 @@ fun SimplePlaceMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
     canTapOnCircles: Boolean,
+    onMapCameraSettled: (LatLng) -> Unit,
     onMapInteraction: (Boolean) -> Unit,
     onMapTap: (lat: Double, lng: Double) -> Unit,
     onMapLongPress: (lat: Double, lng: Double) -> Unit,
@@ -101,7 +105,17 @@ fun SimplePlaceMapComposable(
     LaunchedEffect(key1 = cameraPositionState) {
         snapshotFlow { cameraPositionState.isMoving }
             .distinctUntilChanged()
-            .collectLatest { onMapInteraction(it) }
+            .collectLatest {
+                try {
+                    onMapCameraSettled(
+                        LatLng(
+                            lat = cameraPositionState.position.target.latitude,
+                            lng = cameraPositionState.position.target.longitude,
+                        )
+                    )
+                } catch (e: Exception) { }
+                onMapInteraction(it)
+            }
     }
 
     val uiSettings by defaultMapUiSettings()
@@ -155,7 +169,7 @@ fun SimplePlaceMapComposable(
 
                 if (model.shouldShowApproximateCircle) {
                     Circle(
-                        center = LatLng(latAnim, lngAnim),
+                        center = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
                         clickable = canTapOnCircles,
                         fillColor = Color.Blue.copy(alpha = 0.4f),
                         radius = accuracyAnim,
@@ -170,7 +184,7 @@ fun SimplePlaceMapComposable(
                 }
                 MapMarkerComposable(
                     state = model,
-                    position = LatLng(latAnim, lngAnim),
+                    position = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
                     canTapOnMarker = canTapOnCircles,
                     zIndex = 20f,
                     onClick = {

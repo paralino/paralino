@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
@@ -59,13 +60,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
 import app.paralino.core.models.data
-import app.paralino.core.presentation.groups.edit.CreateGroupScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -505,7 +506,7 @@ private fun PlaceAddressSearchComponent(
     focusRequester: FocusRequester,
     uiMode: CreatePlaceAddressSearchUiMode,
     isLoading: Boolean,
-    address: String,
+    address: TextFieldValue,
     suggestions: List<PlaceAddressSuggestion>,
     onEvent: (CreatePlaceScreenUiEvent) -> Unit
 ) {
@@ -551,13 +552,39 @@ private fun PlaceAddressSearchComponent(
                             .padding(bottom = 8.dp, top = 4.dp)
                             .height(height = 48.dp)
                             .focusRequester(focusRequester),
-                        text = address,
+                        textValue = address,
                         hint = stringResource(MR.strings.places_create_address_placeholder),
                         focusManager = focusManager,
                         hasError = false,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done,
                         capitalization = KeyboardCapitalization.Words,
+                        trailingIcon = if (address.text.isNotEmpty()) {
+                            {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clickable {
+                                            onEvent(
+                                                CreatePlaceScreenUiEvent.OnAddressChanged(
+                                                    TextFieldValue(text = "")
+                                                )
+                                            )
+                                        }
+                                        .clip(shape = CircleShape)
+                                        .background(
+                                            color = MaterialTheme.colors.primary,
+                                            shape = CircleShape
+                                        )
+                                        .padding(4.dp),
+                                    painter = CoreAppIcons.Close.asPainterResource(),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.onPrimary
+                                )
+                            }
+                        } else {
+                            null
+                        },
                         onInputChange = {
                             onEvent(CreatePlaceScreenUiEvent.OnAddressChanged(it))
                         }
@@ -617,7 +644,7 @@ private fun PlaceAddressSearchComponent(
                         Icon(
                             modifier = Modifier,
                             painter = if (uiMode == CreatePlaceAddressSearchUiMode.HIDDEN) {
-                                CoreAppIcons.FilterTune.asPainterResource()
+                                CoreAppIcons.Search.asPainterResource()
                             } else {
                                 CoreAppIcons.Close.asPainterResource()
                             },
@@ -647,14 +674,19 @@ private fun PlaceAddressSearchComponent(
                                 },
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = suggestion.title,
-                                style = MaterialTheme.typography.subtitle2
-                            )
-                            Text(
-                                text = suggestion.info,
-                                style = MaterialTheme.typography.caption
-                            )
+                            if (suggestion.title.isNotBlank()) {
+                                Text(
+                                    text = suggestion.title,
+                                    style = MaterialTheme.typography.subtitle2
+                                )
+                            }
+
+                            if (suggestion.info.isNotBlank()) {
+                                Text(
+                                    text = suggestion.info,
+                                    style = MaterialTheme.typography.caption
+                                )
+                            }
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.places.create
 
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.TextFieldValue
 import app.paralino.core.MR
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
@@ -21,7 +22,7 @@ data class CreatePlaceScreenState constructor(
     val name: String,
     val image: ImageModel,
     val nameSuggestions: List<SuggestionSectionChipData>,
-    val address: String,
+    val address: TextFieldValue,
     val addressUiMode: CreatePlaceAddressSearchUiMode,
     val addressSuggestions: List<PlaceAddressSuggestion>,
     val isAddressLoading: Boolean,
@@ -95,7 +96,7 @@ data class CreatePlaceScreenState constructor(
                 name = "",
                 image = ImageModel.emoji(Emojis.circles.random()),
                 nameSuggestions = nameSuggestions,
-                address = "",
+                address = TextFieldValue(text = ""),
                 addressUiMode = if (lat == null || lng == null) {
                     CreatePlaceAddressSearchUiMode.SEARCH_EXPANDED
                 } else {
@@ -140,10 +141,11 @@ sealed class CreatePlaceScreenEvent() {
 
 sealed interface CreatePlaceScreenUiEvent {
     data object CreatePlace : CreatePlaceScreenUiEvent
+    data class OnMapPositionChanged(val position: LatLng) : CreatePlaceScreenUiEvent
     data class OnNameChanged(val name: String) : CreatePlaceScreenUiEvent
     data class OnRadiusChanged(val radiusMeters: Int) : CreatePlaceScreenUiEvent
     data class OnImageChanged(val image: ImageModel) : CreatePlaceScreenUiEvent
-    data class OnAddressChanged(val address: String) : CreatePlaceScreenUiEvent
+    data class OnAddressChanged(val address: TextFieldValue) : CreatePlaceScreenUiEvent
     data class OnNameSuggestionSelected(val suggestion: SuggestionSectionChipData) : CreatePlaceScreenUiEvent
     data class OnAddressSuggestionSelected(val suggestion: PlaceAddressSuggestion) : CreatePlaceScreenUiEvent
 

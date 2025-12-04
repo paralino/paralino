@@ -18,9 +18,9 @@ class PlaceAddressSearchUseCase(
         latLng: LatLng?
     ): PlaceAddressSearchResponse {
         val language = try {
-            Locale.current.language
+            Locale.current.toLanguageTag()
         } catch (e: Exception) {
-            "en"
+            "en-US"
         }
         return triggerRemoteOnly {
             val response = functionApi.runAndWait(
@@ -38,59 +38,6 @@ class PlaceAddressSearchUseCase(
             }
 
             response.response<PlaceAddressSearchResponse>().data
-//            delay(300)
-//            PlaceAddressSearchResponse(
-//                results = listOf(
-//                    PlaceAddressSearchResult(
-//                        title = "Eiffel Tower",
-//                        address = "Paris 7th arrondissement, France",
-//                        lat = 48.8584,
-//                        lng = 2.3584
-//                    ),
-//                    PlaceAddressSearchResult(
-//                        title = "Louvre Museum",
-//                        address = "Paris 1st arrondissement, France",
-//                        lat = 48.8606,
-//                        lng = 2.3522
-//                    ),
-//                    PlaceAddressSearchResult(
-//                        title = "Notre-Dame Cathedral",
-//                        address = "Paris 4th arrondissement, France",
-//                        lat = 48.8534,
-//                        lng = 2.3488
-//                    ),
-//                    PlaceAddressSearchResult(
-//                        title = "Arc de Triomphe",
-//                        address = "Paris 8th arrondissement, France",
-//                        lat = 48.8738,
-//                        lng = 2.3091
-//                    ),
-//                    PlaceAddressSearchResult(
-//                        title = "Eiffel Tower",
-//                        address = "Paris 7th arrondissement, France",
-//                        lat = 48.8584,
-//                        lng = 2.3584
-//                    ),
-//                    PlaceAddressSearchResult(
-//                        title = "Louvre Museum",
-//                        address = "Paris 1st arrondissement, France",
-//                        lat = 48.8606,
-//                        lng = 2.3522
-//                    ),
-//                    PlaceAddressSearchResult(
-//                        title = "Notre-Dame Cathedral",
-//                        address = "Paris 4th arrondissement, France",
-//                        lat = 48.8534,
-//                        lng = 2.3488
-//                    ),
-//                    PlaceAddressSearchResult(
-//                        title = "Arc de Triomphe",
-//                        address = "Paris 8th arrondissement, France",
-//                        lat = 48.8738,
-//                        lng = 2.3091
-//                    )
-//                )
-//            )
         }
     }
 }

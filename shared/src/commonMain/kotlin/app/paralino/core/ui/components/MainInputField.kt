@@ -27,6 +27,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -90,18 +91,21 @@ fun MainInputField(
 fun MainInputBasicField(
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
-    text: String,
+    textValue: TextFieldValue,
     hint: String,
     hasError: Boolean,
     shape: Shape = MaterialTheme.shapes.small,
     textStyle: TextStyle = LocalTextStyle.current,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Default,
-    capitalization: KeyboardCapitalization = if (keyboardType == KeyboardType.Email)
+    capitalization: KeyboardCapitalization = if (keyboardType == KeyboardType.Email) {
         KeyboardCapitalization.None
-    else KeyboardCapitalization.Sentences,
+    } else {
+        KeyboardCapitalization.Sentences
+    },
+    trailingIcon: @Composable (() -> Unit)? = null,
     onKeyboardAction: () -> Unit = {},
-    onInputChange: (String) -> Unit,
+    onInputChange: (TextFieldValue) -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -109,9 +113,10 @@ fun MainInputBasicField(
         unfocusedBorderColor = MaterialTheme.colors.surface,
         focusedLabelColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
     )
+
     BasicTextField(
         modifier = modifier,
-        value = text,
+        value = textValue,
         onValueChange = onInputChange,
         keyboardOptions = KeyboardOptions(
             imeAction = imeAction,
@@ -129,7 +134,7 @@ fun MainInputBasicField(
         singleLine = true,
         decorationBox = @Composable { innerTextField ->
             TextFieldDefaults.OutlinedTextFieldDecorationBox(
-                value = text,
+                value = textValue.text,
                 visualTransformation = VisualTransformation.None,
                 innerTextField = innerTextField,
                 placeholder = {
@@ -141,7 +146,7 @@ fun MainInputBasicField(
                 },
                 label = null,
                 leadingIcon = null,
-                trailingIcon = null,
+                trailingIcon = trailingIcon,
                 singleLine = true,
                 enabled = true,
                 isError = hasError,
