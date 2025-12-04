@@ -254,6 +254,7 @@ fun LocationHistoryMapContent(
                 MapMarkerComposable(
                     state = point,
                     position = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
+                    canTapOnMarker = true,
                     zIndex = 20f,
                     onClick = {
                         onEvent(LocationHistoryUiEvent.OnMarkerClick(it))

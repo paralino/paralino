@@ -400,6 +400,7 @@ private fun MapHomeElementSharingRow(
                         ?: stringResource(MR.strings.groups_sharing_duration_type_infinite)
                 },
                 backgroundColor = MaterialTheme.colors.background,
+                contentColor = AppColors.accent,
                 onClick = {
                     onEvent(MapHomeScreenUiEvent.OnSharingStartClick)
                 }

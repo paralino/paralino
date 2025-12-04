@@ -506,3 +506,24 @@ data class PersonalDeviceKeyUpdatePayload(
     val status: String,
     val locationHistory: String?
 )
+
+@Serializable
+data class PlaceAddressSearchPayload(
+    val address: String,
+    val language: String,
+    val lat: Float?,
+    val lng: Float?
+)
+
+@Serializable
+data class PlaceAddressSearchResponse(
+    val results: List<PlaceAddressSearchResult>
+)
+
+@Serializable
+data class PlaceAddressSearchResult(
+    val title: String,
+    val address: String,
+    val lat: Double,
+    val lng: Double
+)

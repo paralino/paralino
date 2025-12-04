@@ -21,6 +21,11 @@ object Emojis {
     val airplane = "emoji_u2708"
     val globe = "emoji_u1f30d"
     val mobilePhone = "emoji_u1f4f1"
+    val basketball = "emoji_u1f3c0"
+    val moneyBag = "emoji_u1f4b0"
+    val croissant = "emoji_u1f950"
+    val shoppingCart = "emoji_u1f6d2"
+    val personGym = "emoji_u1f3cb"
 
     private val userSpecific = listOf(
 //        "emoji_u1f4a9",
@@ -98,9 +103,9 @@ object Emojis {
         "emoji_u1f3bc",
         "emoji_u1f3be",
         "emoji_u1f3bf",
-        "emoji_u1f3c0",
+        basketball,
         "emoji_u1f3c8",
-        "emoji_u1f3cb",
+        personGym,
         "emoji_u1f3d0",
         "emoji_u1f3d3",
         "emoji_u1f3d6",
@@ -113,11 +118,11 @@ object Emojis {
         "emoji_u1f3eb",
         "emoji_u1f3f0",
         lightBulb,
-        "emoji_u1f4b0",
+        moneyBag,
         schoolBooks,
         "emoji_u1f6b2",
         "emoji_u1f6cd",
-        "emoji_u1f6d2",
+        shoppingCart,
         "emoji_u1f6dd",
         suitecase,
         "emoji_u1f30a",
@@ -140,7 +145,7 @@ object Emojis {
         "emoji_u1f393",
         "emoji_u1f525",
         "emoji_u1f942",
-        "emoji_u1f950",
+        croissant,
         "emoji_u1fa82",
         "emoji_u1fab7",
         star,

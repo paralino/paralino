@@ -14,6 +14,7 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.map.PlaceCreateMapComposable
 import app.paralino.core.MR
 import app.paralino.core.models.data
+import app.paralino.core.presentation.places.create.CreatePlaceScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.EmojiBottomSheetPicker
@@ -65,9 +66,10 @@ fun CreatePlaceScreen(
                 PlaceCreateMapComposable(
                     modifier = Modifier.fillMaxSize(),
                     state = state,
+                    onMapCameraSettled = { vm.onEvent(CreatePlaceScreenUiEvent.OnMapPositionChanged(it)) },
                     onMapInteraction = { },
-                    onMapTap = { lat, lng -> vm.updatePosition(lat, lng) },
-                    onMapLongPress = { lat, lng -> vm.updatePosition(lat, lng) }
+                    onMapTap = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) },
+                    onMapLongPress = { lat, lng -> vm.onEvent(CreatePlaceScreenUiEvent.OnMapTap(lat, lng)) }
                 )
             }
         )
@@ -76,7 +78,7 @@ fun CreatePlaceScreen(
     EmojiBottomSheetPicker(
         state = pickerState,
         onClick = {
-            vm.updateImage(it)
+            vm.onEvent(CreatePlaceScreenUiEvent.OnImageChanged(it))
             appState.uiScope.launch { pickerState.hide() }
         }
     )

@@ -49,6 +49,7 @@ enum class ServerFunction constructor(
     PLACE_CREATE(method = "PUT", path = "/places"),
     PLACE_DELETE(method = "DELETE", path = "/places"),
     PLACE_UPDATE(method = "PATCH", path = "/places"),
+    PLACE_ADDRESS_SEARCH(method = "POST", path = "/places/search"),
 
     KEYS_UPDATE_GROUP(method = "POST", path = "/keys/group"),
     KEYS_UPDATE_MEMBERS(method = "POST", path = "/keys/member"),

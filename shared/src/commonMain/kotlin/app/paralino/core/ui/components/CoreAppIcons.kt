@@ -113,6 +113,7 @@ import paralino.shared.generated.resources.image_map_mockup_light
 import paralino.shared.generated.resources.image_map_satellite_lawn
 import paralino.shared.generated.resources.paralino_start_background
 import paralino.shared.generated.resources.ic_route_dots
+import paralino.shared.generated.resources.ic_search
 import paralino.shared.generated.resources.ic_star_shine
 import paralino.shared.generated.resources.ic_zoom_focus_full
 import paralino.shared.generated.resources.ic_zoom_focus_large
@@ -191,6 +192,7 @@ object CoreAppIcons {
     val OpenBook get() = Res.drawable.ic_open_book
     val ChatBubbleList get() = Res.drawable.ic_chat_bubble_list
     val AssignmentList get() = Res.drawable.ic_assignment_list
+    val Search get() = Res.drawable.ic_search
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay

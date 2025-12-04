@@ -16,6 +16,7 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.groups.components.SuggestionSectionChipData
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -64,35 +65,35 @@ class CreateGroupViewModel(
                 when {
                     isGroupCreate() -> {
                         val suggestions = listOf(
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.home),
                                 name = MR.strings.group_create_suggestion_family.localizedString()
                             ),
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.artMasks),
                                 name = MR.strings.group_create_suggestion_friends.localizedString()
                             ),
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.heart),
                                 name = MR.strings.group_create_suggestion_couple.localizedString()
                             ),
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.coffee),
                                 name = MR.strings.group_create_suggestion_coffee.localizedString()
                             ),
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.star),
                                 name = MR.strings.group_create_suggestion_bestGroup.localizedString()
                             ),
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.airplane),
                                 name = MR.strings.group_create_suggestion_travel.localizedString()
                             ),
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.schoolBooks),
                                 name = MR.strings.group_create_suggestion_school.localizedString()
                             ),
-                            NewGroupSuggestionChipData(
+                            SuggestionSectionChipData(
                                 image = ImageModel.emoji(Emojis.suitecase),
                                 name = MR.strings.group_create_suggestion_work.localizedString()
                             )
