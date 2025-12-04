@@ -22,7 +22,9 @@ import androidx.compose.ui.input.pointer.pointerInteropFilter
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
+import app.paralino.core.presentation.places.create.PlaceMapFallbackLatLng
 import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -47,6 +49,7 @@ fun PlaceCreateMapComposable(
     SimplePlaceMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
+        fallbackCenterLatLng = state.fallbackCenterLatLng,
         canTapOnCircles = false,
         onMapCameraSettled = onMapCameraSettled,
         onMapInteraction = onMapInteraction,
@@ -69,6 +72,7 @@ fun PlaceDetailMapComposable(
     SimplePlaceMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
+        fallbackCenterLatLng = null,
         canTapOnCircles = true,
         onMapCameraSettled = {},
         onMapInteraction = onMapInteraction,
@@ -82,6 +86,7 @@ fun PlaceDetailMapComposable(
 fun SimplePlaceMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
+    fallbackCenterLatLng: PlaceMapFallbackLatLng?,
     canTapOnCircles: Boolean,
     onMapCameraSettled: (LatLng) -> Unit,
     onMapInteraction: (Boolean) -> Unit,
@@ -93,7 +98,19 @@ fun SimplePlaceMapComposable(
     var mapLoaded by remember { mutableStateOf(false) }
 
     val cameraPositionState = rememberCameraPositionState {
-        refocus(scope = scope, markers = markers, padding = 150, durationMs = 0)
+        if (markers.isEmpty() && fallbackCenterLatLng != null) {
+            this.move(
+                CameraUpdateFactory.newLatLngZoom(
+                    com.google.android.gms.maps.model.LatLng(
+                        fallbackCenterLatLng.location.lat,
+                        fallbackCenterLatLng.location.lng
+                    ),
+                    if (fallbackCenterLatLng.isRegion) 4f else 10f
+                )
+            )
+        } else {
+            refocus(scope = scope, markers = markers, padding = 150, durationMs = 0)
+        }
     }
 
     LaunchedEffect(key1 = markers) {

@@ -27,6 +27,7 @@ data class CreatePlaceScreenState constructor(
     val addressSuggestions: List<PlaceAddressSuggestion>,
     val isAddressLoading: Boolean,
     val private: Boolean,
+    val fallbackCenterLatLng: PlaceMapFallbackLatLng?,
     val lat: Double?,
     val lng: Double?,
     val radiusMeters: Int,
@@ -87,6 +88,7 @@ data class CreatePlaceScreenState constructor(
             lng: Double? = null,
             radiusMeters: Int,
             radiusText: String,
+            fallbackCenterLatLng: PlaceMapFallbackLatLng?,
             nameSuggestions: List<SuggestionSectionChipData>
         ): CreatePlaceScreenState {
             return CreatePlaceScreenState(
@@ -105,6 +107,7 @@ data class CreatePlaceScreenState constructor(
                 addressSuggestions = emptyList(),
                 isAddressLoading = false,
                 private = false,
+                fallbackCenterLatLng = fallbackCenterLatLng,
                 lat = lat,
                 lng = lng,
                 radiusMeters = radiusMeters,
@@ -125,6 +128,11 @@ enum class CreatePlaceScreenStep {
 enum class CreatePlaceAddressSearchUiMode {
     HIDDEN, SEARCH_EXPANDED, FULLY_EXPANDED
 }
+
+data class PlaceMapFallbackLatLng(
+    val location: LatLng,
+    val isRegion: Boolean
+)
 
 data class PlaceAddressSuggestion(
     val title: String,

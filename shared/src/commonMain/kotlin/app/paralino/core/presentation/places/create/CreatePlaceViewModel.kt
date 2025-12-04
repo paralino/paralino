@@ -3,6 +3,7 @@ package app.paralino.core.presentation.places.create
 import androidx.compose.ui.text.input.TextFieldValue
 import app.paralino.core.MR
 import app.paralino.core.domain.group.PlaceAddressSearchUseCase
+import app.paralino.core.domain.location.LocationCacheRepository
 import app.paralino.core.domain.user.PremiumStatusLimitState
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.RefreshEverythingUseCase
@@ -51,7 +52,8 @@ class CreatePlaceViewModel(
     private val premiumStatusManager: PremiumStatusManager,
     private val refreshEverythingUseCase: RefreshEverythingUseCase,
     private val valueFormatter: IValueFormatter,
-    private val placeAddressSearch: PlaceAddressSearchUseCase
+    private val placeAddressSearch: PlaceAddressSearchUseCase,
+    private val cachedLocation: LocationCacheRepository
 ) : CoreViewModel() {
 
     private val placeFlow = MutableStateFlow<Payload<GroupPlace>>(Payload.Loading)
@@ -81,6 +83,20 @@ class CreatePlaceViewModel(
                             groupId = groupId.asGroupOrSpaceId(),
                             lat = lat,
                             lng = lng,
+                            fallbackCenterLatLng = cachedLocation.lastLocation?.let {
+                                PlaceMapFallbackLatLng(
+                                    location = LatLng(
+                                        lat = it.lat,
+                                        lng = it.lng
+                                    ),
+                                    isRegion = false
+                                )
+                            } ?: placeAddressSearch.getDefaultRegionLocation()?.let {
+                                PlaceMapFallbackLatLng(
+                                    location = it,
+                                    isRegion = true
+                                )
+                            },
                             radiusMeters = CreatePlaceScreenState.defaultRadiusMeters,
                             radiusText = valueFormatter.getDistanceSmall(
                                 meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble(),
@@ -104,6 +120,7 @@ class CreatePlaceViewModel(
                             isAddressLoading = false,
                             hasNameError = false,
                             private = false,
+                            fallbackCenterLatLng = null,
                             lat = place.data.data?.lat,
                             lng = place.data.data?.lng,
                             radiusMeters = place.data.data?.radiusMeters ?: 0,

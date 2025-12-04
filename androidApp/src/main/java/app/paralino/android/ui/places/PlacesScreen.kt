@@ -102,6 +102,7 @@ fun PlacesScreen(
             mapContent = { state ->
                 SimplePlaceMapComposable(
                     markers = state.markers,
+                    fallbackCenterLatLng = null,
                     canTapOnCircles = true,
                     onMapCameraSettled = {},
                     onMapInteraction = { userScroll = !it },
