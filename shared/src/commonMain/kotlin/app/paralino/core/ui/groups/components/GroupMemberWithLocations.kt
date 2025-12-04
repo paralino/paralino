@@ -969,6 +969,7 @@ fun GroupMemberActionButton(
     endIcon: Painter? = CoreAppIcons.ChevronRight.asPainterResource(),
     backgroundColor: Color = MaterialTheme.colors.surface,
     contentColor: Color = contentColorFor(backgroundColor),
+    startIconColor: Color = contentColor,
     contentPadding: PaddingValues = PaddingValues(
         start = 8.dp,
         top = 6.dp,
@@ -994,7 +995,7 @@ fun GroupMemberActionButton(
                     modifier = Modifier.size(startIconSize),
                     painter = startIcon,
                     contentDescription = null,
-                    tint = contentColor
+                    tint = startIconColor
                 )
             }
         },
