@@ -533,7 +533,7 @@
     <string name="group_members_item_old_location_button">Show last location</string>
     <string name="group_members_item_directions_button">Directions</string>
     <string name="group_members_item_history_button">History</string>
-    <string name="group_members_item_tracking_button">Tracking</string>
+    <string name="group_members_item_tracking_button">Tracking on</string>
     <string name="group_members_marker_circle_info">%s is somewhere inside this circle</string>
     <string name="group_members_marker_circle_info_inaccurate">%s might be somewhere inside this circle</string>
     <string name="group_member_title">Member</string>

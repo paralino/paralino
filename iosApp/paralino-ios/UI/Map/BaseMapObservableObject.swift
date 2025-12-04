@@ -99,6 +99,10 @@ class BaseMapObservableObject : ObservableObject {
     func refocusMap(animate: Bool = true, canInteruptAnimation: Bool = false) {
         focusToMarkers(markers, animate: animate, canInteruptAnimation: canInteruptAnimation)
     }
+    
+    func regionFinishedUpdating() {
+        isUpdatingRegion = false
+    }
 }
 
 struct MapCameraState {

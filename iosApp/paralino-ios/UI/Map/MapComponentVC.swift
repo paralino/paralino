@@ -429,7 +429,7 @@ extension MapComponentVC: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        mapState?.isUpdatingRegion = false
+        mapState?.regionFinishedUpdating()
     }
     
     func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {

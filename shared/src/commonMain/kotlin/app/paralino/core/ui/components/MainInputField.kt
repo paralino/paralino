@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -130,7 +131,7 @@ fun MainInputBasicField(
                 focusManager.clearFocus()
             onKeyboardAction()
         },
-        textStyle = textStyle,
+        textStyle = textStyle.copy(color = MaterialTheme.colors.onSurface.copy(alpha = LocalContentAlpha.current)),
         singleLine = true,
         decorationBox = @Composable { innerTextField ->
             TextFieldDefaults.OutlinedTextFieldDecorationBox(

@@ -283,7 +283,8 @@ object KoinIOS {
                     premiumStatusManager = get(),
                     refreshEverythingUseCase = get(),
                     valueFormatter = get(),
-                    placeAddressSearch = get()
+                    placeAddressSearch = get(),
+                    cachedLocation = get()
                 )
             }
             factory { (rawDataType: RawPresentationDataType) ->

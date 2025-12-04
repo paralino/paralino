@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 class CreatePlaceViewModel(
     val groupId: String,
@@ -494,15 +495,13 @@ class CreatePlaceViewModel(
             delay(300)
             _uiState.update {
                 it.mapSuccess {
-                    it.copy(
-                        isAddressLoading = true
-                    )
+                    it.copy(isAddressLoading = true)
                 }
             }
             try {
                 val result = placeAddressSearch.searchAddress(
                     address = address.text.trim(),
-                    latLng = mapPosition
+                    latLng = mapPosition ?: uiState.value.data?.fallbackCenterLatLng?.location
                 )
                 val suggestions = result.results.map {
                     PlaceAddressSuggestion(
@@ -525,7 +524,10 @@ class CreatePlaceViewModel(
                     }
                 }
             } catch (e: Exception) {
-                showSnackbar(e.errorString())
+                if (e !is CancellationException) {
+                    showSnackbar(e.errorString())
+                }
+
                 _uiState.update {
                     it.mapSuccess {
                         it.copy(
