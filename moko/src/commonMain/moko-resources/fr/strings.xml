@@ -839,5 +839,22 @@
     <string name="paywall_header_feature_list_screen_solo">Fait pour vous, pas pour les annonceurs</string>
     <string name="paywall_header_feature_list_screen_family">Ne laissez pas les autres suivre votre famille</string>
     <string name="paywall_header_feature_history_title">Suivez vos voyages</string>
-    <string name="group_members_item_tracking_button">Suivi</string>
+    <string name="group_members_item_tracking_button">Suivi activé</string>
+    <string name="setting_feedbackPortal_title">Portail de feedback</string>
+    <string name="setting_feedbackPortal_info">Suggérez et votez pour les prochaines nouvelles fonctionnalités</string>
+    <string name="setting_feedbackChangelog_title">Journal des modifications</string>
+    <string name="setting_appReview_title">Aimez-vous Paralino ?</string>
+    <string name="setting_appReview_info">Pourriez-vous lui donner un avis 🥺</string>
+    <string name="places_create_location_hint_searchTap">**CONSEIL :** Recherchez ou appuyez sur la carte pour ajuster votre emplacement</string>
+    <string name="places_create_location_hint_searchOnly">**CONSEIL :** Commencez à taper l\'adresse pour trouver votre emplacement</string>
+    <string name="places_create_name_placeholder">Nom*</string>
+    <string name="places_create_address_placeholder">Adresse</string>
+    <string name="place_create_suggestion_home">Maison</string>
+    <string name="place_create_suggestion_work">Travail</string>
+    <string name="place_create_suggestion_school">École</string>
+    <string name="place_create_suggestion_playground">Terrain de jeu</string>
+    <string name="place_create_suggestion_gym">Salle de sport</string>
+    <string name="place_create_suggestion_shopping">Centre commercial</string>
+    <string name="place_create_suggestion_bakery">Coin sucré</string>
+    <string name="place_create_suggestion_coffee">Meilleur café</string>
 </resources>

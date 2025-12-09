@@ -269,7 +269,7 @@
     <string name="plans_banner_settings_action">Оновити зараз</string>
     <string name="plans_banner_settings_action_small">Оновити</string>
     <string name="plans_banner_inline_group_detail">Отримайте більше історії місцезнаходжень для всіх!</string>
-    <string name="plans_banner_inline_personal_space">Слідкуйте за більшою кількістю пристроїв і отримуйте більше історії місцезнаходжень!</string>
+    <string name="plans_banner_inline_personal_space">Відстежуйте більше пристроїв та отримуйте більше історії місцезнаходження!</string>
     <string name="plans_banner_inline_places">Додайте більше місць і насолоджуйтеся необмеженими сповіщеннями!</string>
     <string name="plans_banner_inline_groups_picker">Створіть більше груп і зв\'яжіться з більшою кількістю дорогих людей!</string>
     <string name="plans_management_screen_title">Підписка</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Створено для вас, а не для рекламодавців</string>
     <string name="paywall_header_feature_list_screen_family">Не дозволяйте іншим відстежувати вашу родину</string>
     <string name="paywall_header_feature_history_title">Відстежуйте свої подорожі</string>
-    <string name="group_members_item_tracking_button">Відстеження</string>
+    <string name="group_members_item_tracking_button">Ввідключення</string>
+    <string name="setting_feedbackPortal_title">Портал з відгуками</string>
+    <string name="setting_feedbackPortal_info">Пропонуйте та голосуйте за нові функції</string>
+    <string name="setting_feedbackChangelog_title">Зміни в оновленнях</string>
+    <string name="setting_appReview_title">Вам подобається Paralino?</string>
+    <string name="setting_appReview_info">Чи могли б ви залишити відгук 🥺</string>
+    <string name="places_create_location_hint_searchTap">**ПІДКАЗКА:** Шукай або натискай на карті, щоб відкоригувати своє місце</string>
+    <string name="places_create_location_hint_searchOnly">**ПІДКАЗКА:** Почніть вводити адресу, щоб знайти своє місце</string>
+    <string name="places_create_name_placeholder">Ім\'я*</string>
+    <string name="places_create_address_placeholder">Адреса</string>
+    <string name="place_create_suggestion_home">Дім</string>
+    <string name="place_create_suggestion_work">Робота</string>
+    <string name="place_create_suggestion_school">Школа</string>
+    <string name="place_create_suggestion_playground">Ігровий майданчик</string>
+    <string name="place_create_suggestion_gym">Спортзал</string>
+    <string name="place_create_suggestion_shopping">Торговий центр</string>
+    <string name="place_create_suggestion_bakery">Солодка куток</string>
+    <string name="place_create_suggestion_coffee">Найкраща кава</string>
 </resources>

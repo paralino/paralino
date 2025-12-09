@@ -336,7 +336,7 @@
     <string name="plans_banner_settings_action">Uppgradera nu</string>
     <string name="plans_banner_settings_action_small">Uppgradera</string>
     <string name="plans_banner_inline_group_detail">Få mer platsinformation för alla!</string>
-    <string name="plans_banner_inline_personal_space">Håll koll på fler enheter och få mer platsinformation!</string>
+    <string name="plans_banner_inline_personal_space">Spåra fler enheter och få mer platsinformation!</string>
     <string name="plans_banner_inline_places">Lägg till fler platser och njut av obegränsade aviseringar!</string>
     <string name="plans_banner_inline_groups_picker">Skapa fler grupper och koppla samman med fler kära personer!</string>
     <string name="plans_management_screen_title">Prenumeration</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Gjord för dig, inte för annonsörer</string>
     <string name="paywall_header_feature_list_screen_family">Låt inte andra spåra din familj</string>
     <string name="paywall_header_feature_history_title">Spåra dina resor</string>
-    <string name="group_members_item_tracking_button">Spårning</string>
+    <string name="group_members_item_tracking_button">Spårning aktiverad</string>
+    <string name="setting_feedbackPortal_info">Föreslå och rösta på nästa nya funktioner</string>
+    <string name="setting_feedbackChangelog_title">Ändringslogg</string>
+    <string name="setting_appReview_title">Tycker du om Paralino?</string>
+    <string name="setting_appReview_info">Skulle du kunna ge det en recension 🥺</string>
+    <string name="places_create_location_hint_searchTap">**TIPS:** Sök eller tryck på kartan för att justera din plats</string>
+    <string name="places_create_location_hint_searchOnly">**TIPS:** Börja skriva adressen för att hitta din plats</string>
+    <string name="places_create_name_placeholder">Namn*</string>
+    <string name="places_create_address_placeholder">Adress</string>
+    <string name="place_create_suggestion_home">Hem</string>
+    <string name="place_create_suggestion_work">Arbete</string>
+    <string name="place_create_suggestion_school">Skola</string>
+    <string name="place_create_suggestion_playground">Lekplats</string>
+    <string name="place_create_suggestion_gym">Gym</string>
+    <string name="place_create_suggestion_shopping">Köpcentrum</string>
+    <string name="place_create_suggestion_bakery">Söt hörn</string>
+    <string name="place_create_suggestion_coffee">Bästa kaffe</string>
+    <string name="setting_feedbackPortal_title">Feedbackportal</string>
 </resources>

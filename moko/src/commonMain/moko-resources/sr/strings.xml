@@ -820,9 +820,26 @@
     <string name="history_stats_elevation_gain">Надморска висина</string>
     <string name="history_stats_elevation_range">Опсег надморске висине</string>
     <string name="group_members_item_history_button">Историја</string>
-    <string name="group_members_item_tracking_button">Праћење</string>
+    <string name="group_members_item_tracking_button">Траћење укључено</string>
     <string name="notifications_tracking_active_message">Лично праћење локације је активно</string>
     <string name="paywall_header_feature_list_screen_solo">Направљено за вас, а не за оглашиваче</string>
     <string name="paywall_header_feature_list_screen_family">Не дозволите другима да прате вашу породицу</string>
     <string name="paywall_header_feature_history_title">Пратите своје путовање</string>
+    <string name="setting_feedbackPortal_title">Портал за повратне информације</string>
+    <string name="setting_feedbackPortal_info">Предложите и гласайте за нове функције</string>
+    <string name="setting_feedbackChangelog_title">Дневник измена</string>
+    <string name="setting_appReview_title">Да ли вам се свиђа Паралино?</string>
+    <string name="setting_appReview_info">Да ли бисте могли да оставите рецензију 🥺</string>
+    <string name="places_create_location_hint_searchTap">**САВЕТ:** Претражите или тапните на мапи да бисте прилагодили своју локацију</string>
+    <string name="places_create_location_hint_searchOnly">**САВЕТ:** Почните да куцате адресу да бисте пронашли своје место</string>
+    <string name="places_create_name_placeholder">Име*</string>
+    <string name="places_create_address_placeholder">Адреса</string>
+    <string name="place_create_suggestion_home">Дома</string>
+    <string name="place_create_suggestion_work">Посао</string>
+    <string name="place_create_suggestion_school">Школа</string>
+    <string name="place_create_suggestion_playground">Игралиште</string>
+    <string name="place_create_suggestion_gym">Фитнес</string>
+    <string name="place_create_suggestion_shopping">Тржни центар</string>
+    <string name="place_create_suggestion_bakery">Сладак кутак</string>
+    <string name="place_create_suggestion_coffee">Најбоља кафа</string>
 </resources>

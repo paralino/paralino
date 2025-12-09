@@ -669,7 +669,7 @@
     <string name="setting_location_history_level_1_info">Mais movimento necessário para atualizações de localização</string>
     <string name="setting_location_history_level_2_info">Atualizações de localização equilibradas</string>
     <string name="setting_location_history_level_3_info">Atualizações de localização frequentes</string>
-    <string name="plans_banner_inline_personal_space">Acompanhe mais dispositivos e obtenha mais histórico de localização!</string>
+    <string name="plans_banner_inline_personal_space">Rastreie mais dispositivos e obtenha mais histórico de localizações!</string>
     <string name="plans_management_info_wrong_platform_title">Você não pode gerenciar sua assinatura neste dispositivo!</string>
     <string name="plans_management_info_wrong_platform_message">Use o dispositivo que você usou originalmente para a compra.</string>
     <string name="plans_management_action_explore">Planos</string>
@@ -839,5 +839,22 @@
     <string name="paywall_header_feature_list_screen_solo">Feito para você, não para anunciantes</string>
     <string name="paywall_header_feature_list_screen_family">Não deixe que outros rastreiem sua família</string>
     <string name="paywall_header_feature_history_title">Rastreie suas viagens</string>
-    <string name="group_members_item_tracking_button">Rastreamento</string>
+    <string name="group_members_item_tracking_button">Rastreamento ativado</string>
+    <string name="setting_feedbackPortal_title">Portal de Feedback</string>
+    <string name="setting_feedbackPortal_info">Sugira e vote nas próximas novas funcionalidades</string>
+    <string name="setting_feedbackChangelog_title">Registro de alterações</string>
+    <string name="setting_appReview_title">Você gosta do Paralino?</string>
+    <string name="setting_appReview_info">Você se importaria de deixar uma avaliação 🥺</string>
+    <string name="places_create_location_hint_searchTap">**DICA:** Pesquise ou toque no mapa para ajustar sua localização</string>
+    <string name="places_create_location_hint_searchOnly">**DICA:** Comece a digitar o endereço para encontrar sua localização</string>
+    <string name="places_create_name_placeholder">Nome*</string>
+    <string name="places_create_address_placeholder">Endereço</string>
+    <string name="place_create_suggestion_home">Casa</string>
+    <string name="place_create_suggestion_work">Trabalho</string>
+    <string name="place_create_suggestion_school">Escola</string>
+    <string name="place_create_suggestion_playground">Parque infantil</string>
+    <string name="place_create_suggestion_gym">Academia</string>
+    <string name="place_create_suggestion_shopping">Shopping</string>
+    <string name="place_create_suggestion_bakery">Cantinho Doce</string>
+    <string name="place_create_suggestion_coffee">Melhor Café</string>
 </resources>

@@ -277,7 +277,7 @@
     <string name="plans_banner_settings_action">Frissítsen most</string>
     <string name="plans_banner_settings_action_small">Frissítés</string>
     <string name="plans_banner_inline_group_detail">Szerezzen be több helytörténetet mindenki számára!</string>
-    <string name="plans_banner_inline_personal_space">Kövesse nyomon több eszközt, és szerezzen be több helytörténetet!</string>
+    <string name="plans_banner_inline_personal_space">Kövesse nyomon több eszközt, és szerezzen több helyszíntörténetet!</string>
     <string name="plans_banner_inline_places">Adjon hozzá több helyet, és élvezze a korlátlan értesítéseket!</string>
     <string name="plans_banner_inline_groups_picker">Hozzon létre több csoportot, és kapcsolódjon több kedves emberhez!</string>
     <string name="plans_management_screen_title">Előfizetés</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Önnek készült, nem hirdetőknek</string>
     <string name="paywall_header_feature_list_screen_family">Ne hagyja, hogy mások követhessék a családját</string>
     <string name="paywall_header_feature_history_title">Kövesse az utazásait</string>
-    <string name="group_members_item_tracking_button">Követés</string>
+    <string name="group_members_item_tracking_button">Nyomkövetés be</string>
+    <string name="setting_feedbackPortal_title">Visszajelzési portál</string>
+    <string name="setting_feedbackPortal_info">Javasolj és szavazz a következő új funkciókra</string>
+    <string name="setting_feedbackChangelog_title">Változásnapló</string>
+    <string name="setting_appReview_title">Tetszik a Paralino?</string>
+    <string name="setting_appReview_info">Megtennéd, hogy írsz róla egy értékelést 🥺</string>
+    <string name="places_create_location_hint_searchTap">**TIP:** Keresd meg, vagy érints meg a térképen, hogy beállítsd a helyed</string>
+    <string name="places_create_location_hint_searchOnly">**TIP:** Kezdd el beírni a címet, hogy megtaláld a helyed</string>
+    <string name="places_create_name_placeholder">Név*</string>
+    <string name="places_create_address_placeholder">Cím</string>
+    <string name="place_create_suggestion_home">Otthon</string>
+    <string name="place_create_suggestion_work">Munka</string>
+    <string name="place_create_suggestion_school">Iskola</string>
+    <string name="place_create_suggestion_playground">Játszótér</string>
+    <string name="place_create_suggestion_gym">Edzőterem</string>
+    <string name="place_create_suggestion_shopping">Bevásárlóközpont</string>
+    <string name="place_create_suggestion_bakery">Édes Sarok</string>
+    <string name="place_create_suggestion_coffee">Legjobb Kávé</string>
 </resources>

@@ -304,7 +304,7 @@
     <string name="plans_banner_settings_action">Päivitä nyt</string>
     <string name="plans_banner_settings_action_small">Päivitä</string>
     <string name="plans_banner_inline_group_detail">Saat enemmän sijaintihistoriaa kaikille!</string>
-    <string name="plans_banner_inline_personal_space">Pidä kirjaa useammista laitteista ja saat enemmän sijaintihistoriaa!</string>
+    <string name="plans_banner_inline_personal_space">Seuraa enemmän laitteita ja saat enemmän sijaintihistoriaa!</string>
     <string name="plans_banner_inline_places">Lisää enemmän paikkoja ja nauti rajattomista ilmoituksista!</string>
     <string name="plans_banner_inline_groups_picker">Luo enemmän ryhmiä ja yhdistä rakkaiden ihmisten kanssa!</string>
     <string name="plans_management_screen_title">Tilauksen hallinta</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Sinulle tehty, ei mainostajille</string>
     <string name="paywall_header_feature_list_screen_family">Älä anna muiden seurata perhettäsi</string>
     <string name="paywall_header_feature_history_title">Seuraa matkojasi</string>
-    <string name="group_members_item_tracking_button">Seuranta</string>
+    <string name="group_members_item_tracking_button">Seuranta päällä</string>
+    <string name="setting_feedbackPortal_title">Palauteportaali</string>
+    <string name="setting_feedbackPortal_info">Ehdota ja äänestä seuraavista uusista ominaisuuksista</string>
+    <string name="setting_feedbackChangelog_title">Muutospäiväkirja</string>
+    <string name="setting_appReview_title">Pidätkö Paralinosta?</string>
+    <string name="setting_appReview_info">Voisitko antaa siitä arvion 🥺</string>
+    <string name="places_create_location_hint_searchTap">**VINKKI:** Etsi tai napauta kartalla säätelemään sijaintiasi</string>
+    <string name="places_create_location_hint_searchOnly">**VINKKI:** Ala kirjoittaa osoitetta löytääksesi sijaintisi</string>
+    <string name="places_create_name_placeholder">Nimi*</string>
+    <string name="places_create_address_placeholder">Osoite</string>
+    <string name="place_create_suggestion_home">Koti</string>
+    <string name="place_create_suggestion_work">Työ</string>
+    <string name="place_create_suggestion_school">Koulu</string>
+    <string name="place_create_suggestion_playground">Leikkikenttä</string>
+    <string name="place_create_suggestion_gym">Sali</string>
+    <string name="place_create_suggestion_shopping">Ostoskeskus</string>
+    <string name="place_create_suggestion_bakery">Makea nurkka</string>
+    <string name="place_create_suggestion_coffee">Paras kahvi</string>
 </resources>

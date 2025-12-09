@@ -281,7 +281,7 @@
     <string name="plans_banner_settings_action">Ulepsz teraz</string>
     <string name="plans_banner_settings_action_small">Ulepsz</string>
     <string name="plans_banner_inline_group_detail">Zyskaj więcej historii lokalizacji dla wszystkich!</string>
-    <string name="plans_banner_inline_personal_space">Śledź więcej urządzeń i zyskaj więcej historii lokalizacji!</string>
+    <string name="plans_banner_inline_personal_space">Śledź więcej urządzeń i uzyskaj więcej historii lokalizacji!</string>
     <string name="plans_banner_inline_places">Dodaj więcej miejsc i ciesz się nieograniczonymi powiadomieniami!</string>
     <string name="plans_banner_inline_groups_picker">Twórz więcej grup i łącz się z większą liczbą bliskich osób!</string>
     <string name="plans_management_screen_title">Subskrypcja</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Stworzone dla Ciebie, a nie dla reklamodawców</string>
     <string name="paywall_header_feature_list_screen_family">Nie pozwól innym śledzić Twojej rodziny</string>
     <string name="paywall_header_feature_history_title">Śledź swoje podróże</string>
-    <string name="group_members_item_tracking_button">Śledzenie</string>
+    <string name="group_members_item_tracking_button">Śledzenie włączone</string>
+    <string name="setting_feedbackPortal_title">Portal opinii</string>
+    <string name="setting_feedbackPortal_info">Sugeruj i głosuj na następne nowe funkcje</string>
+    <string name="setting_feedbackChangelog_title">Dziennik zmian</string>
+    <string name="setting_appReview_title">Czy podoba ci się Paralino?</string>
+    <string name="setting_appReview_info">Czy mógłbyś dać mu ocenę 🥺</string>
+    <string name="places_create_location_hint_searchTap">**WSKAZÓWKA:** Wyszukaj lub stuknij na mapie, aby dostosować swoje miejsce</string>
+    <string name="places_create_location_hint_searchOnly">**WSKAZÓWKA:** Zacznij wpisywać adres, aby znaleźć swoje miejsce</string>
+    <string name="places_create_name_placeholder">Imię*</string>
+    <string name="places_create_address_placeholder">Adres</string>
+    <string name="place_create_suggestion_home">Dom</string>
+    <string name="place_create_suggestion_work">Praca</string>
+    <string name="place_create_suggestion_school">Szkoła</string>
+    <string name="place_create_suggestion_playground">Place zabaw</string>
+    <string name="place_create_suggestion_gym">Siłownia</string>
+    <string name="place_create_suggestion_shopping">Centrum handlowe</string>
+    <string name="place_create_suggestion_bakery">Słodki kącik</string>
+    <string name="place_create_suggestion_coffee">Najlepsza kawa</string>
 </resources>

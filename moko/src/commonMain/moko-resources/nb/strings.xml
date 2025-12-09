@@ -280,7 +280,7 @@
     <string name="plans_banner_settings_action">Oppgrader nå</string>
     <string name="plans_banner_settings_action_small">Oppgrader</string>
     <string name="plans_banner_inline_group_detail">Få mer stedsinformasjon for alle!</string>
-    <string name="plans_banner_inline_personal_space">Hold oversikt over flere enheter og få mer stedsinformasjon!</string>
+    <string name="plans_banner_inline_personal_space">Spor mer enheter og få mer plasseringhistorikk!</string>
     <string name="plans_banner_inline_places">Legg til flere steder og nyt ubegrensede varsler!</string>
     <string name="plans_banner_inline_groups_picker">Opprett flere grupper og koble deg til flere kjære mennesker!</string>
     <string name="plans_management_screen_title">Abonnement</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Laget for deg, ikke annonsører</string>
     <string name="paywall_header_feature_list_screen_family">Ikke la andre spore familien din</string>
     <string name="paywall_header_feature_history_title">Spor reiseopplevelsene dine</string>
-    <string name="group_members_item_tracking_button">Sporing</string>
+    <string name="group_members_item_tracking_button">Sporing på</string>
+    <string name="setting_feedbackPortal_title">Tilbakemeldingsportal</string>
+    <string name="setting_feedbackPortal_info">Foreslå og stem på de neste nye funksjonene</string>
+    <string name="setting_feedbackChangelog_title">Endringslogg</string>
+    <string name="setting_appReview_title">Liker du Paralino?</string>
+    <string name="setting_appReview_info">Vil du være så snill å gi den en vurdering 🥺</string>
+    <string name="places_create_location_hint_searchTap">**TIPS:** Søk eller trykk på kartet for å justere stedet ditt</string>
+    <string name="places_create_location_hint_searchOnly">**TIPS:** Begynn å skrive adressen for å finne stedet ditt</string>
+    <string name="places_create_name_placeholder">Navn*</string>
+    <string name="places_create_address_placeholder">Adresse</string>
+    <string name="place_create_suggestion_home">Hjem</string>
+    <string name="place_create_suggestion_work">Jobb</string>
+    <string name="place_create_suggestion_school">Skole</string>
+    <string name="place_create_suggestion_playground">Lekeplass</string>
+    <string name="place_create_suggestion_gym">Treningsstudio</string>
+    <string name="place_create_suggestion_shopping">Kjøpesenter</string>
+    <string name="place_create_suggestion_bakery">Søtsakshjørnet</string>
+    <string name="place_create_suggestion_coffee">Beste kaffen</string>
 </resources>
