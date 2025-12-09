@@ -16,22 +16,31 @@ struct HistoryMapMarker: View {
     let isClustered: Bool
     
     var body: some View {
-        Image(
-//            systemName: isAccurate ? "mappin" : "mappin.and.ellipse"
-            resource: isClustered ? MR.shared.images.ic_target_circles : isAccurate ? MR.shared.images.ic_circle_with_dot : MR.shared.images.ic_not_listed_location_filled
-        )
-            .resizable()
-            .renderingMode(.template)
-            .aspectRatio(contentMode: .fill)
-            .frame(width: markerSize, height: markerSize)
-            .optionalForegroundColor(markerTintColor)
-            .background {
-                if let backgroundColor = markerBackgroundColor {
-                    Circle()
-                        .fill(backgroundColor)
-                        .frame(width: markerSize, height: markerSize)
+        if isAccurate {
+            Image(
+    //            systemName: isAccurate ? "mappin" : "mappin.and.ellipse"
+                resource: isClustered ? MR.shared.images.ic_target_circles : isAccurate ? MR.shared.images.ic_circle_with_dot : MR.shared.images.ic_not_listed_location_filled
+            )
+                .resizable()
+                .renderingMode(.template)
+                .aspectRatio(contentMode: .fill)
+                .frame(width: markerSize, height: markerSize)
+                .foregroundColor(markerTintColor)
+                .background {
+                    if let backgroundColor = markerBackgroundColor {
+                        Circle()
+                            .fill(backgroundColor)
+                            .frame(width: markerSize, height: markerSize)
+                    }
                 }
-            }
+        } else {
+            Image(
+                resource: MR.shared.images.ic_not_listed_location_filled
+            )
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: markerSize, height: markerSize)
+        }
     }
 
     private var markerSize: CGFloat {
@@ -142,17 +151,6 @@ class SwiftUIHistoryMapMarkerView: MKAnnotationView {
             anchorPoint = CGPoint(x: 0.5, y: 0.5)
         } else {
             anchorPoint = CGPoint(x: 0.5, y: 1.0)
-        }
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func optionalForegroundColor(_ color: Color?) -> some View {
-        if let color {
-            foregroundColor(color)
-        } else {
-            self
         }
     }
 }
