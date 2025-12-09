@@ -291,6 +291,36 @@ class LocationHistoryViewModelController(
                 }
             }
 
+            is LocationHistoryUiEvent.NavigateHistoryPrevious -> {
+                val newId = _uiState.value.selectedLocations.getOrNull(
+                    index = _uiState.value.locationIndex - 1
+                )?.pointId
+
+                if (!newId.isNullOrBlank()) {
+                    _uiState.update {
+                        it.copy(
+                            selectedLocationId = newId,
+                            isFilterOpened = false
+                        )
+                    }
+                }
+            }
+
+            is LocationHistoryUiEvent.NavigateHistoryNext -> {
+                val newId = _uiState.value.selectedLocations.getOrNull(
+                    index = _uiState.value.locationIndex + 1
+                )?.pointId
+
+                if (!newId.isNullOrBlank()) {
+                    _uiState.update {
+                        it.copy(
+                            selectedLocationId = newId,
+                            isFilterOpened = false
+                        )
+                    }
+                }
+            }
+
             LocationHistoryUiEvent.ToggleDayRange -> {
                 historyEventHandler.handleDaySelection(
                     dateRangeDays = 1,

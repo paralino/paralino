@@ -177,6 +177,9 @@ data class LocationHistoryScreenState(
         }
     }
 
+    val hasPreviousLocation: Boolean = locationIndex > 0
+    val hasNextLocation: Boolean = locationIndex < selectedLocations.size - 1
+
     val deleteAction: MemberActionItemState? =
         if (
             isCurrentUser &&
@@ -344,6 +347,8 @@ data class LocationHistoryScreenUiState(
     val selectedLocations: List<LocationHistoryPointState>,
     val activeDevices: List<UserActiveLocationDeviceState>,
     val locationIndex: Int,
+    val hasPreviousLocation: Boolean,
+    val hasNextLocation: Boolean,
     val selectedPoint: LocationHistoryPointState?,
     val selectedMapPinData: MapPinData?,
     val deleteAction: MemberActionItemState?,
@@ -386,6 +391,8 @@ data class LocationHistoryScreenUiState(
                 selectedLocations = screenState.selectedLocations,
                 activeDevices = screenState.activeDevices,
                 locationIndex = screenState.locationIndex,
+                hasNextLocation = screenState.hasNextLocation,
+                hasPreviousLocation = screenState.hasPreviousLocation,
                 selectedPoint = screenState.selectedPoint,
                 selectedMapPinData = screenState.selectedMapPinData,
                 deleteAction = screenState.deleteAction,
@@ -567,6 +574,8 @@ sealed interface LocationHistoryUiEvent {
     data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent
     data class OnDirectionsRequest(val action: MemberNavigateItemState) : LocationHistoryUiEvent
     data class OnRawDataPointClicked(val action: RawPresentationDataType.LocationHistoryPointPresentation) : LocationHistoryUiEvent
+    data object NavigateHistoryNext : LocationHistoryUiEvent
+    data object NavigateHistoryPrevious : LocationHistoryUiEvent
     data object ToggleClusterLocations : LocationHistoryUiEvent
     data object ToggleShowPins : LocationHistoryUiEvent
     data object ToggleShowPolyline : LocationHistoryUiEvent
