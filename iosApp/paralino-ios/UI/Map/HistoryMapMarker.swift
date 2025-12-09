@@ -13,17 +13,68 @@ import UIKit
 struct HistoryMapMarker: View {
     let isDarkMode: Bool
     let isAccurate: Bool
+    let isClustered: Bool
     
     var body: some View {
         Image(
 //            systemName: isAccurate ? "mappin" : "mappin.and.ellipse"
-            resource: isAccurate ? MR.shared.images.ic_location_pin_filled : MR.shared.images.ic_not_listed_location_filled
+            resource: isClustered ? MR.shared.images.ic_target_circles : isAccurate ? MR.shared.images.ic_circle_with_dot : MR.shared.images.ic_not_listed_location_filled
         )
             .resizable()
             .renderingMode(.template)
             .aspectRatio(contentMode: .fill)
-            .frame(width: isAccurate ? 16 : 18, height: isAccurate ? 16 : 18)
-            .foregroundColor(isDarkMode ? Color.highlightGold : Color.redMain)
+            .frame(width: markerSize, height: markerSize)
+            .optionalForegroundColor(markerTintColor)
+            .background {
+                if let backgroundColor = markerBackgroundColor {
+                    Circle()
+                        .fill(backgroundColor)
+                        .frame(width: markerSize, height: markerSize)
+                }
+            }
+    }
+
+    private var markerSize: CGFloat {
+        if isClustered {
+            24
+        } else if isAccurate {
+            16
+        } else {
+            28
+        }
+    }
+
+    private var markerBackgroundColor: Color? {
+        guard isClustered || isAccurate else { return nil }
+        if isDarkMode {
+            if isClustered {
+                return Color.accentLight
+            } else if isAccurate {
+                return Color.lightBackground
+            }
+        } else {
+            if isClustered {
+                return Color.accentDark
+            } else if isAccurate {
+                return Color.redMain
+            }
+        }
+        return nil
+    }
+
+    private var markerTintColor: Color? {
+        if isDarkMode {
+            if isClustered {
+                return Color.darkThemePrimary
+            } else if isAccurate {
+                return Color.redMain
+            }
+        } else {
+            if isClustered || isAccurate {
+                return Color.lightBackground
+            }
+        }
+        return nil
     }
 }
 
@@ -67,7 +118,8 @@ class SwiftUIHistoryMapMarkerView: MKAnnotationView {
     }
     
     func setupSwiftUIView(data: HistoryMapMarkerData, isDarkMode: Bool) {
-        let markerView = HistoryMapMarker(isDarkMode: isDarkMode, isAccurate: !data.isInaccurate)
+        let isClustered: Bool = data.data is LocationHistoryPointStateCluster
+        let markerView = HistoryMapMarker(isDarkMode: isDarkMode, isAccurate: !data.isInaccurate, isClustered: isClustered)
         
         // Remove old view
         hostingController?.view.removeFromSuperview()
@@ -86,6 +138,21 @@ class SwiftUIHistoryMapMarkerView: MKAnnotationView {
         // Update frame to match hosted content
         frame = hosting.view.frame
         
-        anchorPoint = CGPoint(x: 0.5, y: 1.0)
+        if !data.isInaccurate || isClustered {
+            anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        } else {
+            anchorPoint = CGPoint(x: 0.5, y: 1.0)
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func optionalForegroundColor(_ color: Color?) -> some View {
+        if let color {
+            foregroundColor(color)
+        } else {
+            self
+        }
     }
 }

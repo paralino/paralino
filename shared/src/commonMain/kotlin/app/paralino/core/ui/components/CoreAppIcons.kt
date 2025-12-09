@@ -10,7 +10,6 @@ import paralino.shared.generated.resources.Res
 import paralino.shared.generated.resources.ic_account_circle
 import paralino.shared.generated.resources.ic_add
 import paralino.shared.generated.resources.ic_add_link
-import paralino.shared.generated.resources.ic_adjust
 import paralino.shared.generated.resources.ic_arrow_open_in_new
 import paralino.shared.generated.resources.ic_arrow_spinny
 import paralino.shared.generated.resources.ic_assignment_list
@@ -26,6 +25,7 @@ import paralino.shared.generated.resources.ic_chevron_left
 import paralino.shared.generated.resources.ic_chevron_right
 import paralino.shared.generated.resources.ic_circle_cluster_dots
 import paralino.shared.generated.resources.ic_circle_only_outline
+import paralino.shared.generated.resources.ic_circle_with_dot
 import paralino.shared.generated.resources.ic_circle_with_outline
 import paralino.shared.generated.resources.ic_close
 import paralino.shared.generated.resources.ic_code
@@ -81,8 +81,11 @@ import paralino.shared.generated.resources.ic_question_mark_circle
 import paralino.shared.generated.resources.ic_radio_button_unchecked
 import paralino.shared.generated.resources.ic_refresh
 import paralino.shared.generated.resources.ic_replay
+import paralino.shared.generated.resources.ic_route_dots
+import paralino.shared.generated.resources.ic_ruler
 import paralino.shared.generated.resources.ic_save
 import paralino.shared.generated.resources.ic_schedule
+import paralino.shared.generated.resources.ic_search
 import paralino.shared.generated.resources.ic_security
 import paralino.shared.generated.resources.ic_settings
 import paralino.shared.generated.resources.ic_share
@@ -94,8 +97,12 @@ import paralino.shared.generated.resources.ic_speed
 import paralino.shared.generated.resources.ic_stacked_line_chart
 import paralino.shared.generated.resources.ic_star
 import paralino.shared.generated.resources.ic_star_circle_filled
+import paralino.shared.generated.resources.ic_star_shine
 import paralino.shared.generated.resources.ic_stop_circle
 import paralino.shared.generated.resources.ic_sync
+import paralino.shared.generated.resources.ic_target_circles
+import paralino.shared.generated.resources.ic_timeline
+import paralino.shared.generated.resources.ic_timeline_path
 import paralino.shared.generated.resources.ic_timer
 import paralino.shared.generated.resources.ic_visibility
 import paralino.shared.generated.resources.ic_visibility_off
@@ -104,22 +111,15 @@ import paralino.shared.generated.resources.ic_wifi_1
 import paralino.shared.generated.resources.ic_wifi_2
 import paralino.shared.generated.resources.ic_wifi_3
 import paralino.shared.generated.resources.ic_wifi_off
-import paralino.shared.generated.resources.ic_ruler
-import paralino.shared.generated.resources.ic_target_circles
-import paralino.shared.generated.resources.ic_timeline
-import paralino.shared.generated.resources.ic_timeline_path
-import paralino.shared.generated.resources.image_map_mockup_dark
-import paralino.shared.generated.resources.image_map_mockup_light
-import paralino.shared.generated.resources.image_map_satellite_lawn
-import paralino.shared.generated.resources.paralino_start_background
-import paralino.shared.generated.resources.ic_route_dots
-import paralino.shared.generated.resources.ic_search
-import paralino.shared.generated.resources.ic_star_shine
 import paralino.shared.generated.resources.ic_zoom_focus_full
 import paralino.shared.generated.resources.ic_zoom_focus_large
 import paralino.shared.generated.resources.ic_zoom_focus_small
 import paralino.shared.generated.resources.ic_zoom_in_map
 import paralino.shared.generated.resources.ic_zoom_out_map
+import paralino.shared.generated.resources.image_map_mockup_dark
+import paralino.shared.generated.resources.image_map_mockup_light
+import paralino.shared.generated.resources.image_map_satellite_lawn
+import paralino.shared.generated.resources.paralino_start_background
 
 object CoreAppIcons {
     val LauncherLogo get() = Res.drawable.ic_launcher_foreground
@@ -207,7 +207,7 @@ object CoreAppIcons {
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled
     val NotificationsOff get() = Res.drawable.ic_notifications_off
-    val CircleWithDot get() = Res.drawable.ic_adjust
+    val CircleWithDot get() = Res.drawable.ic_circle_with_dot
     val Groups get() = Res.drawable.ic_groups
 
     val Elevation get() = Res.drawable.ic_elevation_2
