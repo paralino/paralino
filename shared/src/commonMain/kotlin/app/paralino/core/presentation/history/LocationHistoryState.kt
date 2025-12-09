@@ -75,7 +75,18 @@ data class LocationHistoryScreenState(
     private val displayLocations = when (clusteringPointsMode) {
         LocationHistoryClusteringPointsViewMode.DEFAULT_CLUSTERING,
         LocationHistoryClusteringPointsViewMode.CLUSTERING -> {
-            locations
+            locations.flatMap {
+                when (it) {
+                    is LocationHistoryPointState.Cluster -> {
+                        if (it.isExpanded) {
+                            it.points
+                        } else {
+                            listOf(it)
+                        }
+                    }
+                    is LocationHistoryPointState.Point -> listOf(it)
+                }
+            }
         }
 
         LocationHistoryClusteringPointsViewMode.DEFAULT_DETAILED,
@@ -428,17 +439,18 @@ sealed interface LocationHistoryPointState {
 
     data class Cluster(
         override val locationId: String?,
+        override val pointId: String,
         override val locationTime: String?,
         val points: List<Point>,
         override val lat: Double,
         override val lng: Double,
         override val accuracy: Float,
-        val battery: String?
+        val battery: String?,
+        val isExpanded: Boolean
     ): LocationHistoryPointState {
         override val statusTime: String? = null
         override val formattedElevation: String? = null
         override val formattedSpeed: String? = null
-        override val pointId: String = points.first().point.properID
     }
 
     data class Point(
@@ -549,6 +561,7 @@ sealed interface LocationHistoryUiEvent {
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent
     data class OnPointClicked(val point: LocationHistoryPointState) : LocationHistoryUiEvent
+    data class ExpandCluster(val cluster: LocationHistoryPointState.Cluster) : LocationHistoryUiEvent
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
     data class ChangeMapDataViewType(val type: LocationHistoryDataViewType) : LocationHistoryUiEvent

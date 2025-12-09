@@ -10,7 +10,6 @@ import app.paralino.core.models.location.LocationHistoryModelForUser
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.provider.localizedString
 import app.paralino.core.utils.extensions.isoToLocalDateTimeAtTimezone
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.DatePeriod
@@ -18,12 +17,9 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration.Companion.days
 
 class LocationHistoryPersonalStateMapper(
     private val defaultMapper: ILocationHistoryStateMapper,
-    private val clusteringService: LocationClusteringService,
     private val _uiState: MutableStateFlow<LocationHistoryScreenState>
 ) {
 
@@ -129,47 +125,19 @@ class LocationHistoryPersonalStateMapper(
                 } ?: emptyList()
             }
 
-        logg.v("history_fetch", "Devices mapped, map points")
-
-        val now = nowUTC()
-        val nowDate = now.toLocalDateTime(localTimezone)
-        val yesterday = now.minus(1.days).toLocalDateTime(localTimezone).date
-        val locations = history.history
-            .plus(cachedHistory)
-            .flatMap { entry ->
-                defaultMapper.mapLocationPoints(
-                    entry = entry,
-                    startDate = startDate,
-                    endDate = endDate,
-                    timeZone = localTimezone,
-                    nowDate = nowDate,
-                    yesterday = yesterday,
-                )
-            }
-            .sortedByDescending { it.point.status.startTime }
-            .distinctBy { it.point.properID }
-
-        logg.v("history_fetch", "Cluster locations")
-
-        val processedLocations = clusteringService.processLocations(
-            points = locations,
-            rangeStart = startDate,
-            rangeEnd = endDate
-        )
-
         logg.v("history_fetch", "History ready, start UI update")
-        _uiState.update { state ->
-            defaultMapper.mapFinalState(
-                currentState = state,
-                groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
-                groupImage = user.data?.userImage,
-                isGroupOwner = true,
-                userName = user.name,
-                userImage = user.data?.userImage,
-                locations = processedLocations,
-                devices = devices,
-                planConfig = space.plan
-            )
-        }
+        defaultMapper.mapFinalState(
+            startDate = startDate,
+            endDate = endDate,
+            history = history,
+            cachedHistory = cachedHistory,
+            groupName = MR.strings.personalSpace_spaceTitle.localizedString(),
+            groupImage = user.data?.userImage,
+            isGroupOwner = true,
+            userName = user.name,
+            userImage = user.data?.userImage,
+            devices = devices,
+            planConfig = space.plan
+        )
     }
 }

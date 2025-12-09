@@ -352,7 +352,7 @@ fun LocationHistoryDetailCard(
 
                         Row(
                             modifier = Modifier
-                                .padding(start = 10.dp)
+//                                .padding(start = 2.dp)
 //                                .padding(bottom = 10.dp)
 //                                .requiredHeight(30.dp)
                                 .fillMaxWidth(),
@@ -360,14 +360,32 @@ fun LocationHistoryDetailCard(
                         ) {
                             when (uiState.selectedPoint) {
                                 is LocationHistoryPointState.Cluster -> {
-                                    Text(
-                                        text = stringResource(MR.strings.history_entry_clustered_count, "**${uiState.selectedPoint.points.size}**").annotatedBoldCompose(),
-                                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                                    GroupMemberActionButton(
+                                        modifier = Modifier.padding(start = 2.dp, bottom = 2.dp),
+                                        startIcon = CoreAppIcons.TargetCircles.asPainterResource(),
+                                        endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                                        text = stringResource(MR.strings.history_entry_clustered_count, "${uiState.selectedPoint.points.size}"),
+                                        backgroundColor = if (isSystemInDarkTheme()) {
+                                            AppColors.accentLight.copy(alpha = 0.2f)
+                                        } else {
+                                            AppColors.accent.copy(alpha = 0.2f)
+                                        },
+                                        onClick = {
+                                            handleEvent(LocationHistoryUiEvent.ExpandCluster(uiState.selectedPoint))
+                                        }
                                     )
                                 }
+
                                 is LocationHistoryPointState.Point -> {
-                                    BatteryAndNetworkData(point = uiState.selectedPoint)
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(start = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        BatteryAndNetworkData(point = uiState.selectedPoint)
+                                    }
                                 }
+
                                 null -> {}
                             }
 

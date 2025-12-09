@@ -110,17 +110,17 @@ class LocationHistoryViewModelController(
     private val defaultMapper = ILocationHistoryStateMapper(
         valueFormatter = valueFormatter,
         geofenceManager = geofenceManager,
+        clusteringService = clusteringService,
+        _uiState = _uiState,
     )
 
     private val personalStateMapper = LocationHistoryPersonalStateMapper(
         defaultMapper = defaultMapper,
-        clusteringService = clusteringService,
         _uiState = _uiState,
     )
 
     private val groupStateMapper = LocationHistoryGroupStateMapper(
         defaultMapper = defaultMapper,
-        clusteringService = clusteringService,
         remoteConfig = remoteConfig,
         _uiState = _uiState,
     )
@@ -502,6 +502,25 @@ class LocationHistoryViewModelController(
                     } else {
                         it.copy(showPolyline = false, showPins = true)
                     }
+                }
+            }
+
+            is LocationHistoryUiEvent.ExpandCluster -> {
+                _uiState.update {
+                    it.copy(
+                        locations = it.locations.map {
+                            when (it) {
+                                is LocationHistoryPointState.Cluster -> {
+                                    if (it.pointId == event.cluster.pointId) {
+                                        it.copy(isExpanded = true)
+                                    } else {
+                                        it
+                                    }
+                                }
+                                is LocationHistoryPointState.Point -> it
+                            }
+                        }
+                    )
                 }
             }
 

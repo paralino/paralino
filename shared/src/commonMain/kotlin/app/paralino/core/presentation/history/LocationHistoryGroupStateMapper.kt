@@ -10,7 +10,6 @@ import app.paralino.core.models.location.MemberModelWithLocationsAndGroup
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.utils.extensions.isoToLocalDateTimeAtTimezone
-import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.DatePeriod
@@ -18,12 +17,9 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration.Companion.days
 
 class LocationHistoryGroupStateMapper(
     private val defaultMapper: ILocationHistoryStateMapper,
-    private val clusteringService: LocationClusteringService,
     private val remoteConfig: RemoteConfigRepository,
     private val _uiState: MutableStateFlow<LocationHistoryScreenState>
 ) {
@@ -125,42 +121,18 @@ class LocationHistoryGroupStateMapper(
             } ?: emptyList()
         }
 
-        val now = nowUTC()
-        val nowDate = now.toLocalDateTime(localTimezone)
-        val yesterday = now.minus(1.days).toLocalDateTime(localTimezone).date
-        val locations = history.history
-            .plus(cachedHistory)
-            .flatMap { entry ->
-                defaultMapper.mapLocationPoints(
-                    entry = entry,
-                    startDate = startDate,
-                    endDate = endDate,
-                    timeZone = localTimezone,
-                    nowDate = nowDate,
-                    yesterday = yesterday
-                )
-            }
-            .sortedByDescending { it.point.status.startTime }
-            .distinctBy { it.point.properID }
-
-        val processedLocations = clusteringService.processLocations(
-            points = locations,
-            rangeStart = startDate,
-            rangeEnd = endDate
+        defaultMapper.mapFinalState(
+            startDate = startDate,
+            endDate = endDate,
+            history = history,
+            cachedHistory = cachedHistory,
+            groupName = group.name,
+            groupImage = group.image,
+            isGroupOwner = group.isCurrentUserOwner,
+            userName = currentMember.member.name,
+            userImage = currentMember.member.image,
+            devices = devices,
+            planConfig = group.planConfig(remoteConfig.getConfigOnce())
         )
-
-        _uiState.update { state ->
-            defaultMapper.mapFinalState(
-                currentState = state,
-                groupName = group.name,
-                groupImage = group.image,
-                isGroupOwner = group.isCurrentUserOwner,
-                userName = currentMember.member.name,
-                userImage = currentMember.member.image,
-                locations = processedLocations,
-                devices = devices,
-                planConfig = group.planConfig(remoteConfig.getConfigOnce())
-            )
-        }
     }
 }

@@ -20,12 +20,14 @@ class LocationClusteringService(
 ) {
 
     fun processLocations(
-        points: List<LocationHistoryPointState.Point>,
+        oldPoints: List<LocationHistoryPointState>,
+        newPoints: List<LocationHistoryPointState.Point>,
         rangeStart: LocalDate,
         rangeEnd: LocalDate,
     ): List<LocationHistoryPointState> {
         return clusterLocations(
-            points = points,
+            oldPoints = oldPoints,
+            newPoints = newPoints,
             maxRadius = 100.0,
             minDwellTime = 5.minutes,
             rangeStart = rangeStart,
@@ -34,7 +36,8 @@ class LocationClusteringService(
     }
 
     private fun clusterLocations(
-        points: List<LocationHistoryPointState.Point>,
+        oldPoints: List<LocationHistoryPointState>,
+        newPoints: List<LocationHistoryPointState.Point>,
         maxRadius: Double,
         minDwellTime: Duration,
         rangeStart: LocalDate,
@@ -46,7 +49,7 @@ class LocationClusteringService(
         val yesterday = now.minus(1.days).toLocalDateTime(timeZone).date
 
         val clusters = mutableListOf<LocationHistoryPointState>()
-        val sortedPoints = points.sortedBy { it.point.status.startTime }
+        val sortedPoints = newPoints.sortedBy { it.point.status.startTime }
 
         var currentCluster = mutableListOf<LocationHistoryPointState.Point>()
 
@@ -64,7 +67,8 @@ class LocationClusteringService(
                 } else {
                     // Finalize current cluster and start new one
                     finalizeCluster(
-                        points = currentCluster,
+                        oldPoints = oldPoints,
+                        newPoints = currentCluster,
                         rangeStart = rangeStart,
                         rangeEnd = rangeEnd,
                         timeZone = timeZone,
@@ -80,7 +84,8 @@ class LocationClusteringService(
 
         // Last cluster
         finalizeCluster(
-            points = currentCluster,
+            oldPoints = oldPoints,
+            newPoints = currentCluster,
             rangeStart = rangeStart,
             rangeEnd = rangeEnd,
             timeZone = timeZone,
@@ -94,23 +99,27 @@ class LocationClusteringService(
     }
 
     private fun finalizeCluster(
-        points: List<LocationHistoryPointState.Point>,
+        oldPoints: List<LocationHistoryPointState>,
+        newPoints: List<LocationHistoryPointState.Point>,
         rangeStart: LocalDate,
         rangeEnd: LocalDate,
         timeZone: TimeZone,
         nowDate: LocalDateTime,
         yesterday: LocalDate
     ): LocationHistoryPointState? {
-        if (points.size >= 2) {
-            val startTime = points.first().point.status.startTime
-            val endTime = points.last().point.status.endTime
+        if (newPoints.size >= 2) {
+            val startTime = newPoints.first().point.status.startTime
+            val endTime = newPoints.last().point.status.endTime
 
-            val center = calculateCenter(points)
-            val radius = calculateRadius(points, center)
+            val center = calculateCenter(newPoints)
+            val radius = calculateRadius(newPoints, center)
+            val locationId = newPoints.first().locationId
+            val pointId = newPoints.first().point.properID
 
             return LocationHistoryPointState.Cluster(
-                locationId = points.first().locationId,
-                points = points,
+                locationId = locationId,
+                pointId = pointId,
+                points = newPoints,
                 lat = center.lat,
                 lng = center.lng,
                 accuracy = radius.toFloat(),
@@ -123,18 +132,23 @@ class LocationClusteringService(
                     nowDate = nowDate,
                     yesterday = yesterday
                 ),
-                battery = points.mapNotNull { it.point.status.bat }
+                battery = newPoints.mapNotNull { it.point.status.bat }
                     .sorted()
                     .takeIf { it.isNotEmpty() }
                     ?.let {
                         listOf(it.first(), it.last())
                             .distinct()
                             .joinToString(separator = " - ") { "$it%" }
-                }
+                },
+                isExpanded = oldPoints
+                    .filterIsInstance<LocationHistoryPointState.Cluster>()
+                    .firstOrNull { it.pointId == pointId }
+                    ?.isExpanded
+                    ?: false
             )
 
-        } else if (points.size == 1) {
-            return points.first()
+        } else if (newPoints.size == 1) {
+            return newPoints.first()
         } else {
             return null
         }
