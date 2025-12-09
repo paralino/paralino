@@ -176,27 +176,28 @@ class ILocationHistoryStateMapper(
 //            else -> newState.clusteringPointsMode
 //        }
 
-//        val newPinClustering = when (newState.clusteringPinsMode) {
-//            LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING,
-//            LocationHistoryClusteringPinsViewMode.DEFAULT_DETAILED -> {
-//                val count = if (newState.clusteringPointsMode.isClusteringOn) {
-//                    newState.selectedLocations.size
-//                } else {
-//                    (stats?.locationEntriesCount ?: 0)
-//                }
-//
-//                if (count > 80) {
-//                    LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING
-//                } else {
-//                    LocationHistoryClusteringPinsViewMode.DEFAULT_DETAILED
-//                }
-//            }
-//            else -> newState.clusteringPinsMode
-//        }
+            val newPinClustering = when (newState.clusteringPinsMode) {
+                LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING,
+                LocationHistoryClusteringPinsViewMode.DEFAULT_DETAILED -> {
+                    val count = if (newState.clusteringPointsMode.isClusteringOn) {
+                        newState.selectedLocations.size
+                    } else {
+                        (stats?.locationEntriesCount ?: 0)
+                    }
+
+                    if (count >= 80) {
+                        LocationHistoryClusteringPinsViewMode.DEFAULT_CLUSTERING
+                    } else {
+                        LocationHistoryClusteringPinsViewMode.DEFAULT_DETAILED
+                    }
+                }
+
+                else -> newState.clusteringPinsMode
+            }
 
             newState.copy(
                 stats = stats,
-//            clusteringPinsMode = newPinClustering,
+                clusteringPinsMode = newPinClustering,
 //            clusteringPointsMode = newPointClustering
             )
         }
