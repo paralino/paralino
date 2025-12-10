@@ -280,7 +280,7 @@
     <string name="plans_banner_settings_action">Millora ara</string>
     <string name="plans_banner_settings_action_small">Millorar</string>
     <string name="plans_banner_inline_group_detail">Obtingueu més historial de localització per a tothom!</string>
-    <string name="plans_banner_inline_personal_space">Feu un seguiment de més dispositius i obtingueu més historial de localització!</string>
+    <string name="plans_banner_inline_personal_space">Fes un seguiment de més dispositius i obtén més història de localització!</string>
     <string name="plans_banner_inline_places">Afegiu més llocs i gaudiu d\'alertes il·limitades!</string>
     <string name="plans_banner_inline_groups_picker">Creeu més grups i connecteu-vos amb més persones estimades!</string>
     <string name="plans_management_screen_title">Subscripció</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Fet per a tu, no per a anunciants</string>
     <string name="paywall_header_feature_list_screen_family">No deixis que altres segueixin la teva família</string>
     <string name="paywall_header_feature_history_title">Segueix els teus viatges</string>
-    <string name="group_members_item_tracking_button">Seguiment</string>
+    <string name="group_members_item_tracking_button">Seguiment activat</string>
+    <string name="setting_feedbackPortal_title">Porta de comentaris</string>
+    <string name="setting_feedbackPortal_info">Suggeriu i voteu les pròximes noves funcions</string>
+    <string name="setting_feedbackChangelog_title">Registre de canvis</string>
+    <string name="setting_appReview_title">T\'agrada Paralino?</string>
+    <string name="setting_appReview_info">Et molestaria deixar una ressenya? 🥺</string>
+    <string name="places_create_location_hint_searchTap">**CONSELL:** Cerqueu o toqueu al mapa per ajustar la vostra ubicació</string>
+    <string name="places_create_location_hint_searchOnly">**CONSELL:** Comenceu a escriure l\'adreça per trobar la vostra ubicació</string>
+    <string name="places_create_name_placeholder">Nom*</string>
+    <string name="places_create_address_placeholder">Adreça</string>
+    <string name="place_create_suggestion_home">Casa</string>
+    <string name="place_create_suggestion_work">Treball</string>
+    <string name="place_create_suggestion_school">Escola</string>
+    <string name="place_create_suggestion_playground">Parc infantil</string>
+    <string name="place_create_suggestion_gym">Gimnàs</string>
+    <string name="place_create_suggestion_shopping">Centre comercial</string>
+    <string name="place_create_suggestion_bakery">Cantonada dolça</string>
+    <string name="place_create_suggestion_coffee">Millor cafè</string>
 </resources>

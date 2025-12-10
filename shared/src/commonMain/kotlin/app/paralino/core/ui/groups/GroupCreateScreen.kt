@@ -11,8 +11,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,31 +30,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
 import app.paralino.core.presentation.groups.edit.CreateGroupScreenEvent
 import app.paralino.core.presentation.groups.edit.CreateGroupScreenUiEvent
 import app.paralino.core.presentation.groups.edit.CreateGroupState
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
-import app.paralino.core.presentation.groups.edit.NewGroupSuggestionChipData
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
-import app.paralino.core.ui.components.DataInfoChip
 import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
+import app.paralino.core.ui.groups.components.ChipsSuggestionsSection
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
@@ -202,7 +194,7 @@ private fun GroupCreateScreen(
             )
 
             if (state.suggestions.isNotEmpty()) {
-                GroupNameSuggestions(
+                ChipsSuggestionsSection(
                     modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
                     suggestions = state.suggestions,
                     onSuggestionClick = {
@@ -250,52 +242,6 @@ fun ShakeEffect(
             ) {
                 onValueChange(this.value)
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun GroupNameSuggestions(
-    modifier: Modifier = Modifier,
-    suggestions: List<NewGroupSuggestionChipData>,
-    onSuggestionClick: (NewGroupSuggestionChipData) -> Unit
-) {
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
-        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
-    ) {
-
-        DataInfoChip(
-            modifier = Modifier.padding(bottom = 4.dp).fillMaxWidth(),
-            imageOrIcon = {
-                ImageModelImage(
-                    imageModel = ImageModel.emoji(Emojis.lightBulb),
-                    modifier = Modifier.size(16.dp),
-                    useBackgroundForEmoji = false,
-                    clipShape = CircleShape
-                )
-                Spacer(Modifier.size(4.dp))
-            },
-            text = {
-                Text(
-                    text = stringResource(MR.strings.group_create_suggestions_header),
-                    style = MaterialTheme.typography.caption,
-                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
-                )
-            },
-            backgroundColor = Color.Transparent,
-            hasEndArrow = false,
-            onClick = null
-        )
-
-        suggestions.forEach { suggestion ->
-            DataInfoChip(
-                image = suggestion.image,
-                text = suggestion.name,
-                onClick = { onSuggestionClick(suggestion) }
-            )
         }
     }
 }

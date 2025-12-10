@@ -15,11 +15,9 @@ import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
 import app.paralino.core.MR
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
-import app.paralino.core.ui.settings.SettingSectionInfo
 import app.paralino.core.ui.settings.SettingsScreenCore
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
@@ -94,12 +92,6 @@ fun SettingsScreen(
 fun MainPreview() {
     AppTheme {
         Surface {
-            SettingSectionInfo(
-                canAccessDebugScreen = false,
-                onAppStatusClick = {},
-                onGeneralInfoClick = {},
-                onShareApp = {},
-            )
         }
     }
 }

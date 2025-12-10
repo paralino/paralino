@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Создано для вас, а не для рекламодателей</string>
     <string name="paywall_header_feature_list_screen_family">Не позволяйте другим отслеживать вашу семью</string>
     <string name="paywall_header_feature_history_title">Отслеживайте свои путешествия</string>
-    <string name="group_members_item_tracking_button">Отслеживание</string>
+    <string name="group_members_item_tracking_button">Отслеживание включено</string>
+    <string name="setting_feedbackPortal_title">Портал обратной связи</string>
+    <string name="setting_feedbackPortal_info">Предложите и голосуйте за следующие новые функции</string>
+    <string name="setting_feedbackChangelog_title">Журнал изменений</string>
+    <string name="setting_appReview_title">Вам нравится Paralino?</string>
+    <string name="setting_appReview_info">Не могли бы вы оставить отзыв 🥺</string>
+    <string name="places_create_location_hint_searchTap">**СОВЕТ:** Ищите или нажмите на карту, чтобы настроить ваше местоположение</string>
+    <string name="places_create_location_hint_searchOnly">**СОВЕТ:** Начните вводить адрес, чтобы найти ваше местоположение</string>
+    <string name="places_create_name_placeholder">Имя*</string>
+    <string name="places_create_address_placeholder">Адрес</string>
+    <string name="place_create_suggestion_home">Дом</string>
+    <string name="place_create_suggestion_work">Работа</string>
+    <string name="place_create_suggestion_school">Школа</string>
+    <string name="place_create_suggestion_playground">Игровая площадка</string>
+    <string name="place_create_suggestion_gym">Спортзал</string>
+    <string name="place_create_suggestion_shopping">Торговый центр</string>
+    <string name="place_create_suggestion_bakery">Сладкий уголок</string>
+    <string name="place_create_suggestion_coffee">Лучший кофе</string>
 </resources>

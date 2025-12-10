@@ -46,13 +46,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -63,7 +63,6 @@ import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
-import app.paralino.core.presentation.history.LocationHistoryScreenState
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.ui.components.CoreAppIcons
@@ -147,7 +146,9 @@ fun LocationHistoryDetailCard(
                                 )
                             }
                         }
-                        this.itemsIndexed(uiState.activeDevices, key = { index, device -> device.locationId }) { index, device ->
+                        this.itemsIndexed(
+                            uiState.activeDevices,
+                            key = { index, device -> device.locationId }) { index, device ->
                             UserDeviceChip(
                                 modifier = Modifier
                                     .animateItem()
@@ -212,7 +213,10 @@ fun LocationHistoryDetailCard(
 
             Column(
                 modifier = Modifier
-                    .padding(bottom = 6.dp, top = animateDpAsState(if (isCollapsed) 6.dp else 0.dp).value)
+                    .padding(
+                        bottom = 6.dp,
+                        top = animateDpAsState(if (isCollapsed) 6.dp else 0.dp).value
+                    )
                     .padding(horizontal = 6.dp)
                     .conditional(uiState.isLoadingLocations) {
                         pulsate(pulseAmount = 0.98f)
@@ -352,7 +356,7 @@ fun LocationHistoryDetailCard(
 
                         Row(
                             modifier = Modifier
-                                .padding(start = 10.dp)
+//                                .padding(start = 2.dp)
 //                                .padding(bottom = 10.dp)
 //                                .requiredHeight(30.dp)
                                 .fillMaxWidth(),
@@ -360,14 +364,35 @@ fun LocationHistoryDetailCard(
                         ) {
                             when (uiState.selectedPoint) {
                                 is LocationHistoryPointState.Cluster -> {
-                                    Text(
-                                        text = stringResource(MR.strings.history_entry_clustered_count, "**${uiState.selectedPoint.points.size}**").annotatedBoldCompose(),
-                                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp)
+                                    GroupMemberActionButton(
+                                        modifier = Modifier.padding(start = 2.dp, bottom = 2.dp),
+                                        startIcon = CoreAppIcons.TargetCircles.asPainterResource(),
+                                        endIcon = CoreAppIcons.ChevronRight.asPainterResource(),
+                                        text = stringResource(
+                                            MR.strings.history_entry_clustered_count,
+                                            "${uiState.selectedPoint.points.size}"
+                                        ),
+                                        backgroundColor = if (isSystemInDarkTheme()) {
+                                            AppColors.accentLight.copy(alpha = 0.2f)
+                                        } else {
+                                            AppColors.accent.copy(alpha = 0.2f)
+                                        },
+                                        onClick = {
+                                            handleEvent(LocationHistoryUiEvent.ExpandCluster(uiState.selectedPoint))
+                                        }
                                     )
                                 }
+
                                 is LocationHistoryPointState.Point -> {
-                                    BatteryAndNetworkData(point = uiState.selectedPoint)
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(start = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        BatteryAndNetworkData(point = uiState.selectedPoint)
+                                    }
                                 }
+
                                 null -> {}
                             }
 
@@ -464,65 +489,121 @@ fun LocationHistoryDetailCard(
                         ) {
                             Text(
                                 modifier = Modifier,
-                                text = stringResource(MR.strings.history_entry_range_delete_notice_title, uiState.locationsToDeleteSize),
+                                text = stringResource(
+                                    MR.strings.history_entry_range_delete_notice_title,
+                                    uiState.locationsToDeleteSize
+                                ),
                                 style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold)
                             )
                         }
 
                         val sliderSize = remember {
-                            val factor = maxOf(0, (uiState.selectedLocations.size.toString().length - 1) / 3) * 15
+                            val factor = maxOf(
+                                0,
+                                (uiState.selectedLocations.size.toString().length - 1) / 3
+                            ) * 15
                             EmbeddedSliderSize(minStepWidth = (80 + factor).dp, minHeight = 40.dp)
                         }
-                        EmbeddedSlider(
+                        Row(
                             modifier = Modifier
-                                .fillMaxWidth()
                                 .padding(horizontal = 6.dp)
-                                .padding(bottom = 6.dp)
-                                .alpha(animateFloatAsState(if (uiState.isLoadingLocations) 0.5f else 1f).value)
-                                .height(sliderSize.minHeight),
-                            infoContent = {
-                                Column(
+                                .padding(bottom = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(sliderSize.minHeight)
+                                    .clickable(enabled = uiState.hasPreviousLocation) {
+                                        onEvent(LocationHistoryUiEvent.NavigateHistoryPrevious)
+                                    }
+                                    .clip(RoundedCornerShape(innerCornerShape))
+                                    .background(
+                                        color = if (uiState.hasPreviousLocation) MaterialTheme.colors.surface else Color.Transparent,
+                                        shape = RoundedCornerShape(innerCornerShape)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
                                     modifier = Modifier
-                                        .fillMaxHeight()
-                                        .padding(6.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colors.surface.copy(alpha = 0.9f))
-                                        .animateContentSize()
-                                        .padding(horizontal = 6.dp),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        modifier = Modifier,
-                                        text = uiState.locationIndex.plus(1).toString(),
-                                        style = MaterialTheme.typography.caption,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 10.sp,
-                                        lineHeight = 10.sp,
-                                        maxLines = 1,
-                                        color = MaterialTheme.colors.onSurface
-                                    )
-
-                                    Text(
-                                        modifier = Modifier,
-                                        text = "\\ ${uiState.selectedLocations.size}",
-                                        style = MaterialTheme.typography.caption,
-                                        fontSize = 8.sp,
-                                        lineHeight = 8.sp,
-                                        maxLines = 1,
-                                        color = MaterialTheme.colors.onSurface
-                                    )
-                                }
-                            },
-                            swipeEnabled = !uiState.isLoadingLocations,
-                            size = sliderSize,
-                            progress = uiState.locationIndex,
-                            shape = RoundedCornerShape(innerCornerShape),
-                            steps = uiState.selectedLocations.size,
-                            onProgressChange = {
-                                handleEvent(LocationHistoryUiEvent.SetHistoryProgress(it))
+                                        .size(22.dp),
+                                    painter = CoreAppIcons.ChevronLeft.asPainterResource(),
+                                    contentDescription = "Previous",
+                                    tint = MaterialTheme.colors.primary.copy(alpha = if (uiState.hasPreviousLocation) 1f else 0.3f)
+                                )
                             }
-                        )
+
+                            EmbeddedSlider(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .alpha(animateFloatAsState(if (uiState.isLoadingLocations) 0.5f else 1f).value)
+                                    .height(sliderSize.minHeight),
+                                infoContent = {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .padding(6.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(MaterialTheme.colors.surface.copy(alpha = 0.9f))
+                                            .animateContentSize()
+                                            .padding(horizontal = 6.dp),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            modifier = Modifier,
+                                            text = uiState.locationIndex.plus(1).toString(),
+                                            style = MaterialTheme.typography.caption,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 10.sp,
+                                            lineHeight = 10.sp,
+                                            maxLines = 1,
+                                            color = MaterialTheme.colors.onSurface
+                                        )
+
+                                        Text(
+                                            modifier = Modifier,
+                                            text = "\\ ${uiState.selectedLocations.size}",
+                                            style = MaterialTheme.typography.caption,
+                                            fontSize = 8.sp,
+                                            lineHeight = 8.sp,
+                                            maxLines = 1,
+                                            color = MaterialTheme.colors.onSurface
+                                        )
+                                    }
+                                },
+                                swipeEnabled = !uiState.isLoadingLocations,
+                                size = sliderSize,
+                                progress = uiState.locationIndex,
+                                shape = RoundedCornerShape(innerCornerShape),
+                                steps = uiState.selectedLocations.size,
+                                onProgressChange = {
+                                    handleEvent(LocationHistoryUiEvent.SetHistoryProgress(it))
+                                }
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .size(sliderSize.minHeight)
+                                    .clickable(enabled = uiState.hasNextLocation) {
+                                        onEvent(LocationHistoryUiEvent.NavigateHistoryNext)
+                                    }
+                                    .clip(RoundedCornerShape(innerCornerShape))
+                                    .background(
+                                        color = if (uiState.hasNextLocation) MaterialTheme.colors.surface else Color.Transparent,
+                                        shape = RoundedCornerShape(innerCornerShape)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(22.dp),
+                                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                                    contentDescription = "Next",
+                                    tint = MaterialTheme.colors.primary.copy(alpha = if (uiState.hasNextLocation) 1f else 0.3f)
+                                )
+                            }
+                        }
                     }
                 }
             }

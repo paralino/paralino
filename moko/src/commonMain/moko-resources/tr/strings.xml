@@ -282,7 +282,7 @@
     <string name="plans_banner_settings_title">Planınızı yükseltin</string>
     <string name="plans_banner_settings_description">Her şeyin daha fazlasını alın ve deneyiminizi bir üst seviyeye taşıyın!</string>
     <string name="plans_banner_inline_group_detail">Herkes için daha fazla konum geçmişi edinin!</string>
-    <string name="plans_banner_inline_personal_space">Daha fazla cihazı takip edin ve daha fazla konum geçmişi edinin!</string>
+    <string name="plans_banner_inline_personal_space">Daha fazla cihaz takip edin ve daha fazla konum geçmişi elde edin!</string>
     <string name="plans_banner_inline_places">Daha fazla yer ekleyin ve sınırsız bildirimlerin tadını çıkarın!</string>
     <string name="plans_banner_inline_groups_picker">Daha fazla grup oluşturun ve daha değerli insanlarla bağlantı kurun!</string>
     <string name="plans_management_screen_title">Abonelik</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Sizin için, reklamcılar için değil</string>
     <string name="paywall_header_feature_list_screen_family">Başka kişilerin ailenizi takip etmesine izin vermeyin</string>
     <string name="paywall_header_feature_history_title">Seyahatlerinizi takip edin</string>
-    <string name="group_members_item_tracking_button">Takip</string>
+    <string name="group_members_item_tracking_button">Takip açık</string>
+    <string name="setting_feedbackPortal_title">Geri bildirim portalı</string>
+    <string name="setting_feedbackPortal_info">Sonraki yeni özellikler için önerin ve oylama yap</string>
+    <string name="setting_feedbackChangelog_title">Değişiklikler</string>
+    <string name="setting_appReview_title">Paralino\'yu beğendin mi?</string>
+    <string name="setting_appReview_info">Bir inceleme yapar mısınız 🥺</string>
+    <string name="places_create_location_hint_searchTap">**İPUCU:** Yerini ayarlamak için haritada arama yap veya üzerine dokun</string>
+    <string name="places_create_location_hint_searchOnly">**İPUCU:** Yerini bulmak için adresi yazmaya başla</string>
+    <string name="places_create_name_placeholder">İsim*</string>
+    <string name="places_create_address_placeholder">Adres</string>
+    <string name="place_create_suggestion_home">Ev</string>
+    <string name="place_create_suggestion_work">İş</string>
+    <string name="place_create_suggestion_school">Okul</string>
+    <string name="place_create_suggestion_playground">Oyun parkı</string>
+    <string name="place_create_suggestion_gym">Spor salonu</string>
+    <string name="place_create_suggestion_shopping">Alışveriş merkezi</string>
+    <string name="place_create_suggestion_bakery">Tatlı köşesi</string>
+    <string name="place_create_suggestion_coffee">En iyi kahve</string>
 </resources>

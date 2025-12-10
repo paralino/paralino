@@ -287,7 +287,7 @@
     <string name="plans_banner_settings_action">Upgradează acum</string>
     <string name="plans_banner_settings_action_small">Upgradează</string>
     <string name="plans_banner_inline_group_detail">Obțineți mai multe istorii de locație pentru toată lumea!</string>
-    <string name="plans_banner_inline_personal_space">Urmăriți mai multe dispozitive și obțineți mai multe istorii de locație!</string>
+    <string name="plans_banner_inline_personal_space">Urmăriți mai multe dispozitive și obțineți mai mult istoric de locație!</string>
     <string name="plans_banner_inline_places">Adăugați mai multe locuri și bucurați-vă de alerte nelimitate!</string>
     <string name="plans_banner_inline_groups_picker">Creați mai multe grupuri și conectați-vă cu mai mulți oameni dragi!</string>
     <string name="plans_management_screen_title">Abonament</string>
@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Creat pentru tine, nu pentru advertoriale</string>
     <string name="paywall_header_feature_list_screen_family">Nu lăsa pe alții să-ți urmărească familia</string>
     <string name="paywall_header_feature_history_title">Urmărește-ți călătoriile</string>
-    <string name="group_members_item_tracking_button">Urmărire</string>
+    <string name="group_members_item_tracking_button">Urmărire activată</string>
+    <string name="setting_feedbackPortal_title">Portal de feedback</string>
+    <string name="setting_feedbackPortal_info">Sugerați și votați pentru următoarele funcții noi</string>
+    <string name="setting_feedbackChangelog_title">Istoricul modificărilor</string>
+    <string name="setting_appReview_title">Îți place Paralino?</string>
+    <string name="setting_appReview_info">Ai fi de acord să-i dai un review 🥺</string>
+    <string name="places_create_location_hint_searchTap">**TIP:** Căutați sau atingeți pe hartă pentru a ajusta locația</string>
+    <string name="places_create_location_hint_searchOnly">**TIP:** Începeți să tastați adresa pentru a găsi locația</string>
+    <string name="places_create_name_placeholder">Nume*</string>
+    <string name="places_create_address_placeholder">Adresă</string>
+    <string name="place_create_suggestion_home">Acasă</string>
+    <string name="place_create_suggestion_work">Serviciu</string>
+    <string name="place_create_suggestion_school">Școală</string>
+    <string name="place_create_suggestion_playground">Loc de joacă</string>
+    <string name="place_create_suggestion_gym">Sală de sport</string>
+    <string name="place_create_suggestion_shopping">Centrul comercial</string>
+    <string name="place_create_suggestion_bakery">Colț dulce</string>
+    <string name="place_create_suggestion_coffee">Cea mai bună cafea</string>
 </resources>

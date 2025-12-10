@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -32,13 +29,11 @@ import app.paralino.android.app_rating.AppRatingPresenter
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.navigation.MainNavHost
 import app.paralino.android.ui.navigation.loggedOutGraph
-import app.paralino.android.ui.shared.errorString
 import app.paralino.core.MR
 import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ConfigData
-import app.paralino.core.presentation.main.MainScreenEvent
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.ui.components.AppSnackbar
@@ -47,13 +42,13 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.main.DeeplinkType
+import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
@@ -285,6 +280,16 @@ fun MainAppScreen(
                         groupId = null,
                         code = pendingDeeplink.paralinoID,
                         isOnboarding = false
+                    )
+                )
+                onDeeplinkComplete()
+            }
+
+            is DeeplinkType.PaywallScreen -> {
+                appState.navController.navigate(
+                    AppScreen.MainHome.BillingPaywall.route(
+                        groupId = null,
+                        type = BillingScreenSourceType.NORMAL
                     )
                 )
                 onDeeplinkComplete()

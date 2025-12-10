@@ -132,12 +132,23 @@ class MainViewModel constructor(
             is DeeplinkType.EmailVerify -> {
                 verifyEmail(userId = deeplinkType.userId, secret = deeplinkType.secret)
             }
+
             is DeeplinkType.ParalinoID -> {
                 _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
             }
+
             is DeeplinkType.PasswordReset -> {
                 _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
             }
+
+            is DeeplinkType.HomeScreen -> {
+                _uiState.update { it.copy(pendingDeeplinkType = null) }
+            }
+
+            is DeeplinkType.PaywallScreen -> {
+                _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+            }
+
             null -> {
                 _uiState.update { it.copy(pendingDeeplinkType = null) }
             }

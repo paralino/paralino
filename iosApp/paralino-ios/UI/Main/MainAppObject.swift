@@ -42,22 +42,32 @@ class MainAppObject: ObservableObject {
     
     private func processDeeplink(deeplink: DeeplinkType?) {
         if accountState.data is AppAccountState.USER_READY,
-            let inviteDeeplink = deeplink as? DeeplinkType.ParalinoID {
+            let actualDeeplink = deeplink as? DeeplinkType.ParalinoID {
             deeplinkTask?.cancel()
             DispatchQueue.main.async { [weak self] in
                 self?.deeplinkTask = Task { [weak self] in
                     try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-                    self?.userReadyGraph.append(.home(.memberInvite(groupId: nil, code: inviteDeeplink.paralinoID, isOnboarding: false)))
+                    self?.userReadyGraph.append(.home(.memberInvite(groupId: nil, code: actualDeeplink.paralinoID, isOnboarding: false)))
+                    self?.vm.setDeeplink(deeplinkType: nil)
+                }
+            }
+        } else if accountState.data is AppAccountState.USER_READY,
+                  let _ = deeplink as? DeeplinkType.PaywallScreen {
+            deeplinkTask?.cancel()
+            DispatchQueue.main.async { [weak self] in
+                self?.deeplinkTask = Task { [weak self] in
+                    try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+                    self?.userReadyGraph.append(.settings(.paywall(groupId: nil, type: BillingScreenSourceType.normal)))
                     self?.vm.setDeeplink(deeplinkType: nil)
                 }
             }
         } else if accountState.data is AppAccountState.NO_USER,
-                  let recoveryDeeplink = deeplink as? DeeplinkType.PasswordReset {
+                  let actualDeeplink = deeplink as? DeeplinkType.PasswordReset {
             deeplinkTask?.cancel()
             DispatchQueue.main.async { [weak self] in
                 self?.deeplinkTask = Task { [weak self] in
                     try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-                    self?.appStartGraph = [.passwordReset(deeplink: recoveryDeeplink)]
+                    self?.appStartGraph = [.passwordReset(deeplink: actualDeeplink)]
                     self?.vm.setDeeplink(deeplinkType: nil)
                 }
             }

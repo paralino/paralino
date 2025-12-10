@@ -32,12 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
@@ -51,6 +51,7 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -176,29 +177,12 @@ fun SettingsScreenCore(
             }
         }
 
-        SettingSectionInfo(
-            canAccessDebugScreen = readyState?.canAccessDebugScreen == true,
-            onAppStatusClick = openAppStatus,
-            onGeneralInfoClick = openGeneralInfo,
-            onShareApp = onShareApp
-        )
-    }
-}
-
-@Composable
-fun SettingSectionInfo(
-    canAccessDebugScreen: Boolean,
-    onGeneralInfoClick: () -> Unit,
-    onAppStatusClick: () -> Unit,
-    onShareApp: (String) -> Unit,
-) {
-    Column {
-        if (canAccessDebugScreen) {
+        if (readyState?.canAccessDebugScreen == true) {
             SettingsActionItem(
                 name = "App status",
                 icon = CoreAppIcons.Settings.asPainterResource()
             ) {
-                onAppStatusClick()
+                openAppStatus()
             }
         }
 
@@ -209,11 +193,21 @@ fun SettingSectionInfo(
             onShareApp(BackendResourceIDs.downloadUrl)
         }
 
+        val uriHandler = LocalUriHandler.current
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_appReview_title),
+            icon = CoreAppIcons.StarShine.asPainterResource(),
+            iconTint = AppColors.highlightGold,
+            tag = stringResource(MR.strings.setting_appReview_info)
+        ) {
+            readyState?.appReviewUrl?.let { uriHandler.openUri(it) }
+        }
+
         SettingsActionItem(
             name = stringResource(MR.strings.settings_section_general_title),
             icon = CoreAppIcons.LibraryBooks.asPainterResource()
         ) {
-            onGeneralInfoClick()
+            openGeneralInfo()
         }
     }
 }
@@ -227,7 +221,8 @@ fun SettingsActionItem(
     tag: String? = null,
     description: String? = null,
     nameTextStyle: TextStyle = MaterialTheme.typography.subtitle2.copy(fontSize = 18.sp),
-    iconTint: Color = MaterialTheme.colors.surface,
+    iconBackgroundTint: Color = MaterialTheme.colors.surface,
+    iconTint: Color = MaterialTheme.colors.onSurface,
     type: SettingsActionItemType = SettingsActionItemType.Navigation,
     onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
@@ -246,11 +241,12 @@ fun SettingsActionItem(
         ) {
             Icon(
                 painter = icon,
+                tint = iconTint,
                 contentDescription = null,
                 modifier = Modifier
                     .size(46.dp)
                     .background(
-                        color = iconTint,
+                        color = iconBackgroundTint,
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(12.dp)

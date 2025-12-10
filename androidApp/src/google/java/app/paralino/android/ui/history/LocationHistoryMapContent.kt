@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -45,8 +43,6 @@ import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.JointType
@@ -57,7 +53,6 @@ import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -254,6 +249,7 @@ fun LocationHistoryMapContent(
                 MapMarkerComposable(
                     state = point,
                     position = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
+                    canTapOnMarker = true,
                     zIndex = 20f,
                     onClick = {
                         onEvent(LocationHistoryUiEvent.OnMarkerClick(it))
@@ -343,28 +339,12 @@ fun LocationHistoryMapContent(
                     }
                 },
                 clusterItemContent = {
-                    Icon(
-                        modifier = Modifier
-                            .size(
-                                if (it.item.accuracy.isLocationInaccurate()) {
-                                    18.dp
-                                } else {
-                                    16.dp
-                                }
-                            ),
-                        painter = if (it.item.accuracy.isLocationInaccurate()) {
-                            CoreAppIcons.NotListedLocationFilled.asPainterResource()
-                        } else {
-                            CoreAppIcons.LocationOnFilled.asPainterResource()
-                        },
-                        contentDescription = null,
-                        tint = if (isSatelliteMode || isSystemInDarkTheme()) {
-                            AppColors.highlightGold
-                        } else {
-                            AppColors.redMain
-                        }
+                    HistoryMapIcon(
+                        isDarkMode = isSatelliteMode || isSystemInDarkTheme(),
+                        isAccurate = !it.item.accuracy.isLocationInaccurate(),
+                        isClustered = it.item is LocationHistoryPointState.Cluster
                     )
-                },
+                }
             )
         } else {
             uiState.selectedLocations.forEach { pin ->
@@ -383,6 +363,7 @@ fun LocationHistoryMapContent(
         }
     }
 }
+
 
 @Stable
 class MapUiControlledData(

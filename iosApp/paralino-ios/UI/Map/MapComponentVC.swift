@@ -164,6 +164,7 @@ class MapComponentVC: UIViewController, UIGestureRecognizerDelegate {
     
     func setMapStyle(satellite: Bool) {
         mapView.mapType = satellite ? .hybrid : .standard
+        refreshAnnotations()
     }
     
     private func refreshAnnotations() {
@@ -429,7 +430,7 @@ extension MapComponentVC: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        mapState?.isUpdatingRegion = false
+        mapState?.regionFinishedUpdating()
     }
     
     func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {

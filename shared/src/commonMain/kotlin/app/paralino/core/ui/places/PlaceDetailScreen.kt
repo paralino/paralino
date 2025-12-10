@@ -240,7 +240,7 @@ private fun PlaceDetailScreen(
                     SettingsActionItem(
                         name = stringResource(MR.strings.place_list_menu_delete),
                         icon = CoreAppIcons.Delete.asPainterResource(),
-                        iconTint = AppColors.errorBackground
+                        iconBackgroundTint = AppColors.errorBackground
                     ) {
                         onPlaceDelete()
                     }

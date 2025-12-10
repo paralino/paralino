@@ -675,7 +675,7 @@
     <string name="setting_location_history_level_1_info">Više kretanja potrebno za ažuriranja lokacije</string>
     <string name="setting_location_history_level_2_info">Izbalansirana ažuriranja lokacije</string>
     <string name="setting_location_history_level_3_info">Česta ažuriranja lokacije</string>
-    <string name="plans_banner_inline_personal_space">Pratite više uređaja i dobijte više istorije lokacije!</string>
+    <string name="plans_banner_inline_personal_space">Pratite više uređaja i dobijte više istorije lokacija!</string>
     <string name="plans_management_info_wrong_platform_title">Ne možete upravljati svojom pretplatom na ovom uređaju!</string>
     <string name="plans_management_info_wrong_platform_message">Koristite uređaj koji ste prvobitno koristili za kupovinu.</string>
     <string name="plans_management_action_explore">Planovi</string>
@@ -839,5 +839,22 @@
     <string name="paywall_header_feature_list_screen_solo">Napravljen za vas, a ne za oglašivače</string>
     <string name="paywall_header_feature_list_screen_family">Ne dozvolite drugima da prate vašu porodicu</string>
     <string name="paywall_header_feature_history_title">Pratite svoja putovanja</string>
-    <string name="group_members_item_tracking_button">Praćenje</string>
+    <string name="group_members_item_tracking_button">Praćenje uključeno</string>
+    <string name="setting_feedbackPortal_title">Portal za povratne informacije</string>
+    <string name="setting_feedbackPortal_info">Predložite i glasajte za nove funkcije</string>
+    <string name="setting_feedbackChangelog_title">Zapisnik promjena</string>
+    <string name="setting_appReview_title">Da li vam se sviđa Paralino?</string>
+    <string name="setting_appReview_info">Da li biste mogli da ostavite recenziju 🥺</string>
+    <string name="places_create_location_hint_searchTap">**SAVET:** Pretražujte ili dodirnite mapu da biste prilagodili svoje mesto</string>
+    <string name="places_create_location_hint_searchOnly">**SAVET:** Počnite da kucate adresu kako biste pronašli svoje mesto</string>
+    <string name="places_create_name_placeholder">Ime*</string>
+    <string name="places_create_address_placeholder">Adresa</string>
+    <string name="place_create_suggestion_home">Dom</string>
+    <string name="place_create_suggestion_work">Posao</string>
+    <string name="place_create_suggestion_school">Škola</string>
+    <string name="place_create_suggestion_playground">Igralište</string>
+    <string name="place_create_suggestion_gym">Teretana</string>
+    <string name="place_create_suggestion_shopping">Tržni centar</string>
+    <string name="place_create_suggestion_bakery">Slatki kutak</string>
+    <string name="place_create_suggestion_coffee">Najbolja kafa</string>
 </resources>

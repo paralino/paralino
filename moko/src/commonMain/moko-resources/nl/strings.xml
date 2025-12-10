@@ -818,7 +818,7 @@
     <string name="place_sensitivity_optionDelay4_title">Langere Wacht</string>
     <string name="personalSpace_low_battery_notification_default">Uw apparaat heeft een lage batterij</string>
     <string name="raw_data_section_history_info">Meerdere vergelijkbare locatiepunten kunnen worden samengevoegd voordat de versleuteling plaatsvindt. Daarom ziet u hier een volledig versleuteld blok. Pas nadat het locatiegeschiedenisblok is ontsleuteld, kan uw geselecteerde punt worden gefilterd.</string>
-    <string name="plans_banner_inline_personal_space">Houd meer apparaten bij en krijg meer locatiegeschiedenis!</string>
+    <string name="plans_banner_inline_personal_space">Volg meer apparaten en ontvang meer locatiegeschiedenis!</string>
     <string name="paywall_header_feature_history_unlimited">Krijg onbeperkte persoonlijke locatiegeschiedenis met het **%1$s** plan!</string>
     <string name="invite_plan_limit_chip_owner">Om meer leden aan deze groep toe te voegen, dient u uw abonnement te upgraden of een van uw huidige leden te verwijderen.</string>
     <string name="group_members_device_confirm_remove_alert_title">Het verwijderen van een apparaat zal ook alle gerelateerde locatiegeschiedenis verwijderen en het delen van locatie stoppen!  \n\nDeze actie is onomkeerbaar.</string>
@@ -839,5 +839,22 @@
     <string name="paywall_header_feature_list_screen_solo">Gemaakt voor u, niet voor adverteerders</string>
     <string name="paywall_header_feature_list_screen_family">Laat anderen uw gezin niet volgen</string>
     <string name="paywall_header_feature_history_title">Volg uw reizen</string>
-    <string name="group_members_item_tracking_button">Tracking</string>
+    <string name="group_members_item_tracking_button">Tracking aan</string>
+    <string name="setting_feedbackPortal_title">Feedbackportaal</string>
+    <string name="setting_feedbackPortal_info">Stel voor en stem op de volgende nieuwe functies</string>
+    <string name="setting_feedbackChangelog_title">Wijzigingslogboek</string>
+    <string name="setting_appReview_title">Vind je Paralino leuk?</string>
+    <string name="setting_appReview_info">Zou je het een beoordeling willen geven 🥺</string>
+    <string name="places_create_location_hint_searchTap">**TIP:** Zoek of tik op de kaart om je locatie aan te passen</string>
+    <string name="places_create_location_hint_searchOnly">**TIP:** Begin met het typen van het adres om je locatie te vinden</string>
+    <string name="places_create_name_placeholder">Naam*</string>
+    <string name="places_create_address_placeholder">Adres</string>
+    <string name="place_create_suggestion_home">Thuis</string>
+    <string name="place_create_suggestion_work">Werk</string>
+    <string name="place_create_suggestion_school">School</string>
+    <string name="place_create_suggestion_playground">Speelplaats</string>
+    <string name="place_create_suggestion_gym">sportschool</string>
+    <string name="place_create_suggestion_shopping">Winkelscentrum</string>
+    <string name="place_create_suggestion_bakery">Zoete Hoek</string>
+    <string name="place_create_suggestion_coffee">Beste Koffie</string>
 </resources>

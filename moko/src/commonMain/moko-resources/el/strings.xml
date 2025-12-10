@@ -824,5 +824,22 @@
     <string name="paywall_header_feature_list_screen_solo">Δημιουργήθηκε για εσάς, όχι για διαφημιστές</string>
     <string name="paywall_header_feature_list_screen_family">Μην αφήσετε άλλους να παρακολουθούν την οικογένειά σας</string>
     <string name="paywall_header_feature_history_title">Παρακολουθήστε τα ταξίδια σας</string>
-    <string name="group_members_item_tracking_button">Παρακολούθηση</string>
+    <string name="group_members_item_tracking_button">Παρακολούθηση ενεργοποιημένη</string>
+    <string name="setting_feedbackPortal_title">Πύλη Ανατροφοδότησης</string>
+    <string name="setting_feedbackPortal_info">Προτείνετε και ψηφίστε για τις επόμενες νέες δυνατότητες</string>
+    <string name="setting_feedbackChangelog_title">Ιστορικό αλλαγών</string>
+    <string name="setting_appReview_title">Σας αρέσει το Paralino;</string>
+    <string name="setting_appReview_info">Θα μπορούσατε να του δώσετε μια αξιολόγηση 🥺</string>
+    <string name="places_create_location_hint_searchTap">**ΣΥΜΒΟΥΛΗ:** Κάντε αναζήτηση ή πατήστε στον χάρτη για να ρυθμίσετε τη θέση σας</string>
+    <string name="places_create_location_hint_searchOnly">**ΣΥΜΒΟΥΛΗ:** Αρχίστε να πληκτρολογείτε τη διεύθυνση για να βρείτε τη θέση σας</string>
+    <string name="places_create_name_placeholder">Όνομα*</string>
+    <string name="places_create_address_placeholder">Διεύθυνση</string>
+    <string name="place_create_suggestion_home">Σπίτι</string>
+    <string name="place_create_suggestion_work">Εργασία</string>
+    <string name="place_create_suggestion_school">Σχολείο</string>
+    <string name="place_create_suggestion_playground">Παιδική Χαρά</string>
+    <string name="place_create_suggestion_gym">Γυμναστήριο</string>
+    <string name="place_create_suggestion_shopping">Εμπορικό Κέντρο</string>
+    <string name="place_create_suggestion_bakery">Γλυκιά Γωνία</string>
+    <string name="place_create_suggestion_coffee">Καλύτερος Καφές</string>
 </resources>
