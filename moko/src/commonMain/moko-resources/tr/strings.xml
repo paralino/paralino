@@ -761,7 +761,7 @@
     <string name="history_map_options_pin_clustering">İğne kümelenmesi</string>
     <string name="history_map_options_show_pins">Konum iğneleri</string>
     <string name="history_map_options_show_path">Seyahat yolu</string>
-    <string name="history_map_no_locations_placeholder">☹  \nBu dönem için geçmiş yok</string>
+    <string name="history_map_no_locations_placeholder">⏳\nBu dönem için geçmiş yok</string>
     <string name="history_map_date_unselectable_error">Bu tarih seçilemez, başka bir tarih deneyin.</string>
     <string name="history_map_date_need_more_button">Daha fazla güne mi ihtiyacınız var?</string>
     <string name="history_map_date_add_more_button">Daha fazla gün ekle</string>

@@ -752,7 +752,7 @@
     <string name="history_map_options_pin_clustering">Nålk clustering</string>
     <string name="history_map_options_show_pins">Platsnålar</string>
     <string name="history_map_options_show_path">Resväg</string>
-    <string name="history_map_no_locations_placeholder">☹  \nIngen historik för denna period</string>
+    <string name="history_map_no_locations_placeholder">⏳\nIngen historik för denna period</string>
     <string name="history_map_date_unselectable_error">Detta datum kan inte väljas, försök ett annat.</string>
     <string name="history_map_date_need_more_button">Behöver du fler dagar?</string>
     <string name="history_map_date_add_more_button">Lägg till fler dagar</string>

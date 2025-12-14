@@ -740,7 +740,7 @@
     <string name="history_map_options_pin_clustering">Klasifikace připínacích bodů</string>
     <string name="history_map_options_show_pins">Připínací body polohy</string>
     <string name="history_map_options_show_path">Cestovní trasa</string>
-    <string name="history_map_no_locations_placeholder">☹  \nŽádná historie pro toto období</string>
+    <string name="history_map_no_locations_placeholder">⏳\nŽádná historie pro toto období</string>
     <string name="history_map_date_unselectable_error">Toto datum nelze vybrat, zkuste jiné.</string>
     <string name="history_map_date_need_more_button">Potřebujete více dní?</string>
     <string name="history_map_date_add_more_button">Přidat více dní</string>

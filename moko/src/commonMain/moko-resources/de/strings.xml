@@ -759,7 +759,7 @@
     <string name="history_map_options_pin_clustering">Pin-Clusterung</string>
     <string name="history_map_options_show_pins">Standort-Pins</string>
     <string name="history_map_options_show_path">Reiseweg</string>
-    <string name="history_map_no_locations_placeholder">☹\nKein Verlauf für diesen Zeitraum</string>
+    <string name="history_map_no_locations_placeholder">⏳\nKein Verlauf für diesen Zeitraum</string>
     <string name="history_map_date_unselectable_error">Dieses Datum kann nicht ausgewählt werden, versuchen Sie ein anderes.</string>
     <string name="history_map_date_need_more_button">Brauchen Sie mehr Tage?</string>
     <string name="history_map_date_add_more_button">Fügen Sie mehr Tage hinzu</string>

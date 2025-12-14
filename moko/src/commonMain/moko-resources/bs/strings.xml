@@ -775,7 +775,7 @@
     <string name="history_map_options_pin_clustering">Grupisanje pinova</string>
     <string name="history_map_options_show_pins">Pinovi lokacije</string>
     <string name="history_map_options_show_path">Putovanje</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNema istorije za ovaj period</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNema istorije za ovaj period</string>
     <string name="history_map_date_unselectable_error">Ova datum ne može biti odabran, pokušajte s drugim.</string>
     <string name="history_map_date_need_more_button">Trebate više dana?</string>
     <string name="history_map_date_add_more_button">Dodajte više dana</string>

@@ -739,7 +739,7 @@
     <string name="history_map_options_pin_clustering">Clustering de pini</string>
     <string name="history_map_options_show_pins">Pini de locație</string>
     <string name="history_map_options_show_path">Calea de călătorie</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNu există istoric pentru această perioadă</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNu există istoric pentru această perioadă</string>
     <string name="history_map_date_unselectable_error">Această dată nu poate fi selectată, încercați alta.</string>
     <string name="history_map_date_need_more_button">Aveți nevoie de mai multe zile?</string>
     <string name="history_map_date_add_more_button">Adăugați mai multe zile</string>

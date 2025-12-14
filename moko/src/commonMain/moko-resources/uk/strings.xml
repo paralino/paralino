@@ -712,7 +712,7 @@
     <string name="history_map_options_pin_clustering">Кластеризація пінів</string>
     <string name="history_map_options_show_pins">Піни місцезнаходження</string>
     <string name="history_map_options_show_path">Шлях подорожі</string>
-    <string name="history_map_no_locations_placeholder">☹  \nНемає історії за цей період</string>
+    <string name="history_map_no_locations_placeholder">⏳\nНемає історії за цей період</string>
     <string name="history_map_date_unselectable_error">Цю дату не можна вибрати, спробуйте іншу.</string>
     <string name="history_map_date_need_more_button">Потрібно більше днів?</string>
     <string name="history_map_date_add_more_button">Додати більше днів</string>

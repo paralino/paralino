@@ -700,7 +700,7 @@
     <string name="history_map_options_pin_clustering">Tűpontos klaszterezés</string>
     <string name="history_map_options_show_pins">Helymeghatározási tűk</string>
     <string name="history_map_options_show_path">Utazási útvonal</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNincs történelem erre az időszakra</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNincs történelem erre az időszakra</string>
     <string name="history_map_date_unselectable_error">Ez a dátum nem választható, próbáljon meg egy másikat.</string>
     <string name="history_map_date_need_more_button">Több napra van szüksége?</string>
     <string name="history_map_date_add_more_button">Több nap hozzáadása</string>

@@ -716,7 +716,7 @@
     <string name="history_map_options_pin_clustering">Pin klustering</string>
     <string name="history_map_options_show_pins">Placering pins</string>
     <string name="history_map_options_show_path">Rejsevej</string>
-    <string name="history_map_no_locations_placeholder">☹  \nIngen historik for denne periode</string>
+    <string name="history_map_no_locations_placeholder">⏳\nIngen historik for denne periode</string>
     <string name="history_map_date_unselectable_error">Denne dato kan ikke vælges, prøv en anden.</string>
     <string name="history_map_date_need_more_button">Har du brug for flere dage?</string>
     <string name="history_map_date_add_more_button">Tilføj flere dage</string>

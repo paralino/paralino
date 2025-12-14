@@ -749,7 +749,7 @@
     <string name="reset_password_error_token_message">Линк за ресетовање лозинке је истекао, молимо затражите нови.</string>
     <string name="raw_data_screen_info">Овде можете прегледати своје податке како су сачувани на серверу.\nСамо ваш уређај може да откључа (дешифрује) и види ове информације.</string>
     <string name="raw_data_screen_title">Шифровање</string>
-    <string name="history_map_no_locations_placeholder">☹\nНема историје за овај период</string>
+    <string name="history_map_no_locations_placeholder">⏳\nНема историје за овај период</string>
     <string name="history_map_date_unselectable_error">Овај датум не може бити изабран, покушајте неки други.</string>
     <string name="history_delete_until_period_title">До</string>
     <string name="history_delete_screen_title">Обришите историју локација</string>

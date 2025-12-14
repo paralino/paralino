@@ -701,7 +701,7 @@
     <string name="history_map_options_pin_clustering">Agrupament de pins</string>
     <string name="history_map_options_show_pins">Pins de ubicació</string>
     <string name="history_map_options_show_path">Camí de viatge</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNo hi ha historial per a aquest període</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNo hi ha historial per a aquest període</string>
     <string name="history_map_date_unselectable_error">Aquesta data no es pot seleccionar, prova\'n una altra.</string>
     <string name="history_map_date_need_more_button">Necessites més dies?</string>
     <string name="history_map_plan_limit_message_member">Per veure més dies en l\'historial de localització, si us plau contacta amb l\'administrador del teu grup per habilitar-ho.</string>

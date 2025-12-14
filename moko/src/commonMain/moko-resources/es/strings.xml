@@ -672,7 +672,7 @@
     <string name="history_map_options_pin_clustering">Agrupamiento de pines</string>
     <string name="history_map_options_show_pins">Pines de ubicación</string>
     <string name="history_map_options_show_path">Ruta de viaje</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNo hay historial para este período</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNo hay historial para este período</string>
     <string name="history_map_date_unselectable_error">Esta fecha no se puede seleccionar, intente con otra.</string>
     <string name="history_map_date_need_more_button">¿Necesita más días?</string>
     <string name="history_map_date_add_more_button">Agregar más días</string>

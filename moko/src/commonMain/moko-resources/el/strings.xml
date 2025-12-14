@@ -709,7 +709,7 @@
     <string name="history_map_options_pin_clustering">Συσσώρευση καρφίτσας</string>
     <string name="history_map_options_show_pins">Καρφίτσες τοποθεσίας</string>
     <string name="history_map_options_show_path">Διαδρομή ταξιδιού</string>
-    <string name="history_map_no_locations_placeholder">☹\nΔεν υπάρχει ιστορικό για αυτή την περίοδο</string>
+    <string name="history_map_no_locations_placeholder">⏳\nΔεν υπάρχει ιστορικό για αυτή την περίοδο</string>
     <string name="history_map_date_unselectable_error">Αυτή η ημερομηνία δεν μπορεί να επιλεγεί, δοκιμάστε μια άλλη.</string>
     <string name="history_map_date_need_more_button">Χρειάζεστε περισσότερες ημέρες;</string>
     <string name="history_map_date_add_more_button">Προσθέστε περισσότερες ημέρες</string>

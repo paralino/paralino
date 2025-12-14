@@ -771,7 +771,7 @@
     <string name="history_map_options_pin_clustering">Zhlukovanie pinov</string>
     <string name="history_map_options_show_pins">Položky umiestnenia</string>
     <string name="history_map_options_show_path">Cestovná trasa</string>
-    <string name="history_map_no_locations_placeholder">☹\nŽiadna história za toto obdobie</string>
+    <string name="history_map_no_locations_placeholder">⏳\nŽiadna história za toto obdobie</string>
     <string name="history_map_date_unselectable_error">Tento dátum nie je možné vybrať, skúste iný.</string>
     <string name="history_map_date_need_more_button">Potrebujete viac dní?</string>
     <string name="history_map_date_add_more_button">Pridať viac dní</string>

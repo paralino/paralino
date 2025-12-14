@@ -767,7 +767,7 @@
     <string name="history_map_options_pin_clustering">Pinclustering</string>
     <string name="history_map_options_show_pins">Locatiepinnen</string>
     <string name="history_map_options_show_path">Reisroute</string>
-    <string name="history_map_no_locations_placeholder">☹  \nGeen geschiedenis voor deze periode</string>
+    <string name="history_map_no_locations_placeholder">⏳\nGeen geschiedenis voor deze periode</string>
     <string name="history_map_date_unselectable_error">Deze datum kan niet worden geselecteerd, probeer een andere.</string>
     <string name="history_map_date_need_more_button">Meer dagen nodig?</string>
     <string name="history_map_date_add_more_button">Voeg meer dagen toe</string>

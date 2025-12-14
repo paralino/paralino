@@ -731,7 +731,7 @@
     <string name="history_map_options_pin_clustering">Кластеризация пинов</string>
     <string name="history_map_options_show_pins">Пины местоположения</string>
     <string name="history_map_options_show_path">Путь путешествия</string>
-    <string name="history_map_no_locations_placeholder">☹  \nНет истории за этот период</string>
+    <string name="history_map_no_locations_placeholder">⏳\nНет истории за этот период</string>
     <string name="history_map_date_unselectable_error">Эта дата не может быть выбрана, попробуйте другую.</string>
     <string name="history_map_date_need_more_button">Нужны дополнительные дни?</string>
     <string name="history_map_date_add_more_button">Добавить больше дней</string>

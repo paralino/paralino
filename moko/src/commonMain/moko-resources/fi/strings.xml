@@ -721,7 +721,7 @@
     <string name="history_map_options_pin_clustering">Nastaklusterointi</string>
     <string name="history_map_options_show_pins">Sijaintinastat</string>
     <string name="history_map_options_show_path">Matkareitti</string>
-    <string name="history_map_no_locations_placeholder">☹  \nEi historiaa tälle ajanjaksolle</string>
+    <string name="history_map_no_locations_placeholder">⏳\nEi historiaa tälle ajanjaksolle</string>
     <string name="history_map_date_unselectable_error">Tätä päivämäärää ei voi valita, kokeile toista.</string>
     <string name="history_map_date_need_more_button">Tarvitsetko lisää päiviä?</string>
     <string name="history_map_date_add_more_button">Lisää lisää päiviä</string>

@@ -740,7 +740,7 @@
     <string name="history_map_options_pin_clustering">Grupowanie pinezek</string>
     <string name="history_map_options_show_pins">Pinezki lokalizacji</string>
     <string name="history_map_options_show_path">Ścieżka podróży</string>
-    <string name="history_map_no_locations_placeholder">☹  \nBrak historii dla tego okresu</string>
+    <string name="history_map_no_locations_placeholder">⏳\nBrak historii dla tego okresu</string>
     <string name="history_map_date_unselectable_error">Ta data nie może być wybrana, spróbuj innej.</string>
     <string name="history_map_date_need_more_button">Potrzebujesz więcej dni?</string>
     <string name="history_map_date_add_more_button">Dodaj więcej dni</string>

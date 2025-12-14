@@ -740,7 +740,7 @@
     <string name="history_map_options_pin_clustering">Klasifikacija pinov</string>
     <string name="history_map_options_show_pins">Lokacijski pini</string>
     <string name="history_map_options_show_path">Potovanje</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNi zgodovine za to obdobje</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNi zgodovine za to obdobje</string>
     <string name="history_map_date_unselectable_error">Ta datum ni mogoče izbrati, poskusite z drugim.</string>
     <string name="history_map_date_need_more_button">Potrebujete več dni?</string>
     <string name="history_map_date_add_more_button">Dodajte več dni</string>
