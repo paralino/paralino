@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Nákupné centrum</string>
     <string name="place_create_suggestion_bakery">Sladký kútik</string>
     <string name="place_create_suggestion_coffee">Najlepšia káva</string>
+    <string name="button_yes">Áno</string>
+    <string name="button_no">Nie</string>
+    <string name="setting_placeSearch_title">Hľadanie miesta</string>
+    <string name="setting_placeSearch_info">Aby ste poskytli presnejšie výsledky hľadania miesta, môžete si zvoliť zahrnúť približnú polohu vyberanej mapovej oblasti do svojho hľadania. Tieto údaje sa používajú iba dočasne na účely hľadania a nie sú nikde uložené ani zaznamenávané. \nAk túto možnosť vypnete, vaše hľadanie nebude používať mapovú oblasť a môže byť menej presné.</string>
+    <string name="setting_placeSearch_location_title">Aktuálna mapová oblasť</string>
+    <string name="setting_placeSearch_location_info">Keď je táto možnosť zapnutá, približná poloha aktuálne vyberanej mapovej oblasti sa odošle na server na poskytovanie lokalizovaných výsledkov hľadania.</string>
 </resources>

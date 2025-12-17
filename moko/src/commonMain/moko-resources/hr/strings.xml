@@ -857,4 +857,10 @@
     <string name="place_create_suggestion_shopping">Tržni centar</string>
     <string name="place_create_suggestion_bakery">Kutak s slatkišima</string>
     <string name="place_create_suggestion_coffee">Najbolja kava</string>
+    <string name="button_yes">Da</string>
+    <string name="button_no">Ne</string>
+    <string name="setting_placeSearch_title">Pretraživanje lokacija</string>
+    <string name="setting_placeSearch_info">Kako bismo pružili preciznije rezultate pretraživanja lokacija, možete odabrati uključivanje približne lokacije odabranog područja na karti u vaše pretraživanje. Ovi podaci se koriste samo privremeno u svrhu pretraživanja i ne pohranjuju se niti se bilježe nigdje.  \nAko onemogućite ovu opciju, vaše pretraživanje neće koristiti područje karte i moglo bi biti manje precizno.</string>
+    <string name="setting_placeSearch_location_title">Trenutno područje karte</string>
+    <string name="setting_placeSearch_location_info">Kada je omogućeno, približna lokacija trenutno odabranog područja na karti će se slati poslužitelju kako bi se pružili lokalizirani rezultati pretraživanja.</string>
 </resources>

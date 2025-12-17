@@ -857,4 +857,10 @@
     <string name="place_create_suggestion_shopping">Centre commercial</string>
     <string name="place_create_suggestion_bakery">Coin sucré</string>
     <string name="place_create_suggestion_coffee">Meilleur café</string>
+    <string name="button_yes">Oui</string>
+    <string name="button_no">Non</string>
+    <string name="setting_placeSearch_title">Recherche de lieu</string>
+    <string name="setting_placeSearch_info">Pour fournir des résultats de recherche de lieu plus précis, vous pouvez choisir d\'inclure la localisation approximative de la zone de la carte sélectionnée dans votre recherche. Ces données ne sont utilisées que temporairement à des fins de recherche et ne sont stockées ni enregistrées.  \nSi vous désactivez cela, votre recherche n\'utilisera pas la zone de la carte et pourrait être moins précise.</string>
+    <string name="setting_placeSearch_location_title">Zone de carte actuelle</string>
+    <string name="setting_placeSearch_location_info">Lorsque cela est activé, la localisation approximative de la zone de carte actuellement sélectionnée sera envoyée au serveur pour fournir des résultats de recherche localisés.</string>
 </resources>

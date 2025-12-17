@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Bevásárlóközpont</string>
     <string name="place_create_suggestion_bakery">Édes Sarok</string>
     <string name="place_create_suggestion_coffee">Legjobb Kávé</string>
+    <string name="button_yes">Igen</string>
+    <string name="button_no">Nem</string>
+    <string name="setting_placeSearch_title">Helykeresés</string>
+    <string name="setting_placeSearch_info">A pontosabb helykeresési eredmények érdekében kiválaszthatja, hogy a kiválasztott térképrészlet hozzávetőleges helyét is belefoglalja a keresésbe. Ezt az adatot csak ideiglenesen használják keresési célokra, és sehol sem tárolják vagy naplózzák.  \nHa ezt letiltja, a keresése nem használja a térképrészletet, és lehet, hogy kevésbé pontos lesz.</string>
+    <string name="setting_placeSearch_location_title">Jelenlegi térképrészlet</string>
+    <string name="setting_placeSearch_location_info">Ha engedélyezve van, a jelenleg kiválasztott térképrészlet hozzávetőleges helye a szerverhez kerül továbbításra, hogy lokalizált keresési eredményeket biztosítson.</string>
 </resources>

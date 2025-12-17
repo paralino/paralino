@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Ostoskeskus</string>
     <string name="place_create_suggestion_bakery">Makea nurkka</string>
     <string name="place_create_suggestion_coffee">Paras kahvi</string>
+    <string name="button_yes">Kyllä</string>
+    <string name="button_no">Ei</string>
+    <string name="setting_placeSearch_title">Paikkahaku</string>
+    <string name="setting_placeSearch_info">Tarjotaksesi tarkempia paikkahakutuloksia, voit valita, että hakusi sisältää valitun kartta-alueen arvionnin. Tämä tieto käytetään vain väliaikaisesti hakutarkoituksiin eikä sitä tallenneta tai kirjata mihinkään.\nJos poistat tämän käytöstä, hakusi ei käytä kartta-aluetta ja voi olla vähemmän tarkka.</string>
+    <string name="setting_placeSearch_location_title">Nykyinen kartta-alue</string>
+    <string name="setting_placeSearch_location_info">Kun tämä on käytössä, nykyisen valitun kartta-alueen arvioitu sijainti lähetetään palvelimelle paikallisten hakutulosten tuottamiseksi.</string>
 </resources>

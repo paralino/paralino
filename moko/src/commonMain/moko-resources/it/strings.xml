@@ -857,4 +857,10 @@
     <string name="place_create_suggestion_shopping">Centro commerciale</string>
     <string name="place_create_suggestion_bakery">Angolo dolce</string>
     <string name="place_create_suggestion_coffee">Miglior caffè</string>
+    <string name="button_yes">Sì</string>
+    <string name="button_no">No</string>
+    <string name="setting_placeSearch_title">Ricerca di luoghi</string>
+    <string name="setting_placeSearch_info">Per fornire risultati di ricerca di luoghi più accurati, puoi scegliere di includere la posizione approssimativa dell\'area della mappa selezionata nella tua ricerca. Questi dati sono utilizzati solo temporaneamente per scopi di ricerca e non vengono memorizzati o registrati da nessuna parte.  \nSe disabiliti questa opzione, la tua ricerca non utilizzerà l\'area della mappa e potrebbe essere meno accurata.</string>
+    <string name="setting_placeSearch_location_title">Area della mappa attuale</string>
+    <string name="setting_placeSearch_location_info">Quando abilitato, la posizione approssimativa dell\'area della mappa attualmente selezionata verrà inviata al server per fornire risultati di ricerca localizzati.</string>
 </resources>

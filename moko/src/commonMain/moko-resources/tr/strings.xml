@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Alışveriş merkezi</string>
     <string name="place_create_suggestion_bakery">Tatlı köşesi</string>
     <string name="place_create_suggestion_coffee">En iyi kahve</string>
+    <string name="button_yes">Evet</string>
+    <string name="button_no">Hayır</string>
+    <string name="setting_placeSearch_title">Yer arama</string>
+    <string name="setting_placeSearch_info">Daha doğru yer arama sonuçları sağlamak için, seçilen harita alanının yaklaşık konumunu aramanıza dahil etmeyi seçebilirsiniz. Bu veri yalnızca arama amaçları için geçici olarak kullanılır ve herhangi bir yerde saklanmaz veya kaydedilmez. Bunu devre dışı bırakırsanız, aramanız harita alanını kullanmayacak ve daha az doğru olabilir.</string>
+    <string name="setting_placeSearch_location_title">Mevcut harita alanı</string>
+    <string name="setting_placeSearch_location_info">Etkinleştirildiğinde, şu anda seçilen harita alanının yaklaşık konumu, yerelleştirilmiş arama sonuçları sağlamak için sunucuya gönderilecektir.</string>
 </resources>

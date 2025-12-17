@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Nakupovalni center</string>
     <string name="place_create_suggestion_bakery">Sladka točka</string>
     <string name="place_create_suggestion_coffee">Najboljša kava</string>
+    <string name="button_yes">Da</string>
+    <string name="button_no">Ne</string>
+    <string name="setting_placeSearch_title">Iskanje mest</string>
+    <string name="setting_placeSearch_info">Za zagotavljanje bolj natančnih rezultatov iskanja mest lahko izberete, da vključite približno lokacijo izbranega območja na zemljevidu v vaše iskanje. Ti podatki se uporabljajo le začasno za namene iskanja in se ne shranjujejo ali beležijo nikjer.  \nČe to onemogočite, vaša iskanja ne bodo uporabljala območja na zemljevidu in so lahko manj natančna.</string>
+    <string name="setting_placeSearch_location_title">Trenutno območje na zemljevidu</string>
+    <string name="setting_placeSearch_location_info">Ko je vklopljeno, se približna lokacija trenutno izbranega območja na zemljevidu pošlje strežniku za zagotavljanje lokaliziranih rezultatov iskanja.</string>
 </resources>

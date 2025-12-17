@@ -857,4 +857,10 @@
     <string name="place_create_suggestion_shopping">Einkaufszentrum</string>
     <string name="place_create_suggestion_bakery">Süße Ecke</string>
     <string name="place_create_suggestion_coffee">Bester Kaffee</string>
+    <string name="button_yes">Ja</string>
+    <string name="button_no">Nein</string>
+    <string name="setting_placeSearch_title">Ortssuche</string>
+    <string name="setting_placeSearch_info">Um genauere Ergebnisse bei der Ortssuche zu erzielen, können Sie entscheiden, die ungefähre Position des ausgewählten Kartenbereichs in Ihre Suche einzubeziehen. Diese Daten werden nur vorübergehend für Suchzwecke verwendet und nicht gespeichert oder protokolliert.  \nWenn Sie dies deaktivieren, verwendet Ihre Suche den Kartenbereich nicht und könnte weniger genau sein.</string>
+    <string name="setting_placeSearch_location_title">Aktueller Kartenbereich</string>
+    <string name="setting_placeSearch_location_info">Wenn aktiviert, wird die ungefähre Position des aktuell ausgewählten Kartenbereichs an den Server gesendet, um lokalisierte Suchergebnisse bereitzustellen.</string>
 </resources>
