@@ -105,6 +105,7 @@ class AppPrefs(
         const val keyEmailVerificationSkipTime = "prefs.user.emailVerification.skipTime"
         const val keyPlaceSensitivityType = "prefs.device.placeSensitivity"
         const val keyDevModeEnabled = "prefs.device.devModeOverride"
+        const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
     }
 
     val isTokenValid: Boolean
@@ -492,6 +493,12 @@ class AppPrefs(
         get() = provider.userSettings.getBoolean(keyDevModeEnabled, false)
         set(value) {
             provider.userSettings.putBoolean(keyDevModeEnabled, value)
+        }
+
+    var wasAppReviewOpened: Boolean
+        get() = provider.userSettings.getBoolean(keyAppTappedOnReview, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyAppTappedOnReview, value)
         }
 
 

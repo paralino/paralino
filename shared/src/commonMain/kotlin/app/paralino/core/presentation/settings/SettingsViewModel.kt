@@ -74,7 +74,8 @@ class SettingsViewModel(
             userState = userRepo.localUser.value,
             remoteConfig = remoteConfigRepository.getCachedConfigOnce(),
             personalCode = personalCodeRepo.activePersonalCodeState.value,
-            userPlans = userRepo.userPlans.value
+            userPlans = userRepo.userPlans.value,
+            previousState = null
         )
     )
     val accountState: StateFlow<Payload<AccountScreenState>> = _accountState
@@ -105,7 +106,13 @@ class SettingsViewModel(
             personalCodeRepo.activePersonalCodeState,
             userRepo.userPlans
         ) { userState, appConfig, personalCode, userPlans ->
-            mapUserState(userState, appConfig, personalCode, userPlans)
+            mapUserState(
+                userState = userState,
+                remoteConfig = appConfig,
+                personalCode = personalCode,
+                userPlans = userPlans,
+                previousState = _accountState.value.data
+            )
         }.onEach { value ->
             _accountState.update { value }
             runLocationBoostJob()
@@ -118,7 +125,8 @@ class SettingsViewModel(
         userState: Resource<UserMe?>,
         remoteConfig: ConfigData?,
         personalCode: UserPersonalCode?,
-        userPlans: UserPlans
+        userPlans: UserPlans,
+        previousState: AccountScreenState?
     ): Payload<AccountScreenState> {
         return when (userState) {
             Resource.NotInitialized -> Payload.Loading
@@ -147,7 +155,9 @@ class SettingsViewModel(
                             appReviewUrl = when (deviceApiProvider.deviceType) {
                                 DeviceType.Android -> BackendResourceIDs.storeUrlGooglePlay
                                 DeviceType.iOS -> BackendResourceIDs.storeUrlDeeplinkAppleAppStoreReview
-                            }
+                            },
+                            isAppReviewExpanded = previousState?.isAppReviewExpanded ?: false,
+                            isAppReviewVisible = !appPrefs.wasAppReviewOpened
                         )
                     )
                 } else {
@@ -288,6 +298,33 @@ class SettingsViewModel(
                     }
 
                     else -> {}
+                }
+            }
+
+            AccountScreenUiEvent.TryToOpenAppReview -> {
+                _accountState.update {
+                    it.mapSuccess {
+                        it.copy(isAppReviewExpanded = !it.isAppReviewExpanded)
+                    }
+                }
+            }
+
+            AccountScreenUiEvent.OpenAppReview -> {
+                appPrefs.wasAppReviewOpened = true
+                _eventChannel.trySend(AccountScreenEvent.OpenAppReview)
+                _accountState.update {
+                    it.mapSuccess {
+                        it.copy(isAppReviewVisible = false)
+                    }
+                }
+            }
+
+            AccountScreenUiEvent.CloseAppReview -> {
+                appPrefs.wasAppReviewOpened = true
+                _accountState.update {
+                    it.mapSuccess {
+                        it.copy(isAppReviewVisible = false)
+                    }
                 }
             }
         }
