@@ -172,7 +172,6 @@ fun HistoryMapOnboardingContent(
                 Icon(
                     painter = CoreAppIcons.LocationOnFilled.asPainterResource(),
                     contentDescription = null,
-                    tint = AppColors.redMain,
                     modifier = Modifier
                         .size(20.dp)
                         .offset(x = xOffset, y = yOffset)
