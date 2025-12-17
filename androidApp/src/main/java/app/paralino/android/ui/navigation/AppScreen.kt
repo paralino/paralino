@@ -320,6 +320,10 @@ sealed class AppScreen {
             override val routeSignature: String = "settings-measurement-system"
         }
 
+        object PlaceSearch : AppScreen() {
+            override val routeSignature: String = "settings-place-search"
+        }
+
         object NotificationGrouping : AppScreen() {
             override val routeSignature: String = "settings-notification-grouping"
         }

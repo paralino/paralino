@@ -79,6 +79,7 @@ import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.DefaultNavigationAppViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
@@ -306,6 +307,7 @@ object KoinIOS {
             factory { MeasurementSystemViewModel(get(), get()) }
             factory { NotificationsGroupingViewModel(get()) }
             factory { DefaultNavigationAppViewModel(get()) }
+            factory { PlaceSearchSettingsViewModel(get(), get()) }
             factory { (groupId: String, memberUserId: String, deviceId: String?) -> LocationHistoryViewModel(groupId = groupId, memberUserId = memberUserId, deviceId = deviceId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -388,6 +390,7 @@ object KoinIOS {
         val measurementSystemVM get() = get<MeasurementSystemViewModel>()
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
         val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
+        val placeSearchSettingsVM get() = get<PlaceSearchSettingsViewModel>()
         fun locationHistoryVM(groupId: String, memberUserId: String, deviceId: String?) = get<LocationHistoryViewModel> { parametersOf(groupId, memberUserId, deviceId) }
         fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
         val personalSpaceVM get() = get<PersonalSpaceViewModel>()

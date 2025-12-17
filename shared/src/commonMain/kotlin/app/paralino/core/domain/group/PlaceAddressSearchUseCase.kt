@@ -1,6 +1,7 @@
 package app.paralino.core.domain.group
 
 import androidx.compose.ui.text.intl.Locale
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.raw.PlaceAddressSearchPayload
 import app.paralino.core.models.raw.PlaceAddressSearchResponse
@@ -11,7 +12,8 @@ import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.utils.extensions.roundToPrecision
 
 class PlaceAddressSearchUseCase(
-    private val functionApi: IFunctionsApi
+    private val functionApi: IFunctionsApi,
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
     suspend fun searchAddress(
         address: String,
@@ -22,14 +24,20 @@ class PlaceAddressSearchUseCase(
         } catch (e: Exception) {
             "en-US"
         }
+        val location = if (appPrefs.sendLocationWithPlaceSearch) {
+            latLng
+        } else {
+            null
+        }
+
         return triggerRemoteOnly {
             val response = functionApi.runAndWait(
                 function = ServerFunction.PLACE_ADDRESS_SEARCH,
                 data = PlaceAddressSearchPayload(
                     address = address,
                     language = language,
-                    lat = latLng?.lat?.toFloat()?.roundToPrecision(decimalPlaces = 2),
-                    lng = latLng?.lng?.toFloat()?.roundToPrecision(decimalPlaces = 2)
+                    lat = location?.lat?.toFloat()?.roundToPrecision(decimalPlaces = 2),
+                    lng = location?.lng?.toFloat()?.roundToPrecision(decimalPlaces = 2)
                 )
             )
 

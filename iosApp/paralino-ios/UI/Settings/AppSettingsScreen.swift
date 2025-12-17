@@ -24,6 +24,9 @@ struct AppSettingsScreen: View {
                     },
                     openNavigationAppScreen: {
                         path.append(.settings(.navigationAppSettings))
+                    },
+                    openPlaceSearchSettings: {
+                        path.append(.settings(.placeSearchSettings))
                     }
                 )
             }

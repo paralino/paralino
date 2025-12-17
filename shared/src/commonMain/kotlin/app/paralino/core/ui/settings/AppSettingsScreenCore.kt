@@ -27,6 +27,7 @@ fun AppSettingsScreenCore(
     onMeasurementSystemClick: () -> Unit,
     onNotificationGroupingClick: () -> Unit,
     onNavigationAppClick: () -> Unit,
+    onPlaceSearchSettingsClick: () -> Unit,
 ) {
 //    MessageDispatcherEffect(vm, appState)
 //    val uiState by vm.uiState.collectAsState()
@@ -48,6 +49,11 @@ fun AppSettingsScreenCore(
             name = stringResource(MR.strings.setting_notificationGrouping_title),
             icon = CoreAppIcons.NotificationsActive.asPainterResource(),
             onClick = onNotificationGroupingClick
+        )
+        SettingsActionItem(
+            name = stringResource(MR.strings.setting_placeSearch_title),
+            icon = CoreAppIcons.Search.asPainterResource(),
+            onClick = onPlaceSearchSettingsClick
         )
         if (DeviceType.current == DeviceType.iOS) {
             val canShow = rememberSaveable {

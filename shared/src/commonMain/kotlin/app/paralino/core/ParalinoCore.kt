@@ -304,7 +304,7 @@ val coreModule = module {
     single { PersonalSpaceRefreshUseCase(get(), get(), get(), get(), get(), get()) }
     single { DeletePersonalDeviceUseCase(get(), get()) }
     single { DeactivatePersonalDeviceUseCase(get(), get(), get(), get()) }
-    single { PlaceAddressSearchUseCase(get()) }
+    single { PlaceAddressSearchUseCase(get(), get()) }
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

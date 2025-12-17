@@ -286,6 +286,7 @@ object SettingsScreens {
         openMeasurementSystemScreen: () -> Unit,
         openNotificationGroupingScreen: () -> Unit,
         openNavigationAppScreen: () -> Unit,
+        openPlaceSearchSettings: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppSettingsScreenCore(
@@ -293,7 +294,8 @@ object SettingsScreens {
                 paddingValues = PaddingValues(),
                 onMeasurementSystemClick = openMeasurementSystemScreen,
                 onNotificationGroupingClick = openNotificationGroupingScreen,
-                onNavigationAppClick = openNavigationAppScreen
+                onNavigationAppClick = openNavigationAppScreen,
+                onPlaceSearchSettingsClick = openPlaceSearchSettings
             )
         }
     }
