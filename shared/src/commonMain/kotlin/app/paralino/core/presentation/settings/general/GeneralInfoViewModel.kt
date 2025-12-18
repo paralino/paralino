@@ -38,6 +38,7 @@ class GeneralInfoViewModel(
                 appPrefs.didHaveAccountWelcomeOnboarding = false
                 appPrefs.didHaveLocationHistoryIntroOnboarding = false
                 appPrefs.didHavePersonalSpaceIntroOnboarding = false
+                appPrefs.wasAppReviewOpened = false
             }
 
             GeneralInfoScreenStateUiEvent.OnVersionInfoTap -> {

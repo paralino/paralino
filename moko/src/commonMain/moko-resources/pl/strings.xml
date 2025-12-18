@@ -740,7 +740,7 @@
     <string name="history_map_options_pin_clustering">Grupowanie pinezek</string>
     <string name="history_map_options_show_pins">Pinezki lokalizacji</string>
     <string name="history_map_options_show_path">Ścieżka podróży</string>
-    <string name="history_map_no_locations_placeholder">☹  \nBrak historii dla tego okresu</string>
+    <string name="history_map_no_locations_placeholder">⏳\nBrak historii dla tego okresu</string>
     <string name="history_map_date_unselectable_error">Ta data nie może być wybrana, spróbuj innej.</string>
     <string name="history_map_date_need_more_button">Potrzebujesz więcej dni?</string>
     <string name="history_map_date_add_more_button">Dodaj więcej dni</string>
@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Centrum handlowe</string>
     <string name="place_create_suggestion_bakery">Słodki kącik</string>
     <string name="place_create_suggestion_coffee">Najlepsza kawa</string>
+    <string name="button_yes">Tak</string>
+    <string name="button_no">Nie</string>
+    <string name="setting_placeSearch_title">Wyszukiwanie miejsca</string>
+    <string name="setting_placeSearch_info">Aby uzyskać dokładniejsze wyniki wyszukiwania miejsc, możesz wybrać opcję uwzględnienia przybliżonej lokalizacji wybranego obszaru mapy w swoim wyszukiwaniu. Dane te są używane tylko tymczasowo w celach wyszukiwania i nie są przechowywane ani rejestrowane w żadnym miejscu.  \nJeśli to wyłączysz, Twoje wyszukiwanie nie będzie korzystać z obszaru mapy i może być mniej dokładne.</string>
+    <string name="setting_placeSearch_location_title">Aktualny obszar mapy</string>
+    <string name="setting_placeSearch_location_info">Po włączeniu przybliżona lokalizacja obecnie wybranego obszaru mapy zostanie przesłana na serwer w celu uzyskania lokalizowanych wyników wyszukiwania.</string>
 </resources>

@@ -5,8 +5,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
@@ -25,6 +28,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -41,21 +45,25 @@ import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.data
+import app.paralino.core.presentation.settings.AccountScreenEvent
 import app.paralino.core.presentation.settings.AccountScreenUiEvent
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.settings.billing.PremiumPlanBanner
 import app.paralino.core.ui.settings.profile.AccountInfoHeader
 import app.paralino.core.ui.theme.AppColors
+import app.paralino.core.ui.theme.ButtonStyle
 import app.paralino.core.utils.ConditionErrorType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SettingsScreenCore(
@@ -77,6 +85,23 @@ fun SettingsScreenCore(
 
     MessageDispatcherEffect(viewModel, appState)
     val accountState by viewModel.accountState.collectAsState()
+    val uriHandler = LocalUriHandler.current
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.events.collectLatest { event ->
+            when (event) {
+                AccountScreenEvent.EmailVerificationSent -> {}
+
+                AccountScreenEvent.OpenAppReview -> {
+                    accountState.data?.appReviewUrl?.let { uriHandler.openUri(it) }
+                }
+
+                null -> {
+                    /* do nothing */
+                }
+            }
+        }
+    }
 
     val dialog = accountState.data?.alertDialog
     dialog?.let { dialog ->
@@ -193,14 +218,79 @@ fun SettingsScreenCore(
             onShareApp(BackendResourceIDs.downloadUrl)
         }
 
-        val uriHandler = LocalUriHandler.current
-        SettingsActionItem(
-            name = stringResource(MR.strings.setting_appReview_title),
-            icon = CoreAppIcons.StarShine.asPainterResource(),
-            iconTint = AppColors.highlightGold,
-            tag = stringResource(MR.strings.setting_appReview_info)
+        AnimatedVisibility(
+            visible = readyState?.isAppReviewVisible == true
         ) {
-            readyState?.appReviewUrl?.let { uriHandler.openUri(it) }
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_appReview_title),
+                icon = CoreAppIcons.StarShine.asPainterResource(),
+                iconTint = AppColors.highlightGold,
+                tag = stringResource(MR.strings.setting_appReview_info),
+                type = SettingsActionItemType.Action
+            ) {
+                viewModel.onEvent(AccountScreenUiEvent.TryToOpenAppReview)
+            }
+        }
+
+        AnimatedVisibility(
+            visible = readyState?.isAppReviewExpanded == true && readyState.isAppReviewVisible
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                    .padding(bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilledButton(
+                    modifier = Modifier.weight(1f),
+                    style = ButtonStyle.SMALL_ACTION(
+                        paddingValues = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                        minContentHeight = 16.dp,
+                        shape = RoundedCornerShape(100),
+                        iconSize = 18.dp,
+                        iconSpacing = 8.dp
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.surface,
+                        contentColor = MaterialTheme.colors.onSurface
+                    ),
+                    elevation = 0.dp,
+                    onClick = {
+                        viewModel.onEvent(AccountScreenUiEvent.CloseAppReview)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.button_no),
+                        style = MaterialTheme.typography.button
+                    )
+                }
+
+                FilledButton(
+                    modifier = Modifier.weight(1f),
+                    style = ButtonStyle.SMALL_ACTION(
+                        paddingValues = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                        minContentHeight = 16.dp,
+                        shape = RoundedCornerShape(100),
+                        iconSize = 18.dp,
+                        iconSpacing = 8.dp
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.surface,
+                        contentColor = MaterialTheme.colors.onSurface
+                    ),
+                    elevation = 0.dp,
+                    onClick = {
+                        viewModel.onEvent(AccountScreenUiEvent.OpenAppReview)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(MR.strings.button_yes),
+                        style = MaterialTheme.typography.button
+                    )
+                }
+            }
         }
 
         SettingsActionItem(

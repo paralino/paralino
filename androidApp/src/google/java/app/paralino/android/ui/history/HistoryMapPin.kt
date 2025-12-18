@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -37,7 +36,7 @@ fun HistoryMapPin(
     MarkerInfoWindow(
         state = markerState,
         tag = state.pointId,
-        anchor = Offset(0.5f, if (!state.accuracy.isLocationInaccurate() || state is LocationHistoryPointState.Cluster) 0.5f else 1f),
+        anchor = Offset(0.5f, if (state is LocationHistoryPointState.Cluster) 0.5f else 1f),
         onClick = {
             onClick(state)
             true
@@ -87,53 +86,24 @@ fun HistoryMapIcon(
                     28.dp
                 }
             )
-            .conditional(isClustered || isAccurate) {
+            .conditional(isClustered) {
                 background(
-                    color =
-                        if (isDarkMode) {
-                            if (isClustered) {
-                                AppColors.accentLight
-                            } else if (isAccurate) {
-                                AppColors.lightBackground
-                            } else {
-                                Color.Transparent
-                            }
-                        } else {
-                            if (isClustered) {
-                                AppColors.accentDark
-                            } else if (isAccurate) {
-                                AppColors.redMain
-                            } else {
-                                Color.Transparent
-                            }
-                        },
+                    color = AppColors.lightSurface,
                     shape = CircleShape
                 )
             },
         painter = if (isClustered) {
-            CoreAppIcons.TargetCircles.asPainterResource()
+            CoreAppIcons.CircleCircle.asPainterResource()
         } else if (isAccurate) {
-            CoreAppIcons.CircleWithDot.asPainterResource()
+            CoreAppIcons.LocationOnFilled.asPainterResource()
         } else {
             CoreAppIcons.NotListedLocationFilled.asPainterResource()
         },
         contentDescription = null,
-        tint = if (isDarkMode) {
-            if (isClustered) {
-                AppColors.darkThemePrimary
-            } else if (isAccurate) {
-                AppColors.redMain
-            } else {
-                Color.Unspecified
-            }
+        tint = if (isClustered) {
+            AppColors.redMain
         } else {
-            if (isClustered) {
-                AppColors.lightBackground
-            } else if (isAccurate) {
-                AppColors.lightBackground
-            } else {
-                Color.Unspecified
-            }
+            Color.Unspecified
         }
     )
 }
@@ -144,7 +114,7 @@ class LocationHistoryClusterItem(
     fun getAnchor(): Offset {
         return Offset(
             x = 0.5f,
-            y = if (!item.accuracy.isLocationInaccurate() || item is LocationHistoryPointState.Cluster) 0.5f else 1f
+            y = if (item is LocationHistoryPointState.Cluster) 0.5f else 1f
         )
     }
 

@@ -739,7 +739,7 @@
     <string name="history_map_options_pin_clustering">Clustering de pini</string>
     <string name="history_map_options_show_pins">Pini de locație</string>
     <string name="history_map_options_show_path">Calea de călătorie</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNu există istoric pentru această perioadă</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNu există istoric pentru această perioadă</string>
     <string name="history_map_date_unselectable_error">Această dată nu poate fi selectată, încercați alta.</string>
     <string name="history_map_date_need_more_button">Aveți nevoie de mai multe zile?</string>
     <string name="history_map_date_add_more_button">Adăugați mai multe zile</string>
@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Centrul comercial</string>
     <string name="place_create_suggestion_bakery">Colț dulce</string>
     <string name="place_create_suggestion_coffee">Cea mai bună cafea</string>
+    <string name="button_yes">Da</string>
+    <string name="button_no">Nu</string>
+    <string name="setting_placeSearch_title">Căutare loc</string>
+    <string name="setting_placeSearch_info">Pentru a oferi rezultate de căutare ale locului mai precise, puteți alege să includeți locația aproximativă a zonei de pe hartă selectate în căutarea dvs. Aceste date sunt folosite doar temporar în scopuri de căutare și nu sunt stocate sau înregistrate nicăieri. \nDacă dezactivați acest lucru, căutarea dvs. nu va folosi zona de pe hartă și poate fi mai puțin precisă.</string>
+    <string name="setting_placeSearch_location_title">Zona curentă de pe hartă</string>
+    <string name="setting_placeSearch_location_info">Când este activat, locația aproximativă a zonei de pe hartă selectată în prezent va fi trimisă către server pentru a oferi rezultate de căutare localizate.</string>
 </resources>

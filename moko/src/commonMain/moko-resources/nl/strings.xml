@@ -767,7 +767,7 @@
     <string name="history_map_options_pin_clustering">Pinclustering</string>
     <string name="history_map_options_show_pins">Locatiepinnen</string>
     <string name="history_map_options_show_path">Reisroute</string>
-    <string name="history_map_no_locations_placeholder">☹  \nGeen geschiedenis voor deze periode</string>
+    <string name="history_map_no_locations_placeholder">⏳\nGeen geschiedenis voor deze periode</string>
     <string name="history_map_date_unselectable_error">Deze datum kan niet worden geselecteerd, probeer een andere.</string>
     <string name="history_map_date_need_more_button">Meer dagen nodig?</string>
     <string name="history_map_date_add_more_button">Voeg meer dagen toe</string>
@@ -857,4 +857,10 @@
     <string name="place_create_suggestion_shopping">Winkelscentrum</string>
     <string name="place_create_suggestion_bakery">Zoete Hoek</string>
     <string name="place_create_suggestion_coffee">Beste Koffie</string>
+    <string name="button_yes">Ja</string>
+    <string name="button_no">Nee</string>
+    <string name="setting_placeSearch_title">Plaats zoeken</string>
+    <string name="setting_placeSearch_info">Om nauwkeurigere zoekresultaten voor plaatsen te bieden, kunt u ervoor kiezen om de geschatte locatie van het geselecteerde kaartgebied in uw zoekopdracht op te nemen. Deze gegevens worden alleen tijdelijk voor zoekdoeleinden gebruikt en worden nergens opgeslagen of gelogd. Als u dit uitschakelt, zal uw zoekopdracht het kaartgebied niet gebruiken en mogelijk minder nauwkeurig zijn.</string>
+    <string name="setting_placeSearch_location_title">Huidig kaartgebied</string>
+    <string name="setting_placeSearch_location_info">Wanneer ingeschakeld, wordt de geschatte locatie van het momenteel geselecteerde kaartgebied naar de server gestuurd om gelokaliseerde zoekresultaten te bieden.</string>
 </resources>

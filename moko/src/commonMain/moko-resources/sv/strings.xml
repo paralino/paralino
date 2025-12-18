@@ -752,7 +752,7 @@
     <string name="history_map_options_pin_clustering">Nålk clustering</string>
     <string name="history_map_options_show_pins">Platsnålar</string>
     <string name="history_map_options_show_path">Resväg</string>
-    <string name="history_map_no_locations_placeholder">☹  \nIngen historik för denna period</string>
+    <string name="history_map_no_locations_placeholder">⏳\nIngen historik för denna period</string>
     <string name="history_map_date_unselectable_error">Detta datum kan inte väljas, försök ett annat.</string>
     <string name="history_map_date_need_more_button">Behöver du fler dagar?</string>
     <string name="history_map_date_add_more_button">Lägg till fler dagar</string>
@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_bakery">Söt hörn</string>
     <string name="place_create_suggestion_coffee">Bästa kaffe</string>
     <string name="setting_feedbackPortal_title">Feedbackportal</string>
+    <string name="button_yes">Ja</string>
+    <string name="button_no">Ne</string>
+    <string name="setting_placeSearch_title">Platsökning</string>
+    <string name="setting_placeSearch_info">För att ge mer exakta platsökningsresultat kan du välja att inkludera den ungefärliga platsen för det valda kartaområdet i din sökning. Dessa data används endast tillfälligt för sökändamål och lagras eller loggas inte någonstans.  \nOm du inaktiverar detta kommer din sökning inte att använda kartaområdet och kan vara mindre exakt.</string>
+    <string name="setting_placeSearch_location_title">Aktuellt kartaområde</string>
+    <string name="setting_placeSearch_location_info">När denna funktion är aktiverad kommer den ungefärliga platsen för det för närvarande valda kartaområdet att skickas till servern för att ge lokaliserade sökresultat.</string>
 </resources>

@@ -709,7 +709,7 @@
     <string name="history_map_options_pin_clustering">Συσσώρευση καρφίτσας</string>
     <string name="history_map_options_show_pins">Καρφίτσες τοποθεσίας</string>
     <string name="history_map_options_show_path">Διαδρομή ταξιδιού</string>
-    <string name="history_map_no_locations_placeholder">☹\nΔεν υπάρχει ιστορικό για αυτή την περίοδο</string>
+    <string name="history_map_no_locations_placeholder">⏳\nΔεν υπάρχει ιστορικό για αυτή την περίοδο</string>
     <string name="history_map_date_unselectable_error">Αυτή η ημερομηνία δεν μπορεί να επιλεγεί, δοκιμάστε μια άλλη.</string>
     <string name="history_map_date_need_more_button">Χρειάζεστε περισσότερες ημέρες;</string>
     <string name="history_map_date_add_more_button">Προσθέστε περισσότερες ημέρες</string>
@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Εμπορικό Κέντρο</string>
     <string name="place_create_suggestion_bakery">Γλυκιά Γωνία</string>
     <string name="place_create_suggestion_coffee">Καλύτερος Καφές</string>
+    <string name="button_yes">Ναι</string>
+    <string name="button_no">Όχι</string>
+    <string name="setting_placeSearch_title">Αναζήτηση τόπου</string>
+    <string name="setting_placeSearch_info">Για να παρέχετε πιο ακριβή αποτελέσματα αναζήτησης τόπου, μπορείτε να επιλέξετε να συμπεριλάβετε την περίπου τοποθεσία της επιλεγμένης περιοχής χάρτη στην αναζήτησή σας. Αυτά τα δεδομένα χρησιμοποιούνται μόνο προσωρινά για σκοπούς αναζήτησης και δεν αποθηκεύονται ή καταγράφονται πουθενά.  \nΕάν το απενεργοποιήσετε, η αναζήτησή σας δεν θα χρησιμοποιεί την περιοχή χάρτη και ενδέχεται να είναι λιγότερο ακριβής.</string>
+    <string name="setting_placeSearch_location_title">Τρέχουσα περιοχή χάρτη</string>
+    <string name="setting_placeSearch_location_info">Όταν είναι ενεργοποιημένο, η περίπου τοποθεσία της τρέχουσας επιλεγμένης περιοχής χάρτη θα σταλεί στον διακομιστή για να παρέχει τοπικά αποτελέσματα αναζήτησης.</string>
 </resources>

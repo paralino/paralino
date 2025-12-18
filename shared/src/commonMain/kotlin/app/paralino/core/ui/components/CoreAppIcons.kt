@@ -23,6 +23,7 @@ import paralino.shared.generated.resources.ic_check
 import paralino.shared.generated.resources.ic_check_circle
 import paralino.shared.generated.resources.ic_chevron_left
 import paralino.shared.generated.resources.ic_chevron_right
+import paralino.shared.generated.resources.ic_circle_circle
 import paralino.shared.generated.resources.ic_circle_cluster_dots
 import paralino.shared.generated.resources.ic_circle_only_outline
 import paralino.shared.generated.resources.ic_circle_with_dot
@@ -218,6 +219,7 @@ object CoreAppIcons {
     val CircleCluster get() = Res.drawable.ic_circle_cluster_dots
     val PolylineWithCircles get() = Res.drawable.ic_polyline
     val TargetCircles get() = Res.drawable.ic_target_circles
+    val CircleCircle get() = Res.drawable.ic_circle_circle
     val RouteLineWithDotsOnEnds get() = Res.drawable.ic_route_dots
 
     val FocusPersonOn get() = Res.drawable.ic_focus_person_on

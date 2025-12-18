@@ -767,7 +767,7 @@
     <string name="history_map_options_pin_clustering">Regroupement de pin</string>
     <string name="history_map_options_show_pins">Pins de localisation</string>
     <string name="history_map_options_show_path">Chemin de voyage</string>
-    <string name="history_map_no_locations_placeholder">☹  \nAucun historique pour cette période</string>
+    <string name="history_map_no_locations_placeholder">⏳\nAucun historique pour cette période</string>
     <string name="history_map_date_unselectable_error">Cette date ne peut pas être sélectionnée, essayez une autre.</string>
     <string name="history_map_date_need_more_button">Besoin de plus de jours ?</string>
     <string name="history_map_date_add_more_button">Ajouter plus de jours</string>
@@ -857,4 +857,10 @@
     <string name="place_create_suggestion_shopping">Centre commercial</string>
     <string name="place_create_suggestion_bakery">Coin sucré</string>
     <string name="place_create_suggestion_coffee">Meilleur café</string>
+    <string name="button_yes">Oui</string>
+    <string name="button_no">Non</string>
+    <string name="setting_placeSearch_title">Recherche de lieu</string>
+    <string name="setting_placeSearch_info">Pour fournir des résultats de recherche de lieu plus précis, vous pouvez choisir d\'inclure la localisation approximative de la zone de la carte sélectionnée dans votre recherche. Ces données ne sont utilisées que temporairement à des fins de recherche et ne sont stockées ni enregistrées.  \nSi vous désactivez cela, votre recherche n\'utilisera pas la zone de la carte et pourrait être moins précise.</string>
+    <string name="setting_placeSearch_location_title">Zone de carte actuelle</string>
+    <string name="setting_placeSearch_location_info">Lorsque cela est activé, la localisation approximative de la zone de carte actuellement sélectionnée sera envoyée au serveur pour fournir des résultats de recherche localisés.</string>
 </resources>

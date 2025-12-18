@@ -93,6 +93,7 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
 import app.paralino.core.presentation.share.SharingStartViewModel
@@ -250,6 +251,7 @@ object KoinSetup {
         viewModel { (groupID: String) -> BatteryNotificationsViewModel(groupID, get(), get(), get(), get(), get()) }
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
+        viewModel { PlaceSearchSettingsViewModel(get(), get()) }
         viewModel { (groupId: String, memberUserId: String, deviceId: String?) -> LocationHistoryViewModel(groupId = groupId, memberUserId = memberUserId, deviceId = deviceId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

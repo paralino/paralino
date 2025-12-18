@@ -768,7 +768,7 @@
     <string name="history_map_options_pin_clustering">Agrupamento de pinos</string>
     <string name="history_map_options_show_pins">Pinos de localização</string>
     <string name="history_map_options_show_path">Caminho de viagem</string>
-    <string name="history_map_no_locations_placeholder">☹  \nSem histórico para este período</string>
+    <string name="history_map_no_locations_placeholder">⏳\nSem histórico para este período</string>
     <string name="history_map_date_unselectable_error">Esta data não pode ser selecionada, tente outra.</string>
     <string name="history_map_date_need_more_button">Precisa de mais dias?</string>
     <string name="history_map_date_add_more_button">Adicionar mais dias</string>
@@ -857,4 +857,10 @@
     <string name="place_create_suggestion_shopping">Shopping</string>
     <string name="place_create_suggestion_bakery">Cantinho Doce</string>
     <string name="place_create_suggestion_coffee">Melhor Café</string>
+    <string name="button_yes">Sim</string>
+    <string name="button_no">Não</string>
+    <string name="setting_placeSearch_title">Busca de locais</string>
+    <string name="setting_placeSearch_info">Para fornecer resultados de busca de locais mais precisos, você pode optar por incluir a localização aproximada da área do mapa selecionada em sua busca. Esses dados são usados apenas temporariamente para fins de busca e não são armazenados ou registrados em nenhum lugar.  \nSe você desabilitar isso, sua busca não utilizará a área do mapa e pode ser menos precisa.</string>
+    <string name="setting_placeSearch_location_title">Área do mapa atual</string>
+    <string name="setting_placeSearch_location_info">Quando habilitado, a localização aproximada da área do mapa atualmente selecionada será enviada ao servidor para fornecer resultados de busca localizados.</string>
 </resources>

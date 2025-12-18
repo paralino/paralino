@@ -55,6 +55,7 @@ import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
+import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -304,6 +305,12 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             GenericSettingsScreen(
                 appState = appState,
                 vm = koinViewModel<NotificationsGroupingViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.PlaceSearch.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<PlaceSearchSettingsViewModel>()
             )
         }
     }

@@ -48,6 +48,7 @@ struct MapRootScreen: View {
                             case .measurementSystemSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.measurementSystemVM))
                             case .notificationGroupingSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.notificationGroupingVM))
                             case .navigationAppSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.navigationAppVM))
+                            case .placeSearchSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.placeSearchSettingsVM))
                             }
                         case let .home(homeGraph):
                             switch homeGraph {

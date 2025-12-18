@@ -25,6 +25,8 @@
     <string name="button_enable">Enable</string>
     <string name="button_activate">Activate</string>
     <string name="button_later">Later</string>
+    <string name="button_yes">Yes</string>
+    <string name="button_no">No</string>
     <string name="button_open_settings">Open settings</string>
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
@@ -278,6 +280,10 @@
     <string name="setting_navigationApp_citymapper_title">Citymapper</string>
     <string name="setting_navigationApp_yandex_title">Yandex Maps</string>
     <string name="setting_navigationApp_moovit_title">Moovit</string>
+    <string name="setting_placeSearch_title">Place search</string>
+    <string name="setting_placeSearch_info">To provide more accurate place search results, you can choose to include the approximate location of the selected map area in your search. This data is used only temporarily for search purposes and is not stored or logged anywhere.\nIf you disable this, your search will not use the map area and may be less accurate.</string>
+    <string name="setting_placeSearch_location_title">Current map area</string>
+    <string name="setting_placeSearch_location_info">When enabled, the approximate location of the currently selected map area will be sent to the server to provide localized search results.</string>
     <string name="plans_banner_settings_title">Upgrade your Plan</string>
     <string name="plans_banner_settings_description">Get more of everything and take your experience to the next level!</string>
     <string name="plans_banner_settings_action">Upgrade now</string>
@@ -778,7 +784,7 @@
     <string name="history_map_options_pin_clustering">Pin clustering</string>
     <string name="history_map_options_show_pins">Location pins</string>
     <string name="history_map_options_show_path">Travel path</string>
-    <string name="history_map_no_locations_placeholder">☹\nNo history for this period</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNo history for this period</string>
     <string name="history_map_date_unselectable_error">This date can not be selected, try another one.</string>
     <string name="history_map_date_need_more_button">Need more days?</string>
     <string name="history_map_date_add_more_button">Add more days</string>

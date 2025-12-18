@@ -701,7 +701,7 @@
     <string name="history_map_options_pin_clustering">Agrupament de pins</string>
     <string name="history_map_options_show_pins">Pins de ubicació</string>
     <string name="history_map_options_show_path">Camí de viatge</string>
-    <string name="history_map_no_locations_placeholder">☹  \nNo hi ha historial per a aquest període</string>
+    <string name="history_map_no_locations_placeholder">⏳\nNo hi ha historial per a aquest període</string>
     <string name="history_map_date_unselectable_error">Aquesta data no es pot seleccionar, prova\'n una altra.</string>
     <string name="history_map_date_need_more_button">Necessites més dies?</string>
     <string name="history_map_plan_limit_message_member">Per veure més dies en l\'historial de localització, si us plau contacta amb l\'administrador del teu grup per habilitar-ho.</string>
@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Centre comercial</string>
     <string name="place_create_suggestion_bakery">Cantonada dolça</string>
     <string name="place_create_suggestion_coffee">Millor cafè</string>
+    <string name="button_yes">Sí</string>
+    <string name="button_no">No</string>
+    <string name="setting_placeSearch_title">Cerca de lloc</string>
+    <string name="setting_placeSearch_info">Per proporcionar resultats de cerca de lloc més precisos, podeu optar per incloure la ubicació aproximada de l\'àrea del mapa seleccionada en la vostra cerca. Aquests dades s\'utilitzen només temporalment per a fins de cerca i no es guarden ni es registren enlloc. Si desactiveu això, la vostra cerca no utilitzarà l\'àrea del mapa i pot ser menys precisa.</string>
+    <string name="setting_placeSearch_location_title">Àrea del mapa actual</string>
+    <string name="setting_placeSearch_location_info">Quan està habilitada, la ubicació aproximada de l\'àrea del mapa seleccionada actualment s\'enviarà al servidor per proporcionar resultats de cerca localitzats.</string>
 </resources>

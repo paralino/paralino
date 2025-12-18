@@ -731,7 +731,7 @@
     <string name="history_map_options_pin_clustering">Кластеризация пинов</string>
     <string name="history_map_options_show_pins">Пины местоположения</string>
     <string name="history_map_options_show_path">Путь путешествия</string>
-    <string name="history_map_no_locations_placeholder">☹  \nНет истории за этот период</string>
+    <string name="history_map_no_locations_placeholder">⏳\nНет истории за этот период</string>
     <string name="history_map_date_unselectable_error">Эта дата не может быть выбрана, попробуйте другую.</string>
     <string name="history_map_date_need_more_button">Нужны дополнительные дни?</string>
     <string name="history_map_date_add_more_button">Добавить больше дней</string>
@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Торговый центр</string>
     <string name="place_create_suggestion_bakery">Сладкий уголок</string>
     <string name="place_create_suggestion_coffee">Лучший кофе</string>
+    <string name="button_yes">Да</string>
+    <string name="button_no">Нет</string>
+    <string name="setting_placeSearch_title">Поиск мест</string>
+    <string name="setting_placeSearch_info">Для обеспечения более точных результатов поиска мест вы можете выбрать возможность включения приблизительного местоположения выбранной области карты в ваш поиск. Эти данные используются только временно для целей поиска и не сохраняются и не регистрируются нигде.  \nЕсли вы отключите эту возможность, ваш поиск не будет использовать область карты и может быть менее точным.</string>
+    <string name="setting_placeSearch_location_title">Текущая область карты</string>
+    <string name="setting_placeSearch_location_info">При включенной опции приблизительное местоположение текущей выбранной области карты будет отправлено на сервер для предоставления локализованных результатов поиска.</string>
 </resources>

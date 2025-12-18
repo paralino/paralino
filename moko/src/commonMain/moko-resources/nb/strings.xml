@@ -720,7 +720,7 @@
     <string name="history_map_options_pin_clustering">Pinne klustering</string>
     <string name="history_map_options_show_pins">Plassering pinner</string>
     <string name="history_map_options_show_path">Reisevei</string>
-    <string name="history_map_no_locations_placeholder">☹  \nIngen historikk for denne perioden</string>
+    <string name="history_map_no_locations_placeholder">⏳\nIngen historikk for denne perioden</string>
     <string name="history_map_date_unselectable_error">Denne datoen kan ikke velges, prøv en annen.</string>
     <string name="history_map_date_need_more_button">Trenger du flere dager?</string>
     <string name="history_map_date_add_more_button">Legg til flere dager</string>
@@ -842,4 +842,10 @@
     <string name="place_create_suggestion_shopping">Kjøpesenter</string>
     <string name="place_create_suggestion_bakery">Søtsakshjørnet</string>
     <string name="place_create_suggestion_coffee">Beste kaffen</string>
+    <string name="button_yes">Ja</string>
+    <string name="button_no">Ne</string>
+    <string name="setting_placeSearch_title">Stedssøk</string>
+    <string name="setting_placeSearch_info">For å gi mer nøyaktige stedssøkeresultater kan du velge å inkludere den omtrentlige beliggenheten til det valgte kartområdet i søket ditt. Disse dataene brukes kun midlertidig til søkefunksjoner og lagres eller logger ikke noe sted.  \nHvis du deaktiverer dette, vil søket ditt ikke bruke kartområdet og kan være mindre nøyaktig.</string>
+    <string name="setting_placeSearch_location_title">Nåværende kartområde</string>
+    <string name="setting_placeSearch_location_info">Når det er aktivert, vil den omtrentlige beliggenheten til det nåværende valgte kartområdet bli sendt til serveren for å gi lokaliserte søkeresultater.</string>
 </resources>

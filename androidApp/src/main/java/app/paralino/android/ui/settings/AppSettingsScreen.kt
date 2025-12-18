@@ -40,7 +40,10 @@ fun AppSettingsScreen(
             onNotificationGroupingClick = {
                 appState.navController.navigate(AppScreen.Settings.NotificationGrouping.routeSignature)
             },
-            onNavigationAppClick = {}
+            onNavigationAppClick = {},
+            onPlaceSearchSettingsClick = {
+                appState.navController.navigate(AppScreen.Settings.PlaceSearch.routeSignature)
+            },
         )
     }
 }

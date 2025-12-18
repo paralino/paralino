@@ -16,10 +16,9 @@ struct HistoryMapMarker: View {
     let isClustered: Bool
     
     var body: some View {
-        if isAccurate {
+        if isClustered {
             Image(
-    //            systemName: isAccurate ? "mappin" : "mappin.and.ellipse"
-                resource: isClustered ? MR.shared.images.ic_target_circles : isAccurate ? MR.shared.images.ic_circle_with_dot : MR.shared.images.ic_not_listed_location_filled
+                resource: MR.shared.images.ic_circle_circle
             )
                 .resizable()
                 .renderingMode(.template)
@@ -33,6 +32,13 @@ struct HistoryMapMarker: View {
                             .frame(width: markerSize, height: markerSize)
                     }
                 }
+        } else if isAccurate {
+            Image(
+                resource: MR.shared.images.ic_location_on_filled
+            )
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: markerSize, height: markerSize)
         } else {
             Image(
                 resource: MR.shared.images.ic_not_listed_location_filled
@@ -54,36 +60,13 @@ struct HistoryMapMarker: View {
     }
 
     private var markerBackgroundColor: Color? {
-        guard isClustered || isAccurate else { return nil }
-        if isDarkMode {
-            if isClustered {
-                return Color.accentLight
-            } else if isAccurate {
-                return Color.lightBackground
-            }
-        } else {
-            if isClustered {
-                return Color.accentDark
-            } else if isAccurate {
-                return Color.redMain
-            }
-        }
-        return nil
+        guard isClustered else { return nil }
+        return Color.lightSurface
     }
 
     private var markerTintColor: Color? {
-        if isDarkMode {
-            if isClustered {
-                return Color.darkThemePrimary
-            } else if isAccurate {
-                return Color.redMain
-            }
-        } else {
-            if isClustered || isAccurate {
-                return Color.lightBackground
-            }
-        }
-        return nil
+        guard isClustered else { return nil }
+        return Color.redMain
     }
 }
 
@@ -147,7 +130,7 @@ class SwiftUIHistoryMapMarkerView: MKAnnotationView {
         // Update frame to match hosted content
         frame = hosting.view.frame
         
-        if !data.isInaccurate || isClustered {
+        if isClustered {
             anchorPoint = CGPoint(x: 0.5, y: 0.5)
         } else {
             anchorPoint = CGPoint(x: 0.5, y: 1.0)

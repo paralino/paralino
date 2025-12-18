@@ -303,15 +303,20 @@ fun LargeSeekbarSwitch(
                         Text(
                             text = description.annotatedBoldCompose(textColor = contentColor),
                             maxLines = 6,
-                            style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                            color = contentColor
+                            style = MaterialTheme.typography.h6.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = contentColor
+                            )
                         )
                     } else {
                         Text(
-                            text = description.annotatedBoldCompose(textColor = contentColor.copy(alpha = ContentAlpha.medium)),
+                            text = description.annotatedBoldCompose(
+                                textColor = contentColor.copy(alpha = ContentAlpha.medium)
+                            ),
                             maxLines = 6,
-                            style = MaterialTheme.typography.caption,
-                            color = contentColor.copy(alpha = ContentAlpha.medium)
+                            style = MaterialTheme.typography.caption.copy(
+                                color = contentColor.copy(alpha = ContentAlpha.medium)
+                            )
                         )
                     }
                 }
