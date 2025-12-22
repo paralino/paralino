@@ -70,8 +70,10 @@ class SessionRenewalHandler(
         if (currentSession?.canRenewSessions == false) {
             logg.i(sessionRenewalKey, "No need to renew session, skip")
         } else {
-            logg.i(sessionRenewalKey, "Renew session (Active: ${currentSession != null}) ...")
-            userRepo.renewCurrentSession()
+            // TODO enable when fixed on Appwrite
+            logg.i(sessionRenewalKey, "Session should renew, NOT IMPLEMENTED")
+//            logg.i(sessionRenewalKey, "Renew session (Active: ${currentSession != null}) ...")
+//            userRepo.renewCurrentSession()
         }
     }
 }
