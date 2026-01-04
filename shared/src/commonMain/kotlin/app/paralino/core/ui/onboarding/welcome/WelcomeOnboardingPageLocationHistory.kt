@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.layout
@@ -174,7 +175,8 @@ fun HistoryMapOnboardingContent(
                     contentDescription = null,
                     modifier = Modifier
                         .size(20.dp)
-                        .offset(x = xOffset, y = yOffset)
+                        .offset(x = xOffset, y = yOffset),
+                    tint = Color.Unspecified
                 )
             }
         }
@@ -289,7 +291,8 @@ private fun DrawScope.drawPathWithProgress(
         color = AppColors.accentDark,
         style = Stroke(
             width = 6.dp.toPx(),
-            cap = StrokeCap.Round
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round
         )
     )
 }
