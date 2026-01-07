@@ -88,13 +88,14 @@ fun LocationHistoryMapWithContent(
                 )
             )
         },
-        onMapClick = { onEvent(LocationHistoryUiEvent.OnMapTouch) }
-    ) {
-        LocationHistoryMapContent(
-            uiState = uiState,
-            onEvent = onEvent
-        )
-    }
+        onMapClick = { onEvent(LocationHistoryUiEvent.OnMapTouch) },
+        content = {
+            LocationHistoryMapContent(
+                uiState = uiState,
+                onEvent = onEvent
+            )
+        }
+    )
 }
 
 @Composable
