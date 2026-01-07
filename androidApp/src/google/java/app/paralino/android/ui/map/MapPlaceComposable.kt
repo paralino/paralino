@@ -58,6 +58,7 @@ fun PlaceCreateMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
         fallbackCenterLatLng = state.fallbackCenterLatLng,
+        isSatelliteMode = state.isSatelliteMode,
         canTapOnCircles = false,
         onMapCameraSettled = onMapCameraSettled,
         onMapInteraction = onMapInteraction,
@@ -81,6 +82,7 @@ fun PlaceDetailMapComposable(
         modifier = modifier,
         markers = listOfNotNull(pin),
         fallbackCenterLatLng = null,
+        isSatelliteMode = false,
         canTapOnCircles = true,
         onMapCameraSettled = {},
         onMapInteraction = onMapInteraction,
@@ -96,6 +98,7 @@ fun SimplePlaceMapComposable(
     markers: List<MapPinData>,
     fallbackCenterLatLng: PlaceMapFallbackLatLng?,
     canTapOnCircles: Boolean,
+    isSatelliteMode: Boolean,
     onMapCameraSettled: (LatLng) -> Unit,
     onMapInteraction: (Boolean) -> Unit,
     onMapTap: (lat: Double, lng: Double) -> Unit,
@@ -109,7 +112,7 @@ fun SimplePlaceMapComposable(
     val mapController = rememberPlaceMapController(
         mapContentPadding = remember { PaddingValues() },
         cameraPositionState = cameraPositionState,
-        isSatelliteMode = false
+        isSatelliteMode = isSatelliteMode
     )
 
     if (mapLoaded) {

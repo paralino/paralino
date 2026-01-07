@@ -131,7 +131,8 @@ class CreatePlaceViewModel(
                             ),
                             actionLoading = false,
                             fullLoading = false,
-                            alertDialog = null
+                            alertDialog = null,
+                            isSatelliteMode = false
                         )
                     }
                 }
@@ -177,6 +178,13 @@ class CreatePlaceViewModel(
             is CreatePlaceScreenUiEvent.OnRadiusChanged -> updateRadius(event.radiusMeters)
             is CreatePlaceScreenUiEvent.OnMapTap -> updatePosition(lat = event.lat, lng = event.lng)
             is CreatePlaceScreenUiEvent.OnMapPositionChanged -> mapPosition = event.position
+            is CreatePlaceScreenUiEvent.OnMapModeSwitch -> {
+                _uiState.update {
+                    it.mapSuccess {
+                        it.copy(isSatelliteMode = !it.isSatelliteMode)
+                    }
+                }
+            }
 
             is CreatePlaceScreenUiEvent.ChangeSearchFieldFocus -> {
                 _uiState.update {

@@ -33,6 +33,7 @@ data class CreatePlaceScreenState constructor(
     val radiusMeters: Int,
     val radiusText: String,
     val hasNameError: Boolean,
+    val isSatelliteMode: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean,
     val alertDialog: MainAlertDialog?
@@ -115,7 +116,8 @@ data class CreatePlaceScreenState constructor(
                 hasNameError = false,
                 actionLoading = false,
                 fullLoading = false,
-                alertDialog = null
+                alertDialog = null,
+                isSatelliteMode = false
             )
         }
     }
@@ -156,6 +158,7 @@ sealed interface CreatePlaceScreenUiEvent {
     data class OnAddressChanged(val address: TextFieldValue) : CreatePlaceScreenUiEvent
     data class OnNameSuggestionSelected(val suggestion: SuggestionSectionChipData) : CreatePlaceScreenUiEvent
     data class OnAddressSuggestionSelected(val suggestion: PlaceAddressSuggestion) : CreatePlaceScreenUiEvent
+    data object OnMapModeSwitch : CreatePlaceScreenUiEvent
 
     data class ChangeSearchFieldFocus(val isFocused: Boolean) : CreatePlaceScreenUiEvent
     data object ToggleSearchFieldFocus : CreatePlaceScreenUiEvent
