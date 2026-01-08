@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import app.paralino.android.ui.history.LocationHistoryMapContent
-import app.paralino.android.ui.history.rememberLocationHistoryMapController
+import app.paralino.android.ui.history.GoogleMapLocationHistoryMapContent
+import app.paralino.android.ui.history.rememberGoogleMapLocationHistoryMapController
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
@@ -17,7 +17,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 
 @Composable
-fun HomeScreenGoogleMapComposable(
+fun GoogleMapHomeScreenMapComposable(
     modifier: Modifier = Modifier,
     uiState: MapHomeScreenState,
     readyState: MapHomeScreenState.Ready?,
@@ -28,7 +28,7 @@ fun HomeScreenGoogleMapComposable(
 ) {
     var isMapLoaded by remember { mutableStateOf(false) }
     val cameraPositionState = rememberCameraPositionState()
-    val homeMapController = rememberMainHomeMapController(
+    val homeMapController = rememberGoogleMapMainHomeMapController(
         uiState = uiState,
         mapContentPadding = mapContentPadding,
         isMapLoaded = isMapLoaded,
@@ -39,7 +39,7 @@ fun HomeScreenGoogleMapComposable(
     )
 
     val mapController = if (historyUiState != null) {
-        rememberLocationHistoryMapController(
+        rememberGoogleMapLocationHistoryMapController(
             uiState = historyUiState,
             mapContentPadding = mapContentPadding,
             cameraPositionState = cameraPositionState,
@@ -71,13 +71,13 @@ fun HomeScreenGoogleMapComposable(
         },
         content = {
             if (historyUiState != null) {
-                LocationHistoryMapContent(
+                GoogleMapLocationHistoryMapContent(
                     uiState = historyUiState,
                     isSatelliteMode = uiState.isSatelliteMode,
                     onEvent = onHistoryEvent
                 )
             } else {
-                MainHomeMapContent(
+                GoogleMapMainHomeMapContent(
                     uiState = readyState,
                     onEvent = onMainEvent
                 )

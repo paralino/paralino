@@ -191,7 +191,8 @@ object KoinSetup {
                 isDevMode = BuildConfig.internalTesting,
                 hasPreviewFeatures = BuildConfig.internalTesting,
                 logToConsole = BuildConfig.forceLogToSystem,
-                logErrorsToRemote = true
+                logErrorsToRemote = true,
+                maptilerApiKey = BuildConfig.maptilerAccessToken
             )
         }
         single {

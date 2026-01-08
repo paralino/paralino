@@ -31,7 +31,7 @@ sealed class MapHomeScreenState {
     abstract val isPersonalSpace: Boolean
     abstract val isSheetEnabled: Boolean
     abstract val defaultSheetPosition: BottomSheetPosition
-    abstract val androidMapSDKSource: AndroidMapSDKSource
+    abstract val androidMapSDKProvider: AndroidMapSDKProvider
 
     val deviceType: DeviceType = DeviceType.current
 
@@ -63,7 +63,7 @@ sealed class MapHomeScreenState {
         val sharingEndTime: String?,
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
-        override val androidMapSDKSource: AndroidMapSDKSource = AndroidMapSDKSource.GOOGLE,
+        override val androidMapSDKProvider: AndroidMapSDKProvider = AndroidMapSDKProvider.ALTERNATIVE,
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
@@ -132,7 +132,7 @@ sealed class MapHomeScreenState {
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
         override val isPersonalSpace: Boolean,
-        override val androidMapSDKSource: AndroidMapSDKSource = AndroidMapSDKSource.ALTERNATIVE,
+        override val androidMapSDKProvider: AndroidMapSDKProvider = AndroidMapSDKProvider.ALTERNATIVE,
         override val isSatelliteMode: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,
     ) : MapHomeScreenState() {
@@ -204,8 +204,20 @@ sealed interface MapHomeScreenUiEvent {
     data object CloseLocationHistory : MapHomeScreenUiEvent
 }
 
-enum class AndroidMapSDKSource {
-    GOOGLE, ALTERNATIVE
+enum class AndroidMapSDKProvider constructor(val key: String) {
+    GOOGLE("google"),
+    ALTERNATIVE("alt");
+
+    companion object {
+        fun fromKey(key: String): AndroidMapSDKProvider {
+            // TODO make proper default
+            val default = when (DeviceType.current) {
+                DeviceType.Android -> AndroidMapSDKProvider.ALTERNATIVE
+                DeviceType.iOS -> AndroidMapSDKProvider.ALTERNATIVE
+            }
+            return entries.firstOrNull { it.key == key } ?: default
+        }
+    }
 }
 
 enum class MapSheetSelectedContentType {

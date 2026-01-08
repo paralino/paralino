@@ -7,7 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.R
+import app.paralino.core.presentation.map.FocusedMarkerData
+import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.map.MapPinType
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -22,7 +25,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun defaultMapUiSettings(): MutableState<MapUiSettings> {
+fun defaultGoogleMapUiSettings(): MutableState<MapUiSettings> {
     return remember {
         mutableStateOf(
             MapUiSettings(
@@ -37,7 +40,7 @@ fun defaultMapUiSettings(): MutableState<MapUiSettings> {
 }
 
 @Composable
-fun defaultMapProperties(
+fun defaultGoogleMapProperties(
     isDarkMode: Boolean,
     satelliteMode: Boolean
 ): MutableState<MapProperties> {
@@ -62,7 +65,7 @@ fun defaultMapProperties(
     }
 }
 
-fun boundsForMarkers(markers: List<MapPinData>, ignoreAccuracy: Boolean): LatLngBounds? {
+private fun boundsForMarkers(markers: List<MapPinData>, ignoreAccuracy: Boolean): LatLngBounds? {
     if (markers.isEmpty())
         return null
     return LatLngBounds.builder()
@@ -131,6 +134,59 @@ fun CameraPositionState.refocus(
             this@refocus.move(update = cameraUpdate)
         }
     }
+}
+
+fun CameraPositionState.focusOnMap(
+    scope: CoroutineScope,
+    focusType: MapHomeScreenFocusType?,
+    markers: List<MapPinData>,
+    focusedMarker: FocusedMarkerData?,
+    durationMs: Int
+) {
+    val focus = when (focusType) {
+        is MapHomeScreenFocusType.PLACE,
+        is MapHomeScreenFocusType.MEMBER -> {
+            listOfNotNull(
+                markers.firstOrNull { it.markerId == focusedMarker?.markerId }
+            )
+        }
+
+        MapHomeScreenFocusType.ALL_PLACES -> {
+            markers.filter { it.pinType == MapPinType.PLACE }
+        }
+
+        MapHomeScreenFocusType.ALL_MEMBERS -> {
+            markers.filter { it.pinType == MapPinType.MEMBER }
+        }
+
+        else -> {
+            emptyList()
+        }
+    }
+
+    val padding = when (focusType) {
+        MapHomeScreenFocusType.ALL_MEMBERS -> {
+            if (markers.size == 1) 200 else 100
+        }
+
+        MapHomeScreenFocusType.ALL_PLACES -> {
+            if (markers.size == 1) 300 else 100
+        }
+
+        else -> 100
+    }
+
+    val forceZoom = when (focusType) {
+        is MapHomeScreenFocusType.MEMBER -> focusType.forceZoom
+        else -> true
+    }
+    refocus(
+        scope = scope,
+        markers = focus,
+        forceZoom = forceZoom,
+        padding = 100,
+        durationMs = durationMs
+    )
 }
 
 private fun LatLngBounds.canFitBounds(

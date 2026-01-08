@@ -18,9 +18,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
-import app.paralino.android.ui.history.MapUiControlledData
-import app.paralino.core.presentation.map.FocusedMarkerData
-import app.paralino.core.presentation.map.MapHomeScreenFocusType
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapPinData
@@ -31,20 +28,19 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun rememberMainHomeMapController(
+fun rememberGoogleMapMainHomeMapController(
     uiState: MapHomeScreenState,
     mapContentPadding: PaddingValues,
     cameraPositionState: CameraPositionState,
     isMapLoaded: Boolean,
     onMapTouch: () -> Unit
-): MapUiControlledData {
+): GoogleMapUiControlledData {
 
     val stateData by rememberUpdatedState(newValue = uiState.asReady())
     val scope = rememberCoroutineScope()
@@ -101,15 +97,15 @@ fun rememberMainHomeMapController(
         }
     }
 
-    val uiSettings by defaultMapUiSettings()
-    val properties by defaultMapProperties(
+    val uiSettings by defaultGoogleMapUiSettings()
+    val properties by defaultGoogleMapProperties(
         isDarkMode = isSystemInDarkTheme(),
         satelliteMode = uiState.isSatelliteMode
     )
 
     return remember(mapContentPadding, uiState.isSatelliteMode) {
         derivedStateOf {
-            MapUiControlledData(
+            GoogleMapUiControlledData(
                 cameraPositionState = cameraPositionState,
                 properties = properties,
                 uiSettings = uiSettings,
@@ -120,7 +116,7 @@ fun rememberMainHomeMapController(
 }
 
 @Composable
-fun MainHomeMapContent(
+fun GoogleMapMainHomeMapContent(
     uiState: MapHomeScreenState.Ready?,
     onEvent: (MapHomeScreenUiEvent) -> Unit
 ) {
@@ -221,64 +217,11 @@ private fun MapHomeMarkerComposable(
         )
     }
 
-    MapMarkerComposable(
+    GoogleMapMarkerComposable(
         state = model,
         position = LatLng(latValue, lngValue),
         canTapOnMarker = true,
         zIndex = zIndex,
         onClick = onMarkerClick
-    )
-}
-
-private fun CameraPositionState.focusOnMap(
-    scope: CoroutineScope,
-    focusType: MapHomeScreenFocusType?,
-    markers: List<MapPinData>,
-    focusedMarker: FocusedMarkerData?,
-    durationMs: Int
-) {
-    val focus = when (focusType) {
-        is MapHomeScreenFocusType.PLACE,
-        is MapHomeScreenFocusType.MEMBER -> {
-            listOfNotNull(
-                markers.firstOrNull { it.markerId == focusedMarker?.markerId }
-            )
-        }
-
-        MapHomeScreenFocusType.ALL_PLACES -> {
-            markers.filter { it.pinType == MapPinType.PLACE }
-        }
-
-        MapHomeScreenFocusType.ALL_MEMBERS -> {
-            markers.filter { it.pinType == MapPinType.MEMBER }
-        }
-
-        else -> {
-            emptyList()
-        }
-    }
-
-    val padding = when (focusType) {
-        MapHomeScreenFocusType.ALL_MEMBERS -> {
-            if (markers.size == 1) 200 else 100
-        }
-
-        MapHomeScreenFocusType.ALL_PLACES -> {
-            if (markers.size == 1) 300 else 100
-        }
-
-        else -> 100
-    }
-
-    val forceZoom = when (focusType) {
-        is MapHomeScreenFocusType.MEMBER -> focusType.forceZoom
-        else -> true
-    }
-    refocus(
-        scope = scope,
-        markers = focus,
-        forceZoom = forceZoom,
-        padding = 100,
-        durationMs = durationMs
     )
 }

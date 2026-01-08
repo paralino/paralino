@@ -15,7 +15,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,9 +32,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.map.GenericGoogleMapWrapper
-import app.paralino.android.ui.map.MapMarkerComposable
-import app.paralino.android.ui.map.defaultMapProperties
-import app.paralino.android.ui.map.defaultMapUiSettings
+import app.paralino.android.ui.map.GoogleMapUiControlledData
+import app.paralino.android.ui.map.GoogleMapMarkerComposable
+import app.paralino.android.ui.map.defaultGoogleMapProperties
+import app.paralino.android.ui.map.defaultGoogleMapUiSettings
 import app.paralino.android.ui.map.refocus
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
@@ -50,8 +50,6 @@ import com.google.android.gms.maps.model.RoundCap
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
@@ -67,7 +65,7 @@ fun LocationHistoryMapWithContent(
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState()
-    val mapController = rememberLocationHistoryMapController(
+    val mapController = rememberGoogleMapLocationHistoryMapController(
         uiState = uiState,
         mapContentPadding = mapContentPadding,
         cameraPositionState = cameraPositionState,
@@ -90,7 +88,7 @@ fun LocationHistoryMapWithContent(
         },
         onMapClick = { onEvent(LocationHistoryUiEvent.OnMapTouch) },
         content = {
-            LocationHistoryMapContent(
+            GoogleMapLocationHistoryMapContent(
                 uiState = uiState,
                 onEvent = onEvent
             )
@@ -99,14 +97,14 @@ fun LocationHistoryMapWithContent(
 }
 
 @Composable
-fun rememberLocationHistoryMapController(
+fun rememberGoogleMapLocationHistoryMapController(
     uiState: LocationHistoryScreenUiState,
     mapContentPadding: PaddingValues,
     cameraPositionState: CameraPositionState,
     isSatelliteMode: Boolean,
     animateFirstContent: Boolean,
     onMapTouch: () -> Unit
-): MapUiControlledData {
+): GoogleMapUiControlledData {
     val stateData by rememberUpdatedState(newValue = uiState)
     val scope = rememberCoroutineScope()
     var canAnimateMapFocus by remember { mutableStateOf(animateFirstContent) }
@@ -189,15 +187,15 @@ fun rememberLocationHistoryMapController(
             .collectLatest { onMapTouch() }
     }
 
-    val uiSettings by defaultMapUiSettings()
-    val properties by defaultMapProperties(
+    val uiSettings by defaultGoogleMapUiSettings()
+    val properties by defaultGoogleMapProperties(
         isDarkMode = isSystemInDarkTheme(),
         satelliteMode = isSatelliteMode
     )
 
     return remember(mapContentPadding, isSatelliteMode) {
         derivedStateOf {
-            MapUiControlledData(
+            GoogleMapUiControlledData(
                 cameraPositionState = cameraPositionState,
                 properties = properties,
                 uiSettings = uiSettings,
@@ -208,7 +206,7 @@ fun rememberLocationHistoryMapController(
 }
 
 @Composable
-fun LocationHistoryMapContent(
+fun GoogleMapLocationHistoryMapContent(
     uiState: LocationHistoryScreenUiState,
     isSatelliteMode: Boolean = uiState.isSatelliteMode,
     onEvent: (LocationHistoryUiEvent) -> Unit
@@ -247,7 +245,7 @@ fun LocationHistoryMapContent(
                     )
                 }
 
-                MapMarkerComposable(
+                GoogleMapMarkerComposable(
                     state = point,
                     position = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
                     canTapOnMarker = true,
@@ -364,12 +362,3 @@ fun LocationHistoryMapContent(
         }
     }
 }
-
-
-@Stable
-class MapUiControlledData(
-    val cameraPositionState: CameraPositionState,
-    val properties: MapProperties,
-    val uiSettings: MapUiSettings,
-    val contentPadding: PaddingValues
-)

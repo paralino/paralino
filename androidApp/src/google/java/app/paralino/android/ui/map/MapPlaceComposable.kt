@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.history.MapUiControlledData
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -228,7 +227,7 @@ fun SimplePlaceMapComposable(
                             }
                         )
                     }
-                    MapMarkerComposable(
+                    GoogleMapMarkerComposable(
                         state = model,
                         position = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
                         canTapOnMarker = canTapOnCircles,
@@ -248,16 +247,16 @@ private fun rememberPlaceMapController(
     mapContentPadding: PaddingValues,
     cameraPositionState: CameraPositionState,
     isSatelliteMode: Boolean
-): MapUiControlledData {
-    val uiSettings by defaultMapUiSettings()
-    val properties by defaultMapProperties(
+): GoogleMapUiControlledData {
+    val uiSettings by defaultGoogleMapUiSettings()
+    val properties by defaultGoogleMapProperties(
         satelliteMode = isSatelliteMode,
         isDarkMode = isSystemInDarkTheme()
     )
 
     return remember(mapContentPadding, isSatelliteMode) {
         derivedStateOf {
-            MapUiControlledData(
+            GoogleMapUiControlledData(
                 cameraPositionState = cameraPositionState,
                 properties = properties,
                 uiSettings = uiSettings,

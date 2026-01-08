@@ -24,11 +24,10 @@ android {
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
         val variantIgnore =
-//                (variant.buildType == "debug" && names.contains("playStore")) ||
-                (variant.buildType == "debug" && names.contains("playStoreTest")) ||
                 (variant.buildType == "debug" && names.contains("direct")) ||
                 (variant.buildType == "release" && names.contains("dev")) ||
-                (names.contains("playStore") && names.contains("oss"))
+                (names.contains("playStore") && names.contains("alt")) ||
+                (names.contains("direct") && names.contains("google"))
         variant.enable = !variantIgnore
     }
 
@@ -62,6 +61,7 @@ android {
         manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
         resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
         buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
+        buildConfigField("String", "maptilerAccessToken", props["MAPTILER_ACCESS_TOKEN"] as String)
 
         // room schema export
         javaCompileOptions {
@@ -152,14 +152,8 @@ android {
             versionNameSuffix = "-dev"
             applicationIdSuffix = ".dev"
         }
-        create("oss") {
+        create("alt") {
             dimension = "source"
-            val propsFile = rootProject.file("user.properties")
-            if (propsFile.exists()) {
-                val props = Properties()
-                props.load(FileInputStream(propsFile))
-                buildConfigField("String", "mapboxAccessToken", props["MAPBOX_ACCESS_TOKEN"] as String)
-            }
         }
         create("google") {
             dimension = "source"
@@ -223,22 +217,7 @@ kotlin {
     }
 }
 
-repositories {
-    maven {
-        url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
-        authentication {
-            create<BasicAuthentication>("basic")
-        }
-        val props = Properties()
-        props.load(FileInputStream(rootProject.file("user.properties")))
-        credentials {
-            username = "mapbox"
-            password = props["MAPBOX_SECRET_TOKEN"] as String
-        }
-    }
-}
-
-val ossImplementation by configurations
+val altImplementation by configurations
 val googleImplementation by configurations
 dependencies {
     implementation(project(path = ":shared"))
@@ -295,6 +274,7 @@ dependencies {
     googleImplementation(libs.maps.google.compose)
     googleImplementation(libs.maps.google.compose.utils)
     googleImplementation(libs.maps.google.compose.widgets)
+    implementation(libs.maps.maplibre.compose)
 
     implementation(project(path = ":lazysodium-android"))
     implementation(libs.jna) {

@@ -15,6 +15,7 @@ data class AppBuildConfig constructor(
     val hasPreviewFeatures: Boolean,
     val logToConsole: Boolean,
     val logErrorsToRemote: Boolean,
+    val maptilerApiKey: String,
 ) {
     val endpoint = "$serverUrl/v1"
     val resourceIds = BackendResourceIDs

@@ -29,13 +29,14 @@ import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.history.LocationHistoryScreenEventHandler
 import app.paralino.android.ui.main.MainAppState
+import app.paralino.android.ui.map.maplibre.HomeScreenMapLibreMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.onboarding.AccountOnboardingScreen
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.presentation.map.AndroidMapSDKSource
+import app.paralino.core.presentation.map.AndroidMapSDKProvider
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
@@ -270,9 +271,9 @@ internal fun HomeScreenMapWithElements(
             }
         }
 
-        when (uiState.androidMapSDKSource) {
-            AndroidMapSDKSource.GOOGLE -> {
-                HomeScreenGoogleMapComposable(
+        when (uiState.androidMapSDKProvider) {
+            AndroidMapSDKProvider.GOOGLE -> {
+                GoogleMapHomeScreenMapComposable(
                     modifier = Modifier,
                     uiState = uiState,
                     readyState = readyState,
@@ -283,8 +284,16 @@ internal fun HomeScreenMapWithElements(
                 )
             }
 
-            AndroidMapSDKSource.ALTERNATIVE -> {
-
+            AndroidMapSDKProvider.ALTERNATIVE -> {
+                HomeScreenMapLibreMapComposable(
+                    modifier = Modifier,
+                    uiState = uiState,
+                    readyState = readyState,
+                    historyUiState = historyUiState,
+                    mapContentPadding = mapContentPadding,
+                    onMainEvent = onMainEvent,
+                    onHistoryEvent = onHistoryEvent
+                )
             }
         }
 

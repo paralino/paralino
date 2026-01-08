@@ -2,6 +2,7 @@ package app.paralino.core.db
 
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
+import app.paralino.core.presentation.map.AndroidMapSDKProvider
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
@@ -107,6 +108,7 @@ class AppPrefs(
         const val keyDevModeEnabled = "prefs.device.devModeOverride"
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
         const val keyPlaceSearchLocation = "prefs.device.pleaseSearchLocation"
+        const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
     }
 
     val isTokenValid: Boolean
@@ -507,6 +509,16 @@ class AppPrefs(
         set(value) {
             provider.userSettings.putBoolean(keyPlaceSearchLocation, value)
         }
+
+    var androidMapSDKProvider: AndroidMapSDKProvider
+        get() {
+            return provider.userSettings.getString(keyMapSDKProviderLocation, "")
+                .let { AndroidMapSDKProvider.fromKey(it) }
+        }
+        set(value) {
+            provider.userSettings.putString(keyMapSDKProviderLocation, value.key)
+        }
+
 
 
     fun hasGuestAccount(): Boolean {
