@@ -21,6 +21,7 @@ import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.logg
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.history.LocationHistoryViewModel
@@ -51,7 +52,7 @@ object MainMapScreen {
         vm: MapHomeViewModel,
         paddingValues: AppleScreenPaddingValues,
         onOpenPlacesScreen: (String) -> Unit,
-        onOpenCreatePlaceScreen: (String) -> Unit,
+        onOpenCreatePlaceScreen: (groupId: String, location: LatLng?) -> Unit,
         onSheetOffsetChange: (Float) -> Unit,
         onGroupPickerClick: (Boolean) -> Unit,
         onGroupDetailsClick: (String) -> Unit,
@@ -109,7 +110,7 @@ object MainMapScreen {
                         when (event) {
                             MapHomeScreenEvent.OpenGroupCreateScreen -> onCreateGroup()
                             MapHomeScreenEvent.OpenPaywall -> openPaywall()
-                            is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId)
+                            is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId, event.location)
                             is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
                             is MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick(event.showPersonalSpace)
                             is MapHomeScreenEvent.OpenPlaceDetails -> onPlaceClick(event)

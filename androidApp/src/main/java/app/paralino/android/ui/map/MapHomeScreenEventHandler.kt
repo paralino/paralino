@@ -13,7 +13,6 @@ import app.paralino.core.presentation.map.MapHomeScreenEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
-import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.SwipeableSheetState
@@ -71,8 +70,10 @@ internal fun MapHomeScreenEventHandler(
                 is MapHomeScreenEvent.OpenCreatePlace -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.PlaceCreate.route(
-                            groupId = vm.uiState.value.asReady()?.groupOrSpaceId?.id ?: "",
-                            placeId = null
+                            groupId = event.groupId,
+                            placeId = null,
+                            lat = event.location?.lat,
+                            lng = event.location?.lng
                         )
                     )
                 }

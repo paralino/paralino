@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.map.GenericMapWrapper
+import app.paralino.android.ui.map.GenericGoogleMapWrapper
 import app.paralino.android.ui.map.MapMarkerComposable
 import app.paralino.android.ui.map.defaultMapProperties
 import app.paralino.android.ui.map.defaultMapUiSettings
@@ -76,7 +76,7 @@ fun LocationHistoryMapWithContent(
         onMapTouch = { onEvent(LocationHistoryUiEvent.OnMapTouch) }
     )
 
-    GenericMapWrapper(
+    GenericGoogleMapWrapper(
         modifier = Modifier.fillMaxSize(),
         mapData = mapController,
         onMapLoaded = {},

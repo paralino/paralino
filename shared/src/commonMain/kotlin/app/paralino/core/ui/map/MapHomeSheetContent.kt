@@ -256,7 +256,7 @@ fun MapHomeSheetContent(
                         isPersonalSpace = readyState.isPersonalSpace,
                         places = places,
                         onCreatePlace = {
-                            onEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen)
+                            onEvent(MapHomeScreenUiEvent.OnOpenCreatePlaceScreen(location = null))
                         },
                         onOpenPlaces = {
                             onEvent(MapHomeScreenUiEvent.OnOpenPlacesScreen)

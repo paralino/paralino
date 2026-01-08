@@ -175,7 +175,7 @@ fun SimplePlaceMapComposable(
             false
         },
     ) {
-        GenericMapWrapper(
+        GenericGoogleMapWrapper(
             modifier = Modifier.fillMaxSize(),
             mapData = mapController,
             onMapLongClick = {
