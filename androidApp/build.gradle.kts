@@ -292,12 +292,9 @@ dependencies {
 
     googleImplementation(libs.revenuecat.android)
 
-    ossImplementation(libs.osmdroid.android)
-    googleImplementation(libs.maps.compose)
-    googleImplementation(libs.maps.compose.utils)
-    googleImplementation(libs.maps.compose.widgets)
-    ossImplementation(libs.mapbox.android)
-    ossImplementation(libs.mapbox.sdk.turf)
+    googleImplementation(libs.maps.google.compose)
+    googleImplementation(libs.maps.google.compose.utils)
+    googleImplementation(libs.maps.google.compose.widgets)
 
     implementation(project(path = ":lazysodium-android"))
     implementation(libs.jna) {
