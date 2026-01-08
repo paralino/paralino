@@ -142,27 +142,16 @@ class BillingProviderAndroid(
                                 productPlanId = subscriptionOption.id,
                                 billingPeriod = billingPeriod,
                                 price = subscriptionOption.fullPricePhase?.price?.amountMicros ?: 0,
-                                formattedPrice = when (billingPeriod) {
-                                    PlanBillingPeriod.WEEKLY -> subscriptionOption.fullPricePhase
-                                        ?.pricePerWeek()?.formatted ?: ""
-
-                                    PlanBillingPeriod.MONTHLY -> subscriptionOption.fullPricePhase
-                                        ?.pricePerMonth()?.formatted ?: ""
-
-                                    PlanBillingPeriod.ANNUALLY -> subscriptionOption.fullPricePhase
-                                        ?.pricePerYear()?.formatted ?: ""
-
-                                    PlanBillingPeriod.ONETIME -> subscriptionOption.fullPricePhase
-                                        ?.price?.formatted ?: ""
-                                },
+                                formattedPrice = subscriptionOption.fullPricePhase?.price?.formatted ?: "",
                                 referencePerYearPrice = subscriptionOption.fullPricePhase
                                     ?.pricePerYear(Locale.getDefault())?.amountMicros ?: 0,
                                 referencePerYearFormattedPrice = subscriptionOption.fullPricePhase
                                     ?.pricePerYear()?.formatted ?: "",
-                                formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase?.pricePerMonth()?.pricePerPeriod(
-                                    planConfig.membersLimit.toDouble()
-                                )?.formatted,
-                                referencePerMonthFormattedPrice = subscriptionOption.fullPricePhase?.pricePerMonth()?.formatted,
+                                formattedPricePerMemberPerMonth = subscriptionOption.fullPricePhase
+                                    ?.pricePerMonth()
+                                    ?.pricePerPeriod(planConfig.membersLimit.toDouble())?.formatted,
+                                referencePerMonthFormattedPrice = subscriptionOption.fullPricePhase
+                                    ?.pricePerMonth()?.formatted,
                                 trialDurationDays = subscriptionOption.freePhase?.billingPeriod?.valueInDaysInt
                             )
                         } else {

@@ -68,10 +68,10 @@
     <string name="reset_password_caption_reset">**Réinitialiser votre mot de passe supprimera toutes vos données !**</string>
     <string name="reset_password_reset_button">Réinitialiser le mot de passe</string>
     <string name="reset_password_error_token_message">Le lien de réinitialisation de votre mot de passe a expiré, veuillez en demander un nouveau.</string>
-    <string name="raw_data_screen_info">Ici, vous pouvez prévisualiser vos données telles qu\'elles sont stockées sur le serveur.\nSeul votre appareil peut déverrouiller (décrypter) et voir cette information.</string>
+    <string name="raw_data_screen_info">Ici, vous pouvez prévisualiser vos données telles qu\'elles sont stockées sur le serveur.\nSeul votre appareil peut déverrouiller (déchiffrer) et voir cette information.</string>
     <string name="raw_data_screen_title">Chiffrement</string>
     <string name="raw_data_section_encrypted">Données chiffrées sur le serveur</string>
-    <string name="raw_data_section_decrypted">Données décryptées sur l\'appareil</string>
+    <string name="raw_data_section_decrypted">Données déchiffrées sur l\'appareil</string>
     <string name="plan_limit_alert_title">Limite de plan</string>
     <string name="plan_limit_alert_message">Vous avez atteint le nombre maximum de %1$s (**%2$d**) pendant la BETA.\n\nD\'autres plans seront bientôt disponibles.\n\nMerci de votre patience pendant que nous développons notre infrastructure !</string>
     <string name="plan_limit_contact_owner_alert_title">Limite de plan</string>

@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -39,7 +41,10 @@ fun GenericMapWrapper(
     onMapClick: (LatLng) -> Unit,
     onMapLongClick: (LatLng) -> Unit,
     onMapLoaded: () -> Unit,
-    content: @Composable @GoogleMapComposable () -> Unit
+    placeholder: @Composable BoxScope.() -> Unit = {
+        GenericMapLoadingStatePlaceholder(modifier = Modifier.fillMaxSize())
+    },
+    content: @Composable @GoogleMapComposable () -> Unit,
 ) {
     var mapOverlayShown by rememberSaveable { mutableStateOf(true) }
     GoogleMap(
@@ -76,7 +81,7 @@ fun GenericMapWrapper(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colors.background)
@@ -88,21 +93,31 @@ fun GenericMapWrapper(
                         mapOverlayShown = false
                     }
                 ),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            contentAlignment = Alignment.Center,
         ) {
-            Spacer(Modifier.fillMaxHeight(0.3f))
-            Image(
-                painter = CoreAppIcons.LauncherLogo.asPainterResource(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = MaterialTheme.colors.primary,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-            )
+            placeholder()
         }
+    }
+}
+
+@Composable
+fun BoxScope.GenericMapLoadingStatePlaceholder(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.fillMaxHeight(0.3f))
+        Image(
+            painter = CoreAppIcons.LauncherLogo.asPainterResource(),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .size(40.dp)
+                .background(
+                    color = MaterialTheme.colors.primary,
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
     }
 }

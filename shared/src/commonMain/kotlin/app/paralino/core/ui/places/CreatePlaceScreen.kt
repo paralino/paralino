@@ -8,10 +8,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +57,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -66,7 +69,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
+import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -93,6 +98,7 @@ import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.groups.ShakeEffect
 import app.paralino.core.ui.groups.components.ChipsSuggestionsSection
+import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.conditional
 import dev.icerock.moko.resources.compose.stringResource
@@ -451,15 +457,36 @@ private fun CreatePlaceMapStep(
                         onProgressChange = { index ->
                             onEvent(
                                 CreatePlaceScreenUiEvent.OnRadiusChanged(
-                                    CreatePlaceScreenState.radiusForIndex(
-                                        index
-                                    )
+                                    CreatePlaceScreenState.radiusForIndex(index)
                                 )
                             )
                         }
                     )
                 }
             }
+
+            Image(
+                painter = if (!state.isSatelliteMode) {
+                    MR.images.image_map_type_satellite.asPainterResource()
+                } else if (isSystemInDarkTheme()) {
+                    MR.images.image_map_type_default_dark.asPainterResource()
+                } else {
+                    MR.images.image_map_type_default_light.asPainterResource()
+                },
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(top = 16.dp, end = 16.dp, start = 16.dp)
+                    .size(40.dp)
+                    .clickable { onEvent(CreatePlaceScreenUiEvent.OnMapModeSwitch) }
+                    .background(
+                        color = AppColors.accentDark,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(4.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
 
             PlaceAddressSearchComponent(
                 modifier = Modifier
@@ -599,8 +626,6 @@ private fun PlaceAddressSearchComponent(
                 val buttonShape = RoundedCornerShape(14.dp)
                 Box(
                     modifier = Modifier
-                        .padding(
-                        )
                         .padding(
                             top = animateDpAsState(if (uiMode == CreatePlaceAddressSearchUiMode.HIDDEN) 8.dp else 4.dp).value,
                             bottom = 8.dp,
