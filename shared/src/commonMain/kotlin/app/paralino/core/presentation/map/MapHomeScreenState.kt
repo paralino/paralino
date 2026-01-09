@@ -154,6 +154,7 @@ sealed class MapHomeScreenEvent {
     data object OpenGroupCreateScreen : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
+    data object OpenMapProviderSettings : MapHomeScreenEvent()
     data class OpenGroupPicker(val showPersonalSpace: Boolean) : MapHomeScreenEvent()
     data object OpenPersonalSpace : MapHomeScreenEvent()
     data class SharePersonalCode(val content: String): MapHomeScreenEvent()

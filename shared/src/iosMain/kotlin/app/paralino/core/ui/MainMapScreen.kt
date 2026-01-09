@@ -121,6 +121,7 @@ object MainMapScreen {
                             is MapHomeScreenEvent.OpenLocationHistory -> openLocationHistory(event)
                             MapHomeScreenEvent.OpenPersonalSpace -> openPersonalSpace()
                             is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall()
+                            MapHomeScreenEvent.OpenMapProviderSettings -> {}
                             null -> {}
                             MapHomeScreenEvent.AskNotificationPermission -> askNotificationPermission()
                             MapHomeScreenEvent.OpenPersonalCodes -> openPersonalCodes()

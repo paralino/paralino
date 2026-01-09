@@ -147,6 +147,12 @@ enum class MapsSDKProvider constructor(val key: String) {
         MAPLIBRE_PREMIUM -> null
     }
 
+    val hasSatelliteMaps get() = when(this) {
+        GOOGLE -> true
+        MAPLIBRE_FREE -> false
+        MAPLIBRE_PREMIUM -> true
+    }
+
     companion object {
         fun fromKey(key: String): MapsSDKProvider? {
             return entries.firstOrNull { it.key == key }

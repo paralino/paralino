@@ -84,7 +84,7 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OnMapModeSwitch -> {
-                mapStateManager.switchMapMode { transform ->
+                mapStateManager.switchMapMode(uiState) { transform ->
                     updateUiState(transform(uiState.value))
                 }
             }

@@ -157,6 +157,7 @@ class MapStateMapper(
             is GroupWithMembersOrUserSpace.Group -> selectedGroupContract
             is GroupWithMembersOrUserSpace.PersonalSpace -> personalSharingContract
         }
+        val mapProvider = defaultMapProvider()
 
         return MapHomeScreenState.Ready(
             groupOrSpaceId = groupOrSpace.id,
@@ -185,9 +186,9 @@ class MapStateMapper(
             },
             verified = isVerified,
             alertDialog = alertDialog,
-            isSatelliteMode = isSatelliteMode,
+            isSatelliteMode = isSatelliteMode.takeIf { mapProvider.hasSatelliteMaps } ?: false,
             groupPlanConfig = planConfig,
-            androidMapSDKProvider = defaultMapProvider()
+            androidMapSDKProvider = mapProvider
         )
     }
 

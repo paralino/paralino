@@ -112,6 +112,10 @@ internal fun MapHomeScreenEventHandler(
                     appState.navController.navigate(AppScreen.Settings.routeSignature)
                 }
 
+                MapHomeScreenEvent.OpenMapProviderSettings -> {
+                    appState.navController.navigate(AppScreen.Settings.MapsProvider.routeSignature)
+                }
+
                 is MapHomeScreenEvent.OpenSharingStart -> {
                     appState.navController.navigate(
                         AppScreen.MainHome.SharingStart.route(event.groupId)
