@@ -36,13 +36,13 @@ import app.paralino.core.models.Resource
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.presentation.map.AndroidMapSDKProvider
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.MapScreenViewSourceType
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
@@ -272,7 +272,7 @@ internal fun HomeScreenMapWithElements(
         }
 
         when (uiState.androidMapSDKProvider) {
-            AndroidMapSDKProvider.GOOGLE -> {
+            MapsSDKProvider.GOOGLE -> {
                 GoogleMapHomeScreenMapComposable(
                     modifier = Modifier,
                     uiState = uiState,
@@ -284,7 +284,8 @@ internal fun HomeScreenMapWithElements(
                 )
             }
 
-            AndroidMapSDKProvider.ALTERNATIVE -> {
+            MapsSDKProvider.MAPLIBRE_FREE,
+            MapsSDKProvider.MAPLIBRE_PREMIUM -> {
                 HomeScreenMapLibreMapComposable(
                     modifier = Modifier,
                     uiState = uiState,
@@ -295,6 +296,8 @@ internal fun HomeScreenMapWithElements(
                     onHistoryEvent = onHistoryEvent
                 )
             }
+
+            null -> {}
         }
 
         val screenPadding = WindowInsets.safeDrawing.asPaddingValues()

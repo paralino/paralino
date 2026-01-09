@@ -149,6 +149,7 @@ android {
             dimension = "version"
             versionCode = 74
             versionName = "2.1.3"
+            buildConfigField("boolean", "hasGoogleMaps", "true")
         }
         create("direct") {
             dimension = "version"
@@ -156,6 +157,7 @@ android {
             versionName = "2.1.3"
             versionNameSuffix = "-int"
             applicationIdSuffix = ".int"
+            buildConfigField("boolean", "hasGoogleMaps", "false")
         }
     }
 

@@ -7,7 +7,9 @@ import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.LocationPerformanceSettingsType
@@ -27,6 +29,7 @@ class PremiumStatusManager(
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs,
+    private val appConfigRepository: AppConfigRepository
 ) {
 
     private val _hasGroupOverLimits = MutableStateFlow(false)
@@ -51,6 +54,15 @@ class PremiumStatusManager(
             if (LocationPerformanceSettingsType.BatterySaver.fromKey(appPrefs.locationSettingsBatterySaverPerformanceType).isPremiumFeature) {
                 appPrefs.locationSettingsBatterySaverPerformanceType = LocationPerformanceSettingsType.BatterySaver.default.key
             }
+        }
+
+        if (currentPlanConfig?.planTypeEnum?.isPremium == false) {
+                appPrefs.setAndroidMapSDKProvider(
+                    appPrefs.getAndroidMapSDKProviderOrDefault(
+                        hasGoogleMaps = appConfigRepository.hasGoogleMaps,
+                        isPremiumPlan = false
+                    )
+                )
         }
 
         val personalSpaceOverLimit = personalSpaceRepo.personalSpaceState.value.data?.isSpaceOverLimits() == true

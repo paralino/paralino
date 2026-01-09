@@ -327,6 +327,10 @@ sealed class AppScreen {
         object NotificationGrouping : AppScreen() {
             override val routeSignature: String = "settings-notification-grouping"
         }
+
+        object MapsProvider : AppScreen() {
+            override val routeSignature: String = "settings-maps-provider"
+        }
     }
 
     object Common {

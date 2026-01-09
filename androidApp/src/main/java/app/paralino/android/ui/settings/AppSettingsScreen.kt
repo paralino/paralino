@@ -44,6 +44,9 @@ fun AppSettingsScreen(
             onPlaceSearchSettingsClick = {
                 appState.navController.navigate(AppScreen.Settings.PlaceSearch.routeSignature)
             },
+            onMapSourceSettingsClick = {
+                appState.navController.navigate(AppScreen.Settings.MapsProvider.routeSignature)
+            }
         )
     }
 }

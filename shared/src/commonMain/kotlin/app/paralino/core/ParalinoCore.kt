@@ -315,7 +315,7 @@ val coreModule = module {
     single { RemoteConfigRepository(get(), get(), get(), get()) }
     single { UserConfigRepository(get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get()) }
-    single { PremiumStatusManager(get(), get(), get(), get(), get(), get()) }
+    single { PremiumStatusManager(get(), get(), get(), get(), get(), get(), get()) }
 
     single { GroupValidityVerification(get(), get(), get(), get()) }
     single { LocationSharingManager(get(), get()) }

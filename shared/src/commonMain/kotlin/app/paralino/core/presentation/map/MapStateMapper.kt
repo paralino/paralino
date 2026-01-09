@@ -24,14 +24,18 @@ import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.places.list.PlaceListItemData
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class MapStateMapper(
@@ -39,9 +43,11 @@ class MapStateMapper(
     private val userGroupLocal: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
+    private val userRepo: UserRepository,
+    private val appConfigRepo: AppConfigRepository,
     private val memberActionHandler: MemberActionHandler,
-    private val locationRequestDuration: kotlin.time.Duration,
-    private val locationRequestDelay: kotlin.time.Duration
+    private val locationRequestDuration: Duration,
+    private val locationRequestDelay: Duration
 ) {
 
     suspend fun buildReadyState(
@@ -180,7 +186,15 @@ class MapStateMapper(
             verified = isVerified,
             alertDialog = alertDialog,
             isSatelliteMode = isSatelliteMode,
-            groupPlanConfig = planConfig
+            groupPlanConfig = planConfig,
+            androidMapSDKProvider = defaultMapProvider()
+        )
+    }
+
+    fun defaultMapProvider(): MapsSDKProvider {
+        return appPrefs.getAndroidMapSDKProviderOrDefault(
+            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
         )
     }
 

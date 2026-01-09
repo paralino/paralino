@@ -20,4 +20,5 @@ class AppConfigRepository(
     val projectId: String get() = appBuildConfig.projectId
     val appHost: AppHost get() = appBuildConfig.appHost
     val resourceIds: BackendResourceIDs get() = appBuildConfig.resourceIds
+    val hasGoogleMaps: Boolean get() = appBuildConfig.hasGoogleMaps
 }

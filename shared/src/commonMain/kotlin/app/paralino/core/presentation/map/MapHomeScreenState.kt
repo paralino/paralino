@@ -17,6 +17,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -31,7 +32,7 @@ sealed class MapHomeScreenState {
     abstract val isPersonalSpace: Boolean
     abstract val isSheetEnabled: Boolean
     abstract val defaultSheetPosition: BottomSheetPosition
-    abstract val androidMapSDKProvider: AndroidMapSDKProvider
+    abstract val androidMapSDKProvider: MapsSDKProvider?
 
     val deviceType: DeviceType = DeviceType.current
 
@@ -63,7 +64,7 @@ sealed class MapHomeScreenState {
         val sharingEndTime: String?,
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
-        override val androidMapSDKProvider: AndroidMapSDKProvider = AndroidMapSDKProvider.ALTERNATIVE,
+        override val androidMapSDKProvider: MapsSDKProvider,
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteMode: Boolean = false
     ) : MapHomeScreenState() {
@@ -132,7 +133,7 @@ sealed class MapHomeScreenState {
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
         override val isPersonalSpace: Boolean,
-        override val androidMapSDKProvider: AndroidMapSDKProvider = AndroidMapSDKProvider.ALTERNATIVE,
+        override val androidMapSDKProvider: MapsSDKProvider?,
         override val isSatelliteMode: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,
     ) : MapHomeScreenState() {
@@ -202,22 +203,6 @@ sealed interface MapHomeScreenUiEvent {
     data object OnBackClicked : MapHomeScreenUiEvent
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
-}
-
-enum class AndroidMapSDKProvider constructor(val key: String) {
-    GOOGLE("google"),
-    ALTERNATIVE("alt");
-
-    companion object {
-        fun fromKey(key: String): AndroidMapSDKProvider {
-            // TODO make proper default
-            val default = when (DeviceType.current) {
-                DeviceType.Android -> AndroidMapSDKProvider.ALTERNATIVE
-                DeviceType.iOS -> AndroidMapSDKProvider.ALTERNATIVE
-            }
-            return entries.firstOrNull { it.key == key } ?: default
-        }
-    }
 }
 
 enum class MapSheetSelectedContentType {

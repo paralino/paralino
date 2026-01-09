@@ -2,8 +2,8 @@ package app.paralino.core.db
 
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
-import app.paralino.core.presentation.map.AndroidMapSDKProvider
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.BaseRemoteModule
@@ -510,14 +510,32 @@ class AppPrefs(
             provider.userSettings.putBoolean(keyPlaceSearchLocation, value)
         }
 
-    var androidMapSDKProvider: AndroidMapSDKProvider
-        get() {
-            return provider.userSettings.getString(keyMapSDKProviderLocation, "")
-                .let { AndroidMapSDKProvider.fromKey(it) }
+    fun getAndroidMapSDKProviderOrDefault(
+        hasGoogleMaps: Boolean,
+        isPremiumPlan: Boolean
+    ): MapsSDKProvider {
+        val setting = provider.userSettings.getString(keyMapSDKProviderLocation, "")
+            .let { MapsSDKProvider.fromKey(it) }
+        val default = if (hasGoogleMaps) {
+            MapsSDKProvider.GOOGLE
+        } else if (isPremiumPlan) {
+            MapsSDKProvider.MAPLIBRE_PREMIUM
+        } else {
+            MapsSDKProvider.MAPLIBRE_FREE
         }
-        set(value) {
-            provider.userSettings.putString(keyMapSDKProviderLocation, value.key)
+
+        return if (!isPremiumPlan && setting == MapsSDKProvider.MAPLIBRE_PREMIUM) {
+            MapsSDKProvider.MAPLIBRE_FREE
+        } else if (!hasGoogleMaps && setting == MapsSDKProvider.GOOGLE) {
+            default
+        } else {
+            setting ?: default
         }
+    }
+
+    fun setAndroidMapSDKProvider(maps: MapsSDKProvider) {
+        provider.userSettings.putString(keyMapSDKProviderLocation, maps.key)
+    }
 
 
 

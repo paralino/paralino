@@ -189,7 +189,7 @@
     <string name="setting_description_errorReporting">Share anonymous error logs, in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_location_title">Location Settings</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Enabling this setting requires a premium plan.\n\nUpgrade your plan to get the best performance.</string>
+    <string name="setting_location_premium_banner_alert_message">Enabling this setting requires a premium plan.\n\nUpgrade your plan to unlock all options.</string>
     <string name="setting_location_highPerformance_section_title">When in Use</string>
     <string name="setting_location_highPerformance_section_info">**High performance** mode is active only if you, or one of your group members, are looking at the map while location sharing is on.</string>
     <string name="setting_location_highPerformance_duration_title">Allowed</string>
@@ -284,6 +284,15 @@
     <string name="setting_placeSearch_info">To provide more accurate place search results, you can choose to include the approximate location of the selected map area in your search. This data is used only temporarily for search purposes and is not stored or logged anywhere.\nIf you disable this, your search will not use the map area and may be less accurate.</string>
     <string name="setting_placeSearch_location_title">Current map area</string>
     <string name="setting_placeSearch_location_info">When enabled, the approximate location of the currently selected map area will be sent to the server to provide localized search results.</string>
+    <string name="setting_mapsProvider_title">Maps provider</string>
+    <string name="setting_mapsProvider_info">Choose your preferred service provider for maps used in the app. Map style, animations and performance will be different across different sources.</string>
+    <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
+    <string name="setting_mapsProvider_googleMaps_info">Default Google Maps SDK with street and satellite maps.</string>
+    <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>
+    <string name="setting_mapsProvider_mapLibreFree_info">MapLibre SDK with OpenFreeMap maps. Street maps only.</string>
+    <string name="setting_mapsProvider_mapLibreFree_tag">No satellite maps</string>
+    <string name="setting_mapsProvider_mapLibrePremium_title">MapLibre Premium</string>
+    <string name="setting_mapsProvider_mapLibrePremium_info">MapLibre SDK with MapTiler street and satellite maps.</string>
     <string name="plans_banner_settings_title">Upgrade your Plan</string>
     <string name="plans_banner_settings_description">Get more of everything and take your experience to the next level!</string>
     <string name="plans_banner_settings_action">Upgrade now</string>

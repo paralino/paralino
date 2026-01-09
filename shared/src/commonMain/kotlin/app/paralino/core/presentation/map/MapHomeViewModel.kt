@@ -26,6 +26,7 @@ import app.paralino.core.presentation.history.LocationHistoryViewModelController
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
@@ -60,7 +61,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -84,6 +84,7 @@ class MapHomeViewModel constructor(
     val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
+    private val appConfigRepo: AppConfigRepository,
     private val appRatingManager: AppRatingManager
 ) : CoreViewModel() {
 
@@ -94,7 +95,8 @@ class MapHomeViewModel constructor(
             selectedGroupImage = null,
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
             currentUserImage = userRepository.localUser.value.data?.data?.userImage
-                ?: ImageModel.emoji(Emojis.robot)
+                ?: ImageModel.emoji(Emojis.robot),
+            androidMapSDKProvider = null
         )
     )
     val uiState: StateFlow<MapHomeScreenState> = _uiState
@@ -160,6 +162,8 @@ class MapHomeViewModel constructor(
         userGroupLocal = groupRepo,
         valueFormatter = valueFormatter,
         remoteConfig = remoteConfig,
+        appConfigRepo = appConfigRepo,
+        userRepo = userRepository,
         memberActionHandler = memberActionHandler,
         locationRequestDuration = locationRequestDuration,
         locationRequestDelay = locationRequestDelay
@@ -366,7 +370,8 @@ class MapHomeViewModel constructor(
                             selectedGroupId = null,
                             selectedGroupImage = null,
                             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
-                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot)
+                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
+                            androidMapSDKProvider = mapStateMapper.defaultMapProvider()
                         )
                     }
                 } else if (it.isPersonalSpace){
@@ -395,7 +400,8 @@ class MapHomeViewModel constructor(
                     selectedGroupId = appPrefs.selectedGroupId,
                     selectedGroupImage = _uiState.value.selectedGroupImage,
                     isPersonalSpace = true,
-                    currentUserImage = ImageModel.emoji(Emojis.robot)
+                    currentUserImage = ImageModel.emoji(Emojis.robot),
+                    androidMapSDKProvider = mapStateMapper.defaultMapProvider()
                 )
             }
 
@@ -429,7 +435,8 @@ class MapHomeViewModel constructor(
                     selectedGroupId = null,
                     selectedGroupImage = null,
                     isPersonalSpace = false,
-                    currentUserImage = ImageModel.emoji(Emojis.robot)
+                    currentUserImage = ImageModel.emoji(Emojis.robot),
+                    androidMapSDKProvider = mapStateMapper.defaultMapProvider()
                 )
             }
 

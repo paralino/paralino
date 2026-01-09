@@ -295,7 +295,8 @@ object SettingsScreens {
                 onMeasurementSystemClick = openMeasurementSystemScreen,
                 onNotificationGroupingClick = openNotificationGroupingScreen,
                 onNavigationAppClick = openNavigationAppScreen,
-                onPlaceSearchSettingsClick = openPlaceSearchSettings
+                onPlaceSearchSettingsClick = openPlaceSearchSettings,
+                onMapSourceSettingsClick = {}
             )
         }
     }

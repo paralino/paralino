@@ -28,6 +28,7 @@ fun AppSettingsScreenCore(
     onNotificationGroupingClick: () -> Unit,
     onNavigationAppClick: () -> Unit,
     onPlaceSearchSettingsClick: () -> Unit,
+    onMapSourceSettingsClick: () -> Unit,
 ) {
 //    MessageDispatcherEffect(vm, appState)
 //    val uiState by vm.uiState.collectAsState()
@@ -55,6 +56,15 @@ fun AppSettingsScreenCore(
             icon = CoreAppIcons.Search.asPainterResource(),
             onClick = onPlaceSearchSettingsClick
         )
+
+        if (DeviceType.current == DeviceType.Android) {
+            SettingsActionItem(
+                name = stringResource(MR.strings.setting_mapsProvider_title),
+                icon = CoreAppIcons.Map.asPainterResource(),
+                onClick = onMapSourceSettingsClick
+            )
+        }
+
         if (DeviceType.current == DeviceType.iOS) {
             val canShow = rememberSaveable {
                 IOSNavigationAppType.supportedMaps().size > 1
