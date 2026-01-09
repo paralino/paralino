@@ -23,12 +23,25 @@ android {
 
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
-        val variantIgnore =
-                (variant.buildType == "debug" && names.contains("direct")) ||
-                (variant.buildType == "release" && names.contains("dev")) ||
-                (names.contains("playStore") && names.contains("alt")) ||
-                (names.contains("direct") && names.contains("google"))
+        val variantIgnore = (variant.buildType == "releaseTest" && names.contains("direct"))
         variant.enable = !variantIgnore
+
+        if ((variant.buildType == "release" && names.contains("playStore"))) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStoreRelease/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
+                throw FileNotFoundException("Missing Firebase config file for PRODUCTION_RELEASE")
+            }
+        } else if ((variant.buildType == "releaseTest" && names.contains("playStore"))) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStoreReleaseTest/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
+                throw FileNotFoundException("Missing Firebase config file for TEST_RELEASE")
+            }
+        } else if ((variant.buildType == "debug" && names.contains("playStore"))) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStoreDebug/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
+                throw FileNotFoundException("Missing Firebase config file for DEBUG")
+            }
+        }
     }
 
     applicationVariants.all {
@@ -88,7 +101,7 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
@@ -104,12 +117,13 @@ android {
             buildConfigField("String", "serverKey", props["productionServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
         }
-        debug {
+        getByName("debug") {
             isDebuggable = true
 //            isMinifyEnabled = true
 //            isShrinkResources = true
 //            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             versionNameSuffix = "D"
+            applicationIdSuffix = ".dev"
 
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
@@ -123,40 +137,25 @@ android {
 
             signingConfig = signingConfigs.getByName("testConfig")
         }
+        create("releaseTest") {
+            initWith(getByName("release"))
+            isDebuggable = true
+        }
     }
 
     flavorDimensions += "version"
-    flavorDimensions += "source"
     productFlavors {
         create("playStore") {
             dimension = "version"
             versionCode = 74
             versionName = "2.1.3"
-
-            val fcmConfigFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file")
-            }
         }
         create("direct") {
             dimension = "version"
-            versionCode = 20
-            versionName = "0.8.3"
+            versionCode = 74
+            versionName = "2.1.3"
             versionNameSuffix = "-int"
             applicationIdSuffix = ".int"
-        }
-        create("dev") {
-            dimension = "version"
-            versionCode = 75
-            versionName = "2.1.4"
-            versionNameSuffix = "-dev"
-            applicationIdSuffix = ".dev"
-        }
-        create("alt") {
-            dimension = "source"
-        }
-        create("google") {
-            dimension = "source"
         }
     }
 
@@ -217,8 +216,8 @@ kotlin {
     }
 }
 
-val altImplementation by configurations
-val googleImplementation by configurations
+val directImplementation by configurations
+val playStoreImplementation by configurations
 dependencies {
     implementation(project(path = ":shared"))
     testImplementation(libs.junit)
@@ -266,14 +265,14 @@ dependencies {
 
     // region utils
     implementation(libs.play.services.location)
-    googleImplementation(libs.firebase.messaging.ktx)
-    googleImplementation(libs.play.review)
+    playStoreImplementation(libs.firebase.messaging.ktx)
+    playStoreImplementation(libs.play.review)
 
-    googleImplementation(libs.revenuecat.android)
+    playStoreImplementation(libs.revenuecat.android)
 
-    googleImplementation(libs.maps.google.compose)
-    googleImplementation(libs.maps.google.compose.utils)
-    googleImplementation(libs.maps.google.compose.widgets)
+    playStoreImplementation(libs.maps.google.compose)
+    playStoreImplementation(libs.maps.google.compose.utils)
+    playStoreImplementation(libs.maps.google.compose.widgets)
     implementation(libs.maps.maplibre.compose)
 
     implementation(project(path = ":lazysodium-android"))

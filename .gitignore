@@ -19,9 +19,7 @@ user.properties
 iosApp/Configuration/production-config.xcconfig
 iosApp/Configuration/staging-config.xcconfig
 
-androidApp/src/devGoogle/res/values/fcm_config.xml
-androidApp/src/directGoogle/res/values/fcm_config.xml
-androidApp/src/playStore/res/values/fcm_config.xml
+androidApp/src/*/res/values/fcm_config.xml
 
 androidApp/proguard-merged-config.txt
 
