@@ -5,29 +5,26 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import org.jetbrains.compose.resources.DrawableResource
 
-sealed interface GenericSettingsScreenState {
-    abstract val screenTitle: String
-    abstract val alertDialog: MainAlertDialog?
+data class GenericSettingsScreenState(
+    val screenTitle: String,
+    val alertDialog: MainAlertDialog?,
+    val content: GenericSettingsScreenStateContent
+)
 
-    data class Loading(
-        override val screenTitle: String,
-        override val alertDialog: MainAlertDialog? = null
-    ): GenericSettingsScreenState
+sealed interface GenericSettingsScreenStateContent {
+
+    data object Loading: GenericSettingsScreenStateContent
 
     data class EditScreen(
-        override val screenTitle: String,
-        override val alertDialog: MainAlertDialog? = null,
         val placeholder: String = "",
         val content: String = "",
         val hasContentError: Boolean = false,
         val actionLoading: Boolean? = false
-    ): GenericSettingsScreenState
+    ): GenericSettingsScreenStateContent
 
     data class ListItems(
-        override val screenTitle: String,
-        override val alertDialog: MainAlertDialog?,
         val items: List<GenericSettingListItem>
-    ): GenericSettingsScreenState
+    ): GenericSettingsScreenStateContent
 }
 
 sealed interface GenericSettingListItem {
@@ -83,8 +80,8 @@ data class GroupOptionItem(
     val id: String,
     val title: String,
     val description: String?,
-    val batteryImpact: String?,
-    val highBatteryImpact: Boolean,
+    val tag: String?,
+    val isTagWarning: Boolean,
     val isPremiumFeatureEnabled: Boolean,
     val isSelected: Boolean,
     val isLoading: Boolean = false,

@@ -20,27 +20,29 @@ class DefaultNavigationAppViewModel(
 
     override fun createInitialState(): GenericSettingsScreenState {
         val currentOption = appPrefs.iosNavigationApp
-        return GenericSettingsScreenState.ListItems(
+        return GenericSettingsScreenState(
             screenTitle = initialScreenTitle,
             alertDialog = null,
-            items = listOf(
-                GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
-                GenericSettingListItem.Subtitle(MR.strings.setting_navigationApp_info.localizedString()),
-                GenericSettingListItem.GroupOptions(
-                    defaultId = currentOption.key,
-                    keyId = "grouping",
-                    items = IOSNavigationAppType.supportedMaps().map {
-                        GroupOptionItem(
-                            key = it,
-                            id = it.key,
-                            title = it.title.localizedString(),
-                            description = null,
-                            batteryImpact = null,
-                            highBatteryImpact = false,
-                            isPremiumFeatureEnabled = true,
-                            isSelected = it == currentOption
-                        )
-                    }
+            content = GenericSettingsScreenStateContent.ListItems(
+                items = listOf(
+                    GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
+                    GenericSettingListItem.Subtitle(MR.strings.setting_navigationApp_info.localizedString()),
+                    GenericSettingListItem.GroupOptions(
+                        defaultId = currentOption.key,
+                        keyId = "grouping",
+                        items = IOSNavigationAppType.supportedMaps().map {
+                            GroupOptionItem(
+                                key = it,
+                                id = it.key,
+                                title = it.title.localizedString(),
+                                description = null,
+                                tag = null,
+                                isTagWarning = false,
+                                isPremiumFeatureEnabled = true,
+                                isSelected = it == currentOption
+                            )
+                        }
+                    )
                 )
             )
         )
@@ -55,25 +57,27 @@ class DefaultNavigationAppViewModel(
                     appPrefs.iosNavigationApp = it
                 }
                 _uiState.update { state ->
-                    when (state) {
-                        is GenericSettingsScreenState.ListItems -> {
-                            state.copy(
-                                items = state.items.map { item ->
-                                    when (val finalItem = item) {
-                                        is GenericSettingListItem.GroupOptions -> {
-                                            finalItem.copy(
-                                                items = finalItem.items.map {
-                                                    it.copy(isSelected = it.id == event.option.id)
-                                                }
-                                            )
+                    state.copy(
+                        content = when (state.content) {
+                            is GenericSettingsScreenStateContent.ListItems -> {
+                                state.content.copy(
+                                    items = state.content.items.map { item ->
+                                        when (val finalItem = item) {
+                                            is GenericSettingListItem.GroupOptions -> {
+                                                finalItem.copy(
+                                                    items = finalItem.items.map {
+                                                        it.copy(isSelected = it.id == event.option.id)
+                                                    }
+                                                )
+                                            }
+                                            else -> item
                                         }
-                                        else -> item
                                     }
-                                }
-                            )
+                                )
+                            }
+                            else -> state.content
                         }
-                        else -> state
-                    }
+                    )
                 }
             }
         }

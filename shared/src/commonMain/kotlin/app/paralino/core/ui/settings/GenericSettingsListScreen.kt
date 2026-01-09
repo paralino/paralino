@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
-import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
@@ -68,7 +68,7 @@ import app.paralino.core.utils.extensions.annotatedBoldCompose
 fun GenericSettingsListScreen(
     coreUiState: CoreUiState,
     paddingValues: PaddingValues,
-    state: GenericSettingsScreenState.ListItems,
+    state: GenericSettingsScreenStateContent.ListItems,
     onEvent: (GenericSettingsScreenUiEvent) -> Unit
 ) {
     LazyColumn(
@@ -205,8 +205,8 @@ fun GenericSettingsOptions(
             GenericSettingsOptionItem(
                 title = state.title,
                 description = state.description,
-                batteryImpact = state.batteryImpact,
-                highBatteryImpact = state.highBatteryImpact,
+                batteryImpact = state.tag,
+                highBatteryImpact = state.isTagWarning,
                 isSelected = state.isSelected,
                 isLoading = state.isLoading,
                 isPremiumFeatureEnabled = state.isPremiumFeatureEnabled,

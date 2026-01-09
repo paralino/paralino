@@ -14,7 +14,11 @@ import kotlinx.coroutines.launch
 abstract class BaseGenericSettingViewModel(val initialScreenTitle: String) : CoreViewModel() {
 
     protected val _uiState = MutableStateFlow<GenericSettingsScreenState>(
-        GenericSettingsScreenState.Loading(initialScreenTitle)
+        GenericSettingsScreenState(
+            screenTitle = initialScreenTitle,
+            alertDialog = null,
+            content = GenericSettingsScreenStateContent.Loading
+        )
     )
     val uiState: StateFlow<GenericSettingsScreenState> = _uiState
     val screenTitle: Flow<String> = _uiState.map { it.screenTitle }
@@ -28,10 +32,7 @@ abstract class BaseGenericSettingViewModel(val initialScreenTitle: String) : Cor
                 when (event.action.dialog) {
                     is MainAlertDialog.LocationPerformancePremiumInfo -> {
                         _uiState.update {
-                            when (it) {
-                                is GenericSettingsScreenState.ListItems -> it.copy(alertDialog = null)
-                                else -> it
-                            }
+                            it.copy(alertDialog = null)
                         }
                         if (event.action.action == MainAlertDialog.Buttons.buttonOk) {
                             coroutineScope.launch {

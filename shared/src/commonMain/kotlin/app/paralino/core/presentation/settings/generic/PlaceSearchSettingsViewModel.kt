@@ -21,22 +21,24 @@ class PlaceSearchSettingsViewModel(
 
     override fun createInitialState(): GenericSettingsScreenState {
         val currentOption = appPrefs.sendLocationWithPlaceSearch
-        return GenericSettingsScreenState.ListItems(
+        return GenericSettingsScreenState(
             screenTitle = initialScreenTitle,
             alertDialog = null,
-            items = listOf(
-                GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
-                GenericSettingListItem.Subtitle(MR.strings.setting_placeSearch_info.localizedString()),
-                GenericSettingListItem.Switch(
-                    key = "switchMapLocation",
-                    keyId = "switchMapLocation",
-                    title = MR.strings.setting_placeSearch_location_title.localizedString(),
-                    description = MR.strings.setting_placeSearch_location_info.localizedString(),
-                    icon = CoreAppIcons.Map,
-                    isChecked = currentOption,
-                    isEnabled = true,
-                    isLoading = false,
-                    isVisible = true
+            content = GenericSettingsScreenStateContent.ListItems(
+                items = listOf(
+                    GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
+                    GenericSettingListItem.Subtitle(MR.strings.setting_placeSearch_info.localizedString()),
+                    GenericSettingListItem.Switch(
+                        key = "switchMapLocation",
+                        keyId = "switchMapLocation",
+                        title = MR.strings.setting_placeSearch_location_title.localizedString(),
+                        description = MR.strings.setting_placeSearch_location_info.localizedString(),
+                        icon = CoreAppIcons.Map,
+                        isChecked = currentOption,
+                        isEnabled = true,
+                        isLoading = false,
+                        isVisible = true
+                    )
                 )
             )
         )
@@ -61,31 +63,33 @@ class PlaceSearchSettingsViewModel(
         appPrefs.sendLocationWithPlaceSearch = !switch.isChecked
 
         _uiState.update { state ->
-            when (state) {
-                is GenericSettingsScreenState.ListItems -> {
-                    state.copy(
-                        items = state.items.map { item ->
-                            when (val finalItem = item) {
-                                is GenericSettingListItem.Switch<*> -> {
-                                    when (finalItem.keyId) {
-                                        "switchMapLocation" -> {
-                                            finalItem.copy(
-                                                isChecked = !finalItem.isChecked
-                                            )
+            state.copy(
+                content = when (state.content) {
+                    is GenericSettingsScreenStateContent.ListItems -> {
+                        state.content.copy(
+                            items = state.content.items.map { item ->
+                                when (val finalItem = item) {
+                                    is GenericSettingListItem.Switch<*> -> {
+                                        when (finalItem.keyId) {
+                                            "switchMapLocation" -> {
+                                                finalItem.copy(
+                                                    isChecked = !finalItem.isChecked
+                                                )
+                                            }
+
+                                            else -> item
                                         }
-
-                                        else -> item
                                     }
+
+                                    else -> item
                                 }
-
-                                else -> item
                             }
-                        }
-                    )
-                }
+                        )
+                    }
 
-                else -> state
-            }
+                    else -> state.content
+                }
+            )
         }
     }
 }

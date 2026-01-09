@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.MessageDispatcherEffect
@@ -56,8 +57,8 @@ fun GenericSettingsScreenCore(
         }
     }
 
-    when (val finalState = uiState) {
-        is GenericSettingsScreenState.Loading -> {
+    when (val finalState = uiState.content) {
+        is GenericSettingsScreenStateContent.Loading -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -68,8 +69,8 @@ fun GenericSettingsScreenCore(
                 CircularProgressIndicator()
             }
         }
-        is GenericSettingsScreenState.EditScreen -> {}
-        is GenericSettingsScreenState.ListItems -> {
+        is GenericSettingsScreenStateContent.EditScreen -> {}
+        is GenericSettingsScreenStateContent.ListItems -> {
             GenericSettingsListScreen(
                 coreUiState = coreUiState,
                 paddingValues = paddingValues,

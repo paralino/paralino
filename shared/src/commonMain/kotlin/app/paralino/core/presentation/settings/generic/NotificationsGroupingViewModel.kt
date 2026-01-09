@@ -18,27 +18,29 @@ class NotificationsGroupingViewModel(
 
     override fun createInitialState(): GenericSettingsScreenState {
         val currentOption = appPrefs.notificationGrouping
-        return GenericSettingsScreenState.ListItems(
+        return GenericSettingsScreenState(
             screenTitle = initialScreenTitle,
             alertDialog = null,
-            items = listOf(
-                GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
-                GenericSettingListItem.Subtitle(MR.strings.setting_notificationGrouping_info.localizedString()),
-                GenericSettingListItem.GroupOptions(
-                    defaultId = NotificationGroupingType.TYPE.key,
-                    keyId = "grouping",
-                    items = NotificationGroupingType.entries.map {
-                        GroupOptionItem(
-                            key = it,
-                            id = it.key,
-                            title = it.title.localizedString(),
-                            description = it.description.localizedString(),
-                            batteryImpact = null,
-                            highBatteryImpact = false,
-                            isPremiumFeatureEnabled = true,
-                            isSelected = it == currentOption
-                        )
-                    }
+            content = GenericSettingsScreenStateContent.ListItems(
+                items = listOf(
+                    GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
+                    GenericSettingListItem.Subtitle(MR.strings.setting_notificationGrouping_info.localizedString()),
+                    GenericSettingListItem.GroupOptions(
+                        defaultId = NotificationGroupingType.TYPE.key,
+                        keyId = "grouping",
+                        items = NotificationGroupingType.entries.map {
+                            GroupOptionItem(
+                                key = it,
+                                id = it.key,
+                                title = it.title.localizedString(),
+                                description = it.description.localizedString(),
+                                tag = null,
+                                isTagWarning = false,
+                                isPremiumFeatureEnabled = true,
+                                isSelected = it == currentOption
+                            )
+                        }
+                    )
                 )
             )
         )
@@ -53,25 +55,27 @@ class NotificationsGroupingViewModel(
                     appPrefs.notificationGrouping = it
                 }
                 _uiState.update { state ->
-                    when (state) {
-                        is GenericSettingsScreenState.ListItems -> {
-                            state.copy(
-                                items = state.items.map { item ->
-                                    when (val finalItem = item) {
-                                        is GenericSettingListItem.GroupOptions -> {
-                                            finalItem.copy(
-                                                items = finalItem.items.map {
-                                                    it.copy(isSelected = it.id == event.option.id)
-                                                }
-                                            )
+                    state.copy(
+                        content = when (state.content) {
+                            is GenericSettingsScreenStateContent.ListItems -> {
+                                state.content.copy(
+                                    items = state.content.items.map { item ->
+                                        when (val finalItem = item) {
+                                            is GenericSettingListItem.GroupOptions -> {
+                                                finalItem.copy(
+                                                    items = finalItem.items.map {
+                                                        it.copy(isSelected = it.id == event.option.id)
+                                                    }
+                                                )
+                                            }
+                                            else -> item
                                         }
-                                        else -> item
                                     }
-                                }
-                            )
+                                )
+                            }
+                            else -> state.content
                         }
-                        else -> state
-                    }
+                    )
                 }
             }
         }

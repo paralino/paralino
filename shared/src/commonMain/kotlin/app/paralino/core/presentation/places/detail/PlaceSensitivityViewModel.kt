@@ -12,6 +12,7 @@ import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.localizedString
@@ -60,7 +61,11 @@ class PlaceSensitivityViewModel(
     override fun createInitialState(): GenericSettingsScreenState {
         when (val place = placeData.value) {
             null -> {
-                return GenericSettingsScreenState.Loading(screenTitle = initialScreenTitle)
+                return GenericSettingsScreenState(
+                    screenTitle = initialScreenTitle,
+                    alertDialog = null,
+                    content = GenericSettingsScreenStateContent.Loading
+                )
             }
 
             else -> {
@@ -71,140 +76,142 @@ class PlaceSensitivityViewModel(
                 val currentOptions = userOptions ?: placeOptions
                 val isAppliedToAllUsers = userOptions == null || userOptions == placeOptions
 
-                return GenericSettingsScreenState.ListItems(
+                return GenericSettingsScreenState(
                     screenTitle = initialScreenTitle,
                     alertDialog = null,
-                    items = buildList {
-                        add(GenericSettingListItem.Spacer(20.dp, keyId = "top_space"))
+                    content = GenericSettingsScreenStateContent.ListItems(
+                        items = buildList {
+                            add(GenericSettingListItem.Spacer(20.dp, keyId = "top_space"))
 
-                        if (canEdit) {
-                            add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_info_owner.localizedString()))
-                        } else {
-                            add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_info_member.localizedString()))
-                        }
+                            if (canEdit) {
+                                add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_info_owner.localizedString()))
+                            } else {
+                                add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_info_member.localizedString()))
+                            }
 
-                        add(
-                            GenericSettingListItem.Notice(
-                                content = MR.strings.place_sensitivity_defaultNotice.localizedString(),
-                                icon = CoreAppIcons.Warning
+                            add(
+                                GenericSettingListItem.Notice(
+                                    content = MR.strings.place_sensitivity_defaultNotice.localizedString(),
+                                    icon = CoreAppIcons.Warning
+                                )
                             )
-                        )
 
-                        add(
-                            GenericSettingListItem.Spacer(
-                                spacing = 20.dp,
-                                keyId = "switchAll_space"
+                            add(
+                                GenericSettingListItem.Spacer(
+                                    spacing = 20.dp,
+                                    keyId = "switchAll_space"
+                                )
                             )
-                        )
 
-                        if (canEdit) {
+                            if (canEdit) {
+                                add(
+                                    GenericSettingListItem.Switch(
+                                        key = "switchAllUsers",
+                                        keyId = "switchAllUsers",
+                                        title = MR.strings.place_sensitivity_allUsersToggle_title.localizedString(),
+                                        description = if (isAppliedToAllUsers) {
+                                            MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
+                                        } else {
+                                            MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
+                                        },
+                                        icon = CoreAppIcons.Group,
+                                        isChecked = isAppliedToAllUsers,
+                                        isEnabled = true,
+                                        isLoading = false,
+                                        isVisible = true
+                                    )
+                                )
+                            }
+
+                            add(GenericSettingListItem.StickyHeader(content = MR.strings.place_sensitivity_sectionDelay_title.localizedString()))
+                            add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_sectionDelay_info.localizedString()))
+
+                            add(
+                                GenericSettingListItem.GroupOptions(
+                                    defaultId = PlaceSensitivityDelayType.default.key,
+                                    keyId = "delayOptions",
+                                    items = PlaceSensitivityDelayType.entries.map {
+                                        GroupOptionItem(
+                                            key = it,
+                                            id = it.key,
+                                            title = it.title.localizedString(),
+                                            description = it.description.localizedString(),
+                                            tag = null,
+                                            isTagWarning = false,
+                                            isPremiumFeatureEnabled = true,
+                                            isSelected = it == currentOptions.sensitivityDelay
+                                        )
+                                    }
+                                )
+                            )
+
+                            add(
+                                GenericSettingListItem.Spacer(
+                                    spacing = 20.dp,
+                                    keyId = "accuracy_space"
+                                )
+                            )
+                            add(GenericSettingListItem.StickyHeader(content = MR.strings.place_sensitivity_sectionRefresh_title.localizedString()))
+                            add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_sectionRefresh_info.localizedString()))
+
                             add(
                                 GenericSettingListItem.Switch(
-                                    key = "switchAllUsers",
-                                    keyId = "switchAllUsers",
-                                    title = MR.strings.place_sensitivity_allUsersToggle_title.localizedString(),
-                                    description = if (isAppliedToAllUsers) {
-                                        MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
+                                    key = "switchIgnoreInaccurate",
+                                    keyId = "switchIgnoreInaccurate",
+                                    title = MR.strings.place_sensitivity_optionRefresh_onlyAccurate_title.localizedString(),
+                                    description = if (currentOptions.ignoreInaccurate) {
+                                        MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_on.localizedString()
                                     } else {
-                                        MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
+                                        MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_off.localizedString()
                                     },
-                                    icon = CoreAppIcons.Group,
-                                    isChecked = isAppliedToAllUsers,
+                                    icon = null,
+                                    isChecked = currentOptions.ignoreInaccurate,
                                     isEnabled = true,
                                     isLoading = false,
                                     isVisible = true
                                 )
                             )
+
+                            add(
+                                GenericSettingListItem.Switch(
+                                    key = "switchAccuracy",
+                                    keyId = "switchAccuracy",
+                                    title = MR.strings.place_sensitivity_optionRefresh_inaccurate_title.localizedString(),
+                                    description = if (currentOptions.refreshOnlyInaccurate) {
+                                        MR.strings.place_sensitivity_optionRefresh_inaccurate_info_on.localizedString()
+                                    } else {
+                                        MR.strings.place_sensitivity_optionRefresh_inaccurate_info_off.localizedString()
+                                    },
+                                    icon = null,
+                                    isChecked = currentOptions.refreshOnlyInaccurate,
+                                    isEnabled = true,
+                                    isLoading = false,
+                                    isVisible = currentOptions.sensitivityRefresh != PlaceSensitivityLocationRefreshType.NONE
+                                )
+                            )
+
+                            add(
+                                GenericSettingListItem.GroupOptions(
+                                    defaultId = PlaceSensitivityLocationRefreshType.default.key,
+                                    keyId = "refreshOptions",
+                                    items = PlaceSensitivityLocationRefreshType.entries.map {
+                                        GroupOptionItem(
+                                            key = it,
+                                            id = it.key,
+                                            title = it.title.localizedString(),
+                                            description = it.description.localizedString(),
+                                            tag = null,
+                                            isTagWarning = false,
+                                            isPremiumFeatureEnabled = true,
+                                            isSelected = it == currentOptions.sensitivityRefresh
+                                        )
+                                    }
+                                )
+                            )
+
+                            add(GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space"))
                         }
-
-                        add(GenericSettingListItem.StickyHeader(content = MR.strings.place_sensitivity_sectionDelay_title.localizedString()))
-                        add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_sectionDelay_info.localizedString()))
-
-                        add(
-                            GenericSettingListItem.GroupOptions(
-                                defaultId = PlaceSensitivityDelayType.default.key,
-                                keyId = "delayOptions",
-                                items = PlaceSensitivityDelayType.entries.map {
-                                    GroupOptionItem(
-                                        key = it,
-                                        id = it.key,
-                                        title = it.title.localizedString(),
-                                        description = it.description.localizedString(),
-                                        batteryImpact = null,
-                                        highBatteryImpact = false,
-                                        isPremiumFeatureEnabled = true,
-                                        isSelected = it == currentOptions.sensitivityDelay
-                                    )
-                                }
-                            )
-                        )
-
-                        add(
-                            GenericSettingListItem.Spacer(
-                                spacing = 20.dp,
-                                keyId = "accuracy_space"
-                            )
-                        )
-                        add(GenericSettingListItem.StickyHeader(content = MR.strings.place_sensitivity_sectionRefresh_title.localizedString()))
-                        add(GenericSettingListItem.Subtitle(MR.strings.place_sensitivity_sectionRefresh_info.localizedString()))
-
-                        add(
-                            GenericSettingListItem.Switch(
-                                key = "switchIgnoreInaccurate",
-                                keyId = "switchIgnoreInaccurate",
-                                title = MR.strings.place_sensitivity_optionRefresh_onlyAccurate_title.localizedString(),
-                                description = if (currentOptions.ignoreInaccurate) {
-                                    MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_on.localizedString()
-                                } else {
-                                    MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_off.localizedString()
-                                },
-                                icon = null,
-                                isChecked = currentOptions.ignoreInaccurate,
-                                isEnabled = true,
-                                isLoading = false,
-                                isVisible = true
-                            )
-                        )
-
-                        add(
-                            GenericSettingListItem.Switch(
-                                key = "switchAccuracy",
-                                keyId = "switchAccuracy",
-                                title = MR.strings.place_sensitivity_optionRefresh_inaccurate_title.localizedString(),
-                                description = if (currentOptions.refreshOnlyInaccurate) {
-                                    MR.strings.place_sensitivity_optionRefresh_inaccurate_info_on.localizedString()
-                                } else {
-                                    MR.strings.place_sensitivity_optionRefresh_inaccurate_info_off.localizedString()
-                                },
-                                icon = null,
-                                isChecked = currentOptions.refreshOnlyInaccurate,
-                                isEnabled = true,
-                                isLoading = false,
-                                isVisible = currentOptions.sensitivityRefresh != PlaceSensitivityLocationRefreshType.NONE
-                            )
-                        )
-
-                        add(
-                            GenericSettingListItem.GroupOptions(
-                                defaultId = PlaceSensitivityLocationRefreshType.default.key,
-                                keyId = "refreshOptions",
-                                items = PlaceSensitivityLocationRefreshType.entries.map {
-                                    GroupOptionItem(
-                                        key = it,
-                                        id = it.key,
-                                        title = it.title.localizedString(),
-                                        description = it.description.localizedString(),
-                                        batteryImpact = null,
-                                        highBatteryImpact = false,
-                                        isPremiumFeatureEnabled = true,
-                                        isSelected = it == currentOptions.sensitivityRefresh
-                                    )
-                                }
-                            )
-                        )
-
-                        add(GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space"))
-                    }
+                    )
                 )
             }
         }
@@ -273,23 +280,25 @@ class PlaceSensitivityViewModel(
                         .mapToPayload<Unit, Unit>()
                         .onEach { data ->
                             _uiState.update { state ->
-                                when (state) {
-                                    is GenericSettingsScreenState.ListItems -> {
-                                        state.copy(
-                                            items = state.items.map { item ->
-                                                when (val finalItem = item) {
-                                                    is GenericSettingListItem.Switch<*> -> {
-                                                        finalItem.copy(isLoading = data is Payload.Loading)
+                                state.copy(
+                                    content = when (state.content) {
+                                        is GenericSettingsScreenStateContent.ListItems -> {
+                                            state.content.copy(
+                                                items = state.content.items.map { item ->
+                                                    when (val finalItem = item) {
+                                                        is GenericSettingListItem.Switch<*> -> {
+                                                            finalItem.copy(isLoading = data is Payload.Loading)
+                                                        }
+
+                                                        else -> item
                                                     }
-
-                                                    else -> item
                                                 }
-                                            }
-                                        )
-                                    }
+                                            )
+                                        }
 
-                                    else -> state
-                                }
+                                        else -> state.content
+                                    }
+                                )
                             }
 
                             when (data) {
@@ -323,47 +332,49 @@ class PlaceSensitivityViewModel(
         val isChanged = placeData.value?.alertSensitivity != option
 
         _uiState.update { state ->
-            when (state) {
-                is GenericSettingsScreenState.ListItems -> {
-                    state.copy(
-                        items = state.items.map { item ->
-                            when (val finalItem = item) {
-                                is GenericSettingListItem.Switch<*> -> {
-                                    when (finalItem.keyId) {
-                                        "switchAllUsers" -> {
-                                            finalItem.copy(
-                                                isChecked = !isChanged,
-                                                description = if (!isChanged) {
-                                                    MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
-                                                } else {
-                                                    MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
-                                                }
-                                            )
-                                        }
+            state.copy(
+                content = when (state.content) {
+                    is GenericSettingsScreenStateContent.ListItems -> {
+                        state.content.copy(
+                            items = state.content.items.map { item ->
+                                when (val finalItem = item) {
+                                    is GenericSettingListItem.Switch<*> -> {
+                                        when (finalItem.keyId) {
+                                            "switchAllUsers" -> {
+                                                finalItem.copy(
+                                                    isChecked = !isChanged,
+                                                    description = if (!isChanged) {
+                                                        MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
+                                                    } else {
+                                                        MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
+                                                    }
+                                                )
+                                            }
 
-                                        "switchAccuracy" -> {
-                                            finalItem.copy(
-                                                isChecked = !finalItem.isChecked,
-                                                description = if (!finalItem.isChecked) {
-                                                    MR.strings.place_sensitivity_optionRefresh_inaccurate_info_on.localizedString()
-                                                } else {
-                                                    MR.strings.place_sensitivity_optionRefresh_inaccurate_info_off.localizedString()
-                                                }
-                                            )
-                                        }
+                                            "switchAccuracy" -> {
+                                                finalItem.copy(
+                                                    isChecked = !finalItem.isChecked,
+                                                    description = if (!finalItem.isChecked) {
+                                                        MR.strings.place_sensitivity_optionRefresh_inaccurate_info_on.localizedString()
+                                                    } else {
+                                                        MR.strings.place_sensitivity_optionRefresh_inaccurate_info_off.localizedString()
+                                                    }
+                                                )
+                                            }
 
-                                        else -> item
+                                            else -> item
+                                        }
                                     }
+
+                                    else -> item
                                 }
-
-                                else -> item
                             }
-                        }
-                    )
-                }
+                        )
+                    }
 
-                else -> state
-            }
+                    else -> state.content
+                }
+            )
         }
     }
 
@@ -378,47 +389,49 @@ class PlaceSensitivityViewModel(
         val isChanged = placeData.value?.alertSensitivity != option
 
         _uiState.update { state ->
-            when (state) {
-                is GenericSettingsScreenState.ListItems -> {
-                    state.copy(
-                        items = state.items.map { item ->
-                            when (val finalItem = item) {
-                                is GenericSettingListItem.Switch<*> -> {
-                                    when (finalItem.keyId) {
-                                        "switchAllUsers" -> {
-                                            finalItem.copy(
-                                                isChecked = !isChanged,
-                                                description = if (!isChanged) {
-                                                    MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
-                                                } else {
-                                                    MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
-                                                }
-                                            )
-                                        }
+            state.copy(
+                content = when (state.content) {
+                    is GenericSettingsScreenStateContent.ListItems -> {
+                        state.content.copy(
+                            items = state.content.items.map { item ->
+                                when (val finalItem = item) {
+                                    is GenericSettingListItem.Switch<*> -> {
+                                        when (finalItem.keyId) {
+                                            "switchAllUsers" -> {
+                                                finalItem.copy(
+                                                    isChecked = !isChanged,
+                                                    description = if (!isChanged) {
+                                                        MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
+                                                    } else {
+                                                        MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
+                                                    }
+                                                )
+                                            }
 
-                                        "switchIgnoreInaccurate" -> {
-                                            finalItem.copy(
-                                                isChecked = !finalItem.isChecked,
-                                                description = if (!finalItem.isChecked) {
-                                                    MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_on.localizedString()
-                                                } else {
-                                                    MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_off.localizedString()
-                                                }
-                                            )
-                                        }
+                                            "switchIgnoreInaccurate" -> {
+                                                finalItem.copy(
+                                                    isChecked = !finalItem.isChecked,
+                                                    description = if (!finalItem.isChecked) {
+                                                        MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_on.localizedString()
+                                                    } else {
+                                                        MR.strings.place_sensitivity_optionRefresh_onlyAccurate_info_off.localizedString()
+                                                    }
+                                                )
+                                            }
 
-                                        else -> item
+                                            else -> item
+                                        }
                                     }
+
+                                    else -> item
                                 }
-
-                                else -> item
                             }
-                        }
-                    )
-                }
+                        )
+                    }
 
-                else -> state
-            }
+                    else -> state.content
+                }
+            )
         }
     }
 
@@ -459,65 +472,67 @@ class PlaceSensitivityViewModel(
         val isChanged = placeData.value?.alertSensitivity != settings
 
         _uiState.update { state ->
-            when (state) {
-                is GenericSettingsScreenState.ListItems -> {
-                    state.copy(
-                        items = state.items.map { item ->
-                            when (val finalItem = item) {
-                                is GenericSettingListItem.GroupOptions -> {
-                                    if (finalItem.keyId == keyId) {
-                                        finalItem.copy(
-                                            items = finalItem.items.map {
-                                                it.copy(
-                                                    isSelected = it.id == settingId
-                                                )
-                                            }
-                                        )
-                                    } else {
-                                        finalItem
-                                    }
-                                }
-
-                                is GenericSettingListItem.Switch<*> -> {
-                                    when (finalItem.keyId) {
-                                        "switchAllUsers" -> {
+            state.copy(
+                content = when (state.content) {
+                    is GenericSettingsScreenStateContent.ListItems -> {
+                        state.content.copy(
+                            items = state.content.items.map { item ->
+                                when (val finalItem = item) {
+                                    is GenericSettingListItem.GroupOptions -> {
+                                        if (finalItem.keyId == keyId) {
                                             finalItem.copy(
-                                                isChecked = !isChanged,
-                                                description = if (!isChanged) {
-                                                    MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
-                                                } else {
-                                                    MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
+                                                items = finalItem.items.map {
+                                                    it.copy(
+                                                        isSelected = it.id == settingId
+                                                    )
                                                 }
                                             )
+                                        } else {
+                                            finalItem
                                         }
-
-                                        "switchAccuracy" -> {
-                                            finalItem.copy(
-                                                isVisible = settings.sensitivityRefresh != PlaceSensitivityLocationRefreshType.NONE
-                                            )
-                                        }
-
-                                        else -> item
                                     }
+
+                                    is GenericSettingListItem.Switch<*> -> {
+                                        when (finalItem.keyId) {
+                                            "switchAllUsers" -> {
+                                                finalItem.copy(
+                                                    isChecked = !isChanged,
+                                                    description = if (!isChanged) {
+                                                        MR.strings.place_sensitivity_allUsersToggle_info_on.localizedString()
+                                                    } else {
+                                                        MR.strings.place_sensitivity_allUsersToggle_info_off.localizedString()
+                                                    }
+                                                )
+                                            }
+
+                                            "switchAccuracy" -> {
+                                                finalItem.copy(
+                                                    isVisible = settings.sensitivityRefresh != PlaceSensitivityLocationRefreshType.NONE
+                                                )
+                                            }
+
+                                            else -> item
+                                        }
+                                    }
+
+                                    else -> item
                                 }
-
-                                else -> item
                             }
-                        }
-                    )
-                }
+                        )
+                    }
 
-                else -> state
-            }
+                    else -> state.content
+                }
+            )
         }
     }
 
     private fun getCurrentSettings(): GroupPlaceSensitivityData? {
-        when (val state = _uiState.value) {
-            is GenericSettingsScreenState.EditScreen,
-            is GenericSettingsScreenState.Loading -> return null
+        when (val state = _uiState.value.content) {
+            is GenericSettingsScreenStateContent.EditScreen,
+            is GenericSettingsScreenStateContent.Loading -> return null
 
-            is GenericSettingsScreenState.ListItems -> {
+            is GenericSettingsScreenStateContent.ListItems -> {
                 return GroupPlaceSensitivityData(
                     delay = state.items.filterIsInstance<GenericSettingListItem.GroupOptions>()
                         .firstOrNull {
@@ -545,11 +560,11 @@ class PlaceSensitivityViewModel(
     }
 
     private fun isLoading(): Boolean {
-        return when (val state = _uiState.value) {
-            is GenericSettingsScreenState.EditScreen,
-            is GenericSettingsScreenState.Loading -> return true
+        return when (val state = _uiState.value.content) {
+            is GenericSettingsScreenStateContent.EditScreen,
+            is GenericSettingsScreenStateContent.Loading -> return true
 
-            is GenericSettingsScreenState.ListItems -> {
+            is GenericSettingsScreenStateContent.ListItems -> {
                 state.items.filterIsInstance<GenericSettingListItem.Switch<*>>().any {
                     it.isLoading
                 }
