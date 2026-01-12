@@ -285,14 +285,14 @@
     <string name="setting_placeSearch_location_title">Current map area</string>
     <string name="setting_placeSearch_location_info">When enabled, the approximate location of the currently selected map area will be sent to the server to provide localized search results.</string>
     <string name="setting_mapsProvider_title">Maps provider</string>
-    <string name="setting_mapsProvider_info">Choose your preferred service provider for maps used in the app. Map style, animations and performance will be different across different sources.</string>
+    <string name="setting_mapsProvider_info">Choose your preferred service provider for maps used in the app. Map style, animations and performance will be different across different providers.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">Default Google Maps SDK with street and satellite maps.</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Free</string>
     <string name="setting_mapsProvider_mapLibreFree_info">MapLibre SDK with OpenFreeMap maps. Street maps only.</string>
     <string name="setting_mapsProvider_mapLibreFree_tag">No satellite maps</string>
     <string name="setting_mapsProvider_mapLibreFree_warning_title">No satellite maps</string>
-    <string name="setting_mapsProvider_mapLibreFree_warning_message">Satellite maps are not available in current mode. Please change your map provider.</string>
+    <string name="setting_mapsProvider_mapLibreFree_warning_message">Satellite maps are not available with selected provider. Please change your map provider.</string>
     <string name="setting_mapsProvider_mapLibrePremium_title">MapLibre Premium</string>
     <string name="setting_mapsProvider_mapLibrePremium_info">MapLibre SDK with MapTiler street and satellite maps.</string>
     <string name="plans_banner_settings_title">Upgrade your Plan</string>
