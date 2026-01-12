@@ -1,7 +1,8 @@
 package app.paralino.android.ui.map.maplibre
 
-import android.location.Location
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.map.FocusedMarkerData
 import app.paralino.core.presentation.map.MapHomeScreenFocusType
@@ -13,6 +14,7 @@ import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.compose.camera.CameraState
 import org.maplibre.compose.util.VisibleRegion
+import org.maplibre.spatialk.geojson.BoundingBox
 import org.maplibre.spatialk.geojson.Position
 import kotlin.math.asin
 import kotlin.math.atan2
@@ -45,60 +47,29 @@ fun CameraState.refocus(
     markers: List<MapPinData>,
     forceZoom: Boolean = true,
     ignoreAccuracy: Boolean = false,
-    padding: Int = 60,
+    padding: PaddingValues,
     durationMs: Int = 500
 ) {
     scope.launch {
         if (markers.isEmpty()) return@launch
         val bounds = boundsForMarkers(markers = markers, ignoreAccuracy = ignoreAccuracy) ?: return@launch
 
-        val result = FloatArray(1)
-        Location.distanceBetween(
-            bounds.northEast.latitude,
-            bounds.northEast.longitude,
-            bounds.southWest.latitude,
-            bounds.southWest.longitude,
-            result
-        )
-
-        val currentBounds = this@refocus.projection?.queryVisibleRegion()
-        val zoom = currentBounds?.let {
-            val fitBounds = currentBounds.canFitBounds(bounds)
-            if (forceZoom) {
-                if (fitBounds && result.first() < 500) {
-                    17.0
-                } else {
-                    null
-                }
-            } else {
-                if (fitBounds) {
-                    -(1.0)
-                } else {
-                    null
-                }
-            }
-        } ?: let {
-            if (result.first() < 500) {
-                17.0
-            } else {
-                null
-            }
-        }
-
-        val position = bounds.center
-        val newPosition = this@refocus.position.copy(
-            target = Position(longitude = position.longitude, latitude = position.latitude, altitude = position.altitude),
-            padding = if (zoom != null) PaddingValues(padding.dp) else this@refocus.position.padding,
-            zoom = if (zoom != null && zoom > 0.0) zoom else this@refocus.position.zoom
-        )
-        if (durationMs > 0) {
-            this@refocus.animateTo(
-                finalPosition = newPosition,
-                duration = durationMs.milliseconds
+        val box = BoundingBox(
+            southwest = Position(
+                longitude = bounds.southWest.longitude, latitude = bounds.southWest.latitude, altitude = bounds.southWest.altitude
+            ),
+            northeast = Position(
+                longitude = bounds.northEast.longitude, latitude = bounds.northEast.latitude, altitude = bounds.northEast.altitude
             )
-        } else {
-            this@refocus.position = newPosition
-        }
+        )
+        // TODO add forceZoom
+
+        val effectiveDuration = durationMs.coerceAtLeast(1).milliseconds
+        this@refocus.animateTo(
+            boundingBox = box,
+            padding = padding,
+            duration = effectiveDuration
+        )
     }
 }
 
@@ -107,7 +78,8 @@ fun CameraState.focusOnMap(
     focusType: MapHomeScreenFocusType?,
     markers: List<MapPinData>,
     focusedMarker: FocusedMarkerData?,
-    durationMs: Int
+    durationMs: Int,
+    mapContentPadding: PaddingValues
 ) {
     val focus = when (focusType) {
         is MapHomeScreenFocusType.PLACE,
@@ -132,14 +104,14 @@ fun CameraState.focusOnMap(
 
     val padding = when (focusType) {
         MapHomeScreenFocusType.ALL_MEMBERS -> {
-            if (markers.size == 1) 200 else 100
+            if (markers.size == 1) 60 else 80
         }
 
         MapHomeScreenFocusType.ALL_PLACES -> {
-            if (markers.size == 1) 300 else 100
+            if (markers.size == 1) 40 else 60
         }
 
-        else -> 100
+        else -> 40
     }
 
     val forceZoom = when (focusType) {
@@ -150,7 +122,12 @@ fun CameraState.focusOnMap(
         scope = scope,
         markers = focus,
         forceZoom = forceZoom,
-        padding = 100,
+        padding = PaddingValues(
+            start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + padding.dp,
+            top = mapContentPadding.calculateTopPadding() + padding.dp,
+            end = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + padding.dp,
+            bottom = mapContentPadding.calculateBottomPadding() + padding.dp
+        ),
         durationMs = durationMs
     )
 }
