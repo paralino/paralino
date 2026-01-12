@@ -167,7 +167,7 @@ private fun VisibleRegion.canFitBounds(
     return thisBounds.contains(bounds.southWest) && bounds.contains(thisBounds.northEast)
 }
 
-private object MapLibreMapUtils {
+internal object MapLibreMapUtils {
     fun computeOffset(
         from: LatLng,
         distance: Double,

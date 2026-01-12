@@ -66,9 +66,13 @@ fun MapLibreMarkerComposable(
         id = state.markerId,
         source = source,
         iconImage = image(mapMarkerIcon(state)),
-        onClick = {
-            onClick(state)
-            ClickResult.Consume
+        onClick = if (canTapOnMarker) {
+            {
+                onClick(state)
+                ClickResult.Consume
+            }
+        } else {
+            null
         },
         sortKey = const(zIndex),
         iconAnchor = when (state.markerStyle) {
