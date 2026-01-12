@@ -63,9 +63,13 @@ fun MapLibreMarkerComposable(
     onClick: (MapPinData) -> Unit
 ) {
     SymbolLayer(
-        id = state.markerId,
+        id = "map-marker-${state.markerId}",
         source = source,
         iconImage = image(mapMarkerIcon(state)),
+        iconAllowOverlap = const(true),
+        textAllowOverlap = const(true),
+        iconIgnorePlacement = const(true),
+        textIgnorePlacement = const(true),
         onClick = if (canTapOnMarker) {
             {
                 onClick(state)

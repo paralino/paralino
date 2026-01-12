@@ -96,10 +96,12 @@ private fun MapHomeMarkerComposable(
     }
 
     val source = rememberGeoJsonSource(
-        data = GeoJsonData.Features(
-            Point(longitude = lngValue, latitude = latValue)
-        ),
-        options = GeoJsonOptions()
+        data = remember(latValue, lngValue) {
+            GeoJsonData.Features(
+                Point(longitude = lngValue, latitude = latValue)
+            )
+        },
+        options = remember { GeoJsonOptions() }
     )
 
     if (model.shouldShowApproximateCircle) {
@@ -138,7 +140,7 @@ private fun MapHomeMarkerComposable(
             }
 
         val strokeWidth = when (model.pinType) {
-                MapPinType.MEMBER -> 8.dp
+                MapPinType.MEMBER -> 4.dp
                 MapPinType.PLACE -> 0.dp
             }
 
