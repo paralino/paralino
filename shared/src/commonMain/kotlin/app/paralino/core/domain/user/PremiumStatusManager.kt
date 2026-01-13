@@ -7,7 +7,6 @@ import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
-import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -17,6 +16,8 @@ import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -33,7 +34,7 @@ class PremiumStatusManager(
 ) {
 
     private val _hasGroupOverLimits = MutableStateFlow(false)
-    val hasGroupOverLimits = _hasGroupOverLimits
+    val hasGroupOverLimits: StateFlow<Boolean> = _hasGroupOverLimits.asStateFlow()
 
     suspend fun adjustDeviceSettingsForPlan() {
         val config = remoteConfigRepo.getConfigOnce()
@@ -57,37 +58,46 @@ class PremiumStatusManager(
         }
 
         if (currentPlanConfig?.planTypeEnum?.isPremium == false) {
-                appPrefs.setAndroidMapSDKProvider(
-                    appPrefs.getAndroidMapSDKProviderOrDefault(
-                        hasGoogleMaps = appConfigRepository.hasGoogleMaps,
-                        isPremiumPlan = false
-                    )
+            appPrefs.setAndroidMapSDKProvider(
+                appPrefs.getAndroidMapSDKProviderOrDefault(
+                    hasGoogleMaps = appConfigRepository.hasGoogleMaps,
+                    isPremiumPlan = false
                 )
+            )
         }
 
         val personalSpaceOverLimit = personalSpaceRepo.personalSpaceState.value.data?.isSpaceOverLimits() == true
 
         val now = nowUTC()
-        val personalContract = locationSharingManager.currentSharingContractForGroup(id = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId())
+        val personalContract = locationSharingManager.currentSharingContractForGroup(
+            id = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
+        )
         val newPersonalContract = personalContract?.asValidContract(
             newEndTimeUTCOverride = if (personalSpaceOverLimit) {
-                personalContract.endTimeUTCOverride ?: now.plus(5.days).toLocalDateTime(TimeZone.UTC).toString()
+                personalContract.endTimeUTCOverride ?: now.plus(5.days)
+                    .toLocalDateTime(TimeZone.UTC).toString()
             } else {
                 null
             }
         )
+
         if (newPersonalContract != null && newPersonalContract != personalContract) {
             locationSharingManager.startSharing(newPersonalContract)
         }
 
-        val groupsDataForOwner = groupLocalDataSource.allGroupsState.value.data?.filter { it.group.isCurrentUserOwner } ?: emptyList()
-        val groupLimit = userRepo.userPlans.value.groupsLimit.takeIf { config.plans.isNotEmpty() } ?: Int.MAX_VALUE
+        val groupsDataForOwner = groupLocalDataSource.allGroupsState.value.data
+            ?.filter { it.group.isCurrentUserOwner }
+            ?: emptyList()
+        val groupLimit = userRepo.userPlans.value.groupsLimit
+            .takeIf { config.plans.isNotEmpty() }
+            ?: Int.MAX_VALUE
         val groupsOverLimits = groupsDataForOwner.map {
             val isGroupOverLimit = it.isGroupOverLimits(config) || groupsDataForOwner.size > groupLimit
             val contract = locationSharingManager.currentSharingContractForGroup(id = it.group.id.asGroupOrSpaceId())
             val newContract = contract?.asValidContract(
                 newEndTimeUTCOverride = if (isGroupOverLimit) {
-                    contract.endTimeUTCOverride ?: now.plus(5.days).toLocalDateTime(TimeZone.UTC).toString()
+                    contract.endTimeUTCOverride
+                        ?: now.plus(5.days).toLocalDateTime(TimeZone.UTC).toString()
                 } else {
                     null
                 }
@@ -98,13 +108,13 @@ class PremiumStatusManager(
             isGroupOverLimit
         }.any { it }
 
-        hasGroupOverLimits.update {
+        _hasGroupOverLimits.update {
             groupsOverLimits || personalSpaceOverLimit
         }
     }
 
     fun resetLimitState() {
-        hasGroupOverLimits.update { false }
+        _hasGroupOverLimits.update { false }
     }
 
     suspend fun checkPlaceCountLimits(groupId: GroupOrSpaceId): PremiumStatusLimitState? {
@@ -223,7 +233,13 @@ data class PremiumStatusLimitPayload(
 
 sealed interface PremiumStatusLimitState {
     val payload: PremiumStatusLimitPayload
-    data class ServiceLimitReached(override val  payload: PremiumStatusLimitPayload): PremiumStatusLimitState
-    data class PlanLimitReached(override val  payload: PremiumStatusLimitPayload): PremiumStatusLimitState
-    data class WithinLimits(override val  payload: PremiumStatusLimitPayload): PremiumStatusLimitState
+
+    data class ServiceLimitReached(override val payload: PremiumStatusLimitPayload) :
+        PremiumStatusLimitState
+
+    data class PlanLimitReached(override val payload: PremiumStatusLimitPayload) :
+        PremiumStatusLimitState
+
+    data class WithinLimits(override val payload: PremiumStatusLimitPayload) :
+        PremiumStatusLimitState
 }
