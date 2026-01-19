@@ -1,4 +1,4 @@
-package app.paralino.android.ui.map
+package app.paralino.android.ui.map.google
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import app.paralino.android.ui.map.GenericMapLoadingStatePlaceholder
 import app.paralino.core.models.location.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap

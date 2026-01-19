@@ -1,4 +1,4 @@
-package app.paralino.android.ui.history
+package app.paralino.android.ui.map.google.history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.map.rememberComposeBitmapDescriptor
+import app.paralino.android.ui.map.google.rememberComposeBitmapDescriptor
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource

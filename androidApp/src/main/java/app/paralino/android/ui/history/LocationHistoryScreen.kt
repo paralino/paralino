@@ -26,6 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.main.MainAppState
+import app.paralino.android.ui.map.google.GenericGoogleMapWrapper
+import app.paralino.android.ui.map.google.history.GoogleMapLocationHistoryMapContent
+import app.paralino.android.ui.map.google.history.rememberGoogleMapLocationHistoryMapController
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.presentation.history.LocationHistoryDateSelectorState
 import app.paralino.core.presentation.history.LocationHistoryDayState
@@ -44,6 +47,7 @@ import app.paralino.core.ui.history.LocationHistoryStatsTable
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.openNavigation
+import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
@@ -88,9 +92,9 @@ private fun MapContent(
     var cardHeight by remember { mutableStateOf(0.dp) }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        LocationHistoryMapWithContent(
+        val cameraPositionState = rememberCameraPositionState()
+        val mapController = rememberGoogleMapLocationHistoryMapController(
             uiState = uiState,
-            onEvent = onEvent,
             mapContentPadding = PaddingValues(
                 top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 64.dp,
                 bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues()
@@ -99,7 +103,32 @@ private fun MapContent(
                         .calculateBottomPadding(),
                     maximumValue = this.maxHeight
                 )
-            )
+            ),
+            cameraPositionState = cameraPositionState,
+            animateFirstContent = false,
+            isSatelliteMode = uiState.isSatelliteMode,
+            onMapTouch = { onEvent(LocationHistoryUiEvent.OnMapTouch) }
+        )
+
+        GenericGoogleMapWrapper(
+            modifier = Modifier.fillMaxSize(),
+            mapData = mapController,
+            onMapLoaded = {},
+            onMapLongClick = {
+                onEvent(
+                    LocationHistoryUiEvent.OnMapLongPress(
+                        lat = it.lat,
+                        lng = it.lng
+                    )
+                )
+            },
+            onMapClick = { onEvent(LocationHistoryUiEvent.OnMapTouch) },
+            content = {
+                GoogleMapLocationHistoryMapContent(
+                    uiState = uiState,
+                    onEvent = onEvent
+                )
+            }
         )
 
         LocationHistoryScreenElements(

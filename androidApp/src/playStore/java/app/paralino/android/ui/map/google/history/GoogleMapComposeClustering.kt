@@ -1,4 +1,4 @@
-package app.paralino.android.ui.history
+package app.paralino.android.ui.map.google.history
 
 import android.content.Context
 import androidx.compose.runtime.Composable

@@ -1,4 +1,4 @@
-package app.paralino.android.ui.history
+package app.paralino.android.ui.map.google.history
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -8,7 +8,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -31,12 +30,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import app.paralino.android.ui.map.GenericGoogleMapWrapper
-import app.paralino.android.ui.map.GoogleMapUiControlledData
-import app.paralino.android.ui.map.GoogleMapMarkerComposable
-import app.paralino.android.ui.map.defaultGoogleMapProperties
-import app.paralino.android.ui.map.defaultGoogleMapUiSettings
-import app.paralino.android.ui.map.refocus
+import app.paralino.android.ui.map.google.GoogleMapMarkerComposable
+import app.paralino.android.ui.map.google.GoogleMapUiControlledData
+import app.paralino.android.ui.map.google.defaultGoogleMapProperties
+import app.paralino.android.ui.map.google.defaultGoogleMapUiSettings
+import app.paralino.android.ui.map.google.refocus
 import app.paralino.core.presentation.history.LocationHistoryDataViewType
 import app.paralino.core.presentation.history.LocationHistoryPointState
 import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
@@ -46,55 +44,18 @@ import app.paralino.core.presentation.map.MapPinData
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.JointType
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.RoundCap
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 
-@Composable
-fun LocationHistoryMapWithContent(
-    uiState: LocationHistoryScreenUiState,
-    mapContentPadding: PaddingValues,
-    onEvent: (LocationHistoryUiEvent) -> Unit
-) {
-    val cameraPositionState = rememberCameraPositionState()
-    val mapController = rememberGoogleMapLocationHistoryMapController(
-        uiState = uiState,
-        mapContentPadding = mapContentPadding,
-        cameraPositionState = cameraPositionState,
-        animateFirstContent = false,
-        isSatelliteMode = uiState.isSatelliteMode,
-        onMapTouch = { onEvent(LocationHistoryUiEvent.OnMapTouch) }
-    )
-
-    GenericGoogleMapWrapper(
-        modifier = Modifier.fillMaxSize(),
-        mapData = mapController,
-        onMapLoaded = {},
-        onMapLongClick = {
-            onEvent(
-                LocationHistoryUiEvent.OnMapLongPress(
-                    lat = it.lat,
-                    lng = it.lng
-                )
-            )
-        },
-        onMapClick = { onEvent(LocationHistoryUiEvent.OnMapTouch) },
-        content = {
-            GoogleMapLocationHistoryMapContent(
-                uiState = uiState,
-                onEvent = onEvent
-            )
-        }
-    )
-}
 
 @Composable
 fun rememberGoogleMapLocationHistoryMapController(
@@ -235,7 +196,7 @@ fun GoogleMapLocationHistoryMapContent(
 
                 if (point.shouldShowApproximateCircle) {
                     Circle(
-                        center = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
+                        center = LatLng(latAnim, lngAnim),
                         clickable = true,
                         fillColor = AppColors.accentDark.copy(alpha = 0.5f),
                         radius = accuracyAnim,
@@ -247,7 +208,7 @@ fun GoogleMapLocationHistoryMapContent(
 
                 GoogleMapMarkerComposable(
                     state = point,
-                    position = com.google.android.gms.maps.model.LatLng(latAnim, lngAnim),
+                    position = LatLng(latAnim, lngAnim),
                     canTapOnMarker = true,
                     zIndex = 20f,
                     onClick = {
@@ -265,11 +226,11 @@ fun GoogleMapLocationHistoryMapContent(
             uiState.selectedLocations.mapNotNull {
                 when (it) {
                     is LocationHistoryPointState.Cluster -> {
-                        com.google.android.gms.maps.model.LatLng(it.lat, it.lng)
+                        LatLng(it.lat, it.lng)
                     }
                     is LocationHistoryPointState.Point -> {
                         it.point.loc?.let {
-                            com.google.android.gms.maps.model.LatLng(it.lat, it.lng)
+                            LatLng(it.lat, it.lng)
                         }
                     }
                 }
@@ -314,7 +275,8 @@ fun GoogleMapLocationHistoryMapContent(
                 onClusterClick = {
                     try {
                         onEvent(LocationHistoryUiEvent.OnPointClicked(it.items.first().item))
-                    } catch (e: Exception) { }
+                    } catch (e: Exception) {
+                    }
                     false
                 },
                 onClusterItemClick = {
@@ -350,7 +312,7 @@ fun GoogleMapLocationHistoryMapContent(
                 if (pin.lat != null && pin.lng != null) {
                     HistoryMapPin(
                         state = pin,
-                        position = com.google.android.gms.maps.model.LatLng(pin.lat!!, pin.lng!!),
+                        position = LatLng(pin.lat!!, pin.lng!!),
                         isDarkMode = isSatelliteMode || isSystemInDarkTheme(),
                         zIndex = 1f,
                         onClick = {

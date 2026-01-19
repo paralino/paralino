@@ -11,7 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.PlaceCreateMapComposable
+import app.paralino.android.ui.map.google.PlaceCreateMapComposable
 import app.paralino.core.MR
 import app.paralino.core.models.data
 import app.paralino.core.presentation.places.create.CreatePlaceScreenUiEvent

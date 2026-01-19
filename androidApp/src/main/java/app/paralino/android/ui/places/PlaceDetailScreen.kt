@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.PlaceDetailMapComposable
+import app.paralino.android.ui.map.google.PlaceDetailMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel

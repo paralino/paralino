@@ -1,4 +1,4 @@
-package app.paralino.android.ui.map
+package app.paralino.android.ui.map.google
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

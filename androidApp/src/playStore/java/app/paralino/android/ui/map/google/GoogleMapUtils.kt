@@ -1,4 +1,4 @@
-package app.paralino.android.ui.map
+package app.paralino.android.ui.map.google
 
 import android.location.Location
 import androidx.compose.runtime.Composable

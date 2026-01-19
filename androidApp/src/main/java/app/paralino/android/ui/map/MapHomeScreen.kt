@@ -29,6 +29,7 @@ import app.paralino.android.ui.groups.GroupPickerAction
 import app.paralino.android.ui.groups.rememberGroupBottomSheetPickerState
 import app.paralino.android.ui.history.LocationHistoryScreenEventHandler
 import app.paralino.android.ui.main.MainAppState
+import app.paralino.android.ui.map.google.GoogleMapHomeScreenMapComposable
 import app.paralino.android.ui.map.maplibre.HomeScreenMapLibreMapComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.ui.onboarding.AccountOnboardingScreen

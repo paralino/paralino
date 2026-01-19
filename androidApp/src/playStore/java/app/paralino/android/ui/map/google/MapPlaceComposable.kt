@@ -1,4 +1,4 @@
-package app.paralino.android.ui.map
+package app.paralino.android.ui.map.google
 
 import android.view.MotionEvent
 import androidx.compose.animation.core.LinearEasing
