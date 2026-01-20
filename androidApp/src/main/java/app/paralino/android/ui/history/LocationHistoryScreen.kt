@@ -90,6 +90,7 @@ private fun MapContent(
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     var cardHeight by remember { mutableStateOf(0.dp) }
+    var isMapLoaded by remember { mutableStateOf(false) }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val cameraPositionState = rememberCameraPositionState()
@@ -106,6 +107,7 @@ private fun MapContent(
             ),
             cameraPositionState = cameraPositionState,
             animateFirstContent = false,
+            isMapLoaded = isMapLoaded,
             isSatelliteMode = uiState.isSatelliteMode,
             onMapTouch = { onEvent(LocationHistoryUiEvent.OnMapTouch) }
         )
@@ -113,7 +115,9 @@ private fun MapContent(
         GenericGoogleMapWrapper(
             modifier = Modifier.fillMaxSize(),
             mapData = mapController,
-            onMapLoaded = {},
+            onMapLoaded = {
+                isMapLoaded = true
+            },
             onMapLongClick = {
                 onEvent(
                     LocationHistoryUiEvent.OnMapLongPress(

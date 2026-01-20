@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import app.paralino.android.BuildConfig
 import app.paralino.android.ui.map.GenericMapLoadingStatePlaceholder
 import app.paralino.core.models.location.LatLng
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import org.maplibre.compose.camera.CameraState
 import org.maplibre.compose.map.MapOptions
 import org.maplibre.compose.map.MaplibreMap
@@ -43,16 +45,31 @@ fun GenericMapLibreMapWrapper(
     content: @Composable () -> Unit,
 ) {
     var mapOverlayShown by rememberSaveable { mutableStateOf(true) }
+    val mapStyle = when (mapData.mapsSDKProvider) {
+        MapsSDKProvider.MAPLIBRE_PREMIUM -> {
+            if (mapData.isSatelliteMode) {
+                BaseStyle.Uri("https://api.maptiler.com/maps/hybrid-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
+            } else if (isSystemInDarkTheme()) {
+                BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${BuildConfig.maptilerAccessToken}")
+            } else {
+                BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
+            }
+        }
+
+        else -> {
+            if (isSystemInDarkTheme()) {
+                BaseStyle.Uri("https://tiles.openfreemap.org/styles/dark")
+            } else {
+                BaseStyle.Uri("https://tiles.openfreemap.org/styles/liberty")
+            }
+        }
+    }
 
     MaplibreMap(
         modifier = modifier.fillMaxSize(),
         cameraState = mapData.cameraState,
         options = mapData.options,
-        baseStyle = if (mapData.isSatelliteMode) {
-            BaseStyle.Uri("https://api.maptiler.com/maps/hybrid-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
-        } else {
-            BaseStyle.Uri("https://tiles.openfreemap.org/styles/liberty")
-        },
+        baseStyle = mapStyle,
         onMapClick = { position, _ ->
             onMapClick(LatLng(lat = position.latitude, lng = position.longitude))
             ClickResult.Pass
@@ -97,5 +114,6 @@ class MapLibreMapUiControlledData(
     val options: MapOptions,
     val cameraState: CameraState,
     val isSatelliteMode: Boolean,
-    val contentPadding: PaddingValues
+    val contentPadding: PaddingValues,
+    val mapsSDKProvider: MapsSDKProvider?
 )

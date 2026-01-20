@@ -41,6 +41,7 @@ import app.paralino.core.presentation.history.LocationHistoryScreenFocusType
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.ui.map.HistoryMapIcon
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.isLocationInaccurate
 import com.google.android.gms.maps.model.JointType
@@ -64,6 +65,7 @@ fun rememberGoogleMapLocationHistoryMapController(
     cameraPositionState: CameraPositionState,
     isSatelliteMode: Boolean,
     animateFirstContent: Boolean,
+    isMapLoaded: Boolean,
     onMapTouch: () -> Unit
 ): GoogleMapUiControlledData {
     val stateData by rememberUpdatedState(newValue = uiState)
@@ -71,81 +73,84 @@ fun rememberGoogleMapLocationHistoryMapController(
     var canAnimateMapFocus by remember { mutableStateOf(animateFirstContent) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        delay(300)
-        canAnimateMapFocus = true
-        shouldAnimateMapFocus = true
-    }
+    if (isMapLoaded) {
+        LaunchedEffect(Unit) {
+            delay(300)
+            canAnimateMapFocus = true
+            shouldAnimateMapFocus = true
+        }
 
-    LaunchedEffect(stateData.selectedLocations, stateData.dataViewType, mapContentPadding) {
-        snapshotFlow { stateData.focusType }
-            .distinctUntilChanged()
-            .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
-            .collectLatest {
+        LaunchedEffect(stateData.selectedLocations, stateData.dataViewType, mapContentPadding) {
+            snapshotFlow { stateData.focusType }
+                .distinctUntilChanged()
+                .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
+                .collectLatest {
 //                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
 //                    delay(20)
 //                }
-                cameraPositionState.refocus(
-                    scope = scope,
-                    markers = stateData.selectedLocations.mapNotNull {
-                        when (it) {
-                            is LocationHistoryPointState.Cluster -> {
-                                MapPinData(
-                                    id = "",
-                                    groupId = stateData.groupOrSpaceId,
-                                    cluster = it,
-                                    name = null,
-                                    image = null,
-                                    timeInfo = null
-                                )
-                            }
-                            is LocationHistoryPointState.Point -> {
-                                it.point.loc?.let { location ->
+                    cameraPositionState.refocus(
+                        scope = scope,
+                        markers = stateData.selectedLocations.mapNotNull {
+                            when (it) {
+                                is LocationHistoryPointState.Cluster -> {
                                     MapPinData(
-                                        id = it.point.properID,
+                                        id = "",
                                         groupId = stateData.groupOrSpaceId,
-                                        location = location,
+                                        cluster = it,
                                         name = null,
                                         image = null,
                                         timeInfo = null
                                     )
                                 }
+
+                                is LocationHistoryPointState.Point -> {
+                                    it.point.loc?.let { location ->
+                                        MapPinData(
+                                            id = it.point.properID,
+                                            groupId = stateData.groupOrSpaceId,
+                                            location = location,
+                                            name = null,
+                                            image = null,
+                                            timeInfo = null
+                                        )
+                                    }
+                                }
                             }
-                        }
-                    },
-                    forceZoom = true,
-                    ignoreAccuracy = false,
-                    durationMs = if (canAnimateMapFocus) 600 else 0,
-                    padding = 200
-                )
-            }
-    }
-
-    LaunchedEffect(uiState.selectedMapPinData, uiState.focusType) {
-        snapshotFlow { stateData.focusType }
-            .filterNotNull()
-            .distinctUntilChanged()
-            .filter { it.isMember }
-            .collectLatest {
-                if (!canAnimateMapFocus && shouldAnimateMapFocus) {
-                    delay(20)
+                        },
+                        forceZoom = true,
+                        ignoreAccuracy = false,
+                        durationMs = if (canAnimateMapFocus) 600 else 0,
+                        padding = 200
+                    )
                 }
-                cameraPositionState.refocus(
-                    scope = scope,
-                    markers = listOfNotNull(uiState.selectedMapPinData),
-                    ignoreAccuracy = false,
-                    durationMs = if (canAnimateMapFocus) 300 else 0,
-                    forceZoom = it == LocationHistoryScreenFocusType.MEMBER_FOCUSED,
-                    padding = 60
-                )
-            }
-    }
+        }
 
-    LaunchedEffect(key1 = cameraPositionState) {
-        snapshotFlow { cameraPositionState.isMoving }
-            .distinctUntilChanged()
-            .filter { it && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE }
-            .collectLatest { onMapTouch() }
+        LaunchedEffect(uiState.selectedMapPinData, uiState.focusType) {
+            snapshotFlow { stateData.focusType }
+                .filterNotNull()
+                .distinctUntilChanged()
+                .filter { it.isMember }
+                .collectLatest {
+                    if (!canAnimateMapFocus && shouldAnimateMapFocus) {
+                        delay(20)
+                    }
+                    cameraPositionState.refocus(
+                        scope = scope,
+                        markers = listOfNotNull(uiState.selectedMapPinData),
+                        ignoreAccuracy = false,
+                        durationMs = if (canAnimateMapFocus) 300 else 0,
+                        forceZoom = it == LocationHistoryScreenFocusType.MEMBER_FOCUSED,
+                        padding = 60
+                    )
+                }
+        }
+
+        LaunchedEffect(key1 = cameraPositionState) {
+            snapshotFlow { cameraPositionState.isMoving }
+                .distinctUntilChanged()
+                .filter { it && cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE }
+                .collectLatest { onMapTouch() }
+        }
     }
 
     val uiSettings by defaultGoogleMapUiSettings()
@@ -301,7 +306,6 @@ fun GoogleMapLocationHistoryMapContent(
                 },
                 clusterItemContent = {
                     HistoryMapIcon(
-                        isDarkMode = isSatelliteMode || isSystemInDarkTheme(),
                         isAccurate = !it.item.accuracy.isLocationInaccurate(),
                         isClustered = it.item is LocationHistoryPointState.Cluster
                     )
@@ -310,10 +314,9 @@ fun GoogleMapLocationHistoryMapContent(
         } else {
             uiState.selectedLocations.forEach { pin ->
                 if (pin.lat != null && pin.lng != null) {
-                    HistoryMapPin(
+                    GoogleMapHistoryMapPin(
                         state = pin,
                         position = LatLng(pin.lat!!, pin.lng!!),
-                        isDarkMode = isSatelliteMode || isSystemInDarkTheme(),
                         zIndex = 1f,
                         onClick = {
                             onEvent(LocationHistoryUiEvent.OnPointClicked(it))

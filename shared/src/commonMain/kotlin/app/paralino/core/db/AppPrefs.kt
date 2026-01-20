@@ -524,7 +524,7 @@ class AppPrefs(
             MapsSDKProvider.MAPLIBRE_FREE
         }
 
-        return if (!isPremiumPlan && setting == MapsSDKProvider.MAPLIBRE_PREMIUM) {
+        return if (!isPremiumPlan && setting?.isPremium == true) {
             MapsSDKProvider.MAPLIBRE_FREE
         } else if (!hasGoogleMaps && setting == MapsSDKProvider.GOOGLE) {
             default

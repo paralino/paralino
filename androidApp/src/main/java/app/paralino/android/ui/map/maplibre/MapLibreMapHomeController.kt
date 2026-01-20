@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.maplibre.compose.camera.CameraMoveReason
+import org.maplibre.compose.camera.CameraState
 import org.maplibre.compose.camera.rememberCameraState
 import org.maplibre.compose.map.GestureOptions
 import org.maplibre.compose.map.MapOptions
@@ -28,6 +29,7 @@ import org.maplibre.compose.map.RenderOptions
 
 @Composable
 fun rememberMapLibreHomeMapController(
+    cameraState: CameraState = rememberCameraState(),
     uiState: MapHomeScreenState,
     mapContentPadding: PaddingValues,
     isMapLoaded: Boolean,
@@ -39,8 +41,6 @@ fun rememberMapLibreHomeMapController(
     var canAnimateMapFocus by remember { mutableStateOf(false) }
     var shouldAnimateMapFocus by rememberSaveable { mutableStateOf(false) }
     val areEffectsEnabled = remember(stateData?.mapHomeScreenFocusType) { stateData?.locationHistoryMode == null }
-
-    val cameraState = rememberCameraState()
 
     if (isMapLoaded && areEffectsEnabled) {
         LaunchedEffect(Unit) {
@@ -93,7 +93,7 @@ fun rememberMapLibreHomeMapController(
         }
     }
 
-    return remember(mapContentPadding, uiState.isSatelliteMode) {
+    return remember(mapContentPadding, uiState.isSatelliteMode, uiState.androidMapSDKProvider) {
         derivedStateOf {
             val options = MapOptions(
                 renderOptions = RenderOptions(),
@@ -111,7 +111,8 @@ fun rememberMapLibreHomeMapController(
                 options = options,
                 isSatelliteMode = uiState.isSatelliteMode,
                 cameraState = cameraState,
-                contentPadding = mapContentPadding
+                contentPadding = mapContentPadding,
+                mapsSDKProvider = uiState.androidMapSDKProvider
             )
         }
     }.value

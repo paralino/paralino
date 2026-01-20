@@ -568,6 +568,7 @@ sealed interface LocationHistoryUiEvent {
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent
     data class OnPointClicked(val point: LocationHistoryPointState) : LocationHistoryUiEvent
+    data class OnPointIdClicked(val pointId: String) : LocationHistoryUiEvent
     data class ExpandCluster(val cluster: LocationHistoryPointState.Cluster) : LocationHistoryUiEvent
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent

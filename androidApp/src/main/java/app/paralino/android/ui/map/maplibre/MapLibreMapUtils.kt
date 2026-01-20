@@ -111,6 +111,8 @@ fun CameraState.focusOnMap(
             if (markers.size == 1) 40 else 60
         }
 
+        is MapHomeScreenFocusType.LOCATION_HISTORY -> 200
+
         else -> 40
     }
 

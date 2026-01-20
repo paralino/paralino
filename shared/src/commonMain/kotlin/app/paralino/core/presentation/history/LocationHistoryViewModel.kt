@@ -252,6 +252,14 @@ class LocationHistoryViewModelController(
                 }
             }
 
+            is LocationHistoryUiEvent.OnPointIdClicked -> {
+                _uiState.value.selectedLocations.firstOrNull {
+                    it.pointId == event.pointId
+                }?.let {
+                    onEvent(LocationHistoryUiEvent.OnPointClicked(point = it))
+                }
+            }
+
             is LocationHistoryUiEvent.OnPointClicked -> {
                 _uiState.update {
                     it.copy(

@@ -153,6 +153,12 @@ enum class MapsSDKProvider constructor(val key: String) {
         MAPLIBRE_PREMIUM -> true
     }
 
+    val isPremium get() = when(this) {
+        GOOGLE -> false
+        MAPLIBRE_FREE -> false
+        MAPLIBRE_PREMIUM -> true
+    }
+
     companion object {
         fun fromKey(key: String): MapsSDKProvider? {
             return entries.firstOrNull { it.key == key }

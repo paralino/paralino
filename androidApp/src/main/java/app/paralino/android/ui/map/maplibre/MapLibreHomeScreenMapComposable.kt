@@ -7,12 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import app.paralino.android.ui.history.GoogleMapLocationHistoryMapContent
-import app.paralino.android.ui.map.GoogleMapMainHomeMapContent
+import app.paralino.android.ui.map.maplibre.history.MapLibreLocationHistoryMapContent
+import app.paralino.android.ui.map.maplibre.history.rememberMapLibreLocationHistoryMapController
 import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
+import org.maplibre.compose.camera.rememberCameraState
 
 
 @Composable
@@ -26,8 +27,11 @@ fun HomeScreenMapLibreMapComposable(
     onHistoryEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     var isMapLoaded by remember { mutableStateOf(false) }
+    val cameraState = rememberCameraState()
+
     val homeMapController = rememberMapLibreHomeMapController(
         uiState = uiState,
+        cameraState = cameraState,
         mapContentPadding = mapContentPadding,
         isMapLoaded = isMapLoaded,
         onMapTouch = {
@@ -36,17 +40,18 @@ fun HomeScreenMapLibreMapComposable(
     )
 
     val mapController = if (historyUiState != null) {
-//        rememberLocationHistoryMapController(
-//            uiState = historyUiState,
-//            mapContentPadding = mapContentPadding,
-//            cameraPositionState = cameraPositionState,
-//            animateFirstContent = true,
-//            isSatelliteMode = uiState.isSatelliteMode,
-//            onMapTouch = {
-//                onHistoryEvent(LocationHistoryUiEvent.OnMapTouch)
-//            }
-//        )
-        homeMapController
+        rememberMapLibreLocationHistoryMapController(
+            uiState = historyUiState,
+            cameraState = cameraState,
+            mapContentPadding = mapContentPadding,
+            isMapLoaded = isMapLoaded,
+            animateFirstContent = true,
+            isSatelliteMode = uiState.isSatelliteMode,
+            mapsSDKProvider = uiState.androidMapSDKProvider,
+            onMapTouch = {
+                onHistoryEvent(LocationHistoryUiEvent.OnMapTouch)
+            }
+        )
     } else {
         homeMapController
     }
@@ -69,7 +74,7 @@ fun HomeScreenMapLibreMapComposable(
         },
         content = {
             if (historyUiState != null) {
-                GoogleMapLocationHistoryMapContent(
+                MapLibreLocationHistoryMapContent(
                     uiState = historyUiState,
                     isSatelliteMode = uiState.isSatelliteMode,
                     onEvent = onHistoryEvent
