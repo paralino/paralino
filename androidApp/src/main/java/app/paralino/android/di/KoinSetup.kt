@@ -8,7 +8,6 @@ import app.paralino.android.crpyto.CryptoFrameworkLibsodium
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.domain.ExportPersonalLocationHistoryUseCase
 import app.paralino.android.domain.ImportPersonalLocationHistoryUseCase
-import app.paralino.android.fcm.PushProviderManager
 import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
@@ -20,6 +19,7 @@ import app.paralino.android.provider.DeviceApiProvider
 import app.paralino.android.provider.LocationStatusProvider
 import app.paralino.android.provider.NotificationStatusProvider
 import app.paralino.android.provider.OneTimeLocationProvider
+import app.paralino.android.provider.PushProviderManager
 import app.paralino.android.provider.ValueFormatter
 import app.paralino.android.remote.appwrite.AppWriteRemoteModule
 import app.paralino.android.remote.appwrite.DocumentsApi
