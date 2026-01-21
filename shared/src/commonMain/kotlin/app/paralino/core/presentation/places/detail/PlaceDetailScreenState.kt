@@ -2,6 +2,7 @@ package app.paralino.core.presentation.places.detail
 
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 
 data class PlaceDetailScreenState constructor(
     val groupOrSpaceId: GroupOrSpaceId,
@@ -18,7 +19,8 @@ data class PlaceDetailScreenState constructor(
     val fullLoading: Boolean,
     val isPlaceAlertsSwitchLoading: Boolean,
     val arePlaceAlertsActive: Boolean,
-    val settings: List<PlaceSettingsState>
+    val settings: List<PlaceSettingsState>,
+    val androidMapSDKProvider: MapsSDKProvider?,
 ) {
     val isPersonalSpace = groupOrSpaceId.isPersonalSpace
 }

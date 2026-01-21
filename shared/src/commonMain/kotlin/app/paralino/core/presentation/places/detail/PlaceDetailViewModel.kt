@@ -3,6 +3,7 @@ package app.paralino.core.presentation.places.detail
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.PlaceAlertsSettingsUpdateUseCase
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
@@ -48,6 +49,7 @@ class PlaceDetailViewModel(
     private val updatePlaceAlerts: PlaceAlertsSettingsUpdateUseCase,
     private val groupRepo: UserGroupLocalDataSource,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val premiumStatusManager: PremiumStatusManager,
     private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
@@ -131,7 +133,8 @@ class PlaceDetailViewModel(
                 fullLoading = false,
                 arePlaceAlertsActive = place.settings?.alertData?.isActive != false,
                 isPlaceAlertsSwitchLoading = false,
-                settings = settings
+                settings = settings,
+                androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
             )
         }
     }
@@ -185,7 +188,8 @@ class PlaceDetailViewModel(
                 fullLoading = false,
                 arePlaceAlertsActive = place.settings?.alertData?.isActive != false,
                 isPlaceAlertsSwitchLoading = false,
-                settings = settings
+                settings = settings,
+                androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
             )
         }
     }

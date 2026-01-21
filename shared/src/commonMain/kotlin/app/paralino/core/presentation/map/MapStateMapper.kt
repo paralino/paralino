@@ -2,6 +2,7 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
@@ -47,7 +48,8 @@ class MapStateMapper(
     private val appConfigRepo: AppConfigRepository,
     private val memberActionHandler: MemberActionHandler,
     private val locationRequestDuration: Duration,
-    private val locationRequestDelay: Duration
+    private val locationRequestDelay: Duration,
+    private val premiumStatusManager: PremiumStatusManager
 ) {
 
     suspend fun buildReadyState(
@@ -157,7 +159,7 @@ class MapStateMapper(
             is GroupWithMembersOrUserSpace.Group -> selectedGroupContract
             is GroupWithMembersOrUserSpace.PersonalSpace -> personalSharingContract
         }
-        val mapProvider = defaultMapProvider()
+        val mapProvider = premiumStatusManager.defaultMapProvider()
 
         return MapHomeScreenState.Ready(
             groupOrSpaceId = groupOrSpace.id,
@@ -189,13 +191,6 @@ class MapStateMapper(
             isSatelliteMode = isSatelliteMode.takeIf { mapProvider.hasSatelliteMaps } ?: false,
             groupPlanConfig = planConfig,
             androidMapSDKProvider = mapProvider
-        )
-    }
-
-    fun defaultMapProvider(): MapsSDKProvider {
-        return appPrefs.getAndroidMapSDKProviderOrDefault(
-            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
-            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
         )
     }
 

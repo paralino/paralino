@@ -7,6 +7,7 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LatLng
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -36,6 +37,7 @@ data class CreatePlaceScreenState constructor(
     val isSatelliteMode: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean,
+    val androidMapSDKProvider: MapsSDKProvider?,
     val alertDialog: MainAlertDialog?
 ) {
     val hintText: AnnotatedString = when (addressUiMode) {
@@ -89,6 +91,7 @@ data class CreatePlaceScreenState constructor(
             lng: Double? = null,
             radiusMeters: Int,
             radiusText: String,
+            androidMapSDKProvider: MapsSDKProvider?,
             fallbackCenterLatLng: PlaceMapFallbackLatLng?,
             nameSuggestions: List<SuggestionSectionChipData>
         ): CreatePlaceScreenState {
@@ -117,6 +120,7 @@ data class CreatePlaceScreenState constructor(
                 actionLoading = false,
                 fullLoading = false,
                 alertDialog = null,
+                androidMapSDKProvider = androidMapSDKProvider,
                 isSatelliteMode = false
             )
         }

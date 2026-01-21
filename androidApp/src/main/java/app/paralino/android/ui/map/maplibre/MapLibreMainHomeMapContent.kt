@@ -97,7 +97,7 @@ private fun MapHomeMarkerComposable(
         MapLibreMapCircle(
             markerId = model.markerId,
             lat = latValue,
-            lngValue,
+            lng = lngValue,
             accuracy = acc.value,
             pinType = model.pinType,
             isFocused = model.focused,

@@ -7,6 +7,7 @@ import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -219,6 +220,13 @@ class PremiumStatusManager(
         } else {
             return PremiumStatusLimitState.WithinLimits(payload)
         }
+    }
+
+    fun defaultMapProvider(): MapsSDKProvider {
+        return appPrefs.getAndroidMapSDKProviderOrDefault(
+            hasGoogleMaps = appConfigRepository.hasGoogleMaps,
+            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+        )
     }
 }
 

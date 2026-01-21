@@ -11,6 +11,7 @@ import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCa
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
@@ -85,7 +86,8 @@ class MapHomeViewModel constructor(
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
     private val appConfigRepo: AppConfigRepository,
-    private val appRatingManager: AppRatingManager
+    private val appRatingManager: AppRatingManager,
+    private val premiumStatusManager: PremiumStatusManager
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -96,7 +98,7 @@ class MapHomeViewModel constructor(
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
             currentUserImage = userRepository.localUser.value.data?.data?.userImage
                 ?: ImageModel.emoji(Emojis.robot),
-            androidMapSDKProvider = null
+            androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
         )
     )
     val uiState: StateFlow<MapHomeScreenState> = _uiState
@@ -170,7 +172,8 @@ class MapHomeViewModel constructor(
         userRepo = userRepository,
         memberActionHandler = memberActionHandler,
         locationRequestDuration = locationRequestDuration,
-        locationRequestDelay = locationRequestDelay
+        locationRequestDelay = locationRequestDelay,
+        premiumStatusManager = premiumStatusManager
     )
     private val groupsEmptyStateManager = GroupsInitEmptyStateManager(
         userRepo = userRepository,
@@ -369,7 +372,7 @@ class MapHomeViewModel constructor(
                         },
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                     ) { groupsEmptyState, userData ->
-                        val mapProvider = mapStateMapper.defaultMapProvider()
+                        val mapProvider = premiumStatusManager.defaultMapProvider()
                         MapHomeScreenState.Empty(
                             groupsEmptyState = groupsEmptyState,
                             selectedGroupId = null,
@@ -401,7 +404,7 @@ class MapHomeViewModel constructor(
         ) { _, space, places, sharingContracts, userData ->
 
             if (space == null || userData == null) {
-                val mapProvider = mapStateMapper.defaultMapProvider()
+                val mapProvider = premiumStatusManager.defaultMapProvider()
                 return@combine MapHomeScreenState.Empty(
                     groupsEmptyState = null,
                     selectedGroupId = appPrefs.selectedGroupId,
@@ -438,7 +441,7 @@ class MapHomeViewModel constructor(
         ) { _, group, places, sharingContracts, userData ->
 
             if (group == null || userData == null) {
-                val mapProvider = mapStateMapper.defaultMapProvider()
+                val mapProvider = premiumStatusManager.defaultMapProvider()
                 return@combine MapHomeScreenState.Empty(
                     groupsEmptyState = null,
                     selectedGroupId = null,

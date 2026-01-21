@@ -16,9 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.google.PlaceDetailMapComposable
+import app.paralino.android.ui.map.MapPlaceComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.places.detail.PlaceDetailScreenState
 import app.paralino.core.presentation.places.detail.PlaceDetailViewModel
 import app.paralino.core.presentation.places.detail.PlaceSettingsState
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
@@ -106,6 +108,32 @@ fun PlaceDetailScreen(
         )
     }
 }
+
+@Composable
+private fun PlaceDetailMapComposable(
+    modifier: Modifier = Modifier,
+    state: PlaceDetailScreenState,
+    onMapInteraction: (Boolean) -> Unit,
+) {
+    val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
+        if (state.lat != null && state.lng != null)
+            MapPinData(state)
+        else null
+    }
+    MapPlaceComposable(
+        modifier = modifier,
+        mapsSDKProvider = state.androidMapSDKProvider,
+        markers = listOfNotNull(pin),
+        fallbackCenterLatLng = null,
+        isSatelliteMode = false,
+        canTapOnCircles = true,
+        onMapCameraSettled = {},
+        onMapInteraction = onMapInteraction,
+        onMapTap = { lat, lng -> },
+        onMapLongPress = { lat, lng -> }
+    )
+}
+
 
 @Preview("place_detail_user_item")
 @Composable

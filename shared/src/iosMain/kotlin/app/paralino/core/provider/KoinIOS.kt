@@ -215,7 +215,7 @@ object KoinIOS {
         return module {
             factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
             factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
@@ -270,7 +270,8 @@ object KoinIOS {
                     groupRepo = get(),
                     personalSpaceRepo = get(),
                     cryptoCore = get(),
-                    appPrefs = get()
+                    appPrefs = get(),
+                    premiumStatusManager = get()
                 )
             }
             factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->

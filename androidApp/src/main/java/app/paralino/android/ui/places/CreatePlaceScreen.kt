@@ -9,11 +9,15 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.google.PlaceCreateMapComposable
+import app.paralino.android.ui.map.MapPlaceComposable
 import app.paralino.core.MR
 import app.paralino.core.models.data
+import app.paralino.core.models.location.LatLng
+import app.paralino.core.presentation.map.MapPinData
+import app.paralino.core.presentation.places.create.CreatePlaceScreenState
 import app.paralino.core.presentation.places.create.CreatePlaceScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceViewModel
 import app.paralino.core.ui.components.DefaultToolbar
@@ -81,5 +85,33 @@ fun CreatePlaceScreen(
             vm.onEvent(CreatePlaceScreenUiEvent.OnImageChanged(it))
             appState.uiScope.launch { pickerState.hide() }
         }
+    )
+}
+
+@Composable
+private fun PlaceCreateMapComposable(
+    modifier: Modifier = Modifier,
+    state: CreatePlaceScreenState,
+    onMapInteraction: (Boolean) -> Unit,
+    onMapCameraSettled: (LatLng) -> Unit,
+    onMapTap: (lat: Double, lng: Double) -> Unit,
+    onMapLongPress: (lat: Double, lng: Double) -> Unit,
+) {
+    val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
+        if (state.lat != null && state.lng != null)
+            MapPinData(state)
+        else null
+    }
+    MapPlaceComposable(
+        modifier = modifier,
+        mapsSDKProvider = state.androidMapSDKProvider,
+        markers = listOfNotNull(pin),
+        fallbackCenterLatLng = state.fallbackCenterLatLng,
+        isSatelliteMode = state.isSatelliteMode,
+        canTapOnCircles = false,
+        onMapCameraSettled = onMapCameraSettled,
+        onMapInteraction = onMapInteraction,
+        onMapTap = onMapTap,
+        onMapLongPress = onMapLongPress
     )
 }

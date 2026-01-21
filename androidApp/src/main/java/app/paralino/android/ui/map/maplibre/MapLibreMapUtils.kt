@@ -30,7 +30,7 @@ fun boundsForMarkers(markers: List<MapPinData>, ignoreAccuracy: Boolean): LatLng
         .apply {
             markers.forEach {
                 val distanceFromCenterToCorner = (if (ignoreAccuracy) 1f else it.accuracy) * Math.sqrt(2.0)
-                val center = LatLng(it.lat, it.lng)
+                val center = LatLng(latitude = it.lat, longitude = it.lng)
                 val southwestCorner =
                     MapLibreMapUtils.computeOffset(center, distanceFromCenterToCorner, 225.0)
                 val northeastCorner =
@@ -47,7 +47,7 @@ fun CameraState.refocus(
     markers: List<MapPinData>,
     forceZoom: Boolean = true,
     ignoreAccuracy: Boolean = false,
-    padding: PaddingValues,
+    padding: PaddingValues = PaddingValues(60.dp),
     durationMs: Int = 500
 ) {
     scope.launch {

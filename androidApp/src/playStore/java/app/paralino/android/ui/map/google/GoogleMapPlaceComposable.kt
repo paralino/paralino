@@ -39,60 +39,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 
-@Composable
-fun PlaceCreateMapComposable(
-    modifier: Modifier = Modifier,
-    state: CreatePlaceScreenState,
-    onMapInteraction: (Boolean) -> Unit,
-    onMapCameraSettled: (LatLng) -> Unit,
-    onMapTap: (lat: Double, lng: Double) -> Unit,
-    onMapLongPress: (lat: Double, lng: Double) -> Unit,
-) {
-    val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
-        if (state.lat != null && state.lng != null)
-            MapPinData(state)
-        else null
-    }
-    SimplePlaceMapComposable(
-        modifier = modifier,
-        markers = listOfNotNull(pin),
-        fallbackCenterLatLng = state.fallbackCenterLatLng,
-        isSatelliteMode = state.isSatelliteMode,
-        canTapOnCircles = false,
-        onMapCameraSettled = onMapCameraSettled,
-        onMapInteraction = onMapInteraction,
-        onMapTap = onMapTap,
-        onMapLongPress = onMapLongPress
-    )
-}
-
-@Composable
-fun PlaceDetailMapComposable(
-    modifier: Modifier = Modifier,
-    state: PlaceDetailScreenState,
-    onMapInteraction: (Boolean) -> Unit,
-) {
-    val pin = remember(state.lat, state.lng, state.radiusMeters, state.image) {
-        if (state.lat != null && state.lng != null)
-            MapPinData(state)
-        else null
-    }
-    SimplePlaceMapComposable(
-        modifier = modifier,
-        markers = listOfNotNull(pin),
-        fallbackCenterLatLng = null,
-        isSatelliteMode = false,
-        canTapOnCircles = true,
-        onMapCameraSettled = {},
-        onMapInteraction = onMapInteraction,
-        onMapTap = { lat, lng -> },
-        onMapLongPress = { lat, lng -> }
-    )
-}
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SimplePlaceMapComposable(
+fun GoogleMapBasePlaceMapComposable(
     modifier: Modifier = Modifier,
     markers: List<MapPinData>,
     fallbackCenterLatLng: PlaceMapFallbackLatLng?,
