@@ -78,18 +78,6 @@ class GeofenceManager(
     }
 
     override fun distanceBetweenPoints(
-        data: LocationDataModel,
-        geofence: GroupPlaceGeofenceData
-    ): Float {
-        return distanceBetweenPoints(
-            lat1 = data.lat,
-            lng1 = data.lng,
-            lat2 = geofence.lat,
-            lng2 = geofence.lng
-        )
-    }
-
-    override fun distanceBetweenPoints(
         lat1: Double,
         lng1: Double,
         lat2: Double,

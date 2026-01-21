@@ -266,7 +266,7 @@ dependencies {
     // endregion
 
     // region utils
-    implementation(libs.play.services.location)
+    playStoreImplementation(libs.play.services.location)
     playStoreImplementation(libs.firebase.messaging.ktx)
     playStoreImplementation(libs.play.review)
 

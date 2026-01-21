@@ -141,11 +141,6 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-
-        <receiver
-            android:name=".tracking.geofence.GeofenceBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true" />
     </application>
 
 </manifest>

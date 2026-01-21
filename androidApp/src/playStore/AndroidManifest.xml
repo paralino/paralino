@@ -27,6 +27,11 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".tracking.geofence.GeofenceBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
     </application>
 
 </manifest>
