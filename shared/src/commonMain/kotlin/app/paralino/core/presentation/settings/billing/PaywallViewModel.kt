@@ -343,7 +343,7 @@ class PaywallViewModel(
         val availableProducts = billingConfig
             ?.plans
             ?.filter { it.planConfig.isActive }
-            ?.sortedBy { it.periods.minBy { it.price }.price }
+            ?.sortedBy { it.periods.minByOrNull { it.price }?.price }
             ?: emptyList()
 
         val isFreePlanSelected = isPlanSelected(
