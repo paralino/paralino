@@ -12,7 +12,6 @@ import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.groups.GroupSettingsScreen
 import app.paralino.android.ui.history.LocationHistoryDeleteScreen
-import app.paralino.android.ui.history.LocationHistoryScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
 import app.paralino.android.ui.login.LoggedOutScreen
@@ -187,18 +186,6 @@ fun NavGraphBuilder.homeGraph(
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.FreePlanNoticeScreen.argumentGroupId)
             FreePlanInfoScreen(appState)
-        }
-        composable(AppScreen.MainHome.LocationHistory.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentGroupId)!!
-            val memberUserId = it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentMemberUserId)!!
-            val deviceId = it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentDeviceId)
-            LocationHistoryScreen(
-                appState = appState,
-                groupId = groupId,
-                memberUserId = memberUserId,
-                deviceId = deviceId
-            )
         }
         composable(AppScreen.MainHome.LocationHistoryDelete.routeSignature) {
             val groupId =

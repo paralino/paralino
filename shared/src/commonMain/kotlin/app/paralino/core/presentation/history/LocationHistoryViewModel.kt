@@ -5,7 +5,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
-import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent.OpenNavigation
 import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
@@ -34,53 +33,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-class LocationHistoryViewModel(
-    groupId: String,
-    memberUserId: String,
-    deviceId: String?,
-    private val getLocationHistory: GetLocationHistoryUseCase,
-    private val refreshLocationHistory: RefreshLocationHistoryUseCase,
-    private val deleteLocationHistory: DeleteLocationHistoryEntryUseCase,
-    private val userRepo: UserRepository,
-    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
-    private val userGroupRepo: UserGroupLocalDataSource,
-    private val valueFormatter: IValueFormatter,
-    private val appPrefs: AppPrefs,
-    private val remoteConfig: RemoteConfigRepository,
-    private val geofenceManager: IGeofenceManager
-) : CoreViewModel() {
-
-    val controller = LocationHistoryViewModelController(
-        groupId = groupId,
-        memberUserId = memberUserId,
-        deviceId = deviceId,
-        getLocationHistory = getLocationHistory,
-        refreshLocationHistory = refreshLocationHistory,
-        deleteLocationHistory = deleteLocationHistory,
-        userRepo = userRepo,
-        personalSpaceRepo = personalSpaceRepo,
-        userGroupRepo = userGroupRepo,
-        valueFormatter = valueFormatter,
-        appPrefs = appPrefs,
-         remoteConfig = remoteConfig,
-        geofenceManager = geofenceManager,
-        coroutineScope = coroutineScope,
-        messageDispatcher = messageDispatcher
-    )
-
-    val uiState = controller.uiState
-    val events = controller.events
-
-    fun onEvent(event: LocationHistoryUiEvent) {
-        controller.onEvent(event)
-    }
-
-    override fun onCleared() {
-        controller.onCleared()
-        super.onCleared()
-    }
-}
 
 class LocationHistoryViewModelController(
     groupId: String,

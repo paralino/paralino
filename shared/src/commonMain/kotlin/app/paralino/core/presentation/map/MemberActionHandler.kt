@@ -8,9 +8,6 @@ import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.groups.GroupItemState
 import app.paralino.core.presentation.groups.GroupMemberItemState
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionType
 import app.paralino.core.provider.localizedString
@@ -57,20 +54,6 @@ class MemberActionHandler(
 
             MemberActionType.DELETE_LOCATION -> {
                 clearMyLocation(state, updateReadyState, uiState)
-            }
-
-            MemberActionType.LOCATION_HISTORY -> {
-                eventChannel.trySend(
-                    MapHomeScreenEvent.OpenLocationHistory(
-                        groupId = state.memberState.groupId,
-                        memberUserId = state.memberState.userId,
-                        deviceId = when (state) {
-                            is GroupMemberItemStateWithLocations -> null
-                            is GroupMemberItemStateWithFullStateLocations -> null
-                            is GroupMemberItemStateWithOneLocation -> state.deviceId
-                        }
-                    )
-                )
             }
         }
     }

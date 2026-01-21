@@ -126,16 +126,6 @@ internal fun MapHomeScreenEventHandler(
                     context.openNavigation(event)
                 }
 
-                is MapHomeScreenEvent.OpenLocationHistory -> {
-                    appState.navController.navigate(
-                        AppScreen.MainHome.LocationHistory.route(
-                            groupId = event.groupId,
-                            memberUserId = event.memberUserId,
-                            deviceId = event.deviceId
-                        )
-                    )
-                }
-
                 is MapHomeScreenEvent.ShowPlanLimitAlert -> {
                     // This would need to be handled by showing an alert dialog
                     // For now, we'll just navigate to paywall

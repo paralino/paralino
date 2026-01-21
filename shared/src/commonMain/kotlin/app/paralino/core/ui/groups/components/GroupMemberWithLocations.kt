@@ -1156,7 +1156,6 @@ val MemberActionType.actionIcon: Painter
         MemberActionType.DELETE_LOCATION -> CoreAppIcons.Delete.asPainterResource()
         MemberActionType.BLOCK_USER -> CoreAppIcons.Block.asPainterResource()
         MemberActionType.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
-        MemberActionType.LOCATION_HISTORY -> CoreAppIcons.TimelinePathWithPins.asPainterResource()
     }
 
 val MemberActionType.actionText: StringResource
@@ -1165,5 +1164,4 @@ val MemberActionType.actionText: StringResource
         MemberActionType.DELETE_LOCATION -> MR.strings.group_members_item_clear_location_button
         MemberActionType.BLOCK_USER -> MR.strings.group_details_block_group_alert_button
         MemberActionType.UNBLOCK_USER -> MR.strings.blocklist_unblock_alert_button
-        MemberActionType.LOCATION_HISTORY -> MR.strings.group_members_item_history_button
     }

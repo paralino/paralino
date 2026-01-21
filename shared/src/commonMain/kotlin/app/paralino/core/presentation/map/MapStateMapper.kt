@@ -18,6 +18,7 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
+import app.paralino.core.presentation.groups.LocationHistoryActionItemState
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
@@ -238,9 +239,8 @@ class MapStateMapper(
                     GroupMemberItemStateWithOneLocation(
                         memberState = memberState,
                         actions = MemberActionsState(
-                            history = MemberActionItemState(
-                                type = MemberActionType.LOCATION_HISTORY,
-                                isLoading = false,
+                            history = LocationHistoryActionItemState(
+                                isLoading = false
                             )
                         ),
                         singleLocation = null,
@@ -417,9 +417,8 @@ class MapStateMapper(
             )
         }
 
-        val history = MemberActionItemState(
-            type = MemberActionType.LOCATION_HISTORY,
-            isLoading = false,
+        val history = LocationHistoryActionItemState(
+            isLoading = false
         )
 
         val locationRequest = location?.let { location ->

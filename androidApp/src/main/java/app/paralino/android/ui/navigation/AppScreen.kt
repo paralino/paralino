@@ -89,8 +89,6 @@ sealed class AppScreen {
             }
         }
 
-        object LocationHistory : Common.LocationHistory("home")
-
         object SharingStart : AppScreen() {
             val argumentOnboarding: String = "onboarding"
             override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentOnboarding={$argumentOnboarding}"

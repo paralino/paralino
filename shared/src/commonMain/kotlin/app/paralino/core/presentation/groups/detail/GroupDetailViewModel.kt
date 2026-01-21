@@ -367,7 +367,6 @@ class GroupDetailViewModel(
                             }
 
                             MemberActionType.DELETE_LOCATION -> {}
-                            MemberActionType.LOCATION_HISTORY -> {}
                         }
                     }
 
