@@ -105,6 +105,8 @@ import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
+import app.paralino.core.provider.NotificationSocketServiceManager
+import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.AppConfigRepository
@@ -259,6 +261,7 @@ val coreModule = module {
     single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RealtimeSubscriptionManager(get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -281,9 +284,10 @@ val coreModule = module {
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
     factory { PersonalBatterySettingsUpdateUseCase(get(), get(), get()) }
+    single { NotificationSocketServiceManager(get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }

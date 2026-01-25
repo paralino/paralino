@@ -75,6 +75,7 @@ import app.paralino.core.presentation.settings.convertaccount.ConvertAccountView
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.DefaultNavigationAppViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
@@ -212,7 +213,7 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get()) }
+            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
             factory {
                 MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
@@ -312,6 +313,7 @@ object KoinIOS {
             factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceSettingsViewModel(get()) }
             factory { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
+            factory { AppSettingsViewModel(get(), get()) }
         }
     }
 
@@ -394,5 +396,6 @@ object KoinIOS {
         val personalSpaceVM get() = get<PersonalSpaceViewModel>()
         val personalSpaceSettingsVM get() = get<PersonalSpaceSettingsViewModel>()
         fun placeSensitivityVM(groupId: String, placeId: String) = get<PlaceSensitivityViewModel>() { parametersOf(groupId, placeId) }
+        val appSettingsVM get() = get<AppSettingsViewModel>()
     }
 }

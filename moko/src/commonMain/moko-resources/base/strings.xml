@@ -56,16 +56,21 @@
     <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
     <string name="error_crypto_encryption_generic">Unable to encrypt data, please try again.</string>
     <string name="error_crypto_decryption_generic">Unable to decrypt data, please try again.</string>
+    <string name="error_notification_service_error_message">Notification service can\'t start.\nPlease open the app to restart notification service!</string>
     <string name="notifications_sharing_active_title">Sharing active</string>
     <string name="notifications_tracking_active_message">Personal location tracking is active</string>
     <string name="notifications_sharing_error_title">Sharing on hold!</string>
     <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
+    <string name="notifications_socketService_status_active">Push service 🟢</string>
+    <string name="notifications_socketService_status_error">Push service 🔴</string>
+    <string name="notifications_socketService_message_errors">Push notification service is on hold:\n%s</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
     <string name="notifications_channel_place_alert">Place alerts</string>
     <string name="notifications_channel_group_activity">Group activity</string>
     <string name="notifications_channel_push_sync">Notification sync</string>
     <string name="notifications_channel_data_sync">Data sync</string>
     <string name="notifications_channel_info_message">System information</string>
+    <string name="notifications_channel_socket_service">Push notification service</string>
     <string name="location_banner_fix">Fix</string>
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create a new group</string>
@@ -860,4 +865,11 @@
     <string name="history_stats_battery_range">Battery Range</string>
     <string name="history_stats_elevation_gain">Elevation Gain</string>
     <string name="history_stats_elevation_range">Elevation Range</string>
+    <string name="setting_notificationSocket_title">Push Notification Service</string>
+    <string name="setting_notificationSocket_info">This service is used to listen for push notifications in the background. It helps ensure you receive notifications even when the app is not active.\nWhen enabled, persistent notification will be active in order to keep the service running.</string>
+    <string name="setting_notificationSocket_switch_title">Push Notification Service</string>
+    <string name="setting_notificationSocket_switch_info_on">Paralino will keep constant real-time connection to the server and listen for push notifications.</string>
+    <string name="setting_notificationSocket_switch_info_off">You will not be able to locate your device on demand and will not receive push notifications on time.</string>
+    <string name="setting_notificationSocket_channelSettings_title">System settings</string>
+    <string name="setting_notificationSocket_notificationPermission_error">Please enable system notifications permission before starting push notification service!</string>
 </resources>

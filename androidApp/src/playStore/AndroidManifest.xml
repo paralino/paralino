@@ -21,7 +21,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/light_theme_highest" />
 
-        <service android:name="app.paralino.android.fcm.ParalinoFcmService" android:exported="true">
+        <service android:name=".notification.ParalinoFcmService" android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

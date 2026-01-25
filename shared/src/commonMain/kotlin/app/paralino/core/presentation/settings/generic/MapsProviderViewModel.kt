@@ -78,8 +78,6 @@ class MapsProviderViewModel(
 
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
-            is GenericSettingsScreenUiEvent.DialogAction -> {}
-            is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> {}
             is GenericSettingsScreenUiEvent.SelectOptionItem -> {
                 if (!event.option.isPremiumFeatureEnabled) {
                     _uiState.update {
@@ -116,6 +114,8 @@ class MapsProviderViewModel(
                     )
                 }
             }
+
+            else -> {}
         }
     }
 

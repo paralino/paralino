@@ -62,7 +62,7 @@ class CoreAppManager(
                     if (state.current == AppLifecycleType.ACTIVE) {
                         updateLocationStatus()
                         updateConnectionStatus()
-                        deviceApiProvider.notificationStatusProvider.refreshNotificationsStatus()
+                        updateNotificationsStatus()
 
                         updateConfig()
                     }
@@ -110,6 +110,10 @@ class CoreAppManager(
 
     fun updateLocationStatus() {
         deviceApiProvider.locationStatusProvider.refreshLocationStatus()
+    }
+
+    fun updateNotificationsStatus() {
+        deviceApiProvider.notificationStatusProvider.refreshNotificationsStatus()
     }
 
     fun updateConnectionStatus() {

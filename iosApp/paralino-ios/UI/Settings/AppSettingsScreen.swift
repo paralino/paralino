@@ -11,11 +11,14 @@ import shared
 struct AppSettingsScreen: View {
     @Binding var path: [NavigationGraph]
     
+    @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.appSettingsVM)
+    
     var body: some View {
         ZStack {
             Color.themebackground.ignoresSafeArea(.all, edges: .vertical)
             ComposeRepresentable {
                 ScreensIOS.shared.settings.AppSettingsScreenVC(
+                    vm: appState.vm,
                     openMeasurementSystemScreen: {
                         path.append(.settings(.measurementSystemSettings))
                     },

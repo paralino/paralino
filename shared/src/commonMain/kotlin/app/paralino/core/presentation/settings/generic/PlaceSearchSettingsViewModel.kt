@@ -46,7 +46,6 @@ class PlaceSearchSettingsViewModel(
 
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
-            is GenericSettingsScreenUiEvent.DialogAction -> {}
             is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> {
                 when (event.switch.keyId) {
                     "switchMapLocation" -> {
@@ -55,7 +54,7 @@ class PlaceSearchSettingsViewModel(
                 }
             }
 
-            is GenericSettingsScreenUiEvent.SelectOptionItem -> {}
+            else -> {}
         }
     }
 

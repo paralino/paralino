@@ -9,8 +9,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import app.paralino.android.notification.NotificationSocketServiceNotificationHandler
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.android.utils.extensions.openNotificationChannelSettings
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
@@ -24,6 +28,19 @@ fun GenericSettingsScreen(
     vm: BaseGenericSettingViewModel,
 ) {
     val screenTitle by vm.screenTitle.collectAsState(initial = null)
+    val context = LocalContext.current
+    val notificationPermissionHandler = when(val deviceApi = vm.deviceApiProvider) {
+        null -> null
+
+        else -> {
+            rememberNotificationsPermissionHandler(
+                appState = appState,
+                messageDispatcher = vm.messageDispatcher,
+                notificationStatusProvider = deviceApi.notificationStatusProvider
+            )
+        }
+    }
+
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),
         topBar = {
@@ -39,6 +56,12 @@ fun GenericSettingsScreen(
             paddingValues = remember { PaddingValues() },
             openPaywall = {
                 appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.UPGRADE))
+            },
+            openNotificationSocketChannelSettings = {
+                context.openNotificationChannelSettings(NotificationSocketServiceNotificationHandler.channelId)
+            },
+            askNotificationPermission = {
+                notificationPermissionHandler?.askNotificationPermission()
             }
         )
     }

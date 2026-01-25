@@ -26,6 +26,7 @@ import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.history.LocationHistoryViewModelController
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
@@ -75,7 +76,7 @@ class MapHomeViewModel constructor(
     private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
     private val clearUserLocation: ClearUserLocationUseCase,
-    private val realtimeEvents: RealtimeEventsMaker,
+    private val realtimeManager: RealtimeSubscriptionManager,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
@@ -155,7 +156,7 @@ class MapHomeViewModel constructor(
     )
     private val locationFocusManager = LocationFocusManager(
         locationRequestUseCase = locationRequestUseCase,
-        realtimeEvents = realtimeEvents,
+        realtimeManager = realtimeManager,
         sharingManager = sharingManager,
         deviceApiProvider = deviceApiProvider,
         coroutineScope = coroutineScope,

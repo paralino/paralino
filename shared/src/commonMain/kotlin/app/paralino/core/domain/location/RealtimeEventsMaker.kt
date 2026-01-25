@@ -15,36 +15,48 @@ class RealtimeEventsMaker constructor(
     private val realtimeApi: IRealtimeApi,
     private val realtimeEventsProcessor: RealtimeEventsProcessor
 ) {
-    fun listenForEventsWhileActive(): Flow<Unit> {
-        logg.tag("realtime_events").v("Start realtime subscription for map")
+    val eventSetNotificationOnly = Pair(
+        listOf(realtimeEventsProcessor.pushNotificationsChannel),
+        listOf("${realtimeEventsProcessor.pushNotificationsChannel}.*.create")
+    )
+
+    val eventSetUiOnly = Pair(
+        listOf(
+            realtimeEventsProcessor.membersChannel,
+            realtimeEventsProcessor.groupsLocationsChannel,
+            realtimeEventsProcessor.personalLocationsChannel,
+            realtimeEventsProcessor.personalDevicesChannel,
+            realtimeEventsProcessor.placesChannel,
+            realtimeEventsProcessor.locationFocusChannel,
+        ),
+        listOf(
+            "${realtimeEventsProcessor.membersChannel}.*",
+            "${realtimeEventsProcessor.groupsLocationsChannel}.*",
+            "${realtimeEventsProcessor.personalLocationsChannel}.*",
+            "${realtimeEventsProcessor.personalDevicesChannel}.*",
+            "${realtimeEventsProcessor.placesChannel}.*.create",
+            "${realtimeEventsProcessor.placesChannel}.*.update",
+            "${realtimeEventsProcessor.locationFocusChannel}.*.create",
+            "${realtimeEventsProcessor.locationFocusChannel}.*.update",
+        )
+    )
+
+    val eventSetEverything = Pair(
+        eventSetUiOnly.first + eventSetNotificationOnly.first,
+        eventSetUiOnly.second + eventSetNotificationOnly.second,
+    )
+
+    fun listenForEventsWhileActive(eventSet: Pair<List<String>, List<String>>): Flow<Unit> {
+        logg.tag("realtime_events").v("Start realtime subscription")
         return realtimeApi.subscribeWithFilter(
-            channels = listOf(
-                realtimeEventsProcessor.membersChannel,
-                realtimeEventsProcessor.groupsLocationsChannel,
-                realtimeEventsProcessor.personalLocationsChannel,
-                realtimeEventsProcessor.personalDevicesChannel,
-                realtimeEventsProcessor.placesChannel,
-                realtimeEventsProcessor.locationFocusChannel,
-                realtimeEventsProcessor.pushNotificationsChannel,
-            ),
-            filters = listOf(
-                "${realtimeEventsProcessor.membersChannel}.*",
-                "${realtimeEventsProcessor.groupsLocationsChannel}.*",
-                "${realtimeEventsProcessor.personalLocationsChannel}.*",
-                "${realtimeEventsProcessor.personalDevicesChannel}.*",
-                "${realtimeEventsProcessor.placesChannel}.*.create",
-                "${realtimeEventsProcessor.placesChannel}.*.update",
-                "${realtimeEventsProcessor.locationFocusChannel}.*.create",
-                "${realtimeEventsProcessor.locationFocusChannel}.*.update",
-                "${realtimeEventsProcessor.pushNotificationsChannel}.*.create",
-            )
+            channels = eventSet.first,
+            filters = eventSet.second
         )
             .onEach {
                 realtimeEventsProcessor.processEvent(it)
             }
             .catch {
-                logg.tag("realtime_events")
-                    .e("Error parsing member or location on map", it)
+                logg.tag("realtime_events").e("Error parsing realtime event data", it)
             }
             .distinctUntilChanged()
             .map { }

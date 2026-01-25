@@ -16,6 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.di.KoinSetup
+import app.paralino.android.notification.NotificationSocketServiceLauncher
 import app.paralino.android.tracking.LocationService
 import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.core.CoreAppManager
@@ -61,6 +62,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     private val locationSharingManager: LocationSharingManager by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
     private val locationServiceLauncher: LocationServiceLauncher by inject()
+    private val notificationSocketServiceLauncher: NotificationSocketServiceLauncher by inject()
     private val appPrefs: AppPrefs by inject()
 
     val appState get() = ProcessLifecycleOwner.get().lifecycle.currentState
@@ -84,7 +86,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
 
         androidPreCheck.start()
         coreAppManager.onAppStart()
-        initLocationService()
+        initBackgroundServices()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(
@@ -118,7 +120,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
         }
     }
 
-    private fun initLocationService() {
+    private fun initBackgroundServices() {
         combine(
             locationSharingManager.sharingStatus,
             deviceApiProvider.appLifecycleState
@@ -128,10 +130,14 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
             .debounce(500)
             .onEach {
                 if (it.second.current == AppLifecycleType.ACTIVE) {
-                    locationServiceLauncher.startLocationService(action = LocationService.INTENT_ACTION_LOCATION_SERVICE_START)
+                    locationServiceLauncher.startLocationService(
+                        action = LocationService.INTENT_ACTION_LOCATION_SERVICE_START
+                    )
                 }
             }
             .launchIn(defaultScope)
+
+        notificationSocketServiceLauncher.startMonitoring(defaultScope)
     }
 
     override fun onStart(owner: LifecycleOwner) {

@@ -176,6 +176,28 @@ fun GenericSettingsListScreen(
                         }
                     }
                 }
+
+                is GenericSettingListItem.SettingsActionItem -> {
+                    if (item.isVisible) {
+                        this.item(key = item.keyId) {
+                            SettingsActionItem(
+                                modifier = Modifier
+                                    .zIndex(index.toFloat())
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .padding(horizontal = 8.dp),
+                                name = item.text,
+                                icon = item.icon.asPainterResource(),
+                                description = item.description,
+                                tag = item.tag,
+                                type = item.type,
+                                onClick = {
+                                    onEvent(GenericSettingsScreenUiEvent.SelectActionItem(item = item))
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }

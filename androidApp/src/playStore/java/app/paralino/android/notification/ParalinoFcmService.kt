@@ -1,4 +1,4 @@
-package app.paralino.android.fcm
+package app.paralino.android.notification
 
 import app.paralino.core.logg
 import app.paralino.core.repo.user.IPushProviderManager

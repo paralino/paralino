@@ -1,5 +1,7 @@
 package app.paralino.android.utils.extensions
 
+import android.app.NotificationManager
+import android.app.Service
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -11,6 +13,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.BatteryManager
 import android.os.PowerManager
+import android.provider.Settings
 import androidx.core.content.ContextCompat
 import app.paralino.core.MR
 import app.paralino.core.models.base.BackendResourceIDs
@@ -68,4 +71,32 @@ fun Context.contactSupport() {
     val chooserIntent = Intent.createChooser(intent, MR.strings.setting_title_contactSupport.getString(this))
     chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     startActivity(chooserIntent)
+}
+
+fun Context.openNotificationChannelSettings(channel: String) {
+    try {
+        val notificationManager = this.getSystemService(Service.NOTIFICATION_SERVICE) as? NotificationManager
+
+        if (notificationManager?.getNotificationChannel(channel) == null) {
+            val intent = Intent().apply {
+                action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                putExtra(Settings.EXTRA_APP_PACKAGE, this@openNotificationChannelSettings.packageName)
+            }
+            this@openNotificationChannelSettings.startActivity(intent)
+            return
+        }
+
+        val intent = Intent().apply {
+            action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
+            putExtra(Settings.EXTRA_APP_PACKAGE, this@openNotificationChannelSettings.packageName)
+            putExtra(Settings.EXTRA_CHANNEL_ID, channel)
+        }
+        this@openNotificationChannelSettings.startActivity(intent)
+    } catch (e: Exception) {
+        val intent = Intent().apply {
+            action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            data = Uri.fromParts("package", this@openNotificationChannelSettings.packageName, null)
+        }
+        this@openNotificationChannelSettings.startActivity(intent)
+    }
 }

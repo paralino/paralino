@@ -150,6 +150,7 @@ android {
             versionCode = 74
             versionName = "2.1.3"
             buildConfigField("boolean", "hasGoogleMaps", "true")
+            buildConfigField("boolean", "hasNotificationSocketService", "false")
         }
         create("direct") {
             dimension = "version"
@@ -158,6 +159,7 @@ android {
             versionNameSuffix = "-int"
             applicationIdSuffix = ".int"
             buildConfigField("boolean", "hasGoogleMaps", "false")
+            buildConfigField("boolean", "hasNotificationSocketService", "true")
         }
     }
 

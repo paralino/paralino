@@ -70,8 +70,6 @@ class MeasurementSystemViewModel(
 
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
-            is GenericSettingsScreenUiEvent.DialogAction -> {}
-            is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> {}
             is GenericSettingsScreenUiEvent.SelectOptionItem -> {
                 appPrefs.measurementSystem = event.option.key as? MeasurementSystemType?
                 _uiState.update { state ->
@@ -98,6 +96,8 @@ class MeasurementSystemViewModel(
                     )
                 }
             }
+
+            else -> {}
         }
     }
 }

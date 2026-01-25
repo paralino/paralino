@@ -21,4 +21,5 @@ class AppConfigRepository(
     val appHost: AppHost get() = appBuildConfig.appHost
     val resourceIds: BackendResourceIDs get() = appBuildConfig.resourceIds
     val hasGoogleMaps: Boolean get() = appBuildConfig.hasGoogleMaps
+    val hasNotificationSocketService: Boolean get() = appBuildConfig.hasNotificationSocketService
 }

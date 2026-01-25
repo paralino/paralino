@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.settings.generic
 
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +12,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-abstract class BaseGenericSettingViewModel(val initialScreenTitle: String) : CoreViewModel() {
+abstract class BaseGenericSettingViewModel(
+    val initialScreenTitle: String,
+    val deviceApiProvider: IDeviceApiProvider? = null
+) : CoreViewModel() {
 
     protected val _uiState = MutableStateFlow<GenericSettingsScreenState>(
         GenericSettingsScreenState(
@@ -47,6 +51,8 @@ abstract class BaseGenericSettingViewModel(val initialScreenTitle: String) : Cor
 
             is GenericSettingsScreenUiEvent.SelectOptionItem -> handleUiEvent(event)
             is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> handleUiEvent(event)
+            is GenericSettingsScreenUiEvent.SelectActionItem -> handleUiEvent(event)
+            is GenericSettingsScreenUiEvent.EmptyStateActionClick -> handleUiEvent(event)
         }
     }
 

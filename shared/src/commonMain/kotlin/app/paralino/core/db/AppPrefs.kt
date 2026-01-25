@@ -109,7 +109,10 @@ class AppPrefs(
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
         const val keyPlaceSearchLocation = "prefs.device.pleaseSearchLocation"
         const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
+        const val keyNotificationSocketServiceEnabled = "prefs.device.notificationSocketServiceEnabled"
     }
+
+
 
     val isTokenValid: Boolean
         get() = sessionId.isNotBlank()
@@ -536,6 +539,16 @@ class AppPrefs(
     fun setAndroidMapSDKProvider(maps: MapsSDKProvider) {
         provider.userSettings.putString(keyMapSDKProviderLocation, maps.key)
     }
+
+    var notificationSocketServiceEnabled: Boolean?
+        get() = provider.userSettings.getBooleanOrNull(keyNotificationSocketServiceEnabled)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyNotificationSocketServiceEnabled)
+            } else {
+                provider.userSettings.putBoolean(keyNotificationSocketServiceEnabled, value)
+            }
+        }
 
 
 

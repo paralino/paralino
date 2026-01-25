@@ -1,8 +1,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
 
     <application>
+        <service
+            android:name=".notification.NotificationSocketService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" >
+            <intent-filter>
+                <action android:name="app.paralino.android.NOTIFICATION_SOCKET_SERVICE_START" />
+            </intent-filter>
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Service with direct WebSocket connection to Paralino servers used to observe for incoming push notifications."
+                />
+        </service>
+
         <receiver
             android:name=".app_update.InstallRequestReceiver"
             android:exported="true" />

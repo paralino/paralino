@@ -322,6 +322,10 @@ sealed class AppScreen {
             override val routeSignature: String = "settings-place-search"
         }
 
+        object NotificationSocket : AppScreen() {
+            override val routeSignature: String = "settings-notification-socket"
+        }
+
         object NotificationGrouping : AppScreen() {
             override val routeSignature: String = "settings-notification-grouping"
         }

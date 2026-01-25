@@ -48,8 +48,6 @@ class NotificationsGroupingViewModel(
 
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
-            is GenericSettingsScreenUiEvent.DialogAction -> {}
-            is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> {}
             is GenericSettingsScreenUiEvent.SelectOptionItem -> {
                 (event.option.key as? NotificationGroupingType?)?.let {
                     appPrefs.notificationGrouping = it
@@ -78,6 +76,8 @@ class NotificationsGroupingViewModel(
                     )
                 }
             }
+
+            else -> {}
         }
     }
 }

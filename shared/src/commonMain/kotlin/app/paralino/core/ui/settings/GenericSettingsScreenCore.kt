@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
-import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
@@ -28,7 +30,9 @@ fun GenericSettingsScreenCore(
     coreUiState: CoreUiState,
     vm: BaseGenericSettingViewModel,
     paddingValues: PaddingValues,
-    openPaywall: () -> Unit
+    openPaywall: () -> Unit,
+    openNotificationSocketChannelSettings: () -> Unit,
+    askNotificationPermission: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
@@ -37,6 +41,8 @@ fun GenericSettingsScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 GenericSettingsScreenEvent.OpenPaywall -> openPaywall()
+                GenericSettingsScreenEvent.OpenNotificationSocketChannelSettings -> openNotificationSocketChannelSettings()
+                GenericSettingsScreenEvent.AskForNotificationPermission -> askNotificationPermission()
                 null -> {
                     /* do nothing */
                 }
@@ -61,15 +67,27 @@ fun GenericSettingsScreenCore(
         is GenericSettingsScreenStateContent.Loading -> {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(),
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CircularProgressIndicator()
             }
         }
+
         is GenericSettingsScreenStateContent.EditScreen -> {}
+
+        is GenericSettingsScreenStateContent.EmptyState -> {
+            DefaultEmptyState(
+                modifier = Modifier,
+                icon = finalState.icon.asPainterResource(),
+                content = finalState.content,
+                buttonText = finalState.buttonText,
+                buttonState = AppButtonState.loadingStateWithCheck(finalState.buttonLoading),
+                onClick = { vm.onEvent(GenericSettingsScreenUiEvent.EmptyStateActionClick) }
+            )
+        }
+
         is GenericSettingsScreenStateContent.ListItems -> {
             GenericSettingsListScreen(
                 coreUiState = coreUiState,

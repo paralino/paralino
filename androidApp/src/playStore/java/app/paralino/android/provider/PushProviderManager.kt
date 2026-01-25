@@ -1,7 +1,7 @@
 package app.paralino.android.provider
 
 import app.paralino.android.AppClass
-import app.paralino.android.fcm.PushTokenSyncWorker
+import app.paralino.android.notification.PushTokenSyncWorker
 import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
 import app.paralino.core.repo.user.IPushProviderManager

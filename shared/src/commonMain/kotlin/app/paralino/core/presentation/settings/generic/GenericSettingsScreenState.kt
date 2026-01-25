@@ -3,6 +3,7 @@ package app.paralino.core.presentation.settings.generic
 import androidx.compose.ui.unit.Dp
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.settings.SettingsActionItemType
 import org.jetbrains.compose.resources.DrawableResource
 
 data class GenericSettingsScreenState(
@@ -20,6 +21,13 @@ sealed interface GenericSettingsScreenStateContent {
         val content: String = "",
         val hasContentError: Boolean = false,
         val actionLoading: Boolean? = false
+    ): GenericSettingsScreenStateContent
+
+    data class EmptyState(
+        val icon: DrawableResource,
+        val content: String,
+        val buttonText: String?,
+        val buttonLoading: Boolean? = false
     ): GenericSettingsScreenStateContent
 
     data class ListItems(
@@ -73,6 +81,16 @@ sealed interface GenericSettingListItem {
             ?: items.firstOrNull { it.id == defaultId }
             ?: items.first()
     }
+
+    data class SettingsActionItem(
+        val text: String,
+        val icon: DrawableResource,
+        val type: SettingsActionItemType,
+        val isVisible: Boolean,
+        val tag: String?,
+        val description: String?,
+        override val keyId: String = text
+    ): GenericSettingListItem
 }
 
 data class GroupOptionItem(
@@ -90,10 +108,14 @@ data class GroupOptionItem(
 
 sealed interface GenericSettingsScreenEvent {
     data object OpenPaywall : GenericSettingsScreenEvent
+    data object OpenNotificationSocketChannelSettings : GenericSettingsScreenEvent
+    data object AskForNotificationPermission : GenericSettingsScreenEvent
 }
 
 sealed interface GenericSettingsScreenUiEvent {
     data class ToggleSwitch<KEY>(val switch: GenericSettingListItem.Switch<KEY>) : GenericSettingsScreenUiEvent
     data class SelectOptionItem(val groupOptions: GenericSettingListItem.GroupOptions, val option: GroupOptionItem) : GenericSettingsScreenUiEvent
+    data class SelectActionItem(val item: GenericSettingListItem.SettingsActionItem) : GenericSettingsScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : GenericSettingsScreenUiEvent
+    data object EmptyStateActionClick : GenericSettingsScreenUiEvent
 }

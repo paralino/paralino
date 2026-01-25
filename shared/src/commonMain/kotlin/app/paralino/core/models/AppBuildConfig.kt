@@ -16,6 +16,7 @@ data class AppBuildConfig constructor(
     val logToConsole: Boolean,
     val logErrorsToRemote: Boolean,
     val hasGoogleMaps: Boolean,
+    val hasNotificationSocketService: Boolean,
     val maptilerApiKey: String,
 ) {
     val endpoint = "$serverUrl/v1"

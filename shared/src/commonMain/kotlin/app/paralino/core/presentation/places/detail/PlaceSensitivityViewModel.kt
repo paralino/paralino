@@ -219,7 +219,6 @@ class PlaceSensitivityViewModel(
 
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
-            is GenericSettingsScreenUiEvent.DialogAction -> {}
             is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> {
                 if (isLoading()) {
                     return
@@ -255,6 +254,8 @@ class PlaceSensitivityViewModel(
                     }
                 }
             }
+
+            else -> {}
         }
     }
 
@@ -529,9 +530,6 @@ class PlaceSensitivityViewModel(
 
     private fun getCurrentSettings(): GroupPlaceSensitivityData? {
         when (val state = _uiState.value.content) {
-            is GenericSettingsScreenStateContent.EditScreen,
-            is GenericSettingsScreenStateContent.Loading -> return null
-
             is GenericSettingsScreenStateContent.ListItems -> {
                 return GroupPlaceSensitivityData(
                     delay = state.items.filterIsInstance<GenericSettingListItem.GroupOptions>()
@@ -556,19 +554,22 @@ class PlaceSensitivityViewModel(
                         }?.isChecked ?: true
                 )
             }
+
+            else -> return null
         }
     }
 
     private fun isLoading(): Boolean {
         return when (val state = _uiState.value.content) {
-            is GenericSettingsScreenStateContent.EditScreen,
-            is GenericSettingsScreenStateContent.Loading -> return true
-
             is GenericSettingsScreenStateContent.ListItems -> {
                 state.items.filterIsInstance<GenericSettingListItem.Switch<*>>().any {
                     it.isLoading
                 }
             }
+
+            is GenericSettingsScreenStateContent.EditScreen,
+            is GenericSettingsScreenStateContent.EmptyState,
+            is GenericSettingsScreenStateContent.Loading -> return true
         }
     }
 }

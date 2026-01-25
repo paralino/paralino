@@ -295,6 +295,13 @@ fun MainAppScreen(
                 onDeeplinkComplete()
             }
 
+            is DeeplinkType.PushNotificationServiceScreen -> {
+                appState.navController.navigate(
+                    AppScreen.Settings.NotificationSocket.routeSignature
+                )
+                onDeeplinkComplete()
+            }
+
             else -> {}
         }
     }

@@ -50,8 +50,6 @@ class DefaultNavigationAppViewModel(
 
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
-            is GenericSettingsScreenUiEvent.DialogAction -> {}
-            is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> {}
             is GenericSettingsScreenUiEvent.SelectOptionItem -> {
                 (event.option.key as? IOSNavigationAppType?)?.let {
                     appPrefs.iosNavigationApp = it
@@ -80,6 +78,8 @@ class DefaultNavigationAppViewModel(
                     )
                 }
             }
+
+            else -> {}
         }
     }
 }

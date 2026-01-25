@@ -18,6 +18,7 @@ import app.paralino.core.presentation.onboarding.AccountOnboardingScreenEvent.Op
 import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationPermissionResultEvent
+import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -54,6 +55,7 @@ class AccountOnboardingViewModel(
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val locationSharingManager: LocationSharingManager,
     private val registerDevice: RegisterDeviceForSharingUseCase,
+    private val notificationServiceManager: NotificationSocketServiceManager,
     val deviceApiProvider: IDeviceApiProvider,
     private val appPrefs: AppPrefs,
 ) : CoreViewModel() {
@@ -458,6 +460,10 @@ class AccountOnboardingViewModel(
 
     override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {
         if (event is NotificationPermissionResultEvent && uiState.value.data?.onboardingStep is AccountOnboardingContent.PushNotifications) {
+            if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
+                notificationServiceManager.setServiceEnabledState(enabledStatus = true)
+            }
+
             onEvent(AccountOnboardingScreenUiEvent.OnboardingStep(AccountOnboardingUiEvent.SkipOnboarding))
             return true
         }

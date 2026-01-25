@@ -11,6 +11,8 @@ import app.paralino.android.domain.ImportPersonalLocationHistoryUseCase
 import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
+import app.paralino.android.notification.NotificationSocketServiceLauncher
+import app.paralino.android.notification.NotificationSocketServiceNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.provider.ConnectionStatusProvider
@@ -80,6 +82,7 @@ import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
@@ -92,6 +95,7 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
+import app.paralino.core.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
@@ -168,8 +172,10 @@ object KoinSetup {
     private val appSpecificModule = module {
         single { PreCheckControl() }
         single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
+        single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
+        factory { NotificationSocketServiceNotificationHandler(androidContext()) }
 
         single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
         single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class
@@ -193,6 +199,7 @@ object KoinSetup {
                 logToConsole = BuildConfig.forceLogToSystem,
                 logErrorsToRemote = true,
                 hasGoogleMaps = BuildConfig.hasGoogleMaps,
+                hasNotificationSocketService = BuildConfig.hasNotificationSocketService,
                 maptilerApiKey = BuildConfig.maptilerAccessToken
             )
         }
@@ -205,7 +212,7 @@ object KoinSetup {
             )
         }
 
-        viewModel { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (startScreenType: LoginScreenUiType) -> LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get()) }
@@ -254,10 +261,12 @@ object KoinSetup {
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { PlaceSearchSettingsViewModel(get(), get()) }
+        viewModel { NotificationSocketSettingsViewModel(get(), get()) }
         viewModel { MapsProviderViewModel(get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceSettingsViewModel(get()) }
         viewModel { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
+        viewModel { AppSettingsViewModel(get(), get()) }
     }
 }

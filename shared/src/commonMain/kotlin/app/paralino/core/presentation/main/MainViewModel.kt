@@ -149,6 +149,10 @@ class MainViewModel constructor(
                 _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
             }
 
+            is DeeplinkType.PushNotificationServiceScreen -> {
+                _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+            }
+
             null -> {
                 _uiState.update { it.copy(pendingDeeplinkType = null) }
             }
