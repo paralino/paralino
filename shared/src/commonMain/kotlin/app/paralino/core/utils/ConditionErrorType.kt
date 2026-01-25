@@ -11,4 +11,5 @@ sealed interface ConditionErrorType {
     object Network: ConditionErrorType
     data class EmailVerification(val email: String): ConditionErrorType
     object GuestAccount: ConditionErrorType
+    object NewAppUpdate: ConditionErrorType
 }

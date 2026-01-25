@@ -80,6 +80,7 @@ fun AccountScreenCore(
     openChangeEmail: () -> Unit,
     openChangePassword: () -> Unit,
     openBlockList: () -> Unit,
+    askNotificationPermission: () -> Unit,
     onShare: (String) -> Unit,
 ) {
 
@@ -106,7 +107,7 @@ fun AccountScreenCore(
                     image = state.data.userState.image ?: ImageModel.emoji(Emojis.robot),
                     personalCode = state.data.userState.personalCode,
                     isGuestUser = state.data.userState.isGuestUser,
-                    errorItem = state.data.userState.errorItem,
+                    errors = state.data.errors,
                     userPlan = state.data.userPlan,
                     onGuestAccountClick = {
                         if (state.data.canUseEmail) {
@@ -117,6 +118,14 @@ fun AccountScreenCore(
                         when (it) {
                             is ConditionErrorType.EmailVerification -> {
                                 viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
+                            }
+
+                            is ConditionErrorType.PermissionNotifications -> {
+                                askNotificationPermission()
+                            }
+
+                            is ConditionErrorType.NewAppUpdate -> {
+                                viewModel.onEvent(AccountScreenUiEvent.TriggerAppUpdate)
                             }
 
                             else -> {}
@@ -226,7 +235,7 @@ fun AccountInfoHeader(
     image: ImageModel,
     personalCode: String?,
     isGuestUser: Boolean,
-    errorItem: ConditionErrorType?,
+    errors: List<ConditionErrorType>,
     userPlan: PlanConfig,
     onErrorItemClick: (ConditionErrorType) -> Unit,
     onGuestAccountClick: () -> Unit,
@@ -352,12 +361,13 @@ fun AccountInfoHeader(
             }
         }
 
-        if (errorItem != null) {
+        if (errors.isNotEmpty()) {
             Spacer(modifier = Modifier.size(20.dp))
-            ConditionErrorItem(
-                data = errorItem
-            ) {
-                onErrorItemClick(errorItem)
+            errors.forEach { error ->
+                ConditionErrorItem(
+                    data = error,
+                    onClick = { onErrorItemClick(error) }
+                )
             }
         }
     }

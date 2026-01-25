@@ -67,7 +67,8 @@ fun ConditionErrorItem(
             .clickable(enabled = onClick != null) { onClick?.invoke() }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .padding(start = 12.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -144,6 +145,7 @@ val ConditionErrorType.icon: Painter
         ConditionErrorType.Network -> CoreAppIcons.WifiOff
         is ConditionErrorType.EmailVerification -> CoreAppIcons.Email
         ConditionErrorType.GuestAccount -> CoreAppIcons.Incognito
+        ConditionErrorType.NewAppUpdate -> CoreAppIcons.Refresh
     }.asPainterResource()
 
 val ConditionErrorType.nameRes: StringResource
@@ -156,6 +158,7 @@ val ConditionErrorType.nameRes: StringResource
         ConditionErrorType.Network -> MR.strings.location_banner_error_offline
         is ConditionErrorType.EmailVerification -> MR.strings.info_email_confirm
         ConditionErrorType.GuestAccount -> MR.strings.settings_account_guest_badge
+        ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_title
     }
 
 val ConditionErrorType.endActionTextRes: StringResource?
@@ -167,4 +170,5 @@ val ConditionErrorType.endActionTextRes: StringResource?
         ConditionErrorType.Network -> null
         is ConditionErrorType.EmailVerification -> MR.strings.button_verify
         ConditionErrorType.GuestAccount -> MR.strings.location_banner_fix
+        ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_button_update
     }

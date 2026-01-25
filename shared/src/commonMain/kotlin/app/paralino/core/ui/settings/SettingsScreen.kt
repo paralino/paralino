@@ -80,6 +80,7 @@ fun SettingsScreenCore(
     openPaywall: () -> Unit,
     openLocationSettings: () -> Unit,
     openAppSettings: () -> Unit,
+    askNotificationPermission: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -124,7 +125,7 @@ fun SettingsScreenCore(
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
                 userPlan = readyState.userPlan,
-                errorItem = readyState.userState.errorItem,
+                errors = readyState.errors,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
                         openConvertAccount()
@@ -134,6 +135,14 @@ fun SettingsScreenCore(
                     when (it) {
                         is ConditionErrorType.EmailVerification -> {
                             viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
+                        }
+
+                        is ConditionErrorType.PermissionNotifications -> {
+                            askNotificationPermission()
+                        }
+
+                        is ConditionErrorType.NewAppUpdate -> {
+                            viewModel.onEvent(AccountScreenUiEvent.TriggerAppUpdate)
                         }
 
                         else -> {}
