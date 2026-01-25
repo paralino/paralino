@@ -186,8 +186,13 @@ fun RootApp(
                 }
 
                 when (uiState.updateType) {
-                    null, is AppUpdateType.NONE -> null
-                    is AppUpdateType.SOFT -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
+                    null,
+                    is AppUpdateType.NONE,
+                    is AppUpdateType.PASSIVE -> null
+
+                    is AppUpdateType.SOFT,
+                    is AppUpdateType.SOFT_CONSTANT, -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
+
                     is AppUpdateType.FORCE,
                     is AppUpdateType.FORCE_AND_CANCEL -> MainAlertDialog.AppVersionInfo(forceUpdate = true)
                 }?.Show {

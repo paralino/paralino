@@ -73,7 +73,7 @@ class CoreAppManager(
                 }
                     .launchIn(scopeProvider.defaultIOScope)
 
-                appUpdateTypeJob = configRepo.getUpdateType()
+                appUpdateTypeJob = configRepo.listenForNewAppVersionEvents()
                     .onEach { updateType ->
                         if (updateType is AppUpdateType.FORCE_AND_CANCEL) {
                             try {

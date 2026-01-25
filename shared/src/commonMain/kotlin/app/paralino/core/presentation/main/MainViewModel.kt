@@ -68,7 +68,7 @@ class MainViewModel constructor(
             }
             .launchIn(coroutineScope)
 
-        remoteConfigRepository.getUpdateType()
+        remoteConfigRepository.listenForNewAppVersionEvents()
             .onEach { updateType -> _uiState.update { it.copy(updateType = updateType) } }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
@@ -167,6 +167,8 @@ class MainViewModel constructor(
         when (uiState.value.updateType) {
             is AppUpdateType.FORCE,
             is AppUpdateType.FORCE_AND_CANCEL,
+            is AppUpdateType.PASSIVE,
+            is AppUpdateType.SOFT_CONSTANT,
             is AppUpdateType.SOFT -> {
                 uiState.value.updateType?.configData?.let {
                     appUpdateManager.startUpdateProcess(it)
