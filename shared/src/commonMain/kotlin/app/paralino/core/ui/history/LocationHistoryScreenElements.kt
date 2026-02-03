@@ -310,7 +310,7 @@ fun LocationHistoryMapCardUi(
                     .padding(end = 8.dp)
                     .size(32.dp)
                     .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
-                    .shadow(elevation = animateDpAsState(if (uiState.isFilterOpened) 4.dp else 0.dp).value, RoundedCornerShape(8.dp))
+                    .shadow(elevation = animateDpAsState(if (uiState.isFilterOpened) 8.dp else 4.dp).value, RoundedCornerShape(8.dp))
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colors.background),
                 contentAlignment = Alignment.Center

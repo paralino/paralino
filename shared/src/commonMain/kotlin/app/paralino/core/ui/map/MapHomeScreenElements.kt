@@ -265,6 +265,7 @@ fun BoxScope.MapHomeElementMainCards(
                 ) {
                     PlaceListItem(
                         modifier = Modifier.padding(top = 38.dp),
+                        shadow = 12.dp,
                         state = placeState,
                         hasEndArrow = true,
                         onClick = { onEvent(MapHomeScreenUiEvent.OnPlaceClick(placeState)) }
@@ -305,10 +306,12 @@ fun BoxScope.MapHomeElementMainCards(
                     )
                 ) {
                     GroupMember(
-                        modifier = Modifier.padding(top = 38.dp),
+                        modifier = Modifier
+                            .padding(top = 38.dp),
                         state = memberState,
                         backgroundColor = MaterialTheme.colors.background,
                         shape = RoundedCornerShape(16.dp),
+                        shadow = 12.dp,
                         collapseOnActionClick = false,
                         forceExpandAction = true,
                         canShowOldLocation = true,
@@ -364,7 +367,7 @@ private fun MapHomeElementSharingRow(
                         shape = RoundedCornerShape(100),
                         shadow = Shadow(
                             radius = 16.dp,
-                            color = Color.Black.copy(alpha = 0.2f),
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                         )
                     ),
                 startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
@@ -385,7 +388,7 @@ private fun MapHomeElementSharingRow(
                         shape = RoundedCornerShape(100),
                         shadow = Shadow(
                             radius = 16.dp,
-                            color = Color.Black.copy(alpha = 0.2f),
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                         )
                     ),
                 startIcon = if (readyState.isPersonalSpace) {
