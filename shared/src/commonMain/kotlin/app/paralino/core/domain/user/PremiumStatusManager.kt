@@ -31,7 +31,7 @@ class PremiumStatusManager(
     private val groupLocalDataSource: UserGroupLocalDataSource,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val appPrefs: AppPrefs,
-    private val appConfigRepository: AppConfigRepository
+    private val appConfigRepo: AppConfigRepository
 ) {
 
     private val _hasGroupOverLimits = MutableStateFlow(false)
@@ -61,8 +61,9 @@ class PremiumStatusManager(
         if (currentPlanConfig?.planTypeEnum?.isPremium == false) {
             appPrefs.setAndroidMapSDKProvider(
                 appPrefs.getAndroidMapSDKProviderOrDefault(
-                    hasGoogleMaps = appConfigRepository.hasGoogleMaps,
-                    isPremiumPlan = false
+                    hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+                    isPremiumPlan = false,
+                    mapTilerToken = null
                 )
             )
         }
@@ -224,8 +225,9 @@ class PremiumStatusManager(
 
     fun defaultMapProvider(): MapsSDKProvider {
         return appPrefs.getAndroidMapSDKProviderOrDefault(
-            hasGoogleMaps = appConfigRepository.hasGoogleMaps,
-            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium
+            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+            isPremiumPlan = userRepo.userPlans.value.highestValidPlanConfig.planTypeEnum.isPremium,
+            mapTilerToken = appPrefs.mapTilerToken
         )
     }
 }

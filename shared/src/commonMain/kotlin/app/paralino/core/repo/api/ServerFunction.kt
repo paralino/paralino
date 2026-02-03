@@ -60,6 +60,7 @@ enum class ServerFunction constructor(
 
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
+    USER_CONFIG(method = "GET", path = "/user/config"),
 
     EVENT_PLACES(method = "POST", path = "/events/places", functionId = "ping"),
     EVENT_BATTERY_GROUP(method = "POST", path = "/events/battery/group", functionId = "ping"),

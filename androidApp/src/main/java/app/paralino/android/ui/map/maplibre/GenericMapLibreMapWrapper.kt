@@ -21,7 +21,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import app.paralino.android.BuildConfig
 import app.paralino.android.ui.map.GenericMapLoadingStatePlaceholder
 import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.settings.generic.MapsSDKProvider
@@ -48,7 +47,7 @@ fun GenericMapLibreMapWrapper(
     val mapStyle = when (mapData.mapsSDKProvider) {
         is MapsSDKProvider.MAPLIBRE_PREMIUM -> {
             if (mapData.isSatelliteMode) {
-                BaseStyle.Uri("https://api.maptiler.com/maps/hybrid-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
+                BaseStyle.Uri("https://api.maptiler.com/maps/hybrid-v4/style.json?key=${mapData.mapsSDKProvider.mapTilerToken}")
             } else if (isSystemInDarkTheme()) {
                 when (mapData.mapsSDKProvider.darkStyle) {
                     MapsSDKProvider.MapStyle.OPEN_FREE_MAP -> {
@@ -56,7 +55,7 @@ fun GenericMapLibreMapWrapper(
                     }
 
                     MapsSDKProvider.MapStyle.MAPTILER -> {
-                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${BuildConfig.maptilerAccessToken}")
+                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${mapData.mapsSDKProvider.mapTilerToken}")
                     }
                 }
             } else {
@@ -66,7 +65,7 @@ fun GenericMapLibreMapWrapper(
                     }
 
                     MapsSDKProvider.MapStyle.MAPTILER -> {
-                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
+                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4/style.json?key=${mapData.mapsSDKProvider.mapTilerToken}")
                     }
                 }
             }

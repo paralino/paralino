@@ -128,6 +128,31 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_13_14 = object : Migration(13, 14) {
+        override fun migrate(connection: SQLiteConnection) {
+            // 1. Create temporary table
+            connection.execSQL("""
+                CREATE TABLE IF NOT EXISTS `userConfigEntity_new` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `type` TEXT NOT NULL,
+                    `data` TEXT
+                )
+            """.trimIndent())
+
+            // 2. Copy data, setting id to the previous type
+            connection.execSQL("""
+                INSERT INTO `userConfigEntity_new` (id, type, data)
+                SELECT id, type, data FROM `userConfigEntity`
+            """.trimIndent())
+
+            // 3. Drop old table
+            connection.execSQL("DROP TABLE `userConfigEntity`")
+
+            // 4. Rename new table
+            connection.execSQL("ALTER TABLE `userConfigEntity_new` RENAME TO `userConfigEntity`")
+        }
+    }
+
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -141,6 +166,7 @@ object MainDatabaseMigrations {
         MIGRATION_9_10,
         MIGRATION_10_11,
         MIGRATION_11_12,
-        MIGRATION_12_13
+        MIGRATION_12_13,
+        MIGRATION_13_14
     )
 }

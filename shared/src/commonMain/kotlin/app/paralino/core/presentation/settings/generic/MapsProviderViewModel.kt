@@ -6,17 +6,20 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class MapsProviderViewModel(
     private val appPrefs: AppPrefs,
     private val premiumStatusManager: PremiumStatusManager,
     private val userRepository: UserRepository,
-    private val appConfigRepository: AppConfigRepository
-): BaseGenericSettingViewModel(
+    private val appConfigRepo: AppConfigRepository,
+    private val userConfigRepo: UserConfigRepository,
+) : BaseGenericSettingViewModel(
     initialScreenTitle = MR.strings.setting_mapsProvider_title.localizedString()
 ) {
 
@@ -24,24 +27,32 @@ class MapsProviderViewModel(
         _uiState.update { createInitialState() }
         coroutineScope.launch {
             try {
+                userConfigRepo.refreshMaybeAndGetConfig(cacheTime = 5.minutes)
+            } catch (e: Exception) {
+            }
+
+            try {
                 premiumStatusManager.adjustDeviceSettingsForPlan()
             } catch (e: Exception) {
             }
+
+            _uiState.update { createInitialState() }
         }
     }
 
     override fun createInitialState(): GenericSettingsScreenState {
         val currentOption = appPrefs.getAndroidMapSDKProviderOrDefault(
-            hasGoogleMaps = appConfigRepository.hasGoogleMaps,
-            isPremiumPlan = canUserHavePremiumMaps()
+            hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+            isPremiumPlan = canUserHavePremiumMaps(),
+            mapTilerToken = appPrefs.mapTilerToken
         )
         val options = buildList {
-            if (appConfigRepository.hasGoogleMaps) {
+            if (appConfigRepo.hasGoogleMaps) {
                 add(MapsSDKProvider.GOOGLE)
             }
 
             add(MapsSDKProvider.MAPLIBRE_FREE)
-            add(MapsSDKProvider.MAPLIBRE_PREMIUM())
+            add(MapsSDKProvider.MAPLIBRE_PREMIUM(mapTilerToken = ""))
         }
 
         return GenericSettingsScreenState(
@@ -143,11 +154,14 @@ class MapsProviderViewModel(
                 }
 
                 val currentState = _uiState.value
-                val currentItems = (currentState.content as? GenericSettingsScreenStateContent.ListItems)?.items ?: return
-                
+                val currentItems =
+                    (currentState.content as? GenericSettingsScreenStateContent.ListItems)?.items
+                        ?: return
+
                 val currentOption = appPrefs.getAndroidMapSDKProviderOrDefault(
-                    hasGoogleMaps = appConfigRepository.hasGoogleMaps,
-                    isPremiumPlan = canUserHavePremiumMaps()
+                    hasGoogleMaps = appConfigRepo.hasGoogleMaps,
+                    isPremiumPlan = canUserHavePremiumMaps(),
+                    mapTilerToken = appPrefs.mapTilerToken
                 )
 
                 when (event.option.key) {
@@ -155,8 +169,10 @@ class MapsProviderViewModel(
                         val newProvider = event.option.key as MapsSDKProvider
                         val finalProvider = if (newProvider is MapsSDKProvider.MAPLIBRE_PREMIUM) {
                             newProvider.copy(
-                                lightStyle = (currentOption as? MapsSDKProvider.MAPLIBRE_PREMIUM)?.lightStyle ?: MapsSDKProvider.MapStyle.OPEN_FREE_MAP,
-                                darkStyle = (currentOption as? MapsSDKProvider.MAPLIBRE_PREMIUM)?.darkStyle ?: MapsSDKProvider.MapStyle.OPEN_FREE_MAP
+                                lightStyle = (currentOption as? MapsSDKProvider.MAPLIBRE_PREMIUM)?.lightStyle
+                                    ?: MapsSDKProvider.MapStyle.OPEN_FREE_MAP,
+                                darkStyle = (currentOption as? MapsSDKProvider.MAPLIBRE_PREMIUM)?.darkStyle
+                                    ?: MapsSDKProvider.MapStyle.OPEN_FREE_MAP
                             )
                         } else {
                             newProvider
@@ -168,12 +184,12 @@ class MapsProviderViewModel(
                     is MapsSDKProvider.MapStyle -> {
                         val newStyle = event.option.key as MapsSDKProvider.MapStyle
                         if (currentOption is MapsSDKProvider.MAPLIBRE_PREMIUM) {
-                            val isLightStyle = currentItems.any { 
-                                it is GenericSettingListItem.GroupOptions && 
-                                it.keyId == "mapStyleLight" && 
-                                it.items.any { it.id == event.option.id } 
+                            val isLightStyle = currentItems.any {
+                                it is GenericSettingListItem.GroupOptions &&
+                                        it.keyId == "mapStyleLight" &&
+                                        it.items.any { it.id == event.option.id }
                             }
-                            
+
                             val updatedProvider = if (isLightStyle) {
                                 currentOption.copy(lightStyle = newStyle)
                             } else {
@@ -207,13 +223,15 @@ sealed interface MapsSDKProvider {
         OPEN_FREE_MAP("openfreemap"),
         MAPTILER("maptiler");
 
-        val title get() = when(this) {
-            OPEN_FREE_MAP -> MR.strings.setting_mapsProvider_style_openFreeMap
-            MAPTILER -> MR.strings.setting_mapsProvider_style_mapTiler
-        }
+        val title
+            get() = when (this) {
+                OPEN_FREE_MAP -> MR.strings.setting_mapsProvider_style_openFreeMap
+                MAPTILER -> MR.strings.setting_mapsProvider_style_mapTiler
+            }
 
         companion object {
-            fun fromKey(key: String): MapStyle = entries.firstOrNull { it.key == key } ?: OPEN_FREE_MAP
+            fun fromKey(key: String): MapStyle =
+                entries.firstOrNull { it.key == key } ?: OPEN_FREE_MAP
         }
     }
 
@@ -236,6 +254,7 @@ sealed interface MapsSDKProvider {
     }
 
     data class MAPLIBRE_PREMIUM(
+        val mapTilerToken: String,
         val lightStyle: MapStyle = MapStyle.OPEN_FREE_MAP,
         val darkStyle: MapStyle = MapStyle.OPEN_FREE_MAP
     ) : MapsSDKProvider {
@@ -250,13 +269,21 @@ sealed interface MapsSDKProvider {
     companion object {
         fun fromKey(
             key: String,
+            mapTilerToken: String,
             lightStyle: MapStyle = MapStyle.OPEN_FREE_MAP,
             darkStyle: MapStyle = MapStyle.OPEN_FREE_MAP
         ): MapsSDKProvider {
             return when (key) {
                 GOOGLE.key -> GOOGLE
                 MAPLIBRE_FREE.key -> MAPLIBRE_FREE
-                MAPLIBRE_PREMIUM().key -> MAPLIBRE_PREMIUM(lightStyle, darkStyle)
+                MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken).key -> {
+                    MAPLIBRE_PREMIUM(
+                        mapTilerToken = mapTilerToken,
+                        lightStyle = lightStyle,
+                        darkStyle = darkStyle
+                    )
+                }
+
                 else -> MAPLIBRE_FREE
             }
         }

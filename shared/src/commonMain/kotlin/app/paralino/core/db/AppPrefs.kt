@@ -108,6 +108,7 @@ class AppPrefs(
         const val keyDevModeEnabled = "prefs.device.devModeOverride"
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
         const val keyPlaceSearchLocation = "prefs.device.pleaseSearchLocation"
+        const val keyMapTilerToken = "prefs.device.mapsTilerToken"
         const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
         const val keyMapSDKProviderLightStyle = "prefs.device.mapsSDK.lightStyle"
         const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
@@ -517,7 +518,8 @@ class AppPrefs(
 
     fun getAndroidMapSDKProviderOrDefault(
         hasGoogleMaps: Boolean,
-        isPremiumPlan: Boolean
+        isPremiumPlan: Boolean,
+        mapTilerToken: String?
     ): MapsSDKProvider {
         val settingKey = provider.userSettings.getString(keyMapSDKProviderLocation, "")
         val lightStyleKey = provider.userSettings.getString(keyMapSDKProviderLightStyle, "")
@@ -528,18 +530,21 @@ class AppPrefs(
 
         val setting = MapsSDKProvider.fromKey(
             key = settingKey,
+            mapTilerToken = mapTilerToken ?: "",
             lightStyle = lightStyle,
             darkStyle = darkStyle
         )
         val default = if (hasGoogleMaps) {
             MapsSDKProvider.GOOGLE
-        } else if (isPremiumPlan) {
-            MapsSDKProvider.MAPLIBRE_PREMIUM()
+        } else if (isPremiumPlan && !mapTilerToken.isNullOrBlank()) {
+            MapsSDKProvider.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
         } else {
             MapsSDKProvider.MAPLIBRE_FREE
         }
 
         return if (!isPremiumPlan && setting.isPremium) {
+            MapsSDKProvider.MAPLIBRE_FREE
+        } else if (setting is MapsSDKProvider.MAPLIBRE_PREMIUM && mapTilerToken.isNullOrBlank()) {
             MapsSDKProvider.MAPLIBRE_FREE
         } else if (!hasGoogleMaps && setting == MapsSDKProvider.GOOGLE) {
             default
@@ -563,6 +568,16 @@ class AppPrefs(
                 provider.userSettings.remove(keyNotificationSocketServiceEnabled)
             } else {
                 provider.userSettings.putBoolean(keyNotificationSocketServiceEnabled, value)
+            }
+        }
+
+    var mapTilerToken: String?
+        get() = provider.userSettings.getStringOrNull(keyMapTilerToken)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyMapTilerToken)
+            } else {
+                provider.userSettings.putString(keyMapTilerToken, value)
             }
         }
 
