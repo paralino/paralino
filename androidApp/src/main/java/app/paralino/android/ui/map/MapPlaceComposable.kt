@@ -39,7 +39,7 @@ fun MapPlaceComposable(
         }
 
         MapsSDKProvider.MAPLIBRE_FREE,
-        MapsSDKProvider.MAPLIBRE_PREMIUM -> {
+        is MapsSDKProvider.MAPLIBRE_PREMIUM -> {
             MapLibreBasePlaceMapComposable(
                 modifier = modifier,
                 mapsSDKProvider = mapsSDKProvider,

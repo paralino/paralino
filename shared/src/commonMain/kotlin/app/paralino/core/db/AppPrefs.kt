@@ -109,6 +109,8 @@ class AppPrefs(
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
         const val keyPlaceSearchLocation = "prefs.device.pleaseSearchLocation"
         const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
+        const val keyMapSDKProviderLightStyle = "prefs.device.mapsSDK.lightStyle"
+        const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
         const val keyNotificationSocketServiceEnabled = "prefs.device.notificationSocketServiceEnabled"
     }
 
@@ -517,27 +519,41 @@ class AppPrefs(
         hasGoogleMaps: Boolean,
         isPremiumPlan: Boolean
     ): MapsSDKProvider {
-        val setting = provider.userSettings.getString(keyMapSDKProviderLocation, "")
-            .let { MapsSDKProvider.fromKey(it) }
+        val settingKey = provider.userSettings.getString(keyMapSDKProviderLocation, "")
+        val lightStyleKey = provider.userSettings.getString(keyMapSDKProviderLightStyle, "")
+        val darkStyleKey = provider.userSettings.getString(keyMapSDKProviderDarkStyle, "")
+
+        val lightStyle = MapsSDKProvider.MapStyle.fromKey(lightStyleKey)
+        val darkStyle = MapsSDKProvider.MapStyle.fromKey(darkStyleKey)
+
+        val setting = MapsSDKProvider.fromKey(
+            key = settingKey,
+            lightStyle = lightStyle,
+            darkStyle = darkStyle
+        )
         val default = if (hasGoogleMaps) {
             MapsSDKProvider.GOOGLE
         } else if (isPremiumPlan) {
-            MapsSDKProvider.MAPLIBRE_PREMIUM
+            MapsSDKProvider.MAPLIBRE_PREMIUM()
         } else {
             MapsSDKProvider.MAPLIBRE_FREE
         }
 
-        return if (!isPremiumPlan && setting?.isPremium == true) {
+        return if (!isPremiumPlan && setting.isPremium) {
             MapsSDKProvider.MAPLIBRE_FREE
         } else if (!hasGoogleMaps && setting == MapsSDKProvider.GOOGLE) {
             default
         } else {
-            setting ?: default
+            setting
         }
     }
 
     fun setAndroidMapSDKProvider(maps: MapsSDKProvider) {
         provider.userSettings.putString(keyMapSDKProviderLocation, maps.key)
+        if (maps is MapsSDKProvider.MAPLIBRE_PREMIUM) {
+            provider.userSettings.putString(keyMapSDKProviderLightStyle, maps.lightStyle.key)
+            provider.userSettings.putString(keyMapSDKProviderDarkStyle, maps.darkStyle.key)
+        }
     }
 
     var notificationSocketServiceEnabled: Boolean?

@@ -1,6 +1,7 @@
 package app.paralino.core.presentation.settings.generic
 
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
@@ -45,6 +46,7 @@ sealed interface GenericSettingListItem {
 
     data class Subtitle(
         val content: String,
+        val bottomPadding: Dp = 20.dp,
         override val keyId: String = content
     ): GenericSettingListItem
 

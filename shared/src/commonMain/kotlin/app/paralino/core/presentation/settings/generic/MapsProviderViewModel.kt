@@ -41,37 +41,93 @@ class MapsProviderViewModel(
             }
 
             add(MapsSDKProvider.MAPLIBRE_FREE)
-            add(MapsSDKProvider.MAPLIBRE_PREMIUM)
+            add(MapsSDKProvider.MAPLIBRE_PREMIUM())
         }
 
         return GenericSettingsScreenState(
             screenTitle = initialScreenTitle,
             alertDialog = null,
             content = GenericSettingsScreenStateContent.ListItems(
-                items = listOf(
-                    GenericSettingListItem.Spacer(20.dp, keyId = "top_space"),
-                    GenericSettingListItem.Subtitle(MR.strings.setting_mapsProvider_info.localizedString()),
-                    GenericSettingListItem.GroupOptions(
-                        defaultId = currentOption.key,
-                        keyId = "mapProvider",
-                        items = options.map {
-                            GroupOptionItem(
-                                key = it,
-                                id = it.key,
-                                title = it.title.localizedString(),
-                                description = it.description.localizedString(),
-                                tag = it.tag?.localizedString(),
-                                isTagWarning = true,
-                                isPremiumFeatureEnabled = if (it == MapsSDKProvider.MAPLIBRE_PREMIUM) {
-                                    canUserHavePremiumMaps()
-                                } else {
-                                    true
-                                },
-                                isSelected = it == currentOption
-                            )
-                        }
+                items = buildList {
+                    add(GenericSettingListItem.Spacer(20.dp, keyId = "top_space"))
+                    add(GenericSettingListItem.Subtitle(MR.strings.setting_mapsProvider_info.localizedString()))
+                    add(
+                        GenericSettingListItem.GroupOptions(
+                            defaultId = currentOption.key,
+                            keyId = "mapProvider",
+                            items = options.map {
+                                GroupOptionItem(
+                                    key = it,
+                                    id = it.key,
+                                    title = it.title.localizedString(),
+                                    description = it.description.localizedString(),
+                                    tag = it.tag?.localizedString(),
+                                    isTagWarning = true,
+                                    isPremiumFeatureEnabled = if (it is MapsSDKProvider.MAPLIBRE_PREMIUM) {
+                                        canUserHavePremiumMaps()
+                                    } else {
+                                        true
+                                    },
+                                    isSelected = it.key == currentOption.key
+                                )
+                            }
+                        )
                     )
-                )
+
+                    if (currentOption is MapsSDKProvider.MAPLIBRE_PREMIUM) {
+                        add(GenericSettingListItem.Spacer(20.dp, keyId = "premium_space"))
+                        add(
+                            GenericSettingListItem.Subtitle(
+                                content = MR.strings.setting_mapsProvider_style_light_title.localizedString(),
+                                bottomPadding = 10.dp
+                            )
+                        )
+                        add(
+                            GenericSettingListItem.GroupOptions(
+                                defaultId = currentOption.lightStyle.key,
+                                keyId = "mapStyleLight",
+                                items = MapsSDKProvider.MapStyle.entries.map {
+                                    GroupOptionItem(
+                                        key = it,
+                                        id = "light_${it.key}",
+                                        title = it.title.localizedString(),
+                                        description = null,
+                                        isSelected = it == currentOption.lightStyle,
+                                        tag = null,
+                                        isTagWarning = false,
+                                        isPremiumFeatureEnabled = true,
+                                    )
+                                }
+                            )
+                        )
+
+                        add(GenericSettingListItem.Spacer(20.dp, keyId = "premium_space_dark"))
+                        add(
+                            GenericSettingListItem.Subtitle(
+                                content = MR.strings.setting_mapsProvider_style_dark_title.localizedString(),
+                                bottomPadding = 10.dp
+                            )
+                        )
+                        add(
+                            GenericSettingListItem.GroupOptions(
+                                defaultId = currentOption.darkStyle.key,
+                                keyId = "mapStyleDark",
+                                items = MapsSDKProvider.MapStyle.entries.map {
+                                    GroupOptionItem(
+                                        key = it,
+                                        id = "dark_${it.key}",
+                                        title = it.title.localizedString(),
+                                        description = null,
+                                        isSelected = it == currentOption.darkStyle,
+                                        tag = null,
+                                        isTagWarning = false,
+                                        isPremiumFeatureEnabled = true,
+                                    )
+                                }
+                            )
+                        )
+                    }
+                }
             )
         )
     }
@@ -86,32 +142,47 @@ class MapsProviderViewModel(
                     return
                 }
 
-                (event.option.key as? MapsSDKProvider?)?.let {
-                    appPrefs.setAndroidMapSDKProvider(it)
-                }
-                _uiState.update { state ->
-                    state.copy(
-                        content = when (state.content) {
-                            is GenericSettingsScreenStateContent.ListItems -> {
-                                state.content.copy(
-                                    items = state.content.items.map { item ->
-                                        when (val finalItem = item) {
-                                            is GenericSettingListItem.GroupOptions -> {
-                                                finalItem.copy(
-                                                    items = finalItem.items.map {
-                                                        it.copy(isSelected = it.id == event.option.id)
-                                                    }
-                                                )
-                                            }
-                                            else -> item
-                                        }
-                                    }
-                                )
-                            }
+                val currentState = _uiState.value
+                val currentItems = (currentState.content as? GenericSettingsScreenStateContent.ListItems)?.items ?: return
+                
+                val currentOption = appPrefs.getAndroidMapSDKProviderOrDefault(
+                    hasGoogleMaps = appConfigRepository.hasGoogleMaps,
+                    isPremiumPlan = canUserHavePremiumMaps()
+                )
 
-                            else -> state.content
+                when (event.option.key) {
+                    is MapsSDKProvider -> {
+                        val newProvider = event.option.key as MapsSDKProvider
+                        val finalProvider = if (newProvider is MapsSDKProvider.MAPLIBRE_PREMIUM) {
+                            newProvider.copy(
+                                lightStyle = (currentOption as? MapsSDKProvider.MAPLIBRE_PREMIUM)?.lightStyle ?: MapsSDKProvider.MapStyle.OPEN_FREE_MAP,
+                                darkStyle = (currentOption as? MapsSDKProvider.MAPLIBRE_PREMIUM)?.darkStyle ?: MapsSDKProvider.MapStyle.OPEN_FREE_MAP
+                            )
+                        } else {
+                            newProvider
                         }
-                    )
+                        appPrefs.setAndroidMapSDKProvider(finalProvider)
+                        _uiState.update { createInitialState() }
+                    }
+
+                    is MapsSDKProvider.MapStyle -> {
+                        val newStyle = event.option.key as MapsSDKProvider.MapStyle
+                        if (currentOption is MapsSDKProvider.MAPLIBRE_PREMIUM) {
+                            val isLightStyle = currentItems.any { 
+                                it is GenericSettingListItem.GroupOptions && 
+                                it.keyId == "mapStyleLight" && 
+                                it.items.any { it.id == event.option.id } 
+                            }
+                            
+                            val updatedProvider = if (isLightStyle) {
+                                currentOption.copy(lightStyle = newStyle)
+                            } else {
+                                currentOption.copy(darkStyle = newStyle)
+                            }
+                            appPrefs.setAndroidMapSDKProvider(updatedProvider)
+                            _uiState.update { createInitialState() }
+                        }
+                    }
                 }
             }
 
@@ -124,44 +195,70 @@ class MapsProviderViewModel(
     }
 }
 
-enum class MapsSDKProvider constructor(val key: String) {
-    GOOGLE("google_maps"),
-    MAPLIBRE_FREE("maplibre_free"),
-    MAPLIBRE_PREMIUM("maplibre_premium");
+sealed interface MapsSDKProvider {
+    val key: String
+    val title: dev.icerock.moko.resources.StringResource
+    val description: dev.icerock.moko.resources.StringResource
+    val tag: dev.icerock.moko.resources.StringResource?
+    val hasSatelliteMaps: Boolean
+    val isPremium: Boolean
 
-    val title get() = when(this) {
-        GOOGLE -> MR.strings.setting_mapsProvider_googleMaps_title
-        MAPLIBRE_FREE -> MR.strings.setting_mapsProvider_mapLibreFree_title
-        MAPLIBRE_PREMIUM -> MR.strings.setting_mapsProvider_mapLibrePremium_title
+    enum class MapStyle(val key: String) {
+        OPEN_FREE_MAP("openfreemap"),
+        MAPTILER("maptiler");
+
+        val title get() = when(this) {
+            OPEN_FREE_MAP -> MR.strings.setting_mapsProvider_style_openFreeMap
+            MAPTILER -> MR.strings.setting_mapsProvider_style_mapTiler
+        }
+
+        companion object {
+            fun fromKey(key: String): MapStyle = entries.firstOrNull { it.key == key } ?: OPEN_FREE_MAP
+        }
     }
 
-    val description get() = when(this) {
-        GOOGLE -> MR.strings.setting_mapsProvider_googleMaps_info
-        MAPLIBRE_FREE -> MR.strings.setting_mapsProvider_mapLibreFree_info
-        MAPLIBRE_PREMIUM -> MR.strings.setting_mapsProvider_mapLibrePremium_info
+    data object GOOGLE : MapsSDKProvider {
+        override val key: String = "google_maps"
+        override val title = MR.strings.setting_mapsProvider_googleMaps_title
+        override val description = MR.strings.setting_mapsProvider_googleMaps_info
+        override val tag = null
+        override val hasSatelliteMaps = true
+        override val isPremium = false
     }
 
-    val tag get() = when(this) {
-        GOOGLE -> null
-        MAPLIBRE_FREE -> MR.strings.setting_mapsProvider_mapLibreFree_tag
-        MAPLIBRE_PREMIUM -> null
+    data object MAPLIBRE_FREE : MapsSDKProvider {
+        override val key: String = "maplibre_free"
+        override val title = MR.strings.setting_mapsProvider_mapLibreFree_title
+        override val description = MR.strings.setting_mapsProvider_mapLibreFree_info
+        override val tag = MR.strings.setting_mapsProvider_mapLibreFree_tag
+        override val hasSatelliteMaps = false
+        override val isPremium = false
     }
 
-    val hasSatelliteMaps get() = when(this) {
-        GOOGLE -> true
-        MAPLIBRE_FREE -> false
-        MAPLIBRE_PREMIUM -> true
-    }
-
-    val isPremium get() = when(this) {
-        GOOGLE -> false
-        MAPLIBRE_FREE -> false
-        MAPLIBRE_PREMIUM -> true
+    data class MAPLIBRE_PREMIUM(
+        val lightStyle: MapStyle = MapStyle.OPEN_FREE_MAP,
+        val darkStyle: MapStyle = MapStyle.OPEN_FREE_MAP
+    ) : MapsSDKProvider {
+        override val key: String = "maplibre_premium"
+        override val title = MR.strings.setting_mapsProvider_mapLibrePremium_title
+        override val description = MR.strings.setting_mapsProvider_mapLibrePremium_info
+        override val tag = null
+        override val hasSatelliteMaps = true
+        override val isPremium = true
     }
 
     companion object {
-        fun fromKey(key: String): MapsSDKProvider? {
-            return entries.firstOrNull { it.key == key }
+        fun fromKey(
+            key: String,
+            lightStyle: MapStyle = MapStyle.OPEN_FREE_MAP,
+            darkStyle: MapStyle = MapStyle.OPEN_FREE_MAP
+        ): MapsSDKProvider {
+            return when (key) {
+                GOOGLE.key -> GOOGLE
+                MAPLIBRE_FREE.key -> MAPLIBRE_FREE
+                MAPLIBRE_PREMIUM().key -> MAPLIBRE_PREMIUM(lightStyle, darkStyle)
+                else -> MAPLIBRE_FREE
+            }
         }
     }
 }

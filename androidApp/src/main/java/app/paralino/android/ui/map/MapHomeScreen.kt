@@ -286,7 +286,7 @@ internal fun HomeScreenMapWithElements(
             }
 
             MapsSDKProvider.MAPLIBRE_FREE,
-            MapsSDKProvider.MAPLIBRE_PREMIUM -> {
+            is MapsSDKProvider.MAPLIBRE_PREMIUM -> {
                 HomeScreenMapLibreMapComposable(
                     modifier = Modifier,
                     uiState = uiState,

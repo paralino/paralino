@@ -130,7 +130,7 @@ fun GenericSettingsListScreen(
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                             Text(
                                 modifier = Modifier
-                                    .padding(bottom = 20.dp)
+                                    .padding(bottom = item.bottomPadding)
                                     .padding(horizontal = 20.dp)
                                     .fillMaxWidth()
                                     .animateItem(),

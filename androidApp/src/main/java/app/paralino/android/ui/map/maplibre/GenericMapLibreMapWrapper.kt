@@ -46,13 +46,29 @@ fun GenericMapLibreMapWrapper(
 ) {
     var mapOverlayShown by rememberSaveable { mutableStateOf(true) }
     val mapStyle = when (mapData.mapsSDKProvider) {
-        MapsSDKProvider.MAPLIBRE_PREMIUM -> {
+        is MapsSDKProvider.MAPLIBRE_PREMIUM -> {
             if (mapData.isSatelliteMode) {
                 BaseStyle.Uri("https://api.maptiler.com/maps/hybrid-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
             } else if (isSystemInDarkTheme()) {
-                BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${BuildConfig.maptilerAccessToken}")
+                when (mapData.mapsSDKProvider.darkStyle) {
+                    MapsSDKProvider.MapStyle.OPEN_FREE_MAP -> {
+                        BaseStyle.Uri("https://tiles.openfreemap.org/styles/dark")
+                    }
+
+                    MapsSDKProvider.MapStyle.MAPTILER -> {
+                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4-dark/style.json?key=${BuildConfig.maptilerAccessToken}")
+                    }
+                }
             } else {
-                BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
+                when (mapData.mapsSDKProvider.lightStyle) {
+                    MapsSDKProvider.MapStyle.OPEN_FREE_MAP -> {
+                        BaseStyle.Uri("https://tiles.openfreemap.org/styles/liberty")
+                    }
+
+                    MapsSDKProvider.MapStyle.MAPTILER -> {
+                        BaseStyle.Uri("https://api.maptiler.com/maps/streets-v4/style.json?key=${BuildConfig.maptilerAccessToken}")
+                    }
+                }
             }
         }
 
