@@ -25,6 +25,7 @@ import app.paralino.core.presentation.map.MapPinType
 import app.paralino.core.presentation.map.asReady
 import app.paralino.core.ui.theme.AppColors
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.SphericalUtil
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
@@ -32,6 +33,28 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+
+private const val MIN_ANIMATION_DURATION_MS = 500
+private const val MAX_ANIMATION_DURATION_MS = 4000
+private const val SHORT_DISTANCE_METERS = 100.0
+private const val LONG_DISTANCE_METERS = 1000.0
+
+/**
+ * Calculates animation duration based on distance.
+ * Short distances (< 100m) for smooth animation.
+ * Long distances (> 1000m) for quick jumps.
+ * Distances in between are scaled linearly.
+ */
+private fun calculateAnimationDuration(distanceMeters: Double): Int {
+    return when {
+        distanceMeters <= SHORT_DISTANCE_METERS -> MAX_ANIMATION_DURATION_MS
+        distanceMeters >= LONG_DISTANCE_METERS -> MIN_ANIMATION_DURATION_MS
+        else -> {
+            val ratio = (distanceMeters - SHORT_DISTANCE_METERS) / (LONG_DISTANCE_METERS - SHORT_DISTANCE_METERS)
+            (MAX_ANIMATION_DURATION_MS - (ratio * (MAX_ANIMATION_DURATION_MS - MIN_ANIMATION_DURATION_MS))).toInt()
+        }
+    }
+}
 
 @Composable
 fun rememberGoogleMapMainHomeMapController(
@@ -137,16 +160,11 @@ private fun MapHomeMarkerComposable(
     onMarkerClick: (MapPinData) -> Unit
 ) {
 
-    val lat = remember { Animatable(0f) }
-    val lng = remember { Animatable(0f) }
+    val animProgress = remember { Animatable(0f) }
     val acc = remember { Animatable(0f) }
 
     var latValue by remember { mutableDoubleStateOf(0.0) }
     var lngValue by remember { mutableDoubleStateOf(0.0) }
-
-    val animationSpec = remember {
-        tween<Float>(durationMillis = 4000, easing = LinearEasing)
-    }
 
     val zIndex = when (model.pinType) {
         MapPinType.MEMBER -> if (model.focused) 40f else 30f
@@ -154,31 +172,33 @@ private fun MapHomeMarkerComposable(
     }
 
     LaunchedEffect(model.markerId) {
-        lat.snapTo(0f)
-        lng.snapTo(0f)
+        animProgress.snapTo(0f)
         acc.snapTo(model.accuracy)
 
         latValue = model.lat
         lngValue = model.lng
     }
 
-    LaunchedEffect(model.lat) {
-        lat.snapTo(0f)
+    LaunchedEffect(model.lat, model.lng) {
+        animProgress.snapTo(0f)
         val startLat = latValue
-        lat.animateTo(1f, animationSpec = animationSpec) {
-            latValue = (model.lat - startLat) * this.value + startLat
-        }
-    }
-
-    LaunchedEffect(model.lng) {
-        lng.snapTo(0f)
         val startLng = lngValue
-        lng.animateTo(1f, animationSpec = animationSpec) {
+
+        val distance = SphericalUtil.computeDistanceBetween(
+            LatLng(startLat, startLng),
+            LatLng(model.lat, model.lng)
+        )
+        val durationMs = calculateAnimationDuration(distance)
+        val animationSpec = tween<Float>(durationMillis = durationMs, easing = LinearEasing)
+
+        animProgress.animateTo(1f, animationSpec = animationSpec) {
+            latValue = (model.lat - startLat) * this.value + startLat
             lngValue = (model.lng - startLng) * this.value + startLng
         }
     }
 
     LaunchedEffect(model.accuracy) {
+        val animationSpec = tween<Float>(durationMillis = MAX_ANIMATION_DURATION_MS, easing = LinearEasing)
         acc.animateTo(model.accuracy, animationSpec = animationSpec)
     }
 

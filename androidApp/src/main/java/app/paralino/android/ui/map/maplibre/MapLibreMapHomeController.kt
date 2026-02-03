@@ -52,7 +52,7 @@ fun rememberMapLibreHomeMapController(
         LaunchedEffect(stateData?.visibleMarkers) {
             snapshotFlow { stateData?.mapHomeScreenFocusType }
                 .distinctUntilChanged()
-                .collectLatest {
+                .collect {
                     if (!canAnimateMapFocus && shouldAnimateMapFocus) {
                         delay(20)
                     }
@@ -61,7 +61,7 @@ fun rememberMapLibreHomeMapController(
                         focusType = it,
                         markers = stateData?.visibleMarkers ?: emptyList(),
                         focusedMarker = stateData?.trackingMarker,
-                        durationMs = if (canAnimateMapFocus) 3000 else 0,
+                        durationMs = if (canAnimateMapFocus) 6000 else 0,
                         mapContentPadding = mapContentPadding
                     )
                 }

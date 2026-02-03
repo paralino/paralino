@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.map.maplibre.MapLibreMapCircle
 import app.paralino.android.ui.map.maplibre.MapLibreMapUiControlledData
@@ -106,6 +108,13 @@ fun rememberMapLibreLocationHistoryMapController(
     }
 
     LaunchedEffect(stateData.selectedLocations, stateData.dataViewType, mapContentPadding) {
+        val extraPadding = 60.dp
+        val mapPadding = PaddingValues(
+            start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
+            top = mapContentPadding.calculateTopPadding() + extraPadding,
+            end = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
+            bottom = mapContentPadding.calculateBottomPadding() + extraPadding
+        )
         snapshotFlow { stateData.focusType }
             .distinctUntilChanged()
             .filter { it == LocationHistoryScreenFocusType.OVERVIEW }
@@ -145,12 +154,19 @@ fun rememberMapLibreLocationHistoryMapController(
                     forceZoom = true,
                     ignoreAccuracy = false,
                     durationMs = if (canAnimateMapFocus) 600 else 0,
-                    padding = mapContentPadding
+                    padding = mapPadding
                 )
             }
     }
 
     LaunchedEffect(stateData.selectedMapPinData, stateData.focusType) {
+        val extraPadding = 100.dp
+        val mapPadding = PaddingValues(
+            start = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
+            top = mapContentPadding.calculateTopPadding() + extraPadding,
+            end = mapContentPadding.calculateStartPadding(LayoutDirection.Ltr) + extraPadding,
+            bottom = mapContentPadding.calculateBottomPadding() + extraPadding
+        )
         snapshotFlow { stateData.focusType }
             .filterNotNull()
             .distinctUntilChanged()
@@ -165,7 +181,7 @@ fun rememberMapLibreLocationHistoryMapController(
                     ignoreAccuracy = false,
                     durationMs = if (canAnimateMapFocus) 300 else 0,
                     forceZoom = it == LocationHistoryScreenFocusType.MEMBER_FOCUSED,
-                    padding = mapContentPadding
+                    padding = mapPadding
                 )
             }
     }
