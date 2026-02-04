@@ -1,6 +1,7 @@
 package app.paralino.android.provider
 
 import app.paralino.android.AppClass
+import app.paralino.android.notification.PushTokenSyncWorker
 import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
 import app.paralino.core.repo.user.IPushProviderManager
@@ -12,7 +13,7 @@ class PushProviderManager(
 ) : IPushProviderManager {
 
     override fun syncPushToken() {
-        // no push token in direct version
+        PushTokenSyncWorker.createRequest(appClass)
     }
 
     override fun syncPushNotifications() {

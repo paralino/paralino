@@ -70,7 +70,10 @@ class UserDevicesRemoteSource constructor(
         }
     }
 
-    suspend fun updateDeviceData(pushToken: String, locationPushToken: String?) {
+    suspend fun updateDeviceData(
+        pushToken: String?,
+        locationPushToken: String?
+    ) {
         val payload = UpdateUserDeviceFunctionData(
             sessionId = appPrefs.sessionId,
             deviceId = appPrefs.deviceId,

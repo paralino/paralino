@@ -239,7 +239,7 @@ data class PersonalLocationDeletePayload(
 data class UpdateUserDeviceFunctionData constructor(
     val sessionId: String,
     val deviceId: String,
-    val pushToken: String,
+    val pushToken: String?,
     val deviceType: String,
     val locationPushToken: String?
 )

@@ -113,6 +113,7 @@ class AppPrefs(
         const val keyMapSDKProviderLightStyle = "prefs.device.mapsSDK.lightStyle"
         const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
         const val keyNotificationSocketServiceEnabled = "prefs.device.notificationSocketServiceEnabled"
+        const val keyDeviceWasEverSynced = "prefs.device.isSynced"
     }
 
 
@@ -232,6 +233,12 @@ class AppPrefs(
         get() = provider.userSettings.getString(keyAppSessionKey, "")
         set(value) {
             provider.userSettings.putString(keyAppSessionKey, value)
+        }
+
+    var wasDeviceEverSynced: Boolean
+        get() = provider.userSettings.getBoolean(keyDeviceWasEverSynced, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyDeviceWasEverSynced, value)
         }
 
     var pushTokenUnsynced: String
