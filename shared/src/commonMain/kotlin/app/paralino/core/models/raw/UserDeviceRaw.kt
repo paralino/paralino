@@ -12,6 +12,7 @@ data class UserDeviceRaw constructor(
     val ownerUserId: String,
     val deviceId: String,
     val locationPushToken: String?,
+    val isUsingNotificationSockets: Boolean?,
     val deviceData: String?,
     val encryptedSenderKey: String?,
     val userKeyVersion: Long?,
@@ -32,6 +33,7 @@ data class UserDeviceRaw constructor(
                 encryptedSenderKey = map["encryptedSenderKey"] as? String,
                 userKeyVersion = (map["userKeyVersion"] as? Number?)?.toLong(),
                 batteryAlertSettings = map["batteryAlertSettings"] as? String,
+                isUsingNotificationSockets = map["isUsingNotificationSockets"] as? Boolean,
             )
         }
     }

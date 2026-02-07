@@ -72,14 +72,16 @@ class UserDevicesRemoteSource constructor(
 
     suspend fun updateDeviceData(
         pushToken: String?,
-        locationPushToken: String?
-    ) {
+        locationPushToken: String?,
+        isUsingNotificationSockets: Boolean
+    ): UserDeviceRaw? {
         val payload = UpdateUserDeviceFunctionData(
             sessionId = appPrefs.sessionId,
             deviceId = appPrefs.deviceId,
             pushToken = pushToken,
             deviceType = userMemberIdUseCase.getCurrentDeviceType().key,
-            locationPushToken = locationPushToken
+            locationPushToken = locationPushToken,
+            isUsingNotificationSockets = isUsingNotificationSockets
         )
 
         val response = functionsApi.runAndWait(
@@ -87,7 +89,13 @@ class UserDevicesRemoteSource constructor(
             data = payload
         )
 
-        if (!response.isSuccess) {
+        if (response.isSuccess) {
+            return try {
+                response.responseDataMap?.parsePersonalDevice()
+            } catch (e: Exception) {
+                null
+            }
+        } else {
             throw response.remoteException
         }
     }

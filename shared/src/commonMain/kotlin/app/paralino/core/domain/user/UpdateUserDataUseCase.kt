@@ -7,17 +7,21 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.UpdateMemberData
 import app.paralino.core.models.raw.UpdateMemberFunctionPayload
 import app.paralino.core.models.user.UserMeData
+import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
+import app.paralino.core.repo.user.PersonalDevicesLocalDataSource
 import app.paralino.core.repo.user.UserDevicesRemoteSource
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
@@ -35,7 +39,10 @@ class UpdateUserDataUseCase constructor(
     private val cryptoCore: CryptoCore,
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val personalCodes: PersonalCodesRepository,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val notificationSocketServiceManager: NotificationSocketServiceManager,
+    private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val userDeviceLocal: PersonalDevicesLocalDataSource
 ) : LimitedExecutionRepository() {
 
     fun updateUserData(data: UserMeData): Flow<Unit> {
@@ -99,6 +106,15 @@ class UpdateUserDataUseCase constructor(
     }
 
     suspend fun registerPushTokenIfNeeded(): Payload<Unit>? {
+
+        try {
+            startProcessing("notification_token_update")
+        } catch (e: Exception) {
+            logg.tag("push_notifications")
+                .v("Notification token update already in progress")
+            return Payload.Loading
+        }
+
         try {
             userRepo.cachedUser?.data ?: let {
                 logg.tag("push_notifications").v("User not present, ignoring...")
@@ -116,9 +132,22 @@ class UpdateUserDataUseCase constructor(
                 ?: false
 
             val wasDeviceSynced = appPrefs.wasDeviceEverSynced
+            val isSocketServiceActive = notificationSocketServiceManager.isServiceActive()
 
-            if (!hasNewPushToken && !hasNewLocationPushToken && wasDeviceSynced) {
-                logg.tag("push_notifications").v("No new push token to sync, device was already synced")
+            val wasSocketServiceStatusChanged = personalSpaceRepo.personalSpaceState.value
+                .data?.currentDevice?.let {
+                    if (it.isUsingNotificationSockets == null) {
+                        // if status is not initialized yet, only consider updating it if socket is active
+                        // otherwise no need to call the api again
+                        isSocketServiceActive
+                    } else {
+                        it.isUsingNotificationSockets != isSocketServiceActive
+                    }
+                } ?: false
+
+            if (!hasNewPushToken && !hasNewLocationPushToken && !wasSocketServiceStatusChanged && wasDeviceSynced) {
+                logg.tag("push_notifications")
+                    .v("No new push token to sync, device was already synced")
                 return null
             }
 
@@ -130,17 +159,25 @@ class UpdateUserDataUseCase constructor(
                     timeMillis = 5.seconds.inWholeMilliseconds
                 )
             ) {
-                val newPushToken = appPrefs.pushTokenUnsynced.takeIf { it.isNotBlank() } ?: appPrefs.pushTokenSynced.takeIf { it.isNotBlank() }
+                val newPushToken = appPrefs.pushTokenUnsynced.takeIf { it.isNotBlank() }
+                    ?: appPrefs.pushTokenSynced.takeIf { it.isNotBlank() }
 
-                if (newPushToken.isNullOrBlank() && wasDeviceSynced) {
+                if (newPushToken.isNullOrBlank() && !wasSocketServiceStatusChanged && wasDeviceSynced) {
                     return@triggerRemoteMaybe null
                 }
 
-                val newLocationPushToken = appPrefs.locationPushTokenUnsynced.takeIf { it.isNotBlank() } ?: appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() }
-                userDevicesRemoteSource.updateDeviceData(
+                val newLocationPushToken =
+                    appPrefs.locationPushTokenUnsynced.takeIf { it.isNotBlank() }
+                        ?: appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() }
+                val updatedDevice = userDevicesRemoteSource.updateDeviceData(
                     pushToken = newPushToken,
-                    locationPushToken = newLocationPushToken
+                    locationPushToken = newLocationPushToken,
+                    isUsingNotificationSockets = isSocketServiceActive
                 )
+
+                if (updatedDevice != null) {
+                    userDeviceLocal.updateUserDeviceData(device = updatedDevice)
+                }
 
                 appPrefs.pushTokenUnsynced = ""
                 appPrefs.pushTokenSynced = newPushToken ?: ""
@@ -155,6 +192,8 @@ class UpdateUserDataUseCase constructor(
             return Payload.Success(Unit)
         } catch (e: Exception) {
             return Payload.Error(e)
+        } finally {
+            stopProcessing("notification_token_update")
         }
     }
 }

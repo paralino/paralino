@@ -241,6 +241,7 @@ data class UpdateUserDeviceFunctionData constructor(
     val deviceId: String,
     val pushToken: String?,
     val deviceType: String,
+    val isUsingNotificationSockets: Boolean,
     val locationPushToken: String?
 )
 

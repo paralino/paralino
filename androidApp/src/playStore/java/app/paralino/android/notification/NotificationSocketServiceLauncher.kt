@@ -1,6 +1,7 @@
 package app.paralino.android.notification
 
 import android.app.Application
+import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
@@ -14,7 +15,8 @@ class NotificationSocketServiceLauncher(
     private val infoMessagesNotifications: InfoMessagesNotificationPresenter,
     private val serviceManager: NotificationSocketServiceManager,
     private val appConfigRepo: AppConfigRepository,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val updateUserData: UpdateUserDataUseCase
 ) {
 
     fun startMonitoring(scope: CoroutineScope) {}

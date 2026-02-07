@@ -44,7 +44,8 @@ class UserDeviceMapper(
             deviceData = deviceRaw.device.deviceData,
             locationData = deviceRaw.location?.locationData,
             status = deviceRaw.location?.status,
-            locationHistory = deviceRaw.location?.locationHistory
+            locationHistory = deviceRaw.location?.locationHistory,
+            isUsingNotificationSockets = deviceRaw.device.isUsingNotificationSockets
         )
     }
 
@@ -64,6 +65,7 @@ class UserDeviceMapper(
                 userKeyVersion = entity.userKeyVersion,
                 batteryAlertSettings = entity.batteryAlertSettings,
                 deviceData = entity.deviceData,
+                isUsingNotificationSockets = entity.isUsingNotificationSockets,
             ),
             location = if (entity.locationId != null) {
                 UserDeviceLocationRaw(
@@ -131,7 +133,8 @@ class UserDeviceMapper(
                 } catch (e: Exception) {
                     null
                 }
-            }
+            },
+            isUsingNotificationSockets = entity.isUsingNotificationSockets
         )
     }
 

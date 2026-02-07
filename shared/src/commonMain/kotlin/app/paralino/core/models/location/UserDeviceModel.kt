@@ -21,7 +21,8 @@ data class UserDeviceModel(
     val location: MemberLocation?,
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,
-    val batteryAlertSettings: BatteryNotificationsSettingsData?
+    val batteryAlertSettings: BatteryNotificationsSettingsData?,
+    val isUsingNotificationSockets: Boolean?
 ) {
     val deviceNameOrNull: String? = deviceData.data?.deviceName?.takeIf { it.isNotBlank() }
 }

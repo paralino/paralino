@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.ForegroundServiceStartNotAllowedException
 import android.content.Intent
 import android.os.Build
+import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -33,7 +34,8 @@ class NotificationSocketServiceLauncher(
     private val infoMessagesNotifications: InfoMessagesNotificationPresenter,
     private val serviceManager: NotificationSocketServiceManager,
     private val appConfigRepo: AppConfigRepository,
-    private val scopeProvider: ICoroutineScopeProvider
+    private val scopeProvider: ICoroutineScopeProvider,
+    private val updateUserData: UpdateUserDataUseCase
 ) {
     private val _pendingNotificationsChannel = Channel<Boolean?>()
     private var lastNotificationPost: Instant? = null
@@ -65,10 +67,14 @@ class NotificationSocketServiceLauncher(
             }
                 .debounce(500)
                 .onEach { (appState, serviceStatus) ->
-                    if (appState.current == AppLifecycleType.ACTIVE && serviceStatus) {
-                        startNotificationService(
-                            action = NotificationSocketServiceLauncher.INTENT_NOTIFICATION_SOCKET_SERVICE_START
-                        )
+                    if (appState.current == AppLifecycleType.ACTIVE) {
+                        if (serviceStatus) {
+                            startNotificationService(
+                                action = NotificationSocketServiceLauncher.INTENT_NOTIFICATION_SOCKET_SERVICE_START
+                            )
+                        }
+
+                        updateDeviceStatus()
                     }
                 }
                 .launchIn(scope)
@@ -109,7 +115,6 @@ class NotificationSocketServiceLauncher(
         }
     }
 
-
     private fun postNotificationMaybe(backgroundLocationError: Boolean) {
         if (lastNotificationPost?.isOlderThan(10.minutes) != false) {
             lastNotificationPost = nowUTC()
@@ -145,6 +150,12 @@ class NotificationSocketServiceLauncher(
                 backgroundStartError = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is ForegroundServiceStartNotAllowedException,
                 context = appClass
             )
+        }
+    }
+
+    private fun updateDeviceStatus() {
+        scopeProvider.userSessionIOScope.launch {
+            updateUserData.registerPushTokenIfNeeded()
         }
     }
 

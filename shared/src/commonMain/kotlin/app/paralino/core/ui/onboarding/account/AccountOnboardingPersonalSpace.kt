@@ -257,7 +257,8 @@ private fun createDummyDeviceWithSession(
                 deviceType = "mobile"
             )
         ),
-        batteryAlertSettings = null
+        batteryAlertSettings = null,
+        isUsingNotificationSockets = null
     )
 
     val deviceItemState = UserDeviceItemState(

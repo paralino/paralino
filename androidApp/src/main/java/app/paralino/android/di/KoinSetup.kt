@@ -172,7 +172,7 @@ object KoinSetup {
     private val appSpecificModule = module {
         single { PreCheckControl() }
         single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
-        single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get()) }
+        single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
         factory { NotificationSocketServiceNotificationHandler(androidContext()) }
