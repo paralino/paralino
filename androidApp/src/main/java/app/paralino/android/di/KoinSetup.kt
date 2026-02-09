@@ -252,7 +252,7 @@ object KoinSetup {
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get(), get()) }
-        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), get()) }
         viewModel { GeneralInfoViewModel(get(), get()) }
         viewModel { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }

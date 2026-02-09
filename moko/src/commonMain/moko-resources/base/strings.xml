@@ -428,7 +428,10 @@
     <string name="paywall_faq_answer_refund_google">You can contact our support team by emailing **contact@paralino.com**.</string>
     <string name="paywall_faq_answer_payment_security_apple">Yes, your payment is processed directly by the Apple App Store. We do not process or store any payment information.</string>
     <string name="paywall_faq_answer_payment_security_google">Yes, your payment is processed directly by the Google Play Store. We do not process or store any payment information.</string>
-    <string name="paywall_faq_answer_free_trial">Yes, we offer a free trial period for the first time you start your subscription. You can then enjoy premium features at no cost.</string>
+    <string name="paywall_faq_answer_free_trial">
+        Yes, we offer a free trial period on some plans and billing cycles, available for the first time you start your subscription. You can then enjoy all the premium features at no cost for the duration of the trial.\n\n
+        After the trial ends, subscription will be automatically renewed at the selected plan price.
+    </string>
     <string name="paywall_faq_answer_contact_support">You can contact our support team by emailing **contact@paralino.com**.</string>
     <string name="plans_gift_screen_title">Lets celebrate!</string>
     <string name="plans_gift_screen_box_title">Early Adopter Gift</string>

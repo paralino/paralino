@@ -5,7 +5,9 @@ import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 
 interface IBillingProvider {
+    val isExternalProvider: Boolean
     suspend fun configure(): SubscriptionProviderData
+    suspend fun startDirectPurchase(url: String)
 
     data class SubscriptionProviderData(
         val plans: List<SubscriptionPlanData>,

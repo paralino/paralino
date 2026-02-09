@@ -7,6 +7,7 @@ import app.paralino.core.provider.IBillingProvider
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserConfigRepository
+import app.paralino.core.utils.extensions.openUri
 
 class BillingProviderAndroid(
     private val appClass: CoreAppClass,
@@ -14,7 +15,11 @@ class BillingProviderAndroid(
     private val userConfigRepo: UserConfigRepository,
     private val remoteConfigRepo: RemoteConfigRepository
 ) : IBillingProvider {
+
+    override val isExternalProvider: Boolean = true
+
     override suspend fun configure(): IBillingProvider.SubscriptionProviderData {
+        val billingUserId = userConfigRepo.ensureAndGetBillingUserId()
         return loadAndGetProducts()
     }
 
@@ -46,10 +51,16 @@ class BillingProviderAndroid(
         planType: PlanType,
         newProductPlanId: String
     ) {
-        // TODO add billing
+        // NO-OP
+    }
+
+    override suspend fun startDirectPurchase(
+        url: String
+    ) {
+        appClass.openUri(url)
     }
 
     suspend fun restorePurchase() {
-        // TODO add billing
+        // NO-OP
     }
 }

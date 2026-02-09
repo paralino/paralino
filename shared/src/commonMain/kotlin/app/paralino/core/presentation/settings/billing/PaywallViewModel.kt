@@ -5,7 +5,9 @@ import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
 import app.paralino.core.domain.user.RefreshEverythingUseCase
+import app.paralino.core.domain.user.StartDirectCheckoutUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
@@ -28,6 +30,7 @@ import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.poll
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.channels.Channel
@@ -38,6 +41,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -51,6 +55,7 @@ class PaywallViewModel(
     private val deviceApiProvider: IDeviceApiProvider,
     private val appRatingManager: AppRatingManager,
     private val appConfig: AppConfigRepository,
+    private val directCheckout: StartDirectCheckoutUseCase,
     val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider
 ) : CoreViewModel() {
@@ -142,7 +147,8 @@ class PaywallViewModel(
                     try {
                         poll(
                             firstDelayMillis = 3.seconds.inWholeMilliseconds,
-                            delay = 2.seconds.inWholeMilliseconds
+                            delay = 2.seconds.inWholeMilliseconds,
+                            timeout = 15.seconds.inWholeMilliseconds
                         ) {
                             userRepo.refreshUserMaybe(timeDelayMillis = 0)
                             delay(200)
@@ -228,23 +234,27 @@ class PaywallViewModel(
 
                     PaywallScreenStep.PAYWALL -> {
                         val selectedPlan = uiState.value.selectedPlan
-                        val selectedBillingPeriod = selectedPlan?.selectedBillingPeriod
                         if (!uiState.value.canMakePurchaseOnThisPlatform) {
                             _eventChannel.trySend(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
                         } else if (selectedPlan == null) {
                             messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
                         } else if (selectedPlan.type.isPremium) {
-                            if (selectedBillingPeriod == null) {
-                                messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
+                            if (billingProvider.isExternalProvider) {
+                                startDirectSession()
                             } else {
-                                _uiState.update { it.copy(isPurchaseButtonLoading = true) }
-                                coroutineScope.launch {
-                                    _eventChannel.send(
-                                        PaywallScreenEvent.OnStartPurchase(
-                                            planType = selectedPlan.type,
-                                            newPlanProductId = selectedBillingPeriod.productPlanId
+                                val selectedBillingPeriod = selectedPlan.selectedBillingPeriod
+                                if (selectedBillingPeriod == null) {
+                                    messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
+                                } else {
+                                    _uiState.update { it.copy(isPurchaseButtonLoading = true) }
+                                    coroutineScope.launch {
+                                        _eventChannel.send(
+                                            PaywallScreenEvent.OnStartPurchase(
+                                                planType = selectedPlan.type,
+                                                newPlanProductId = selectedBillingPeriod.productPlanId
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         } else {
@@ -255,7 +265,7 @@ class PaywallViewModel(
             }
 
             PaywallScreenUiEvent.RestorePurchase -> {
-                if (uiState.value.canMakePurchaseOnThisPlatform) {
+                if (uiState.value.canMakePurchaseOnThisPlatform && uiState.value.canRestorePurchases) {
                     _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
                     coroutineScope.launch {
                         _eventChannel.send(PaywallScreenEvent.OnRestorePurchase)
@@ -476,6 +486,8 @@ class PaywallViewModel(
             },
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
+            isPlatformBillingSupported = !billingProvider.isExternalProvider,
+            canRestorePurchases = !billingProvider.isExternalProvider,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
             faq = currentState?.faq ?: getFaqSection(config),
             isPromoCodeSectionVisible = currentState?.isPromoCodeSectionVisible ?: false,
@@ -634,5 +646,27 @@ class PaywallViewModel(
         } else {
             return false
         }
+    }
+
+    private fun startDirectSession() {
+        directCheckout.createCheckout(
+            preselectedPlan = _uiState.value.selectedPlan?.type
+        )
+            .mapToPayload { it }
+            .onEach { result ->
+                _uiState.update { it.copy(isPurchaseButtonLoading = result is Payload.Loading) }
+                when (result) {
+                    is Payload.Success -> {
+                        billingProvider.startDirectPurchase(url = result.data.url)
+                    }
+
+                    Payload.Loading -> {}
+
+                    is Payload.Error<*> -> {
+                        showSnackbar(result.exception.errorString())
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
     }
 }

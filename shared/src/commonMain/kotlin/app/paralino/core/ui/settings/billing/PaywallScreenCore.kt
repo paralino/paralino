@@ -453,7 +453,7 @@ private fun ColumnScope.PaywallScreen(
         onEvent = onEvent
     )
 
-    if (state.selectedPlan != null && state.canMakePurchaseOnThisPlatform) {
+    if (state.selectedPlan != null && state.canMakePurchaseOnThisPlatform && state.isPlatformBillingSupported) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
             BillingPeriodOptions(
                 modifier = Modifier
@@ -607,7 +607,7 @@ private fun ColumnScope.PaywallScreen(
 
     PaywallUserReviewsSection()
 
-    if (!state.screenType.isOnboarding) {
+    if (!state.screenType.isOnboarding && state.canMakePurchaseOnThisPlatform && state.isPlatformBillingSupported) {
         Column(
             modifier = Modifier
                 .padding(top = 40.dp)
@@ -697,14 +697,16 @@ private fun ColumnScope.PaywallScreen(
         }
     }
 
-    SettingsActionItem(
-        modifier = Modifier.padding(horizontal = 20.dp),
-        name = stringResource(MR.strings.paywall_button_restore),
-        icon = CoreAppIcons.Sync.asPainterResource(),
-        type = SettingsActionItemType.Action,
-        onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) },
-        onLongClick = { onEvent(PaywallScreenUiEvent.RequestPromoCode) }
-    )
+    if (state.canRestorePurchases) {
+        SettingsActionItem(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            name = stringResource(MR.strings.paywall_button_restore),
+            icon = CoreAppIcons.Sync.asPainterResource(),
+            type = SettingsActionItemType.Action,
+            onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) },
+            onLongClick = { onEvent(PaywallScreenUiEvent.RequestPromoCode) }
+        )
+    }
 
     Spacer(modifier = Modifier.size(8.dp))
     Spacer(modifier = Modifier.size(with(density) { bottomCardHeight.toDp() }))

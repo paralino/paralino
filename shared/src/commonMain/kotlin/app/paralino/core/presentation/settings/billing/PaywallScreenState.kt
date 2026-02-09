@@ -23,6 +23,8 @@ data class PaywallScreenState(
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,
     val faq: FaqSectionState?,
+    val isPlatformBillingSupported: Boolean,
+    val canRestorePurchases: Boolean,
     val isPromoCodeSectionVisible: Boolean,
     val promoCode: String,
     val screenStep: PaywallScreenStep,
@@ -40,6 +42,7 @@ data class PaywallScreenState(
     val canMakePurchaseOnThisPlatform: Boolean = when (currentPlan?.currentPlanProvider) {
         PlanProvider.APPLE_APP_STORE -> DeviceType.current == DeviceType.iOS
         PlanProvider.GOOGLE_PLAY_STORE -> DeviceType.current == DeviceType.Android
+        PlanProvider.WEB_POLAR -> DeviceType.current == DeviceType.Android
         PlanProvider.PARALINO -> false
         null -> true
     }

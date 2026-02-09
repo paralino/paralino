@@ -78,6 +78,8 @@ enum class ServerFunction constructor(
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
     ACCOUNT_CHANGE_EMAIL(method = "PATCH", path = "/user/email"),
 
+    CREATE_WEB_CHECKOUT_SESSION(method = "POST", path = "/billing/web_checkout"),
+
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
     BILLING_CONFIG(method = "GET", path = "/billing-config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
     LOGIN(method = "POST", path = "/login", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false)

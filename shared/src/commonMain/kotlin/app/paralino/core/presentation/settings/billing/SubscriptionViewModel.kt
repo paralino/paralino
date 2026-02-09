@@ -82,6 +82,7 @@ class SubscriptionViewModel(
                 isCurrentPlatform = when (it.plan.provider) {
                     PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
                     PlanProvider.GOOGLE_PLAY_STORE -> deviceApi.deviceType == DeviceType.Android
+                    PlanProvider.WEB_POLAR -> false
                     PlanProvider.PARALINO -> false
                 },
                 isFromParalino = it.plan.provider == PlanProvider.PARALINO

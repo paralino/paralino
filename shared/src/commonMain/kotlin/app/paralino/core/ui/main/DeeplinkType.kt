@@ -27,11 +27,13 @@ sealed class DeeplinkType() {
 
     data class PaywallScreen(
         override val deeplink: String,
-        val type: String?
+        val type: String?,
+        val action: String?
     ) : DeeplinkType() {
 
         companion object {
             const val argumentType: String = "type"
+            const val argumentAction: String = "action"
             fun buildUrl(): String {
                 return "https://$host/$pathBilling"
             }
@@ -200,7 +202,8 @@ sealed class DeeplinkType() {
 
                 path.matches(pathBilling) -> {
                     val type = cleanDeeplink.parameters.get(PaywallScreen.argumentType)
-                    DeeplinkType.PaywallScreen(deeplink = deeplink, type = type)
+                    val action = cleanDeeplink.parameters.get(PaywallScreen.argumentAction)
+                    DeeplinkType.PaywallScreen(deeplink = deeplink, type = type, action = action)
                 }
 
                 path.matches(pathPushNotificationService) -> {
