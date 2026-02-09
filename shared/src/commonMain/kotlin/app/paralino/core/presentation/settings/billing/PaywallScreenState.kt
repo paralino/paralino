@@ -2,6 +2,8 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.intl.Locale
+import app.paralino.core.MR
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
@@ -10,9 +12,12 @@ import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionInfoNotice
 import app.paralino.core.provider.current
+import app.paralino.core.provider.localizedString
+import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import org.jetbrains.compose.resources.DrawableResource
 
 data class PaywallScreenState(
     val freePlanInfo: PlanInfoState,
@@ -23,6 +28,7 @@ data class PaywallScreenState(
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,
     val faq: FaqSectionState?,
+    val appFlavor: AppFlavor,
     val isPlatformBillingSupported: Boolean,
     val canRestorePurchases: Boolean,
     val isPromoCodeSectionVisible: Boolean,
@@ -41,8 +47,19 @@ data class PaywallScreenState(
     val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
     val canMakePurchaseOnThisPlatform: Boolean = when (currentPlan?.currentPlanProvider) {
         PlanProvider.APPLE_APP_STORE -> DeviceType.current == DeviceType.iOS
-        PlanProvider.GOOGLE_PLAY_STORE -> DeviceType.current == DeviceType.Android
-        PlanProvider.WEB_POLAR -> DeviceType.current == DeviceType.Android
+
+        PlanProvider.GOOGLE_PLAY_STORE -> when (appFlavor) {
+            AppFlavor.ANDROID_GOOGLE -> true
+            AppFlavor.ANDROID_DIRECT,
+            AppFlavor.APPLE_IOS -> false
+        }
+
+        PlanProvider.WEB_POLAR -> when (appFlavor) {
+            AppFlavor.ANDROID_DIRECT -> true
+            AppFlavor.ANDROID_GOOGLE,
+            AppFlavor.APPLE_IOS -> false
+        }
+
         PlanProvider.PARALINO -> false
         null -> true
     }
@@ -50,6 +67,56 @@ data class PaywallScreenState(
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod?.takeIf {
         canMakePurchaseOnThisPlatform
+    }
+
+    val continueButtonType: PaywallContinueButtonType = when (screenStep) {
+        PaywallScreenStep.PAYWALL -> {
+            if (!canMakePurchaseOnThisPlatform) {
+                PaywallContinueButtonType.Ok
+            } else if (selectedBillingPeriod?.trialDurationDays != null) {
+                PaywallContinueButtonType.FreeTrial(selectedBillingPeriod.trialDurationDays)
+            } else {
+                when (currentPlan?.currentPlanProvider) {
+                    PlanProvider.APPLE_APP_STORE -> {
+                        if (DeviceType.current == DeviceType.iOS) {
+                            PaywallContinueButtonType.Continue
+                        } else {
+                            PaywallContinueButtonType.Ok
+                        }
+                    }
+
+                    PlanProvider.GOOGLE_PLAY_STORE -> {
+                        if (appFlavor == AppFlavor.ANDROID_GOOGLE) {
+                            PaywallContinueButtonType.Continue
+                        } else {
+                            PaywallContinueButtonType.Ok
+                        }
+                    }
+
+                    PlanProvider.WEB_POLAR -> {
+                        if (appFlavor == AppFlavor.ANDROID_DIRECT) {
+                            PaywallContinueButtonType.ManageExternal
+                        } else {
+                            PaywallContinueButtonType.Ok
+                        }
+                    }
+
+                    PlanProvider.PARALINO -> PaywallContinueButtonType.Ok
+
+                    null -> {
+                        when (appFlavor) {
+                            AppFlavor.ANDROID_GOOGLE -> PaywallContinueButtonType.Continue
+                            AppFlavor.ANDROID_DIRECT -> PaywallContinueButtonType.ContinueExternal
+                            AppFlavor.APPLE_IOS -> PaywallContinueButtonType.Continue
+                        }
+                    }
+                }
+            }
+        }
+
+        else -> {
+            PaywallContinueButtonType.Continue
+        }
     }
 
     val fullFeatureTable: FeatureTableState = FeatureTableState.constructFeaturesTable(
@@ -156,6 +223,37 @@ data class PlanBillingPeriodState(
 
 enum class PaywallScreenStep {
     ONBOARDING, DEMO, LOCATION_HISTORY, PAYWALL
+}
+
+sealed interface PaywallContinueButtonType {
+    val buttonText: String
+    val icon: DrawableResource?
+    data object Continue: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_continue.localizedString()
+        override val icon: DrawableResource? = null
+    }
+
+    data object ContinueExternal: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_continue.localizedString()
+        override val icon: DrawableResource = CoreAppIcons.ArrowOpenNew
+    }
+
+    data object Ok: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.button_ok.localizedString()
+        override val icon: DrawableResource? = null
+    }
+
+    data object ManageExternal: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_manage.localizedString()
+        override val icon: DrawableResource = CoreAppIcons.ArrowOpenNew
+    }
+
+    data class FreeTrial(val trialDays: Int): PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_free.localizedString(
+            "$trialDays"
+        )
+        override val icon: DrawableResource? = null
+    }
 }
 
 data class FaqSectionState(

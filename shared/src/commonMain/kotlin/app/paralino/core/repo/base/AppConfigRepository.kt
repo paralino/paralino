@@ -2,6 +2,7 @@ package app.paralino.core.repo.base
 
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.BackendResourceIDs
 
@@ -22,4 +23,5 @@ class AppConfigRepository(
     val resourceIds: BackendResourceIDs get() = appBuildConfig.resourceIds
     val hasGoogleMaps: Boolean get() = appBuildConfig.hasGoogleMaps
     val hasNotificationSocketService: Boolean get() = appBuildConfig.hasNotificationSocketService
+    val appFlavor: AppFlavor get() = appBuildConfig.appFlavor
 }

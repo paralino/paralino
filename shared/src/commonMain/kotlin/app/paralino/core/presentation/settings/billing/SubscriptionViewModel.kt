@@ -1,6 +1,9 @@
 package app.paralino.core.presentation.settings.billing
 
+import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.AppFlavor
+import app.paralino.core.models.Payload
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
@@ -13,6 +16,8 @@ import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.AppSnackbarPayload
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.mapToPayload
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,11 +32,15 @@ class SubscriptionViewModel(
     private val userRepo: UserRepository,
     private val userConfigRepo: UserConfigRepository,
     private val deviceApi: IDeviceApiProvider,
+    private val getWebPortal: GetDirectCheckoutWebPortalUseCase
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
         SubscriptionScreenState(
-            subscriptionState = getPlanState(userRepo.userPlans.value.highestValidPlan),
+            subscriptionState = getPlanState(
+                plan = userRepo.userPlans.value.highestValidPlan,
+                previousState = null
+            ),
             isLoading = true,
             canShowMoreInfo = appConfig.isInAppDevMode,
             featureTableState = constructFeatureTable()
@@ -45,9 +54,12 @@ class SubscriptionViewModel(
     init {
         userRepo.userPlans
             .onEach { plans ->
-                _uiState.update {
-                    it.copy(
-                        subscriptionState = getPlanState(plans.highestValidPlan),
+                _uiState.update { state ->
+                    state.copy(
+                        subscriptionState = getPlanState(
+                            plan = plans.highestValidPlan,
+                            previousState = state.subscriptionState
+                        ),
                         featureTableState = constructFeatureTable()
                     )
                 }
@@ -72,19 +84,40 @@ class SubscriptionViewModel(
         }
     }
 
-    private fun getPlanState(plan: UserPlan?): SubscriptionInfoState? {
+    private fun getPlanState(
+        plan: UserPlan?,
+        previousState: SubscriptionInfoState?
+    ): SubscriptionInfoState? {
         return plan?.let {
             SubscriptionInfoState(
                 name = it.config.adjustedPlanName,
                 expiresAt = it.plan.expiresAt?.toString() ?: "N/A",
                 billingPeriod = it.plan.billingPeriod.name,
                 hasPremiumPlan = it.plan.planTypeEnum.isPremium,
-                isCurrentPlatform = when (it.plan.provider) {
+                canManagePlan = when (it.plan.provider) {
                     PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
-                    PlanProvider.GOOGLE_PLAY_STORE -> deviceApi.deviceType == DeviceType.Android
-                    PlanProvider.WEB_POLAR -> false
+
+                    PlanProvider.GOOGLE_PLAY_STORE -> when (appConfig.appFlavor) {
+                        AppFlavor.ANDROID_GOOGLE -> true
+                        AppFlavor.ANDROID_DIRECT,
+                        AppFlavor.APPLE_IOS -> false
+                    }
+
+                    PlanProvider.WEB_POLAR -> when (appConfig.appFlavor) {
+                        AppFlavor.ANDROID_DIRECT -> true
+                        AppFlavor.ANDROID_GOOGLE,
+                        AppFlavor.APPLE_IOS -> false
+                    }
+
                     PlanProvider.PARALINO -> false
                 },
+                canChangePlanOnDevice = when (it.plan.provider) {
+                    PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
+                    PlanProvider.GOOGLE_PLAY_STORE -> appConfig.appFlavor == AppFlavor.ANDROID_GOOGLE
+                    PlanProvider.WEB_POLAR,
+                    PlanProvider.PARALINO -> false
+                },
+                isManageLoading = previousState?.isManageLoading ?: false,
                 isFromParalino = it.plan.provider == PlanProvider.PARALINO
             )
         }
@@ -140,6 +173,51 @@ class SubscriptionViewModel(
                     else -> {}
                 }
             }
+
+            SubscriptionScreenUiEvent.OnManagePlanClick -> {
+                val state = uiState.value.subscriptionState ?: return
+                if (state.isManageLoading) return
+                if (!state.canManagePlan) return
+
+                when (appConfig.appFlavor) {
+                    AppFlavor.ANDROID_DIRECT -> {
+                        requestDirectBillingUrl()
+                    }
+
+                    AppFlavor.ANDROID_GOOGLE,
+                    AppFlavor.APPLE_IOS -> {
+                        _eventChannel.trySend(SubscriptionScreenEvent.OpenNativeBillingStorePage)
+                    }
+                }
+            }
         }
+    }
+
+    private fun requestDirectBillingUrl() {
+        getWebPortal.getWebPortalUrl()
+            .mapToPayload { it }
+            .onEach { result ->
+                _uiState.update {
+                    it.copy(
+                        subscriptionState = it.subscriptionState?.copy(
+                            isManageLoading = result is Payload.Loading
+                        )
+                    )
+                }
+                when (result) {
+                    is Payload.Success -> {
+                        _eventChannel.trySend(
+                            SubscriptionScreenEvent.OpenDirectPlanManagementPage(url = result.data.url)
+                        )
+                    }
+
+                    Payload.Loading -> {}
+
+                    is Payload.Error<*> -> {
+                        showSnackbar(result.exception.errorString())
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
     }
 }

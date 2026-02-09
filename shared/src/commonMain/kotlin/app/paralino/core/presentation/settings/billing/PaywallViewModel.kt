@@ -4,6 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
+import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.StartDirectCheckoutUseCase
 import app.paralino.core.logg
@@ -56,6 +57,7 @@ class PaywallViewModel(
     private val appRatingManager: AppRatingManager,
     private val appConfig: AppConfigRepository,
     private val directCheckout: StartDirectCheckoutUseCase,
+    private val getWebPortal: GetDirectCheckoutWebPortalUseCase,
     val valueFormatter: IValueFormatter,
     val billingProvider: IBillingProvider
 ) : CoreViewModel() {
@@ -486,6 +488,7 @@ class PaywallViewModel(
             },
             isLoading = currentState?.isLoading ?: true,
             alertDialog = currentState?.alertDialog,
+            appFlavor = appConfig.appFlavor,
             isPlatformBillingSupported = !billingProvider.isExternalProvider,
             canRestorePurchases = !billingProvider.isExternalProvider,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
@@ -649,24 +652,44 @@ class PaywallViewModel(
     }
 
     private fun startDirectSession() {
-        directCheckout.createCheckout(
-            preselectedPlan = _uiState.value.selectedPlan?.type
-        )
-            .mapToPayload { it }
-            .onEach { result ->
-                _uiState.update { it.copy(isPurchaseButtonLoading = result is Payload.Loading) }
-                when (result) {
-                    is Payload.Success -> {
-                        billingProvider.startDirectPurchase(url = result.data.url)
-                    }
+        if (uiState.value.currentPlan != null) {
+            getWebPortal.getWebPortalUrl()
+                .mapToPayload { it }
+                .onEach { result ->
+                    _uiState.update { it.copy(isPurchaseButtonLoading = result is Payload.Loading) }
+                    when (result) {
+                        is Payload.Success -> {
+                            billingProvider.startDirectPurchase(url = result.data.url)
+                        }
 
-                    Payload.Loading -> {}
+                        Payload.Loading -> {}
 
-                    is Payload.Error<*> -> {
-                        showSnackbar(result.exception.errorString())
+                        is Payload.Error<*> -> {
+                            showSnackbar(result.exception.errorString())
+                        }
                     }
                 }
-            }
-            .launchIn(coroutineScope)
+                .launchIn(coroutineScope)
+        } else {
+            directCheckout.createCheckout(
+                preselectedPlan = _uiState.value.selectedPlan?.type
+            )
+                .mapToPayload { it }
+                .onEach { result ->
+                    _uiState.update { it.copy(isPurchaseButtonLoading = result is Payload.Loading) }
+                    when (result) {
+                        is Payload.Success -> {
+                            billingProvider.startDirectPurchase(url = result.data.url)
+                        }
+
+                        Payload.Loading -> {}
+
+                        is Payload.Error<*> -> {
+                            showSnackbar(result.exception.errorString())
+                        }
+                    }
+                }
+                .launchIn(coroutineScope)
+        }
     }
 }

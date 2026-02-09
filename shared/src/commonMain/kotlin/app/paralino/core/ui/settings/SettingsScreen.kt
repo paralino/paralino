@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
@@ -33,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -350,6 +352,7 @@ fun SettingsActionItem(
                     )
                     .padding(12.dp)
             )
+
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -372,6 +375,7 @@ fun SettingsActionItem(
                     }
                 }
             }
+
             when (type) {
                 SettingsActionItemType.Action -> {}
                 SettingsActionItemType.Navigation -> {
@@ -421,6 +425,15 @@ fun SettingsActionItem(
                         }
                     }
                 }
+
+                SettingsActionItemType.Loading -> {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colors.onBackground,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier
+                            .size(22.dp)
+                    )
+                }
             }
         }
         if (description != null) {
@@ -442,5 +455,6 @@ sealed interface SettingsActionItemType {
     object Navigation : SettingsActionItemType
     object Action : SettingsActionItemType
     object Link : SettingsActionItemType
+    object Loading : SettingsActionItemType
     data class Switch(val checked: Boolean) : SettingsActionItemType
 }

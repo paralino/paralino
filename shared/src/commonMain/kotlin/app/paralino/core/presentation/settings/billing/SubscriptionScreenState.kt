@@ -18,15 +18,20 @@ data class SubscriptionInfoState(
     val expiresAt: String,
     val billingPeriod: String,
     val hasPremiumPlan: Boolean,
-    val isCurrentPlatform: Boolean,
+    val canManagePlan: Boolean,
+    val canChangePlanOnDevice: Boolean,
+    val isManageLoading: Boolean,
     val isFromParalino: Boolean,
 )
 
 sealed class SubscriptionScreenEvent() {
     data object OnNavigateBack : SubscriptionScreenEvent()
+    data class OpenDirectPlanManagementPage(val url: String) : SubscriptionScreenEvent()
+    data object OpenNativeBillingStorePage : SubscriptionScreenEvent()
 }
 
 sealed class SubscriptionScreenUiEvent() {
     data class DialogAction(val action: AlertDialogAction) : SubscriptionScreenUiEvent()
     data class OnCellItemClick(val table: FeatureTableItemState, val cellItem: FeatureTableItemValue) : SubscriptionScreenUiEvent()
+    data object OnManagePlanClick : SubscriptionScreenUiEvent()
 }

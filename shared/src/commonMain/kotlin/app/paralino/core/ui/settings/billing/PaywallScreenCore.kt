@@ -925,27 +925,21 @@ private fun PaywallBottomCard(
                     }
                 ) {
                     Text(
-                        text = when (state.screenStep) {
-                            PaywallScreenStep.PAYWALL -> {
-                                if (!state.canMakePurchaseOnThisPlatform) {
-                                    stringResource(MR.strings.button_ok)
-                                } else if (billingPeriodState?.trialDurationDays != null) {
-                                    stringResource(
-                                        MR.strings.paywall_start_button_free,
-                                        "${billingPeriodState.trialDurationDays}"
-                                    )
-                                } else {
-                                    stringResource(MR.strings.paywall_start_button_continue)
-                                }
-                            }
-
-                            else -> {
-                                stringResource(MR.strings.button_continue)
-                            }
-                        }.annotatedBoldCompose(),
+                        text = state.continueButtonType.buttonText.annotatedBoldCompose(),
                         style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.Bold),
                         textAlign = TextAlign.Center
                     )
+
+                    if (state.continueButtonType.icon != null) {
+                        Icon(
+                            painter = state.continueButtonType.icon!!.asPainterResource(),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.onPrimary,
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .size(18.dp)
+                        )
+                    }
                 }
             }
 

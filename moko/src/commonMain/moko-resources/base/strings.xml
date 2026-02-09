@@ -338,6 +338,7 @@
     <string name="paywall_free_trial_notice_main">**%1$s days free trial**\nNo payment now - try all the features completely free for the first **%1$s days**.</string>
     <string name="paywall_start_button_free">Start %s days free trial</string>
     <string name="paywall_start_button_continue">Continue</string>
+    <string name="paywall_start_button_manage">Change</string>
     <string name="paywall_cancellation_notice">You can easily cancel anytime</string>
     <string name="paywall_cancellation_notice_trial">No payment now, easily cancel anytime</string>
     <string name="paywall_button_restore">Restore purchases</string>

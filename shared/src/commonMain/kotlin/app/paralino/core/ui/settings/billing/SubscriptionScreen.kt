@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,7 @@ fun SubscriptionScreenCore(
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
+    val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(key1 = Unit) {
         vm.events.collectLatest { event ->
@@ -59,9 +61,18 @@ fun SubscriptionScreenCore(
                     onNavigateBack()
                 }
 
+                is SubscriptionScreenEvent.OpenDirectPlanManagementPage -> {
+                    uriHandler.openUri(event.url)
+                }
+
+                SubscriptionScreenEvent.OpenNativeBillingStorePage -> {
+                    openBillingStore()
+                }
+
                 null -> {
                     /* do nothing */
                 }
+
             }
         }
     }
@@ -110,7 +121,7 @@ fun SubscriptionScreenCore(
             if (uiState.subscriptionState != null) {
                 if (uiState.subscriptionState?.hasPremiumPlan == false) {
                     NotSubscribedSection(openPaywall = openPaywall)
-                } else if (uiState.subscriptionState?.isCurrentPlatform == true) {
+                } else if (uiState.subscriptionState?.canManagePlan == true) {
                     Text(
                         text = stringResource(
                             MR.strings.plans_management_info_plan,
@@ -123,14 +134,26 @@ fun SubscriptionScreenCore(
                     SettingsActionItem(
                         name = stringResource(MR.strings.plans_management_action_manage),
                         icon = CoreAppIcons.Edit.asPainterResource(),
-                        type = SettingsActionItemType.Link
+                        type = if (uiState.subscriptionState?.isManageLoading == true) {
+                            SettingsActionItemType.Loading
+                        } else {
+                            SettingsActionItemType.Link
+                        }
                     ) {
-                        openBillingStore()
+                        vm.onEvent(SubscriptionScreenUiEvent.OnManagePlanClick)
                     }
 
                     SettingsActionItem(
-                        name = stringResource(MR.strings.plans_management_action_change),
-                        icon = CoreAppIcons.Edit.asPainterResource(),
+                        name = if (uiState.subscriptionState?.canChangePlanOnDevice == true) {
+                            stringResource(MR.strings.plans_management_action_change)
+                        } else {
+                            stringResource(MR.strings.plans_management_action_explore)
+                        },
+                        icon = if (uiState.subscriptionState?.canChangePlanOnDevice == true) {
+                            CoreAppIcons.Edit.asPainterResource()
+                        } else {
+                            CoreAppIcons.StarFamily.asPainterResource()
+                        },
                         type = SettingsActionItemType.Navigation
                     ) {
                         openPaywall()
