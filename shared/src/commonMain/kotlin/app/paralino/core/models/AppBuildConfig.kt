@@ -17,7 +17,7 @@ data class AppBuildConfig constructor(
     val logErrorsToRemote: Boolean,
     val hasGoogleMaps: Boolean,
     val hasNotificationSocketService: Boolean,
-    val maptilerApiKey: String,
+    val appFlavor: AppFlavor
 ) {
     val endpoint = "$serverUrl/v1"
     val resourceIds = BackendResourceIDs
@@ -25,6 +25,12 @@ data class AppBuildConfig constructor(
     companion object {
         lateinit var instance: AppBuildConfig
     }
+}
+
+enum class AppFlavor constructor(val key: String) {
+    ANDROID_GOOGLE("android_google"),
+    ANDROID_DIRECT("android_direct"),
+    APPLE_IOS("ios")
 }
 
 enum class AppHost constructor(val key: String) {

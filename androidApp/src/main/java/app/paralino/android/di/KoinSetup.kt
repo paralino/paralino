@@ -54,6 +54,7 @@ import app.paralino.core.domain.notifications.IGroupActivityNotificationPresente
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
 import app.paralino.core.models.AppBuildConfig
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.AppHost
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
@@ -200,7 +201,11 @@ object KoinSetup {
                 logErrorsToRemote = true,
                 hasGoogleMaps = BuildConfig.hasGoogleMaps,
                 hasNotificationSocketService = BuildConfig.hasNotificationSocketService,
-                maptilerApiKey = BuildConfig.maptilerAccessToken
+                appFlavor = when (BuildConfig.FLAVOR) {
+                    "direct" -> AppFlavor.ANDROID_DIRECT
+                    "playStore" -> AppFlavor.ANDROID_GOOGLE
+                    else -> throw IllegalArgumentException("Wrong app flavor")
+                }
             )
         }
         single {

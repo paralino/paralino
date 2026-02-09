@@ -73,8 +73,6 @@ android {
 
         manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
         resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
-        buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
-        buildConfigField("String", "maptilerAccessToken", props["MAPTILER_ACCESS_TOKEN"] as String)
 
         // room schema export
         javaCompileOptions {
@@ -113,6 +111,7 @@ android {
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
             props.load(FileInputStream(propsFile))
+            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
             buildConfigField("String", "serverUrl", props["productionServerUrl"] as String)
             buildConfigField("String", "serverKey", props["productionServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
@@ -131,6 +130,7 @@ android {
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
             props.load(FileInputStream(propsFile))
+            buildConfigField("String", "revenueCatApiKey", "\"\"")
             buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
             buildConfigField("String", "serverKey", props["devServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
