@@ -152,7 +152,7 @@ class SubscriptionViewModel(
             validUntil = plan?.plan?.let { plan ->
                 plan.expiresAt?.let { expiresAt ->
                     valueFormatter.formatSimpleDateTime(
-                        timeUTC = expiresAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+                        timeUTC = expiresAt.toLocalDateTime(TimeZone.UTC),
                         optionalYear = false,
                         optionalMonth = false,
                         showTodayInfo = true
