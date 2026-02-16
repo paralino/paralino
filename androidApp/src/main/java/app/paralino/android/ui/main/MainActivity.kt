@@ -32,6 +32,7 @@ import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.core.MR
 import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
+import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.presentation.main.MainViewModel
@@ -291,6 +292,7 @@ fun MainAppScreen(
             }
 
             is DeeplinkType.PaywallScreen -> {
+                logg.w("billing", "Open billing deeplink -> type: ${pendingDeeplink.type} - action: ${pendingDeeplink.action}")
                 appState.navController.navigate(
                     AppScreen.MainHome.BillingPaywall.route(
                         groupId = null,

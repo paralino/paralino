@@ -8,6 +8,7 @@ import app.paralino.core.domain.user.AppAccountStateMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.localizedString
@@ -146,6 +147,7 @@ class MainViewModel constructor(
             }
 
             is DeeplinkType.PaywallScreen -> {
+                logg.w("billing", "Set billing deeplink")
                 _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
             }
 
