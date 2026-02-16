@@ -5,6 +5,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
 data class SubscriptionScreenState(
     val subscriptionState: SubscriptionInfoState? = null,
+    val detailsState: SubscriptionDetailsState = SubscriptionDetailsState(),
     val alertDialog: MainAlertDialog? = null,
     val isLoading: Boolean = true,
     val canShowMoreInfo: Boolean = false,
@@ -14,14 +15,18 @@ data class SubscriptionScreenState(
 }
 
 data class SubscriptionInfoState(
-    val name: String,
-    val expiresAt: String,
-    val billingPeriod: String,
     val hasPremiumPlan: Boolean,
     val canManagePlan: Boolean,
     val canChangePlanOnDevice: Boolean,
     val isManageLoading: Boolean,
     val isFromParalino: Boolean,
+)
+
+data class SubscriptionDetailsState(
+    val planName: String = "---",
+    val billingPeriod: String? = null,
+    val validUntil: String? = null,
+    val planProviderText: String? = null
 )
 
 sealed class SubscriptionScreenEvent() {

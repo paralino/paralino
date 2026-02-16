@@ -1,14 +1,19 @@
 package app.paralino.core.presentation.settings.billing
 
+import app.paralino.core.MR
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.PlanBillingPeriod
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
@@ -26,13 +31,16 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class SubscriptionViewModel(
     private val appConfig: AppConfigRepository,
     private val userRepo: UserRepository,
     private val userConfigRepo: UserConfigRepository,
     private val deviceApi: IDeviceApiProvider,
-    private val getWebPortal: GetDirectCheckoutWebPortalUseCase
+    private val getWebPortal: GetDirectCheckoutWebPortalUseCase,
+    private val valueFormatter: IValueFormatter
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -40,6 +48,10 @@ class SubscriptionViewModel(
             subscriptionState = getPlanState(
                 plan = userRepo.userPlans.value.highestValidPlan,
                 previousState = null
+            ),
+            detailsState = getDetailsState(
+                plan = userRepo.userPlans.value.highestValidPlan,
+                config = userRepo.userPlans.value.highestValidPlanConfig
             ),
             isLoading = true,
             canShowMoreInfo = appConfig.isInAppDevMode,
@@ -59,6 +71,10 @@ class SubscriptionViewModel(
                         subscriptionState = getPlanState(
                             plan = plans.highestValidPlan,
                             previousState = state.subscriptionState
+                        ),
+                        detailsState = getDetailsState(
+                            plan = plans.highestValidPlan,
+                            config = plans.highestValidPlanConfig
                         ),
                         featureTableState = constructFeatureTable()
                     )
@@ -90,9 +106,6 @@ class SubscriptionViewModel(
     ): SubscriptionInfoState? {
         return plan?.let {
             SubscriptionInfoState(
-                name = it.config.adjustedPlanName,
-                expiresAt = it.plan.expiresAt?.toString() ?: "N/A",
-                billingPeriod = it.plan.billingPeriod.name,
                 hasPremiumPlan = it.plan.planTypeEnum.isPremium,
                 canManagePlan = when (it.plan.provider) {
                     PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
@@ -121,6 +134,47 @@ class SubscriptionViewModel(
                 isFromParalino = it.plan.provider == PlanProvider.PARALINO
             )
         }
+    }
+
+    private fun getDetailsState(
+        plan: UserPlan?,
+        config: PlanConfig
+    ): SubscriptionDetailsState {
+        return SubscriptionDetailsState(
+            planName = config.adjustedPlanName,
+            billingPeriod = when (plan?.plan?.billingPeriod) {
+                PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
+                PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
+                PlanBillingPeriod.ANNUALLY -> MR.strings.plan_period_annually_name.localizedString()
+                PlanBillingPeriod.ONETIME -> "N/A"
+                else -> null
+            },
+            validUntil = plan?.plan?.let { plan ->
+                plan.expiresAt?.let { expiresAt ->
+                    valueFormatter.formatSimpleDateTime(
+                        timeUTC = expiresAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+                        optionalYear = false,
+                        optionalMonth = false,
+                        showTodayInfo = true
+                    )
+                } ?: "N/A"
+            },
+            planProviderText = when (plan?.plan?.provider) {
+                PlanProvider.APPLE_APP_STORE -> {
+                    MR.strings.plans_management_providerInfo_apple.localizedString()
+                }
+                PlanProvider.GOOGLE_PLAY_STORE -> {
+                    MR.strings.plans_management_providerInfo_google.localizedString()
+                }
+                PlanProvider.WEB_POLAR -> {
+                    MR.strings.plans_management_providerInfo_polar.localizedString()
+                }
+                PlanProvider.PARALINO -> {
+                    MR.strings.plans_management_providerInfo_paralino.localizedString()
+                }
+                else -> null
+            }
+        )
     }
 
     private fun constructFeatureTable(): FeatureTableState {
