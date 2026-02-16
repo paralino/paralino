@@ -312,7 +312,7 @@
     <string name="plans_banner_inline_personal_space">Track more devices and get more location history!</string>
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
-    <string name="plans_management_screen_title">Subscription</string>
+    <string name="plans_management_screen_title">Membership</string>
     <string name="plans_management_info_not_subscribed">You are currently not subscribed to a Premium plan!</string>
     <string name="plans_management_info_wrong_platform_title">You can not manage your subscription on this device!</string>
     <string name="plans_management_info_wrong_platform_message">Use the device you originally used for purchasing.</string>
