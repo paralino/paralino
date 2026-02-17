@@ -7,6 +7,11 @@ fun Float.roundToPrecision(decimalPlaces: Int): Float {
     return kotlin.math.ceil(this * factor) / factor
 }
 
+fun Double.roundToPrecision(decimalPlaces: Int): Double {
+    val factor = 10f.pow(decimalPlaces) // For example, 10^4 = 10000 for 4 decimal places
+    return kotlin.math.ceil(this * factor) / factor
+}
+
 fun Float?.isLocationInaccurate(): Boolean {
     return (this ?: 0f) >= 200f || this == 100f
 }
