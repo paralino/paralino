@@ -697,7 +697,7 @@ private fun ColumnScope.PaywallScreen(
         }
     }
 
-    if (state.canRestorePurchases) {
+    if (state.canMakePurchaseOnThisPlatform && state.canRestorePurchases) {
         SettingsActionItem(
             modifier = Modifier.padding(horizontal = 20.dp),
             name = stringResource(MR.strings.paywall_button_restore),
