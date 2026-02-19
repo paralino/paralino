@@ -62,6 +62,7 @@ import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificatio
 import app.paralino.core.domain.notifications.processors.PlaceDeletedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceUpdatedNotificationProcessor
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
@@ -328,6 +329,7 @@ val coreModule = module {
     single { GroupValidityVerification(get(), get(), get(), get()) }
     single { LocationSharingManager(get(), get()) }
     single { UserSessionMonitor() }
+    single { BillingRefreshMonitor() }
     single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }

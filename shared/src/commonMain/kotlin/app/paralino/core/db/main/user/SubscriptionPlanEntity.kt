@@ -12,6 +12,7 @@ data class SubscriptionPlanEntity(
     @ColumnInfo(name = "groupId", defaultValue = "NULL") val groupId: String?,
     @ColumnInfo(name = "ownerUserId", defaultValue = "NULL") val ownerUserId: String?,
     @ColumnInfo(name = "expiresAt", defaultValue = "NULL") val expiresAt: String?,
+    @ColumnInfo(name = "updatedAt", defaultValue = "NULL") val updatedAt: String?,
     @ColumnInfo(name = "groupsLimitOverride", defaultValue = "NULL") val groupsLimitOverride: Long?,
     @ColumnInfo(name = "provider", defaultValue = "NULL") val provider: String?
 )

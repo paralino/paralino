@@ -5,6 +5,7 @@ import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -42,7 +43,8 @@ class MainViewModel constructor(
     private val expiredSessionHandler: ExpiredSessionHandler,
     private val appUpdateManager: IAppUpdateManager,
     private val premiumStatusManager: PremiumStatusManager,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val billingRefreshMonitor: BillingRefreshMonitor
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(MainActivityState())
@@ -147,8 +149,12 @@ class MainViewModel constructor(
             }
 
             is DeeplinkType.PaywallScreen -> {
-                logg.w("billing", "Set billing deeplink")
-                _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+                if (deeplinkType.action == "refresh") {
+                    billingRefreshMonitor.triggerRefresh()
+                } else {
+                    logg.w("billing", "Set billing deeplink")
+                    _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+                }
             }
 
             is DeeplinkType.PushNotificationServiceScreen -> {

@@ -241,7 +241,7 @@ object KoinSetup {
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get()) }
-        viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { VerifyEmailViewModel(get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get(), get()) }
         viewModel { ChangePasswordViewModel(get(), get(), get(), get()) }
@@ -257,7 +257,7 @@ object KoinSetup {
         viewModel { BlocklistViewModel(get()) }
         viewModel { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
         viewModel { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
-        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { PlanInfoViewModel(get(), get()) }
         viewModel { GeneralInfoViewModel(get(), get()) }
         viewModel { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }

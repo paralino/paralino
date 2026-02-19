@@ -4,6 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
+import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.StartDirectCheckoutUseCase
@@ -31,6 +32,7 @@ import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.annotatedBold
 import app.paralino.core.utils.extensions.errorString
+import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.poll
 import dev.icerock.moko.resources.StringResource
@@ -46,6 +48,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PaywallViewModel(
@@ -59,7 +62,8 @@ class PaywallViewModel(
     private val directCheckout: StartDirectCheckoutUseCase,
     private val getWebPortal: GetDirectCheckoutWebPortalUseCase,
     val valueFormatter: IValueFormatter,
-    val billingProvider: IBillingProvider
+    val billingProvider: IBillingProvider,
+    private val billingRefreshMonitor: BillingRefreshMonitor
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -114,6 +118,10 @@ class PaywallViewModel(
             }
             .launchIn(coroutineScope)
 
+        billingRefreshMonitor.refreshEvent
+            .onEach { onEvent(PaywallScreenUiEvent.RefreshPlans) }
+            .launchIn(coroutineScope)
+
         coroutineScope.launch {
             try {
                 userRepo.refreshUserMaybe()
@@ -143,7 +151,11 @@ class PaywallViewModel(
             }
 
             PaywallScreenUiEvent.RefreshPlans -> {
-                _uiState.update { it.copy(isLoading = true) }
+                if (uiState.value.isLoading) {
+                    return
+                }
+
+                _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
                 coroutineScope.launch {
                     val currentPlan = userRepo.userPlans.value.highestValidPlan
                     try {
@@ -158,7 +170,7 @@ class PaywallViewModel(
                             if (newPlan != currentPlan) {
                                 newPlan
                             } else {
-                                null
+                                newPlan?.plan?.updatedAt?.takeIf { !it.isOlderThan(2.minutes) }
                             }
                         }
 
