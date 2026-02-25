@@ -439,7 +439,7 @@ data class GroupHistoryKeyUploadResult(
 data class HistoryUploadError(
     val groupId: String? = null,
     val key: String,
-    val error: FunctionErrorBody?
+    val error: FunctionErrorBody? = null
 )
 
 @Serializable
