@@ -116,6 +116,9 @@ fun PaywallScreen(
                     )
                 }
             }
+        },
+        openLicenceScreen = {
+            appState.navController.navigate(AppScreen.Settings.LicenceCode.routeSignature)
         }
     )
 

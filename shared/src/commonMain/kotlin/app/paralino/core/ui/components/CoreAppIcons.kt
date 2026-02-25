@@ -55,6 +55,8 @@ import paralino.shared.generated.resources.ic_info_circle
 import paralino.shared.generated.resources.ic_key
 import paralino.shared.generated.resources.ic_launcher_foreground
 import paralino.shared.generated.resources.ic_library_books
+import paralino.shared.generated.resources.ic_license_tag
+import paralino.shared.generated.resources.ic_license_ticket
 import paralino.shared.generated.resources.ic_location_off
 import paralino.shared.generated.resources.ic_location_on
 import paralino.shared.generated.resources.ic_location_on_filled
@@ -204,6 +206,8 @@ object CoreAppIcons {
     val Star get() = Res.drawable.ic_star
     val StarCircle get() = Res.drawable.ic_star_circle_filled
     val StarShine get() = Res.drawable.ic_star_shine
+    val LicenseTag get() = Res.drawable.ic_license_tag
+    val LicenseTicket get() = Res.drawable.ic_license_ticket
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled

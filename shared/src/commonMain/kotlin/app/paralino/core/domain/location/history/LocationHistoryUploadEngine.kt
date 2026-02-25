@@ -47,7 +47,7 @@ interface ILocationHistoryUploadEngine {
 class IOSLocationHistoryUploadEngine : ILocationHistoryUploadEngine {
     override fun syncPendingEntriesInBackground(cacheTime: Duration) {}
     override suspend fun syncPendingEntriesNow(cacheTime: Duration): Result<Unit> =
-        Result.failure(InvalidRequestException("Function not available from iOS extension"))
+        Result.failure(IllegalArgumentException("Function not available from iOS extension"))
 }
 
 class LocationHistoryUploadEngine(

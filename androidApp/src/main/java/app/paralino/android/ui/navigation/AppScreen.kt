@@ -294,6 +294,10 @@ sealed class AppScreen {
             override val routeSignature: String = "licences"
         }
 
+        object LicenceCode : AppScreen() {
+            override val routeSignature: String = "licence-code"
+        }
+
         object AppStatusDebug : AppScreen() {
             override val routeSignature: String = "app-status"
         }

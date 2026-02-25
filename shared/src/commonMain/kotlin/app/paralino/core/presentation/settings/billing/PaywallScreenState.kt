@@ -31,8 +31,6 @@ data class PaywallScreenState(
     val appFlavor: AppFlavor,
     val isPlatformBillingSupported: Boolean,
     val canRestorePurchases: Boolean,
-    val isPromoCodeSectionVisible: Boolean,
-    val promoCode: String,
     val screenStep: PaywallScreenStep,
     val screenType: BillingScreenSourceType,
     val memberImageModel: ImageModel,
@@ -280,9 +278,6 @@ sealed class PaywallScreenUiEvent() {
     data object RefreshPlans : PaywallScreenUiEvent()
     data object StartPurchase : PaywallScreenUiEvent()
     data object RestorePurchase : PaywallScreenUiEvent()
-    data object RequestPromoCode : PaywallScreenUiEvent()
-    data object ApplyPromoCode : PaywallScreenUiEvent()
-    data class OnChangePromoCode(val code: String) : PaywallScreenUiEvent()
     data class OnPurchaseError(val error: PurchaseErrorException) : PaywallScreenUiEvent()
     data class SelectBillingPeriod(val planType: PlanType, val period: PlanBillingPeriod) :
         PaywallScreenUiEvent()

@@ -10,6 +10,7 @@ import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.user.UserPlan
+import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
@@ -49,10 +50,7 @@ class SubscriptionViewModel(
                 plan = userRepo.userPlans.value.highestValidPlan,
                 previousState = null
             ),
-            detailsState = getDetailsState(
-                plan = userRepo.userPlans.value.highestValidPlan,
-                config = userRepo.userPlans.value.highestValidPlanConfig
-            ),
+            allActivePlans = getAllActivePlansState(plans = userRepo.userPlans.value),
             isLoading = true,
             canShowMoreInfo = appConfig.isInAppDevMode,
             featureTableState = constructFeatureTable()
@@ -72,10 +70,7 @@ class SubscriptionViewModel(
                             plan = plans.highestValidPlan,
                             previousState = state.subscriptionState
                         ),
-                        detailsState = getDetailsState(
-                            plan = plans.highestValidPlan,
-                            config = plans.highestValidPlanConfig
-                        ),
+                        allActivePlans = getAllActivePlansState(plans = plans),
                         featureTableState = constructFeatureTable()
                     )
                 }
@@ -136,17 +131,37 @@ class SubscriptionViewModel(
         }
     }
 
-    private fun getDetailsState(
+    private fun getAllActivePlansState(
+        plans: UserPlans
+    ): List<SubscriptionDetailsState> {
+        return plans.nonExpiredPlans
+            .sortedBy { it.config.planTypeEnum.order }
+            .map { plan ->
+                getPlanState(
+                    plan = plan,
+                    isCurrentPlan = plan.config.planTypeEnum == plans.highestValidPlanConfig.planTypeEnum,
+                    config = plan.config
+                )
+            }.ifEmpty {
+                listOf(
+                    getPlanState(plan = null, isCurrentPlan = true, config = plans.highestValidPlanConfig)
+                )
+            }
+    }
+
+    private fun getPlanState(
         plan: UserPlan?,
+        isCurrentPlan: Boolean,
         config: PlanConfig
     ): SubscriptionDetailsState {
         return SubscriptionDetailsState(
+            isCurrentPlan = isCurrentPlan,
             planName = config.adjustedPlanName,
             billingPeriod = when (plan?.plan?.billingPeriod) {
                 PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
                 PlanBillingPeriod.MONTHLY -> MR.strings.plan_period_monthly_name.localizedString()
                 PlanBillingPeriod.ANNUALLY -> MR.strings.plan_period_annually_name.localizedString()
-                PlanBillingPeriod.ONETIME -> "N/A"
+                PlanBillingPeriod.ONETIME -> "∅"
                 else -> null
             },
             validUntil = plan?.plan?.let { plan ->
@@ -157,21 +172,25 @@ class SubscriptionViewModel(
                         optionalMonth = false,
                         showTodayInfo = true
                     )
-                } ?: "N/A"
+                } ?: "∅"
             },
             planProviderText = when (plan?.plan?.provider) {
                 PlanProvider.APPLE_APP_STORE -> {
                     MR.strings.plans_management_providerInfo_apple.localizedString()
                 }
+
                 PlanProvider.GOOGLE_PLAY_STORE -> {
                     MR.strings.plans_management_providerInfo_google.localizedString()
                 }
+
                 PlanProvider.WEB_POLAR -> {
                     MR.strings.plans_management_providerInfo_polar.localizedString()
                 }
+
                 PlanProvider.PARALINO -> {
                     MR.strings.plans_management_providerInfo_paralino.localizedString()
                 }
+
                 else -> null
             }
         )
@@ -224,6 +243,7 @@ class SubscriptionViewModel(
                             )
                         )
                     }
+
                     else -> {}
                 }
             }

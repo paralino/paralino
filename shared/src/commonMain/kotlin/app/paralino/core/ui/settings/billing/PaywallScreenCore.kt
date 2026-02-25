@@ -124,6 +124,7 @@ fun PaywallScreenCore(
     onNavigateBack: (Boolean) -> Unit,
     onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
     onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit,
+    openLicenceScreen: () -> Unit
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -360,7 +361,8 @@ fun PaywallScreenCore(
                         bottomCardHeight = bottomCardHeight,
                         onTermsClick = { uriHandler.openUri(BackendResourceIDs.termsOfUseUrl) },
                         onPrivacyClick = { uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl) },
-                        onEvent = { vm.onEvent(it) }
+                        onEvent = { vm.onEvent(it) },
+                        openLicenceScreen = openLicenceScreen
                     )
                 }
             }
@@ -410,6 +412,7 @@ private fun ColumnScope.PaywallScreen(
     onTermsClick: () -> Unit,
     onPrivacyClick: () -> Unit,
     onEvent: (PaywallScreenUiEvent) -> Unit,
+    openLicenceScreen: () -> Unit
 ) {
     val density = LocalDensity.current
     val focusManager = LocalFocusManager.current
@@ -670,32 +673,6 @@ private fun ColumnScope.PaywallScreen(
         onClick = onTermsClick
     )
 
-    AnimatedVisibility(state.isPromoCodeSectionVisible && !state.isPurchaseButtonLoading) {
-        Column(
-            modifier = Modifier.padding(horizontal = 20.dp)
-        ) {
-            Spacer(modifier = Modifier.size(20.dp))
-            MainInputField(
-                text = state.promoCode,
-                hint = "Code",
-                hasError = false,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done,
-                capitalization = KeyboardCapitalization.Words,
-                focusManager = focusManager,
-                onInputChange = { onEvent(PaywallScreenUiEvent.OnChangePromoCode(it)) }
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            FilledButton(
-                style = ButtonStyle.BIG,
-                state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
-                onClick = { onEvent(PaywallScreenUiEvent.ApplyPromoCode) }
-            ) {
-                Text(text = stringResource(MR.strings.button_confirm))
-            }
-            Spacer(modifier = Modifier.size(20.dp))
-        }
-    }
 
     if (state.canMakePurchaseOnThisPlatform && state.canRestorePurchases) {
         SettingsActionItem(
@@ -703,10 +680,17 @@ private fun ColumnScope.PaywallScreen(
             name = stringResource(MR.strings.paywall_button_restore),
             icon = CoreAppIcons.Sync.asPainterResource(),
             type = SettingsActionItemType.Action,
-            onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) },
-            onLongClick = { onEvent(PaywallScreenUiEvent.RequestPromoCode) }
+            onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) }
         )
     }
+
+    SettingsActionItem(
+        modifier = Modifier.padding(horizontal = 20.dp),
+        name = stringResource(MR.strings.licence_screen_title),
+        icon = CoreAppIcons.LicenseTicket.asPainterResource(),
+        type = SettingsActionItemType.Navigation,
+        onClick = openLicenceScreen
+    )
 
     Spacer(modifier = Modifier.size(8.dp))
     Spacer(modifier = Modifier.size(with(density) { bottomCardHeight.toDp() }))

@@ -40,6 +40,7 @@ import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.LocationSettingsScreen
 import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.SettingsScreen
+import app.paralino.android.ui.settings.billing.LicenceCodeScreen
 import app.paralino.android.ui.settings.billing.PaywallScreen
 import app.paralino.android.ui.settings.billing.SubscriptionScreen
 import app.paralino.android.ui.settings.profile.AccountScreen
@@ -249,6 +250,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         }
         composable(AppScreen.Settings.Licences.routeSignature) {
             LicencesScreen(appState)
+        }
+        composable(AppScreen.Settings.LicenceCode.routeSignature) {
+            LicenceCodeScreen(appState)
         }
         composable(AppScreen.Settings.AppStatusDebug.routeSignature) {
             AppStatusDebugScreen(appState)

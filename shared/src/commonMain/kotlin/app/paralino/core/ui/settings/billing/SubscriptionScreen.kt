@@ -57,6 +57,7 @@ fun SubscriptionScreenCore(
     onNavigateBack: () -> Unit,
     openBillingStore: () -> Unit,
     openPaywall: () -> Unit,
+    openLicenceScreen: () -> Unit
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -117,13 +118,22 @@ fun SubscriptionScreenCore(
                 .padding(20.dp)
                 .padding(bottom = 40.dp)
         ) {
-            SubscriptionDetailsBox(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                planName = uiState.detailsState.planName,
-                billingPeriod = uiState.detailsState.billingPeriod,
-                validUntil = uiState.detailsState.validUntil,
-                planProviderText = uiState.detailsState.planProviderText
-            )
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                uiState.allActivePlans.forEach { plan ->
+                    SubscriptionDetailsBox(
+                        modifier = Modifier.fillMaxWidth(),
+                        isCurrentPlan = plan.isCurrentPlan,
+                        planName = plan.planName,
+                        billingPeriod = plan.billingPeriod,
+                        validUntil = plan.validUntil,
+                        planProviderText = plan.planProviderText
+                    )
+                }
+            }
+
             Spacer(Modifier.size(30.dp))
 
 //            if (uiState.canShowMoreInfo) {
@@ -135,7 +145,7 @@ fun SubscriptionScreenCore(
 
             if (uiState.subscriptionState != null) {
                 if (uiState.subscriptionState?.hasPremiumPlan == false) {
-                    NotSubscribedSection(openPaywall = openPaywall)
+                    NotSubscribedSection(openPaywall = openPaywall, openLicenceScreen = openLicenceScreen)
                 } else {
                     if (uiState.subscriptionState?.canManagePlan == true) {
                         SettingsActionItem(
@@ -165,6 +175,13 @@ fun SubscriptionScreenCore(
                         ) {
                             openPaywall()
                         }
+
+                        SettingsActionItem(
+                            name = stringResource(MR.strings.licence_screen_title),
+                            icon = CoreAppIcons.LicenseTicket.asPainterResource(),
+                            type = SettingsActionItemType.Navigation,
+                            onClick = openLicenceScreen
+                        )
                     } else {
                         Text(
                             text = stringResource(MR.strings.plans_management_info_wrong_platform_title),
@@ -184,10 +201,17 @@ fun SubscriptionScreenCore(
                         ) {
                             openPaywall()
                         }
+
+                        SettingsActionItem(
+                            name = stringResource(MR.strings.licence_screen_title),
+                            icon = CoreAppIcons.LicenseTicket.asPainterResource(),
+                            type = SettingsActionItemType.Navigation,
+                            onClick = openLicenceScreen
+                        )
                     }
                 }
             } else {
-                NotSubscribedSection(openPaywall = openPaywall)
+                NotSubscribedSection(openPaywall = openPaywall, openLicenceScreen = openLicenceScreen)
             }
 
             Text(
@@ -197,7 +221,7 @@ fun SubscriptionScreenCore(
                     .padding(bottom = 4.dp, top = 40.dp),
                 text = stringResource(
                     MR.strings.paywall_current_plan_label,
-                    uiState.detailsState.planName
+                    uiState.currentPlanName
                 ),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
@@ -224,7 +248,8 @@ fun SubscriptionScreenCore(
 
 @Composable
 private fun ColumnScope.NotSubscribedSection(
-    openPaywall: () -> Unit
+    openPaywall: () -> Unit,
+    openLicenceScreen: () -> Unit
 ) {
     Text(
         text = stringResource(MR.strings.plans_management_info_not_subscribed),
@@ -233,11 +258,20 @@ private fun ColumnScope.NotSubscribedSection(
     )
     Spacer(Modifier.size(30.dp))
     PremiumPlanBanner(onClick = openPaywall)
+
+    Spacer(Modifier.size(20.dp))
+    SettingsActionItem(
+        name = stringResource(MR.strings.licence_screen_title),
+        icon = CoreAppIcons.LicenseTicket.asPainterResource(),
+        type = SettingsActionItemType.Navigation,
+        onClick = openLicenceScreen
+    )
 }
 
 @Composable
 private fun SubscriptionDetailsBox(
     modifier: Modifier = Modifier,
+    isCurrentPlan: Boolean,
     planName: String,
     billingPeriod: String?,
     validUntil: String?,
@@ -246,8 +280,8 @@ private fun SubscriptionDetailsBox(
     Box(
         modifier = modifier
             .border(
-                width = 1.dp,
-                color = MaterialTheme.colors.primary,
+                width = if (isCurrentPlan) 1.5.dp else 1.dp,
+                color = if (isCurrentPlan) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
                 shape = MaterialTheme.shapes.medium
             )
             .background(
@@ -262,7 +296,7 @@ private fun SubscriptionDetailsBox(
         ) {
             Text(
                 text = stringResource(
-                    MR.strings.paywall_current_plan_label,
+                    if (isCurrentPlan) MR.strings.paywall_current_plan_label else MR.strings.paywall_plan_label,
                     "**$planName**"
                 ).annotatedBoldCompose(),
                 style = MaterialTheme.typography.caption,

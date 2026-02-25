@@ -287,37 +287,6 @@ class PaywallViewModel(
                 }
             }
 
-            PaywallScreenUiEvent.RequestPromoCode -> {
-                if (uiState.value.canMakePurchaseOnThisPlatform) {
-                    _uiState.update { it.copy(isPromoCodeSectionVisible = true) }
-                }
-            }
-
-            is PaywallScreenUiEvent.OnChangePromoCode -> {
-                _uiState.update { it.copy(promoCode = event.code) }
-            }
-
-            PaywallScreenUiEvent.ApplyPromoCode -> {
-                if (uiState.value.canMakePurchaseOnThisPlatform && uiState.value.promoCode.isNotBlank()) {
-                    _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
-                    coroutineScope.launch {
-                        try {
-                            userRepo.redeemPromoCode(code = uiState.value.promoCode)
-                            onEvent(PaywallScreenUiEvent.RefreshPlans)
-                        } catch (e: Exception) {
-                            _uiState.update {
-                                it.copy(
-                                    alertDialog = MainAlertDialog.BillingError(
-                                        code = 0,
-                                        message = MR.strings.paywall_purchase_error_alert_message.localizedString()
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
             is PaywallScreenUiEvent.OnPurchaseError -> {
                 if (event.error.userCancelled) {
                     _uiState.update { it.copy(isPurchaseButtonLoading = false) }
@@ -505,8 +474,6 @@ class PaywallViewModel(
             canRestorePurchases = !billingProvider.isExternalProvider,
             isPurchaseButtonLoading = currentState?.isPurchaseButtonLoading ?: false,
             faq = currentState?.faq ?: getFaqSection(config),
-            isPromoCodeSectionVisible = currentState?.isPromoCodeSectionVisible ?: false,
-            promoCode = currentState?.promoCode ?: "",
             screenStep = currentState?.screenStep ?: if (sourceType.isOnboarding) {
                 PaywallScreenStep.ONBOARDING
             } else {
