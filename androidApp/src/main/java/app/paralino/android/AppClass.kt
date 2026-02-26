@@ -22,6 +22,7 @@ import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.core.CoreAppManager
 import app.paralino.core.ParalinoCore
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.logg
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -100,17 +101,24 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                 IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION).apply { addAction(Intent.ACTION_PROVIDER_CHANGED) }
             )
         }
-        getSystemService<ConnectivityManager>()?.registerDefaultNetworkCallback(
-            object : NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    coreAppManager.updateConnectionStatus()
-                }
+        getSystemService<ConnectivityManager>().let {
+            if (it != null) {
+                logg.i("app_state", "Register system connectivity monitor")
+                it.registerDefaultNetworkCallback(
+                    object : NetworkCallback() {
+                        override fun onAvailable(network: Network) {
+                            coreAppManager.updateConnectionStatus()
+                        }
 
-                override fun onLost(network: Network) {
-                    coreAppManager.updateConnectionStatus()
-                }
+                        override fun onLost(network: Network) {
+                            coreAppManager.updateConnectionStatus()
+                        }
+                    }
+                )
+            } else {
+                logg.i("app_state", "System connectivity monitor not available")
             }
-        )
+        }
     }
 
     private fun initCrashReporting() {

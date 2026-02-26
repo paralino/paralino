@@ -49,7 +49,7 @@ class NotificationSocketService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logg.v(
+        logg.i(
             tag = "notification_socket_service_${this.hashCode()}",
             message = "Notification socket service created"
         )
@@ -60,7 +60,7 @@ class NotificationSocketService : Service() {
 
         launchedInForeground = intent?.getBooleanExtra(startedInForeground, false) ?: false
 
-        logg.v(
+        logg.i(
             tag = "notification_socket_service_${this.hashCode()}",
             message = "Notification socket service starting - action: ${intent?.action} - launched in foreground: $launchedInForeground"
         )
@@ -88,7 +88,7 @@ class NotificationSocketService : Service() {
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_NONE
                     )
                 }
-                logg.v(
+                logg.i(
                     tag = "notification_socket_service_${this.hashCode()}",
                     message = "Notification socket started in foreground - action: ${intent?.action}"
                 )
@@ -119,7 +119,7 @@ class NotificationSocketService : Service() {
             initTracking()
         }
 
-        logg.v(
+        logg.i(
             tag = "notification_socket_service_${this.hashCode()}",
             message = "Notification socket service started - action: ${intent?.action} - launched in foreground: $launchedInForeground"
         )
@@ -130,7 +130,7 @@ class NotificationSocketService : Service() {
     }
 
     private fun initTracking() {
-        logg.v(
+        logg.i(
             tag = "notification_socket_service_${this.hashCode()}",
             message = "Subscribe to push notifications"
         )
@@ -138,7 +138,7 @@ class NotificationSocketService : Service() {
         serviceManager.listenForServiceStatus()
             .onEach { isEnabled ->
                 if (!isEnabled) {
-                    logg.v(
+                    logg.i(
                         tag = "notification_socket_service_${this.hashCode()}",
                         message = "Notification socket service can not run, stopping service"
                     )
@@ -180,7 +180,7 @@ class NotificationSocketService : Service() {
     }
 
     private fun stopAll() {
-        logg.v(
+        logg.i(
             tag = "notification_socket_service_${this.hashCode()}",
             message = "Stop all - notification socket service"
         )
@@ -191,7 +191,7 @@ class NotificationSocketService : Service() {
     }
 
     override fun onDestroy() {
-        logg.v(
+        logg.i(
             tag = "notification_socket_service_${this.hashCode()}",
             message = "onDestroy - Killing notification socket service"
         )
