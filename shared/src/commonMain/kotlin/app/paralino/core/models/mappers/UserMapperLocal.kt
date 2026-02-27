@@ -83,6 +83,7 @@ class UserMapperLocal constructor(
             planType = model.planType,
             billingPeriod = model.billingPeriod.key,
             expiresAt = model.expiresAt?.toString(),
+            cancelledAt = model.cancelledAt?.toString(),
             updatedAt = model.updatedAt?.toString(),
             groupsLimitOverride = model.groupsLimitOverride,
             provider = model.provider.key
@@ -98,6 +99,7 @@ class UserMapperLocal constructor(
             billingPeriod = PlanBillingPeriod.fromKey(model.billingPeriod)
                 ?: PlanBillingPeriod.ONETIME,
             expiresAt = model.expiresAt?.isoWithOffsetToInstant(),
+            cancelledAt = model.cancelledAt?.isoWithOffsetToInstant(),
             updatedAt = model.updatedAt?.isoWithOffsetToInstant(),
             groupsLimitOverride = model.groupsLimitOverride,
             provider = PlanProvider.fromKey(model.provider)

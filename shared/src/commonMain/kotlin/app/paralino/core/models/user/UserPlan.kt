@@ -15,8 +15,15 @@ data class UserPlans(
         )
     }
 
-    val nonExpiredPlans get() = plans.filter { !it.plan.isExpired }
-    val highestValidPlan: UserPlan? get() = nonExpiredPlans.maxByOrNull { it.plan.planTypeEnum.order }
+    val nonExpiredPlans: List<UserPlan> get() = plans.filter { !it.plan.isExpired }
+    val highestValidPlan: UserPlan? get() = nonExpiredPlans
+        .groupBy { it.config.planType }
+        // pick the longest lasting plan for every plan type
+        .mapValues { it.value.sortedByDescending { it.plan.expiresAt?.toString() }.firstOrNull() }
+        .values
+        .filterNotNull()
+        .maxByOrNull { it.plan.planTypeEnum.order }
+
     val highestValidPlanConfig: PlanConfig get() = highestValidPlan?.config ?: config.defaultFreePlanConfig()
 
     val groupsLimit: Int = highestValidPlan?.plan?.groupsLimitOverride?.toInt() ?: highestValidPlanConfig.groupsLimit

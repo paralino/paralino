@@ -20,6 +20,7 @@ class UserPlanRaw constructor(
     val groupId: String?,
     val ownerUserId: String?,
     val expiresAt: Instant?,
+    val cancelledAt: Instant?,
     val updatedAt: Instant?,
     val groupsLimitOverride: Long?,
     val provider: PlanProvider
@@ -47,6 +48,7 @@ class UserPlanRaw constructor(
                     PlanBillingPeriod.fromKey(it) ?: PlanBillingPeriod.ONETIME
                 },
                 expiresAt = (map["expiresAt"] as? String)?.isoWithOffsetToInstant(),
+                cancelledAt = (map["cancelledAt"] as? String)?.isoWithOffsetToInstant(),
                 updatedAt = (map["\$updatedAt"] as? String)?.isoWithOffsetToInstant(),
                 groupsLimitOverride = (map["groupsLimitOverride"] as? Number?)?.toLong(),
                 provider = PlanProvider.fromKey(map["provider"] as? String)

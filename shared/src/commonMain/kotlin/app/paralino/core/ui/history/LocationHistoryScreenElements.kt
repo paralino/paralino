@@ -468,6 +468,7 @@ private fun HistoryMapOptionChip(
                 style = MaterialTheme.typography.body2,
                 color = contentColor
             )
-        }
+        },
+        endSection = null
     )
 }

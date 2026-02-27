@@ -388,7 +388,7 @@ fun SettingsActionItem(
                 }
                 SettingsActionItemType.Link -> {
                     Icon(
-                        modifier = Modifier.width(24.dp),
+                        modifier = Modifier.width(20.dp),
                         painter = CoreAppIcons.ArrowOpenNew.asPainterResource(),
                         tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
                         contentDescription = null

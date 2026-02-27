@@ -202,6 +202,7 @@ fun LocationHistoryDeleteScreenCore(
                                         }
                                     }
                                 },
+                                endSection = null,
                                 onClick = {
                                     vm.onEvent(LocationHistoryDeleteUiEvent.ToggleDeviceSelection(item))
                                 }

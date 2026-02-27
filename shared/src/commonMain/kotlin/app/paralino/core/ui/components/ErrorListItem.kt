@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.AppColors
@@ -91,7 +92,8 @@ fun ConditionErrorItem(
             color = contentColor,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .weight(1f)
+                .weight(1f),
+            lineHeight = 20.sp
         )
 
         if (endAction != null) {

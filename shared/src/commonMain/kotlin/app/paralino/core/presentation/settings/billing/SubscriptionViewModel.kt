@@ -46,13 +46,12 @@ class SubscriptionViewModel(
 
     private val _uiState = MutableStateFlow(
         SubscriptionScreenState(
-            subscriptionState = getPlanState(
-                plan = userRepo.userPlans.value.highestValidPlan,
+            allActivePlans = getAllActivePlansState(
+                plans = userRepo.userPlans.value,
                 previousState = null
             ),
-            allActivePlans = getAllActivePlansState(plans = userRepo.userPlans.value),
             isLoading = true,
-            canShowMoreInfo = appConfig.isInAppDevMode,
+            currentPlanName = userRepo.userPlans.value.highestValidPlanConfig.adjustedPlanName,
             featureTableState = constructFeatureTable()
         )
     )
@@ -66,11 +65,11 @@ class SubscriptionViewModel(
             .onEach { plans ->
                 _uiState.update { state ->
                     state.copy(
-                        subscriptionState = getPlanState(
-                            plan = plans.highestValidPlan,
-                            previousState = state.subscriptionState
+                        allActivePlans = getAllActivePlansState(
+                            plans = plans,
+                            previousState = state
                         ),
-                        allActivePlans = getAllActivePlansState(plans = plans),
+                        currentPlanName = plans.highestValidPlanConfig.adjustedPlanName,
                         featureTableState = constructFeatureTable()
                     )
                 }
@@ -95,56 +94,21 @@ class SubscriptionViewModel(
         }
     }
 
-    private fun getPlanState(
-        plan: UserPlan?,
-        previousState: SubscriptionInfoState?
-    ): SubscriptionInfoState? {
-        return plan?.let {
-            SubscriptionInfoState(
-                hasPremiumPlan = it.plan.planTypeEnum.isPremium,
-                canManagePlan = when (it.plan.provider) {
-                    PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
-
-                    PlanProvider.GOOGLE_PLAY_STORE -> when (appConfig.appFlavor) {
-                        AppFlavor.ANDROID_GOOGLE -> true
-                        AppFlavor.ANDROID_DIRECT,
-                        AppFlavor.APPLE_IOS -> false
-                    }
-
-                    PlanProvider.WEB_POLAR -> when (appConfig.appFlavor) {
-                        AppFlavor.ANDROID_DIRECT -> true
-                        AppFlavor.ANDROID_GOOGLE,
-                        AppFlavor.APPLE_IOS -> false
-                    }
-
-                    PlanProvider.PARALINO -> false
-                },
-                canChangePlanOnDevice = when (it.plan.provider) {
-                    PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
-                    PlanProvider.GOOGLE_PLAY_STORE -> appConfig.appFlavor == AppFlavor.ANDROID_GOOGLE
-                    PlanProvider.WEB_POLAR,
-                    PlanProvider.PARALINO -> false
-                },
-                isManageLoading = previousState?.isManageLoading ?: false,
-                isFromParalino = it.plan.provider == PlanProvider.PARALINO
-            )
-        }
-    }
-
     private fun getAllActivePlansState(
-        plans: UserPlans
+        plans: UserPlans,
+        previousState: SubscriptionScreenState?
     ): List<SubscriptionDetailsState> {
         return plans.nonExpiredPlans
-            .sortedBy { it.config.planTypeEnum.order }
+            .filter { it.config.planTypeEnum.isPremium }
+            .sortedByDescending { it.config.planTypeEnum.order }
             .map { plan ->
                 getPlanState(
                     plan = plan,
-                    isCurrentPlan = plan.config.planTypeEnum == plans.highestValidPlanConfig.planTypeEnum,
+                    isCurrentPlan = plan.plan.id == plans.highestValidPlan?.plan?.id,
+                    isManageLoading = previousState?.allActivePlans?.firstOrNull {
+                        it.planId == plan.plan.id
+                    }?.isManageLoading ?: false,
                     config = plan.config
-                )
-            }.ifEmpty {
-                listOf(
-                    getPlanState(plan = null, isCurrentPlan = true, config = plans.highestValidPlanConfig)
                 )
             }
     }
@@ -152,10 +116,28 @@ class SubscriptionViewModel(
     private fun getPlanState(
         plan: UserPlan?,
         isCurrentPlan: Boolean,
+        isManageLoading: Boolean,
         config: PlanConfig
     ): SubscriptionDetailsState {
         return SubscriptionDetailsState(
+            planId = plan?.plan?.id ?: "free",
             isCurrentPlan = isCurrentPlan,
+            isPremiumPlan = config.planTypeEnum.isPremium,
+            isManageLoading = isManageLoading,
+            canManagePlanOnThisDevice = when (plan?.plan?.provider) {
+                PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
+                PlanProvider.GOOGLE_PLAY_STORE -> appConfig.appFlavor == AppFlavor.ANDROID_GOOGLE
+                PlanProvider.WEB_POLAR -> appConfig.appFlavor == AppFlavor.ANDROID_DIRECT
+                PlanProvider.PARALINO -> null
+                null -> null
+            },
+            canChangePlanOnThisDevice = when (plan?.plan?.provider) {
+                PlanProvider.APPLE_APP_STORE -> deviceApi.deviceType == DeviceType.iOS
+                PlanProvider.GOOGLE_PLAY_STORE -> appConfig.appFlavor == AppFlavor.ANDROID_GOOGLE
+                PlanProvider.WEB_POLAR -> false
+                PlanProvider.PARALINO -> false
+                null -> false
+            },
             planName = config.adjustedPlanName,
             billingPeriod = when (plan?.plan?.billingPeriod) {
                 PlanBillingPeriod.WEEKLY -> MR.strings.plan_period_weekly_name.localizedString()
@@ -164,8 +146,20 @@ class SubscriptionViewModel(
                 PlanBillingPeriod.ONETIME -> "∅"
                 else -> null
             },
-            validUntil = plan?.plan?.let { plan ->
-                plan.expiresAt?.let { expiresAt ->
+            nextRenewal = if (plan?.plan?.cancelledAt == null && plan?.plan?.billingPeriod?.isRenewalBased == true) {
+                plan.plan.expiresAt?.let { expiresAt ->
+                    valueFormatter.formatSimpleDateTime(
+                        timeUTC = expiresAt.toLocalDateTime(TimeZone.UTC),
+                        optionalYear = false,
+                        optionalMonth = false,
+                        showTodayInfo = true
+                    )
+                }
+            } else {
+                null
+            },
+            expiresAt = if (plan?.plan?.cancelledAt != null || plan?.plan?.billingPeriod?.isRenewalBased == false) {
+                plan.plan.expiresAt?.let { expiresAt ->
                     valueFormatter.formatSimpleDateTime(
                         timeUTC = expiresAt.toLocalDateTime(TimeZone.UTC),
                         optionalYear = false,
@@ -173,6 +167,8 @@ class SubscriptionViewModel(
                         showTodayInfo = true
                     )
                 } ?: "∅"
+            } else {
+                null
             },
             planProviderText = when (plan?.plan?.provider) {
                 PlanProvider.APPLE_APP_STORE -> {
@@ -248,14 +244,14 @@ class SubscriptionViewModel(
                 }
             }
 
-            SubscriptionScreenUiEvent.OnManagePlanClick -> {
-                val state = uiState.value.subscriptionState ?: return
-                if (state.isManageLoading) return
-                if (!state.canManagePlan) return
+            is SubscriptionScreenUiEvent.OnManagePlanClick -> {
+                val state = uiState.value
+                if (state.allActivePlans.any { it.isManageLoading }) return
+                if (!state.canManagePlanOnThisDevice) return
 
                 when (appConfig.appFlavor) {
                     AppFlavor.ANDROID_DIRECT -> {
-                        requestDirectBillingUrl()
+                        requestDirectBillingUrl(planId = event.planId)
                     }
 
                     AppFlavor.ANDROID_GOOGLE,
@@ -267,15 +263,19 @@ class SubscriptionViewModel(
         }
     }
 
-    private fun requestDirectBillingUrl() {
+    private fun requestDirectBillingUrl(planId: String) {
         getWebPortal.getWebPortalUrl()
             .mapToPayload { it }
             .onEach { result ->
-                _uiState.update {
-                    it.copy(
-                        subscriptionState = it.subscriptionState?.copy(
-                            isManageLoading = result is Payload.Loading
-                        )
+                _uiState.update { state ->
+                    state.copy(
+                        allActivePlans = state.allActivePlans.map { plan ->
+                            if (plan.planId == planId && plan.canManagePlanOnThisDevice == true) {
+                                plan.copy(isManageLoading = result is Payload.Loading)
+                            } else {
+                                plan
+                            }
+                        }
                     )
                 }
                 when (result) {

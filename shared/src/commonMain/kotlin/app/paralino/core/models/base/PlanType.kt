@@ -98,6 +98,8 @@ enum class PlanBillingPeriod(val key: String) {
     ANNUALLY(key = "annually"),
     ONETIME(key = "oneTime");
 
+    val isRenewalBased: Boolean get() = this != PlanBillingPeriod.ONETIME
+
     companion object {
         fun fromKey(key: String): PlanBillingPeriod? {
             return values().firstOrNull { it.key == key }

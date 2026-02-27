@@ -999,7 +999,6 @@ fun GroupMemberActionButton(
                 )
             }
         },
-        hasEndArrow = false,
         text = {
             AnimatedVisibility(visible = showText) {
                 Text(
@@ -1024,6 +1023,7 @@ fun GroupMemberActionButton(
                 )
             }
         },
+        endSection = null,
         onClick = onClick
     )
 }

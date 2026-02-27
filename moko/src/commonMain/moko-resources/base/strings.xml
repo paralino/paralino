@@ -317,9 +317,11 @@
     <string name="plans_management_info_wrong_platform_title">You can not manage your subscription on this device!</string>
     <string name="plans_management_info_wrong_platform_message">Use the device you originally used for purchasing.</string>
     <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
-    <string name="plans_management_billing_period_label">Billing period: %1$s</string>
-    <string name="plans_management_valid_until_label">Valid until: %1$s</string>
+    <string name="plans_management_billingPeriod_label">Billing period: %1$s</string>
+    <string name="plans_management_nextRenewal_label">Renews at: %1$s</string>
+    <string name="plans_management_expiresAt_label">Valid until: %1$s</string>
     <string name="plans_management_provider_label">Provider: %1$s</string>
+    <string name="plans_management_activePlan_tag">Active plan</string>
     <string name="plans_management_action_manage">Manage or cancel subscription</string>
     <string name="plans_management_action_change">Change plan</string>
     <string name="plans_management_action_explore">Plans</string>
