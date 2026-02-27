@@ -2,6 +2,7 @@ package app.paralino.core.models.user
 
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.raw.UserPlanRaw
 
 data class UserPlans(
@@ -25,6 +26,9 @@ data class UserPlans(
         .maxByOrNull { it.plan.planTypeEnum.order }
 
     val highestValidPlanConfig: PlanConfig get() = highestValidPlan?.config ?: config.defaultFreePlanConfig()
+    val hasActiveWebPlan: Boolean get() = nonExpiredPlans.any {
+        it.plan.provider == PlanProvider.WEB_POLAR
+    }
 
     val groupsLimit: Int = highestValidPlan?.plan?.groupsLimitOverride?.toInt() ?: highestValidPlanConfig.groupsLimit
 }

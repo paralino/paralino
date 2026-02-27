@@ -14,6 +14,7 @@ import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
+import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
@@ -142,6 +143,26 @@ class PaywallViewModel(
                         }
                     }
 
+                    is MainAlertDialog.SubscriptionActiveOnAnotherPlatform -> {
+                        _uiState.update { it.copy(alertDialog = null) }
+                        if (event.action.isOk) {
+                            when (event.action.dialog.event) {
+                                PaywallScreenUiEvent.StartPurchase -> {
+                                    val selectedPlan = uiState.value.selectedPlan
+                                    if (selectedPlan != null) {
+                                        startPlatformPurchase(selectedPlan = selectedPlan)
+                                    }
+                                }
+
+                                PaywallScreenUiEvent.RestorePurchase -> {
+                                    restorePurchases()
+                                }
+
+                                else -> {}
+                            }
+                        }
+                    }
+
                     else -> {}
                 }
             }
@@ -248,28 +269,17 @@ class PaywallViewModel(
 
                     PaywallScreenStep.PAYWALL -> {
                         val selectedPlan = uiState.value.selectedPlan
-                        if (!uiState.value.canMakePurchaseOnThisPlatform) {
-                            _eventChannel.trySend(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
-                        } else if (selectedPlan == null) {
+                        if (selectedPlan == null) {
                             messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
                         } else if (selectedPlan.type.isPremium) {
-                            if (billingProvider.isExternalProvider) {
-                                startDirectSession()
+                            val activePlan = uiState.value.currentPlan
+                            if (uiState.value.hasActivePlanOnAnotherPlatform && activePlan != null) {
+                                showPlanActiveOnAnotherPlatformDialog(
+                                    plan = activePlan,
+                                    event = event
+                                )
                             } else {
-                                val selectedBillingPeriod = selectedPlan.selectedBillingPeriod
-                                if (selectedBillingPeriod == null) {
-                                    messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
-                                } else {
-                                    _uiState.update { it.copy(isPurchaseButtonLoading = true) }
-                                    coroutineScope.launch {
-                                        _eventChannel.send(
-                                            PaywallScreenEvent.OnStartPurchase(
-                                                planType = selectedPlan.type,
-                                                newPlanProductId = selectedBillingPeriod.productPlanId
-                                            )
-                                        )
-                                    }
-                                }
+                                startPlatformPurchase(selectedPlan)
                             }
                         } else {
                             _eventChannel.trySend(PaywallScreenEvent.OnNavigateBack(isSuccess = false))
@@ -279,11 +289,14 @@ class PaywallViewModel(
             }
 
             PaywallScreenUiEvent.RestorePurchase -> {
-                if (uiState.value.canMakePurchaseOnThisPlatform && uiState.value.canRestorePurchases) {
-                    _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
-                    coroutineScope.launch {
-                        _eventChannel.send(PaywallScreenEvent.OnRestorePurchase)
-                    }
+                val plan = uiState.value.currentPlan
+                if (uiState.value.hasActivePlanOnAnotherPlatform && plan != null) {
+                    showPlanActiveOnAnotherPlatformDialog(
+                        plan = plan,
+                        event = event
+                    )
+                } else {
+                    restorePurchases()
                 }
             }
 
@@ -630,8 +643,59 @@ class PaywallViewModel(
         }
     }
 
+    private fun showPlanActiveOnAnotherPlatformDialog(
+        plan: PlanInfoState,
+        event: PaywallScreenUiEvent
+    ) {
+        _uiState.update {
+            it.copy(
+                alertDialog = MainAlertDialog.SubscriptionActiveOnAnotherPlatform(
+                    planName = plan.name,
+                    planProvider = when (plan.currentPlanProvider) {
+                        PlanProvider.APPLE_APP_STORE -> MR.strings.plans_management_providerName_apple.localizedString()
+                        PlanProvider.GOOGLE_PLAY_STORE -> MR.strings.plans_management_providerName_google.localizedString()
+                        PlanProvider.WEB_POLAR -> MR.strings.plans_management_providerName_polar.localizedString()
+                        PlanProvider.PARALINO -> MR.strings.app_name.localizedString()
+                        null -> ""
+                    },
+                    event = event
+                )
+            )
+        }
+    }
+
+    private fun restorePurchases() {
+        if (uiState.value.canRestorePurchases) {
+            _uiState.update { it.copy(isPurchaseButtonLoading = true, isLoading = true) }
+            coroutineScope.launch {
+                _eventChannel.send(PaywallScreenEvent.OnRestorePurchase)
+            }
+        }
+    }
+
+    private fun startPlatformPurchase(selectedPlan: PlanInfoState) {
+        if (billingProvider.isExternalProvider) {
+            startDirectSession()
+        } else {
+            val selectedBillingPeriod = selectedPlan.selectedBillingPeriod
+            if (selectedBillingPeriod == null) {
+                messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
+            } else {
+                _uiState.update { it.copy(isPurchaseButtonLoading = true) }
+                coroutineScope.launch {
+                    _eventChannel.send(
+                        PaywallScreenEvent.OnStartPurchase(
+                            planType = selectedPlan.type,
+                            newPlanProductId = selectedBillingPeriod.productPlanId
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     private fun startDirectSession() {
-        if (uiState.value.currentPlan != null) {
+        if (userRepo.userPlans.value.hasActiveWebPlan) {
             getWebPortal.getWebPortalUrl()
                 .mapToPayload { it }
                 .onEach { result ->

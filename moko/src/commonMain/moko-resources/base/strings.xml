@@ -314,9 +314,12 @@
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
     <string name="plans_management_screen_title">Membership</string>
     <string name="plans_management_info_not_subscribed">You are currently not subscribed to a Premium plan!</string>
-    <string name="plans_management_info_wrong_platform_title">You can not manage your subscription on this device!</string>
+    <string name="plans_management_info_wrong_platform_title">You can not manage this subscription on this device!</string>
     <string name="plans_management_info_wrong_platform_message">Use the device you originally used for purchasing.</string>
+    <string name="plans_management_info_otherPlatformPlan_message">You already have an active plan on another platform.</string>
     <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
+    <string name="plans_management_alert_otherPlatformPlan_title">Found an active plan</string>
+    <string name="plans_management_alert_otherPlatformPlan_message">You already have an active **%1$s** plan from **%2$s**.\n\nPlease confirm to continue with the new subscription!</string>
     <string name="plans_management_billingPeriod_label">Billing period: %1$s</string>
     <string name="plans_management_nextRenewal_label">Renews at: %1$s</string>
     <string name="plans_management_expiresAt_label">Valid until: %1$s</string>
@@ -329,6 +332,9 @@
     <string name="plans_management_providerInfo_apple">Subscription is provided by **Apple App Store**.</string>
     <string name="plans_management_providerInfo_polar">Subscription is provided by **Polar.sh** on the web.</string>
     <string name="plans_management_providerInfo_paralino">Membership is provided by **Paralino**.</string>
+    <string name="plans_management_providerName_apple">Apple App Store</string>
+    <string name="plans_management_providerName_google">Google Play Store</string>
+    <string name="plans_management_providerName_polar">Polar.sh</string>
     <string name="plan_period_weekly_name">Weekly</string>
     <string name="plan_period_monthly_name">Monthly</string>
     <string name="plan_period_annually_name">Annually</string>
@@ -379,7 +385,7 @@
     <string name="paywall_feature_control">Complete sharing control</string>
     <string name="paywall_feature_control_description">You decide how and what you share.</string>
     <string name="paywall_special_offer_description">**Special launch discount**\nAvailable during the beta period – claim your special discount and keep this price forever.</string>
-    <string name="paywall_price_per_member">As low as **%1$s**/member/month for %2$d members</string>
+    <string name="paywall_price_per_member">For %2$d members: **%1$s**/member/month</string>
     <string name="paywall_price_per_month">**≈ %1$s** / month</string>
     <string name="paywall_divider_plan_duration">Choose your plan duration</string>
     <string name="paywall_feature_table_header">What you get</string>

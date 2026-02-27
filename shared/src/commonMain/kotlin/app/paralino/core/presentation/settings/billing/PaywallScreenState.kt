@@ -43,70 +43,43 @@ data class PaywallScreenState(
 
     val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
     val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
-    val canMakePurchaseOnThisPlatform: Boolean = when (currentPlan?.currentPlanProvider) {
-        PlanProvider.APPLE_APP_STORE -> DeviceType.current == DeviceType.iOS
-
-        PlanProvider.GOOGLE_PLAY_STORE -> when (appFlavor) {
-            AppFlavor.ANDROID_GOOGLE -> true
-            AppFlavor.ANDROID_DIRECT,
-            AppFlavor.APPLE_IOS -> false
-        }
-
-        PlanProvider.WEB_POLAR -> when (appFlavor) {
-            AppFlavor.ANDROID_DIRECT -> true
-            AppFlavor.ANDROID_GOOGLE,
-            AppFlavor.APPLE_IOS -> false
-        }
-
-        PlanProvider.PARALINO -> false
-        null -> true
+    val hasActivePlanOnAnotherPlatform: Boolean = when (appFlavor) {
+        AppFlavor.ANDROID_DIRECT -> currentPlan?.currentPlanProvider != PlanProvider.WEB_POLAR
+        AppFlavor.ANDROID_GOOGLE -> currentPlan?.currentPlanProvider != PlanProvider.GOOGLE_PLAY_STORE
+        AppFlavor.APPLE_IOS -> currentPlan?.currentPlanProvider != PlanProvider.APPLE_APP_STORE
     }
 
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod?.takeIf {
-        canMakePurchaseOnThisPlatform
+        isPlatformBillingSupported
     }
 
     val continueButtonType: PaywallContinueButtonType = when (screenStep) {
         PaywallScreenStep.PAYWALL -> {
-            if (!canMakePurchaseOnThisPlatform) {
-                PaywallContinueButtonType.Ok
-            } else if (selectedBillingPeriod?.trialDurationDays != null) {
+            if (!hasActivePlanOnAnotherPlatform && selectedBillingPeriod?.trialDurationDays != null) {
                 PaywallContinueButtonType.FreeTrial(selectedBillingPeriod.trialDurationDays)
             } else {
-                when (currentPlan?.currentPlanProvider) {
-                    PlanProvider.APPLE_APP_STORE -> {
-                        if (DeviceType.current == DeviceType.iOS) {
-                            PaywallContinueButtonType.Continue
-                        } else {
-                            PaywallContinueButtonType.Ok
+                when (appFlavor) {
+                    AppFlavor.ANDROID_GOOGLE -> {
+                        // continue regardless of current plan
+                        PaywallContinueButtonType.Continue
+                    }
+
+                    AppFlavor.ANDROID_DIRECT -> {
+                        when (currentPlan?.currentPlanProvider) {
+                            PlanProvider.WEB_POLAR -> {
+                                PaywallContinueButtonType.ManageExternal
+                            }
+
+                            else -> {
+                                PaywallContinueButtonType.ContinueExternal
+                            }
                         }
                     }
 
-                    PlanProvider.GOOGLE_PLAY_STORE -> {
-                        if (appFlavor == AppFlavor.ANDROID_GOOGLE) {
-                            PaywallContinueButtonType.Continue
-                        } else {
-                            PaywallContinueButtonType.Ok
-                        }
-                    }
-
-                    PlanProvider.WEB_POLAR -> {
-                        if (appFlavor == AppFlavor.ANDROID_DIRECT) {
-                            PaywallContinueButtonType.ManageExternal
-                        } else {
-                            PaywallContinueButtonType.Ok
-                        }
-                    }
-
-                    PlanProvider.PARALINO -> PaywallContinueButtonType.Ok
-
-                    null -> {
-                        when (appFlavor) {
-                            AppFlavor.ANDROID_GOOGLE -> PaywallContinueButtonType.Continue
-                            AppFlavor.ANDROID_DIRECT -> PaywallContinueButtonType.ContinueExternal
-                            AppFlavor.APPLE_IOS -> PaywallContinueButtonType.Continue
-                        }
+                    AppFlavor.APPLE_IOS -> {
+                        // continue regardless of current plan
+                        PaywallContinueButtonType.Continue
                     }
                 }
             }

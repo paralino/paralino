@@ -45,6 +45,7 @@ class BillingProviderAndroid(
 
     private val offerings = MutableStateFlow<Offerings?>(null)
     private val currentUserPlan = MutableStateFlow<CurrentPlanConfig?>(null)
+    override val isExternalProvider: Boolean = false
 
     private fun packageFor(subscriptionOptionId: String): Package? {
         return offerings.value?.current?.availablePackages?.firstOrNull {
@@ -234,6 +235,10 @@ class BillingProviderAndroid(
                 }
             }
         }
+    }
+
+    override suspend fun startDirectPurchase(url: String) {
+        // do nothing
     }
 
     suspend fun restorePurchase() {

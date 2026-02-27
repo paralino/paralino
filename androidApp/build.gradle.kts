@@ -130,7 +130,7 @@ android {
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
             props.load(FileInputStream(propsFile))
-            buildConfigField("String", "revenueCatApiKey", "\"\"")
+            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
             buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
             buildConfigField("String", "serverKey", props["devServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
@@ -139,7 +139,11 @@ android {
         }
         create("releaseTest") {
             initWith(getByName("release"))
+            matchingFallbacks.add("release")
+            buildConfigField("boolean", "internalTesting", "true")
+            buildConfigField("boolean", "forceLogToSystem", "true")
             isDebuggable = true
+            signingConfig = signingConfigs.getByName("testConfig")
         }
     }
 
