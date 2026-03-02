@@ -43,6 +43,7 @@ androidx-room = "2.8.4"
 sqlite = "2.6.2"
 ksp = "2.3.2"
 googlePlayReview = "2.0.2"
+unifiedPushConnector = "3.3.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -115,6 +116,8 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 play-review = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
+
+unifiedPush-connector = { module = "org.unifiedpush.android:connector", version.ref = "unifiedPushConnector" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

@@ -6,6 +6,7 @@ import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.models.Resource
 import app.paralino.core.models.Resource.NotInitialized.mapReady
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -461,7 +462,7 @@ class AccountOnboardingViewModel(
     override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {
         if (event is NotificationPermissionResultEvent && uiState.value.data?.onboardingStep is AccountOnboardingContent.PushNotifications) {
             if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
-                notificationServiceManager.setServiceEnabledState(enabledStatus = true)
+                notificationServiceManager.setNotificationPushProvider(provider = PushProvider.DEVICE_NATIVE)
             }
 
             onEvent(AccountOnboardingScreenUiEvent.OnboardingStep(AccountOnboardingUiEvent.SkipOnboarding))

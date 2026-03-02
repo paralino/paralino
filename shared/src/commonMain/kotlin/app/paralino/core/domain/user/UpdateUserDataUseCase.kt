@@ -4,9 +4,11 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.user.UnifiedPushEndpointConfig
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.UpdateMemberData
@@ -16,6 +18,7 @@ import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.api.runAndWait
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.personal_code.PersonalCodesRepository
@@ -40,6 +43,7 @@ class UpdateUserDataUseCase constructor(
     private val cryptoKEKRepo: CryptoKEKLocalRepository,
     private val personalCodes: PersonalCodesRepository,
     private val appPrefs: AppPrefs,
+    private val appConfigRepo: AppConfigRepository,
     private val notificationSocketServiceManager: NotificationSocketServiceManager,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val userDeviceLocal: PersonalDevicesLocalDataSource
@@ -121,31 +125,79 @@ class UpdateUserDataUseCase constructor(
                 return null
             }
 
-            val hasNewLocationPushToken = appPrefs.locationPushTokenUnsynced
-                .takeIf { it.isNotBlank() && it != appPrefs.locationPushTokenSynced }
-                ?.isNotBlank()
-                ?: false
-
-            val hasNewPushToken = appPrefs.pushTokenUnsynced
-                .takeIf { it.isNotBlank() && it != appPrefs.pushTokenSynced }
-                ?.isNotBlank()
-                ?: false
-
+            val pushProvider = notificationSocketServiceManager.adjustedPushProvider()
             val wasDeviceSynced = appPrefs.wasDeviceEverSynced
-            val isSocketServiceActive = notificationSocketServiceManager.isServiceActive()
+            val unifiedPushPrefsUnsynced = appPrefs.unifiedPushEndpointConfigUnsynced
+            val unifiedPushPrefsSynced = appPrefs.unifiedPushEndpointConfigSynced
 
-            val wasSocketServiceStatusChanged = personalSpaceRepo.personalSpaceState.value
-                .data?.currentDevice?.let {
-                    if (it.isUsingNotificationSockets == null) {
-                        // if status is not initialized yet, only consider updating it if socket is active
-                        // otherwise no need to call the api again
-                        isSocketServiceActive
-                    } else {
-                        it.isUsingNotificationSockets != isSocketServiceActive
+            val unifiedPushConfig = if (unifiedPushPrefsUnsynced != null) {
+                if (unifiedPushPrefsUnsynced.isBlank()) {
+                    null
+                } else {
+                    try {
+                        BaseRemoteModule.formatter.decodeFromString<UnifiedPushEndpointConfig>(unifiedPushPrefsUnsynced)
+                    } catch (e: Exception) {
+                        null
                     }
-                } ?: false
+                }
+            } else {
+                null
+            }
 
-            if (!hasNewPushToken && !hasNewLocationPushToken && !wasSocketServiceStatusChanged && wasDeviceSynced) {
+            val updateUnifiedPush = when (pushProvider) {
+                PushProvider.DEVICE_NATIVE,
+                PushProvider.PARALINO,
+                PushProvider.NOT_SET -> true
+
+                PushProvider.UNIFIED_PUSH -> {
+                    if (unifiedPushPrefsUnsynced != null) {
+                        if (unifiedPushPrefsUnsynced.isBlank()) {
+                            true
+                        } else {
+                            unifiedPushPrefsUnsynced != unifiedPushPrefsSynced
+                        }
+                    } else {
+                        false
+                    }
+                }
+            }
+
+            val pendingState = UserDeviceDataUpdateState(
+                pushToken = when (pushProvider) {
+                    PushProvider.DEVICE_NATIVE -> {
+                        appPrefs.pushTokenUnsynced.takeIf { it.isNotBlank() }
+                            ?: appPrefs.pushTokenSynced.takeIf { it.isNotBlank() }
+                    }
+                    else -> null
+                },
+                locationPushToken = when (pushProvider) {
+                    PushProvider.DEVICE_NATIVE -> {
+                        appPrefs.locationPushTokenUnsynced.takeIf { it.isNotBlank() }
+                            ?: appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() }
+                    }
+                    else -> null
+                },
+                pushProvider = notificationSocketServiceManager.adjustedPushProvider(),
+                unifiedPushConfig = unifiedPushConfig,
+                updateUnifiedPush = updateUnifiedPush
+            )
+
+            val currentState = UserDeviceDataUpdateState(
+                pushToken = appPrefs.pushTokenSynced.takeIf { it.isNotBlank() },
+                locationPushToken = appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() },
+                pushProvider = personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProvider ?: PushProvider.DEVICE_NATIVE,
+                unifiedPushConfig = try {
+                    personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.unifiedPushConfig?.let {
+                        BaseRemoteModule.formatter.decodeFromString<UnifiedPushEndpointConfig>(it)
+                    }
+                } catch (e: Exception) {
+                    null
+                },
+                updateUnifiedPush = false
+            )
+
+
+            if (!pendingState.shouldUpdate(currentState) && wasDeviceSynced) {
                 logg.tag("push_notifications")
                     .v("No new push token to sync, device was already synced")
                 return null
@@ -159,20 +211,13 @@ class UpdateUserDataUseCase constructor(
                     timeMillis = 5.seconds.inWholeMilliseconds
                 )
             ) {
-                val newPushToken = appPrefs.pushTokenUnsynced.takeIf { it.isNotBlank() }
-                    ?: appPrefs.pushTokenSynced.takeIf { it.isNotBlank() }
 
-                if (newPushToken.isNullOrBlank() && !wasSocketServiceStatusChanged && wasDeviceSynced) {
-                    return@triggerRemoteMaybe null
-                }
-
-                val newLocationPushToken =
-                    appPrefs.locationPushTokenUnsynced.takeIf { it.isNotBlank() }
-                        ?: appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() }
                 val updatedDevice = userDevicesRemoteSource.updateDeviceData(
-                    pushToken = newPushToken,
-                    locationPushToken = newLocationPushToken,
-                    isUsingNotificationSockets = isSocketServiceActive
+                    pushToken = pendingState.pushToken,
+                    locationPushToken = pendingState.locationPushToken,
+                    pushProvider = pendingState.pushProvider.key,
+                    unifiedPushConfig = pendingState.unifiedPushConfig,
+                    updateUnifiedPush = pendingState.updateUnifiedPush
                 )
 
                 if (updatedDevice != null) {
@@ -180,10 +225,13 @@ class UpdateUserDataUseCase constructor(
                 }
 
                 appPrefs.pushTokenUnsynced = ""
-                appPrefs.pushTokenSynced = newPushToken ?: ""
+                appPrefs.pushTokenSynced = pendingState.pushToken ?: ""
 
                 appPrefs.locationPushTokenUnsynced = ""
-                appPrefs.locationPushTokenSynced = newLocationPushToken ?: ""
+                appPrefs.locationPushTokenSynced = pendingState.pushToken ?: ""
+
+                appPrefs.unifiedPushEndpointConfigUnsynced = null
+                appPrefs.unifiedPushEndpointConfigSynced = if (pendingState.updateUnifiedPush) unifiedPushPrefsUnsynced else unifiedPushPrefsSynced
 
                 appPrefs.wasDeviceEverSynced = true
 
@@ -194,6 +242,27 @@ class UpdateUserDataUseCase constructor(
             return Payload.Error(e)
         } finally {
             stopProcessing("notification_token_update")
+        }
+    }
+
+    private data class UserDeviceDataUpdateState(
+        val pushToken: String?,
+        val locationPushToken: String?,
+        val pushProvider: PushProvider,
+        val updateUnifiedPush: Boolean,
+        val unifiedPushConfig: UnifiedPushEndpointConfig?,
+    ) {
+        fun shouldUpdate(other: UserDeviceDataUpdateState): Boolean {
+            val didConfigChange = if (this.unifiedPushConfig != null) {
+                this.unifiedPushConfig == other.unifiedPushConfig
+            } else {
+                other.unifiedPushConfig != null
+            }
+            return this.pushToken != other.pushToken
+                    || this.locationPushToken != other.locationPushToken
+                    || this.pushProvider != other.pushProvider
+                    || this.updateUnifiedPush != other.updateUnifiedPush
+                    || didConfigChange
         }
     }
 }

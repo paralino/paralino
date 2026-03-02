@@ -50,9 +50,11 @@ import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEv
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CheckButtonIcon
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchSize
@@ -194,6 +196,21 @@ fun GenericSettingsListScreen(
                                 onClick = {
                                     onEvent(GenericSettingsScreenUiEvent.SelectActionItem(item = item))
                                 }
+                            )
+                        }
+                    }
+                }
+
+                is GenericSettingListItem.EmptyState -> {
+                    if (item.isVisible) {
+                        this.item(key = item.keyId) {
+                            DefaultEmptyState(
+                                modifier = Modifier,
+                                icon = item.icon.asPainterResource(),
+                                content = item.content,
+                                buttonText = item.buttonText,
+                                buttonState = AppButtonState.loadingStateWithCheck(item.buttonLoading),
+                                onClick = { onEvent(GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick) }
                             )
                         }
                     }

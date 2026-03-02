@@ -52,7 +52,8 @@ abstract class BaseGenericSettingViewModel(
             is GenericSettingsScreenUiEvent.SelectOptionItem -> handleUiEvent(event)
             is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> handleUiEvent(event)
             is GenericSettingsScreenUiEvent.SelectActionItem -> handleUiEvent(event)
-            is GenericSettingsScreenUiEvent.EmptyStateActionClick -> handleUiEvent(event)
+            is GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick -> handleUiEvent(event)
+            is GenericSettingsScreenUiEvent.EmbeddedEmptyStateActionClick -> handleUiEvent(event)
         }
     }
 

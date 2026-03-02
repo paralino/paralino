@@ -70,7 +70,7 @@
     <string name="notifications_channel_push_sync">Notification sync</string>
     <string name="notifications_channel_data_sync">Data sync</string>
     <string name="notifications_channel_info_message">System information</string>
-    <string name="notifications_channel_socket_service">Push notification service</string>
+    <string name="notifications_channel_socket_service">Push Notifications Service</string>
     <string name="location_banner_fix">Fix</string>
     <string name="dashboard_groups_section_unverified">UNVERIFIED</string>
     <string name="dashboard_groups_add_button">Create a new group</string>

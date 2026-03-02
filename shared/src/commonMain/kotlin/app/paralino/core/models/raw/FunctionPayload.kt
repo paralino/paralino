@@ -236,13 +236,23 @@ data class PersonalLocationDeletePayload(
 )
 
 @Serializable
+data class UnifiedPushEndpointPayload(
+    val distributor: String,
+    val url: String,
+    val pubkey: String?,
+    val auth: String?
+)
+
+@Serializable
 data class UpdateUserDeviceFunctionData constructor(
     val sessionId: String,
     val deviceId: String,
-    val pushToken: String?,
     val deviceType: String,
-    val isUsingNotificationSockets: Boolean,
-    val locationPushToken: String?
+    val pushProvider: String,
+    val pushToken: String?,
+    val locationPushToken: String?,
+    val unifiedPushConfig: UnifiedPushEndpointPayload?,
+    val updateUnifiedPush: Boolean
 )
 
 @Serializable

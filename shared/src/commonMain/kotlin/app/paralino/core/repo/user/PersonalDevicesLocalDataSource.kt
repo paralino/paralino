@@ -83,7 +83,8 @@ class PersonalDevicesLocalDataSource constructor(
                 encryptedSenderKey = device.encryptedSenderKey,
                 userKeyVersion = device.userKeyVersion,
                 batteryAlertSettings = device.batteryAlertSettings,
-                isUsingNotificationSockets = device.isUsingNotificationSockets
+                unifiedPushConfig = device.unifiedPushConfig,
+                pushProvider = device.pushProvider
             )
         )
     }

@@ -1106,4 +1106,22 @@ sealed interface MainAlertDialog {
             )
         )
     }
+
+    data class UnifiedPushRegistrationError(
+        val reason: String
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.error_something_wrong),
+            message = reason,
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor
+                )
+            ),
+        )
+    }
 }

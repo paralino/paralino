@@ -282,6 +282,7 @@ dependencies {
     playStoreImplementation(libs.maps.google.compose.utils)
     playStoreImplementation(libs.maps.google.compose.widgets)
     implementation(libs.maps.maplibre.compose)
+    directImplementation(libs.unifiedPush.connector)
 
     implementation(project(path = ":lazysodium-android"))
     implementation(libs.jna) {
@@ -297,4 +298,16 @@ dependencies {
     implementation(libs.okhttp)
     debugImplementation(libs.logging.interceptor)
     // endregion
+}
+
+configurations.all {
+    val tink = "com.google.crypto.tink:tink-android:1.20.0"
+    // You can also use the library declaration catalog
+    // val tink = libs.google.tink
+    resolutionStrategy {
+        force(tink)
+        dependencySubstitution {
+            substitute(module("com.google.crypto.tink:tink")).using(module(tink))
+        }
+    }
 }

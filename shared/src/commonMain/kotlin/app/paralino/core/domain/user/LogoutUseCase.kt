@@ -101,7 +101,7 @@ class LogoutUseCase(
 
     private suspend fun logoutLocallyImpl() {
         logg.w("account_state", "Logging user out locally")
-        notificationServiceManager.setServiceEnabledState(enabledStatus = null)
+        notificationServiceManager.setNotificationPushProvider(provider = null)
         appPrefs.clear()
         scopeProvider.userSessionIOScope.coroutineContext.cancelChildren()
 

@@ -5,6 +5,7 @@ import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.user.UserMe
@@ -22,7 +23,8 @@ data class UserDeviceModel(
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,
     val batteryAlertSettings: BatteryNotificationsSettingsData?,
-    val isUsingNotificationSockets: Boolean?
+    val unifiedPushConfig: String?,
+    val pushProvider: PushProvider
 ) {
     val deviceNameOrNull: String? = deviceData.data?.deviceName?.takeIf { it.isNotBlank() }
 }

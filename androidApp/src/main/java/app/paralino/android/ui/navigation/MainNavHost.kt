@@ -57,7 +57,7 @@ import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
-import app.paralino.core.presentation.settings.generic.NotificationSocketSettingsViewModel
+import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf

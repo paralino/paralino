@@ -1,8 +1,10 @@
 package app.paralino.core.repo.user
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.user.UnifiedPushEndpointConfig
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.raw.UnifiedPushEndpointPayload
 import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.models.raw.UserDeviceRaw
@@ -73,15 +75,26 @@ class UserDevicesRemoteSource constructor(
     suspend fun updateDeviceData(
         pushToken: String?,
         locationPushToken: String?,
-        isUsingNotificationSockets: Boolean
+        pushProvider: String,
+        unifiedPushConfig: UnifiedPushEndpointConfig?,
+        updateUnifiedPush: Boolean,
     ): UserDeviceRaw? {
         val payload = UpdateUserDeviceFunctionData(
             sessionId = appPrefs.sessionId,
             deviceId = appPrefs.deviceId,
-            pushToken = pushToken,
             deviceType = userMemberIdUseCase.getCurrentDeviceType().key,
+            pushProvider = pushProvider,
+            pushToken = pushToken,
             locationPushToken = locationPushToken,
-            isUsingNotificationSockets = isUsingNotificationSockets
+            updateUnifiedPush = updateUnifiedPush,
+            unifiedPushConfig = unifiedPushConfig?.let {
+                UnifiedPushEndpointPayload(
+                    distributor = it.distributor,
+                    url = it.url,
+                    pubkey = it.pubkey,
+                    auth = it.auth
+                )
+            }
         )
 
         val response = functionsApi.runAndWait(

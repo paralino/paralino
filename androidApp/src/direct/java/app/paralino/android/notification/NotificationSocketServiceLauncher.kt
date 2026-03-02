@@ -6,11 +6,11 @@ import android.content.Intent
 import android.os.Build
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationSocketServiceManager
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +33,6 @@ class NotificationSocketServiceLauncher(
     private val deviceApiProvider: IDeviceApiProvider,
     private val infoMessagesNotifications: InfoMessagesNotificationPresenter,
     private val serviceManager: NotificationSocketServiceManager,
-    private val appConfigRepo: AppConfigRepository,
     private val scopeProvider: ICoroutineScopeProvider,
     private val updateUserData: UpdateUserDataUseCase
 ) {
@@ -58,7 +57,7 @@ class NotificationSocketServiceLauncher(
     }
 
     fun startMonitoring(scope: CoroutineScope) {
-        if (appConfigRepo.hasNotificationSocketService) {
+        if (serviceManager.hasNotificationSocketService()) {
             combine(
                 deviceApiProvider.appLifecycleState,
                 serviceManager.listenForServiceStatus(),
@@ -80,7 +79,7 @@ class NotificationSocketServiceLauncher(
                 .launchIn(scope)
         } else {
             scope.launch(Dispatchers.IO) {
-                serviceManager.setServiceEnabledState(enabledStatus = false)
+                serviceManager.setNotificationPushProvider(provider = PushProvider.NOT_SET)
             }
         }
     }

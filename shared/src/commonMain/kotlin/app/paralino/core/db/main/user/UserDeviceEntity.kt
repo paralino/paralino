@@ -21,7 +21,8 @@ data class UserDeviceEntity(
     @ColumnInfo(name = "locationData") val locationData: String?,
     @ColumnInfo(name = "status") val status: String?,
     @ColumnInfo(name = "locationHistory") val locationHistory: String?,
-    @ColumnInfo(name = "isUsingNotificationSockets") val isUsingNotificationSockets: Boolean?
+    @ColumnInfo(name = "unifiedPushConfig") val unifiedPushConfig: String?,
+    @ColumnInfo(name = "pushProvider") val pushProvider: String?
 ) {
     val hasValidLocation: Boolean get() = !locationId.isNullOrBlank() && !encryptedSenderKey.isNullOrBlank() && userKeyVersion != null
 }
@@ -39,7 +40,8 @@ data class UserDeviceEntityDeviceUpdate(
     @ColumnInfo(name = "encryptedSenderKey") val encryptedSenderKey: String?,
     @ColumnInfo(name = "userKeyVersion") val userKeyVersion: Long?,
     @ColumnInfo(name = "batteryAlertSettings") val batteryAlertSettings: String?,
-    @ColumnInfo(name = "isUsingNotificationSockets") val isUsingNotificationSockets: Boolean?
+    @ColumnInfo(name = "unifiedPushConfig") val unifiedPushConfig: String?,
+    @ColumnInfo(name = "pushProvider") val pushProvider: String?
 )
 
 @Entity

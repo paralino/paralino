@@ -1,5 +1,6 @@
 package app.paralino.core.db
 
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
@@ -112,8 +113,11 @@ class AppPrefs(
         const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
         const val keyMapSDKProviderLightStyle = "prefs.device.mapsSDK.lightStyle"
         const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
-        const val keyNotificationSocketServiceEnabled = "prefs.device.notificationSocketServiceEnabled"
         const val keyDeviceWasEverSynced = "prefs.device.isSynced"
+        const val keySelectedUnifiedPushDistributor = "prefs.device.unifiedPushDistributor"
+        const val keySelectedPushProvider = "prefs.device.pushProvider"
+        const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
+        const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
     }
 
 
@@ -263,6 +267,44 @@ class AppPrefs(
         get() = provider.userSettings.getString(keyLocationPushTokenSynced, "")
         set(value) {
             provider.userSettings.putString(keyLocationPushTokenSynced, value)
+        }
+
+    var selectedUnifiedPushDistributor: String?
+        get() = provider.userSettings.getStringOrNull(keySelectedUnifiedPushDistributor)
+        set(value) {
+            provider.userSettings.set(keySelectedUnifiedPushDistributor, value)
+        }
+
+    var unifiedPushEndpointConfigUnsynced: String?
+        get() = provider.userSettings.getStringOrNull(keyUnifiedPushEndpointConfigUnsynced)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyUnifiedPushEndpointConfigUnsynced)
+            } else {
+                provider.userSettings.putString(keyUnifiedPushEndpointConfigUnsynced, value)
+            }
+        }
+
+    var unifiedPushEndpointConfigSynced: String?
+        get() = provider.userSettings.getStringOrNull(keyUnifiedPushEndpointConfigSynced)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyUnifiedPushEndpointConfigSynced)
+            } else {
+                provider.userSettings.putString(keyUnifiedPushEndpointConfigSynced, value)
+            }
+        }
+
+    var notificationPushProvider: PushProvider?
+        get() = provider.userSettings.getStringOrNull(keySelectedPushProvider)?.let {
+            PushProvider.fromKey(key = it)
+        }
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keySelectedPushProvider)
+            } else {
+                provider.userSettings.putString(keySelectedPushProvider, value.key)
+            }
         }
 
     var selectedGroupId: String?
@@ -568,16 +610,6 @@ class AppPrefs(
         }
     }
 
-    var notificationSocketServiceEnabled: Boolean?
-        get() = provider.userSettings.getBooleanOrNull(keyNotificationSocketServiceEnabled)
-        set(value) {
-            if (value == null) {
-                provider.userSettings.remove(keyNotificationSocketServiceEnabled)
-            } else {
-                provider.userSettings.putBoolean(keyNotificationSocketServiceEnabled, value)
-            }
-        }
-
     var mapTilerToken: String?
         get() = provider.userSettings.getStringOrNull(keyMapTilerToken)
         set(value) {
@@ -623,6 +655,8 @@ class AppPrefs(
         pushTokenUnsynced = ""
         locationPushTokenSynced = ""
         locationPushTokenUnsynced = ""
+        unifiedPushEndpointConfigUnsynced = null
+        unifiedPushEndpointConfigSynced = null
     }
 
     fun clear() {

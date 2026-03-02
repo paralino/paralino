@@ -71,7 +71,7 @@ enum class ServerFunction constructor(
     PERSONAL_CODE_UPDATE(method = "PATCH", path = "/personal_code"),
     PERSONAL_CODE_DELETE(method = "DELETE", path = "/personal_code"),
 
-    USER_DEVICE_UPDATE(method = "PUT", path = "/user/devices"),
+    USER_DEVICE_UPDATE(method = "PUT", path = "/v2/user/devices"),
     USER_DEVICE_DELETE(method = "DELETE", path = "/user/devices"),
 
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),

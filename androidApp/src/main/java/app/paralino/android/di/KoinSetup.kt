@@ -22,6 +22,8 @@ import app.paralino.android.provider.LocationStatusProvider
 import app.paralino.android.provider.NotificationStatusProvider
 import app.paralino.android.provider.OneTimeLocationProvider
 import app.paralino.android.provider.PushProviderManager
+import app.paralino.android.provider.IUnifiedPushManager
+import app.paralino.android.provider.UnifiedPushManager
 import app.paralino.android.provider.ValueFormatter
 import app.paralino.android.remote.appwrite.AppWriteRemoteModule
 import app.paralino.android.remote.appwrite.DocumentsApi
@@ -97,7 +99,7 @@ import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
 import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
-import app.paralino.core.presentation.settings.generic.NotificationSocketSettingsViewModel
+import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
@@ -149,6 +151,7 @@ object KoinSetup {
 
         single<ICrashReportingLogr> { CrashReportingLogr(get(), get()) }
         single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
+        single<IUnifiedPushManager> { UnifiedPushManager(androidApplication() as AppClass, get()) }
         single<IValueFormatter> { ValueFormatter(get()) }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class
 
@@ -174,7 +177,7 @@ object KoinSetup {
     private val appSpecificModule = module {
         single { PreCheckControl() }
         single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
-        single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get(), get()) }
+        single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
         factory { NotificationSocketServiceNotificationHandler(androidContext()) }
@@ -268,7 +271,7 @@ object KoinSetup {
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { PlaceSearchSettingsViewModel(get(), get()) }
-        viewModel { NotificationSocketSettingsViewModel(get(), get()) }
+        viewModel { NotificationSocketSettingsViewModel(get(), get(), get(), get(), get()) }
         viewModel { MapsProviderViewModel(get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
