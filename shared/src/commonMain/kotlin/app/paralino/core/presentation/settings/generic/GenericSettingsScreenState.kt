@@ -32,6 +32,8 @@ sealed interface GenericSettingsScreenStateContent {
     ): GenericSettingsScreenStateContent
 
     data class ListItems(
+        val isFullScreenLoading: Boolean = false,
+        val loadingText: String? = null,
         val items: List<GenericSettingListItem>
     ): GenericSettingsScreenStateContent
 }

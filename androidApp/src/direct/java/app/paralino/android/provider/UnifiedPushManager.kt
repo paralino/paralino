@@ -3,16 +3,23 @@ package app.paralino.android.provider
 import app.paralino.android.AppClass
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.logg
+import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.unifiedpush.android.connector.UnifiedPush
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 class UnifiedPushManager(
     private val appClass: AppClass,
     private val appPrefs: AppPrefs
 ) : IUnifiedPushManager {
 
+    private val _refreshTime = MutableStateFlow<Instant?>(null)
     private val _errorState = MutableStateFlow<UnifiedPushError?>(null)
     override val errorState: StateFlow<UnifiedPushError?> = _errorState.asStateFlow()
 
@@ -20,15 +27,19 @@ class UnifiedPushManager(
         return UnifiedPush.getDistributors(context = appClass)
     }
 
-    override fun registerApp(distributor: String) {
+    override fun registerApp(distributor: String): Boolean {
         try {
             logg.tag("push_notifications").i("Register new unifiedPush distributor $distributor")
             unregisterApp()
             appPrefs.selectedUnifiedPushDistributor = distributor
             UnifiedPush.saveDistributor(context = appClass, distributor = distributor)
             UnifiedPush.register(context = appClass, messageForDistributor = "Paralino")
+            _refreshTime.update { nowUTC() }
+            return true
         } catch (e: Exception) {
+            logg.tag("push_notifications").i("Error registering distributor: ${e.message}")
             _errorState.value = UnifiedPushError.Other(e.message ?: "Unknown error")
+            return false
         }
     }
 
@@ -38,6 +49,30 @@ class UnifiedPushManager(
             appPrefs.selectedUnifiedPushDistributor = null
             UnifiedPush.unregister(context = appClass)
         } catch (e: Exception) {
+            logg.tag("push_notifications").i("Error unregistering distributor: ${e.message}")
+            _errorState.value = UnifiedPushError.Other(e.message ?: "Unknown error")
+        }
+    }
+
+    override fun refresh() {
+        try {
+            val currentDistributor = UnifiedPush.getAckDistributor(context = appClass)
+            val savedDistributor = appPrefs.selectedUnifiedPushDistributor
+            logg.tag("push_notifications").i("Refresh unifiedPush distributor, current: ${currentDistributor}, saved: $savedDistributor")
+            if (currentDistributor == savedDistributor && !savedDistributor.isNullOrBlank()) {
+                if (_refreshTime.value?.isOlderThan(2.minutes) != false) {
+                    logg.tag("push_notifications").i("Distributors match, refresh registration")
+                    _refreshTime.update { nowUTC() }
+                    registerApp(distributor = savedDistributor)
+                } else {
+                    logg.tag("push_notifications").i("Distributors match, no need to refresh")
+                }
+            } else {
+                logg.tag("push_notifications").i("Distributors do not match, unregister")
+                unregisterApp()
+            }
+        } catch (e: Exception) {
+            logg.tag("push_notifications").i("Error refreshing distributor: ${e.message}")
             _errorState.value = UnifiedPushError.Other(e.message ?: "Unknown error")
         }
     }

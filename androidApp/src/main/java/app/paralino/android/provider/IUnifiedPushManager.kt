@@ -6,8 +6,9 @@ interface IUnifiedPushManager {
     val errorState: StateFlow<UnifiedPushError?>
     
     fun getDistributors(): List<String>
-    fun registerApp(distributor: String)
+    fun registerApp(distributor: String): Boolean
     fun unregisterApp()
+    fun refresh()
     fun emitError(error: UnifiedPushError)
     fun clearError()
 }

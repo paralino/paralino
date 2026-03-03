@@ -1,5 +1,6 @@
 package app.paralino.core.db.main.user
 
+import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,5 +30,19 @@ data class UnifiedPushEndpointConfig(
         result = 31 * result + (pubkey?.hashCode() ?: 0)
         result = 31 * result + (auth?.hashCode() ?: 0)
         return result
+    }
+
+    companion object {
+        fun get(config: String?): UnifiedPushEndpointConfig? {
+            if (config.isNullOrBlank()) {
+                return null
+            } else {
+                return try {
+                    BaseRemoteModule.formatter.decodeFromString<UnifiedPushEndpointConfig>(config)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        }
     }
 }

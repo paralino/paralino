@@ -1,27 +1,37 @@
 package app.paralino.android.presentation.settings.generic
 
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
+import app.paralino.android.provider.IUnifiedPushManager
+import app.paralino.android.provider.UnifiedPushError
 import app.paralino.core.MR
+import app.paralino.core.db.AppPrefs
+import app.paralino.core.db.main.user.UnifiedPushEndpointConfig
+import app.paralino.core.logg
+import app.paralino.core.models.AppFlavor
+import app.paralino.core.models.base.PushProvider
+import app.paralino.core.models.data
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
+import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
-import app.paralino.core.ui.components.CoreAppIcons
-import app.paralino.core.db.AppPrefs
-import app.paralino.android.provider.IUnifiedPushManager
-import app.paralino.android.provider.UnifiedPushError
-import app.paralino.core.models.AppFlavor
-import app.paralino.core.models.base.PushProvider
-import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.repo.base.AppConfigRepository
+import app.paralino.core.repo.user.IPushProviderManager
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
+import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
@@ -30,13 +40,62 @@ class NotificationSocketSettingsViewModel(
     private val appPrefs: AppPrefs,
     private val appConfigRepo: AppConfigRepository,
     private val unifiedPushManager: IUnifiedPushManager,
+    private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
+    private val pushProviderManager: IPushProviderManager,
     deviceApiProvider: IDeviceApiProvider
 ) : BaseGenericSettingViewModel(
     initialScreenTitle = MR.strings.setting_notificationSocket_title.localizedString(),
     deviceApiProvider = deviceApiProvider
 ) {
 
+    private val loadingTrigger = MutableStateFlow(false)
+
     init {
+        loadingTrigger
+            .onEach { isLoading ->
+                _uiState.update {
+                    it.copy(
+                        content = when (val content = it.content) {
+                            is GenericSettingsScreenStateContent.ListItems -> {
+                                content.copy(isFullScreenLoading = isLoading)
+                            }
+                            else -> it.content
+                        }
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        personalSpaceLocal.personalSpaceState
+            .mapNotNull { it.data?.currentDevice }
+            .map { it.pushProvider to it.unifiedPushConfig }
+            .onEach { device ->
+                delay(5000)
+
+                if (loadingTrigger.value) {
+                    logg.tag("push_notifications").i("Push provider registration still loading, check again")
+                    val localConfig = UnifiedPushEndpointConfig.get(appPrefs.unifiedPushEndpointConfigSynced)
+                    val syncedConfig = UnifiedPushEndpointConfig.get(device.second)
+                    val isConfigValid = if (device.first == PushProvider.PARALINO) {
+                        // TODO also check for config here
+                        true
+                    } else {
+                        syncedConfig != null && syncedConfig == localConfig
+                    }
+                    val isUpdated = device.first == appPrefs.notificationPushProvider && isConfigValid
+
+                    if (!isUpdated) {
+                        logg.tag("push_notifications").i("Device still not updated, trigger token sync")
+                        pushProviderManager.syncPushToken()
+                    } else {
+                        logg.tag("push_notifications").i("Push provider registration complete")
+                    }
+
+                    loadingTrigger.update { !isUpdated }
+                }
+            }
+            .launchIn(coroutineScope)
+
         deviceApiProvider.notificationStatusProvider.status
             .onEach { status ->
                 if (status.isNotificationPermissionAllowed) {
@@ -93,7 +152,11 @@ class NotificationSocketSettingsViewModel(
                 keyId = "switchNotificationSocket",
                 title = MR.strings.setting_notificationSocket_switch_title.localizedString(),
                 description = if (isMasterToggleOn) {
-                    MR.strings.setting_notificationSocket_switch_info_on.localizedString()
+                    if (distributors.isEmpty()) {
+                        MR.strings.setting_notificationSocket_providerParalino_info.localizedString()
+                    } else {
+                        MR.strings.setting_notificationSocket_switch_info_on.localizedString()
+                    }
                 } else {
                     MR.strings.setting_notificationSocket_switch_info_off.localizedString()
                 },
@@ -112,7 +175,7 @@ class NotificationSocketSettingsViewModel(
                     key = "socket",
                     id = "socket",
                     title = "Paralino",
-                    description = null,
+                    description = MR.strings.setting_notificationSocket_providerParalino_info.localizedString(),
                     tag = null,
                     isTagWarning = false,
                     isPremiumFeatureEnabled = true,
@@ -133,7 +196,7 @@ class NotificationSocketSettingsViewModel(
                         id = distributor,
                         title = distributorName,
                         description = if (distributor != distributorName) distributor else null,
-                        tag = null,
+                        tag = MR.strings.setting_notificationSocket_providerUnifiedPush_tag.localizedString(),
                         isTagWarning = false,
                         isPremiumFeatureEnabled = true,
                         isSelected = distributor == selectedDistributor
@@ -150,22 +213,27 @@ class NotificationSocketSettingsViewModel(
             )
         }
 
-        items.add(
-            GenericSettingListItem.SettingsActionItem(
-                keyId = "channelSettings",
-                text = MR.strings.setting_notificationSocket_channelSettings_title.localizedString(),
-                icon = CoreAppIcons.PhonelinkSetup,
-                type = SettingsActionItemType.Navigation,
-                isVisible = isMasterToggleOn,
-                tag = null,
-                description = null
+        if (defaultProvider == PushProvider.PARALINO) {
+            items.add(GenericSettingListItem.Spacer(8.dp, keyId = "settings_space"),)
+            items.add(
+                GenericSettingListItem.SettingsActionItem(
+                    keyId = "channelSettings",
+                    text = MR.strings.setting_notificationSocket_channelSettings_title.localizedString(),
+                    icon = CoreAppIcons.PhonelinkSetup,
+                    type = SettingsActionItemType.Navigation,
+                    isVisible = isMasterToggleOn,
+                    tag = null,
+                    description = null
+                )
             )
-        )
+        }
 
         return GenericSettingsScreenState(
             screenTitle = initialScreenTitle,
             alertDialog = null,
             content = GenericSettingsScreenStateContent.ListItems(
+                isFullScreenLoading = loadingTrigger.value,
+                loadingText = MR.strings.setting_notificationSocket_distributor_loading_text.localizedString(),
                 items = items
             )
         )
@@ -225,9 +293,12 @@ class NotificationSocketSettingsViewModel(
     private fun handleProviderOptionSelection(option: GroupOptionItem) {
         val distributor = option.key as String
         if (distributor == "socket") {
+            val wasAlreadySelected = serviceManager.adjustedPushProvider() == PushProvider.PARALINO
+            loadingTrigger.update { !wasAlreadySelected }
             unifiedPushManager.unregisterApp()
             serviceManager.setNotificationPushProvider(provider = PushProvider.PARALINO)
         } else {
+            loadingTrigger.update { true }
             serviceManager.setNotificationPushProvider(provider = PushProvider.UNIFIED_PUSH)
             unifiedPushManager.registerApp(distributor)
         }

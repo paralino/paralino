@@ -61,6 +61,7 @@ import app.paralino.core.ui.components.LargeSwitchSize
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
+import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -217,6 +218,10 @@ fun GenericSettingsListScreen(
                 }
             }
         }
+    }
+
+    if (state.isFullScreenLoading) {
+        LoadingDialog(text = state.loadingText)
     }
 }
 

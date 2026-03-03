@@ -271,7 +271,7 @@ object KoinSetup {
         viewModel { MeasurementSystemViewModel(get(), get()) }
         viewModel { NotificationsGroupingViewModel(get()) }
         viewModel { PlaceSearchSettingsViewModel(get(), get()) }
-        viewModel { NotificationSocketSettingsViewModel(get(), get(), get(), get(), get()) }
+        viewModel { NotificationSocketSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
         viewModel { MapsProviderViewModel(get(), get(), get(), get(), get()) }
         viewModel { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
         viewModel { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }

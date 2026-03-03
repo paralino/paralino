@@ -11,9 +11,12 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import app.paralino.android.provider.IUnifiedPushManager
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.getOrThrow
+import app.paralino.core.provider.NotificationSocketServiceManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -22,7 +25,7 @@ class PushTokenSyncWorker(
     params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
 
-    private val userDataUpdate by lazy { UserRepoComponent() }
+    private val components by lazy { UserRepoComponent() }
 
     override suspend fun doWork(): Result {
         try { setForeground(getForegroundInfo()) }
@@ -30,7 +33,10 @@ class PushTokenSyncWorker(
 
         try {
             logg.tag("push_notifications").v("Sync push token or device")
-            userDataUpdate.userDataUpdate.registerPushTokenIfNeeded()?.getOrThrow()
+            components.userDataUpdate.registerPushTokenIfNeeded()?.getOrThrow()
+            if (components.serviceManager.adjustedPushProvider() == PushProvider.UNIFIED_PUSH) {
+                components.unifiedPushManager.refresh()
+            }
         } catch (e: Exception) {
             logg.tag("push_notifications").e("Error syncing push token", e)
             return if (runAttemptCount < 3) Result.retry() else Result.failure()
@@ -71,4 +77,6 @@ class PushTokenSyncWorker(
 
 class UserRepoComponent() : KoinComponent {
     val userDataUpdate: UpdateUserDataUseCase by inject()
+    val serviceManager: NotificationSocketServiceManager by inject()
+    val unifiedPushManager: IUnifiedPushManager by inject()
 }

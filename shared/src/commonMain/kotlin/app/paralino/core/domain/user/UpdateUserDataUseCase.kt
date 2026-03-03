@@ -134,11 +134,7 @@ class UpdateUserDataUseCase constructor(
                 if (unifiedPushPrefsUnsynced.isBlank()) {
                     null
                 } else {
-                    try {
-                        BaseRemoteModule.formatter.decodeFromString<UnifiedPushEndpointConfig>(unifiedPushPrefsUnsynced)
-                    } catch (e: Exception) {
-                        null
-                    }
+                    UnifiedPushEndpointConfig.get(unifiedPushPrefsUnsynced)
                 }
             } else {
                 null
@@ -186,13 +182,7 @@ class UpdateUserDataUseCase constructor(
                 pushToken = appPrefs.pushTokenSynced.takeIf { it.isNotBlank() },
                 locationPushToken = appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() },
                 pushProvider = personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProvider ?: PushProvider.DEVICE_NATIVE,
-                unifiedPushConfig = try {
-                    personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.unifiedPushConfig?.let {
-                        BaseRemoteModule.formatter.decodeFromString<UnifiedPushEndpointConfig>(it)
-                    }
-                } catch (e: Exception) {
-                    null
-                },
+                unifiedPushConfig = UnifiedPushEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.unifiedPushConfig),
                 updateUnifiedPush = false
             )
 
@@ -254,9 +244,9 @@ class UpdateUserDataUseCase constructor(
     ) {
         fun shouldUpdate(other: UserDeviceDataUpdateState): Boolean {
             val didConfigChange = if (this.unifiedPushConfig != null) {
-                this.unifiedPushConfig == other.unifiedPushConfig
+                this.unifiedPushConfig != other.unifiedPushConfig
             } else {
-                other.unifiedPushConfig != null
+                other.unifiedPushConfig != null && this.updateUnifiedPush
             }
             return this.pushToken != other.pushToken
                     || this.locationPushToken != other.locationPushToken
