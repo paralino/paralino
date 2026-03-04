@@ -147,7 +147,7 @@ val ConditionErrorType.icon: Painter
         ConditionErrorType.Network -> CoreAppIcons.WifiOff
         is ConditionErrorType.EmailVerification -> CoreAppIcons.Email
         ConditionErrorType.GuestAccount -> CoreAppIcons.Incognito
-        ConditionErrorType.NewAppUpdate -> CoreAppIcons.Refresh
+        ConditionErrorType.NewAppUpdate -> CoreAppIcons.DownloadArrow
     }.asPainterResource()
 
 val ConditionErrorType.nameRes: StringResource

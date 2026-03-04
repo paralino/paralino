@@ -23,6 +23,6 @@ abstract class IAppUpdateManager: BaseRepository() {
 
 sealed interface AppUpdateStatus {
     data object Idle: AppUpdateStatus
-    data class Downloading(val progress: Float?): AppUpdateStatus
+    data class Downloading(val progress: Float?, val mb: String?): AppUpdateStatus
     data object Installing: AppUpdateStatus
 }

@@ -36,6 +36,7 @@ import paralino.shared.generated.resources.ic_delete
 import paralino.shared.generated.resources.ic_delete_forever
 import paralino.shared.generated.resources.ic_devices
 import paralino.shared.generated.resources.ic_directions
+import paralino.shared.generated.resources.ic_download_arrow
 import paralino.shared.generated.resources.ic_drag_indicator
 import paralino.shared.generated.resources.ic_edit
 import paralino.shared.generated.resources.ic_elevation_2
@@ -196,6 +197,7 @@ object CoreAppIcons {
     val ChatBubbleList get() = Res.drawable.ic_chat_bubble_list
     val AssignmentList get() = Res.drawable.ic_assignment_list
     val Search get() = Res.drawable.ic_search
+    val DownloadArrow get() = Res.drawable.ic_download_arrow
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay

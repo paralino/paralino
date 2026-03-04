@@ -244,6 +244,16 @@ fun AccountInfoHeader(
     onShareCode: (String) -> Unit,
 ) {
     Column {
+        if (errors.isNotEmpty()) {
+            errors.forEach { error ->
+                ConditionErrorItem(
+                    data = error,
+                    onClick = { onErrorItemClick(error) }
+                )
+            }
+            Spacer(modifier = Modifier.size(20.dp))
+        }
+
         Surface(
             modifier = modifier
                 .fillMaxWidth()
@@ -358,16 +368,6 @@ fun AccountInfoHeader(
                         contentDescription = null
                     )
                 }
-            }
-        }
-
-        if (errors.isNotEmpty()) {
-            Spacer(modifier = Modifier.size(20.dp))
-            errors.forEach { error ->
-                ConditionErrorItem(
-                    data = error,
-                    onClick = { onErrorItemClick(error) }
-                )
             }
         }
     }

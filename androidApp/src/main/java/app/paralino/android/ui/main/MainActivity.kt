@@ -211,7 +211,10 @@ fun RootApp(
         when (val finalState = uiState.appUpdateStatus) {
             AppUpdateStatus.Idle -> {}
             is AppUpdateStatus.Downloading -> {
-                LoadingDialog(text = "Downloading...", progress = finalState.progress)
+                LoadingDialog(
+                    text = listOfNotNull("Downloading...", finalState.mb).joinToString(separator = "\n"),
+                    progress = finalState.progress
+                )
             }
 
             AppUpdateStatus.Installing -> {
