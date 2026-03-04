@@ -180,6 +180,13 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_18_19 = object : Migration(18, 19) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userDeviceEntity DROP COLUMN unifiedPushConfig")
+            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN pushProviderConfig TEXT DEFAULT NULL")
+        }
+    }
+
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
         MIGRATION_2_3,
@@ -198,5 +205,6 @@ object MainDatabaseMigrations {
         MIGRATION_15_16,
         MIGRATION_16_17,
         MIGRATION_17_18,
+        MIGRATION_18_19
     )
 }

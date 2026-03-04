@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import app.paralino.android.notification.NotificationSocketServiceNotificationHandler
+import app.paralino.android.notification.PushServiceNotificationHandler
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -58,7 +58,7 @@ fun GenericSettingsScreen(
                 appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.UPGRADE))
             },
             openNotificationSocketChannelSettings = {
-                context.openNotificationChannelSettings(NotificationSocketServiceNotificationHandler.channelId)
+                context.openNotificationChannelSettings(PushServiceNotificationHandler.channelId)
             },
             askNotificationPermission = {
                 notificationPermissionHandler?.askNotificationPermission()

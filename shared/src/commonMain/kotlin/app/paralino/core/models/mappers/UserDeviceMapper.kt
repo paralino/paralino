@@ -46,7 +46,7 @@ class UserDeviceMapper(
             locationData = deviceRaw.location?.locationData,
             status = deviceRaw.location?.status,
             locationHistory = deviceRaw.location?.locationHistory,
-            unifiedPushConfig = deviceRaw.device.unifiedPushConfig,
+            pushProviderConfig = deviceRaw.device.pushProviderConfig,
             pushProvider = deviceRaw.device.pushProvider
         )
     }
@@ -67,7 +67,7 @@ class UserDeviceMapper(
                 userKeyVersion = entity.userKeyVersion,
                 batteryAlertSettings = entity.batteryAlertSettings,
                 deviceData = entity.deviceData,
-                unifiedPushConfig = entity.unifiedPushConfig,
+                pushProviderConfig = entity.pushProviderConfig,
                 pushProvider = entity.pushProvider,
             ),
             location = if (entity.locationId != null) {
@@ -137,7 +137,7 @@ class UserDeviceMapper(
                     null
                 }
             },
-            unifiedPushConfig = entity.unifiedPushConfig,
+            pushProviderConfig = entity.pushProviderConfig,
             pushProvider = PushProvider.fromKey(entity.pushProvider)
         )
     }

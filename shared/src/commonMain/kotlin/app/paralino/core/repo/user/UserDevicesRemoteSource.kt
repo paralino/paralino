@@ -1,10 +1,10 @@
 package app.paralino.core.repo.user
 
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.db.main.user.UnifiedPushEndpointConfig
+import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.base.BackendDatabaseType
-import app.paralino.core.models.raw.UnifiedPushEndpointPayload
+import app.paralino.core.models.raw.PushProviderEndpointPayload
 import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.models.raw.UserDeviceRaw
@@ -76,8 +76,8 @@ class UserDevicesRemoteSource constructor(
         pushToken: String?,
         locationPushToken: String?,
         pushProvider: String,
-        unifiedPushConfig: UnifiedPushEndpointConfig?,
-        updateUnifiedPush: Boolean,
+        pushProviderConfig: PushProviderEndpointConfig?,
+        updatePushProviderConfig: Boolean,
     ): UserDeviceRaw? {
         val payload = UpdateUserDeviceFunctionData(
             sessionId = appPrefs.sessionId,
@@ -86,11 +86,12 @@ class UserDevicesRemoteSource constructor(
             pushProvider = pushProvider,
             pushToken = pushToken,
             locationPushToken = locationPushToken,
-            updateUnifiedPush = updateUnifiedPush,
-            unifiedPushConfig = unifiedPushConfig?.let {
-                UnifiedPushEndpointPayload(
+            updatePushProviderConfig = updatePushProviderConfig,
+            pushProviderConfig = pushProviderConfig?.let {
+                PushProviderEndpointPayload(
                     distributor = it.distributor,
                     url = it.url,
+                    createdAt = it.createdAt,
                     pubkey = it.pubkey,
                     auth = it.auth
                 )

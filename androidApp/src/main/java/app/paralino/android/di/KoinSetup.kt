@@ -11,8 +11,9 @@ import app.paralino.android.domain.ImportPersonalLocationHistoryUseCase
 import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
+import app.paralino.android.notification.PushServiceWebSocketManager
 import app.paralino.android.notification.NotificationSocketServiceLauncher
-import app.paralino.android.notification.NotificationSocketServiceNotificationHandler
+import app.paralino.android.notification.PushServiceNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.provider.ConnectionStatusProvider
@@ -179,8 +180,9 @@ object KoinSetup {
         single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
         single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
+        single { PushServiceWebSocketManager(get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
-        factory { NotificationSocketServiceNotificationHandler(androidContext()) }
+        factory { PushServiceNotificationHandler(androidContext()) }
 
         single { MemberCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get()) } bind IMemberCryptoKeyRotation::class
         single { MemberDeviceKeyRotation(get(), get(), get(), get(), get(), get(), get(), get()) } bind IMemberDeviceKeyRotation::class

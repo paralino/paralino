@@ -6,7 +6,7 @@ import app.paralino.android.provider.IUnifiedPushManager
 import app.paralino.android.provider.UnifiedPushError
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.db.main.user.UnifiedPushEndpointConfig
+import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.PushProvider
@@ -68,18 +68,17 @@ class NotificationSocketSettingsViewModel(
 
         personalSpaceLocal.personalSpaceState
             .mapNotNull { it.data?.currentDevice }
-            .map { it.pushProvider to it.unifiedPushConfig }
+            .map { it.pushProvider to it.pushProviderConfig }
             .onEach { device ->
                 delay(5000)
 
                 if (loadingTrigger.value) {
                     logg.tag("push_notifications").i("Push provider registration still loading, check again")
-                    val localConfig = UnifiedPushEndpointConfig.get(appPrefs.unifiedPushEndpointConfigSynced)
-                    val syncedConfig = UnifiedPushEndpointConfig.get(device.second)
+                    val syncedConfig = PushProviderEndpointConfig.get(device.second)
                     val isConfigValid = if (device.first == PushProvider.PARALINO) {
-                        // TODO also check for config here
-                        true
+                        syncedConfig != null
                     } else {
+                        val localConfig = PushProviderEndpointConfig.get(appPrefs.unifiedPushEndpointConfigSynced)
                         syncedConfig != null && syncedConfig == localConfig
                     }
                     val isUpdated = device.first == appPrefs.notificationPushProvider && isConfigValid
@@ -311,6 +310,7 @@ class NotificationSocketSettingsViewModel(
             serviceManager.setNotificationPushProvider(provider = PushProvider.NOT_SET)
             unifiedPushManager.unregisterApp()
         } else {
+            loadingTrigger.update { true }
             serviceManager.setNotificationPushProvider(provider = PushProvider.PARALINO)
         }
 

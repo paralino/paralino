@@ -259,7 +259,7 @@ private fun createDummyDeviceWithSession(
             )
         ),
         batteryAlertSettings = null,
-        unifiedPushConfig = null,
+        pushProviderConfig = null,
         pushProvider = PushProvider.DEVICE_NATIVE
     )
 

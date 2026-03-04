@@ -62,8 +62,11 @@
     <string name="notifications_sharing_error_title">Sharing on hold!</string>
     <string name="notifications_sharing_error_message">Sharing is on hold because of the following errors:\n%s</string>
     <string name="notifications_socketService_status_active">Push service 🟢</string>
+    <string name="notifications_socketService_status_warning">Push service 🟠</string>
     <string name="notifications_socketService_status_error">Push service 🔴</string>
     <string name="notifications_socketService_message_errors">Push notification service is on hold:\n%s</string>
+    <string name="notifications_socketService_message_connecting">Connecting...</string>
+    <string name="notifications_socketService_message_disconnected">Notification service temporary disconnected</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
     <string name="notifications_channel_place_alert">Place alerts</string>
     <string name="notifications_channel_group_activity">Group activity</string>

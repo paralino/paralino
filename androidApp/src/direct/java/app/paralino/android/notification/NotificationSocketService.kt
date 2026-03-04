@@ -12,13 +12,14 @@ import androidx.core.content.ContextCompat
 import app.paralino.android.remote.sync.FullRefreshSyncWorker
 import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
+import app.paralino.core.models.data
+import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.NetworkConnectionInfo
 import app.paralino.core.provider.NotificationConditionStatus
 import app.paralino.core.provider.NotificationSocketServiceManager
-import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,10 +37,13 @@ class NotificationSocketService : Service() {
 
     private val serviceDefaultScope = CoroutineScope(Dispatchers.Default + Job())
 
-    private val notificationHandler: NotificationSocketServiceNotificationHandler by inject()
+    private val notificationHandler: PushServiceNotificationHandler by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
-    private val realtimeManager: RealtimeSubscriptionManager by inject()
+    private val webSocketManager: PushServiceWebSocketManager by inject()
+    private val personalSpaceLocal: app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource by inject()
     private val serviceManager: NotificationSocketServiceManager by inject()
+    
+    private var websocketState: PushServiceWebSocketConnection.WebSocketConnectionState? = null
 
     private var launchedInForeground: Boolean = false
 
@@ -73,7 +77,8 @@ class NotificationSocketService : Service() {
                         notificationHandler.notificationId,
                         notificationHandler.notify(
                             context = this,
-                            errors = getServiceErrors()
+                            errors = getServiceErrors(),
+                            connectionState = websocketState
                         ),
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
                     )
@@ -83,7 +88,8 @@ class NotificationSocketService : Service() {
                         notificationHandler.notificationId,
                         notificationHandler.notify(
                             context = this,
-                            errors = getServiceErrors()
+                            errors = getServiceErrors(),
+                            connectionState = websocketState
                         ),
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_NONE
                     )
@@ -135,6 +141,13 @@ class NotificationSocketService : Service() {
             message = "Subscribe to push notifications"
         )
 
+        webSocketManager.connectionState
+            .onEach { state ->
+                websocketState = state
+                updateNotification()
+            }
+            .launchIn(serviceDefaultScope)
+
         serviceManager.listenForServiceStatus()
             .onEach { isEnabled ->
                 if (!isEnabled) {
@@ -147,17 +160,60 @@ class NotificationSocketService : Service() {
             }
             .launchIn(serviceDefaultScope)
 
+        personalSpaceLocal.personalSpaceState
+            .map { it.data?.currentDevice?.pushProviderConfig }
+            .distinctUntilChanged()
+            .onEach { configString ->
+                val config = PushProviderEndpointConfig.get(configString)
+                if (config == null || config.distributor != "app.paralino.android") {
+                    logg.i(
+                        tag = "notification_socket_service_${this.hashCode()}",
+                        message = "Websocket config not valid, cancel connection"
+                    )
+                    webSocketManager.closeConnection()
+                    websocketState = PushServiceWebSocketConnection.WebSocketConnectionState.Disconnected
+                } else {
+                    logg.i(
+                        tag = "notification_socket_service_${this.hashCode()}",
+                        message = "Websocket config valid, start connection"
+                    )
+                    websocketState = webSocketManager.connectionState.value
+                    if (deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
+                        webSocketManager.startConnection(config.url)
+                    }
+                }
+                updateNotification()
+            }
+            .launchIn(serviceDefaultScope)
+
         deviceApiProvider.connectionStatusProvider.status
             .map { it.isOnline }
             .distinctUntilChanged()
             .onEach { isOnline ->
                 if (isOnline) {
                     delay(2000)
-                    realtimeManager.startNotificationsSubscription()
                     PushNotificationsSyncWorker.createRequest(applicationContext)
+                    val configString = personalSpaceLocal.personalSpaceState.value.data?.currentDevice?.pushProviderConfig
+                    val config = PushProviderEndpointConfig.get(configString)
+                    if (config != null && config.distributor == "app.paralino.android") {
+                        logg.i(
+                            tag = "notification_socket_service_${this.hashCode()}",
+                            message = "Device online, websocket config valid, start connection"
+                        )
+                        webSocketManager.startConnection(config.url)
+                    } else {
+                        logg.i(
+                            tag = "notification_socket_service_${this.hashCode()}",
+                            message = "Device online, websocket config not valid, cancel connection"
+                        )
+                    }
                 } else {
                     delay(1000)
-                    realtimeManager.cancelNotificationsSubscription()
+                    logg.i(
+                        tag = "notification_socket_service_${this.hashCode()}",
+                        message = "Device offline, cancel connection"
+                    )
+                    webSocketManager.closeConnection()
                 }
                 updateNotification()
             }
@@ -167,7 +223,8 @@ class NotificationSocketService : Service() {
     private fun updateNotification() {
         notificationHandler.notify(
             context = this,
-            errors = getServiceErrors()
+            errors = getServiceErrors(),
+            connectionState = websocketState
         )
     }
 
@@ -198,7 +255,7 @@ class NotificationSocketService : Service() {
         isServiceActive = false
         serviceDefaultScope.cancel()
         notificationHandler.removeNotification()
-        realtimeManager.cancelNotificationsSubscription()
+        webSocketManager.closeConnection()
         super.onDestroy()
     }
 

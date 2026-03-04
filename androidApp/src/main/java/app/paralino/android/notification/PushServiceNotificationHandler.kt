@@ -24,7 +24,7 @@ import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.ConditionErrorType
 
-class NotificationSocketServiceNotificationHandler(
+class PushServiceNotificationHandler(
     private val context: Context
 ) {
 
@@ -35,7 +35,8 @@ class NotificationSocketServiceNotificationHandler(
 
     fun notify(
         context: Context,
-        errors: List<ConditionErrorType>
+        errors: List<ConditionErrorType>,
+        connectionState: PushServiceWebSocketConnection.WebSocketConnectionState?
     ): Notification {
 
         val notificationManager = NotificationManagerCompat.from(context)
@@ -50,15 +51,44 @@ class NotificationSocketServiceNotificationHandler(
             )
 
         val summary = if (errors.isEmpty()) {
-            context.getString(MR.strings.notifications_socketService_status_active.resourceId)
+            when (connectionState) {
+                PushServiceWebSocketConnection.WebSocketConnectionState.Scheduled,
+                PushServiceWebSocketConnection.WebSocketConnectionState.Connecting -> {
+                    context.getString(MR.strings.notifications_socketService_status_warning.resourceId)
+                }
+
+                PushServiceWebSocketConnection.WebSocketConnectionState.Disconnected -> {
+                    context.getString(MR.strings.notifications_socketService_status_error.resourceId)
+                }
+
+                null,
+                PushServiceWebSocketConnection.WebSocketConnectionState.Connected -> {
+                    context.getString(MR.strings.notifications_socketService_status_active.resourceId)
+                }
+            }
         } else {
             context.getString(MR.strings.notifications_socketService_status_error.resourceId)
         }
 
         val content = if (errors.isEmpty()) {
-            buildList {
-                add("")
-            }.joinToString(separator = "\n")
+            when (connectionState) {
+                PushServiceWebSocketConnection.WebSocketConnectionState.Scheduled,
+                PushServiceWebSocketConnection.WebSocketConnectionState.Connecting -> {
+                    context.getString(MR.strings.notifications_socketService_message_connecting.resourceId)
+                }
+
+                PushServiceWebSocketConnection.WebSocketConnectionState.Disconnected -> {
+                    context.getString(
+                        MR.strings.notifications_socketService_message_errors.resourceId,
+                        context.getString(MR.strings.notifications_socketService_message_disconnected.resourceId)
+                    )
+                }
+
+                null,
+                PushServiceWebSocketConnection.WebSocketConnectionState.Connected -> {
+                    ""
+                }
+            }
         } else {
             val errorContent =
                 errors.joinToString(separator = "**\n- **", prefix = "- **", postfix = "**") {
@@ -135,7 +165,7 @@ class NotificationSocketServiceNotificationHandler(
         notificationManager?.createNotificationChannel(channel)
     }
 
-    companion object {
+    companion object Companion {
         const val channelId = "notification_socket_active_channel"
     }
 }

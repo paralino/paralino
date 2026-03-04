@@ -4,7 +4,6 @@ import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.crypto.GroupMasterKey
 import app.paralino.core.crypto.group.CryptoKEKLocalRepository
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.db.main.user.UnifiedPushEndpointConfig
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
@@ -13,6 +12,7 @@ import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberModelData
 import app.paralino.core.models.raw.UpdateMemberData
 import app.paralino.core.models.raw.UpdateMemberFunctionPayload
+import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.models.user.UserMeData
 import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.repo.api.IFunctionsApi
@@ -29,8 +29,11 @@ import app.paralino.core.repo.user.UserRemoteSource
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.BaseRemoteModule
 import app.paralino.core.utils.exceptions.MissingGroupKeyException
+import app.paralino.core.utils.extensions.isOlderThan
+import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 class UpdateUserDataUseCase constructor(
@@ -134,16 +137,23 @@ class UpdateUserDataUseCase constructor(
                 if (unifiedPushPrefsUnsynced.isBlank()) {
                     null
                 } else {
-                    UnifiedPushEndpointConfig.get(unifiedPushPrefsUnsynced)
+                    PushProviderEndpointConfig.get(unifiedPushPrefsUnsynced)
                 }
             } else {
                 null
             }
 
-            val updateUnifiedPush = when (pushProvider) {
+            val updatePushProviderConfig = when (pushProvider) {
                 PushProvider.DEVICE_NATIVE,
-                PushProvider.PARALINO,
                 PushProvider.NOT_SET -> true
+
+                PushProvider.PARALINO -> {
+                    PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig)
+                        ?.createdAt
+                        ?.isoWithOffsetToInstant()
+                        ?.isOlderThan(30.days)
+                        ?: true
+                }
 
                 PushProvider.UNIFIED_PUSH -> {
                     if (unifiedPushPrefsUnsynced != null) {
@@ -174,16 +184,16 @@ class UpdateUserDataUseCase constructor(
                     else -> null
                 },
                 pushProvider = notificationSocketServiceManager.adjustedPushProvider(),
-                unifiedPushConfig = unifiedPushConfig,
-                updateUnifiedPush = updateUnifiedPush
+                pushProviderConfig = unifiedPushConfig,
+                updatePushProviderConfig = updatePushProviderConfig
             )
 
             val currentState = UserDeviceDataUpdateState(
                 pushToken = appPrefs.pushTokenSynced.takeIf { it.isNotBlank() },
                 locationPushToken = appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() },
                 pushProvider = personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProvider ?: PushProvider.DEVICE_NATIVE,
-                unifiedPushConfig = UnifiedPushEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.unifiedPushConfig),
-                updateUnifiedPush = false
+                pushProviderConfig = PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig),
+                updatePushProviderConfig = false
             )
 
 
@@ -206,8 +216,8 @@ class UpdateUserDataUseCase constructor(
                     pushToken = pendingState.pushToken,
                     locationPushToken = pendingState.locationPushToken,
                     pushProvider = pendingState.pushProvider.key,
-                    unifiedPushConfig = pendingState.unifiedPushConfig,
-                    updateUnifiedPush = pendingState.updateUnifiedPush
+                    pushProviderConfig = pendingState.pushProviderConfig,
+                    updatePushProviderConfig = pendingState.updatePushProviderConfig
                 )
 
                 if (updatedDevice != null) {
@@ -221,7 +231,7 @@ class UpdateUserDataUseCase constructor(
                 appPrefs.locationPushTokenSynced = pendingState.pushToken ?: ""
 
                 appPrefs.unifiedPushEndpointConfigUnsynced = null
-                appPrefs.unifiedPushEndpointConfigSynced = if (pendingState.updateUnifiedPush) unifiedPushPrefsUnsynced else unifiedPushPrefsSynced
+                appPrefs.unifiedPushEndpointConfigSynced = if (pendingState.updatePushProviderConfig) unifiedPushPrefsUnsynced else unifiedPushPrefsSynced
 
                 appPrefs.wasDeviceEverSynced = true
 
@@ -239,19 +249,19 @@ class UpdateUserDataUseCase constructor(
         val pushToken: String?,
         val locationPushToken: String?,
         val pushProvider: PushProvider,
-        val updateUnifiedPush: Boolean,
-        val unifiedPushConfig: UnifiedPushEndpointConfig?,
+        val updatePushProviderConfig: Boolean,
+        val pushProviderConfig: PushProviderEndpointConfig?,
     ) {
         fun shouldUpdate(other: UserDeviceDataUpdateState): Boolean {
-            val didConfigChange = if (this.unifiedPushConfig != null) {
-                this.unifiedPushConfig != other.unifiedPushConfig
+            val didConfigChange = if (this.pushProviderConfig != null) {
+                this.pushProviderConfig != other.pushProviderConfig
             } else {
-                other.unifiedPushConfig != null && this.updateUnifiedPush
+                other.pushProviderConfig != null && this.updatePushProviderConfig
             }
             return this.pushToken != other.pushToken
                     || this.locationPushToken != other.locationPushToken
                     || this.pushProvider != other.pushProvider
-                    || this.updateUnifiedPush != other.updateUnifiedPush
+                    || this.updatePushProviderConfig != other.updatePushProviderConfig
                     || didConfigChange
         }
     }

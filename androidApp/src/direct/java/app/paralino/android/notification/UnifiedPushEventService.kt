@@ -3,14 +3,11 @@ package app.paralino.android.notification
 import app.paralino.android.provider.IUnifiedPushManager
 import app.paralino.android.provider.UnifiedPushError
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.db.main.user.UnifiedPushEndpointConfig
 import app.paralino.core.logg
-import app.paralino.core.provider.NotificationSocketServiceManager
+import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.repo.user.IPushProviderManager
 import app.paralino.core.utils.BaseRemoteModule
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import app.paralino.core.utils.extensions.nowUTC
 import org.koin.android.ext.android.inject
 import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.PushService
@@ -19,10 +16,7 @@ import org.unifiedpush.android.connector.data.PushMessage
 
 class UnifiedPushEventService: PushService() {
 
-    private val serviceDefaultScope = CoroutineScope(Dispatchers.Default + Job())
-
     private val pushProvider: IPushProviderManager by inject()
-    private val serviceManager: NotificationSocketServiceManager by inject()
     private val appPrefs: AppPrefs by inject()
     private val unifiedPushManager: IUnifiedPushManager by inject()
 
@@ -35,9 +29,10 @@ class UnifiedPushEventService: PushService() {
         appPrefs.unifiedPushEndpointConfigUnsynced = try {
             appPrefs.selectedUnifiedPushDistributor?.let {
                 BaseRemoteModule.formatter.encodeToString(
-                    UnifiedPushEndpointConfig(
+                    PushProviderEndpointConfig(
                         distributor = it,
                         url = endpoint.url,
+                        createdAt = nowUTC().toString(),
                         pubkey = endpoint.pubKeySet?.pubKey,
                         auth = endpoint.pubKeySet?.auth
                     )

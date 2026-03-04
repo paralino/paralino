@@ -22,7 +22,7 @@ data class UserDeviceModel(
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,
     val batteryAlertSettings: BatteryNotificationsSettingsData?,
-    val unifiedPushConfig: String?,
+    val pushProviderConfig: String?,
     val pushProvider: PushProvider
 ) {
     val deviceNameOrNull: String? = deviceData.data?.deviceName?.takeIf { it.isNotBlank() }

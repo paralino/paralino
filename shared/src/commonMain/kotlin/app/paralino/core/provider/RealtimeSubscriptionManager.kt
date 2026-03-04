@@ -42,9 +42,7 @@ class RealtimeSubscriptionManager(
 
     private fun reInitSubscription() {
         val set = when {
-            status.value.isSubscribedToUiData && status.value.isSubscribedToNotifications -> eventsMaker.eventSetEverything
             status.value.isSubscribedToUiData -> eventsMaker.eventSetUiOnly
-            status.value.isSubscribedToNotifications -> eventsMaker.eventSetNotificationOnly
             else -> null
         }
 
