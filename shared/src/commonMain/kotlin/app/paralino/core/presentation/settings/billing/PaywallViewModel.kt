@@ -276,6 +276,7 @@ class PaywallViewModel(
                             if (uiState.value.hasActivePlanOnAnotherPlatform && activePlan != null) {
                                 showPlanActiveOnAnotherPlatformDialog(
                                     plan = activePlan,
+                                    planProvider = uiState.value.currentPlanProvider,
                                     event = event
                                 )
                             } else {
@@ -293,6 +294,7 @@ class PaywallViewModel(
                 if (uiState.value.hasActivePlanOnAnotherPlatform && plan != null) {
                     showPlanActiveOnAnotherPlatformDialog(
                         plan = plan,
+                        planProvider = uiState.value.currentPlanProvider,
                         event = event
                     )
                 } else {
@@ -363,7 +365,6 @@ class PaywallViewModel(
             name = freePlanConfig.adjustedPlanName,
             config = freePlanConfig,
             isCurrentPlan = false,
-            currentPlanProvider = null,
             hasSpecialOffer = false,
             isSelected = isFreePlanSelected,
             isExpanded = false,
@@ -442,7 +443,6 @@ class PaywallViewModel(
                 name = planConfig.adjustedPlanName,
                 config = planConfig,
                 isCurrentPlan = plans.highestValidPlanConfig.planTypeEnum == planConfig.planTypeEnum,
-                currentPlanProvider = plans.highestValidPlan?.plan?.provider,
                 hasSpecialOffer = billingPeriods.any { it.isPromoDiscount },
                 isSelected = isPlanSelected,
                 isExpanded = !sourceType.shouldPreselectPlan,
@@ -509,7 +509,8 @@ class PaywallViewModel(
                 }
             }?.let {
                 MainAlertDialog.SubscriptionOfferDialog(dialogOffer = it)
-            }
+            },
+            currentPlanProvider = plans.highestValidPlan?.plan?.provider
         )
     }
 
@@ -645,13 +646,14 @@ class PaywallViewModel(
 
     private fun showPlanActiveOnAnotherPlatformDialog(
         plan: PlanInfoState,
+        planProvider: PlanProvider?,
         event: PaywallScreenUiEvent
     ) {
         _uiState.update {
             it.copy(
                 alertDialog = MainAlertDialog.SubscriptionActiveOnAnotherPlatform(
                     planName = plan.name,
-                    planProvider = when (plan.currentPlanProvider) {
+                    planProvider = when (planProvider) {
                         PlanProvider.APPLE_APP_STORE -> MR.strings.plans_management_providerName_apple.localizedString()
                         PlanProvider.GOOGLE_PLAY_STORE -> MR.strings.plans_management_providerName_google.localizedString()
                         PlanProvider.WEB_POLAR -> MR.strings.plans_management_providerName_polar.localizedString()

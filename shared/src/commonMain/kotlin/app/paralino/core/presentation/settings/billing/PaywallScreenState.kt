@@ -38,15 +38,20 @@ data class PaywallScreenState(
     val memberDeviceName: String,
     val locationHistoryStepMessage: String,
     val subscriptionNotice: List<SubscriptionInfoNotice>,
-    val subscriptionOfferDialog: MainAlertDialog.SubscriptionOfferDialog?
+    val subscriptionOfferDialog: MainAlertDialog.SubscriptionOfferDialog?,
+    val currentPlanProvider: PlanProvider?,
 ) {
 
     val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
     val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
-    val hasActivePlanOnAnotherPlatform: Boolean = when (appFlavor) {
-        AppFlavor.ANDROID_DIRECT -> currentPlan?.currentPlanProvider != PlanProvider.WEB_POLAR
-        AppFlavor.ANDROID_GOOGLE -> currentPlan?.currentPlanProvider != PlanProvider.GOOGLE_PLAY_STORE
-        AppFlavor.APPLE_IOS -> currentPlan?.currentPlanProvider != PlanProvider.APPLE_APP_STORE
+    val hasActivePlanOnAnotherPlatform: Boolean = if (currentPlan != null && currentPlanProvider != null) {
+        when (appFlavor) {
+            AppFlavor.ANDROID_DIRECT -> currentPlanProvider != PlanProvider.WEB_POLAR
+            AppFlavor.ANDROID_GOOGLE -> currentPlanProvider != PlanProvider.GOOGLE_PLAY_STORE
+            AppFlavor.APPLE_IOS -> currentPlanProvider != PlanProvider.APPLE_APP_STORE
+        }
+    } else {
+        false
     }
 
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
@@ -66,7 +71,7 @@ data class PaywallScreenState(
                     }
 
                     AppFlavor.ANDROID_DIRECT -> {
-                        when (currentPlan?.currentPlanProvider) {
+                        when (currentPlanProvider) {
                             PlanProvider.WEB_POLAR -> {
                                 PaywallContinueButtonType.ManageExternal
                             }
@@ -160,7 +165,6 @@ data class PlanInfoState(
     val name: String,
     val config: PlanConfig,
     val isCurrentPlan: Boolean,
-    val currentPlanProvider: PlanProvider?,
     val hasSpecialOffer: Boolean,
     val isSelected: Boolean,
     val isExpanded: Boolean,

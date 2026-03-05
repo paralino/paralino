@@ -202,7 +202,6 @@ class SubscriptionViewModel(
                     name = currentPlan.adjustedPlanName,
                     config = currentPlan,
                     isCurrentPlan = true,
-                    currentPlanProvider = userRepo.userPlans.value.highestValidPlan?.plan?.provider,
                     hasSpecialOffer = false,
                     isSelected = true,
                     isExpanded = true,

@@ -859,7 +859,7 @@ private fun PaywallBottomCard(
                 )
             }
 
-            AnimatedVisibility(state.hasActivePlanOnAnotherPlatform) {
+            AnimatedVisibility(state.hasActivePlanOnAnotherPlatform && state.screenStep == PaywallScreenStep.PAYWALL) {
                 SmallActionButton(
                     modifier = Modifier.padding(bottom = 8.dp),
                     backgroundColor = Color.Transparent,
