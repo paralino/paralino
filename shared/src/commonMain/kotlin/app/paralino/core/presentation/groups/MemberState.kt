@@ -251,6 +251,7 @@ data class LocationRequestItemState(
     val hasRequestError: Boolean = false,
     val hasDeviceSetupWrongError: Boolean = false,
     val hasDeviceUnreachableError: Boolean = false,
+    val hasDeviceMaybeUnreachableError: Boolean = false,
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
     val isPremiumFeatureEnabled: Boolean,
@@ -258,7 +259,7 @@ data class LocationRequestItemState(
     val lastDeviceUpdate: Instant? = null
 ) {
     val canInteract: Boolean = !isLoading && !isWaitingForUser
-    val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError
+    val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError || hasDeviceMaybeUnreachableError
     val isStatusRecent: Boolean = lastDeviceUpdate?.isOlderThan(10.minutes) == false
 }
 

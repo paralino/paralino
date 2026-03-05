@@ -207,6 +207,9 @@ class MemberActionHandler(
                 val hasDeviceSetupWrongError = error?.asRemoteException()?.type.let {
                     it == "device_setup_invalid" || it == "push_message_failed"
                 }
+                val isDeviceMaybeUnreachable = error?.asRemoteException()?.type.let {
+                    it == "device_setup_passive"
+                }
                 updateReadyState { readyState ->
                     readyState.copy(
                         allMembersOrDevices = readyState.allMembersOrDevices.map {
@@ -218,8 +221,9 @@ class MemberActionHandler(
                                             isEnabled = true,
                                             isWaitingForUser = error == null,
                                             hasRequestError = error != null,
-                                            hasDeviceUnreachableError = hasDeviceUnreachableError,
                                             hasDeviceSetupWrongError = hasDeviceSetupWrongError,
+                                            hasDeviceUnreachableError = hasDeviceUnreachableError,
+                                            hasDeviceMaybeUnreachableError = isDeviceMaybeUnreachable,
                                             lastLocationRequest = nowUTC(),
                                             isPremiumFeatureEnabled = readyState.groupPlanConfig.planTypeEnum.isPremium
                                         )
@@ -235,7 +239,9 @@ class MemberActionHandler(
                 if (error != null) {
                     // only show snackbar for other type of errors
                     // these are displayed on member item on map
-                    if (!hasDeviceUnreachableError && !hasDeviceSetupWrongError) {
+                    if (isDeviceMaybeUnreachable) {
+                        messageDispatcher.showSnackbar(MR.strings.group_member_device_maybe_unreachable_message.localizedString())
+                    } else if (!hasDeviceUnreachableError && !hasDeviceSetupWrongError) {
                         if (error.asRemoteException()?.code == 429) {
                             messageDispatcher.showSnackbar(MR.strings.group_member_device_request_disabled.localizedString())
                         } else {
