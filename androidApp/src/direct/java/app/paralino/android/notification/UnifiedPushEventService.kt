@@ -34,7 +34,8 @@ class UnifiedPushEventService: PushService() {
                         url = endpoint.url,
                         createdAt = nowUTC().toString(),
                         pubkey = endpoint.pubKeySet?.pubKey,
-                        auth = endpoint.pubKeySet?.auth
+                        auth = endpoint.pubKeySet?.auth,
+                        isSocketConnection = true
                     )
                 )
             }

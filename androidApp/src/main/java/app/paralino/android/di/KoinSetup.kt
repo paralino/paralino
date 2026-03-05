@@ -180,7 +180,7 @@ object KoinSetup {
         single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
         single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
-        single { PushServiceWebSocketManager(get(), get()) }
+        single { PushServiceWebSocketManager(get(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
         factory { PushServiceNotificationHandler(androidContext()) }
 

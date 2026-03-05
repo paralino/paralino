@@ -241,7 +241,8 @@ data class PushProviderEndpointPayload(
     val url: String,
     val createdAt: String?,
     val pubkey: String?,
-    val auth: String?
+    val auth: String?,
+    val isSocketConnection: Boolean?
 )
 
 @Serializable

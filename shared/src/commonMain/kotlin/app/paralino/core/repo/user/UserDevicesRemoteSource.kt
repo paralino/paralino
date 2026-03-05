@@ -93,7 +93,8 @@ class UserDevicesRemoteSource constructor(
                     url = it.url,
                     createdAt = it.createdAt,
                     pubkey = it.pubkey,
-                    auth = it.auth
+                    auth = it.auth,
+                    isSocketConnection = it.isSocketConnection
                 )
             }
         )

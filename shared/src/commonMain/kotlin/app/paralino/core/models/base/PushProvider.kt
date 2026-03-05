@@ -7,6 +7,7 @@ enum class PushProvider(val key: String) {
     UNIFIED_PUSH("unified_push");
 
     companion object {
+        val paralinoDistributorId = "app.paralino.android"
         fun fromKey(key: String?): PushProvider {
             return entries.firstOrNull { it.key == key } ?: DEVICE_NATIVE
         }

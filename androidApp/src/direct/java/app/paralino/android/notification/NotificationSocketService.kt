@@ -12,10 +12,12 @@ import androidx.core.content.ContextCompat
 import app.paralino.android.remote.sync.FullRefreshSyncWorker
 import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.NetworkConnectionInfo
 import app.paralino.core.provider.NotificationConditionStatus
@@ -31,7 +33,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.android.ext.android.inject
+import kotlin.time.Instant
 
 class NotificationSocketService : Service() {
 
@@ -42,8 +47,10 @@ class NotificationSocketService : Service() {
     private val webSocketManager: PushServiceWebSocketManager by inject()
     private val personalSpaceLocal: app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource by inject()
     private val serviceManager: NotificationSocketServiceManager by inject()
-    
+    private val valueFormatter: IValueFormatter by inject()
+
     private var websocketState: PushServiceWebSocketConnection.WebSocketConnectionState? = null
+    private var lastSyncTime: Instant? = null
 
     private var launchedInForeground: Boolean = false
 
@@ -78,7 +85,8 @@ class NotificationSocketService : Service() {
                         notificationHandler.notify(
                             context = this,
                             errors = getServiceErrors(),
-                            connectionState = websocketState
+                            connectionState = websocketState,
+                            lastSyncTime = getLastNotificationSyncTime()
                         ),
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
                     )
@@ -89,7 +97,8 @@ class NotificationSocketService : Service() {
                         notificationHandler.notify(
                             context = this,
                             errors = getServiceErrors(),
-                            connectionState = websocketState
+                            connectionState = websocketState,
+                            lastSyncTime = getLastNotificationSyncTime()
                         ),
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_NONE
                     )
@@ -148,6 +157,13 @@ class NotificationSocketService : Service() {
             }
             .launchIn(serviceDefaultScope)
 
+        webSocketManager.lastSyncTime
+            .onEach { time ->
+                lastSyncTime = time
+                updateNotification()
+            }
+            .launchIn(serviceDefaultScope)
+
         serviceManager.listenForServiceStatus()
             .onEach { isEnabled ->
                 if (!isEnabled) {
@@ -165,7 +181,7 @@ class NotificationSocketService : Service() {
             .distinctUntilChanged()
             .onEach { configString ->
                 val config = PushProviderEndpointConfig.get(configString)
-                if (config == null || config.distributor != "app.paralino.android") {
+                if (config == null || config.distributor != PushProvider.paralinoDistributorId) {
                     logg.i(
                         tag = "notification_socket_service_${this.hashCode()}",
                         message = "Websocket config not valid, cancel connection"
@@ -195,7 +211,7 @@ class NotificationSocketService : Service() {
                     PushNotificationsSyncWorker.createRequest(applicationContext)
                     val configString = personalSpaceLocal.personalSpaceState.value.data?.currentDevice?.pushProviderConfig
                     val config = PushProviderEndpointConfig.get(configString)
-                    if (config != null && config.distributor == "app.paralino.android") {
+                    if (config != null && config.distributor == PushProvider.paralinoDistributorId) {
                         logg.i(
                             tag = "notification_socket_service_${this.hashCode()}",
                             message = "Device online, websocket config valid, start connection"
@@ -224,8 +240,20 @@ class NotificationSocketService : Service() {
         notificationHandler.notify(
             context = this,
             errors = getServiceErrors(),
-            connectionState = websocketState
+            connectionState = websocketState,
+            lastSyncTime = getLastNotificationSyncTime()
         )
+    }
+
+    private fun getLastNotificationSyncTime(): String? {
+        return lastSyncTime?.let {
+            valueFormatter.formatSimpleDateTime(
+                timeUTC = it.toLocalDateTime(timeZone = TimeZone.UTC),
+                optionalYear = true,
+                optionalMonth = false,
+                showTodayInfo = false
+            )
+        }
     }
 
     private fun getServiceErrors(): List<ConditionErrorType> {

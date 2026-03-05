@@ -36,7 +36,8 @@ class PushServiceNotificationHandler(
     fun notify(
         context: Context,
         errors: List<ConditionErrorType>,
-        connectionState: PushServiceWebSocketConnection.WebSocketConnectionState?
+        connectionState: PushServiceWebSocketConnection.WebSocketConnectionState?,
+        lastSyncTime: String?
     ): Notification {
 
         val notificationManager = NotificationManagerCompat.from(context)
@@ -86,7 +87,11 @@ class PushServiceNotificationHandler(
 
                 null,
                 PushServiceWebSocketConnection.WebSocketConnectionState.Connected -> {
-                    ""
+                    if (lastSyncTime != null) {
+                        context.getString(MR.strings.notifications_socketService_message_lastSync.resourceId, lastSyncTime)
+                    } else {
+                        ""
+                    }
                 }
             }
         } else {

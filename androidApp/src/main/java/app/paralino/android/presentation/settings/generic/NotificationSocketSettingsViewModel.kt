@@ -6,11 +6,12 @@ import app.paralino.android.provider.IUnifiedPushManager
 import app.paralino.android.provider.UnifiedPushError
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
-import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.logg
 import app.paralino.core.models.AppFlavor
+import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
+import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
@@ -27,13 +28,14 @@ import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class NotificationSocketSettingsViewModel(
     private val serviceManager: NotificationSocketServiceManager,
@@ -49,6 +51,7 @@ class NotificationSocketSettingsViewModel(
 ) {
 
     private val loadingTrigger = MutableStateFlow(false)
+    private var statePollJob: Job? = null
 
     init {
         loadingTrigger
@@ -63,37 +66,15 @@ class NotificationSocketSettingsViewModel(
                         }
                     )
                 }
-            }
-            .launchIn(viewModelScope)
 
-        personalSpaceLocal.personalSpaceState
-            .mapNotNull { it.data?.currentDevice }
-            .map { it.pushProvider to it.pushProviderConfig }
-            .onEach { device ->
-                delay(5000)
-
-                if (loadingTrigger.value) {
-                    logg.tag("push_notifications").i("Push provider registration still loading, check again")
-                    val syncedConfig = PushProviderEndpointConfig.get(device.second)
-                    val isConfigValid = if (device.first == PushProvider.PARALINO) {
-                        syncedConfig != null
-                    } else {
-                        val localConfig = PushProviderEndpointConfig.get(appPrefs.unifiedPushEndpointConfigSynced)
-                        syncedConfig != null && syncedConfig == localConfig
-                    }
-                    val isUpdated = device.first == appPrefs.notificationPushProvider && isConfigValid
-
-                    if (!isUpdated) {
-                        logg.tag("push_notifications").i("Device still not updated, trigger token sync")
-                        pushProviderManager.syncPushToken()
-                    } else {
-                        logg.tag("push_notifications").i("Push provider registration complete")
-                    }
-
-                    loadingTrigger.update { !isUpdated }
+                if (isLoading) {
+                    pollForState()
+                } else {
+                    statePollJob?.cancel()
+                    statePollJob = null
                 }
             }
-            .launchIn(coroutineScope)
+            .launchIn(viewModelScope)
 
         deviceApiProvider.notificationStatusProvider.status
             .onEach { status ->
@@ -213,7 +194,72 @@ class NotificationSocketSettingsViewModel(
         }
 
         if (defaultProvider == PushProvider.PARALINO) {
-            items.add(GenericSettingListItem.Spacer(8.dp, keyId = "settings_space"),)
+            val currentConnectionType = appPrefs.paralinoSocketConnectionType
+            val connectionOptions = listOf(
+                GroupOptionItem(
+                    key = ParalinoSocketConnectionType.REALTIME,
+                    id = ParalinoSocketConnectionType.REALTIME.key,
+                    title = MR.strings.setting_notificationSocket_connectionType_realtime_title.localizedString(),
+                    description = MR.strings.setting_notificationSocket_connectionType_realtime_info.localizedString(),
+                    tag = MR.strings.setting_notificationSocket_connectionType_realtime_tag.localizedString(),
+                    isTagWarning = true,
+                    isPremiumFeatureEnabled = true,
+                    isSelected = currentConnectionType == ParalinoSocketConnectionType.REALTIME
+                ),
+                GroupOptionItem(
+                    key = ParalinoSocketConnectionType.PERIODIC_LEVEL_1,
+                    id = ParalinoSocketConnectionType.PERIODIC_LEVEL_1.key,
+                    title = MR.strings.setting_notificationSocket_connectionType_periodic1_title.localizedString(),
+                    description = MR.strings.setting_notificationSocket_connectionType_periodic1_info.localizedString(),
+                    tag = MR.strings.setting_notificationSocket_connectionType_periodic1_tag.localizedString(),
+                    isTagWarning = true,
+                    isPremiumFeatureEnabled = true,
+                    isSelected = currentConnectionType == ParalinoSocketConnectionType.PERIODIC_LEVEL_1
+                ),
+                GroupOptionItem(
+                    key = ParalinoSocketConnectionType.PERIODIC_LEVEL_2,
+                    id = ParalinoSocketConnectionType.PERIODIC_LEVEL_2.key,
+                    title = MR.strings.setting_notificationSocket_connectionType_periodic2_title.localizedString(),
+                    description = MR.strings.setting_notificationSocket_connectionType_periodic2_info.localizedString(),
+                    tag = MR.strings.setting_notificationSocket_connectionType_periodic2_tag.localizedString(),
+                    isTagWarning = false,
+                    isPremiumFeatureEnabled = true,
+                    isSelected = currentConnectionType == ParalinoSocketConnectionType.PERIODIC_LEVEL_2
+                ),
+                GroupOptionItem(
+                    key = ParalinoSocketConnectionType.PERIODIC_LEVEL_3,
+                    id = ParalinoSocketConnectionType.PERIODIC_LEVEL_3.key,
+                    title = MR.strings.setting_notificationSocket_connectionType_periodic3_title.localizedString(),
+                    description = MR.strings.setting_notificationSocket_connectionType_periodic3_info.localizedString(),
+                    tag = MR.strings.setting_notificationSocket_connectionType_periodic3_tag.localizedString(),
+                    isTagWarning = false,
+                    isPremiumFeatureEnabled = true,
+                    isSelected = currentConnectionType == ParalinoSocketConnectionType.PERIODIC_LEVEL_3
+                )
+            )
+
+            items.add(GenericSettingListItem.Spacer(20.dp, keyId = "provider_space"))
+            items.add(GenericSettingListItem.StickyHeader(keyId = "paralinoProviderSettings", content = MR.strings.setting_notificationSocket_connectionType_title.localizedString()))
+            items.add(GenericSettingListItem.Subtitle(MR.strings.setting_notificationSocket_connectionType_info.localizedString()))
+
+            items.add(
+                GenericSettingListItem.GroupOptions(
+                    defaultId = ParalinoSocketConnectionType.PERIODIC_LEVEL_2.key,
+                    keyId = "paralinoConnectionTypeOptions",
+                    items = connectionOptions
+                )
+            )
+            items.add(GenericSettingListItem.Spacer(20.dp, keyId = "periodic_notice_space"))
+            items.add(
+                GenericSettingListItem.Notice(
+                    keyId = "periodicRefreshNotice",
+                    content = MR.strings.setting_notificationSocket_connectionType_notice.localizedString(),
+                    icon = CoreAppIcons.LocationOn
+                )
+            )
+
+            items.add(GenericSettingListItem.Spacer(20.dp, keyId = "system_settings_space"))
+
             items.add(
                 GenericSettingListItem.SettingsActionItem(
                     keyId = "channelSettings",
@@ -225,6 +271,8 @@ class NotificationSocketSettingsViewModel(
                     description = null
                 )
             )
+
+            items.add(GenericSettingListItem.Spacer(spacing = 40.dp, keyId = "bottom_space"))
         }
 
         return GenericSettingsScreenState(
@@ -251,6 +299,56 @@ class NotificationSocketSettingsViewModel(
         )
     }
 
+    private fun pollForState() {
+        statePollJob?.cancel()
+        statePollJob = coroutineScope.launch {
+            var counter = 0
+            while(isActive) {
+                delay(3000)
+                counter++
+                val currentDevice = personalSpaceLocal.personalSpaceState.value.data?.currentDevice
+                if (currentDevice != null) {
+                    val syncedConfig = PushProviderEndpointConfig.get(currentDevice.pushProviderConfig)
+                    val isConfigValid = if (currentDevice.pushProvider == PushProvider.PARALINO) {
+                        syncedConfig != null
+                    } else {
+                        val localConfig = PushProviderEndpointConfig.get(appPrefs.unifiedPushEndpointConfigSynced)
+                        syncedConfig != null && syncedConfig == localConfig
+                    }
+                    val isUpdated = currentDevice.pushProvider == appPrefs.notificationPushProvider && isConfigValid
+
+                    if (!isUpdated) {
+                        if (counter > 4) {
+                            // on 5th pass we cancel
+                            logg.tag("push_notifications").i("Device still not updated, cancel and show error")
+                            loadingTrigger.update { false }
+                            _uiState.update {
+                                createInitialState()
+                                    .copy(
+                                        alertDialog = MainAlertDialog.UnifiedPushRegistrationError(
+                                            reason = MR.strings.setting_notificationSocket_registration_error_message.localizedString()
+                                        )
+                                    )
+                            }
+                        } else if (counter > 2) {
+                            // 3rd and 4th pass: try to sync tokens again, 2x
+                            logg.tag("push_notifications").i("Device still not updated, trigger token sync")
+                            pushProviderManager.syncPushToken()
+                        } else {
+                            // 1st and 2nd pass: wait and check again
+                            logg.tag("push_notifications").i("Device still not updated, wait more")
+                        }
+                    } else {
+                        logg.tag("push_notifications").i("Push provider registration complete")
+                        loadingTrigger.update { false }
+                    }
+                } else {
+                    loadingTrigger.update { counter > 2 }
+                }
+            }
+        }
+    }
+
     override fun handleUiEvent(event: GenericSettingsScreenUiEvent) {
         when (event) {
             is GenericSettingsScreenUiEvent.ToggleSwitch<*> -> {
@@ -264,6 +362,14 @@ class NotificationSocketSettingsViewModel(
             is GenericSettingsScreenUiEvent.SelectOptionItem -> {
                 if (event.groupOptions.keyId == "pushProviderOptions") {
                     handleProviderOptionSelection(event.option)
+                } else if (event.groupOptions.keyId == "paralinoConnectionTypeOptions") {
+                    val connectionType = event.option.key as ParalinoSocketConnectionType
+                    appPrefs.paralinoSocketConnectionType = connectionType
+                    
+                    // We need to sync config immediately when changing options
+                    pushProviderManager.syncPushToken()
+                    
+                    _uiState.update { createInitialState() }
                 }
             }
 
@@ -315,5 +421,10 @@ class NotificationSocketSettingsViewModel(
         }
 
         _uiState.update { createInitialState() }
+    }
+
+    override fun onCleared() {
+        statePollJob?.cancel()
+        super.onCleared()
     }
 }

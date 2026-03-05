@@ -9,7 +9,8 @@ data class PushProviderEndpointConfig(
     val url: String,
     val createdAt: String?,
     val pubkey: String?,
-    val auth: String?
+    val auth: String?,
+    val isSocketConnection: Boolean?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -22,6 +23,7 @@ data class PushProviderEndpointConfig(
         if (createdAt != other.createdAt) return false
         if (pubkey != other.pubkey) return false
         if (auth != other.auth) return false
+        if (isSocketConnection != other.isSocketConnection) return false
 
         return true
     }
@@ -32,6 +34,7 @@ data class PushProviderEndpointConfig(
         result = 31 * result + (createdAt?.hashCode() ?: 0)
         result = 31 * result + (pubkey?.hashCode() ?: 0)
         result = 31 * result + (auth?.hashCode() ?: 0)
+        result = 31 * result + (isSocketConnection?.hashCode() ?: 0)
         return result
     }
 

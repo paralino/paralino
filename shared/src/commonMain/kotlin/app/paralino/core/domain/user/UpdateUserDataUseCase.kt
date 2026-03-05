@@ -7,6 +7,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.LimitedExecutionRepository
 import app.paralino.core.logg
 import app.paralino.core.models.Payload
+import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.location.MemberModelData
@@ -133,26 +134,44 @@ class UpdateUserDataUseCase constructor(
             val unifiedPushPrefsUnsynced = appPrefs.unifiedPushEndpointConfigUnsynced
             val unifiedPushPrefsSynced = appPrefs.unifiedPushEndpointConfigSynced
 
-            val unifiedPushConfig = if (unifiedPushPrefsUnsynced != null) {
-                if (unifiedPushPrefsUnsynced.isBlank()) {
-                    null
-                } else {
-                    PushProviderEndpointConfig.get(unifiedPushPrefsUnsynced)
+            val pushProviderConfig = when (pushProvider) {
+                PushProvider.PARALINO -> {
+                    PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig)
+                        ?.takeIf { it.distributor == PushProvider.paralinoDistributorId }
+                        ?.copy(isSocketConnection = appPrefs.paralinoSocketConnectionType == ParalinoSocketConnectionType.REALTIME)
+                        ?: PushProviderEndpointConfig(
+                            distributor = PushProvider.paralinoDistributorId,
+                            url = "",
+                            createdAt = null,
+                            pubkey = null,
+                            auth = null,
+                            isSocketConnection = appPrefs.paralinoSocketConnectionType == ParalinoSocketConnectionType.REALTIME
+                        )
                 }
-            } else {
-                null
+
+                else -> {
+                    if (unifiedPushPrefsUnsynced != null) {
+                        if (unifiedPushPrefsUnsynced.isBlank()) {
+                            null
+                        } else {
+                            PushProviderEndpointConfig.get(unifiedPushPrefsUnsynced)
+                        }
+                    } else {
+                        null
+                    }
+                }
             }
+
 
             val updatePushProviderConfig = when (pushProvider) {
                 PushProvider.DEVICE_NATIVE,
                 PushProvider.NOT_SET -> true
 
                 PushProvider.PARALINO -> {
-                    PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig)
-                        ?.createdAt
-                        ?.isoWithOffsetToInstant()
-                        ?.isOlderThan(30.days)
-                        ?: true
+                    val currentDevicePushConfig = PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig)
+                    val createdAtOld = currentDevicePushConfig?.createdAt?.isoWithOffsetToInstant()?.isOlderThan(30.days) ?: true
+                    val connectionTypeChanged = currentDevicePushConfig?.isSocketConnection != pushProviderConfig?.isSocketConnection
+                    createdAtOld || connectionTypeChanged
                 }
 
                 PushProvider.UNIFIED_PUSH -> {
@@ -184,7 +203,7 @@ class UpdateUserDataUseCase constructor(
                     else -> null
                 },
                 pushProvider = notificationSocketServiceManager.adjustedPushProvider(),
-                pushProviderConfig = unifiedPushConfig,
+                pushProviderConfig = pushProviderConfig,
                 updatePushProviderConfig = updatePushProviderConfig
             )
 

@@ -1,6 +1,7 @@
 package app.paralino.core.db
 
 import app.paralino.core.models.base.PushProvider
+import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
@@ -115,6 +116,7 @@ class AppPrefs(
         const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
         const val keyDeviceWasEverSynced = "prefs.device.isSynced"
         const val keySelectedUnifiedPushDistributor = "prefs.device.unifiedPushDistributor"
+        const val keyParalinoSocketConnectionType = "prefs.device.paralinoSocketConnectionType"
         const val keySelectedPushProvider = "prefs.device.pushProvider"
         const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
         const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
@@ -305,6 +307,12 @@ class AppPrefs(
             } else {
                 provider.userSettings.putString(keySelectedPushProvider, value.key)
             }
+        }
+
+    var paralinoSocketConnectionType: ParalinoSocketConnectionType
+        get() = provider.userSettings.getStringOrNull(keyParalinoSocketConnectionType).let { ParalinoSocketConnectionType.fromKey(it) }
+        set(value) {
+            provider.userSettings.putString(keyParalinoSocketConnectionType, value.key)
         }
 
     var selectedGroupId: String?
