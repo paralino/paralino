@@ -40,7 +40,8 @@ class PushServiceWebSocketManager(
 ): BaseRepository() {
     private var connection: PushServiceWebSocketConnection? = null
     private var periodicJob: Job? = null
-    
+    private var oneTimeCheckJob: Job? = null
+
     private val _connectionState = MutableStateFlow(PushServiceWebSocketConnection.WebSocketConnectionState.Disconnected)
     val connectionState: StateFlow<PushServiceWebSocketConnection.WebSocketConnectionState> = _connectionState.asStateFlow()
 
@@ -110,6 +111,11 @@ class PushServiceWebSocketManager(
             httpClient = client,
             onStateChange = { state ->
                 _connectionState.value = state
+
+                // when connected, check latest messages to fetch anything missing
+                if (state == PushServiceWebSocketConnection.WebSocketConnectionState.Connected) {
+                    checkMessagesOnce(baseUrl = baseUrl)
+                }
             },
             onMessageCallback = {
                 pushProvider.syncPushNotifications()
@@ -133,7 +139,8 @@ class PushServiceWebSocketManager(
                     val newState = checkMessages(
                         connectionType = connectionType,
                         currentState = periodicPollState.value,
-                        baseUrl = url
+                        baseUrl = url,
+                        lastUpdateTimeUnixSeconds = _lastSyncTime.value?.epochSeconds
                     )
                     logg.i("notification_socket_manager", "Delay next push message refresh for ${newState.nextDelay}")
                     periodicPollState.update { newState }
@@ -146,9 +153,10 @@ class PushServiceWebSocketManager(
     private suspend fun checkMessages(
         connectionType: ParalinoSocketConnectionType,
         currentState: PeriodicPollState?,
-        baseUrl: String
+        baseUrl: String,
+        lastUpdateTimeUnixSeconds: Long?
     ): PeriodicPollState {
-        val time = _lastSyncTime.value?.epochSeconds ?: "latest"
+        val time = lastUpdateTimeUnixSeconds ?: "latest"
         val url = "${baseUrl.substringBefore("?")}/json?poll=1&since=$time"
         logg.i("notification_socket_manager", "Fetch push messages since $time")
 
@@ -244,6 +252,22 @@ class PushServiceWebSocketManager(
         }
 
         return delayDuration
+    }
+
+    private fun checkMessagesOnce(baseUrl: String) {
+        oneTimeCheckJob?.cancel()
+        oneTimeCheckJob = scopeProvider.userSessionIOScope.launch {
+            checkMessages(
+                connectionType = ParalinoSocketConnectionType.PERIODIC_LEVEL_1,
+                currentState = PeriodicPollState(
+                    nextDelay = 5.minutes,
+                    shouldMakeFullRefresh = false,
+                    counter = 0
+                ),
+                baseUrl = baseUrl,
+                lastUpdateTimeUnixSeconds = _lastSyncTime.value?.epochSeconds
+            )
+        }
     }
 
     private fun closeConnectionNow() {
