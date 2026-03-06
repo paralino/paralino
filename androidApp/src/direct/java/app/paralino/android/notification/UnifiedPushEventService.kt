@@ -32,6 +32,7 @@ class UnifiedPushEventService: PushService() {
                     PushProviderEndpointConfig(
                         distributor = it,
                         url = endpoint.url,
+                        id = null,
                         createdAt = nowUTC().toString(),
                         pubkey = endpoint.pubKeySet?.pubKey,
                         auth = endpoint.pubKeySet?.auth,

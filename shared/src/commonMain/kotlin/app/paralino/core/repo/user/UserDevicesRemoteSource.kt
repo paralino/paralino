@@ -91,6 +91,7 @@ class UserDevicesRemoteSource constructor(
                 PushProviderEndpointPayload(
                     distributor = it.distributor,
                     url = it.url,
+                    id = it.id,
                     createdAt = it.createdAt,
                     pubkey = it.pubkey,
                     auth = it.auth,

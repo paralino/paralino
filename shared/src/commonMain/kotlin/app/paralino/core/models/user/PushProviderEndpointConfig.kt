@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class PushProviderEndpointConfig(
     val distributor: String,
     val url: String,
+    val id: String?,
     val createdAt: String?,
     val pubkey: String?,
     val auth: String?,
@@ -20,6 +21,7 @@ data class PushProviderEndpointConfig(
 
         if (distributor != other.distributor) return false
         if (url != other.url) return false
+        if (id != other.id) return false
         if (createdAt != other.createdAt) return false
         if (pubkey != other.pubkey) return false
         if (auth != other.auth) return false
@@ -31,6 +33,7 @@ data class PushProviderEndpointConfig(
     override fun hashCode(): Int {
         var result = distributor.hashCode()
         result = 31 * result + url.hashCode()
+        result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + (createdAt?.hashCode() ?: 0)
         result = 31 * result + (pubkey?.hashCode() ?: 0)
         result = 31 * result + (auth?.hashCode() ?: 0)

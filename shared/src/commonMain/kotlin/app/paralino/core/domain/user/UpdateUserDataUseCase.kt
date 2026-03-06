@@ -142,6 +142,7 @@ class UpdateUserDataUseCase constructor(
                         ?: PushProviderEndpointConfig(
                             distributor = PushProvider.paralinoDistributorId,
                             url = "",
+                            id = null,
                             createdAt = null,
                             pubkey = null,
                             auth = null,

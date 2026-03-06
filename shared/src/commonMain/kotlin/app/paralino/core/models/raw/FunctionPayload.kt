@@ -239,6 +239,7 @@ data class PersonalLocationDeletePayload(
 data class PushProviderEndpointPayload(
     val distributor: String,
     val url: String,
+    val id: String?,
     val createdAt: String?,
     val pubkey: String?,
     val auth: String?,
