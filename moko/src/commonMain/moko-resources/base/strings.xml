@@ -328,7 +328,7 @@
     <string name="plans_management_expiresAt_label">Valid until: %1$s</string>
     <string name="plans_management_provider_label">Provider: %1$s</string>
     <string name="plans_management_activePlan_tag">Active plan</string>
-    <string name="plans_management_action_manage">Manage or cancel subscription</string>
+    <string name="plans_management_action_manage">Manage or cancel</string>
     <string name="plans_management_action_change">Change plan</string>
     <string name="plans_management_action_explore">Plans</string>
     <string name="plans_management_providerInfo_google">Subscription is provided by **Google Play Store**.</string>
@@ -920,7 +920,7 @@
     <string name="setting_notificationSocket_connectionType_periodic3_info">Notifications are refreshed periodically every few hours</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Battery Usage: Low</string>
     <string name="setting_notificationSocket_registration_error_message">Connection could be confirmed, please try again!</string>
-    <string name="notifications_socketService_message_lastSync">Last sync: %s</string>
+    <string name="notifications_socketService_message_lastSync">Last update: %s</string>
     <string name="licence_screen_title">License key</string>
     <string name="licence_screen_info">If you have a license key, enter it here to connect a premium plan with your Paralino account.</string>
     <string name="licence_code_hint">License key</string>
