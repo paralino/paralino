@@ -1,12 +1,15 @@
 package app.paralino.android.notification
 
 import app.paralino.core.logg
+import app.paralino.core.utils.BaseRemoteModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -38,7 +41,7 @@ class PushServiceWebSocketConnection(
     @Synchronized
     fun start() {
         if (isConnectionClosed || webSocketConnectionState == WebSocketConnectionState.Connecting || webSocketConnectionState == WebSocketConnectionState.Connected) {
-            logg.d(TAG, "Not starting websocket, connection either closed or active")
+            logg.i(TAG, "Not starting websocket, connection either closed or active")
             return
         }
 
@@ -48,7 +51,7 @@ class PushServiceWebSocketConnection(
         val nextListenerId = listenerId.incrementAndGet()
 
         val request = Request.Builder().url(url).build()
-        logg.d(TAG, "Opening websocket to $url with listener $nextListenerId ...")
+        logg.i(TAG, "Opening websocket to $url with listener $nextListenerId ...")
         webSocket = httpClient.newWebSocket(
             request = request,
             listener = ParalinoWebSocketListener(id = nextListenerId)
@@ -60,7 +63,7 @@ class PushServiceWebSocketConnection(
         isConnectionClosed = true
         scope.cancel()
 
-        logg.d(TAG, "Closing connection")
+        logg.i(TAG, "Closing websocket connection")
 
         webSocketConnectionState = WebSocketConnectionState.Disconnected
         onStateChange(WebSocketConnectionState.Disconnected)
@@ -71,11 +74,12 @@ class PushServiceWebSocketConnection(
     @Synchronized
     private fun scheduleReconnect(duration: Duration) {
         if (isConnectionClosed || webSocketConnectionState == WebSocketConnectionState.Connecting || webSocketConnectionState == WebSocketConnectionState.Connected) {
+            logg.i(TAG, "Not reconnecting to websocket, isClosed: $isConnectionClosed, state: $webSocketConnectionState")
             return
         }
         webSocketConnectionState = WebSocketConnectionState.Scheduled
         onStateChange(WebSocketConnectionState.Scheduled)
-        logg.d(TAG, "Scheduling a restart in $duration")
+        logg.i(TAG, "Scheduling a websocket restart in $duration")
 
         scope.launch {
             delay(duration)
@@ -86,7 +90,7 @@ class PushServiceWebSocketConnection(
     private inner class ParalinoWebSocketListener(private val id: Long) : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             synchronize {
-                logg.d(TAG, "Connection opened")
+                logg.i(TAG, "Websocket connection opened")
                 webSocketConnectionState = WebSocketConnectionState.Connected
                 onStateChange(WebSocketConnectionState.Connected)
                 if (errorCount > 0) {
@@ -97,8 +101,19 @@ class PushServiceWebSocketConnection(
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             synchronize {
-                logg.d(TAG, "WebSocket received new message")
-                onMessageCallback()
+                val eventType = try {
+                    BaseRemoteModule.formatter.parseToJsonElement(text)
+                        .jsonObject["event"]?.jsonPrimitive?.content
+                } catch (e: Exception) {
+                    false
+                }
+
+                if (eventType == "message") {
+                    logg.i(TAG, "WebSocket received new >message< event")
+                    onMessageCallback()
+                } else {
+                    logg.i(TAG, "WebSocket received new >$eventType< event, ignoring")
+                }
             }
         }
 
@@ -112,7 +127,7 @@ class PushServiceWebSocketConnection(
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             synchronize {
-                logg.w(tag = TAG, message = "Connection failed: ${t.message}", t = t)
+                logg.w(tag = TAG, message = "Connection failed, already closed: $isConnectionClosed - ${t::class} ${t.message}", t = t)
                 if (isConnectionClosed) {
                     return@synchronize
                 }

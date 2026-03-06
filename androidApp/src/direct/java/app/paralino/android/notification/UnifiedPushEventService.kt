@@ -49,7 +49,7 @@ class UnifiedPushEventService: PushService() {
         message: PushMessage,
         instance: String
     ) {
-        logg.tag("push_notifications").d("Got new unifiedPush push notification")
+        logg.tag("push_notifications").i("Got new unifiedPush push notification")
         pushProvider.syncPushNotifications()
     }
 
