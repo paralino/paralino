@@ -205,7 +205,7 @@ class RawCryptoPresentation constructor(
                             decryptedDataSubtitle = null,
                             contentIdInfo = buildList {
                                 if (rawPair.first.member.ownerUserId == appPrefs.userId) {
-                                    add("User ID: **${appPrefs.userId}**")
+                                    add("User ID: **${rawPair.first.member.ownerUserId}**")
                                     add("Member ID: **${rawPair.first.member.id}**")
                                 }
                                 add("Devices: **${rawPair.first.locations.size}**")
