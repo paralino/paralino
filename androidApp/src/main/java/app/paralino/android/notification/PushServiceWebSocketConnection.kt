@@ -119,7 +119,7 @@ class PushServiceWebSocketConnection(
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             synchronize {
-                logg.w(TAG, "Connection closed")
+                logg.w(TAG, "Connection closed: $code - $reason")
                 webSocketConnectionState = WebSocketConnectionState.Disconnected
                 onStateChange(WebSocketConnectionState.Disconnected)
             }
@@ -128,6 +128,7 @@ class PushServiceWebSocketConnection(
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             synchronize {
                 logg.w(tag = TAG, message = "Connection failed, already closed: $isConnectionClosed - ${t::class} ${t.message}", t = t)
+                logg.w(tag = TAG, message = "Failure reason, ${response?.code} - ${response?.message}")
                 if (isConnectionClosed) {
                     return@synchronize
                 }
