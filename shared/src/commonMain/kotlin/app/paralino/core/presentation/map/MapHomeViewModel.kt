@@ -169,8 +169,6 @@ class MapHomeViewModel constructor(
         userGroupLocal = groupRepo,
         valueFormatter = valueFormatter,
         remoteConfig = remoteConfig,
-        appConfigRepo = appConfigRepo,
-        userRepo = userRepository,
         memberActionHandler = memberActionHandler,
         locationRequestDuration = locationRequestDuration,
         locationRequestDelay = locationRequestDelay,

@@ -26,13 +26,10 @@ import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.presentation.groups.MemberNavigateItemState
 import app.paralino.core.presentation.places.list.PlaceListItemData
-import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
-import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
-import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
@@ -45,8 +42,6 @@ class MapStateMapper(
     private val userGroupLocal: UserGroupLocalDataSource,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
-    private val userRepo: UserRepository,
-    private val appConfigRepo: AppConfigRepository,
     private val memberActionHandler: MemberActionHandler,
     private val locationRequestDuration: Duration,
     private val locationRequestDelay: Duration,

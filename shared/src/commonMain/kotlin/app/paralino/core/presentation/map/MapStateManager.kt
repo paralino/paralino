@@ -26,9 +26,6 @@ class MapStateManager(
         val marker = uiState.value.asReady()
             ?.markers?.firstOrNull { it.markerId == markerData.markerId }
 
-        val isRequestForSameVisibleMarker = uiState.value.asReady()
-            ?.trackingMarker?.markerId == markerData.markerId
-
         val memberStateForMarker = uiState.value.asReady()
             ?.allMembersOrDevices?.firstOrNull { it.keyId == markerData.markerId }
 
@@ -41,13 +38,15 @@ class MapStateManager(
                 mapHomeScreenFocusType = when (markerData.type) {
                     MapPinType.MEMBER -> {
                         if (memberStateForMarker != null) {
+                            val isNewDevice = readyState.mapHomeScreenFocusType.asMember?.memberKeyId != markerData.markerId
+                            val isRequestForSameVisibleMarker = readyState.trackingMarker?.markerId == markerData.markerId
                             MapHomeScreenFocusType.MEMBER(
                                 memberUserId = memberStateForMarker.memberState.userId,
                                 memberId = memberStateForMarker.memberState.memberId,
                                 memberLocationId = memberStateForMarker.singleLocation?.locationId,
                                 memberKeyId = markerData.markerId,
                                 isIdleActive = memberStateForMarker.singleLocation?.deviceStatus?.isIdlingOrActive ?: false,
-                                forceZoom = isRequestForSameVisibleMarker
+                                forceZoom = isNewDevice || isRequestForSameVisibleMarker
                             )
                         } else {
                             readyState.mapHomeScreenFocusType
