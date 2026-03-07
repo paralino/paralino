@@ -111,9 +111,9 @@ sealed class MapHomeScreenState {
         val locationHistoryMode: MapHomeScreenFocusType.LOCATION_HISTORY? = mapHomeScreenFocusType.asLocationHistory
 
         override val isSheetEnabled: Boolean = if (isPersonalSpace) {
-            !isFirstTimeInPersonalSpace
+            !isFirstTimeInPersonalSpace && !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
         } else {
-            true
+            !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
         }
 
         override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
