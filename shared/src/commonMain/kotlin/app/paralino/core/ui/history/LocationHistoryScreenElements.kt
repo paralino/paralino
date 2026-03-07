@@ -39,11 +39,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -310,7 +312,13 @@ fun LocationHistoryMapCardUi(
                     .padding(end = 8.dp)
                     .size(32.dp)
                     .clickable(onClick = { onEvent(LocationHistoryUiEvent.ToggleMapFilter) })
-                    .shadow(elevation = animateDpAsState(if (uiState.isFilterOpened) 8.dp else 4.dp).value, RoundedCornerShape(8.dp))
+                    .dropShadow(
+                        shape = RoundedCornerShape(8.dp),
+                        shadow = Shadow(
+                            radius = animateDpAsState(if (uiState.isFilterOpened) 16.dp else 12.dp).value,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                        )
+                    )
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colors.background),
                 contentAlignment = Alignment.Center
@@ -388,7 +396,7 @@ fun LocationHistoryMapCardUi(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
                         .padding(bottom = 8.dp),
-                    elevation = 4.dp,
+                    elevation = 12.dp,
                     state = uiState.daySelectorState,
                     onEvent = onEvent
                 )
@@ -416,7 +424,13 @@ private fun RowScope.FocusTypeIcon(
                 .clickable(onClick = {
                     onEvent(LocationHistoryUiEvent.OnSelectFocusType(type))
                 })
-//                .shadow(elevation = 4.dp, RoundedCornerShape(8.dp))
+                .dropShadow(
+                    shape = RoundedCornerShape(8.dp),
+                    shadow = Shadow(
+                        radius = 12.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colors.background)
                 .padding(4.dp),

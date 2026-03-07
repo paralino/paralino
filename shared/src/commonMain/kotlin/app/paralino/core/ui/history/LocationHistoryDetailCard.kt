@@ -51,9 +51,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -116,7 +116,13 @@ fun LocationHistoryDetailCard(
                         }
                     }
                 )
-                .shadow(6.dp, RoundedCornerShape(cornerShape))
+                .dropShadow(
+                    shape = RoundedCornerShape(cornerShape),
+                    shadow = Shadow(
+                        radius = 12.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
                 .clip(RoundedCornerShape(cornerShape))
                 .background(MaterialTheme.colors.background)
         ) {

@@ -45,7 +45,6 @@ import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -158,7 +157,7 @@ fun MapHomeScreenElements(
                 onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
                 icon = null,
                 style = ButtonStyle.ICON,
-                elevation = 8.dp,
+                elevation = 12.dp,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.surface
                 ),
@@ -482,6 +481,13 @@ private fun MapGroupOrSpacePickerTabs(
             modifier = Modifier
                 .matchParentSize()
                 .padding(6.dp)
+                .dropShadow(
+                    shape = RoundedCornerShape(100),
+                    shadow = Shadow(
+                        radius = 15.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
                 .clip(RoundedCornerShape(100))
                 .background(MaterialTheme.colors.background)
                 .background(
@@ -517,9 +523,12 @@ private fun MapGroupOrSpacePickerTabs(
                             }
                         }
                     )
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(100)
+                    .dropShadow(
+                        shape = RoundedCornerShape(100),
+                        shadow = Shadow(
+                            radius = 8.dp,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                        )
                     )
                     .clip(RoundedCornerShape(100))
                     .background(MaterialTheme.colors.background)
