@@ -519,7 +519,15 @@ fun LocationHistoryDetailCard(
                                     }
                                     .clip(RoundedCornerShape(innerCornerShape))
                                     .background(
-                                        color = if (uiState.hasPreviousLocation) MaterialTheme.colors.surface else Color.Transparent,
+                                        color = if (uiState.hasPreviousLocation) {
+                                            if (isSystemInDarkTheme()) {
+                                                AppColors.accentLight.copy(alpha = 0.2f)
+                                            } else {
+                                                AppColors.accent.copy(alpha = 0.2f)
+                                            }
+                                        } else {
+                                            MaterialTheme.colors.surface.copy(alpha = 0.4f)
+                                        },
                                         shape = RoundedCornerShape(innerCornerShape)
                                     ),
                                 contentAlignment = Alignment.Center
@@ -529,7 +537,7 @@ fun LocationHistoryDetailCard(
                                         .size(22.dp),
                                     painter = CoreAppIcons.ChevronLeft.asPainterResource(),
                                     contentDescription = "Previous",
-                                    tint = MaterialTheme.colors.primary.copy(alpha = if (uiState.hasPreviousLocation) 1f else 0.3f)
+                                    tint = MaterialTheme.colors.onBackground.copy(alpha = if (uiState.hasPreviousLocation) 1f else 0.3f)
                                 )
                             }
 
@@ -590,7 +598,15 @@ fun LocationHistoryDetailCard(
                                     }
                                     .clip(RoundedCornerShape(innerCornerShape))
                                     .background(
-                                        color = if (uiState.hasNextLocation) MaterialTheme.colors.surface else Color.Transparent,
+                                        color = if (uiState.hasNextLocation) {
+                                            if (isSystemInDarkTheme()) {
+                                                AppColors.accentLight.copy(alpha = 0.2f)
+                                            } else {
+                                                AppColors.accent.copy(alpha = 0.2f)
+                                            }
+                                        } else {
+                                            MaterialTheme.colors.surface.copy(alpha = 0.4f)
+                                        },
                                         shape = RoundedCornerShape(innerCornerShape)
                                     ),
                                 contentAlignment = Alignment.Center
@@ -600,7 +616,7 @@ fun LocationHistoryDetailCard(
                                         .size(22.dp),
                                     painter = CoreAppIcons.ChevronRight.asPainterResource(),
                                     contentDescription = "Next",
-                                    tint = MaterialTheme.colors.primary.copy(alpha = if (uiState.hasNextLocation) 1f else 0.3f)
+                                    tint = MaterialTheme.colors.onBackground.copy(alpha = if (uiState.hasNextLocation) 1f else 0.3f)
                                 )
                             }
                         }
