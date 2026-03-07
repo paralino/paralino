@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
+import app.paralino.android.AppClass
 import app.paralino.android.remote.sync.FullRefreshSyncWorker
 import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
@@ -22,6 +23,7 @@ import app.paralino.core.provider.LocationConditionStatus
 import app.paralino.core.provider.NetworkConnectionInfo
 import app.paralino.core.provider.NotificationConditionStatus
 import app.paralino.core.provider.NotificationSocketServiceManager
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +37,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import kotlin.time.Instant
 
@@ -44,12 +47,20 @@ class NotificationSocketService : Service() {
 
     private val notificationHandler: PushServiceNotificationHandler by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
-    private val webSocketManager: PushServiceWebSocketManager by inject()
-    private val personalSpaceLocal: app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource by inject()
+    private val personalSpaceLocal: UserPersonalSpaceLocalDataSource by inject()
     private val serviceManager: NotificationSocketServiceManager by inject()
     private val valueFormatter: IValueFormatter by inject()
+    private val webSocketManager: PushServiceWebSocketManager by lazy {
+        PushServiceWebSocketManager(
+            appClass = this.application as AppClass,
+            pushProvider = get(),
+            scopeProvider = get(),
+            deviceApiProvider = deviceApiProvider,
+            appPrefs = get()
+        )
+    }
 
-    private var websocketState: PushServiceWebSocketConnection.WebSocketConnectionState? = null
+    private var websocketState: PushServiceConnectionState? = null
     private var lastSyncTime: Instant? = null
 
     private var launchedInForeground: Boolean = false
@@ -187,15 +198,20 @@ class NotificationSocketService : Service() {
                         message = "Websocket config not valid, cancel connection"
                     )
                     webSocketManager.closeConnection()
-                    websocketState = PushServiceWebSocketConnection.WebSocketConnectionState.Disconnected
+                    websocketState = PushServiceConnectionState.Disconnected
                 } else {
-                    logg.i(
-                        tag = "notification_socket_service_${this.hashCode()}",
-                        message = "Websocket config valid, start connection"
-                    )
                     websocketState = webSocketManager.connectionState.value
                     if (deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
+                        logg.i(
+                            tag = "notification_socket_service_${this.hashCode()}",
+                            message = "Websocket config valid, start connection"
+                        )
                         webSocketManager.startConnection(config.url)
+                    } else {
+                        logg.i(
+                            tag = "notification_socket_service_${this.hashCode()}",
+                            message = "Device offline, skip starting connection"
+                        )
                     }
                 }
                 updateNotification()

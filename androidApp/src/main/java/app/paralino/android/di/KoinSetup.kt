@@ -11,19 +11,19 @@ import app.paralino.android.domain.ImportPersonalLocationHistoryUseCase
 import app.paralino.android.notification.GroupActivityNotificationPresenter
 import app.paralino.android.notification.InfoMessagesNotificationPresenter
 import app.paralino.android.notification.LocationNotificationHandler
-import app.paralino.android.notification.PushServiceWebSocketManager
 import app.paralino.android.notification.NotificationSocketServiceLauncher
-import app.paralino.android.notification.PushServiceNotificationHandler
 import app.paralino.android.notification.PlaceNotificationPresenter
+import app.paralino.android.notification.PushServiceNotificationHandler
+import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.provider.ConnectionStatusProvider
 import app.paralino.android.provider.CrashReportingLogr
 import app.paralino.android.provider.DeviceApiProvider
+import app.paralino.android.provider.IUnifiedPushManager
 import app.paralino.android.provider.LocationStatusProvider
 import app.paralino.android.provider.NotificationStatusProvider
 import app.paralino.android.provider.OneTimeLocationProvider
 import app.paralino.android.provider.PushProviderManager
-import app.paralino.android.provider.IUnifiedPushManager
 import app.paralino.android.provider.UnifiedPushManager
 import app.paralino.android.provider.ValueFormatter
 import app.paralino.android.remote.appwrite.AppWriteRemoteModule
@@ -86,21 +86,20 @@ import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.places.list.PlacesViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
-import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
-import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
+import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
-import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
@@ -180,7 +179,6 @@ object KoinSetup {
         single { LocationServiceLauncher(androidApplication(), get(), get(), get(), get()) }
         single { NotificationSocketServiceLauncher(androidApplication(), get(), get(), get(), get(), get()) }
         single { LocationInitHandler(androidContext(), get(), get(), get()) }
-        single { PushServiceWebSocketManager(get(), get(), get(), get()) }
         factory { LocationNotificationHandler(androidContext()) }
         factory { PushServiceNotificationHandler(androidContext()) }
 

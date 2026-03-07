@@ -5,12 +5,14 @@ import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.models.CryptoResource
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
@@ -36,6 +38,7 @@ class RawCryptoPresentation constructor(
     private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
     private val userConfigRepo: UserConfigRepository,
     private val getHistoryUseCase: GetLocationHistoryUseCase,
+    private val notificationServiceManager: NotificationSocketServiceManager,
     private val appPrefs: AppPrefs,
     private val appConfig: AppConfigRepository
 ) {
@@ -272,11 +275,17 @@ class RawCryptoPresentation constructor(
                             val pushConfig = PushProviderEndpointConfig.get(
                                 personalSpaceLocal.personalSpaceState.value.data?.currentDevice?.pushProviderConfig
                             )
-                            if (pushConfig != null) {
-                                add(ContentIdItem(text = "Push token:\n**${pushConfig.id ?: pushConfig.url}**", separateWithPadding = true, canCopy = true))
-                            } else {
-                                add(ContentIdItem(text = "Push token:\n**${appPrefs.pushTokenSynced}**", separateWithPadding = true, canCopy = true))
+                            val providerInfo = when (notificationServiceManager.adjustedPushProvider()) {
+                                PushProvider.NOT_SET -> "not_set"
+                                PushProvider.DEVICE_NATIVE -> "Native"
+                                PushProvider.PARALINO -> "Paralino"
+                                PushProvider.UNIFIED_PUSH -> pushConfig?.distributor ?: "UnifiedPush"
                             }
+                            val info = listOf(
+                                providerInfo,
+                                pushConfig?.let { it.id ?: it.url } ?: appPrefs.pushTokenSynced
+                            ).joinToString(separator = "\n")
+                            add(ContentIdItem(text = "Push token:\n**${info}**", separateWithPadding = true, canCopy = true))
                         }
                     },
                     rawData = it?.first?.data?.let {

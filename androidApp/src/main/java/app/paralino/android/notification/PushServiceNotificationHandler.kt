@@ -36,7 +36,7 @@ class PushServiceNotificationHandler(
     fun notify(
         context: Context,
         errors: List<ConditionErrorType>,
-        connectionState: PushServiceWebSocketConnection.WebSocketConnectionState?,
+        connectionState: PushServiceConnectionState?,
         lastSyncTime: String?
     ): Notification {
 
@@ -53,17 +53,17 @@ class PushServiceNotificationHandler(
 
         val summary = if (errors.isEmpty()) {
             when (connectionState) {
-                PushServiceWebSocketConnection.WebSocketConnectionState.Scheduled,
-                PushServiceWebSocketConnection.WebSocketConnectionState.Connecting -> {
+                PushServiceConnectionState.Scheduled,
+                PushServiceConnectionState.Connecting -> {
                     context.getString(MR.strings.notifications_socketService_status_warning.resourceId)
                 }
 
-                PushServiceWebSocketConnection.WebSocketConnectionState.Disconnected -> {
+                PushServiceConnectionState.Disconnected -> {
                     context.getString(MR.strings.notifications_socketService_status_error.resourceId)
                 }
 
                 null,
-                PushServiceWebSocketConnection.WebSocketConnectionState.Connected -> {
+                PushServiceConnectionState.Connected -> {
                     context.getString(MR.strings.notifications_socketService_status_active.resourceId)
                 }
             }
@@ -73,12 +73,12 @@ class PushServiceNotificationHandler(
 
         val content = if (errors.isEmpty()) {
             when (connectionState) {
-                PushServiceWebSocketConnection.WebSocketConnectionState.Scheduled,
-                PushServiceWebSocketConnection.WebSocketConnectionState.Connecting -> {
+                PushServiceConnectionState.Scheduled,
+                PushServiceConnectionState.Connecting -> {
                     context.getString(MR.strings.notifications_socketService_message_connecting.resourceId)
                 }
 
-                PushServiceWebSocketConnection.WebSocketConnectionState.Disconnected -> {
+                PushServiceConnectionState.Disconnected -> {
                     context.getString(
                         MR.strings.notifications_socketService_message_errors.resourceId,
                         context.getString(MR.strings.notifications_socketService_message_disconnected.resourceId)
@@ -86,7 +86,7 @@ class PushServiceNotificationHandler(
                 }
 
                 null,
-                PushServiceWebSocketConnection.WebSocketConnectionState.Connected -> {
+                PushServiceConnectionState.Connected -> {
                     if (lastSyncTime != null) {
                         context.getString(MR.strings.notifications_socketService_message_lastSync.resourceId, lastSyncTime)
                     } else {

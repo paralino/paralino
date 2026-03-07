@@ -1,7 +1,12 @@
 package app.paralino.android.notification
 
+import android.app.AlarmManager
+import android.content.Context
+import android.os.Build
+import app.paralino.android.AppClass
 import app.paralino.core.logg
 import app.paralino.core.utils.BaseRemoteModule
+import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,28 +31,29 @@ import kotlin.time.Duration.Companion.seconds
  */
 class PushServiceWebSocketConnection(
     val url: String,
+    private val appClass: AppClass,
     private val httpClient: OkHttpClient,
-    private val onStateChange: (WebSocketConnectionState) -> Unit,
+    private val onStateChange: (PushServiceConnectionState) -> Unit,
     private val onMessageCallback: () -> Unit
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var errorCount = 0
     private var webSocket: WebSocket? = null
-    private var webSocketConnectionState: WebSocketConnectionState? = null
+    private var pushServiceConnectionState: PushServiceConnectionState? = null
     private var isConnectionClosed = false
 
     private val listenerId = AtomicLong(0)
 
     @Synchronized
     fun start() {
-        if (isConnectionClosed || webSocketConnectionState == WebSocketConnectionState.Connecting || webSocketConnectionState == WebSocketConnectionState.Connected) {
+        if (isConnectionClosed || pushServiceConnectionState == PushServiceConnectionState.Connecting || pushServiceConnectionState == PushServiceConnectionState.Connected) {
             logg.i(TAG, "Not starting websocket, connection either closed or active")
             return
         }
 
         webSocket?.close(WS_CLOSE_CODE_NORMAL, "")
-        webSocketConnectionState = WebSocketConnectionState.Connecting
-        onStateChange(WebSocketConnectionState.Connecting)
+        pushServiceConnectionState = PushServiceConnectionState.Connecting
+        onStateChange(PushServiceConnectionState.Connecting)
         val nextListenerId = listenerId.incrementAndGet()
 
         val request = Request.Builder().url(url).build()
@@ -65,25 +71,49 @@ class PushServiceWebSocketConnection(
 
         logg.i(TAG, "Closing websocket connection")
 
-        webSocketConnectionState = WebSocketConnectionState.Disconnected
-        onStateChange(WebSocketConnectionState.Disconnected)
+        pushServiceConnectionState = PushServiceConnectionState.Disconnected
+        onStateChange(PushServiceConnectionState.Disconnected)
         webSocket?.close(WS_CLOSE_CODE_NORMAL, "")
         webSocket = null
     }
 
     @Synchronized
     private fun scheduleReconnect(duration: Duration) {
-        if (isConnectionClosed || webSocketConnectionState == WebSocketConnectionState.Connecting || webSocketConnectionState == WebSocketConnectionState.Connected) {
-            logg.i(TAG, "Not reconnecting to websocket, isClosed: $isConnectionClosed, state: $webSocketConnectionState")
+        if (isConnectionClosed || pushServiceConnectionState == PushServiceConnectionState.Connecting || pushServiceConnectionState == PushServiceConnectionState.Connected) {
+            logg.i(TAG, "Not reconnecting to websocket, isClosed: $isConnectionClosed, state: $pushServiceConnectionState")
             return
         }
-        webSocketConnectionState = WebSocketConnectionState.Scheduled
-        onStateChange(WebSocketConnectionState.Scheduled)
+        pushServiceConnectionState = PushServiceConnectionState.Scheduled
+        onStateChange(PushServiceConnectionState.Scheduled)
         logg.i(TAG, "Scheduling a websocket restart in $duration")
 
-        scope.launch {
-            delay(duration)
-            start()
+        val reconnectTimeMillis = nowUTC().plus(duration).toEpochMilliseconds()
+
+        val alarmManager = appClass.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExact(
+                    AlarmManager.RTC_WAKEUP,
+                    reconnectTimeMillis,
+                    "paralino_ws_reconnect",
+                    { scope.launch { start() } },
+                    null
+                )
+            } else {
+                logg.i(TAG, "Schedule alarm permission denied, fallback to scope only restart")
+                scope.launch {
+                    delay(duration)
+                    start()
+                }
+            }
+        } else {
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP,
+                reconnectTimeMillis,
+                "paralino_ws_reconnect",
+                { scope.launch { start() } },
+                null
+            )
         }
     }
 
@@ -91,8 +121,8 @@ class PushServiceWebSocketConnection(
         override fun onOpen(webSocket: WebSocket, response: Response) {
             synchronize {
                 logg.i(TAG, "Websocket connection opened")
-                webSocketConnectionState = WebSocketConnectionState.Connected
-                onStateChange(WebSocketConnectionState.Connected)
+                pushServiceConnectionState = PushServiceConnectionState.Connected
+                onStateChange(PushServiceConnectionState.Connected)
                 if (errorCount > 0) {
                     errorCount = 0
                 }
@@ -120,8 +150,8 @@ class PushServiceWebSocketConnection(
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             synchronize {
                 logg.w(TAG, "Connection closed: $code - $reason")
-                webSocketConnectionState = WebSocketConnectionState.Disconnected
-                onStateChange(WebSocketConnectionState.Disconnected)
+                pushServiceConnectionState = PushServiceConnectionState.Disconnected
+                onStateChange(PushServiceConnectionState.Disconnected)
             }
         }
 
@@ -133,8 +163,8 @@ class PushServiceWebSocketConnection(
                     return@synchronize
                 }
 
-                webSocketConnectionState = WebSocketConnectionState.Disconnected
-                onStateChange(WebSocketConnectionState.Disconnected)
+                pushServiceConnectionState = PushServiceConnectionState.Disconnected
+                onStateChange(PushServiceConnectionState.Disconnected)
 
                 errorCount++
                 val retrySeconds = RETRY_SECONDS.getOrNull(errorCount - 1) ?: RETRY_SECONDS.last()
@@ -150,10 +180,6 @@ class PushServiceWebSocketConnection(
                 }
             }
         }
-    }
-
-    enum class WebSocketConnectionState {
-        Scheduled, Connecting, Connected, Disconnected
     }
 
     companion object Companion {
