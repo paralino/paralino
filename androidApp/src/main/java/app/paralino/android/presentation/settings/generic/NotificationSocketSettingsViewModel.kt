@@ -191,6 +191,8 @@ class NotificationSocketSettingsViewModel(
                     items = options
                 )
             )
+
+            items.add(GenericSettingListItem.Spacer(20.dp, keyId = "provider_space"))
         }
 
         if (defaultProvider == PushProvider.PARALINO) {
@@ -238,7 +240,6 @@ class NotificationSocketSettingsViewModel(
                 )
             )
 
-            items.add(GenericSettingListItem.Spacer(20.dp, keyId = "provider_space"))
             items.add(GenericSettingListItem.StickyHeader(keyId = "paralinoProviderSettings", content = MR.strings.setting_notificationSocket_connectionType_title.localizedString()))
             items.add(GenericSettingListItem.Subtitle(MR.strings.setting_notificationSocket_connectionType_info.localizedString()))
 
