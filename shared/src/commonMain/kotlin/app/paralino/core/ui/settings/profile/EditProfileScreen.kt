@@ -15,9 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -31,9 +34,11 @@ import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
+import app.paralino.core.ui.components.EditImageIcon
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.groups.ShakeEffect
 import app.paralino.core.utils.Emojis
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.flow.collectLatest
@@ -64,6 +69,7 @@ fun EditProfileScreen(
 
     EditProfileScreen(
         state = uiState,
+        canShakeImage = false,
         onImageClick = {
             onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.userEmojis))
         },
@@ -75,11 +81,20 @@ fun EditProfileScreen(
 @Composable
 fun EditProfileScreen(
     state: EditProfileScreenState,
+    canShakeImage: Boolean,
     onImageClick: () -> Unit,
     onNameChange: (String) -> Unit,
     onConfirm: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
+    var rotation by remember { mutableStateOf(0f) }
+
+    if (canShakeImage) {
+        // Shake image to draw attention
+        ShakeEffect {
+            rotation = it
+        }
+    }
 
     ActionScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -109,13 +124,19 @@ fun EditProfileScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Box(
-                modifier = Modifier.size(100.dp),
+                modifier = Modifier.size(120.dp),
                 contentAlignment = Alignment.Center
             ) {
                 ImageModelImage(
                     imageModel = state.image,
                     modifier = Modifier
                         .size(100.dp)
+                        .rotate(rotation)
+                        .clickable(onClick = onImageClick)
+                )
+                EditImageIcon(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
                         .clickable(onClick = onImageClick)
                 )
             }

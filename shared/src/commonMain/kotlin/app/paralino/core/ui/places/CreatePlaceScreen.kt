@@ -86,6 +86,7 @@ import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.EditImageIcon
 import app.paralino.core.ui.components.EmbeddedSlider
 import app.paralino.core.ui.components.EmbeddedSliderSize
 import app.paralino.core.ui.components.ImageModelImage
@@ -311,7 +312,7 @@ private fun CreatePlaceNameSuggestionStep(
         Spacer(modifier = Modifier.weight(1f))
 
         Box(
-            modifier = Modifier.size(100.dp),
+            modifier = Modifier.size(120.dp),
             contentAlignment = Alignment.Center
         ) {
             ImageModelImage(
@@ -319,6 +320,11 @@ private fun CreatePlaceNameSuggestionStep(
                 modifier = Modifier
                     .size(100.dp)
                     .rotate(rotation)
+                    .clickable(onClick = onImageClick)
+            )
+            EditImageIcon(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
                     .clickable(onClick = onImageClick)
             )
         }

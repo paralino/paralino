@@ -46,6 +46,7 @@ import app.paralino.core.ui.components.ActionScaffold
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.EditImageIcon
 import app.paralino.core.ui.components.ImageModelImage
 import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
@@ -166,7 +167,7 @@ private fun GroupCreateScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Box(
-                modifier = Modifier.size(100.dp),
+                modifier = Modifier.size(120.dp),
                 contentAlignment = Alignment.Center
             ) {
                 ImageModelImage(
@@ -174,6 +175,11 @@ private fun GroupCreateScreen(
                     modifier = Modifier
                         .size(100.dp)
                         .rotate(rotation)
+                        .clickable(onClick = onImageClick)
+                )
+                EditImageIcon(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
                         .clickable(onClick = onImageClick)
                 )
             }
