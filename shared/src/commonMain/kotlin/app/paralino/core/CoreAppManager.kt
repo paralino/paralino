@@ -50,7 +50,7 @@ class CoreAppManager(
             AppHost.MAIN_APP -> {
                 sessionMonitorJob = sessionMonitor.listenForSessionExpired()
                     .onEach {
-                        logg.tag("account_session").v("Got session expired event")
+                        logg.tag("account_session").d("Got session expired event")
                         expiredSessionHandler.processExpiredSession()
                     }
                     .catch {

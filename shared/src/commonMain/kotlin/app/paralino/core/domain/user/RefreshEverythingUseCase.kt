@@ -76,7 +76,7 @@ class RefreshEverythingUseCase(
                     timeMillis = minimumDelayMillis
                 ),
                 remote = {
-                    logg.tag("full_refresh").v("Start full refresh")
+                    logg.tag("full_refresh").d("Start full refresh")
                     userRepository.refreshUserMaybe(timeDelayMillis = 0).getOrThrow()
                     personalCodesRepo.refreshPersonalCodes()
                     configRepo.refreshConfig()

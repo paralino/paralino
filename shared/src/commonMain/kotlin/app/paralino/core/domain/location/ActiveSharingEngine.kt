@@ -71,7 +71,7 @@ class ActiveSharingEngine(
                         if (it) {
                             sendStatusPeriodically()
                         } else {
-                            logg.v("location_service", "Cancel periodic location status update")
+                            logg.i("location_service", "Cancel periodic location status update")
                             activePingJob?.cancel()
                             locationHistoryUploadEngine.syncPendingEntriesInBackground(cacheTime = 0.seconds)
                         }
@@ -92,14 +92,14 @@ class ActiveSharingEngine(
     }
 
     private fun sendStatusPeriodically() {
-        logg.v("location_service", "Start periodic location status update")
+        logg.d("location_service", "Start periodic location status update")
         activePingJob?.cancel()
         activePingJob = scopeProvider.userSessionIOScope.launch {
             val batteryCheck = async {
                 while (isActive) {
                     delay(20.minutes)
                     if (deviceApiProvider.batteryLevel?.takeIf { it < BatteryNotificationsSettingsData.LOW_BATTERY_LEVEL } != null) {
-                        logg.v("location_service", "Sending location status for low battery")
+                        logg.d("location_service", "Sending location status for low battery")
                         updateStatus()
                     } else {
                         logg.v("location_service", "Skip sending location status for low battery")
@@ -110,7 +110,7 @@ class ActiveSharingEngine(
                 while (isActive) {
                     delay(2.hours)
                     if (locationCache.lastLocation?.isOlderThan(3.hours) != false) {
-                        logg.v("location_service", "Sending location status after inactivity")
+                        logg.d("location_service", "Sending location status after inactivity")
                         updateStatus()
                     } else {
                         logg.v("location_service", "Skip sending location status after inactivity")

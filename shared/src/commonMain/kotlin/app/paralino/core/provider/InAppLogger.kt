@@ -91,7 +91,7 @@ class InAppLogger(
             return
         }
 
-        if (priority < LogPriority.INFO && appConfig.appHost == AppHost.MAIN_APP) {
+        if (priority < LogPriority.DEBUG && appConfig.appHost == AppHost.MAIN_APP) {
             return
         }
 
