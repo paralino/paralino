@@ -1,5 +1,8 @@
 package app.paralino.core.ui.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -62,38 +65,51 @@ fun GenericSettingsScreenCore(
         }
     }
 
-    when (val finalState = uiState.content) {
-        is GenericSettingsScreenStateContent.Loading -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
+    AnimatedVisibility(
+        modifier = Modifier.fillMaxSize(),
+        visible = uiState.content is GenericSettingsScreenStateContent.Loading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+
+    AnimatedVisibility(
+        modifier = Modifier.fillMaxSize(),
+        visible = uiState.content !is GenericSettingsScreenStateContent.Loading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        when (val finalState = uiState.content) {
+            is GenericSettingsScreenStateContent.Loading -> {}
+            is GenericSettingsScreenStateContent.EditScreen -> {}
+
+            is GenericSettingsScreenStateContent.EmptyState -> {
+                DefaultEmptyState(
+                    modifier = Modifier,
+                    icon = finalState.icon.asPainterResource(),
+                    content = finalState.content,
+                    buttonText = finalState.buttonText,
+                    buttonState = AppButtonState.loadingStateWithCheck(finalState.buttonLoading),
+                    onClick = { vm.onEvent(GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick) }
+                )
             }
-        }
 
-        is GenericSettingsScreenStateContent.EditScreen -> {}
-
-        is GenericSettingsScreenStateContent.EmptyState -> {
-            DefaultEmptyState(
-                modifier = Modifier,
-                icon = finalState.icon.asPainterResource(),
-                content = finalState.content,
-                buttonText = finalState.buttonText,
-                buttonState = AppButtonState.loadingStateWithCheck(finalState.buttonLoading),
-                onClick = { vm.onEvent(GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick) }
-            )
-        }
-
-        is GenericSettingsScreenStateContent.ListItems -> {
-            GenericSettingsListScreen(
-                coreUiState = coreUiState,
-                paddingValues = paddingValues,
-                state = finalState,
-                onEvent = { vm.onEvent(it) }
-            )
+            is GenericSettingsScreenStateContent.ListItems -> {
+                GenericSettingsListScreen(
+                    coreUiState = coreUiState,
+                    paddingValues = paddingValues,
+                    state = finalState,
+                    onEvent = { vm.onEvent(it) }
+                )
+            }
         }
     }
 }

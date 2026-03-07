@@ -28,9 +28,11 @@ import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -79,11 +81,17 @@ class NotificationSocketSettingsViewModel(
         deviceApiProvider.notificationStatusProvider.status
             .onEach { status ->
                 if (status.isNotificationPermissionAllowed) {
-                    _uiState.update { createInitialState() }
+                    // adding artificial loading since fetching UnifiedPush distributors has small delay
+                    // which is still small enough to make screen reload during entrance animation
+                    // here we just delay the ui refresh a bit so it is not glitchy on low powered phones
+                    delay(300)
+                    val newState = createInitialState()
+                    _uiState.update { newState }
                 } else {
                     _uiState.update { getMissingPermissionEmpty() }
                 }
             }
+            .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
 
         unifiedPushManager.errorState
