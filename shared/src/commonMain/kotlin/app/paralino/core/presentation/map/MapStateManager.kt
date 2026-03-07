@@ -4,10 +4,18 @@ import app.paralino.core.MR
 import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.provider.localizedString
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.AppSnackbarPayload
+import app.paralino.core.ui.components.onAction
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class MapStateManager(
-    private val messageDispatcher: ICoreMessageDispatcher
+    private val messageDispatcher: ICoreMessageDispatcher,
+    private val coroutineScope: CoroutineScope,
+    private val eventChannel: Channel<MapHomeScreenEvent?>,
 ) {
     
     fun trackMarker(
@@ -17,9 +25,6 @@ class MapStateManager(
     ) {
         val marker = uiState.value.asReady()
             ?.markers?.firstOrNull { it.markerId == markerData.markerId }
-
-        val isRequestForSameVisibleMarker = uiState.value.asReady()
-            ?.trackingMarker?.markerId == markerData.markerId
 
         val memberStateForMarker = uiState.value.asReady()
             ?.allMembersOrDevices?.firstOrNull { it.keyId == markerData.markerId }
@@ -33,13 +38,15 @@ class MapStateManager(
                 mapHomeScreenFocusType = when (markerData.type) {
                     MapPinType.MEMBER -> {
                         if (memberStateForMarker != null) {
+                            val isNewDevice = readyState.mapHomeScreenFocusType.asMember?.memberKeyId != markerData.markerId
+                            val isRequestForSameVisibleMarker = readyState.trackingMarker?.markerId == markerData.markerId
                             MapHomeScreenFocusType.MEMBER(
                                 memberUserId = memberStateForMarker.memberState.userId,
                                 memberId = memberStateForMarker.memberState.memberId,
                                 memberLocationId = memberStateForMarker.singleLocation?.locationId,
                                 memberKeyId = markerData.markerId,
                                 isIdleActive = memberStateForMarker.singleLocation?.deviceStatus?.isIdlingOrActive ?: false,
-                                forceZoom = isRequestForSameVisibleMarker
+                                forceZoom = isNewDevice || isRequestForSameVisibleMarker
                             )
                         } else {
                             readyState.mapHomeScreenFocusType
@@ -119,12 +126,30 @@ class MapStateManager(
     }
 
     fun switchMapMode(
+        uiState: StateFlow<MapHomeScreenState>,
         updateState: ((MapHomeScreenState) -> MapHomeScreenState) -> Unit,
     ) {
-        updateState { state ->
-            when (state) {
-                is MapHomeScreenState.Empty -> state.copy(isSatelliteMode = !state.isSatelliteMode)
-                is MapHomeScreenState.Ready -> state.copy(isSatelliteMode = !state.isSatelliteMode)
+        if (uiState.value.androidMapSDKProvider?.hasSatelliteMaps == true) {
+            updateState { state ->
+                when (state) {
+                    is MapHomeScreenState.Empty -> state.copy(isSatelliteMode = !state.isSatelliteMode)
+                    is MapHomeScreenState.Ready -> state.copy(isSatelliteMode = !state.isSatelliteMode)
+                }
+            }
+        } else {
+            coroutineScope.launch {
+                messageDispatcher.showSnackbarForResult(
+                    data = AppSnackbarData(
+                        payload = AppSnackbarPayload(
+                            title = MR.strings.setting_mapsProvider_mapLibreFree_warning_title.localizedString(),
+                            text = MR.strings.setting_mapsProvider_mapLibreFree_warning_message.localizedString(),
+                            hasCloseButton = true
+                        ),
+                        actionText = MR.strings.button_open_settings.localizedString()
+                    )
+                )?.result?.onAction {
+                    eventChannel.trySend(MapHomeScreenEvent.OpenMapProviderSettings)
+                }
             }
         }
     }

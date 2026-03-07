@@ -45,20 +45,23 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.presentation.settings.generic.GenericSettingListItem
-import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
 import app.paralino.core.presentation.settings.generic.GroupOptionItem
 import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CheckButtonIcon
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.LargeSeekbarSwitch
 import app.paralino.core.ui.components.LargeSeekbarSwitchState
 import app.paralino.core.ui.components.LargeSwitchSize
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
 import app.paralino.core.ui.components.SmallActionButton
+import app.paralino.core.ui.components.dialogs.LoadingDialog
 import app.paralino.core.ui.components.rememberSeekbarState
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.utils.extensions.annotatedBoldCompose
@@ -68,7 +71,7 @@ import app.paralino.core.utils.extensions.annotatedBoldCompose
 fun GenericSettingsListScreen(
     coreUiState: CoreUiState,
     paddingValues: PaddingValues,
-    state: GenericSettingsScreenState.ListItems,
+    state: GenericSettingsScreenStateContent.ListItems,
     onEvent: (GenericSettingsScreenUiEvent) -> Unit
 ) {
     LazyColumn(
@@ -130,7 +133,7 @@ fun GenericSettingsListScreen(
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                             Text(
                                 modifier = Modifier
-                                    .padding(bottom = 20.dp)
+                                    .padding(bottom = item.bottomPadding)
                                     .padding(horizontal = 20.dp)
                                     .fillMaxWidth()
                                     .animateItem(),
@@ -176,8 +179,49 @@ fun GenericSettingsListScreen(
                         }
                     }
                 }
+
+                is GenericSettingListItem.SettingsActionItem -> {
+                    if (item.isVisible) {
+                        this.item(key = item.keyId) {
+                            SettingsActionItem(
+                                modifier = Modifier
+                                    .zIndex(index.toFloat())
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .padding(horizontal = 8.dp),
+                                name = item.text,
+                                icon = item.icon.asPainterResource(),
+                                description = item.description,
+                                tag = item.tag,
+                                type = item.type,
+                                onClick = {
+                                    onEvent(GenericSettingsScreenUiEvent.SelectActionItem(item = item))
+                                }
+                            )
+                        }
+                    }
+                }
+
+                is GenericSettingListItem.EmptyState -> {
+                    if (item.isVisible) {
+                        this.item(key = item.keyId) {
+                            DefaultEmptyState(
+                                modifier = Modifier,
+                                icon = item.icon.asPainterResource(),
+                                content = item.content,
+                                buttonText = item.buttonText,
+                                buttonState = AppButtonState.loadingStateWithCheck(item.buttonLoading),
+                                onClick = { onEvent(GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick) }
+                            )
+                        }
+                    }
+                }
             }
         }
+    }
+
+    if (state.isFullScreenLoading) {
+        LoadingDialog(text = state.loadingText)
     }
 }
 
@@ -205,8 +249,8 @@ fun GenericSettingsOptions(
             GenericSettingsOptionItem(
                 title = state.title,
                 description = state.description,
-                batteryImpact = state.batteryImpact,
-                highBatteryImpact = state.highBatteryImpact,
+                batteryImpact = state.tag,
+                highBatteryImpact = state.isTagWarning,
                 isSelected = state.isSelected,
                 isLoading = state.isLoading,
                 isPremiumFeatureEnabled = state.isPremiumFeatureEnabled,

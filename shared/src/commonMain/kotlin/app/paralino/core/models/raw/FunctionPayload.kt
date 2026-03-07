@@ -236,12 +236,26 @@ data class PersonalLocationDeletePayload(
 )
 
 @Serializable
+data class PushProviderEndpointPayload(
+    val distributor: String,
+    val url: String,
+    val id: String?,
+    val createdAt: String?,
+    val pubkey: String?,
+    val auth: String?,
+    val isSocketConnection: Boolean?
+)
+
+@Serializable
 data class UpdateUserDeviceFunctionData constructor(
     val sessionId: String,
     val deviceId: String,
-    val pushToken: String,
     val deviceType: String,
-    val locationPushToken: String?
+    val pushProvider: String,
+    val pushToken: String?,
+    val locationPushToken: String?,
+    val pushProviderConfig: PushProviderEndpointPayload?,
+    val updatePushProviderConfig: Boolean
 )
 
 @Serializable
@@ -438,7 +452,7 @@ data class GroupHistoryKeyUploadResult(
 data class HistoryUploadError(
     val groupId: String? = null,
     val key: String,
-    val error: FunctionErrorBody?
+    val error: FunctionErrorBody? = null
 )
 
 @Serializable

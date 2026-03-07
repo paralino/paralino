@@ -2,6 +2,8 @@ package app.paralino.core.presentation.settings.billing
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.intl.Locale
+import app.paralino.core.MR
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
@@ -10,9 +12,12 @@ import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionInfoNotice
 import app.paralino.core.provider.current
+import app.paralino.core.provider.localizedString
+import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
+import org.jetbrains.compose.resources.DrawableResource
 
 data class PaywallScreenState(
     val freePlanInfo: PlanInfoState,
@@ -23,8 +28,9 @@ data class PaywallScreenState(
     val isPurchaseButtonLoading: Boolean,
     val alertDialog: MainAlertDialog?,
     val faq: FaqSectionState?,
-    val isPromoCodeSectionVisible: Boolean,
-    val promoCode: String,
+    val appFlavor: AppFlavor,
+    val isPlatformBillingSupported: Boolean,
+    val canRestorePurchases: Boolean,
     val screenStep: PaywallScreenStep,
     val screenType: BillingScreenSourceType,
     val memberImageModel: ImageModel,
@@ -32,21 +38,61 @@ data class PaywallScreenState(
     val memberDeviceName: String,
     val locationHistoryStepMessage: String,
     val subscriptionNotice: List<SubscriptionInfoNotice>,
-    val subscriptionOfferDialog: MainAlertDialog.SubscriptionOfferDialog?
+    val subscriptionOfferDialog: MainAlertDialog.SubscriptionOfferDialog?,
+    val currentPlanProvider: PlanProvider?,
 ) {
 
     val currentPlan: PlanInfoState? = plans.firstOrNull { it.isCurrentPlan }
     val currentPlanName: String = currentPlan?.let { "**${it.name}**" } ?: ""
-    val canMakePurchaseOnThisPlatform: Boolean = when (currentPlan?.currentPlanProvider) {
-        PlanProvider.APPLE_APP_STORE -> DeviceType.current == DeviceType.iOS
-        PlanProvider.GOOGLE_PLAY_STORE -> DeviceType.current == DeviceType.Android
-        PlanProvider.PARALINO -> false
-        null -> true
+    val hasActivePlanOnAnotherPlatform: Boolean = if (currentPlan != null && currentPlanProvider != null) {
+        when (appFlavor) {
+            AppFlavor.ANDROID_DIRECT -> currentPlanProvider != PlanProvider.WEB_POLAR
+            AppFlavor.ANDROID_GOOGLE -> currentPlanProvider != PlanProvider.GOOGLE_PLAY_STORE
+            AppFlavor.APPLE_IOS -> currentPlanProvider != PlanProvider.APPLE_APP_STORE
+        }
+    } else {
+        false
     }
 
     val selectedPlan: PlanInfoState? = plans.firstOrNull { it.isSelected }
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod?.takeIf {
-        canMakePurchaseOnThisPlatform
+        isPlatformBillingSupported
+    }
+
+    val continueButtonType: PaywallContinueButtonType = when (screenStep) {
+        PaywallScreenStep.PAYWALL -> {
+            if (!hasActivePlanOnAnotherPlatform && selectedBillingPeriod?.trialDurationDays != null) {
+                PaywallContinueButtonType.FreeTrial(selectedBillingPeriod.trialDurationDays)
+            } else {
+                when (appFlavor) {
+                    AppFlavor.ANDROID_GOOGLE -> {
+                        // continue regardless of current plan
+                        PaywallContinueButtonType.Continue
+                    }
+
+                    AppFlavor.ANDROID_DIRECT -> {
+                        when (currentPlanProvider) {
+                            PlanProvider.WEB_POLAR -> {
+                                PaywallContinueButtonType.ManageExternal
+                            }
+
+                            else -> {
+                                PaywallContinueButtonType.ContinueExternal
+                            }
+                        }
+                    }
+
+                    AppFlavor.APPLE_IOS -> {
+                        // continue regardless of current plan
+                        PaywallContinueButtonType.Continue
+                    }
+                }
+            }
+        }
+
+        else -> {
+            PaywallContinueButtonType.Continue
+        }
     }
 
     val fullFeatureTable: FeatureTableState = FeatureTableState.constructFeaturesTable(
@@ -119,7 +165,6 @@ data class PlanInfoState(
     val name: String,
     val config: PlanConfig,
     val isCurrentPlan: Boolean,
-    val currentPlanProvider: PlanProvider?,
     val hasSpecialOffer: Boolean,
     val isSelected: Boolean,
     val isExpanded: Boolean,
@@ -155,6 +200,37 @@ enum class PaywallScreenStep {
     ONBOARDING, DEMO, LOCATION_HISTORY, PAYWALL
 }
 
+sealed interface PaywallContinueButtonType {
+    val buttonText: String
+    val icon: DrawableResource?
+    data object Continue: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_continue.localizedString()
+        override val icon: DrawableResource? = null
+    }
+
+    data object ContinueExternal: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_continue.localizedString()
+        override val icon: DrawableResource = CoreAppIcons.ArrowOpenNew
+    }
+
+    data object Ok: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.button_ok.localizedString()
+        override val icon: DrawableResource? = null
+    }
+
+    data object ManageExternal: PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_manage.localizedString()
+        override val icon: DrawableResource = CoreAppIcons.ArrowOpenNew
+    }
+
+    data class FreeTrial(val trialDays: Int): PaywallContinueButtonType {
+        override val buttonText: String = MR.strings.paywall_start_button_free.localizedString(
+            "$trialDays"
+        )
+        override val icon: DrawableResource? = null
+    }
+}
+
 data class FaqSectionState(
     val faqs: List<FaqSectionItem>
 )
@@ -179,9 +255,6 @@ sealed class PaywallScreenUiEvent() {
     data object RefreshPlans : PaywallScreenUiEvent()
     data object StartPurchase : PaywallScreenUiEvent()
     data object RestorePurchase : PaywallScreenUiEvent()
-    data object RequestPromoCode : PaywallScreenUiEvent()
-    data object ApplyPromoCode : PaywallScreenUiEvent()
-    data class OnChangePromoCode(val code: String) : PaywallScreenUiEvent()
     data class OnPurchaseError(val error: PurchaseErrorException) : PaywallScreenUiEvent()
     data class SelectBillingPeriod(val planType: PlanType, val period: PlanBillingPeriod) :
         PaywallScreenUiEvent()

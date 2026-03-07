@@ -11,6 +11,7 @@ import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCa
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
 import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ImageModel
@@ -25,7 +26,9 @@ import app.paralino.core.presentation.history.LocationHistoryUiEvent
 import app.paralino.core.presentation.history.LocationHistoryViewModelController
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.repo.base.AppConfigRepository
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
@@ -60,7 +63,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -74,7 +76,7 @@ class MapHomeViewModel constructor(
     private val personalSpaceRefresh: PersonalSpaceRefreshUseCase,
     private val locationRequestUseCase: LocationRequestUseCase,
     private val clearUserLocation: ClearUserLocationUseCase,
-    private val realtimeEvents: RealtimeEventsMaker,
+    private val realtimeManager: RealtimeSubscriptionManager,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
     private val getLocationHistory: GetLocationHistoryUseCase,
     private val refreshLocationHistory: RefreshLocationHistoryUseCase,
@@ -84,7 +86,9 @@ class MapHomeViewModel constructor(
     val deviceApiProvider: IDeviceApiProvider,
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
-    private val appRatingManager: AppRatingManager
+    private val appConfigRepo: AppConfigRepository,
+    private val appRatingManager: AppRatingManager,
+    private val premiumStatusManager: PremiumStatusManager
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow<MapHomeScreenState>(
@@ -94,7 +98,8 @@ class MapHomeViewModel constructor(
             selectedGroupImage = null,
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
             currentUserImage = userRepository.localUser.value.data?.data?.userImage
-                ?: ImageModel.emoji(Emojis.robot)
+                ?: ImageModel.emoji(Emojis.robot),
+            androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
         )
     )
     val uiState: StateFlow<MapHomeScreenState> = _uiState
@@ -120,7 +125,11 @@ class MapHomeViewModel constructor(
     private val locationRequestDelay = 25.seconds
 
     // Initialize managers
-    private val mapStateManager = MapStateManager(messageDispatcher)
+    private val mapStateManager = MapStateManager(
+        messageDispatcher = messageDispatcher,
+        coroutineScope = coroutineScope,
+        eventChannel = _eventChannel
+    )
     private val groupStateManager = GroupStateManager(
         groupRepo = groupRepo,
         personalSpaceRepo = personalSpaceRepo,
@@ -147,7 +156,7 @@ class MapHomeViewModel constructor(
     )
     private val locationFocusManager = LocationFocusManager(
         locationRequestUseCase = locationRequestUseCase,
-        realtimeEvents = realtimeEvents,
+        realtimeManager = realtimeManager,
         sharingManager = sharingManager,
         deviceApiProvider = deviceApiProvider,
         coroutineScope = coroutineScope,
@@ -162,7 +171,8 @@ class MapHomeViewModel constructor(
         remoteConfig = remoteConfig,
         memberActionHandler = memberActionHandler,
         locationRequestDuration = locationRequestDuration,
-        locationRequestDelay = locationRequestDelay
+        locationRequestDelay = locationRequestDelay,
+        premiumStatusManager = premiumStatusManager
     )
     private val groupsEmptyStateManager = GroupsInitEmptyStateManager(
         userRepo = userRepository,
@@ -361,12 +371,15 @@ class MapHomeViewModel constructor(
                         },
                         userRepository.localUser.map { it.data?.data }.distinctUntilChanged()
                     ) { groupsEmptyState, userData ->
+                        val mapProvider = premiumStatusManager.defaultMapProvider()
                         MapHomeScreenState.Empty(
                             groupsEmptyState = groupsEmptyState,
                             selectedGroupId = null,
                             selectedGroupImage = null,
                             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
-                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot)
+                            currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
+                            androidMapSDKProvider = mapProvider,
+                            isSatelliteMode = false
                         )
                     }
                 } else if (it.isPersonalSpace){
@@ -390,12 +403,15 @@ class MapHomeViewModel constructor(
         ) { _, space, places, sharingContracts, userData ->
 
             if (space == null || userData == null) {
+                val mapProvider = premiumStatusManager.defaultMapProvider()
                 return@combine MapHomeScreenState.Empty(
                     groupsEmptyState = null,
                     selectedGroupId = appPrefs.selectedGroupId,
                     selectedGroupImage = _uiState.value.selectedGroupImage,
                     isPersonalSpace = true,
-                    currentUserImage = ImageModel.emoji(Emojis.robot)
+                    currentUserImage = ImageModel.emoji(Emojis.robot),
+                    androidMapSDKProvider = mapProvider,
+                    isSatelliteMode = false
                 )
             }
 
@@ -424,12 +440,15 @@ class MapHomeViewModel constructor(
         ) { _, group, places, sharingContracts, userData ->
 
             if (group == null || userData == null) {
+                val mapProvider = premiumStatusManager.defaultMapProvider()
                 return@combine MapHomeScreenState.Empty(
                     groupsEmptyState = null,
                     selectedGroupId = null,
                     selectedGroupImage = null,
                     isPersonalSpace = false,
-                    currentUserImage = ImageModel.emoji(Emojis.robot)
+                    currentUserImage = ImageModel.emoji(Emojis.robot),
+                    androidMapSDKProvider = mapProvider,
+                    isSatelliteMode = false
                 )
             }
 

@@ -124,6 +124,7 @@ fun PaywallScreenCore(
     onNavigateBack: (Boolean) -> Unit,
     onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
     onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit,
+    openLicenceScreen: () -> Unit
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -158,7 +159,7 @@ fun PaywallScreenCore(
     var isOfferDialogVisible by remember { mutableStateOf(false) }
     LaunchedEffect(uiState.screenStep == PaywallScreenStep.PAYWALL) {
         delay(1500)
-        isOfferDialogVisible = uiState.canMakePurchaseOnThisPlatform && uiState.screenStep == PaywallScreenStep.PAYWALL
+        isOfferDialogVisible = !uiState.hasActivePlanOnAnotherPlatform && uiState.screenStep == PaywallScreenStep.PAYWALL
     }
 
     if (isOfferDialogVisible) {
@@ -240,7 +241,7 @@ fun PaywallScreenCore(
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier.weight(1f))
-                    FeaturesSection(modifier = Modifier)
+                    FeaturesSection(modifier = Modifier.padding(vertical = 20.dp))
                     Spacer(modifier.weight(1f))
                 }
             }
@@ -360,7 +361,8 @@ fun PaywallScreenCore(
                         bottomCardHeight = bottomCardHeight,
                         onTermsClick = { uriHandler.openUri(BackendResourceIDs.termsOfUseUrl) },
                         onPrivacyClick = { uriHandler.openUri(BackendResourceIDs.privacyPolicyUrl) },
-                        onEvent = { vm.onEvent(it) }
+                        onEvent = { vm.onEvent(it) },
+                        openLicenceScreen = openLicenceScreen
                     )
                 }
             }
@@ -410,9 +412,9 @@ private fun ColumnScope.PaywallScreen(
     onTermsClick: () -> Unit,
     onPrivacyClick: () -> Unit,
     onEvent: (PaywallScreenUiEvent) -> Unit,
+    openLicenceScreen: () -> Unit
 ) {
     val density = LocalDensity.current
-    val focusManager = LocalFocusManager.current
 
     AnimatedVisibility(state.selectedPlan == null) {
         Text(
@@ -453,46 +455,48 @@ private fun ColumnScope.PaywallScreen(
         onEvent = onEvent
     )
 
-    if (state.selectedPlan != null && state.canMakePurchaseOnThisPlatform) {
+    if (state.selectedPlan != null && state.isPlatformBillingSupported) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
             BillingPeriodOptions(
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 12.dp)
                     .padding(horizontal = 20.dp),
-                selectedPlan = state.selectedPlan!!,
+                selectedPlan = state.selectedPlan,
                 onPeriodSelected = {
                     onEvent(
                         PaywallScreenUiEvent.SelectBillingPeriod(
-                            planType = state.selectedPlan!!.type,
+                            planType = state.selectedPlan.type,
                             period = it
                         )
                     )
                 }
             )
         }
+    } else {
+        Spacer(modifier = Modifier.size(12.dp))
     }
 
-    if (!state.canMakePurchaseOnThisPlatform) {
-        NoticeInfoChip(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 20.dp)
-                .padding(top = 12.dp, bottom = 12.dp),
-            text = stringResource(MR.strings.plans_management_info_wrong_platform_title),
-            icon = {
-                Icon(
-                    painter = CoreAppIcons.Warning.asPainterResource(),
-                    contentDescription = null,
-                    tint = AppColors.redMain
-                )
-            }
-        )
-    }
+//    if (!state.canMakePurchaseOnThisPlatform) {
+//        NoticeInfoChip(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .align(Alignment.CenterHorizontally)
+//                .padding(horizontal = 20.dp)
+//                .padding(top = 12.dp, bottom = 12.dp),
+//            text = stringResource(MR.strings.plans_management_info_wrong_platform_title),
+//            icon = {
+//                Icon(
+//                    painter = CoreAppIcons.Warning.asPainterResource(),
+//                    contentDescription = null,
+//                    tint = AppColors.redMain
+//                )
+//            }
+//        )
+//    }
 
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        visible = state.canMakePurchaseOnThisPlatform && state.subscriptionNoticeForCurrentPlan != null
+        visible = !state.hasActivePlanOnAnotherPlatform && state.subscriptionNoticeForCurrentPlan != null
     ) {
         NoticeInfoChip(
             modifier = Modifier
@@ -512,7 +516,7 @@ private fun ColumnScope.PaywallScreen(
 
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        visible = state.selectedBillingPeriod?.isPromoDiscount == true && state.canMakePurchaseOnThisPlatform
+        visible = state.selectedBillingPeriod?.isPromoDiscount == true && !state.hasActivePlanOnAnotherPlatform
     ) {
         NoticeInfoChip(
             modifier = Modifier
@@ -548,11 +552,9 @@ private fun ColumnScope.PaywallScreen(
     )
 
     if (!state.screenType.isOnboarding) {
-        FeaturesSection()
-
         PaywallScreenFeatureElements(
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = 30.dp)
                 .background(MaterialTheme.colors.background)
                 .background(
                     color = AppColors.accent.copy(alpha = if (isSystemInDarkTheme()) 0.1f else 0.2f),
@@ -566,11 +568,13 @@ private fun ColumnScope.PaywallScreen(
             memberDeviceName = state.memberDeviceName,
             valueFormatter = valueFormatter
         )
+
+        FeaturesSection(modifier = Modifier.padding(top = 20.dp))
     }
 
     AnimatedVisibility(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null && state.canMakePurchaseOnThisPlatform
+        visible = state.selectedBillingPeriod?.trialDurationDays?.takeIf { it > 0 } != null && !state.hasActivePlanOnAnotherPlatform
     ) {
         NoticeInfoChip(
             modifier = Modifier
@@ -607,7 +611,7 @@ private fun ColumnScope.PaywallScreen(
 
     PaywallUserReviewsSection()
 
-    if (!state.screenType.isOnboarding) {
+    if (!state.screenType.isOnboarding && state.isPlatformBillingSupported) {
         Column(
             modifier = Modifier
                 .padding(top = 40.dp)
@@ -628,11 +632,11 @@ private fun ColumnScope.PaywallScreen(
                         modifier = Modifier
                             .padding(top = 8.dp)
                             .padding(horizontal = 20.dp),
-                        selectedPlan = state.selectedPlan!!,
+                        selectedPlan = state.selectedPlan,
                         onPeriodSelected = {
                             onEvent(
                                 PaywallScreenUiEvent.SelectBillingPeriod(
-                                    planType = state.selectedPlan!!.type,
+                                    planType = state.selectedPlan.type,
                                     period = it
                                 )
                             )
@@ -648,7 +652,7 @@ private fun ColumnScope.PaywallScreen(
     if (state.faq != null) {
         FaqSection(
             modifier = Modifier.padding(horizontal = 20.dp),
-            faqsList = state.faq!!.faqs
+            faqsList = state.faq.faqs
         )
     }
 
@@ -670,40 +674,23 @@ private fun ColumnScope.PaywallScreen(
         onClick = onTermsClick
     )
 
-    AnimatedVisibility(state.isPromoCodeSectionVisible && !state.isPurchaseButtonLoading) {
-        Column(
-            modifier = Modifier.padding(horizontal = 20.dp)
-        ) {
-            Spacer(modifier = Modifier.size(20.dp))
-            MainInputField(
-                text = state.promoCode,
-                hint = "Code",
-                hasError = false,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done,
-                capitalization = KeyboardCapitalization.Words,
-                focusManager = focusManager,
-                onInputChange = { onEvent(PaywallScreenUiEvent.OnChangePromoCode(it)) }
-            )
-            Spacer(modifier = Modifier.size(4.dp))
-            FilledButton(
-                style = ButtonStyle.BIG,
-                state = AppButtonState.loadingState(state.isPurchaseButtonLoading),
-                onClick = { onEvent(PaywallScreenUiEvent.ApplyPromoCode) }
-            ) {
-                Text(text = stringResource(MR.strings.button_confirm))
-            }
-            Spacer(modifier = Modifier.size(20.dp))
-        }
+
+    if (state.canRestorePurchases) {
+        SettingsActionItem(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            name = stringResource(MR.strings.paywall_button_restore),
+            icon = CoreAppIcons.Sync.asPainterResource(),
+            type = SettingsActionItemType.Action,
+            onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) }
+        )
     }
 
     SettingsActionItem(
         modifier = Modifier.padding(horizontal = 20.dp),
-        name = stringResource(MR.strings.paywall_button_restore),
-        icon = CoreAppIcons.Sync.asPainterResource(),
-        type = SettingsActionItemType.Action,
-        onClick = { onEvent(PaywallScreenUiEvent.RestorePurchase) },
-        onLongClick = { onEvent(PaywallScreenUiEvent.RequestPromoCode) }
+        name = stringResource(MR.strings.licence_screen_title),
+        icon = CoreAppIcons.LicenseTicket.asPainterResource(),
+        type = SettingsActionItemType.Navigation,
+        onClick = openLicenceScreen
     )
 
     Spacer(modifier = Modifier.size(8.dp))
@@ -716,7 +703,6 @@ private fun FeaturesSection(
 ) {
     Column(
         modifier = modifier
-            .padding(vertical = 20.dp)
             .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.Center
     ) {
@@ -759,27 +745,27 @@ private fun FeaturesSection(
     }
 }
 
-@Composable
-private fun ColumnScope.FeatureInfoItem(
-    delay: Duration,
-    content: @Composable () -> Unit
-) {
-    var itemVisible by remember { mutableStateOf(0f) }
-    LaunchedEffect(Unit) {
-        delay(delay)
-        itemVisible = 1f
-    }
-    Box(
-        modifier = Modifier.alpha(
-            animateFloatAsState(
-                itemVisible,
-                tween(durationMillis = 600)
-            ).value
-        ),
-    ) {
-        content()
-    }
-}
+//@Composable
+//private fun ColumnScope.FeatureInfoItem(
+//    delay: Duration,
+//    content: @Composable () -> Unit
+//) {
+//    var itemVisible by remember { mutableStateOf(0f) }
+//    LaunchedEffect(Unit) {
+//        delay(delay)
+//        itemVisible = 1f
+//    }
+//    Box(
+//        modifier = Modifier.alpha(
+//            animateFloatAsState(
+//                itemVisible,
+//                tween(durationMillis = 600)
+//            ).value
+//        ),
+//    ) {
+//        content()
+//    }
+//}
 
 @Composable
 private fun ColumnScope.PlanTypePicker(
@@ -804,7 +790,7 @@ private fun ColumnScope.PlanTypePicker(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        state.plans.forEachIndexed { index, plan ->
+        state.plans.forEachIndexed { _, plan ->
             PlanName(
                 modifier = Modifier
                     .defaultMinSize(minWidth = 100.dp)
@@ -860,7 +846,7 @@ private fun PaywallBottomCard(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedVisibility(billingPeriodState?.trialDurationDays != null && state.screenStep == PaywallScreenStep.PAYWALL && state.canMakePurchaseOnThisPlatform) {
+            AnimatedVisibility(billingPeriodState?.trialDurationDays != null && state.screenStep == PaywallScreenStep.PAYWALL && !state.hasActivePlanOnAnotherPlatform) {
                 Text(
                     modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
                     text = stringResource(
@@ -873,17 +859,26 @@ private fun PaywallBottomCard(
                 )
             }
 
-            AnimatedVisibility(!state.canMakePurchaseOnThisPlatform) {
-                Text(
-                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
-                    text = stringResource(MR.strings.plans_management_info_wrong_platform_message),
-                    style = MaterialTheme.typography.body2,
-                    textAlign = TextAlign.Center,
-                    color = contentColor
+            AnimatedVisibility(state.hasActivePlanOnAnotherPlatform && state.screenStep == PaywallScreenStep.PAYWALL) {
+                SmallActionButton(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    backgroundColor = Color.Transparent,
+                    contentColor = animateColorAsState(if (isSystemInDarkTheme()) AppColors.highlightGold else AppColors.redMain).value,
+                    icon = CoreAppIcons.Warning.asPainterResource(),
+                    compactMode = true,
+                    iconSize = 16.dp,
+                    text = {
+                        Text(
+                            text = stringResource(MR.strings.plans_management_info_otherPlatformPlan_message),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.caption
+                        )
+                    },
+                    onClick = null
                 )
             }
 
-            AnimatedVisibility(selectedPlan != null && state.screenStep == PaywallScreenStep.PAYWALL && state.canMakePurchaseOnThisPlatform) {
+            AnimatedVisibility(selectedPlan != null && state.screenStep == PaywallScreenStep.PAYWALL && !state.hasActivePlanOnAnotherPlatform) {
                 SmallActionButton(
                     modifier = Modifier.padding(bottom = 8.dp),
                     backgroundColor = Color.Transparent,
@@ -910,7 +905,7 @@ private fun PaywallBottomCard(
                 Spacer(modifier = Modifier.size(12.dp))
             }
 
-            AnimatedVisibility(selectedPlan != null || state.screenStep != PaywallScreenStep.PAYWALL || !state.canMakePurchaseOnThisPlatform) {
+            AnimatedVisibility(selectedPlan != null || state.screenStep != PaywallScreenStep.PAYWALL) {
                 FilledButton(
                     modifier = Modifier,
                     style = ButtonStyle.BIG,
@@ -923,31 +918,25 @@ private fun PaywallBottomCard(
                     }
                 ) {
                     Text(
-                        text = when (state.screenStep) {
-                            PaywallScreenStep.PAYWALL -> {
-                                if (!state.canMakePurchaseOnThisPlatform) {
-                                    stringResource(MR.strings.button_ok)
-                                } else if (billingPeriodState?.trialDurationDays != null) {
-                                    stringResource(
-                                        MR.strings.paywall_start_button_free,
-                                        "${billingPeriodState.trialDurationDays}"
-                                    )
-                                } else {
-                                    stringResource(MR.strings.paywall_start_button_continue)
-                                }
-                            }
-
-                            else -> {
-                                stringResource(MR.strings.button_continue)
-                            }
-                        }.annotatedBoldCompose(),
+                        text = state.continueButtonType.buttonText.annotatedBoldCompose(),
                         style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.Bold),
                         textAlign = TextAlign.Center
                     )
+
+                    if (state.continueButtonType.icon != null) {
+                        Icon(
+                            painter = state.continueButtonType.icon!!.asPainterResource(),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.onPrimary,
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .size(18.dp)
+                        )
+                    }
                 }
             }
 
-            AnimatedVisibility(selectedPlan == null && state.screenStep == PaywallScreenStep.PAYWALL && state.canMakePurchaseOnThisPlatform) {
+            AnimatedVisibility(selectedPlan == null && state.screenStep == PaywallScreenStep.PAYWALL) {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
                     text = stringResource(MR.strings.paywall_select_plan_label),

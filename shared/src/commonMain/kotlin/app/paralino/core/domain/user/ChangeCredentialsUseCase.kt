@@ -313,7 +313,7 @@ class ChangeCredentialsUseCase(
                     newMasterKey = newUserKeys.userPersonalKey
                 )
             } catch (e: Exception) {
-                throw InvalidRequestException(message = e.message, e)
+                throw InvalidRequestException(code = null, type = null, message = e.message, cause = e)
             }
 
             // revoke sessions before any other operation

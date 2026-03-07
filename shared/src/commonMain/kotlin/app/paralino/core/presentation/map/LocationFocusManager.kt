@@ -1,14 +1,13 @@
 package app.paralino.core.presentation.map
 
 import app.paralino.core.domain.location.LocationRequestUseCase
-import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.repo.LocationSharingManager
-import app.paralino.core.utils.extensions.mapToPayload
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,11 +17,8 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.isActive
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -32,7 +28,7 @@ import kotlin.time.Instant
 
 class LocationFocusManager(
     private val locationRequestUseCase: LocationRequestUseCase,
-    private val realtimeEvents: RealtimeEventsMaker,
+    private val realtimeManager: RealtimeSubscriptionManager,
     private val sharingManager: LocationSharingManager,
     private val deviceApiProvider: IDeviceApiProvider,
     private val coroutineScope: CoroutineScope,
@@ -44,7 +40,6 @@ class LocationFocusManager(
     private var uiRefreshPingSubscriptionJob: Job? = null
     private var activePingSubscriptionJob: Job? = null
     private var activeLocationBoostJob: Job? = null
-    private var realtimeSubscriptionJob: Job? = null
 
     fun keepUiRefreshPing() {
         uiRefreshPingSubscriptionJob?.cancel()
@@ -99,11 +94,10 @@ class LocationFocusManager(
     }
 
     fun initRealtime() {
-        realtimeSubscriptionJob?.cancel()
         if (deviceApiProvider.appLifecycleState.value.current.activeOrInactive) {
-            realtimeSubscriptionJob = realtimeEvents.listenForEventsWhileActive()
-                .mapToPayload { Unit }
-                .launchIn(coroutineScope)
+            realtimeManager.startUiDataSubscription()
+        } else {
+            realtimeManager.cancelUiDataSubscription()
         }
     }
 
@@ -119,6 +113,6 @@ class LocationFocusManager(
         uiRefreshPingSubscriptionJob?.cancel()
         activePingSubscriptionJob?.cancel()
         activeLocationBoostJob?.cancel()
-        realtimeSubscriptionJob?.cancel()
+        realtimeManager.cancelUiDataSubscription()
     }
 } 

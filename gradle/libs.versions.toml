@@ -28,10 +28,8 @@ accompanist = "0.34.0"
 aboutLibraries = "12.2.4"
 sentry = "8.25.0"
 playServicesLocation = "21.3.0"
-osmdroid = "6.1.10"
-mapsCompose = "6.12.2"
-mapbox = "10.8.1"
-mapboxSdkTurf = "6.4.0"
+mapsGoogleCompose = "6.12.2"
+mapsMapLibreCompose = "0.12.1"
 firebaseMessaging = "24.1.2"
 jna = "5.17.0"
 nanoid = "1.0.1"
@@ -45,6 +43,7 @@ androidx-room = "2.8.4"
 sqlite = "2.6.2"
 ksp = "2.3.2"
 googlePlayReview = "2.0.2"
+unifiedPushConnector = "3.3.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -88,12 +87,10 @@ aboutLibraries-compose = { group = "com.mikepenz", name = "aboutlibraries-compos
 aboutLibraries-core = { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutLibraries" }
 sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
-osmdroid-android = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
-maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
-maps-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsCompose" }
-maps-compose-widgets = { group = "com.google.maps.android", name = "maps-compose-widgets", version.ref = "mapsCompose" }
-mapbox-android = { group = "com.mapbox.maps", name = "android", version.ref = "mapbox" }
-mapbox-sdk-turf = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-turf", version.ref = "mapboxSdkTurf" }
+maps-google-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsGoogleCompose" }
+maps-google-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsGoogleCompose" }
+maps-google-compose-widgets = { group = "com.google.maps.android", name = "maps-compose-widgets", version.ref = "mapsGoogleCompose" }
+maps-maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "mapsMapLibreCompose" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 nanoid = { group = "io.viascom.nanoid", name = "nanoid", version.ref = "nanoid" }
@@ -119,6 +116,8 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 play-review = { module = "com.google.android.play:review-ktx", version.ref = "googlePlayReview" }
+
+unifiedPush-connector = { module = "org.unifiedpush.android:connector", version.ref = "unifiedPushConnector" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

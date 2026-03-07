@@ -7,12 +7,15 @@ import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.logg
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.provider.ICoroutineScopeProvider
+import app.paralino.core.utils.extensions.openUri
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import java.util.Locale
 
 class AppUpdateManager(
     private val appClass: Application,
@@ -27,15 +31,19 @@ class AppUpdateManager(
 ) : IAppUpdateManager() {
 
     override fun startUpdateProcess(data: ConfigData) {
-        val url = data.androidAppUrl?.takeIf { it.isNotBlank() } ?: return
-        downloadAndInstall(url)
+        val url = data.androidAppUrl?.takeIf { it.isNotBlank() }
+        if (url == null) {
+            appClass.openUri(BackendResourceIDs.downloadLandingPageUrl.toUri())
+        } else {
+            downloadAndInstall(url)
+        }
     }
 
     private fun downloadAndInstall(url: String) {
         updateJob?.cancel()
         updateJob = flow<Unit> {
             triggerRemoteOnly {
-                updateStatus.update { AppUpdateStatus.Downloading(null) }
+                updateStatus.update { AppUpdateStatus.Downloading(progress = null, mb = null) }
 
                 val destinationFolder = File(appClass.cacheDir, "ParalinoUpdate")
                 if (destinationFolder.exists()) {
@@ -48,13 +56,16 @@ class AppUpdateManager(
                     File.createTempFile("paralino-app-update", ".apk", destinationFolder)
 
                 logg.v("app_update", "Download url: $url")
-                logg.v("app_update", "Download path: $destination")
+                logg.i("app_update", "Download path: $destination")
 
-                val url = URL(url)
-                val connection = url.openConnection()
+                val connection = URL(url).openConnection() as java.net.HttpURLConnection
+                connection.setRequestProperty("Accept-Encoding", "identity")
                 connection.connect()
+
                 val length = connection.contentLengthLong
-                url.openStream().use { input ->
+                logg.v("app_update", "Download size: $length")
+
+                connection.inputStream.use { input ->
                     FileOutputStream(destination).use { output ->
                         val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
                         var bytesRead = input.read(buffer)
@@ -62,10 +73,26 @@ class AppUpdateManager(
                         while (bytesRead >= 0) {
                             output.write(buffer, 0, bytesRead)
                             bytesCopied += bytesRead
+                            val downloadedMb = bytesCopied.toDouble() / (1024 * 1024)
+                            val formattedMb =
+                                String.format(Locale.US, "%.2f MB", downloadedMb)
+
                             if (length > 0) {
-                                updateStatus.update { AppUpdateStatus.Downloading(bytesCopied.toFloat() / length) }
+                                updateStatus.update {
+                                    val progress = bytesCopied.toFloat() / length
+                                    logg.v("app_update", "Download progress: $progress")
+                                    AppUpdateStatus.Downloading(
+                                        progress = progress,
+                                        mb = formattedMb
+                                    )
+                                }
                             } else {
-                                updateStatus.update { AppUpdateStatus.Downloading(null) }
+                                updateStatus.update {
+                                    AppUpdateStatus.Downloading(
+                                        progress = null,
+                                        mb = formattedMb
+                                    )
+                                }
                             }
                             bytesRead = input.read(buffer)
                         }
@@ -91,7 +118,7 @@ class AppUpdateManager(
             val session = context.packageManager.packageInstaller.openSession(sessionId)
 
             logg.v("app_update", "Open install session stream")
-            session.openWrite("myComfort", 0, length).use { sessionStream ->
+            session.openWrite("Paralino", 0, length).use { sessionStream ->
                 apkStream.copyTo(sessionStream)
                 session.fsync(sessionStream)
             }
@@ -110,7 +137,7 @@ class AppUpdateManager(
                 flags
             )
 
-            logg.v("app_update", "Request install")
+            logg.i("app_update", "Request install")
             session.commit(pi.intentSender)
             session.close()
         }

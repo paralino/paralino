@@ -23,13 +23,25 @@ android {
 
     androidComponents.beforeVariants { variant ->
         val names = variant.productFlavors.map { flavor -> flavor.second }
-        val variantIgnore =
-//                (variant.buildType == "debug" && names.contains("playStore")) ||
-                (variant.buildType == "debug" && names.contains("playStoreTest")) ||
-                (variant.buildType == "debug" && names.contains("direct")) ||
-                (variant.buildType == "release" && names.contains("dev")) ||
-                (names.contains("playStore") && names.contains("oss"))
+        val variantIgnore = (variant.buildType == "releaseTest" && names.contains("direct"))
         variant.enable = !variantIgnore
+
+        if ((variant.buildType == "release" && names.contains("playStore"))) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStoreRelease/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
+                throw FileNotFoundException("Missing Firebase config file for PRODUCTION_RELEASE")
+            }
+        } else if ((variant.buildType == "releaseTest" && names.contains("playStore"))) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStoreReleaseTest/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
+                throw FileNotFoundException("Missing Firebase config file for TEST_RELEASE")
+            }
+        } else if ((variant.buildType == "debug" && names.contains("playStore"))) {
+            val fcmConfigFile = rootProject.file("androidApp/src/playStoreDebug/res/values/fcm_config.xml")
+            if (!fcmConfigFile.exists()) {
+                throw FileNotFoundException("Missing Firebase config file for DEBUG")
+            }
+        }
     }
 
     applicationVariants.all {
@@ -61,7 +73,6 @@ android {
 
         manifestPlaceholders["MAPS_API_KEY"] = props["MAPS_API_KEY"] as String
         resValue("string", "glitchTipDSN", props["glitchTipDSNAndroid"] as String)
-        buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
 
         // room schema export
         javaCompileOptions {
@@ -88,7 +99,7 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
@@ -100,16 +111,18 @@ android {
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
             props.load(FileInputStream(propsFile))
+            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
             buildConfigField("String", "serverUrl", props["productionServerUrl"] as String)
             buildConfigField("String", "serverKey", props["productionServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
         }
-        debug {
+        getByName("debug") {
             isDebuggable = true
 //            isMinifyEnabled = true
 //            isShrinkResources = true
 //            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             versionNameSuffix = "D"
+            applicationIdSuffix = ".dev"
 
             buildConfigField("boolean", "internalTesting", "true")
             buildConfigField("boolean", "forceLogToSystem", "true")
@@ -117,52 +130,40 @@ android {
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
             props.load(FileInputStream(propsFile))
+            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
             buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
             buildConfigField("String", "serverKey", props["devServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
 
             signingConfig = signingConfigs.getByName("testConfig")
         }
+        create("releaseTest") {
+            initWith(getByName("release"))
+            matchingFallbacks.add("release")
+            buildConfigField("boolean", "internalTesting", "true")
+            buildConfigField("boolean", "forceLogToSystem", "true")
+            isDebuggable = true
+            signingConfig = signingConfigs.getByName("testConfig")
+        }
     }
 
     flavorDimensions += "version"
-    flavorDimensions += "source"
     productFlavors {
         create("playStore") {
             dimension = "version"
             versionCode = 74
             versionName = "2.1.3"
-
-            val fcmConfigFile = rootProject.file("androidApp/src/playStore/res/values/fcm_config.xml")
-            if (!fcmConfigFile.exists()) {
-                throw FileNotFoundException("Missing Firebase config file")
-            }
+            buildConfigField("boolean", "hasGoogleMaps", "true")
+            buildConfigField("boolean", "hasNotificationSocketService", "false")
         }
         create("direct") {
             dimension = "version"
-            versionCode = 20
-            versionName = "0.8.3"
+            versionCode = 74
+            versionName = "2.1.3"
             versionNameSuffix = "-int"
             applicationIdSuffix = ".int"
-        }
-        create("dev") {
-            dimension = "version"
-            versionCode = 75
-            versionName = "2.1.4"
-            versionNameSuffix = "-dev"
-            applicationIdSuffix = ".dev"
-        }
-        create("oss") {
-            dimension = "source"
-            val propsFile = rootProject.file("user.properties")
-            if (propsFile.exists()) {
-                val props = Properties()
-                props.load(FileInputStream(propsFile))
-                buildConfigField("String", "mapboxAccessToken", props["MAPBOX_ACCESS_TOKEN"] as String)
-            }
-        }
-        create("google") {
-            dimension = "source"
+            buildConfigField("boolean", "hasGoogleMaps", "false")
+            buildConfigField("boolean", "hasNotificationSocketService", "true")
         }
     }
 
@@ -223,23 +224,8 @@ kotlin {
     }
 }
 
-repositories {
-    maven {
-        url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
-        authentication {
-            create<BasicAuthentication>("basic")
-        }
-        val props = Properties()
-        props.load(FileInputStream(rootProject.file("user.properties")))
-        credentials {
-            username = "mapbox"
-            password = props["MAPBOX_SECRET_TOKEN"] as String
-        }
-    }
-}
-
-val ossImplementation by configurations
-val googleImplementation by configurations
+val directImplementation by configurations
+val playStoreImplementation by configurations
 dependencies {
     implementation(project(path = ":shared"))
     testImplementation(libs.junit)
@@ -286,18 +272,17 @@ dependencies {
     // endregion
 
     // region utils
-    implementation(libs.play.services.location)
-    googleImplementation(libs.firebase.messaging.ktx)
-    googleImplementation(libs.play.review)
+    playStoreImplementation(libs.play.services.location)
+    playStoreImplementation(libs.firebase.messaging.ktx)
+    playStoreImplementation(libs.play.review)
 
-    googleImplementation(libs.revenuecat.android)
+    playStoreImplementation(libs.revenuecat.android)
 
-    ossImplementation(libs.osmdroid.android)
-    googleImplementation(libs.maps.compose)
-    googleImplementation(libs.maps.compose.utils)
-    googleImplementation(libs.maps.compose.widgets)
-    ossImplementation(libs.mapbox.android)
-    ossImplementation(libs.mapbox.sdk.turf)
+    playStoreImplementation(libs.maps.google.compose)
+    playStoreImplementation(libs.maps.google.compose.utils)
+    playStoreImplementation(libs.maps.google.compose.widgets)
+    implementation(libs.maps.maplibre.compose)
+    directImplementation(libs.unifiedPush.connector)
 
     implementation(project(path = ":lazysodium-android"))
     implementation(libs.jna) {
@@ -313,4 +298,16 @@ dependencies {
     implementation(libs.okhttp)
     debugImplementation(libs.logging.interceptor)
     // endregion
+}
+
+configurations.all {
+    val tink = "com.google.crypto.tink:tink-android:1.20.0"
+    // You can also use the library declaration catalog
+    // val tink = libs.google.tink
+    resolutionStrategy {
+        force(tink)
+        dependencySubstitution {
+            substitute(module("com.google.crypto.tink:tink")).using(module(tink))
+        }
+    }
 }

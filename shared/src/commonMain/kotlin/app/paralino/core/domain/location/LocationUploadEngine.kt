@@ -254,7 +254,7 @@ class LocationUploadEngine constructor(
                     )
                 } catch (e: Exception) {
                     if (e is DeviceSafetySignatureCorrupted) {
-                        logg.d(
+                        logg.i(
                             "location_service",
                             "Location device safety signature is corrupted, abort sharing"
                         )
@@ -279,7 +279,7 @@ class LocationUploadEngine constructor(
             }
 
             LocationPayloadStatus.MissingData -> {
-                logg.d(
+                logg.i(
                     "location_service",
                     "Location device can not be established for current device, abort sharing"
                 )

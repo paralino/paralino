@@ -1,8 +1,10 @@
 package app.paralino.core.repo.user
 
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.models.user.PushProviderEndpointConfig
 import app.paralino.core.domain.location.UserMemberIdUseCase
 import app.paralino.core.models.base.BackendDatabaseType
+import app.paralino.core.models.raw.PushProviderEndpointPayload
 import app.paralino.core.models.raw.UpdateUserDeviceFunctionData
 import app.paralino.core.models.raw.UserDeviceLocationRaw
 import app.paralino.core.models.raw.UserDeviceRaw
@@ -70,13 +72,32 @@ class UserDevicesRemoteSource constructor(
         }
     }
 
-    suspend fun updateDeviceData(pushToken: String, locationPushToken: String?) {
+    suspend fun updateDeviceData(
+        pushToken: String?,
+        locationPushToken: String?,
+        pushProvider: String,
+        pushProviderConfig: PushProviderEndpointConfig?,
+        updatePushProviderConfig: Boolean,
+    ): UserDeviceRaw? {
         val payload = UpdateUserDeviceFunctionData(
             sessionId = appPrefs.sessionId,
             deviceId = appPrefs.deviceId,
-            pushToken = pushToken,
             deviceType = userMemberIdUseCase.getCurrentDeviceType().key,
-            locationPushToken = locationPushToken
+            pushProvider = pushProvider,
+            pushToken = pushToken,
+            locationPushToken = locationPushToken,
+            updatePushProviderConfig = updatePushProviderConfig,
+            pushProviderConfig = pushProviderConfig?.let {
+                PushProviderEndpointPayload(
+                    distributor = it.distributor,
+                    url = it.url,
+                    id = it.id,
+                    createdAt = it.createdAt,
+                    pubkey = it.pubkey,
+                    auth = it.auth,
+                    isSocketConnection = it.isSocketConnection
+                )
+            }
         )
 
         val response = functionsApi.runAndWait(
@@ -84,7 +105,13 @@ class UserDevicesRemoteSource constructor(
             data = payload
         )
 
-        if (!response.isSuccess) {
+        if (response.isSuccess) {
+            return try {
+                response.responseDataMap?.parsePersonalDevice()
+            } catch (e: Exception) {
+                null
+            }
+        } else {
             throw response.remoteException
         }
     }

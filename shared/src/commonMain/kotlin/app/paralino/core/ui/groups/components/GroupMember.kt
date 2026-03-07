@@ -14,7 +14,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
@@ -29,6 +32,7 @@ import app.paralino.core.presentation.groups.MemberLocationVisibilityType
 import app.paralino.core.provider.NetworkSignalStrength
 import app.paralino.core.provider.NetworkType
 import app.paralino.core.utils.Emojis
+import app.paralino.core.utils.extensions.conditional
 
 @Composable
 fun GroupMember(
@@ -36,6 +40,7 @@ fun GroupMember(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.surface,
     shape: CornerBasedShape = RoundedCornerShape(12.dp),
+    shadow: Dp? = null,
     forceExpandAction: Boolean = false,
     collapseOnActionClick: Boolean = true,
     canShowOldLocation: Boolean = false,
@@ -45,6 +50,15 @@ fun GroupMember(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onEvent(GroupMemberItemEvent.onItemClick(state)) }
+            .conditional(shadow != null) {
+                dropShadow(
+                    shape = shape,
+                    shadow = Shadow(
+                        radius = shadow ?: 0.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
+            }
             .clip(shape)
             .background(backgroundColor)
             .animateContentSize(

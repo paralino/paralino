@@ -999,7 +999,6 @@ fun GroupMemberActionButton(
                 )
             }
         },
-        hasEndArrow = false,
         text = {
             AnimatedVisibility(visible = showText) {
                 Text(
@@ -1024,6 +1023,7 @@ fun GroupMemberActionButton(
                 )
             }
         },
+        endSection = null,
         onClick = onClick
     )
 }
@@ -1075,6 +1075,7 @@ private fun LocationRequestItem(
                 state.isLoading -> stringResource(MR.strings.group_member_device_requesting)
                 state.hasDeviceSetupWrongError -> stringResource(MR.strings.group_member_device_setup_invalid)
                 state.hasDeviceUnreachableError -> stringResource(MR.strings.group_member_device_unreachable)
+                state.hasDeviceMaybeUnreachableError -> stringResource(MR.strings.group_member_device_maybe_unreachable)
                 state.hasRequestError -> stringResource(MR.strings.group_member_device_request_failed)
                 state.isStatusRecent -> stringResource(MR.strings.group_members_item_refresh_location_button)
                 else -> stringResource(MR.strings.group_members_item_request_location_button)
@@ -1156,7 +1157,6 @@ val MemberActionType.actionIcon: Painter
         MemberActionType.DELETE_LOCATION -> CoreAppIcons.Delete.asPainterResource()
         MemberActionType.BLOCK_USER -> CoreAppIcons.Block.asPainterResource()
         MemberActionType.UNBLOCK_USER -> CoreAppIcons.LockOpen.asPainterResource()
-        MemberActionType.LOCATION_HISTORY -> CoreAppIcons.TimelinePathWithPins.asPainterResource()
     }
 
 val MemberActionType.actionText: StringResource
@@ -1165,5 +1165,4 @@ val MemberActionType.actionText: StringResource
         MemberActionType.DELETE_LOCATION -> MR.strings.group_members_item_clear_location_button
         MemberActionType.BLOCK_USER -> MR.strings.group_details_block_group_alert_button
         MemberActionType.UNBLOCK_USER -> MR.strings.blocklist_unblock_alert_button
-        MemberActionType.LOCATION_HISTORY -> MR.strings.group_members_item_history_button
     }

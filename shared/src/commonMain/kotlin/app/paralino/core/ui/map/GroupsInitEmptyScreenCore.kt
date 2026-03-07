@@ -89,7 +89,7 @@ fun GroupsInitEmptyScreenContent(
                     .padding(horizontal = 20.dp)
                     .height(LargeSwitchDefaults.minHeight)
                     .fillMaxWidth(1f),
-                icon = CoreAppIcons.Key.asPainterResource(),
+                icon = CoreAppIcons.AddLink.asPainterResource(),
                 title = stringResource(MR.strings.dashboard_groups_join_button),
                 titleStyle = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Normal),
                 description = null,

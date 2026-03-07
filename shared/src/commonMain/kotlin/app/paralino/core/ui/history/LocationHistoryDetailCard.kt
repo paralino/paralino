@@ -698,7 +698,6 @@ private fun UserDeviceChip(
         } else {
             null
         },
-        hasEndArrow = false,
         text = {
             Text(
                 text = name,
@@ -710,6 +709,7 @@ private fun UserDeviceChip(
                 modifier = Modifier
             )
         },
+        endSection = null,
         onClick = onClick
     )
 }

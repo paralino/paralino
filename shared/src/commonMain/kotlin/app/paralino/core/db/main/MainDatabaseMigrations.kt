@@ -128,6 +128,64 @@ object MainDatabaseMigrations {
         }
     }
 
+    private val MIGRATION_13_14 = object : Migration(13, 14) {
+        override fun migrate(connection: SQLiteConnection) {
+            // 1. Create temporary table
+            connection.execSQL("""
+                CREATE TABLE IF NOT EXISTS `userConfigEntity_new` (
+                    `id` TEXT NOT NULL PRIMARY KEY,
+                    `type` TEXT NOT NULL,
+                    `data` TEXT
+                )
+            """.trimIndent())
+
+            // 2. Copy data, setting id to the previous type
+            connection.execSQL("""
+                INSERT INTO `userConfigEntity_new` (id, type, data)
+                SELECT id, type, data FROM `userConfigEntity`
+            """.trimIndent())
+
+            // 3. Drop old table
+            connection.execSQL("DROP TABLE `userConfigEntity`")
+
+            // 4. Rename new table
+            connection.execSQL("ALTER TABLE `userConfigEntity_new` RENAME TO `userConfigEntity`")
+        }
+    }
+
+
+    private val MIGRATION_14_15 = object : Migration(14, 15) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN isUsingNotificationSockets INTEGER DEFAULT NULL")
+        }
+    }
+
+    private val MIGRATION_15_16 = object : Migration(15, 16) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE subscriptionPlanEntity ADD COLUMN updatedAt TEXT DEFAULT NULL")
+        }
+    }
+
+    private val MIGRATION_16_17 = object : Migration(16, 17) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE subscriptionPlanEntity ADD COLUMN cancelledAt TEXT DEFAULT NULL")
+        }
+    }
+
+    private val MIGRATION_17_18 = object : Migration(17, 18) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN unifiedPushConfig TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN pushProvider TEXT DEFAULT NULL")
+            connection.execSQL("ALTER TABLE userDeviceEntity DROP COLUMN isUsingNotificationSockets")
+        }
+    }
+
+    private val MIGRATION_18_19 = object : Migration(18, 19) {
+        override fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE userDeviceEntity DROP COLUMN unifiedPushConfig")
+            connection.execSQL("ALTER TABLE userDeviceEntity ADD COLUMN pushProviderConfig TEXT DEFAULT NULL")
+        }
+    }
 
     val migrations: List<Migration> = listOf(
         MIGRATION_1_2,
@@ -141,6 +199,12 @@ object MainDatabaseMigrations {
         MIGRATION_9_10,
         MIGRATION_10_11,
         MIGRATION_11_12,
-        MIGRATION_12_13
+        MIGRATION_12_13,
+        MIGRATION_13_14,
+        MIGRATION_14_15,
+        MIGRATION_15_16,
+        MIGRATION_16_17,
+        MIGRATION_17_18,
+        MIGRATION_18_19
     )
 }

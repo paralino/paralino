@@ -12,7 +12,6 @@ import app.paralino.android.ui.groups.GroupCreateScreen
 import app.paralino.android.ui.groups.GroupDetailScreen
 import app.paralino.android.ui.groups.GroupSettingsScreen
 import app.paralino.android.ui.history.LocationHistoryDeleteScreen
-import app.paralino.android.ui.history.LocationHistoryScreen
 import app.paralino.android.ui.invite.input.MemberInviteScreen
 import app.paralino.android.ui.invite.manage.PersonalCodeScreen
 import app.paralino.android.ui.login.LoggedOutScreen
@@ -41,6 +40,7 @@ import app.paralino.android.ui.settings.LicencesScreen
 import app.paralino.android.ui.settings.LocationSettingsScreen
 import app.paralino.android.ui.settings.RawDataScreen
 import app.paralino.android.ui.settings.SettingsScreen
+import app.paralino.android.ui.settings.billing.LicenceCodeScreen
 import app.paralino.android.ui.settings.billing.PaywallScreen
 import app.paralino.android.ui.settings.billing.SubscriptionScreen
 import app.paralino.android.ui.settings.profile.AccountScreen
@@ -53,9 +53,11 @@ import app.paralino.core.presentation.login.LoginScreenState
 import app.paralino.core.presentation.login.LoginScreenUiType
 import app.paralino.core.presentation.places.detail.PlaceSensitivityViewModel
 import app.paralino.core.presentation.rawdata.RawPresentationDataType
+import app.paralino.core.presentation.settings.generic.MapsProviderViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
 import app.paralino.core.presentation.settings.generic.PlaceSearchSettingsViewModel
+import app.paralino.android.presentation.settings.generic.NotificationSocketSettingsViewModel
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -187,18 +189,6 @@ fun NavGraphBuilder.homeGraph(
                 it.arguments?.getString(AppScreen.MainHome.FreePlanNoticeScreen.argumentGroupId)
             FreePlanInfoScreen(appState)
         }
-        composable(AppScreen.MainHome.LocationHistory.routeSignature) {
-            val groupId =
-                it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentGroupId)!!
-            val memberUserId = it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentMemberUserId)!!
-            val deviceId = it.arguments?.getString(AppScreen.MainHome.LocationHistory.argumentDeviceId)
-            LocationHistoryScreen(
-                appState = appState,
-                groupId = groupId,
-                memberUserId = memberUserId,
-                deviceId = deviceId
-            )
-        }
         composable(AppScreen.MainHome.LocationHistoryDelete.routeSignature) {
             val groupId =
                 it.arguments?.getString(AppScreen.MainHome.LocationHistoryDelete.argumentGroupId)!!
@@ -261,6 +251,9 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
         composable(AppScreen.Settings.Licences.routeSignature) {
             LicencesScreen(appState)
         }
+        composable(AppScreen.Settings.LicenceCode.routeSignature) {
+            LicenceCodeScreen(appState)
+        }
         composable(AppScreen.Settings.AppStatusDebug.routeSignature) {
             AppStatusDebugScreen(appState)
         }
@@ -311,6 +304,18 @@ fun NavGraphBuilder.settingsGraph(appState: MainAppState) {
             GenericSettingsScreen(
                 appState = appState,
                 vm = koinViewModel<PlaceSearchSettingsViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.NotificationSocket.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<NotificationSocketSettingsViewModel>()
+            )
+        }
+        composable(AppScreen.Settings.MapsProvider.routeSignature) {
+            GenericSettingsScreen(
+                appState = appState,
+                vm = koinViewModel<MapsProviderViewModel>()
             )
         }
     }

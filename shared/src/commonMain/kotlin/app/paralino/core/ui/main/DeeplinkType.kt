@@ -27,13 +27,26 @@ sealed class DeeplinkType() {
 
     data class PaywallScreen(
         override val deeplink: String,
-        val type: String?
+        val type: String?,
+        val action: String?
     ) : DeeplinkType() {
 
         companion object {
             const val argumentType: String = "type"
+            const val argumentAction: String = "action"
             fun buildUrl(): String {
                 return "https://$host/$pathBilling"
+            }
+        }
+    }
+
+    data class PushNotificationServiceScreen(
+        override val deeplink: String
+    ) : DeeplinkType() {
+
+        companion object {
+            fun buildUrl(): String {
+                return "https://$host/$pathPushNotificationService"
             }
         }
     }
@@ -86,6 +99,7 @@ sealed class DeeplinkType() {
         private const val pathEmailVerify = "verify"
         private const val pathParalinoID = "id"
         private const val pathBilling = "billing"
+        private const val pathPushNotificationService = "settings-pnss"
 
         private fun cleanDeepLink(deeplink: String?): Url? {
 
@@ -106,7 +120,8 @@ sealed class DeeplinkType() {
                 pathPasswordReset,
                 pathEmailVerify,
                 pathParalinoID,
-                pathBilling
+                pathBilling,
+                pathPushNotificationService
             ).any {
                 data.encodedPath.matches(it)
             }
@@ -187,7 +202,12 @@ sealed class DeeplinkType() {
 
                 path.matches(pathBilling) -> {
                     val type = cleanDeeplink.parameters.get(PaywallScreen.argumentType)
-                    DeeplinkType.PaywallScreen(deeplink = deeplink, type = type)
+                    val action = cleanDeeplink.parameters.get(PaywallScreen.argumentAction)
+                    DeeplinkType.PaywallScreen(deeplink = deeplink, type = type, action = action)
+                }
+
+                path.matches(pathPushNotificationService) -> {
+                    DeeplinkType.PushNotificationServiceScreen(deeplink = deeplink)
                 }
 
                 else -> null

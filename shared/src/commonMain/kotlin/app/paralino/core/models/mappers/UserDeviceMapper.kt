@@ -5,6 +5,7 @@ import app.paralino.core.crypto.user.CryptoUserKeysLocalSource
 import app.paralino.core.db.main.user.UserDeviceEntity
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.DeviceType
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.LocationDataModel
@@ -44,7 +45,9 @@ class UserDeviceMapper(
             deviceData = deviceRaw.device.deviceData,
             locationData = deviceRaw.location?.locationData,
             status = deviceRaw.location?.status,
-            locationHistory = deviceRaw.location?.locationHistory
+            locationHistory = deviceRaw.location?.locationHistory,
+            pushProviderConfig = deviceRaw.device.pushProviderConfig,
+            pushProvider = deviceRaw.device.pushProvider
         )
     }
 
@@ -64,6 +67,8 @@ class UserDeviceMapper(
                 userKeyVersion = entity.userKeyVersion,
                 batteryAlertSettings = entity.batteryAlertSettings,
                 deviceData = entity.deviceData,
+                pushProviderConfig = entity.pushProviderConfig,
+                pushProvider = entity.pushProvider,
             ),
             location = if (entity.locationId != null) {
                 UserDeviceLocationRaw(
@@ -131,7 +136,9 @@ class UserDeviceMapper(
                 } catch (e: Exception) {
                     null
                 }
-            }
+            },
+            pushProviderConfig = entity.pushProviderConfig,
+            pushProvider = PushProvider.fromKey(entity.pushProvider)
         )
     }
 

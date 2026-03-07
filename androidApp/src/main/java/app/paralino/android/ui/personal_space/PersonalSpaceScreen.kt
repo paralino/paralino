@@ -14,7 +14,6 @@ import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
-import app.paralino.core.presentation.rawdata.RawPresentationDataType
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.ToolbarButtons
 import app.paralino.core.ui.personal_space.PersonalSpaceScreenCore
@@ -58,13 +57,11 @@ fun PersonalSpaceScreen(
                 )
             },
             openTimeline = {
-                appState.navController.navigate(
-                    AppScreen.MainHome.LocationHistory.route(
-                        groupId = UserGroup.groupPersonalDevicesId,
-                        memberUserId = "",
-                        deviceId = null
-                    )
-                )
+                // TODO deeplink to history
+                appState.navController.navigate(AppScreen.MainHome.MainMap.route(UserGroup.groupPersonalDevicesId)) {
+                    popUpTo(AppScreen.MainHome.MainMap.routeSignature) { inclusive = true }
+                    this.launchSingleTop = true
+                }
             },
             openMap = {
                 appState.navController.navigate(AppScreen.MainHome.MainMap.route(UserGroup.groupPersonalDevicesId)) {

@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
+import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
@@ -283,6 +284,7 @@ object SettingsScreens {
     }
 
     fun AppSettingsScreenVC(
+        vm: AppSettingsViewModel,
         openMeasurementSystemScreen: () -> Unit,
         openNotificationGroupingScreen: () -> Unit,
         openNavigationAppScreen: () -> Unit,
@@ -290,12 +292,15 @@ object SettingsScreens {
     ) = ComposeUIViewController {
         RootScreenIOS {
             AppSettingsScreenCore(
+                vm = vm,
                 appState = it,
                 paddingValues = PaddingValues(),
                 onMeasurementSystemClick = openMeasurementSystemScreen,
                 onNotificationGroupingClick = openNotificationGroupingScreen,
                 onNavigationAppClick = openNavigationAppScreen,
-                onPlaceSearchSettingsClick = openPlaceSearchSettings
+                onPlaceSearchSettingsClick = openPlaceSearchSettings,
+                onMapSourceSettingsClick = {},
+                onNotificationSocketSettingsClick = {}
             )
         }
     }
@@ -309,7 +314,10 @@ object SettingsScreens {
                 coreUiState = it,
                 paddingValues = PaddingValues(),
                 vm = vm,
-                openPaywall = openPaywall
+                openPaywall = openPaywall,
+                // not available in iOS
+                openNotificationSocketChannelSettings = {},
+                askNotificationPermission = {},
             )
         }
     }

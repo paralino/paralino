@@ -28,9 +28,9 @@ class RemoteConfigRepository(
 
     private val cachedConfigState = MutableStateFlow<ConfigData?>(null)
 
-    fun getUpdateType(): Flow<AppUpdateType> {
+    fun listenForNewAppVersionEvents(): Flow<AppUpdateType> {
         return getConfigLocally()
-            .map { getUpdateType(it) }
+            .map { getNewAppVersionUpdateType(it) }
             .distinctUntilChanged()
     }
 
@@ -108,7 +108,11 @@ class RemoteConfigRepository(
         return newConfig
     }
 
-    private fun getUpdateType(configData: ConfigData): AppUpdateType {
+    fun getNewAppVersionUpdateType(): AppUpdateType {
+        return getNewAppVersionUpdateType(configData = getCachedConfigOnce())
+    }
+
+    private fun getNewAppVersionUpdateType(configData: ConfigData): AppUpdateType {
         val currentVersion = deviceApiProvider.appVersionCode
         val minVersion = when (deviceApiProvider.deviceType) {
             DeviceType.Android -> configData.minVersionAndroid
@@ -118,6 +122,10 @@ class RemoteConfigRepository(
             DeviceType.Android -> configData.minUiVersionAndroid
             DeviceType.iOS -> configData.minUiVersionIOS
         }
+        val minSoftVersion = when (deviceApiProvider.deviceType) {
+            DeviceType.Android -> configData.minSoftVersionAndroid
+            DeviceType.iOS -> configData.minSoftVersionIOS
+        }
         val newVersion = when (deviceApiProvider.deviceType) {
             DeviceType.Android -> configData.newVersionAndroid
             DeviceType.iOS -> configData.newVersionIOS
@@ -126,9 +134,11 @@ class RemoteConfigRepository(
         return when {
             currentVersion < minVersion -> AppUpdateType.FORCE_AND_CANCEL(configData)
             currentVersion < minUiVersion -> AppUpdateType.FORCE(configData)
-            currentVersion < newVersion && newVersion > appPrefs.dismissedAppVersion -> AppUpdateType.SOFT(
-                configData
-            )
+            currentVersion < minSoftVersion -> AppUpdateType.SOFT_CONSTANT(configData)
+            currentVersion < newVersion && newVersion > appPrefs.dismissedAppVersion -> {
+                AppUpdateType.SOFT(configData)
+            }
+            currentVersion < newVersion -> AppUpdateType.PASSIVE(configData)
 
             else -> AppUpdateType.NONE(configData)
         }
@@ -139,7 +149,9 @@ sealed interface AppUpdateType {
     val configData: ConfigData
 
     data class NONE(override val configData: ConfigData) : AppUpdateType
+    data class PASSIVE(override val configData: ConfigData) : AppUpdateType
     data class SOFT(override val configData: ConfigData) : AppUpdateType
+    data class SOFT_CONSTANT(override val configData: ConfigData) : AppUpdateType
     data class FORCE(override val configData: ConfigData) : AppUpdateType
     data class FORCE_AND_CANCEL(override val configData: ConfigData) : AppUpdateType
 
@@ -149,6 +161,11 @@ sealed interface AppUpdateType {
             is FORCE_AND_CANCEL -> true
 
             is NONE,
-            is SOFT -> false
+            is PASSIVE,
+            is SOFT,
+            is SOFT_CONSTANT -> false
         }
+
+    val isNewVersionAvailable: Boolean
+        get() = this !is NONE
 }

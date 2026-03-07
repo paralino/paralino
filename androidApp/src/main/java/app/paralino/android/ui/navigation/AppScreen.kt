@@ -89,8 +89,6 @@ sealed class AppScreen {
             }
         }
 
-        object LocationHistory : Common.LocationHistory("home")
-
         object SharingStart : AppScreen() {
             val argumentOnboarding: String = "onboarding"
             override val routeSignature: String = "home-share?$argumentGroupId={$argumentGroupId}&$argumentOnboarding={$argumentOnboarding}"
@@ -296,6 +294,10 @@ sealed class AppScreen {
             override val routeSignature: String = "licences"
         }
 
+        object LicenceCode : AppScreen() {
+            override val routeSignature: String = "licence-code"
+        }
+
         object AppStatusDebug : AppScreen() {
             override val routeSignature: String = "app-status"
         }
@@ -324,8 +326,16 @@ sealed class AppScreen {
             override val routeSignature: String = "settings-place-search"
         }
 
+        object NotificationSocket : AppScreen() {
+            override val routeSignature: String = "settings-notification-socket"
+        }
+
         object NotificationGrouping : AppScreen() {
             override val routeSignature: String = "settings-notification-grouping"
+        }
+
+        object MapsProvider : AppScreen() {
+            override val routeSignature: String = "settings-maps-provider"
         }
     }
 

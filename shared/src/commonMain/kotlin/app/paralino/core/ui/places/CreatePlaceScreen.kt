@@ -465,28 +465,30 @@ private fun CreatePlaceMapStep(
                 }
             }
 
-            Image(
-                painter = if (!state.isSatelliteMode) {
-                    MR.images.image_map_type_satellite.asPainterResource()
-                } else if (isSystemInDarkTheme()) {
-                    MR.images.image_map_type_default_dark.asPainterResource()
-                } else {
-                    MR.images.image_map_type_default_light.asPainterResource()
-                },
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(top = 16.dp, end = 16.dp, start = 16.dp)
-                    .size(40.dp)
-                    .clickable { onEvent(CreatePlaceScreenUiEvent.OnMapModeSwitch) }
-                    .background(
-                        color = AppColors.accentDark,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+            if (state.androidMapSDKProvider?.hasSatelliteMaps == true) {
+                Image(
+                    painter = if (!state.isSatelliteMode) {
+                        MR.images.image_map_type_satellite.asPainterResource()
+                    } else if (isSystemInDarkTheme()) {
+                        MR.images.image_map_type_default_dark.asPainterResource()
+                    } else {
+                        MR.images.image_map_type_default_light.asPainterResource()
+                    },
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(top = 16.dp, end = 16.dp, start = 16.dp)
+                        .size(40.dp)
+                        .clickable { onEvent(CreatePlaceScreenUiEvent.OnMapModeSwitch) }
+                        .background(
+                            color = AppColors.accentDark,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             PlaceAddressSearchComponent(
                 modifier = Modifier

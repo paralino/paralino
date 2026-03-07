@@ -58,7 +58,7 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Location service created"
         )
@@ -69,7 +69,7 @@ class LocationService : Service() {
 
         launchedInForeground = intent?.getBooleanExtra(startedInForeground, false) ?: false
 
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Location service starting - action: ${intent?.action} - launched in foreground: $launchedInForeground"
         )
@@ -129,7 +129,7 @@ class LocationService : Service() {
     }
 
     private fun initTracking() {
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Subscribe to location and sharing status"
         )
@@ -194,7 +194,7 @@ class LocationService : Service() {
     private fun startTracking() {
         updateNotification()
 
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Subscribing to location updates"
         )
@@ -204,7 +204,7 @@ class LocationService : Service() {
             .onEach {
                 when (val location = it.data) {
                     null -> {
-                        logg.v(
+                        logg.d(
                             tag = "location_service_${this.hashCode()}",
                             message = "Got null location"
                         )
@@ -249,7 +249,7 @@ class LocationService : Service() {
     }
 
     private fun stopAll() {
-        logg.v(
+        logg.d(
             tag = "location_service_${this.hashCode()}",
             message = "Stop all - location service"
         )
@@ -260,7 +260,7 @@ class LocationService : Service() {
     }
 
     override fun onDestroy() {
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "onDestroy - Killing location service"
         )

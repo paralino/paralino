@@ -132,6 +132,7 @@ class PlacesViewModel(
                     canShowPlanBanner
                 },
                 error = error,
+                androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                 alertDialog = _uiState.value.data?.alertDialog
             )
             state
@@ -181,6 +182,7 @@ class PlacesViewModel(
                     canShowPlanBanner
                 },
                 error = error,
+                androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                 alertDialog = _uiState.value.data?.alertDialog
             )
             state

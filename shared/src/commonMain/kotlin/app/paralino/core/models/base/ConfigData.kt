@@ -10,9 +10,11 @@ import kotlinx.serialization.Serializable
 data class ConfigData(
     val minVersionAndroid: Long = 0,
     val minUiVersionAndroid: Long = 0,
+    val minSoftVersionAndroid: Long = 0,
     val newVersionAndroid: Long = 0,
     val minVersionIOS: Long = 0,
     val minUiVersionIOS: Long = 0,
+    val minSoftVersionIOS: Long = 0,
     val newVersionIOS: Long = 0,
     val androidAppUrl: String? = null,
     val emailEnabled: Boolean = false,
@@ -28,9 +30,11 @@ data class ConfigData(
             return ConfigData(
                 minVersionAndroid = map.get("minVersionAndroid")?.toLongOrNull() ?: 0,
                 minUiVersionAndroid = map.get("minUiVersionAndroid")?.toLongOrNull() ?: 0,
+                minSoftVersionAndroid = map.get("minSoftVersionAndroid")?.toLongOrNull() ?: 0,
                 newVersionAndroid = map.get("newVersionAndroid")?.toLongOrNull() ?: 0,
                 minVersionIOS = map.get("minVersionIOS")?.toLongOrNull() ?: 0,
                 minUiVersionIOS = map.get("minUiVersionIOS")?.toLongOrNull() ?: 0,
+                minSoftVersionIOS = map.get("minSoftVersionIOS")?.toLongOrNull() ?: 0,
                 newVersionIOS = map.get("newVersionIOS")?.toLongOrNull() ?: 0,
                 androidAppUrl = map.get("androidAppUrl")?.takeIf { it.isNotBlank() },
                 emailEnabled = map.get("emailEnabled")?.toBooleanStrictOrNull() ?: false,

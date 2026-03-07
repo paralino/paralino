@@ -62,6 +62,7 @@ import app.paralino.core.domain.notifications.processors.PlaceCreatedNotificatio
 import app.paralino.core.domain.notifications.processors.PlaceDeletedNotificationProcessor
 import app.paralino.core.domain.notifications.processors.PlaceUpdatedNotificationProcessor
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.ChangeCredentialsUseCase
 import app.paralino.core.domain.user.ConvertAccountUseCase
 import app.paralino.core.domain.user.CreateAccountUseCase
@@ -69,6 +70,7 @@ import app.paralino.core.domain.user.DeactivatePersonalDeviceUseCase
 import app.paralino.core.domain.user.DeletePersonalDeviceUseCase
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.ExpiredSessionRecovery
+import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.domain.user.LoginUseCase
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PasswordConfirmationUseCase
@@ -79,6 +81,7 @@ import app.paralino.core.domain.user.RecoverAccountUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.ResetPasswordUseCase
 import app.paralino.core.domain.user.SessionRenewalHandler
+import app.paralino.core.domain.user.StartDirectCheckoutUseCase
 import app.paralino.core.domain.user.UpdateUserDataUseCase
 import app.paralino.core.domain.user.UserCryptoKeyRefreshUseCase
 import app.paralino.core.domain.user.UserSessionMonitor
@@ -105,6 +108,8 @@ import app.paralino.core.provider.ICrashReportingLogr
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.InAppLogger
 import app.paralino.core.provider.Logr
+import app.paralino.core.provider.NotificationSocketServiceManager
+import app.paralino.core.provider.RealtimeSubscriptionManager
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.base.AccessLogDataSource
 import app.paralino.core.repo.base.AppConfigRepository
@@ -259,6 +264,7 @@ val coreModule = module {
     single { CoreAppManager(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GeofenceRegistrationMonitor(get(), get(), get(), get(), get()) }
     single { ActiveSharingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { RealtimeSubscriptionManager(get(), get()) }
 
     factory { LoginUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { CreateAccountUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -275,15 +281,16 @@ val coreModule = module {
     factory { ClearUserLocationUseCase(get(), get(), get(), get(), get(), get()) }
     factory { RealtimeEventsMaker(get(), get()) }
     factory { UserMemberIdUseCase(get(), get(), get(), get()) }
-    factory { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { UpdateUserDataUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { RawCryptoPresentation(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { PlaceActivityUploadEngine(get(), get(), get(), get(), get(), get(), get()) }
     factory { GroupBatterySettingsUpdateUseCase(get(), get(), get()) }
     factory { PlaceAlertsSettingsUpdateUseCase(get(), get()) }
     factory { PersonalBatterySettingsUpdateUseCase(get(), get(), get()) }
+    single { NotificationSocketServiceManager(get(), get(), get()) }
 
     single { ExpiredSessionHandler(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RegisterDeviceForSharingUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { RealtimeEventsProcessor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GroupCryptoKeyRotation(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
@@ -315,11 +322,14 @@ val coreModule = module {
     single { RemoteConfigRepository(get(), get(), get(), get()) }
     single { UserConfigRepository(get(), get(), get(), get()) }
     single { AppConfigRepository(get(), get()) }
-    single { PremiumStatusManager(get(), get(), get(), get(), get(), get()) }
+    single { PremiumStatusManager(get(), get(), get(), get(), get(), get(), get()) }
+    single { StartDirectCheckoutUseCase(get()) }
+    single { GetDirectCheckoutWebPortalUseCase(get()) }
 
     single { GroupValidityVerification(get(), get(), get(), get()) }
     single { LocationSharingManager(get(), get()) }
     single { UserSessionMonitor() }
+    single { BillingRefreshMonitor() }
     single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }

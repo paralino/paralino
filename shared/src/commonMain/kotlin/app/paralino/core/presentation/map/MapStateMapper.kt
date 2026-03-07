@@ -2,6 +2,7 @@ package app.paralino.core.presentation.map
 
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
@@ -17,6 +18,7 @@ import app.paralino.core.models.user.UserMeData
 import app.paralino.core.presentation.groups.GroupMemberItemLocationState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.GroupMemberState
+import app.paralino.core.presentation.groups.LocationHistoryActionItemState
 import app.paralino.core.presentation.groups.LocationRequestItemState
 import app.paralino.core.presentation.groups.MemberActionItemState
 import app.paralino.core.presentation.groups.MemberActionType
@@ -32,6 +34,7 @@ import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.Emojis
 import app.paralino.core.utils.extensions.fromUTCtoInstant
 import app.paralino.core.utils.extensions.nowUTC
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class MapStateMapper(
@@ -40,8 +43,9 @@ class MapStateMapper(
     private val valueFormatter: IValueFormatter,
     private val remoteConfig: RemoteConfigRepository,
     private val memberActionHandler: MemberActionHandler,
-    private val locationRequestDuration: kotlin.time.Duration,
-    private val locationRequestDelay: kotlin.time.Duration
+    private val locationRequestDuration: Duration,
+    private val locationRequestDelay: Duration,
+    private val premiumStatusManager: PremiumStatusManager
 ) {
 
     suspend fun buildReadyState(
@@ -151,6 +155,7 @@ class MapStateMapper(
             is GroupWithMembersOrUserSpace.Group -> selectedGroupContract
             is GroupWithMembersOrUserSpace.PersonalSpace -> personalSharingContract
         }
+        val mapProvider = premiumStatusManager.defaultMapProvider()
 
         return MapHomeScreenState.Ready(
             groupOrSpaceId = groupOrSpace.id,
@@ -179,8 +184,9 @@ class MapStateMapper(
             },
             verified = isVerified,
             alertDialog = alertDialog,
-            isSatelliteMode = isSatelliteMode,
-            groupPlanConfig = planConfig
+            isSatelliteMode = isSatelliteMode.takeIf { mapProvider.hasSatelliteMaps } ?: false,
+            groupPlanConfig = planConfig,
+            androidMapSDKProvider = mapProvider
         )
     }
 
@@ -228,9 +234,8 @@ class MapStateMapper(
                     GroupMemberItemStateWithOneLocation(
                         memberState = memberState,
                         actions = MemberActionsState(
-                            history = MemberActionItemState(
-                                type = MemberActionType.LOCATION_HISTORY,
-                                isLoading = false,
+                            history = LocationHistoryActionItemState(
+                                isLoading = false
                             )
                         ),
                         singleLocation = null,
@@ -407,9 +412,8 @@ class MapStateMapper(
             )
         }
 
-        val history = MemberActionItemState(
-            type = MemberActionType.LOCATION_HISTORY,
-            isLoading = false,
+        val history = LocationHistoryActionItemState(
+            isLoading = false
         )
 
         val locationRequest = location?.let { location ->

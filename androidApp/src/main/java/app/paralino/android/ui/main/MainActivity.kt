@@ -32,6 +32,7 @@ import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.core.MR
 import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
+import app.paralino.core.logg
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.presentation.main.MainViewModel
@@ -186,8 +187,13 @@ fun RootApp(
                 }
 
                 when (uiState.updateType) {
-                    null, is AppUpdateType.NONE -> null
-                    is AppUpdateType.SOFT -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
+                    null,
+                    is AppUpdateType.NONE,
+                    is AppUpdateType.PASSIVE -> null
+
+                    is AppUpdateType.SOFT,
+                    is AppUpdateType.SOFT_CONSTANT, -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
+
                     is AppUpdateType.FORCE,
                     is AppUpdateType.FORCE_AND_CANCEL -> MainAlertDialog.AppVersionInfo(forceUpdate = true)
                 }?.Show {
@@ -205,7 +211,10 @@ fun RootApp(
         when (val finalState = uiState.appUpdateStatus) {
             AppUpdateStatus.Idle -> {}
             is AppUpdateStatus.Downloading -> {
-                LoadingDialog(text = "Downloading...", progress = finalState.progress)
+                LoadingDialog(
+                    text = listOfNotNull("Downloading...", finalState.mb).joinToString(separator = "\n"),
+                    progress = finalState.progress
+                )
             }
 
             AppUpdateStatus.Installing -> {
@@ -286,11 +295,19 @@ fun MainAppScreen(
             }
 
             is DeeplinkType.PaywallScreen -> {
+                logg.w("billing", "Open billing deeplink -> type: ${pendingDeeplink.type} - action: ${pendingDeeplink.action}")
                 appState.navController.navigate(
                     AppScreen.MainHome.BillingPaywall.route(
                         groupId = null,
                         type = BillingScreenSourceType.NORMAL
                     )
+                )
+                onDeeplinkComplete()
+            }
+
+            is DeeplinkType.PushNotificationServiceScreen -> {
+                appState.navController.navigate(
+                    AppScreen.Settings.NotificationSocket.routeSignature
                 )
                 onDeeplinkComplete()
             }

@@ -1,10 +1,12 @@
 package app.paralino.core.ui.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,9 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenEvent
-import app.paralino.core.presentation.settings.generic.GenericSettingsScreenState
+import app.paralino.core.presentation.settings.generic.GenericSettingsScreenStateContent
 import app.paralino.core.presentation.settings.generic.GenericSettingsScreenUiEvent
 import app.paralino.core.ui.CoreUiState
+import app.paralino.core.ui.components.AppButtonState
+import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
+import app.paralino.core.ui.components.DefaultEmptyState
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
@@ -27,7 +32,9 @@ fun GenericSettingsScreenCore(
     coreUiState: CoreUiState,
     vm: BaseGenericSettingViewModel,
     paddingValues: PaddingValues,
-    openPaywall: () -> Unit
+    openPaywall: () -> Unit,
+    openNotificationSocketChannelSettings: () -> Unit,
+    askNotificationPermission: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
@@ -36,6 +43,8 @@ fun GenericSettingsScreenCore(
         vm.events.collectLatest { event ->
             when (event) {
                 GenericSettingsScreenEvent.OpenPaywall -> openPaywall()
+                GenericSettingsScreenEvent.OpenNotificationSocketChannelSettings -> openNotificationSocketChannelSettings()
+                GenericSettingsScreenEvent.AskForNotificationPermission -> askNotificationPermission()
                 null -> {
                     /* do nothing */
                 }
@@ -56,26 +65,51 @@ fun GenericSettingsScreenCore(
         }
     }
 
-    when (val finalState = uiState) {
-        is GenericSettingsScreenState.Loading -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
-            }
+    AnimatedVisibility(
+        modifier = Modifier.fillMaxSize(),
+        visible = uiState.content is GenericSettingsScreenStateContent.Loading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator()
         }
-        is GenericSettingsScreenState.EditScreen -> {}
-        is GenericSettingsScreenState.ListItems -> {
-            GenericSettingsListScreen(
-                coreUiState = coreUiState,
-                paddingValues = paddingValues,
-                state = finalState,
-                onEvent = { vm.onEvent(it) }
-            )
+    }
+
+    AnimatedVisibility(
+        modifier = Modifier.fillMaxSize(),
+        visible = uiState.content !is GenericSettingsScreenStateContent.Loading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        when (val finalState = uiState.content) {
+            is GenericSettingsScreenStateContent.Loading -> {}
+            is GenericSettingsScreenStateContent.EditScreen -> {}
+
+            is GenericSettingsScreenStateContent.EmptyState -> {
+                DefaultEmptyState(
+                    modifier = Modifier,
+                    icon = finalState.icon.asPainterResource(),
+                    content = finalState.content,
+                    buttonText = finalState.buttonText,
+                    buttonState = AppButtonState.loadingStateWithCheck(finalState.buttonLoading),
+                    onClick = { vm.onEvent(GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick) }
+                )
+            }
+
+            is GenericSettingsScreenStateContent.ListItems -> {
+                GenericSettingsListScreen(
+                    coreUiState = coreUiState,
+                    paddingValues = paddingValues,
+                    state = finalState,
+                    onEvent = { vm.onEvent(it) }
+                )
+            }
         }
     }
 }

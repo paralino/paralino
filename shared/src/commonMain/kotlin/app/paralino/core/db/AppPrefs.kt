@@ -1,8 +1,11 @@
 package app.paralino.core.db
 
+import app.paralino.core.models.base.PushProvider
+import app.paralino.core.models.base.ParalinoSocketConnectionType
 import app.paralino.core.models.places.GroupPlaceSensitivityData
 import app.paralino.core.presentation.common.FormValidation
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.presentation.settings.generic.NotificationGroupingType
 import app.paralino.core.provider.MeasurementSystemType
 import app.paralino.core.utils.BaseRemoteModule
@@ -107,7 +110,19 @@ class AppPrefs(
         const val keyDevModeEnabled = "prefs.device.devModeOverride"
         const val keyAppTappedOnReview = "prefs.device.appReviewOpened"
         const val keyPlaceSearchLocation = "prefs.device.pleaseSearchLocation"
+        const val keyMapTilerToken = "prefs.device.mapsTilerToken"
+        const val keyMapSDKProviderLocation = "prefs.device.mapsSDK"
+        const val keyMapSDKProviderLightStyle = "prefs.device.mapsSDK.lightStyle"
+        const val keyMapSDKProviderDarkStyle = "prefs.device.mapsSDK.darkStyle"
+        const val keyDeviceWasEverSynced = "prefs.device.isSynced"
+        const val keySelectedUnifiedPushDistributor = "prefs.device.unifiedPushDistributor"
+        const val keyParalinoSocketConnectionType = "prefs.device.paralinoSocketConnectionType"
+        const val keySelectedPushProvider = "prefs.device.pushProvider"
+        const val keyUnifiedPushEndpointConfigUnsynced = "prefs.device.unifiedPushEndpointConfig.unsynced"
+        const val keyUnifiedPushEndpointConfigSynced = "prefs.device.unifiedPushEndpointConfig.synced"
     }
+
+
 
     val isTokenValid: Boolean
         get() = sessionId.isNotBlank()
@@ -226,6 +241,12 @@ class AppPrefs(
             provider.userSettings.putString(keyAppSessionKey, value)
         }
 
+    var wasDeviceEverSynced: Boolean
+        get() = provider.userSettings.getBoolean(keyDeviceWasEverSynced, false)
+        set(value) {
+            provider.userSettings.putBoolean(keyDeviceWasEverSynced, value)
+        }
+
     var pushTokenUnsynced: String
         get() = provider.userSettings.getString(keyPushTokenUnsynced, "")
         set(value) {
@@ -248,6 +269,50 @@ class AppPrefs(
         get() = provider.userSettings.getString(keyLocationPushTokenSynced, "")
         set(value) {
             provider.userSettings.putString(keyLocationPushTokenSynced, value)
+        }
+
+    var selectedUnifiedPushDistributor: String?
+        get() = provider.userSettings.getStringOrNull(keySelectedUnifiedPushDistributor)
+        set(value) {
+            provider.userSettings.set(keySelectedUnifiedPushDistributor, value)
+        }
+
+    var unifiedPushEndpointConfigUnsynced: String?
+        get() = provider.userSettings.getStringOrNull(keyUnifiedPushEndpointConfigUnsynced)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyUnifiedPushEndpointConfigUnsynced)
+            } else {
+                provider.userSettings.putString(keyUnifiedPushEndpointConfigUnsynced, value)
+            }
+        }
+
+    var unifiedPushEndpointConfigSynced: String?
+        get() = provider.userSettings.getStringOrNull(keyUnifiedPushEndpointConfigSynced)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyUnifiedPushEndpointConfigSynced)
+            } else {
+                provider.userSettings.putString(keyUnifiedPushEndpointConfigSynced, value)
+            }
+        }
+
+    var notificationPushProvider: PushProvider?
+        get() = provider.userSettings.getStringOrNull(keySelectedPushProvider)?.let {
+            PushProvider.fromKey(key = it)
+        }
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keySelectedPushProvider)
+            } else {
+                provider.userSettings.putString(keySelectedPushProvider, value.key)
+            }
+        }
+
+    var paralinoSocketConnectionType: ParalinoSocketConnectionType
+        get() = provider.userSettings.getStringOrNull(keyParalinoSocketConnectionType).let { ParalinoSocketConnectionType.fromKey(it) }
+        set(value) {
+            provider.userSettings.putString(keyParalinoSocketConnectionType, value.key)
         }
 
     var selectedGroupId: String?
@@ -508,6 +573,62 @@ class AppPrefs(
             provider.userSettings.putBoolean(keyPlaceSearchLocation, value)
         }
 
+    fun getAndroidMapSDKProviderOrDefault(
+        hasGoogleMaps: Boolean,
+        isPremiumPlan: Boolean,
+        mapTilerToken: String?
+    ): MapsSDKProvider {
+        val settingKey = provider.userSettings.getString(keyMapSDKProviderLocation, "")
+        val lightStyleKey = provider.userSettings.getString(keyMapSDKProviderLightStyle, "")
+        val darkStyleKey = provider.userSettings.getString(keyMapSDKProviderDarkStyle, "")
+
+        val lightStyle = MapsSDKProvider.MapStyle.fromKey(lightStyleKey)
+        val darkStyle = MapsSDKProvider.MapStyle.fromKey(darkStyleKey)
+
+        val setting = MapsSDKProvider.fromKey(
+            key = settingKey,
+            mapTilerToken = mapTilerToken ?: "",
+            lightStyle = lightStyle,
+            darkStyle = darkStyle
+        )
+        val default = if (hasGoogleMaps) {
+            MapsSDKProvider.GOOGLE
+        } else if (isPremiumPlan && !mapTilerToken.isNullOrBlank()) {
+            MapsSDKProvider.MAPLIBRE_PREMIUM(mapTilerToken = mapTilerToken)
+        } else {
+            MapsSDKProvider.MAPLIBRE_FREE
+        }
+
+        return if (!isPremiumPlan && setting.isPremium) {
+            MapsSDKProvider.MAPLIBRE_FREE
+        } else if (setting is MapsSDKProvider.MAPLIBRE_PREMIUM && mapTilerToken.isNullOrBlank()) {
+            MapsSDKProvider.MAPLIBRE_FREE
+        } else if (!hasGoogleMaps && setting == MapsSDKProvider.GOOGLE) {
+            default
+        } else {
+            setting
+        }
+    }
+
+    fun setAndroidMapSDKProvider(maps: MapsSDKProvider) {
+        provider.userSettings.putString(keyMapSDKProviderLocation, maps.key)
+        if (maps is MapsSDKProvider.MAPLIBRE_PREMIUM) {
+            provider.userSettings.putString(keyMapSDKProviderLightStyle, maps.lightStyle.key)
+            provider.userSettings.putString(keyMapSDKProviderDarkStyle, maps.darkStyle.key)
+        }
+    }
+
+    var mapTilerToken: String?
+        get() = provider.userSettings.getStringOrNull(keyMapTilerToken)
+        set(value) {
+            if (value == null) {
+                provider.userSettings.remove(keyMapTilerToken)
+            } else {
+                provider.userSettings.putString(keyMapTilerToken, value)
+            }
+        }
+
+
 
     fun hasGuestAccount(): Boolean {
         return hasV1GuestAccount() || hasV2GuestAccount()
@@ -542,6 +663,8 @@ class AppPrefs(
         pushTokenUnsynced = ""
         locationPushTokenSynced = ""
         locationPushTokenUnsynced = ""
+        unifiedPushEndpointConfigUnsynced = null
+        unifiedPushEndpointConfigSynced = null
     }
 
     fun clear() {

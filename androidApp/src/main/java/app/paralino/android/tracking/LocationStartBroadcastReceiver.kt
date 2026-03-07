@@ -3,6 +3,7 @@ package app.paralino.android.tracking
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import app.paralino.android.notification.NotificationSocketServiceLauncher
 import app.paralino.core.logg
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -29,8 +30,10 @@ class LocationStartBroadcastReceiver: BroadcastReceiver() {
 
 class BootReceiverComponent() : KoinComponent {
     private val locationServiceLauncher: LocationServiceLauncher by inject()
+    private val notificationServiceLauncher: NotificationSocketServiceLauncher by inject()
 
     fun launchService(action: String?) {
         locationServiceLauncher.startLocationService(action = action)
+        notificationServiceLauncher.startNotificationService(action = action)
     }
 }

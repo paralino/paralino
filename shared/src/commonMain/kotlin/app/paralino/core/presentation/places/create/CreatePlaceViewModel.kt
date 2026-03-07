@@ -103,6 +103,7 @@ class CreatePlaceViewModel(
                                 meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble(),
                                 distanceType = DistanceType.DISTANCE
                             ),
+                            androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                             nameSuggestions = getNameSuggestions()
                         )
                     )
@@ -131,8 +132,9 @@ class CreatePlaceViewModel(
                             ),
                             actionLoading = false,
                             fullLoading = false,
+                            isSatelliteMode = false,
+                            androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                             alertDialog = null,
-                            isSatelliteMode = false
                         )
                     }
                 }

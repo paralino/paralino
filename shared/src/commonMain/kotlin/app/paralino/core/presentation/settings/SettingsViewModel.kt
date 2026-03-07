@@ -3,6 +3,7 @@ package app.paralino.core.presentation.settings
 import app.paralino.core.MR
 import app.paralino.core.app_rating.AppRatingManager
 import app.paralino.core.app_rating.AppRatingSource
+import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
@@ -20,6 +21,7 @@ import app.paralino.core.models.user.UserMe
 import app.paralino.core.models.user.UserPersonalCode
 import app.paralino.core.models.user.UserPlans
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.DeviceStatusData
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.IValueFormatter
 import app.paralino.core.provider.localizedString
@@ -60,13 +62,14 @@ class SettingsViewModel(
     private val userRepo: UserRepository,
     private val remoteConfigRepository: RemoteConfigRepository,
     private val personalCodeRepo: PersonalCodesRepository,
-    private val deviceApiProvider: IDeviceApiProvider,
+    val deviceApiProvider: IDeviceApiProvider,
     private val locationPerformanceManager: LocationPerformanceManager,
     private val premiumStatusManager: PremiumStatusManager,
     private val valueFormatter: IValueFormatter,
     private val appPrefs: AppPrefs,
     private val appConfig: AppConfigRepository,
-    private val appRatingManager: AppRatingManager
+    private val appRatingManager: AppRatingManager,
+    private val appUpdateManager: IAppUpdateManager,
 ) : CoreViewModel() {
 
     private val _accountState = MutableStateFlow<Payload<AccountScreenState>>(
@@ -75,7 +78,8 @@ class SettingsViewModel(
             remoteConfig = remoteConfigRepository.getCachedConfigOnce(),
             personalCode = personalCodeRepo.activePersonalCodeState.value,
             userPlans = userRepo.userPlans.value,
-            previousState = null
+            deviceStatus = deviceApiProvider.currentDeviceStatus(),
+            previousState = null,
         )
     )
     val accountState: StateFlow<Payload<AccountScreenState>> = _accountState
@@ -104,13 +108,15 @@ class SettingsViewModel(
             userRepo.localUser,
             remoteConfigRepository.getConfigLocally(),
             personalCodeRepo.activePersonalCodeState,
-            userRepo.userPlans
-        ) { userState, appConfig, personalCode, userPlans ->
+            userRepo.userPlans,
+            deviceApiProvider.deviceStatus
+        ) { userState, appConfig, personalCode, userPlans, deviceStatus ->
             mapUserState(
                 userState = userState,
                 remoteConfig = appConfig,
                 personalCode = personalCode,
                 userPlans = userPlans,
+                deviceStatus = deviceStatus,
                 previousState = _accountState.value.data
             )
         }.onEach { value ->
@@ -126,7 +132,8 @@ class SettingsViewModel(
         remoteConfig: ConfigData?,
         personalCode: UserPersonalCode?,
         userPlans: UserPlans,
-        previousState: AccountScreenState?
+        deviceStatus: DeviceStatusData,
+        previousState: AccountScreenState?,
     ): Payload<AccountScreenState> {
         return when (userState) {
             Resource.NotInitialized -> Payload.Loading
@@ -139,10 +146,7 @@ class SettingsViewModel(
                                 image = userState.data.data?.userImage,
                                 email = userState.data.email,
                                 personalCode = personalCode?.formattedCode,
-                                isGuestUser = userState.data.isGuestUser,
-                                errorItem = if (userState.data.canVerifyEmail)
-                                    ConditionErrorType.EmailVerification(userState.data.email)
-                                else null
+                                isGuestUser = userState.data.isGuestUser
                             ),
                             canUseEmail = remoteConfig?.isEmailEnabled ?: false,
                             logoutState = null,
@@ -157,7 +161,20 @@ class SettingsViewModel(
                                 DeviceType.iOS -> BackendResourceIDs.storeUrlDeeplinkAppleAppStoreReview
                             },
                             isAppReviewExpanded = previousState?.isAppReviewExpanded ?: false,
-                            isAppReviewVisible = !appPrefs.wasAppReviewOpened
+                            isAppReviewVisible = !appPrefs.wasAppReviewOpened,
+                            errors = buildList {
+                                if (userState.data.canVerifyEmail) {
+                                    add(ConditionErrorType.EmailVerification(userState.data.email))
+                                }
+
+                                if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
+                                    add(ConditionErrorType.PermissionNotifications)
+                                }
+
+                                if (remoteConfigRepository.getNewAppVersionUpdateType().isNewVersionAvailable) {
+                                    add(ConditionErrorType.NewAppUpdate)
+                                }
+                            }
                         )
                     )
                 } else {
@@ -326,6 +343,10 @@ class SettingsViewModel(
                         it.copy(isAppReviewVisible = false)
                     }
                 }
+            }
+
+            AccountScreenUiEvent.TriggerAppUpdate -> {
+                appUpdateManager.startUpdateProcess(data = remoteConfigRepository.getCachedConfigOnce())
             }
         }
     }

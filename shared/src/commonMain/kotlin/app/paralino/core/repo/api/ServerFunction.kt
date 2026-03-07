@@ -60,6 +60,7 @@ enum class ServerFunction constructor(
 
     BILLING_ID_UPDATE(method = "POST", path = "/user/create_billing_profile"),
     BILLING_REDEEM_CODE(method = "POST", path = "/redeem_code"),
+    USER_CONFIG(method = "GET", path = "/user/config"),
 
     EVENT_PLACES(method = "POST", path = "/events/places", functionId = "ping"),
     EVENT_BATTERY_GROUP(method = "POST", path = "/events/battery/group", functionId = "ping"),
@@ -70,12 +71,15 @@ enum class ServerFunction constructor(
     PERSONAL_CODE_UPDATE(method = "PATCH", path = "/personal_code"),
     PERSONAL_CODE_DELETE(method = "DELETE", path = "/personal_code"),
 
-    USER_DEVICE_UPDATE(method = "PUT", path = "/user/devices"),
+    USER_DEVICE_UPDATE(method = "PUT", path = "/v2/user/devices"),
     USER_DEVICE_DELETE(method = "DELETE", path = "/user/devices"),
 
     ACCOUNT_DELETE(method = "DELETE", path = "/user"),
     ACCOUNT_RESET(method = "POST", path = "/user/reset"),
     ACCOUNT_CHANGE_EMAIL(method = "PATCH", path = "/user/email"),
+
+    CREATE_WEB_CHECKOUT_SESSION(method = "POST", path = "/billing/web_checkout"),
+    WEB_CHECKOUT_PORTAL_GET(method = "GET", path = "/billing/web_portal"),
 
     CONFIG(method = "GET", path = "/config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),
     BILLING_CONFIG(method = "GET", path = "/billing-config", functionId = AppBuildConfig.instance.publicServerUrl, useSdk = false),

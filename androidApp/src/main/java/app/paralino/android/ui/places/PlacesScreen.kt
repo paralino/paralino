@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
-import app.paralino.android.ui.map.SimplePlaceMapComposable
+import app.paralino.android.ui.map.MapPlaceComposable
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.core.MR
 import app.paralino.core.models.base.ImageModel
@@ -100,7 +100,8 @@ fun PlacesScreen(
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             },
             mapContent = { state ->
-                SimplePlaceMapComposable(
+                MapPlaceComposable(
+                    mapsSDKProvider = state.androidMapSDKProvider,
                     markers = state.markers,
                     fallbackCenterLatLng = null,
                     isSatelliteMode = false,

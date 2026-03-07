@@ -10,6 +10,7 @@ import app.paralino.android.utils.extensions.copy
 import app.paralino.android.utils.extensions.isBatteryCharging
 import app.paralino.android.utils.extensions.isLowPowerMode
 import app.paralino.core.logg
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.provider.IConnectionStatusProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
@@ -48,6 +49,9 @@ class DeviceApiProvider constructor(
 
     override val packageName: String
         get() = BuildConfig.APPLICATION_ID
+
+    override val appFlavor: AppFlavor
+        get() = appConfig.appFlavor
 
     override fun createSystemLogr(): SystemLogr {
         return DebugLogr(enabled = appConfig.logToConsole, tagPrefix = "Paralino")

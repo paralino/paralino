@@ -5,9 +5,11 @@ import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.logg
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.provider.localizedString
@@ -41,7 +43,8 @@ class MainViewModel constructor(
     private val expiredSessionHandler: ExpiredSessionHandler,
     private val appUpdateManager: IAppUpdateManager,
     private val premiumStatusManager: PremiumStatusManager,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val billingRefreshMonitor: BillingRefreshMonitor
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(MainActivityState())
@@ -68,7 +71,7 @@ class MainViewModel constructor(
             }
             .launchIn(coroutineScope)
 
-        remoteConfigRepository.getUpdateType()
+        remoteConfigRepository.listenForNewAppVersionEvents()
             .onEach { updateType -> _uiState.update { it.copy(updateType = updateType) } }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
@@ -146,6 +149,15 @@ class MainViewModel constructor(
             }
 
             is DeeplinkType.PaywallScreen -> {
+                if (deeplinkType.action == "refresh") {
+                    billingRefreshMonitor.triggerRefresh()
+                } else {
+                    logg.w("billing", "Set billing deeplink")
+                    _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+                }
+            }
+
+            is DeeplinkType.PushNotificationServiceScreen -> {
                 _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
             }
 
@@ -163,6 +175,8 @@ class MainViewModel constructor(
         when (uiState.value.updateType) {
             is AppUpdateType.FORCE,
             is AppUpdateType.FORCE_AND_CANCEL,
+            is AppUpdateType.PASSIVE,
+            is AppUpdateType.SOFT_CONSTANT,
             is AppUpdateType.SOFT -> {
                 uiState.value.updateType?.configData?.let {
                     appUpdateManager.startUpdateProcess(it)

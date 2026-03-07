@@ -27,7 +27,7 @@ data class FunctionExecutionRaw constructor(
     val errorResponse: FunctionErrorBody?
         get() {
             return try {
-                BaseRemoteModule.formatter.decodeFromString(response)
+                BaseRemoteModule.formatter.decodeFromString<FunctionResponse<FunctionErrorBody>>(response).data
             } catch (e: Exception) {
                 null
             }

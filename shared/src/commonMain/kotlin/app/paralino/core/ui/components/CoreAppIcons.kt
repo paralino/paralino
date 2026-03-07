@@ -36,6 +36,7 @@ import paralino.shared.generated.resources.ic_delete
 import paralino.shared.generated.resources.ic_delete_forever
 import paralino.shared.generated.resources.ic_devices
 import paralino.shared.generated.resources.ic_directions
+import paralino.shared.generated.resources.ic_download_arrow
 import paralino.shared.generated.resources.ic_drag_indicator
 import paralino.shared.generated.resources.ic_edit
 import paralino.shared.generated.resources.ic_elevation_2
@@ -55,6 +56,8 @@ import paralino.shared.generated.resources.ic_info_circle
 import paralino.shared.generated.resources.ic_key
 import paralino.shared.generated.resources.ic_launcher_foreground
 import paralino.shared.generated.resources.ic_library_books
+import paralino.shared.generated.resources.ic_license_tag
+import paralino.shared.generated.resources.ic_license_ticket
 import paralino.shared.generated.resources.ic_location_off
 import paralino.shared.generated.resources.ic_location_on
 import paralino.shared.generated.resources.ic_location_on_filled
@@ -194,6 +197,7 @@ object CoreAppIcons {
     val ChatBubbleList get() = Res.drawable.ic_chat_bubble_list
     val AssignmentList get() = Res.drawable.ic_assignment_list
     val Search get() = Res.drawable.ic_search
+    val DownloadArrow get() = Res.drawable.ic_download_arrow
 
     val Refresh get() = Res.drawable.ic_refresh
     val Replay get() = Res.drawable.ic_replay
@@ -204,6 +208,8 @@ object CoreAppIcons {
     val Star get() = Res.drawable.ic_star
     val StarCircle get() = Res.drawable.ic_star_circle_filled
     val StarShine get() = Res.drawable.ic_star_shine
+    val LicenseTag get() = Res.drawable.ic_license_tag
+    val LicenseTicket get() = Res.drawable.ic_license_ticket
 
     val NotListedLocation get() = Res.drawable.ic_not_listed_location
     val NotListedLocationFilled get() = Res.drawable.ic_not_listed_location_filled

@@ -8,6 +8,5 @@ import androidx.room.PrimaryKey
 data class UserConfigEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "type") val type: String,
-    @ColumnInfo(name = "ownerUserId") val ownerUserId: String,
     @ColumnInfo(name = "data") val data: String?
 )

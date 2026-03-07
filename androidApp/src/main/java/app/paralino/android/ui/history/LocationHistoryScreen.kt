@@ -3,27 +3,14 @@ package app.paralino.android.ui.history
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
@@ -34,12 +21,9 @@ import app.paralino.core.presentation.history.LocationHistoryScreenUiState
 import app.paralino.core.presentation.history.LocationHistorySelectedDayPosition
 import app.paralino.core.presentation.history.LocationHistoryStats
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.presentation.history.LocationHistoryViewModel
-import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryDateSelector
-import app.paralino.core.ui.history.LocationHistoryScreenElements
 import app.paralino.core.ui.history.LocationHistoryStatsTable
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import app.paralino.core.ui.theme.AppTheme
@@ -47,70 +31,7 @@ import app.paralino.core.utils.extensions.openNavigation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
-@Composable
-fun LocationHistoryScreen(
-    appState: MainAppState,
-    groupId: String,
-    memberUserId: String,
-    deviceId: String?,
-    vm: LocationHistoryViewModel = koinViewModel { parametersOf(groupId, memberUserId, deviceId) },
-) {
-    MessageDispatcherEffect(vm, appState)
-
-    val uiState by vm.uiState.collectAsState()
-
-    LocationHistoryScreenEventHandler(
-        appState = appState,
-        uiState = uiState,
-        events = vm.events,
-        onDialogEvent = {
-            vm.onEvent(it)
-        },
-        onCloseHistory = {
-            appState.navController.popBackStack()
-        }
-    )
-
-    MapContent(
-        uiState = uiState,
-        onEvent = { vm.onEvent(it) }
-    )
-}
-
-@Composable
-private fun MapContent(
-    uiState: LocationHistoryScreenUiState,
-    onEvent: (LocationHistoryUiEvent) -> Unit
-) {
-    var cardHeight by remember { mutableStateOf(0.dp) }
-
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        LocationHistoryMapWithContent(
-            uiState = uiState,
-            onEvent = onEvent,
-            mapContentPadding = PaddingValues(
-                top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 64.dp,
-                bottom = (cardHeight + WindowInsets.navigationBars.asPaddingValues()
-                    .calculateBottomPadding()).coerceIn(
-                    minimumValue = WindowInsets.navigationBars.asPaddingValues()
-                        .calculateBottomPadding(),
-                    maximumValue = this.maxHeight
-                )
-            )
-        )
-
-        LocationHistoryScreenElements(
-            modifier = Modifier,
-            uiState = uiState,
-            topPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding() + 4.dp,
-            cardHeight = { cardHeight = it },
-            onEvent = onEvent
-        )
-    }
-}
 
 @Composable
 fun LocationHistoryScreenEventHandler(
