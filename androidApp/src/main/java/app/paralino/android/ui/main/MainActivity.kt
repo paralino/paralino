@@ -264,7 +264,7 @@ fun AppStartScreen(
         ) { innerPadding ->
             NavHost(
                 modifier = Modifier.padding(innerPadding),
-                navController = appState.navController,
+                navController = appState.navController.navController,
                 startDestination = AppScreen.LoggedOut.routeSignature
             ) {
                 loggedOutGraph(appState, start = start)

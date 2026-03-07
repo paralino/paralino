@@ -71,7 +71,7 @@ fun MainNavHost(
 ) {
     NavHost(
         modifier = modifier,
-        navController = appState.navController,
+        navController = appState.navController.navController,
         startDestination = AppScreen.MainHome.routeSignature,
         enterTransition = { this.slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
         exitTransition = { this.slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start, targetOffset = { it / 4 }) },
@@ -336,7 +336,7 @@ fun NavGraphBuilder.loggedOutGraph(
             WelcomeOnboardingScreen(
                 isDemo = false,
                 onFinish = {
-                    appState.navController.navigate(
+                    appState.navController.navController.navigate(
                         AppScreen.LoggedOut.Login.route(LoginScreenUiType.SIGNUP)
                     ) {
                         this.popUpTo(route = AppScreen.LoggedOut.WelcomeOnboarding.routeSignature) {
