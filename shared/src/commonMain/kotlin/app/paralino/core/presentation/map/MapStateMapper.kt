@@ -565,7 +565,8 @@ class MapStateMapper(
             )
         }
 
-        return placeMarkers + memberMarkers
+        return (placeMarkers + memberMarkers)
+            .sortedBy { it.focused }
     }
 
     private fun determineFocusType(

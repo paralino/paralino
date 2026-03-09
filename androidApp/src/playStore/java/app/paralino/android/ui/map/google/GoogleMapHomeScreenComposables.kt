@@ -167,8 +167,8 @@ private fun MapHomeMarkerComposable(
     var lngValue by remember { mutableDoubleStateOf(0.0) }
 
     val zIndex = when (model.pinType) {
-        MapPinType.MEMBER -> if (model.focused) 40f else 30f
-        MapPinType.PLACE -> if (model.focused) 40f else 20f
+        MapPinType.MEMBER -> if (model.focused) 100f else 30f
+        MapPinType.PLACE -> if (model.focused) 100f else 20f
     }
 
     LaunchedEffect(model.markerId) {
