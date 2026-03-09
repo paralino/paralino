@@ -125,6 +125,7 @@ fun SharingStartScreen(
             askLocationService = { permissionHandler.askLocationService() },
             askLocationPermission = { permissionHandler.askLocationPermission() },
             askBackgroundLocationPermission = { permissionHandler.askBackgroundLocationPermission() },
+            askBackgroundAccessPermission = { permissionHandler.askUnrestrictedBackgroundAccess(forcePrompt = true) },
             openSubscriptions = {
                 appState.navController.navigate(AppScreen.MainHome.BillingPaywall.route())
             }

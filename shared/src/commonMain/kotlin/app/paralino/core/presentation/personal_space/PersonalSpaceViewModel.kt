@@ -15,7 +15,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.UserDeviceModel
-import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.detail.LocationSharingState
@@ -31,6 +30,8 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
@@ -111,12 +112,21 @@ class PersonalSpaceViewModel(
         ) { deviceStatus, personalSpaceData, sharingStatus, user, userPlans ->
 
             val errors = buildList {
-                sharingStatus?.let {
+                sharingStatus?.let { status ->
                     if (!deviceStatus.networkStatus.isOnline) {
                         add(ConditionErrorType.Network)
                     }
 
-                    addAll(deviceStatus.locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
+                    addAll(
+                        deviceStatus.locationStatus.getPossibleErrors()
+                            .filter {
+                                if (status.isLongTerm) {
+                                    it is MandatoryBackgroundLocationSharingConditionType
+                                } else {
+                                    it is MandatoryForegroundLocationSharingConditionType
+                                }
+                            }
+                    )
                 }
 
                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {

@@ -40,6 +40,8 @@ import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -145,12 +147,21 @@ class GroupDetailViewModel(
                 }
 
             val errors = buildList {
-                sharingStatus?.let {
+                sharingStatus?.let { status ->
                     if (!deviceStatus.networkStatus.isOnline) {
                         add(ConditionErrorType.Network)
                     }
 
-                    addAll(deviceStatus.locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
+                    addAll(
+                        deviceStatus.locationStatus.getPossibleErrors()
+                            .filter {
+                                if (status.isLongTerm) {
+                                    it is MandatoryBackgroundLocationSharingConditionType
+                                } else {
+                                    it is MandatoryForegroundLocationSharingConditionType
+                                }
+                            }
+                    )
                 }
 
                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.PowerManager
 import androidx.core.content.ContextCompat
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.LocationConditionStatus
@@ -47,11 +48,17 @@ fun LocationConditionStatus.Companion.hasBackgroundLocationPermission(context: C
     ) == PackageManager.PERMISSION_GRANTED
 }
 
+fun LocationConditionStatus.Companion.hasUnrestrictedBackgroundAccess(context: Context): Boolean {
+    return (context.getSystemService(Context.POWER_SERVICE) as PowerManager)
+        .isIgnoringBatteryOptimizations(context.packageName)
+}
+
 fun LocationConditionStatus.Companion.getLocationStatus(context: Context): LocationConditionStatus {
     return LocationConditionStatus(
         isGpsOn = isLocationOn(context),
         isFinePermissionAllowed = hasFineLocationPermission(context),
         isCoarsePermissionAllowed = hasCoarseLocationPermission(context),
-        isBackgroundPermissionAllowed = hasBackgroundLocationPermission(context)
+        isBackgroundPermissionAllowed = hasBackgroundLocationPermission(context),
+        isUnrestrictedBackgroundPermissionAllowed = hasUnrestrictedBackgroundAccess(context)
     )
 }

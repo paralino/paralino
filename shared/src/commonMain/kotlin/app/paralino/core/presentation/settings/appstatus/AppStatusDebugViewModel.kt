@@ -132,6 +132,14 @@ class AppStatusDebugViewModel(
                                 isError = !deviceStatus.locationStatus.isBackgroundPermissionAllowed
                             )
                         )
+
+                        add(
+                            AppStatusItemStatusState(
+                                key = "unrestricted-background-battery",
+                                text = "Unrestricted background run: ${if (deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed) "**OK**" else "**MISSING**"}",
+                                isError = !deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed
+                            )
+                        )
                     }
                 )
             }

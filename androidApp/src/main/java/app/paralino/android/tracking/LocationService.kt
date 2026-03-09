@@ -26,6 +26,8 @@ import app.paralino.core.provider.NotificationConditionStatus
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -173,9 +175,13 @@ class LocationService : Service() {
     private fun updateNotification() {
         val errors = buildList {
             addAll(
-                deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors(
-                    forBackground = !launchedInForeground
-                )
+                deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors().filter {
+                    if (launchedInForeground) {
+                        it is MandatoryForegroundLocationSharingConditionType
+                    } else {
+                        it is MandatoryBackgroundLocationSharingConditionType
+                    }
+                }
             )
             if (!deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
                 add(ConditionErrorType.Network)

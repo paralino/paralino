@@ -148,6 +148,7 @@ val ConditionErrorType.icon: Painter
         is ConditionErrorType.EmailVerification -> CoreAppIcons.Email
         ConditionErrorType.GuestAccount -> CoreAppIcons.Incognito
         ConditionErrorType.NewAppUpdate -> CoreAppIcons.DownloadArrow
+        ConditionErrorType.UnrestrictedBackgroundAccess -> CoreAppIcons.BatteryFull
     }.asPainterResource()
 
 val ConditionErrorType.nameRes: StringResource
@@ -161,6 +162,7 @@ val ConditionErrorType.nameRes: StringResource
         is ConditionErrorType.EmailVerification -> MR.strings.info_email_confirm
         ConditionErrorType.GuestAccount -> MR.strings.settings_account_guest_badge
         ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_title
+        ConditionErrorType.UnrestrictedBackgroundAccess -> MR.strings.location_banner_error_background_access
     }
 
 val ConditionErrorType.endActionTextRes: StringResource?
@@ -173,4 +175,5 @@ val ConditionErrorType.endActionTextRes: StringResource?
         is ConditionErrorType.EmailVerification -> MR.strings.button_verify
         ConditionErrorType.GuestAccount -> MR.strings.location_banner_fix
         ConditionErrorType.NewAppUpdate -> MR.strings.app_version_alert_button_update
+        ConditionErrorType.UnrestrictedBackgroundAccess -> MR.strings.location_banner_fix
     }

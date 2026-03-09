@@ -58,6 +58,7 @@
     <string name="error_crypto_encryption_generic">Unable to encrypt data, please try again.</string>
     <string name="error_crypto_decryption_generic">Unable to decrypt data, please try again.</string>
     <string name="error_notification_service_error_message">Notification service can\'t start.\nPlease open the app to restart notification service!</string>
+    <string name="error_unrestricted_background_access_message">Please allow **unrestricted background usage** and disable **system battery optimisations** to allow Paralino to run in the background without interruptions.</string>
     <string name="notifications_sharing_active_title">Sharing active</string>
     <string name="notifications_tracking_active_message">Personal location tracking is active</string>
     <string name="notifications_sharing_error_title">Sharing on hold!</string>
@@ -91,6 +92,7 @@
     <string name="location_banner_error_no_permission_location_precise">Missing precise location permission</string>
     <string name="location_banner_error_no_permission_location_background">Missing all time location permission</string>
     <string name="location_banner_error_offline">Device is offline</string>
+    <string name="location_banner_error_background_access">Missing unrestricted background access</string>
     <string name="onboarding_step_location_title">Real-time location sharing</string>
     <string name="onboarding_step_location_title_tag">Paralino</string>
     <string name="onboarding_step_location_info">Battery, speed, elevation, and network monitoring. Private groups with family, friends, or only your devices.</string>
