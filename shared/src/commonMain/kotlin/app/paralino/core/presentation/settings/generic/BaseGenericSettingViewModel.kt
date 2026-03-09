@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 abstract class BaseGenericSettingViewModel(
     val initialScreenTitle: String,
-    val deviceApiProvider: IDeviceApiProvider? = null
+    open val deviceApiProvider: IDeviceApiProvider? = null
 ) : CoreViewModel() {
 
     protected val _uiState = MutableStateFlow<GenericSettingsScreenState>(
@@ -54,6 +54,7 @@ abstract class BaseGenericSettingViewModel(
             is GenericSettingsScreenUiEvent.SelectActionItem -> handleUiEvent(event)
             is GenericSettingsScreenUiEvent.GlobalEmptyStateActionClick -> handleUiEvent(event)
             is GenericSettingsScreenUiEvent.EmbeddedEmptyStateActionClick -> handleUiEvent(event)
+            is GenericSettingsScreenUiEvent.ConditionErrorItemClick -> handleUiEvent(event)
         }
     }
 

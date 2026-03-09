@@ -35,6 +35,7 @@ fun GenericSettingsScreenCore(
     openPaywall: () -> Unit,
     openNotificationSocketChannelSettings: () -> Unit,
     askNotificationPermission: () -> Unit,
+    askBackgroundAccessPermission: () -> Unit,
 ) {
     MessageDispatcherEffect(vm, coreUiState)
     val uiState by vm.uiState.collectAsState()
@@ -45,6 +46,7 @@ fun GenericSettingsScreenCore(
                 GenericSettingsScreenEvent.OpenPaywall -> openPaywall()
                 GenericSettingsScreenEvent.OpenNotificationSocketChannelSettings -> openNotificationSocketChannelSettings()
                 GenericSettingsScreenEvent.AskForNotificationPermission -> askNotificationPermission()
+                GenericSettingsScreenEvent.AskForBackgroundAccessPermission -> askBackgroundAccessPermission()
                 null -> {
                     /* do nothing */
                 }

@@ -28,12 +28,14 @@ import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
+import app.paralino.core.utils.ConditionErrorType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -46,7 +48,7 @@ class NotificationSocketSettingsViewModel(
     private val unifiedPushManager: IUnifiedPushManager,
     private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
     private val pushProviderManager: IPushProviderManager,
-    deviceApiProvider: IDeviceApiProvider
+    override val deviceApiProvider: IDeviceApiProvider
 ) : BaseGenericSettingViewModel(
     initialScreenTitle = MR.strings.setting_notificationSocket_title.localizedString(),
     deviceApiProvider = deviceApiProvider
@@ -78,9 +80,10 @@ class NotificationSocketSettingsViewModel(
             }
             .launchIn(viewModelScope)
 
-        deviceApiProvider.notificationStatusProvider.status
+        deviceApiProvider.deviceStatus
+            .map { it.notificationStatus to it.locationStatus }
             .onEach { status ->
-                if (status.isNotificationPermissionAllowed) {
+                if (status.first.isNotificationPermissionAllowed) {
                     // adding artificial loading since fetching UnifiedPush distributors has small delay
                     // which is still small enough to make screen reload during entrance animation
                     // here we just delay the ui refresh a bit so it is not glitchy on low powered phones
@@ -155,6 +158,14 @@ class NotificationSocketSettingsViewModel(
                 isVisible = true
             )
         )
+
+        if (
+            !deviceApiProvider.locationStatusProvider.currentStatus.isUnrestrictedBackgroundPermissionAllowed
+            && defaultProvider == PushProvider.PARALINO
+        ) {
+            items.add(GenericSettingListItem.ConditionError(type = ConditionErrorType.UnrestrictedBackgroundAccess))
+            items.add(GenericSettingListItem.Spacer(20.dp, keyId = "background_permission_space"))
+        }
 
         if (distributors.isNotEmpty() && isMasterToggleOn) {
             val selectedDistributor = appPrefs.selectedUnifiedPushDistributor
@@ -401,6 +412,10 @@ class NotificationSocketSettingsViewModel(
             is GenericSettingsScreenUiEvent.EmbeddedEmptyStateActionClick -> {
                 _eventChannel.trySend(GenericSettingsScreenEvent.AskForNotificationPermission)
             }
+
+            is GenericSettingsScreenUiEvent.ConditionErrorItemClick -> {
+                _eventChannel.trySend(GenericSettingsScreenEvent.AskForBackgroundAccessPermission)
+            }
         }
     }
 
@@ -411,6 +426,10 @@ class NotificationSocketSettingsViewModel(
             loadingTrigger.update { !wasAlreadySelected }
             unifiedPushManager.unregisterApp()
             serviceManager.setNotificationPushProvider(provider = PushProvider.PARALINO)
+
+            if (!deviceApiProvider.locationStatusProvider.currentStatus.isUnrestrictedBackgroundPermissionAllowed) {
+                _eventChannel.trySend(GenericSettingsScreenEvent.AskForBackgroundAccessPermission)
+            }
         } else {
             loadingTrigger.update { true }
             serviceManager.setNotificationPushProvider(provider = PushProvider.UNIFIED_PUSH)
@@ -427,6 +446,10 @@ class NotificationSocketSettingsViewModel(
         } else {
             loadingTrigger.update { true }
             serviceManager.setNotificationPushProvider(provider = PushProvider.PARALINO)
+
+            if (!deviceApiProvider.locationStatusProvider.currentStatus.isUnrestrictedBackgroundPermissionAllowed) {
+                _eventChannel.trySend(GenericSettingsScreenEvent.AskForBackgroundAccessPermission)
+            }
         }
 
         _uiState.update { createInitialState() }

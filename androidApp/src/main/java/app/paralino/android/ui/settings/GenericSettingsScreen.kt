@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import app.paralino.android.notification.PushServiceNotificationHandler
 import app.paralino.android.notification.rememberNotificationsPermissionHandler
+import app.paralino.android.tracking.rememberLocationPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.openNotificationChannelSettings
@@ -41,6 +42,18 @@ fun GenericSettingsScreen(
         }
     }
 
+    val locationPermissionHandler = when(val deviceApi = vm.deviceApiProvider) {
+        null -> null
+
+        else -> {
+            rememberLocationPermissionHandler(
+                appState = appState,
+                messageDispatcher = vm.messageDispatcher,
+                locationStatusProvider = deviceApi.locationStatusProvider
+            )
+        }
+    }
+
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),
         topBar = {
@@ -60,9 +73,8 @@ fun GenericSettingsScreen(
             openNotificationSocketChannelSettings = {
                 context.openNotificationChannelSettings(PushServiceNotificationHandler.channelId)
             },
-            askNotificationPermission = {
-                notificationPermissionHandler?.askNotificationPermission()
-            }
+            askNotificationPermission = { notificationPermissionHandler?.askNotificationPermission() },
+            askBackgroundAccessPermission = { locationPermissionHandler?.askUnrestrictedBackgroundAccess(forcePrompt = true) }
         )
     }
 }

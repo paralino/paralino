@@ -52,6 +52,7 @@ import app.paralino.core.provider.current
 import app.paralino.core.ui.CoreUiState
 import app.paralino.core.ui.components.AppButtonState
 import app.paralino.core.ui.components.CheckButtonIcon
+import app.paralino.core.ui.components.ConditionErrorItem
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
@@ -112,6 +113,21 @@ fun GenericSettingsListScreen(
                 is GenericSettingListItem.Spacer -> {
                     this.item(key = item.keyId) {
                         Spacer(modifier = Modifier.size(item.spacing).animateItem())
+                    }
+                }
+
+                is GenericSettingListItem.ConditionError -> {
+                    this.item(key = item.keyId) {
+                        ConditionErrorItem(
+                            Modifier
+                                .zIndex(0f)
+                                .padding(horizontal = 20.dp)
+                                .animateItem(),
+                            data = item.type,
+                            onClick = {
+                                onEvent(GenericSettingsScreenUiEvent.ConditionErrorItemClick(item = item))
+                            }
+                        )
                     }
                 }
 

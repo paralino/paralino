@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.dp
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.settings.SettingsActionItemType
+import app.paralino.core.utils.ConditionErrorType
 import org.jetbrains.compose.resources.DrawableResource
 
 data class GenericSettingsScreenState(
@@ -40,6 +41,11 @@ sealed interface GenericSettingsScreenStateContent {
 
 sealed interface GenericSettingListItem {
     abstract val keyId: String
+
+    data class ConditionError(
+        val type: ConditionErrorType,
+        override val keyId: String = type::class.toString()
+    ): GenericSettingListItem
 
     data class StickyHeader(
         val content: String,
@@ -123,10 +129,12 @@ sealed interface GenericSettingsScreenEvent {
     data object OpenPaywall : GenericSettingsScreenEvent
     data object OpenNotificationSocketChannelSettings : GenericSettingsScreenEvent
     data object AskForNotificationPermission : GenericSettingsScreenEvent
+    data object AskForBackgroundAccessPermission : GenericSettingsScreenEvent
 }
 
 sealed interface GenericSettingsScreenUiEvent {
     data class ToggleSwitch<KEY>(val switch: GenericSettingListItem.Switch<KEY>) : GenericSettingsScreenUiEvent
+    data class ConditionErrorItemClick(val item: GenericSettingListItem.ConditionError) : GenericSettingsScreenUiEvent
     data class SelectOptionItem(val groupOptions: GenericSettingListItem.GroupOptions, val option: GroupOptionItem) : GenericSettingsScreenUiEvent
     data class SelectActionItem(val item: GenericSettingListItem.SettingsActionItem) : GenericSettingsScreenUiEvent
     data class DialogAction(val action: AlertDialogAction) : GenericSettingsScreenUiEvent
