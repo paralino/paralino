@@ -6,7 +6,6 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.GroupPreRefreshUseCase
 import app.paralino.core.domain.location.ClearUserLocationUseCase
 import app.paralino.core.domain.location.LocationRequestUseCase
-import app.paralino.core.domain.location.RealtimeEventsMaker
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.GetLocationHistoryUseCase
 import app.paralino.core.domain.location.history.RefreshLocationHistoryUseCase
@@ -14,7 +13,9 @@ import app.paralino.core.domain.user.PersonalSpaceRefreshUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.GroupWithMembersOrUserSpace
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
@@ -326,6 +327,7 @@ class MapHomeViewModel constructor(
         ) { groupId, isAppFocused, isUiFocused, mapFocusType ->
             MapScreenLifecycleData(
                 groupId = groupId,
+                planConfig = uiState.value.asReady()?.groupPlanConfig ?: PlanConfig.default,
                 isAppFocused = isAppFocused,
                 isUiFocused = isUiFocused,
                 mapFocusType = mapFocusType

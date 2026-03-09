@@ -2,6 +2,7 @@ package app.paralino.core.domain.location
 
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.models.raw.LocationFocusGroupPayload
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class LocationRequestUseCase constructor(
@@ -48,28 +50,57 @@ class LocationRequestUseCase constructor(
 
     fun keepLocationFocus(
         groupId: GroupOrSpaceId,
-        focusType: MapHomeScreenFocusType
+        focusType: MapHomeScreenFocusType,
+        planConfig: PlanConfig
     ): Flow<String> {
         return flow {
             do {
                 emit("User is looking at map")
-                sendLocationFocusEvent(groupId, focusType)
-                val delayMillis = when (focusType) {
-                    is MapHomeScreenFocusType.MEMBER -> 5_000L
-                    else -> 20_000L
+                sendLocationFocusEvent(
+                    groupId = groupId,
+                    focusType = focusType,
+                    planConfig = planConfig
+                )
+                val delayDuration = when (focusType) {
+                    is MapHomeScreenFocusType.MEMBER -> {
+                        when (planConfig.planTypeEnum.isPremium) {
+                            true -> 5.seconds
+                            false -> 20.seconds
+                        }
+                    }
+                    else -> {
+                        when (planConfig.planTypeEnum.isPremium) {
+                            true -> 20.seconds
+                            false -> 40.seconds
+                        }
+                    }
                 }
-                delay(delayMillis)
+                delay(delayDuration)
             } while (currentCoroutineContext().isActive)
         }.catch { emit("Error while boosting location") }
     }
 
-    private suspend fun sendLocationFocusEvent(groupId: GroupOrSpaceId, focusType: MapHomeScreenFocusType) {
+    private suspend fun sendLocationFocusEvent(
+        groupId: GroupOrSpaceId,
+        focusType: MapHomeScreenFocusType,
+        planConfig: PlanConfig
+    ) {
         triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
                 key = "location_performance_location_focus_${groupId}_${(focusType as? MapHomeScreenFocusType.MEMBER)?.memberUserId}",
                 timeMillis = when (focusType) {
-                    is MapHomeScreenFocusType.MEMBER -> 20.seconds.inWholeMilliseconds
-                    else -> 60.seconds.inWholeMilliseconds
+                    is MapHomeScreenFocusType.MEMBER -> {
+                        when (planConfig.planTypeEnum.isPremium) {
+                            true -> 20.seconds.inWholeMilliseconds
+                            false -> 1.minutes.inWholeMilliseconds
+                        }
+                    }
+                    else -> {
+                        when (planConfig.planTypeEnum.isPremium) {
+                            true -> 1.minutes.inWholeMilliseconds
+                            false -> 3.minutes.inWholeMilliseconds
+                        }
+                    }
                 },
                 failOnError = false
             )

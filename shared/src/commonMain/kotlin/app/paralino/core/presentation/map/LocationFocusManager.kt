@@ -3,6 +3,7 @@ package app.paralino.core.presentation.map
 import app.paralino.core.domain.location.LocationRequestUseCase
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
+import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.provider.IDeviceApiProvider
@@ -87,7 +88,8 @@ class LocationFocusManager(
 
         activePingSubscriptionJob = locationRequestUseCase.keepLocationFocus(
             groupId = groupId,
-            focusType = lifecycleData.mapFocusType
+            focusType = lifecycleData.mapFocusType,
+            planConfig = lifecycleData.planConfig
         )
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)

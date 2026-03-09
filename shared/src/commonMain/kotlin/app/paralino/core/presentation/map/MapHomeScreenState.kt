@@ -249,17 +249,8 @@ sealed interface MapScreenViewSourceType {
 
 data class MapScreenLifecycleData(
     val groupId: GroupOrSpaceId,
+    val planConfig: PlanConfig,
     val isAppFocused: Boolean,
     val isUiFocused: Boolean,
     val mapFocusType: MapHomeScreenFocusType,
 )
-
-sealed interface GroupWithMembersOrUserSpace {
-    val id: GroupOrSpaceId
-    data class Group(val group: UserGroupWithMembers): GroupWithMembersOrUserSpace {
-        override val id: GroupOrSpaceId = group.id.asGroupOrSpaceId()
-    }
-    data class PersonalSpace(val space: UserPersonalSpaceModel): GroupWithMembersOrUserSpace {
-        override val id: GroupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
-    }
-}
