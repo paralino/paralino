@@ -63,7 +63,7 @@ class LocationUploadEngine constructor(
                         LocationPerformanceType.BATTERY_SAVER -> 10.seconds
 
                         LocationPerformanceType.BALANCED,
-                        LocationPerformanceType.MEDIUM_HIGH -> 4.seconds
+                        LocationPerformanceType.MEDIUM_HIGH -> 6.seconds
 
                         LocationPerformanceType.HIGH,
                         LocationPerformanceType.VERY_HIGH,
