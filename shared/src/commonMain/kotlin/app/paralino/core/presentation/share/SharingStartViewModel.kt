@@ -526,7 +526,11 @@ class SharingStartViewModel(
                 groupId = group.id,
                 deviceName = _uiState.value.deviceName,
                 contract = contract,
-                notifyOthers = _uiState.value.notifyOthers,
+                notifyOthers = if (_uiState.value.currentContract != null) {
+                    false
+                } else {
+                    _uiState.value.notifyOthers
+                },
                 isRetry = false
             )
         } catch (e: Exception) {
