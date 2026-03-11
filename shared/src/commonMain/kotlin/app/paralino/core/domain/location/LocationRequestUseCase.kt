@@ -3,6 +3,7 @@ package app.paralino.core.domain.location
 import app.paralino.core.logg
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.data
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.models.raw.FunctionExecutionRaw
 import app.paralino.core.models.raw.LocationFocusGroupPayload
@@ -17,6 +18,7 @@ import app.paralino.core.repo.api.runAsync
 import app.paralino.core.repo.base.BaseRepository
 import app.paralino.core.repo.base.RemotePreference
 import app.paralino.core.repo.location.LocationPerformanceManager
+import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.utils.exceptions.BaseRemoteException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -29,7 +31,8 @@ import kotlin.time.Duration.Companion.seconds
 
 class LocationRequestUseCase constructor(
     private val functionsApi: IFunctionsApi,
-    private val locationPerformanceManager: LocationPerformanceManager
+    private val locationPerformanceManager: LocationPerformanceManager,
+    private val personalSpaceLocal: UserPersonalSpaceLocalDataSource,
 ) : BaseRepository() {
 
     fun keepLocationBoost(
@@ -138,20 +141,28 @@ class LocationRequestUseCase constructor(
                                 .v("User not sharing, skip ping")
                         }
                     }
+
                     else -> {
-                        logg.tag("location_performance")
-                            .v("Map is active (${focusType::class.simpleName}), sending ping")
-
                         if (groupId.isPersonalSpace) {
-                            val requestPayload = LocationFocusSpacePayload(
-                                locationId = null
-                            )
+                            if (personalSpaceLocal.personalSpaceState.value.data?.areOtherDevicesActive == true) {
+                                logg.tag("location_performance")
+                                    .v("Map is active (${focusType::class.simpleName}), sending ping")
+                                val requestPayload = LocationFocusSpacePayload(
+                                    locationId = null
+                                )
 
-                            functionsApi.runAndWait(
-                                function = ServerFunction.LOCATION_FOCUS_SPACE,
-                                data = requestPayload
-                            )
+                                functionsApi.runAndWait(
+                                    function = ServerFunction.LOCATION_FOCUS_SPACE,
+                                    data = requestPayload
+                                )
+                            } else {
+                                logg.tag("location_performance")
+                                    .v("No active devices in personal space, skip ping")
+                            }
                         } else {
+                            logg.tag("location_performance")
+                                .v("Map is active (${focusType::class.simpleName}), sending ping")
+
                             val requestPayload = LocationFocusGroupPayload(
                                 groupId = groupId.id,
                                 userId = null,

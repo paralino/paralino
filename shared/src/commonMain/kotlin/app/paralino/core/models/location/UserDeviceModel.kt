@@ -36,6 +36,11 @@ data class UserPersonalSpaceModel(
 ) {
     val plan: PlanConfig = plans.highestValidPlanConfig
     val activeDeviceCount: Int = devices.count { it.location != null }
+    val areOtherDevicesActive: Boolean get() {
+        return devices
+            .filter { it.location != null }
+            .any { it.id != currentDevice?.id }
+    }
     val currentDevice: UserDeviceModel? get() {
         val userId = appPrefs.userId
         val deviceId = appPrefs.deviceId
