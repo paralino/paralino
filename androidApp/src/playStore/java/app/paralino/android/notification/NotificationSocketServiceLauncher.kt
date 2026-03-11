@@ -6,7 +6,6 @@ import app.paralino.core.logg
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.NotificationSocketServiceManager
-import app.paralino.core.repo.base.AppConfigRepository
 import kotlinx.coroutines.CoroutineScope
 
 class NotificationSocketServiceLauncher(
@@ -14,7 +13,6 @@ class NotificationSocketServiceLauncher(
     private val deviceApiProvider: IDeviceApiProvider,
     private val infoMessagesNotifications: InfoMessagesNotificationPresenter,
     private val serviceManager: NotificationSocketServiceManager,
-    private val appConfigRepo: AppConfigRepository,
     private val scopeProvider: ICoroutineScopeProvider,
     private val updateUserData: UpdateUserDataUseCase
 ) {
