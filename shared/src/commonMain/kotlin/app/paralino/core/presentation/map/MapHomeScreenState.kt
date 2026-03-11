@@ -64,6 +64,7 @@ sealed class MapHomeScreenState {
         val sharingEndTime: String?,
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
+        val isOverLimit: Boolean,
         override val androidMapSDKProvider: MapsSDKProvider,
         override val alertDialog: MainAlertDialog?,
         override val isSatelliteMode: Boolean = false
@@ -199,6 +200,7 @@ sealed interface MapHomeScreenUiEvent {
     data object OnBackClicked : MapHomeScreenUiEvent
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
+    data object OnOverLimitsBannerTap : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {

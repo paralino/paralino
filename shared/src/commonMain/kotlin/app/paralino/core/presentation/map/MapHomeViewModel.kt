@@ -193,6 +193,8 @@ class MapHomeViewModel constructor(
         uiState = uiState,
         eventChannel = _eventChannel,
         appPrefs = appPrefs,
+        groupLocal = groupRepo,
+        messageDispatcher = messageDispatcher,
         uiFocusedStatus = uiFocusedStatus,
         updateUiState = { state -> _uiState.value = state },
         updateReadyState = ::updateReadyState,

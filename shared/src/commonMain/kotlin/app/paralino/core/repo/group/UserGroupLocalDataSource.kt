@@ -147,19 +147,19 @@ class UserGroupLocalDataSource constructor(
                 .filterNotNull(),
             memberLocal.getMemberCountInGroup(groupId)
                 .distinctUntilChanged(),
-            database.groupRelatedDao.getLocationCountForUserInGroup(groupId = groupId, userId = appPrefs.userId)
+            database.groupRelatedDao.getLocationCountForUsersInGroup(groupId = groupId)
                 .filterNotNull()
                 .distinctUntilChanged(),
             database.groupRelatedDao.getPlacesCountForGroup(groupId)
                 .filterNotNull()
                 .distinctUntilChanged()
-        ) { groupEntity, currentUserMember, memberCount, devicesCount, placesCount ->
+        ) { groupEntity, currentUserMember, memberCount, devicesPerMember, placesCount ->
             val group = mapper.local2Core(groupEntity)
             UserGroupWithMetadata(
                 group = group,
                 memberCount = memberCount,
                 placesCount = placesCount,
-                devicesCount = devicesCount,
+                devicesPerMember = devicesPerMember,
                 verification = memberMapper.local2Core(
                     member = currentUserMember,
                     memberLocations = emptyList(),
@@ -227,18 +227,18 @@ class UserGroupLocalDataSource constructor(
                                 .filterNotNull(),
                             memberLocal.getMemberCountInGroup(group.id)
                                 .distinctUntilChanged(),
-                            database.groupRelatedDao.getLocationCountForUserInGroup(groupId = group.id, userId = appPrefs.userId)
+                            database.groupRelatedDao.getLocationCountForUsersInGroup(groupId = group.id)
                                 .filterNotNull()
                                 .distinctUntilChanged(),
                             database.groupRelatedDao.getPlacesCountForGroup(group.id)
                                 .filterNotNull()
                                 .distinctUntilChanged()
-                        ) { currentUserMember, memberCount, devicesCount, placesCount ->
+                        ) { currentUserMember, memberCount, devicesPerMember, placesCount ->
                             UserGroupWithMetadata(
                                 group = group,
                                 memberCount = memberCount,
                                 placesCount = placesCount,
-                                devicesCount = devicesCount,
+                                devicesPerMember = devicesPerMember,
                                 verification = memberMapper.local2Core(
                                     member = currentUserMember,
                                     memberLocations = emptyList(),

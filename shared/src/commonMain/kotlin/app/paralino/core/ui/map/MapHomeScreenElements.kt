@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,6 +67,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.places.PlaceListItem
@@ -224,6 +226,22 @@ fun MapHomeScreenElements(
                     readyState = readyState,
                     onEvent = onEvent
                 )
+
+                if (readyState?.isOverLimit == true) {
+                    NoticeInfoChip(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(unbounded = true)
+                            .padding(horizontal = 20.dp)
+                            .padding(bottom = 6.dp),
+                        text = stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title),
+                        icon = CoreAppIcons.Warning.asPainterResource(),
+                        backgroundColor = MaterialTheme.colors.error,
+                        textColor = MaterialTheme.colors.onError,
+                        iconTint = MaterialTheme.colors.onError,
+                        onClick = { onEvent(MapHomeScreenUiEvent.OnOverLimitsBannerTap) }
+                    )
+                }
             }
 
             bottomCards(sheetPeekHeight)

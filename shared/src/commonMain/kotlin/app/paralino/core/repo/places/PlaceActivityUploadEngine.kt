@@ -144,7 +144,7 @@ class PlaceActivityUploadEngine(
                 val group = groupLocal.allGroupsState.value.data?.firstOrNull {
                     it.group.id == place.groupOrSpaceId.id
                 }
-                if (group?.arePlacesOverLimits(config = remoteConfig.getConfigOnce()) == true) {
+                if (group?.isGroupOverLimits(config = remoteConfig.getConfigOnce()) == true) {
                     logg.tag(executionKey).v("Group places are over limit, skip alert")
                     return
                 }

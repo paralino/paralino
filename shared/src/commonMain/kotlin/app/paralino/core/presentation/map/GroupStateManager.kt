@@ -16,8 +16,10 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.ui.components.onAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -90,12 +92,15 @@ class GroupStateManager(
 
         if (newGroup != null && newGroup.isGroupOverLimits(remoteConfig.getConfigOnce())) {
             if (newGroup.group.isCurrentUserOwner) {
-                messageDispatcher.showSnackbar(
-                    text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
-                    duration = SnackbarDuration.Forever
-                )
-                delay(2000)
-                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                messageDispatcher.showSnackbarForResult(
+                    data = AppSnackbarData(
+                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever,
+                        actionText = MR.strings.plans_banner_settings_action_small.localizedString()
+                    )
+                )?.result?.onAction {
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                }
             } else {
                 messageDispatcher.showSnackbar(
                     text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
@@ -110,12 +115,15 @@ class GroupStateManager(
         groupIdData.update { UserGroup.groupPersonalDevicesId.asGroupOrSpaceId() }
         val personalSpace = personalSpaceRepo.personalSpaceState.value.data
         if (personalSpace?.isSpaceOverLimits() == true) {
-            messageDispatcher.showSnackbar(
-                text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
-                duration = SnackbarDuration.Forever
-            )
-            delay(2000)
-            eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+            messageDispatcher.showSnackbarForResult(
+                data = AppSnackbarData(
+                    text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
+                    duration = SnackbarDuration.Forever,
+                    actionText = MR.strings.plans_banner_settings_action_small.localizedString()
+                )
+            )?.result?.onAction {
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package app.paralino.core.db.main.groups
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
 @Entity(tableName = "memberLocationEntity")
 data class MemberLocationEntity(
@@ -29,4 +30,11 @@ data class MemberLocationEntityDataUpdate(
     @ColumnInfo(name = "locationData") val locationData: String?,
     @ColumnInfo(name = "status") val status: String?,
     @ColumnInfo(name = "locationHistory") val locationHistory: String?
+)
+
+@Serializable
+data class MemberRegisteredLocationCount(
+    val groupId: String,
+    val userId: String,
+    val count: Int
 )

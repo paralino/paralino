@@ -81,6 +81,16 @@ class MapStateMapper(
             is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.plan
         }
 
+        val isOverLimits = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> {
+                userGroupLocal.allGroupsState.value.data
+                    ?.firstOrNull { it.id == groupOrSpace.id.id }
+                    ?.isGroupOverLimits(remoteConfig.getConfigOnce())
+                    ?: false
+            }
+            is GroupWithMembersOrUserSpace.PersonalSpace -> groupOrSpace.space.isSpaceOverLimits()
+        }
+
         val isVerified = when (groupOrSpace) {
             is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.isGroupVerified
             is GroupWithMembersOrUserSpace.PersonalSpace -> true // Personal space is always verified
@@ -187,6 +197,7 @@ class MapStateMapper(
             alertDialog = alertDialog,
             isSatelliteMode = isSatelliteMode.takeIf { mapProvider.hasSatelliteMaps } ?: false,
             groupPlanConfig = planConfig,
+            isOverLimit = isOverLimits,
             androidMapSDKProvider = mapProvider
         )
     }

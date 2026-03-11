@@ -87,14 +87,18 @@ class PremiumStatusManager(
             locationSharingManager.startSharing(newPersonalContract)
         }
 
-        val groupsDataForOwner = groupLocalDataSource.allGroupsState.value.data
-            ?.filter { it.group.isCurrentUserOwner }
+        val allGroups = groupLocalDataSource.allGroupsState.value.data
             ?: emptyList()
+
+        val allUserOwnedGroups = allGroups.filter { it.group.isCurrentUserOwner }
+
         val groupLimit = userRepo.userPlans.value.groupsLimit
             .takeIf { config.plans.isNotEmpty() }
             ?: Int.MAX_VALUE
-        val groupsOverLimits = groupsDataForOwner.map {
-            val isGroupOverLimit = it.isGroupOverLimits(config) || groupsDataForOwner.size > groupLimit
+
+        // adjust contracts
+        allGroups.map {
+            val isGroupOverLimit = it.isGroupOverLimits(config)
             val contract = locationSharingManager.currentSharingContractForGroup(id = it.group.id.asGroupOrSpaceId())
             val newContract = contract?.asValidContract(
                 newEndTimeUTCOverride = if (isGroupOverLimit) {
@@ -104,14 +108,18 @@ class PremiumStatusManager(
                     null
                 }
             )
+
             if (newContract != null && newContract != contract) {
                 locationSharingManager.startSharing(newContract)
             }
-            isGroupOverLimit
-        }.any { it }
+        }
+
+        val areUserOwnedGroupsOverLimits = allUserOwnedGroups.any {
+            it.isGroupOverLimits(config) || allUserOwnedGroups.size > groupLimit
+        }
 
         _hasGroupOverLimits.update {
-            groupsOverLimits || personalSpaceOverLimit
+            areUserOwnedGroupsOverLimits || personalSpaceOverLimit
         }
     }
 
@@ -137,7 +145,6 @@ class PremiumStatusManager(
                 count = group.placesCount,
                 isOwner = group.group.isCurrentUserOwner
             )
-
         }
 
         val maxPlaceLimit = remoteConfigRepo.getConfigOnce()

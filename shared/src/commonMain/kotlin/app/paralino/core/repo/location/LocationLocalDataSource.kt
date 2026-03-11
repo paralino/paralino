@@ -42,12 +42,6 @@ class LocationLocalDataSource(
         }
     }
 
-    fun getLocationCountForMember(groupId: String, userId: String): Flow<Int> {
-        return database.groupRelatedDao.getLocationCountForUserInGroup(groupId = groupId, userId = userId)
-            .filterNotNull()
-            .distinctUntilChanged()
-    }
-
     fun getMemberCountInGroup(groupId: String): Flow<Int> {
         return database.groupRelatedDao.getMemberCount(groupId = groupId)
             .filterNotNull()
