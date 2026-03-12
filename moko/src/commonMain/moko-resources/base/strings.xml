@@ -735,10 +735,10 @@
     <string name="place_sensitivity_optionRefresh2_info">Gets an accurate location beforehand but may suppress or delay some alerts. Make sure you are connected to the Internet and the app can run in the background without restrictions.</string>
     <string name="place_sensitivity_optionRefresh3_title">After Alert Is Sent</string>
     <string name="place_sensitivity_optionRefresh3_info">An accurate location is requested as the final step to ensure you don’t miss any alerts, but it might cause extra or false alerts.</string>
-    <string name="place_notification_enter">%s arrived at %s</string>
-    <string name="place_notification_exit">%s left %s</string>
-    <string name="place_notification_device_enter">%s arrived at %s</string>
-    <string name="place_notification_device_exit">%s left %s</string>
+    <string name="place_notification_enter">%1$s arrived at %2$s</string>
+    <string name="place_notification_exit">%1$s left %2$s</string>
+    <string name="place_notification_device_enter">%1$s arrived at %2$s</string>
+    <string name="place_notification_device_exit">%1$s left %2$s</string>
     <string name="place_notification_default">Your place had an activity</string>
     <string name="place_notification_personal_default">Your personal place had an activity</string>
     <string name="place_created_group_notification">Group %1$s just got a new place: %2$s</string>
