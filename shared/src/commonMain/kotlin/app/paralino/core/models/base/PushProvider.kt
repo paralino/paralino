@@ -2,7 +2,7 @@ package app.paralino.core.models.base
 
 enum class PushProvider(val key: String) {
     NOT_SET("not_set"),
-    DEVICE_NATIVE("native"),
+    DEVICE_NATIVE("device_native"),
     PARALINO("paralino"),
     UNIFIED_PUSH("unified_push");
 
