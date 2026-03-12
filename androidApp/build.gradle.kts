@@ -1,20 +1,14 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import org.jetbrains.kotlin.daemon.common.trimQuotes
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
-    // have to use id here since build will fail otherwise because of duplicate versions
-    // check later id fixed
-    // https://github.com/gradle/gradle/issues/17968
-    id(libs.plugins.kotlin.parcelize.get().pluginId)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -63,7 +57,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        setProperty("archivesBaseName", "Paralino_v$versionName($versionCode)")
+        base.archivesName = "Paralino_v$versionName($versionCode)"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -216,14 +210,6 @@ android {
     }
 }
 
-kotlin {
-    compilerOptions {
-        optIn.add("kotlin.RequiresOptIn")
-        optIn.add("kotlin.time.ExperimentalTime")
-        jvmTarget.set(JvmTarget.JVM_17)
-    }
-}
-
 val directImplementation by configurations
 val playStoreImplementation by configurations
 dependencies {
@@ -256,8 +242,6 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
-    // implementation(libs.compose.material.icons.core)
-    // implementation(libs.compose.material.icons.extended)
 
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.systemuicontroller)

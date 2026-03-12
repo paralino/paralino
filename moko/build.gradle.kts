@@ -1,17 +1,14 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
-    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.multiplatformLibrary)
     alias(libs.plugins.moko.resources)
 }
 
 kotlin {
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-        }
+    android {
+        namespace = "app.paralino.core.moko"
+        compileSdk = 36
     }
 
     listOf(
@@ -31,11 +28,6 @@ kotlin {
             api(libs.moko.resources.compose)
         }
     }
-}
-
-android {
-    namespace = "app.paralino.core"
-    compileSdk = 36
 }
 
 multiplatformResources {
