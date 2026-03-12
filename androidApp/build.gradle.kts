@@ -264,7 +264,6 @@ dependencies {
 
     playStoreImplementation(libs.maps.google.compose)
     playStoreImplementation(libs.maps.google.compose.utils)
-    playStoreImplementation(libs.maps.google.compose.widgets)
     implementation(libs.maps.maplibre.compose)
     directImplementation(libs.unifiedPush.connector)
 

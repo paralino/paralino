@@ -26,6 +26,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +52,8 @@ import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.clustering.Clustering
+import com.google.maps.android.compose.clustering.ClusteringMarkerProperties
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -304,7 +307,12 @@ fun GoogleMapLocationHistoryMapContent(
                         )
                     }
                 },
+                clusterContentAnchor = Offset(0.5f, 0.5f),
                 clusterItemContent = {
+                    // Google Map Helper composable effect to set anchoring
+                    ClusteringMarkerProperties(
+                        anchor = it.getAnchor()
+                    )
                     HistoryMapIcon(
                         isAccurate = !it.item.accuracy.isLocationInaccurate(),
                         isClustered = it.item is LocationHistoryPointState.Cluster

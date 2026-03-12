@@ -28,7 +28,7 @@ accompanist = "0.34.0"
 aboutLibraries = "12.2.4"
 sentry = "8.34.1"
 playServicesLocation = "21.3.0"
-mapsGoogleCompose = "6.12.2"
+mapsGoogleCompose = "8.2.1"
 mapsMapLibreCompose = "0.12.1"
 firebaseMessaging = "24.1.2"
 jna = "5.17.0"
@@ -95,7 +95,6 @@ sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 maps-google-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsGoogleCompose" }
 maps-google-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsGoogleCompose" }
-maps-google-compose-widgets = { group = "com.google.maps.android", name = "maps-compose-widgets", version.ref = "mapsGoogleCompose" }
 maps-maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "mapsMapLibreCompose" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
