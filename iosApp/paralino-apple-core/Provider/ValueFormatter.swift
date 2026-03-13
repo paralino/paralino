@@ -69,7 +69,7 @@ class ValueFormatter: IValueFormatter {
     }
     
     override func formatWithPattern(timeUTC: Kotlinx_datetimeLocalDateTime, pattern: String) -> String {
-        let date = timeUTC.toDate(timeZone: .gmt)!
+        let date = timeUTC.toDate(timeZone: .current)!
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = pattern
         dateFormatter.locale = Locale.current
@@ -78,7 +78,7 @@ class ValueFormatter: IValueFormatter {
     }
     
     override func formatWithPattern(dateUTC: Kotlinx_datetimeLocalDate, pattern: String) -> String {
-        let date = dateUTC.toDate(timeZone: .gmt)!
+        let date = dateUTC.toDate(timeZone: .current)!
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = pattern
         dateFormatter.locale = Locale.current

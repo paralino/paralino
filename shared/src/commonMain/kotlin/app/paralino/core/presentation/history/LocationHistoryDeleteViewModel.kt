@@ -292,8 +292,8 @@ class LocationHistoryDeleteViewModel(
         return LocationHistoryDeleteDateState(
             isEnabled = isEnabled,
             date = selectedDate,
-            formattedFullDate = valueFormatter.formatBestPattern(
-                timeUTC = selectedDate.atTime(0, 0),
+            formattedFullDate = valueFormatter.formatBestPatternLocal(
+                timeLocal = selectedDate.atTime(0, 0),
                 pattern = "MMMMdyyyy"
             ),
             formattedMonth = valueFormatter.formatWithPattern(
