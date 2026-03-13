@@ -150,7 +150,7 @@ object KoinSetup {
         single(createdAtStart = true) { DeviceApiProvider(androidApplication() as AppClass, get(), get(), get(), get()) } bind IDeviceApiProvider::class
 
         single<ICrashReportingLogr> { CrashReportingLogr(get(), get()) }
-        single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass) }
+        single<IPushProviderManager> { PushProviderManager(androidApplication() as AppClass, get(), get()) }
         single<IUnifiedPushManager> { UnifiedPushManager(androidApplication() as AppClass, get()) }
         single<IValueFormatter> { ValueFormatter(get()) }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class

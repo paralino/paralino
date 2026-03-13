@@ -4,6 +4,7 @@ import app.paralino.android.AppClass
 import app.paralino.android.notification.PushTokenSyncWorker
 import app.paralino.android.remote.sync.PushNotificationsSyncWorker
 import app.paralino.core.logg
+import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.repo.user.IPushProviderManager
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
@@ -13,7 +14,10 @@ import kotlinx.coroutines.withContext
 
 
 class PushProviderManager(
-    private val appClass: AppClass
+    private val appClass: AppClass,
+    // needed for direct release
+    private val notificationServiceManager: NotificationSocketServiceManager,
+    private val unifiedPushManager: IUnifiedPushManager
 ) : IPushProviderManager {
 
     override fun syncPushToken() {
