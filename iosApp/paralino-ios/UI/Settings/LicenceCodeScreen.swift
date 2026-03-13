@@ -24,7 +24,7 @@ struct LicenceCodeScreen: View {
                 )
             }
             .toolbarTitleDisplayMode(.inline)
-            .ignoresSafeArea(.all, edges: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle(MR.shared.strings.settings_section_general_title.localizedString())
         }
     }
