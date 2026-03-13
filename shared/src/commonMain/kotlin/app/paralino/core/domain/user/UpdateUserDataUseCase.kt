@@ -211,7 +211,7 @@ class UpdateUserDataUseCase constructor(
             val currentState = UserDeviceDataUpdateState(
                 pushToken = appPrefs.pushTokenSynced.takeIf { it.isNotBlank() },
                 locationPushToken = appPrefs.locationPushTokenSynced.takeIf { it.isNotBlank() },
-                pushProvider = personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProvider ?: PushProvider.DEVICE_NATIVE,
+                pushProvider = personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProvider ?: PushProvider.default,
                 pushProviderConfig = PushProviderEndpointConfig.get(personalSpaceRepo.personalSpaceState.value.data?.currentDevice?.pushProviderConfig),
                 updatePushProviderConfig = false
             )

@@ -264,7 +264,7 @@ class NotificationSocketSettingsViewModel(
 
             items.add(
                 GenericSettingListItem.GroupOptions(
-                    defaultId = ParalinoSocketConnectionType.PERIODIC_LEVEL_2.key,
+                    defaultId = ParalinoSocketConnectionType.default.key,
                     keyId = "paralinoConnectionTypeOptions",
                     items = connectionOptions
                 )

@@ -915,7 +915,7 @@
     <string name="setting_notificationSocket_connectionType_realtime_info">Constant real-time connection with near-instant notification delivery.</string>
     <string name="setting_notificationSocket_connectionType_realtime_tag">Battery Usage: Potentially High</string>
     <string name="setting_notificationSocket_connectionType_periodic1_title">Every 5-15 minutes</string>
-    <string name="setting_notificationSocket_connectionType_periodic1_info">Notifications are refreshed periodically every 5-15 minutes</string>
+    <string name="setting_notificationSocket_connectionType_periodic1_info">Depending on current battery level, notifications are refreshed periodically every 5-15 minutes</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Battery Usage: High</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Few times per hour</string>
     <string name="setting_notificationSocket_connectionType_periodic2_info">Notifications are refreshed periodically few times per hour</string>

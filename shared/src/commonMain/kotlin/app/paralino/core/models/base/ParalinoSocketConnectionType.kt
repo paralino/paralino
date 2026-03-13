@@ -7,8 +7,9 @@ enum class ParalinoSocketConnectionType(val key: String) {
     PERIODIC_LEVEL_3("periodic_level_3");
 
     companion object {
+        val default = REALTIME
         fun fromKey(key: String?): ParalinoSocketConnectionType {
-            return entries.find { it.key == key } ?: PERIODIC_LEVEL_2
+            return entries.find { it.key == key } ?: default
         }
     }
 }

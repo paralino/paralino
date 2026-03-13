@@ -8,8 +8,9 @@ enum class PushProvider(val key: String) {
 
     companion object {
         val paralinoDistributorId = "app.paralino.android"
+        val default = DEVICE_NATIVE
         fun fromKey(key: String?): PushProvider {
-            return entries.firstOrNull { it.key == key } ?: DEVICE_NATIVE
+            return entries.firstOrNull { it.key == key } ?: default
         }
     }
 }

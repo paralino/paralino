@@ -462,7 +462,7 @@ class AccountOnboardingViewModel(
     override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {
         if (event is NotificationPermissionResultEvent && uiState.value.data?.onboardingStep is AccountOnboardingContent.PushNotifications) {
             if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
-                notificationServiceManager.setNotificationPushProvider(provider = PushProvider.DEVICE_NATIVE)
+                notificationServiceManager.setNotificationPushProvider(provider = PushProvider.default)
             }
 
             onEvent(AccountOnboardingScreenUiEvent.OnboardingStep(AccountOnboardingUiEvent.SkipOnboarding))
