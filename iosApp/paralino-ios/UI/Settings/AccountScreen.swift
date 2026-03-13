@@ -10,6 +10,7 @@ import shared
 
 struct AccountScreen: View {
     
+    @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState = ViewModelFactoryIOS(vm: KoinIOS.ViewModels.shared.settingsVM)
     @State var shareText: ShareText?
@@ -40,6 +41,11 @@ struct AccountScreen: View {
                     },
                     onShare: { data in
                         shareText = ShareText(text: data)
+                    },
+                    askNotificationPermission: {
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }

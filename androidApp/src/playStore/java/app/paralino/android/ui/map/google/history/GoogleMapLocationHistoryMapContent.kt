@@ -177,7 +177,7 @@ fun rememberGoogleMapLocationHistoryMapController(
 @Composable
 fun GoogleMapLocationHistoryMapContent(
     uiState: LocationHistoryScreenUiState,
-    isSatelliteMode: Boolean = uiState.isSatelliteMode,
+    isSatelliteMode: Boolean,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     val polylineWidthPixels = with(LocalDensity.current) { 5.dp.toPx() }

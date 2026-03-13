@@ -69,9 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
-import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -471,9 +469,9 @@ private fun CreatePlaceMapStep(
                 }
             }
 
-            if (state.androidMapSDKProvider?.hasSatelliteMaps == true) {
+            if (state.hasSatelliteMode) {
                 Image(
-                    painter = if (!state.isSatelliteMode) {
+                    painter = if (!state.isSatelliteModeActive) {
                         MR.images.image_map_type_satellite.asPainterResource()
                     } else if (isSystemInDarkTheme()) {
                         MR.images.image_map_type_default_dark.asPainterResource()

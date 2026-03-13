@@ -33,7 +33,9 @@ struct PersonalSpaceScreen: View {
                         path.append(.home(.personalSpaceSettings))
                     },
                     openTimeline: {
-                        path.append(.home(.locationHistory(groupId: UserGroup.companion.groupPersonalDevicesId, memberUserId: "", deviceId: nil)))
+                        // TODO: deeplink to history
+                        path.removeAll()
+                        path.append(.home(.map))
                     },
                     openMap: {
                         path.removeAll()

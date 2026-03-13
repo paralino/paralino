@@ -49,7 +49,7 @@ fun MapLibreMainHomeMapContent(
     uiState?.visibleMarkers?.forEach { model ->
         MapHomeMarkerComposable(
             model = model,
-            satelliteMode = uiState.isSatelliteMode,
+            satelliteMode = uiState.isSatelliteModeActive,
             onMarkerClick = { onEvent(MapHomeScreenUiEvent.OnMarkerClick(it)) }
         )
     }

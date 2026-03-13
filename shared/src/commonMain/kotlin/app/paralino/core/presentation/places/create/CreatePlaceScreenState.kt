@@ -34,12 +34,19 @@ data class CreatePlaceScreenState constructor(
     val radiusMeters: Int,
     val radiusText: String,
     val hasNameError: Boolean,
-    val isSatelliteMode: Boolean,
+    val isSatelliteModeEnabled: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean,
     val androidMapSDKProvider: MapsSDKProvider?,
     val alertDialog: MainAlertDialog?
 ) {
+    val deviceType: DeviceType = DeviceType.current
+    val hasSatelliteMode: Boolean = when (deviceType) {
+        DeviceType.Android -> androidMapSDKProvider?.hasSatelliteMaps != false
+        DeviceType.iOS -> true
+    }
+    val isSatelliteModeActive: Boolean = if (hasSatelliteMode) isSatelliteModeEnabled else false
+
     val hintText: AnnotatedString = when (addressUiMode) {
         CreatePlaceAddressSearchUiMode.HIDDEN -> {
             when (DeviceType.current) {
@@ -121,7 +128,7 @@ data class CreatePlaceScreenState constructor(
                 fullLoading = false,
                 alertDialog = null,
                 androidMapSDKProvider = androidMapSDKProvider,
-                isSatelliteMode = false
+                isSatelliteModeEnabled = false
             )
         }
     }

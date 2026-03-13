@@ -8,6 +8,8 @@
 import Foundation
 import shared
 import paralino_apple_core
+import CoreLocation
+import UIKit
 
 class KoinSetup {
     static func initKoin(
@@ -25,5 +27,14 @@ class KoinSetup {
             connectionStatusProvider: { appBuildConfig in ConnectionStatusProvider(appBuildConfig: appBuildConfig) },
             notificationStatusProvider: { NotificationStatusProvider() }
         )
+    }
+    
+    class LocationStatusProvider: ILocationStatusProvider {
+        override func createCurrentStatus() -> LocationConditionStatus {
+            let locationManager = CLLocationManager()
+            return locationManager.locationCondtionStatus(
+                isUnrestrictedBackgroundPermissionAllowed: UIApplication.shared.backgroundRefreshStatus != .denied
+            )
+        }
     }
 }

@@ -123,10 +123,10 @@ fun rememberGoogleMapMainHomeMapController(
     val uiSettings by defaultGoogleMapUiSettings()
     val properties by defaultGoogleMapProperties(
         isDarkMode = isSystemInDarkTheme(),
-        satelliteMode = uiState.isSatelliteMode
+        satelliteMode = uiState.isSatelliteModeActive
     )
 
-    return remember(mapContentPadding, uiState.isSatelliteMode) {
+    return remember(mapContentPadding, uiState.isSatelliteModeActive) {
         derivedStateOf {
             GoogleMapUiControlledData(
                 cameraPositionState = cameraPositionState,
@@ -146,7 +146,7 @@ fun GoogleMapMainHomeMapContent(
     uiState?.visibleMarkers?.forEach { model ->
         MapHomeMarkerComposable(
             model = model,
-            satelliteMode = uiState.isSatelliteMode,
+            satelliteMode = uiState.isSatelliteModeActive,
             onMarkerClick = { onEvent(MapHomeScreenUiEvent.OnMarkerClick(it)) }
         )
     }

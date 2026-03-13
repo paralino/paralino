@@ -129,11 +129,11 @@ class MapStateManager(
         uiState: StateFlow<MapHomeScreenState>,
         updateState: ((MapHomeScreenState) -> MapHomeScreenState) -> Unit,
     ) {
-        if (uiState.value.androidMapSDKProvider?.hasSatelliteMaps == true) {
+        if (uiState.value.hasSatelliteMode) {
             updateState { state ->
                 when (state) {
-                    is MapHomeScreenState.Empty -> state.copy(isSatelliteMode = !state.isSatelliteMode)
-                    is MapHomeScreenState.Ready -> state.copy(isSatelliteMode = !state.isSatelliteMode)
+                    is MapHomeScreenState.Empty -> state.copy(isSatelliteModeEnabled = !state.isSatelliteModeEnabled)
+                    is MapHomeScreenState.Ready -> state.copy(isSatelliteModeEnabled = !state.isSatelliteModeEnabled)
                 }
             }
         } else {

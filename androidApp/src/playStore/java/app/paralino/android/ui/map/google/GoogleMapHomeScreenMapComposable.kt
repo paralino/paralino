@@ -45,7 +45,7 @@ fun GoogleMapHomeScreenMapComposable(
             cameraPositionState = cameraPositionState,
             animateFirstContent = true,
             isMapLoaded = isMapLoaded,
-            isSatelliteMode = uiState.isSatelliteMode,
+            isSatelliteMode = uiState.isSatelliteModeActive,
             onMapTouch = {
                 onHistoryEvent(LocationHistoryUiEvent.OnMapTouch)
             }
@@ -74,7 +74,7 @@ fun GoogleMapHomeScreenMapComposable(
             if (historyUiState != null) {
                 GoogleMapLocationHistoryMapContent(
                     uiState = historyUiState,
-                    isSatelliteMode = uiState.isSatelliteMode,
+                    isSatelliteMode = uiState.isSatelliteModeActive,
                     onEvent = onHistoryEvent
                 )
             } else {

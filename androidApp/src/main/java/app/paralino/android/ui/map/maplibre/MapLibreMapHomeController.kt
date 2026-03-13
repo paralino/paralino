@@ -93,7 +93,7 @@ fun rememberMapLibreHomeMapController(
         }
     }
 
-    return remember(mapContentPadding, uiState.isSatelliteMode, uiState.androidMapSDKProvider) {
+    return remember(mapContentPadding, uiState.isSatelliteModeActive, uiState.androidMapSDKProvider) {
         derivedStateOf {
             val options = MapOptions(
                 renderOptions = RenderOptions(),
@@ -109,7 +109,7 @@ fun rememberMapLibreHomeMapController(
 
             MapLibreMapUiControlledData(
                 options = options,
-                isSatelliteMode = uiState.isSatelliteMode,
+                isSatelliteMode = uiState.isSatelliteModeActive,
                 cameraState = cameraState,
                 contentPadding = mapContentPadding,
                 mapsSDKProvider = uiState.androidMapSDKProvider

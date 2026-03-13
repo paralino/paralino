@@ -41,17 +41,15 @@ fun CreatePlaceScreen(
     lng: Double? = null,
     vm: CreatePlaceViewModel = koinViewModel { parametersOf(groupId, placeId, lat, lng) },
 ) {
-    val isNewPlace by vm.uiState.map { it.data?.isNewPlace }.collectAsState(initial = null)
     val pickerState = rememberEmojiBottomSheetPickerState()
 
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colors.background).safeDrawingPadding(),
         topBar = {
             DefaultToolbar(
-                title = when (isNewPlace) {
+                title = when (vm.isNewPlace) {
                     true -> stringResource(MR.strings.places_create_screen_title)
                     false -> stringResource(MR.strings.places_edit_screen_title)
-                    else -> null
                 },
                 navigationIcon = { ToolbarButtons.Back { appState.navController.popBackStack() } }
             )
@@ -107,7 +105,7 @@ private fun PlaceCreateMapComposable(
         mapsSDKProvider = state.androidMapSDKProvider,
         markers = listOfNotNull(pin),
         fallbackCenterLatLng = state.fallbackCenterLatLng,
-        isSatelliteMode = state.isSatelliteMode,
+        isSatelliteMode = state.isSatelliteModeActive,
         canTapOnCircles = false,
         onMapCameraSettled = onMapCameraSettled,
         onMapInteraction = onMapInteraction,

@@ -221,7 +221,7 @@ fun rememberMapLibreLocationHistoryMapController(
 @Composable
 fun MapLibreLocationHistoryMapContent(
     uiState: LocationHistoryScreenUiState,
-    isSatelliteMode: Boolean = uiState.isSatelliteMode,
+    isSatelliteMode: Boolean,
     onEvent: (LocationHistoryUiEvent) -> Unit
 ) {
     val geoData = remember(uiState.selectedLocations) {

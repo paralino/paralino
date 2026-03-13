@@ -27,6 +27,9 @@ struct SubscriptionsScreen: View {
                     },
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
+                    },
+                    openLicenceScreen: {
+                        path.append(.settings(.licenceCode))
                     }
                 )
             }

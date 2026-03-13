@@ -5,17 +5,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.rawdata.RawDataPresentationViewModel
-import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.SettingsViewModel
 import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallScreenEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
+import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.BaseGenericSettingViewModel
 import app.paralino.core.presentation.settings.location.LocationSettingsViewModel
 import app.paralino.core.presentation.settings.passwordchange.ChangePasswordViewModel
@@ -31,6 +32,7 @@ import app.paralino.core.ui.settings.RawDataScreenCore
 import app.paralino.core.ui.settings.SettingsScreenCore
 import app.paralino.core.ui.settings.billing.PaywallScreenCore
 import app.paralino.core.ui.settings.billing.SubscriptionScreenCore
+import app.paralino.core.ui.settings.billing.licence.LicenceCodeScreenCore
 import app.paralino.core.ui.settings.location.LocationSettingsScreenCore
 import app.paralino.core.ui.settings.profile.AccountScreenCore
 import app.paralino.core.ui.settings.profile.ChangeEmailScreenCore
@@ -53,6 +55,7 @@ object SettingsScreens {
         openAppSettings: () -> Unit,
         openLocationSettings: () -> Unit,
         onShare: (String) -> Unit,
+        askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             SettingsScreenCore(
@@ -69,7 +72,8 @@ object SettingsScreens {
                 openPaywall = openPaywall,
                 openAppSettings = openAppSettings,
                 openLocationSettings = openLocationSettings,
-                onShareCode = onShare
+                onShareCode = onShare,
+                askNotificationPermission = askNotificationPermission
             )
         }
     }
@@ -83,6 +87,7 @@ object SettingsScreens {
         openProfileRawScreen: () -> Unit,
         openBlockList: () -> Unit,
         onShare: (String) -> Unit,
+        askNotificationPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             AccountScreenCore(
@@ -94,7 +99,8 @@ object SettingsScreens {
                 openChangeEmail = openChangeEmail,
                 openProfileRawScreen = openProfileRawScreen,
                 openBlockList = openBlockList,
-                onShare = onShare
+                onShare = onShare,
+                askNotificationPermission = askNotificationPermission
             )
         }
     }
@@ -198,6 +204,7 @@ object SettingsScreens {
         onNavigateBack: () -> Unit,
         openBillingStore: () -> Unit,
         openPaywall: () -> Unit,
+        openLicenceScreen: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             SubscriptionScreenCore(
@@ -206,7 +213,8 @@ object SettingsScreens {
                 paddingValues = PaddingValues(bottom = 30.dp),
                 onNavigateBack = onNavigateBack,
                 openBillingStore = openBillingStore,
-                openPaywall = openPaywall
+                openPaywall = openPaywall,
+                openLicenceScreen = openLicenceScreen
             )
         }
     }
@@ -216,7 +224,8 @@ object SettingsScreens {
         paddingValues: AppleScreenPaddingValues,
         onNavigateBack: (Boolean) -> Unit,
         onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
-        onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit
+        onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit,
+        openLicenceScreen: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             PaywallScreenCore(
@@ -225,7 +234,21 @@ object SettingsScreens {
                 paddingValues = paddingValues.toComposePaddingValues(),
                 onNavigateBack = onNavigateBack,
                 onStartPurchase = onStartPurchase,
-                onRestorePurchase = onRestorePurchase
+                onRestorePurchase = onRestorePurchase,
+                openLicenceScreen = openLicenceScreen
+            )
+        }
+    }
+
+    fun LicenceCodeScreenVC(
+        vm: LicenceCodeViewModel,
+        onNavigateBack: () -> Unit,
+    ) = ComposeUIViewController {
+        RootScreenIOS {
+            LicenceCodeScreenCore(
+                appState = it,
+                vm = vm,
+                onNavigateBack = onNavigateBack,
             )
         }
     }
@@ -299,6 +322,7 @@ object SettingsScreens {
                 onNotificationGroupingClick = openNotificationGroupingScreen,
                 onNavigationAppClick = openNavigationAppScreen,
                 onPlaceSearchSettingsClick = openPlaceSearchSettings,
+                // not available in iOS
                 onMapSourceSettingsClick = {},
                 onNotificationSocketSettingsClick = {}
             )
@@ -308,6 +332,8 @@ object SettingsScreens {
     fun GenericSettingsScreenVC(
         vm: BaseGenericSettingViewModel,
         openPaywall: () -> Unit,
+        askNotificationPermission: () -> Unit,
+        askBackgroundAccessPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             GenericSettingsScreenCore(
@@ -317,7 +343,8 @@ object SettingsScreens {
                 openPaywall = openPaywall,
                 // not available in iOS
                 openNotificationSocketChannelSettings = {},
-                askNotificationPermission = {},
+                askNotificationPermission = askNotificationPermission,
+                askBackgroundAccessPermission = askBackgroundAccessPermission,
             )
         }
     }

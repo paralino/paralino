@@ -20,6 +20,7 @@ class MapHomeState : BaseMapObservableObject {
         selectedGroupImage: nil,
         currentUserImage: ImageModel.companion.placeholder(),
         isPersonalSpace: true,
+        androidMapSDKProvider: nil,
         isSatelliteMode: false,
         alertDialog: nil
     )

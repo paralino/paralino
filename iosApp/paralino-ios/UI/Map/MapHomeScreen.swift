@@ -29,8 +29,8 @@ struct MapHomeScreen: View {
                     onOpenPlacesScreen: { groupId in
                         path.append(.home(.places(groupId: groupId, isOnboarding: false)))
                     },
-                    onOpenCreatePlaceScreen: { groupId in
-                        path.append(.home(.placeCreate(groupId: groupId, placeId: nil, lat: nil, lng: nil)))
+                    onOpenCreatePlaceScreen: { groupId, latLng in
+                        path.append(.home(.placeCreate(groupId: groupId, placeId: nil, lat: latLng?.lat, lng: latLng?.lng)))
                     },
                     onSheetOffsetChange: { offset in
                         mapState.bottomSafeArea = max(CGFloat(offset.floatValue - safeAreaInsets.bottom), 0)
@@ -81,9 +81,6 @@ struct MapHomeScreen: View {
                         appDelegate.notificationPermissionHandler.requestNotificationPermission(
                             messageDispather: mapState.vm.messageDispatcher
                         )
-                    },
-                    openLocationHistory: { event in
-                        path.append(.home(.locationHistory(groupId: event.groupId, memberUserId: event.memberUserId, deviceId: event.deviceId)))
                     },
                     mapUIView: { () -> UIViewController in
                         let controller = MapComponentVC()

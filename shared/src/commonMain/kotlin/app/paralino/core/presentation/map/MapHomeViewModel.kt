@@ -383,7 +383,7 @@ class MapHomeViewModel constructor(
                             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
                             currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
                             androidMapSDKProvider = mapProvider,
-                            isSatelliteMode = false
+                            isSatelliteModeEnabled = false
                         )
                     }
                 } else if (it.isPersonalSpace){
@@ -415,7 +415,7 @@ class MapHomeViewModel constructor(
                     isPersonalSpace = true,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
-                    isSatelliteMode = false
+                    isSatelliteModeEnabled = false
                 )
             }
 
@@ -426,7 +426,7 @@ class MapHomeViewModel constructor(
                 userData = userData,
                 previousState = _uiState.value.asReady()
                     ?.takeIf { it.groupOrSpaceId.isPersonalSpace },
-                isSatelliteMode = _uiState.value.isSatelliteMode,
+                isSatelliteModeEnabled = _uiState.value.isSatelliteModeEnabled,
                 alertDialog = _uiState.value.alertDialog,
                 isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding,
             )
@@ -452,7 +452,7 @@ class MapHomeViewModel constructor(
                     isPersonalSpace = false,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
-                    isSatelliteMode = false
+                    isSatelliteModeEnabled = false
                 )
             }
 
@@ -463,7 +463,7 @@ class MapHomeViewModel constructor(
                 userData = userData,
                 previousState = _uiState.value.asReady()
                     ?.takeIf { it.groupOrSpaceId.id == group.id },
-                isSatelliteMode = _uiState.value.isSatelliteMode,
+                isSatelliteModeEnabled = _uiState.value.isSatelliteModeEnabled,
                 alertDialog = _uiState.value.alertDialog,
                 isFirstTimeInPersonalSpace = _uiState.value.asReady()?.isFirstTimeInPersonalSpace ?: !appPrefs.didHavePersonalSpaceIntroOnboarding
             )

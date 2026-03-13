@@ -43,7 +43,6 @@ enum HomeGraph: Hashable {
     case placeCreate(groupId: String, placeId: String?, lat: Double? = nil, lng: Double? = nil)
     case personalSpace
     case personalSpaceSettings
-    case locationHistory(groupId: String, memberUserId: String, deviceId: String?)
     case locationHistorySettings(groupId: String)
 }
 
@@ -69,4 +68,5 @@ enum SettingsGraph: Hashable {
     case notificationGroupingSettings
     case navigationAppSettings
     case placeSearchSettings
+    case licenceCode
 }

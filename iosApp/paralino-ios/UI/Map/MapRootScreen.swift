@@ -49,6 +49,7 @@ struct MapRootScreen: View {
                             case .notificationGroupingSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.notificationGroupingVM))
                             case .navigationAppSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.navigationAppVM))
                             case .placeSearchSettings: GenericSettingsScreen(path: $mainAppState.userReadyGraph, appState: GenericSettingsScreenState(vm: KoinIOS.ViewModels.shared.placeSearchSettingsVM))
+                            case .licenceCode: LicenceCodeScreen(path: $mainAppState.userReadyGraph)
                             }
                         case let .home(homeGraph):
                             switch homeGraph {
@@ -88,8 +89,6 @@ struct MapRootScreen: View {
                                 PlaceCreateScreen(path: $mainAppState.userReadyGraph, appState: PlaceCreateScreen.createState(groupId: groupId, placeId: placeId, lat: lat, lng: lng))
                             case .freePlanInfo: FreePlanInfoScreen(path: $mainAppState.userReadyGraph)
                             case .locationHistorySettings(groupId: let groupId): LocationHistoryDeleteScreen(path: $mainAppState.userReadyGraph, appState: LocationHistoryDeleteScreen.createState(groupId: groupId))
-                            case .locationHistory(groupId: let groupId, memberUserId: let memberUserId, deviceId: let deviceId):
-                                LocationHistoryMapScreen(path: $mainAppState.userReadyGraph, mapState: LocationHistoryMapState(groupId: groupId, memberUserId: memberUserId, deviceId: deviceId))
                             case .personalSpace: PersonalSpaceScreen(path: $mainAppState.userReadyGraph, appState: PersonalSpaceScreen.createState())
                             case .personalSpaceSettings: PersonalSpaceSettingsScreen(path: $mainAppState.userReadyGraph)
                             }

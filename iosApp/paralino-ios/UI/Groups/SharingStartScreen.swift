@@ -53,6 +53,11 @@ struct SharingStartScreen: View {
                         appDelegate.locationPermissionHandler.requestLocationPermission(
                             messageDispather: appState.vm.messageDispatcher
                         )
+                    },
+                    askBackgroundAccessPermission: {
+                        appDelegate.locationPermissionHandler.requestBackgroundRefreshPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }

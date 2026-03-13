@@ -183,7 +183,7 @@ fun MapHomeScreenElements(
         // map mode
         if (readyState != null) {
             Image(
-                painter = if (!state.isSatelliteMode) {
+                painter = if (!state.isSatelliteModeActive) {
                     MR.images.image_map_type_satellite.asPainterResource()
                 } else if (isSystemInDarkTheme()) {
                     MR.images.image_map_type_default_dark.asPainterResource()

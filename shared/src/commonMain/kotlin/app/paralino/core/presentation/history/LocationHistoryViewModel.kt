@@ -163,15 +163,6 @@ class LocationHistoryViewModelController(
                 }
             }
 
-            LocationHistoryUiEvent.OnMapModeSwitch -> {
-                _uiState.update {
-                    it.copy(
-                        isSatelliteMode = !it.isSatelliteMode,
-                        isFilterOpened = false
-                    )
-                }
-            }
-
             LocationHistoryUiEvent.OnMapTouch -> {
                 _uiState.update {
                     it.copy(

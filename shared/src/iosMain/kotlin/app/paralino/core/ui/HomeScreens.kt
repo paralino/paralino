@@ -250,6 +250,7 @@ object HomeScreens {
         askLocationService: () -> Unit,
         askLocationPermission: () -> Unit,
         askBackgroundLocationPermission: () -> Unit,
+        askBackgroundAccessPermission: () -> Unit,
     ) = ComposeUIViewController {
         RootScreenIOS {
             SharingStartScreenCore(
@@ -262,7 +263,8 @@ object HomeScreens {
                 askNotificationPermission = askNotificationPermission,
                 askLocationService = askLocationService,
                 askLocationPermission = askLocationPermission,
-                askBackgroundLocationPermission = askBackgroundLocationPermission
+                askBackgroundLocationPermission = askBackgroundLocationPermission,
+                askBackgroundAccessPermission = askBackgroundAccessPermission,
             )
         }
     }

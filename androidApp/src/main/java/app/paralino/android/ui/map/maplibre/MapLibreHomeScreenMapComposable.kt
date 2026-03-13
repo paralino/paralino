@@ -46,7 +46,7 @@ fun HomeScreenMapLibreMapComposable(
             mapContentPadding = mapContentPadding,
             isMapLoaded = isMapLoaded,
             animateFirstContent = true,
-            isSatelliteMode = uiState.isSatelliteMode,
+            isSatelliteMode = uiState.isSatelliteModeActive,
             mapsSDKProvider = uiState.androidMapSDKProvider,
             onMapTouch = {
                 onHistoryEvent(LocationHistoryUiEvent.OnMapTouch)
@@ -76,7 +76,7 @@ fun HomeScreenMapLibreMapComposable(
             if (historyUiState != null) {
                 MapLibreLocationHistoryMapContent(
                     uiState = historyUiState,
-                    isSatelliteMode = uiState.isSatelliteMode,
+                    isSatelliteMode = uiState.isSatelliteModeActive,
                     onEvent = onHistoryEvent
                 )
             } else {

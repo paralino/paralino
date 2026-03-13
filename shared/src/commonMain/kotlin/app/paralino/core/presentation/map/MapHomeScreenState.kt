@@ -25,7 +25,7 @@ import app.paralino.core.ui.map.BottomSheetPosition
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
-    abstract val isSatelliteMode: Boolean
+    abstract val isSatelliteModeEnabled: Boolean
     abstract val alertDialog: MainAlertDialog?
     abstract val selectedGroupId: String?
     abstract val selectedGroupImage: ImageModel?
@@ -35,6 +35,11 @@ sealed class MapHomeScreenState {
     abstract val androidMapSDKProvider: MapsSDKProvider?
 
     val deviceType: DeviceType = DeviceType.current
+    val hasSatelliteMode: Boolean get() = when (deviceType) {
+        DeviceType.Android -> androidMapSDKProvider?.hasSatelliteMaps != false
+        DeviceType.iOS -> true
+    }
+    val isSatelliteModeActive: Boolean get() = if (hasSatelliteMode) isSatelliteModeEnabled else false
 
     data class Ready constructor(
         val groupOrSpaceId: GroupOrSpaceId,
@@ -67,7 +72,7 @@ sealed class MapHomeScreenState {
         val isOverLimit: Boolean,
         override val androidMapSDKProvider: MapsSDKProvider,
         override val alertDialog: MainAlertDialog?,
-        override val isSatelliteMode: Boolean = false
+        override val isSatelliteModeEnabled: Boolean = false
     ) : MapHomeScreenState() {
         override val isPersonalSpace = groupOrSpaceId.isPersonalSpace
         val hasPersonalSpaceIntroBanner = isPersonalSpace && isFirstTimeInPersonalSpace
@@ -135,7 +140,7 @@ sealed class MapHomeScreenState {
         override val currentUserImage: ImageModel,
         override val isPersonalSpace: Boolean,
         override val androidMapSDKProvider: MapsSDKProvider?,
-        override val isSatelliteMode: Boolean = false,
+        override val isSatelliteModeEnabled: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,
     ) : MapHomeScreenState() {
         override val isSheetEnabled: Boolean = false

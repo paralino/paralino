@@ -55,7 +55,7 @@ class MapStateMapper(
         activeSharingContracts: List<LocationSharingContract>,
         userData: UserMeData,
         previousState: MapHomeScreenState.Ready?,
-        isSatelliteMode: Boolean,
+        isSatelliteModeEnabled: Boolean,
         alertDialog: MainAlertDialog?,
         isFirstTimeInPersonalSpace: Boolean,
     ): MapHomeScreenState.Ready {
@@ -195,7 +195,7 @@ class MapStateMapper(
             },
             verified = isVerified,
             alertDialog = alertDialog,
-            isSatelliteMode = isSatelliteMode.takeIf { mapProvider.hasSatelliteMaps } ?: false,
+            isSatelliteModeEnabled = isSatelliteModeEnabled,
             groupPlanConfig = planConfig,
             isOverLimit = isOverLimits,
             androidMapSDKProvider = mapProvider

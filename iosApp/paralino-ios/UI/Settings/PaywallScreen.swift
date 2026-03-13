@@ -30,6 +30,9 @@ struct PaywallScreen: View {
                     },
                     onRestorePurchase: { event in
                         state.restorePurchase(event)
+                    },
+                    openLicenceScreen: {
+                        path.append(.settings(.licenceCode))
                     }
                 )
             }

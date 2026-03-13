@@ -234,7 +234,7 @@ data class LocationPermissionHandlerState constructor(
         appState.uiScope.launch {
             messageDispatcher.showSnackbarForResult(
                 AppSnackbarData(
-                    text = context.getString(MR.strings.error_unrestricted_background_access_message.resourceId),
+                    text = context.getString(MR.strings.error_unrestricted_background_access_message_android.resourceId),
                     actionText = MR.strings.button_open_settings.getString(context),
                     duration = SnackbarDuration.Long
                 )
