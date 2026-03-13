@@ -21,7 +21,7 @@ class MapHomeState : BaseMapObservableObject {
         currentUserImage: ImageModel.companion.placeholder(),
         isPersonalSpace: true,
         androidMapSDKProvider: nil,
-        isSatelliteMode: false,
+        isSatelliteModeEnabled: false,
         alertDialog: nil
     )
     
@@ -60,7 +60,7 @@ class MapHomeState : BaseMapObservableObject {
                     }
                 }
                 
-                self?.isSatelliteMode = state.isSatelliteMode
+                self?.isSatelliteMode = state.isSatelliteModeActive
             }
         }
         
