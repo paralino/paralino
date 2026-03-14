@@ -9,6 +9,7 @@ import app.paralino.core.domain.user.GetDirectCheckoutWebPortalUseCase
 import app.paralino.core.domain.user.RefreshEverythingUseCase
 import app.paralino.core.domain.user.StartDirectCheckoutUseCase
 import app.paralino.core.logg
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.Payload
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
@@ -371,6 +372,8 @@ class PaywallViewModel(
             billingPeriods = emptyList()
         )
 
+        val currentHighestPlan = plans.highestValidPlan
+
         val uiPlans = availableProducts.map { product ->
             val planConfig = product.planConfig
             val isPlanSelected = isPlanSelected(
@@ -381,7 +384,7 @@ class PaywallViewModel(
             )
             val billingPeriods = product.periods
                 .groupBy { it.billingPeriod }
-                .map { periods ->
+                .mapNotNull { periods ->
                     val period = periods.value.first()
 
                     val fullYearlyPrice = product.periods
@@ -433,7 +436,17 @@ class PaywallViewModel(
                             ?.let { "$it%" },
                         isPromoDiscount = highestPrice != null,
                         trialDurationDays = lowestPrice.trialDurationDays,
-                        isCurrentBillingPeriod = plans.highestValidPlan?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }?.plan?.billingPeriod == period.billingPeriod
+                        isNativePlatformCurrentBillingPeriod = currentHighestPlan
+                            ?.takeIf { it.config.planTypeEnum == planConfig.planTypeEnum }
+                            ?.takeIf { plan ->
+                                when (plan.plan.provider) {
+                                    PlanProvider.APPLE_APP_STORE -> deviceApiProvider.deviceType == DeviceType.iOS
+                                    PlanProvider.GOOGLE_PLAY_STORE -> appConfig.appFlavor == AppFlavor.ANDROID_GOOGLE
+                                    PlanProvider.WEB_POLAR -> appConfig.appFlavor == AppFlavor.ANDROID_DIRECT
+                                    PlanProvider.PARALINO -> false
+                                }
+                            }
+                            ?.plan?.billingPeriod == period.billingPeriod
                     )
                 }
                 .sortedByDescending { it.billingPeriod }
@@ -510,7 +523,7 @@ class PaywallViewModel(
             }?.let {
                 MainAlertDialog.SubscriptionOfferDialog(dialogOffer = it)
             },
-            currentPlanProvider = plans.highestValidPlan?.plan?.provider
+            currentPlanProvider = currentHighestPlan?.plan?.provider
         )
     }
 
@@ -682,16 +695,16 @@ class PaywallViewModel(
             val selectedBillingPeriod = selectedPlan.selectedBillingPeriod
             if (selectedBillingPeriod == null) {
                 messageDispatcher.showSnackbar(text = MR.strings.paywall_select_plan_label.localizedString())
+            } else if (selectedBillingPeriod.isNativePlatformCurrentBillingPeriod) {
+                _eventChannel.trySend(PaywallScreenEvent.OpenNativeBillingStorePage)
             } else {
                 _uiState.update { it.copy(isPurchaseButtonLoading = true) }
-                coroutineScope.launch {
-                    _eventChannel.send(
-                        PaywallScreenEvent.OnStartPurchase(
-                            planType = selectedPlan.type,
-                            newPlanProductId = selectedBillingPeriod.productPlanId
-                        )
+                _eventChannel.trySend(
+                    PaywallScreenEvent.OnStartPurchase(
+                        planType = selectedPlan.type,
+                        newPlanProductId = selectedBillingPeriod.productPlanId
                     )
-                }
+                )
             }
         }
     }

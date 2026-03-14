@@ -9,9 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import app.paralino.android.provider.BillingProviderAndroid
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PurchaseErrorException
@@ -64,6 +66,7 @@ fun PaywallScreen(
 
     val activity = LocalContext.current.getActivity()
     val scope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
 
     PaywallScreenCore(
         modifier = Modifier,
@@ -119,6 +122,9 @@ fun PaywallScreen(
         },
         openLicenceScreen = {
             appState.navController.navigate(AppScreen.Settings.LicenceCode.routeSignature)
+        },
+        openBillingStore = {
+            uriHandler.openUri(BackendResourceIDs.subscriptionUrlGooglePlay)
         }
     )
 

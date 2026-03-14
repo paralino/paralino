@@ -226,6 +226,7 @@ object SettingsScreens {
         onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
         onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit,
         openLicenceScreen: () -> Unit,
+        openBillingStore: () -> Unit
     ) = ComposeUIViewController {
         RootScreenIOS {
             PaywallScreenCore(
@@ -235,7 +236,8 @@ object SettingsScreens {
                 onNavigateBack = onNavigateBack,
                 onStartPurchase = onStartPurchase,
                 onRestorePurchase = onRestorePurchase,
-                openLicenceScreen = openLicenceScreen
+                openLicenceScreen = openLicenceScreen,
+                openBillingStore = openBillingStore
             )
         }
     }

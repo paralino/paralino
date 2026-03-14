@@ -324,8 +324,9 @@
     <string name="plans_management_info_wrong_platform_title">You can not manage this subscription on this device!</string>
     <string name="plans_management_info_wrong_platform_message">Use the device you originally used for purchasing.</string>
     <string name="plans_management_info_otherPlatformPlan_message">You already have an active plan on another platform.</string>
+    <string name="plans_management_info_externalPricing_message">To check available options and prices, please continue on the web.</string>
     <string name="plans_management_info_plan">You currently have a **%1$s** plan!</string>
-    <string name="plans_management_alert_otherPlatformPlan_title">Found an active plan</string>
+    <string name="plans_management_alert_otherPlatformPlan_title">Active plan found</string>
     <string name="plans_management_alert_otherPlatformPlan_message">You already have an active **%1$s** plan from **%2$s**.\n\nPlease confirm to continue with the new subscription!</string>
     <string name="plans_management_billingPeriod_label">Billing period: %1$s</string>
     <string name="plans_management_nextRenewal_label">Renews at: %1$s</string>
@@ -352,6 +353,7 @@
     <string name="paywall_screen_header">Select the plan that is right for you</string>
     <string name="paywall_screen_title">Membership</string>
     <string name="paywall_current_plan_label">Current plan: %1$s</string>
+    <string name="paywall_active_planBillingPeriod_label">Active</string>
     <string name="paywall_plan_label">Plan: %1$s</string>
     <string name="paywall_special_offer_label">Special offer</string>
     <string name="paywall_special_offer_title">Forever discount</string>

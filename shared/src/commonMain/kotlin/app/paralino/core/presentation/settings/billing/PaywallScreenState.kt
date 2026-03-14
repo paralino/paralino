@@ -4,14 +4,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.intl.Locale
 import app.paralino.core.MR
 import app.paralino.core.models.AppFlavor
-import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.PlanBillingPeriod
 import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.PlanProvider
 import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionInfoNotice
-import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -58,6 +56,10 @@ data class PaywallScreenState(
     val selectedBillingPeriod: PlanBillingPeriodState? = selectedPlan?.selectedBillingPeriod?.takeIf {
         isPlatformBillingSupported
     }
+
+    val canShowAdditionalPlanSelector: Boolean = !screenType.isOnboarding && isPlatformBillingSupported
+    val canShowPlanPeriodSelector: Boolean = isPlatformBillingSupported && selectedPlan != null
+    val showExternalPricingInfo: Boolean = !isPlatformBillingSupported
 
     val continueButtonType: PaywallContinueButtonType = when (screenStep) {
         PaywallScreenStep.PAYWALL -> {
@@ -193,7 +195,7 @@ data class PlanBillingPeriodState(
     val discountPercent: String?,
     val isPromoDiscount: Boolean,
     val trialDurationDays: Int?,
-    val isCurrentBillingPeriod: Boolean
+    val isNativePlatformCurrentBillingPeriod: Boolean
 )
 
 enum class PaywallScreenStep {
@@ -248,6 +250,7 @@ sealed class PaywallScreenEvent() {
     ) : PaywallScreenEvent()
 
     data object OnRestorePurchase : PaywallScreenEvent()
+    data object OpenNativeBillingStorePage : PaywallScreenEvent()
     data class OnNavigateBack(val isSuccess: Boolean) : PaywallScreenEvent()
 }
 

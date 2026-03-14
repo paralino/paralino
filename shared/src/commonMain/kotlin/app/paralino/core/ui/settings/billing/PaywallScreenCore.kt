@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -60,7 +59,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -71,9 +69,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -96,7 +91,6 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultToolbar
 import app.paralino.core.ui.components.FilledButton
-import app.paralino.core.ui.components.MainInputField
 import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.components.SettingsSectionHeader
@@ -113,7 +107,6 @@ import app.paralino.core.utils.extensions.annotatedBoldCompose
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.time.Duration
 
 @Composable
 fun PaywallScreenCore(
@@ -124,7 +117,8 @@ fun PaywallScreenCore(
     onNavigateBack: (Boolean) -> Unit,
     onStartPurchase: (PaywallScreenEvent.OnStartPurchase) -> Unit,
     onRestorePurchase: (PaywallScreenEvent.OnRestorePurchase) -> Unit,
-    openLicenceScreen: () -> Unit
+    openLicenceScreen: () -> Unit,
+    openBillingStore: () -> Unit
 ) {
     MessageDispatcherEffect(vm, appState)
     val uiState by vm.uiState.collectAsState()
@@ -135,6 +129,7 @@ fun PaywallScreenCore(
                 is PaywallScreenEvent.OnNavigateBack -> onNavigateBack(event.isSuccess)
                 is PaywallScreenEvent.OnStartPurchase -> onStartPurchase(event)
                 is PaywallScreenEvent.OnRestorePurchase -> onRestorePurchase(event)
+                is PaywallScreenEvent.OpenNativeBillingStorePage -> openBillingStore()
 
                 null -> {
                     /* do nothing */
@@ -455,7 +450,7 @@ private fun ColumnScope.PaywallScreen(
         onEvent = onEvent
     )
 
-    if (state.selectedPlan != null && state.isPlatformBillingSupported) {
+    if (state.selectedPlan != null && state.canShowPlanPeriodSelector) {
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
             BillingPeriodOptions(
                 modifier = Modifier
@@ -472,6 +467,16 @@ private fun ColumnScope.PaywallScreen(
                 }
             )
         }
+    } else if (state.showExternalPricingInfo) {
+        NoticeInfoChip(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 20.dp)
+                .padding(top = 12.dp, bottom = 12.dp),
+            text = stringResource(MR.strings.plans_management_info_externalPricing_message),
+            icon = CoreAppIcons.InfoCircle.asPainterResource()
+        )
     } else {
         Spacer(modifier = Modifier.size(12.dp))
     }
@@ -611,7 +616,7 @@ private fun ColumnScope.PaywallScreen(
 
     PaywallUserReviewsSection()
 
-    if (!state.screenType.isOnboarding && state.isPlatformBillingSupported) {
+    if (state.canShowAdditionalPlanSelector) {
         Column(
             modifier = Modifier
                 .padding(top = 40.dp)
@@ -626,7 +631,7 @@ private fun ColumnScope.PaywallScreen(
                 onEvent = onEvent
             )
 
-            if (state.selectedPlan != null) {
+            if (state.selectedPlan != null && state.canShowPlanPeriodSelector) {
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
                     BillingPeriodOptions(
                         modifier = Modifier
@@ -1029,13 +1034,14 @@ private fun BillingPeriodOptions(
                     monthlyEquivalent = state.pricePerMonth,
                     isPromoDiscount = state.isPromoDiscount,
                     isSelected = state.isSelected,
+                    isCurrent = state.isNativePlatformCurrentBillingPeriod,
                     onClick = { onPeriodSelected(state.billingPeriod) }
                 )
             }
         }
 
         AnimatedVisibility(
-            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null
+            visible = selectedPlan.selectedBillingPeriod?.pricePerMember != null && !selectedPlan.selectedBillingPeriod.isNativePlatformCurrentBillingPeriod
         ) {
             Text(
                 modifier = Modifier
@@ -1062,6 +1068,7 @@ private fun SubscriptionOptionItem(
     monthlyEquivalent: String? = null,
     isPromoDiscount: Boolean,
     isSelected: Boolean,
+    isCurrent: Boolean,
     onClick: () -> Unit
 ) {
     val sourceColor = if (isSelected) MaterialTheme.colors.surface else MaterialTheme.colors.surface
@@ -1144,7 +1151,7 @@ private fun SubscriptionOptionItem(
                 color = contentColor
             )
 
-            AnimatedVisibility(monthlyEquivalent != null) {
+            AnimatedVisibility(monthlyEquivalent != null && !isCurrent) {
                 Text(
                     text = monthlyEquivalent?.annotatedBoldCompose() ?: "".annotatedBoldCompose(),
                     fontSize = 14.sp,
@@ -1159,7 +1166,7 @@ private fun SubscriptionOptionItem(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            AnimatedVisibility(discountPercent != null) {
+            AnimatedVisibility(discountPercent != null && !isCurrent) {
                 Text(
                     modifier = Modifier
                         .background(
@@ -1179,12 +1186,31 @@ private fun SubscriptionOptionItem(
                 )
             }
 
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
-                color = contentColor,
-                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-            )
+            AnimatedVisibility(isCurrent) {
+                Text(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colors.primary,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(horizontal = 6.dp)
+                        .padding(vertical = 2.dp),
+                    text = stringResource(MR.strings.paywall_active_planBillingPeriod_label),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp,
+                    color = MaterialTheme.colors.onPrimary
+                )
+            }
+
+            AnimatedVisibility(!isCurrent) {
+                Text(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    text = if (isPromoDiscount) "🎁 $originalPrice" else originalPrice,
+                    color = contentColor,
+                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
+                )
+            }
         }
     }
 }
