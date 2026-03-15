@@ -709,6 +709,9 @@ sealed interface MainAlertDialog {
         val forceUpdate: Boolean
     ) : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
+        companion object {
+            val buttonChangelog = "changelog"
+        }
 
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
@@ -717,11 +720,20 @@ sealed interface MainAlertDialog {
             buttons = buildList {
                 add(
                     AlertDialogButtonData(
+                        id = buttonChangelog,
+                        text = stringResource(resource = MR.strings.setting_feedbackChangelog_title),
+                        color = Color.Transparent
+                    )
+                )
+
+                add(
+                    AlertDialogButtonData(
                         id = Buttons.buttonOk,
                         text = stringResource(resource = MR.strings.app_version_alert_button_update),
                         color = AlertDialogButtonData.positiveColor
                     )
                 )
+
                 if (!forceUpdate) {
                     add(
                         AlertDialogButtonData(

@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -34,6 +35,7 @@ import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.base.ConfigData
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.repo.base.AppUpdateType
@@ -102,6 +104,7 @@ fun RootApp(
         MessageDispatcherEffect(vm, appState)
 
         val uiState by vm.uiState.collectAsState()
+        val uriHandler = LocalUriHandler.current
 
         when (val state = uiState.userState) {
             Resource.NotInitialized -> {
@@ -199,6 +202,8 @@ fun RootApp(
                 }?.Show {
                     if (it == MainAlertDialog.Buttons.buttonCancel) {
                         vm.cancelVersion()
+                    } else if (it == MainAlertDialog.AppVersionInfo.buttonChangelog) {
+                        uriHandler.openUri(BackendResourceIDs.feedbackPortalChangelog)
                     } else if (it == MainAlertDialog.Buttons.buttonOk) {
                         uiState.updateType?.configData?.let {
                             onNewVersionDownload(it)
