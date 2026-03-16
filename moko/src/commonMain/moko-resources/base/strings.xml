@@ -201,7 +201,7 @@
     <string name="setting_description_errorReporting">Share anonymous error logs, in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_location_title">Location Settings</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Enabling this setting requires a premium plan.\n\nUpgrade your plan to unlock all options.</string>
+    <string name="setting_location_premium_banner_alert_message" version="v2">Enabling this setting requires a premium plan.\n\nUpgrade your plan to unlock all options.</string>
     <string name="setting_location_highPerformance_section_title">When in Use</string>
     <string name="setting_location_highPerformance_section_info">**High performance** mode is active only if you, or one of your group members, are looking at the map while location sharing is on.</string>
     <string name="setting_location_highPerformance_duration_title">Allowed</string>
@@ -319,7 +319,7 @@
     <string name="plans_banner_inline_personal_space">Track more devices and get more location history!</string>
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
-    <string name="plans_management_screen_title">Membership</string>
+    <string name="plans_management_screen_title" version="v2">Membership</string>
     <string name="plans_management_info_not_subscribed">You are currently not subscribed to a Premium plan!</string>
     <string name="plans_management_info_wrong_platform_title">You can not manage this subscription on this device!</string>
     <string name="plans_management_info_wrong_platform_message">Use the device you originally used for purchasing.</string>
@@ -454,7 +454,7 @@
     <string name="paywall_faq_answer_refund_google">You can contact our support team by emailing **contact@paralino.com**.</string>
     <string name="paywall_faq_answer_payment_security_apple">Yes, your payment is processed directly by the Apple App Store. We do not process or store any payment information.</string>
     <string name="paywall_faq_answer_payment_security_google">Yes, your payment is processed directly by the Google Play Store. We do not process or store any payment information.</string>
-    <string name="paywall_faq_answer_free_trial">
+    <string name="paywall_faq_answer_free_trial" version="v2">
         Yes, we offer a free trial period on some plans and billing cycles, available for the first time you start your subscription. You can then enjoy all the premium features at no cost for the duration of the trial.\n\n
         After the trial ends, subscription will be automatically renewed at the selected plan price.
     </string>
@@ -738,8 +738,8 @@
     <string name="place_sensitivity_optionRefresh2_info">Gets an accurate location beforehand but may suppress or delay some alerts. Make sure you are connected to the Internet and the app can run in the background without restrictions.</string>
     <string name="place_sensitivity_optionRefresh3_title">After Alert Is Sent</string>
     <string name="place_sensitivity_optionRefresh3_info">An accurate location is requested as the final step to ensure you don’t miss any alerts, but it might cause extra or false alerts.</string>
-    <string name="place_notification_enter">%1$s arrived at %2$s</string>
-    <string name="place_notification_exit">%1$s left %2$s</string>
+    <string name="place_notification_enter" note="Used to tell that someone has arrived at certain place as in: User arrived at Home">%1$s arrived at %2$s</string>
+    <string name="place_notification_exit" note="Used to tell that someone has left some place as in: User left Home">%1$s left %2$s</string>
     <string name="place_notification_device_enter">%1$s arrived at %2$s</string>
     <string name="place_notification_device_exit">%1$s left %2$s</string>
     <string name="place_notification_default">Your place had an activity</string>
