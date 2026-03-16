@@ -66,7 +66,11 @@ struct AlertDialog: ViewModifier {
     var isShowingAlert: Binding<Bool> {
         Binding(
             get: { alertData != nil },
-            set: { _ in alertData = nil }
+            set: { _ in
+                if alertData?.coreDialog.dialogData.canDismiss == true {
+                    alertData = nil
+                }
+            }
         )
     }
     

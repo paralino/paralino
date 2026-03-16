@@ -113,7 +113,9 @@ import app.paralino.core.provider.IDeviceApiProvider
 import app.paralino.core.provider.ILocationStatusProvider
 import app.paralino.core.provider.INotificationStatusProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
+import app.paralino.core.provider.IPlatformUrlHandler
 import app.paralino.core.provider.IValueFormatter
+import app.paralino.core.provider.PlatformUrlHandler
 import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.IRealtimeApi
@@ -154,6 +156,7 @@ object KoinSetup {
         single<IUnifiedPushManager> { UnifiedPushManager(androidApplication() as AppClass, get()) }
         single<IValueFormatter> { ValueFormatter(get()) }
         single { OneTimeLocationProvider(get(), get(), get()) } bind IOneTimeLocationProvider::class
+        single { PlatformUrlHandler(androidContext()) } bind IPlatformUrlHandler::class
 
         single { GeofenceManager(androidApplication()) } bind IGeofenceManager::class
         factory { PlaceNotificationPresenter(androidContext(), get()) } bind IPlaceActivityNotificationPresenter::class
@@ -245,7 +248,7 @@ object KoinSetup {
         }
         viewModel { (groupID: String) -> GroupDetailViewModel(groupID, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { (groupID: String) -> GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get()) }
-        viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { VerifyEmailViewModel(get(), get(), get(), get()) }
         viewModel { ChangeEmailViewModel(get(), get(), get()) }
         viewModel { ChangePasswordViewModel(get(), get(), get(), get()) }

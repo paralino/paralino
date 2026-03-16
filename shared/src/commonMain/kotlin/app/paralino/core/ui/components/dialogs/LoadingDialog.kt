@@ -18,7 +18,8 @@ import app.paralino.core.utils.extensions.annotatedBoldCompose
 @Composable
 fun LoadingDialog(
     text: String?,
-    progress: Float? = null
+    progress: Float? = null,
+    isCircular: Boolean = false
 ) {
     val title: (@Composable () -> Unit)? = if (text != null) {
         @Composable {
@@ -45,10 +46,18 @@ fun LoadingDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (progress != null) {
-                        CircularProgressIndicator(progress = progress, strokeCap = StrokeCap.Round)
+                    if (isCircular) {
+                        if (progress != null) {
+                            CircularProgressIndicator(progress = progress, strokeCap = StrokeCap.Round)
+                        } else {
+                            CircularProgressIndicator(strokeCap = StrokeCap.Round)
+                        }
                     } else {
-                        LinearProgressIndicator(strokeCap = StrokeCap.Round)
+                        if (progress != null) {
+                            LinearProgressIndicator(progress = progress, strokeCap = StrokeCap.Round)
+                        } else {
+                            LinearProgressIndicator(strokeCap = StrokeCap.Round)
+                        }
                     }
                 }
             },

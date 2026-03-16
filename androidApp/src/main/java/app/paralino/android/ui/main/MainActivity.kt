@@ -21,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -35,14 +34,12 @@ import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.logg
 import app.paralino.core.models.Resource
-import app.paralino.core.models.base.BackendResourceIDs
-import app.paralino.core.models.base.ConfigData
+import app.paralino.core.presentation.main.MainActivityUiEvent
 import app.paralino.core.presentation.main.MainViewModel
-import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.ui.components.AppSnackbar
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
@@ -65,8 +62,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             RootApp(
                 vm = vm,
-                onAppClose = { finishAffinity() },
-                onNewVersionDownload = { vm.startAppUpdate() }
+                onAppClose = { finishAffinity() }
             )
         }
         handleExtraDeeplink(intent?.data)
@@ -95,8 +91,7 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun RootApp(
     vm: MainViewModel,
-    onAppClose: () -> Unit,
-    onNewVersionDownload: (ConfigData) -> Unit
+    onAppClose: () -> Unit
 ) {
     AppTheme {
         val appState = rememberAppState()
@@ -104,7 +99,6 @@ fun RootApp(
         MessageDispatcherEffect(vm, appState)
 
         val uiState by vm.uiState.collectAsState()
-        val uriHandler = LocalUriHandler.current
 
         when (val state = uiState.userState) {
             Resource.NotInitialized -> {
@@ -183,31 +177,15 @@ fun RootApp(
                     }
                 }
 
-                if (uiState.isSessionExpiredShown) {
-                    MainAlertDialog.SessionExpired.Show {
-                        vm.cancelSessionExpired()
+                uiState.sessionExpiredDialog?.let { dialog ->
+                    dialog.Show {
+                        vm.onEvent(MainActivityUiEvent.DialogAction(AlertDialogAction(dialog, it)))
                     }
                 }
 
-                when (uiState.updateType) {
-                    null,
-                    is AppUpdateType.NONE,
-                    is AppUpdateType.PASSIVE -> null
-
-                    is AppUpdateType.SOFT,
-                    is AppUpdateType.SOFT_CONSTANT, -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
-
-                    is AppUpdateType.FORCE,
-                    is AppUpdateType.FORCE_AND_CANCEL -> MainAlertDialog.AppVersionInfo(forceUpdate = true)
-                }?.Show {
-                    if (it == MainAlertDialog.Buttons.buttonCancel) {
-                        vm.cancelVersion()
-                    } else if (it == MainAlertDialog.AppVersionInfo.buttonChangelog) {
-                        uriHandler.openUri(BackendResourceIDs.feedbackPortalChangelog)
-                    } else if (it == MainAlertDialog.Buttons.buttonOk) {
-                        uiState.updateType?.configData?.let {
-                            onNewVersionDownload(it)
-                        }
+                uiState.appUpdateDialog?.let { dialog ->
+                    dialog.Show {
+                        vm.onEvent(MainActivityUiEvent.DialogAction(AlertDialogAction(dialog, it)))
                     }
                 }
             }
@@ -218,7 +196,8 @@ fun RootApp(
             is AppUpdateStatus.Downloading -> {
                 LoadingDialog(
                     text = listOfNotNull("Downloading...", finalState.mb).joinToString(separator = "\n"),
-                    progress = finalState.progress
+                    progress = finalState.progress,
+                    isCircular = false
                 )
             }
 

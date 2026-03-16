@@ -13,23 +13,23 @@ import shared
 
 @main
 struct MainApp: App {
-
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var appState = MainAppObject()
-
+    
     @Environment(\.scenePhase) var scenePhase
-
+    
     @State var isOrWasActive = false
-
+    
     init() {
         AppDelegate.sharedInstance = appDelegate
-
+        
         SentrySDK.start { options in
             options.dsn = BuildKonfig.shared.glitchTipDSN
             options.debug = false
         }
     }
-
+    
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -50,7 +50,7 @@ struct MainApp: App {
                     tag: "delegate",
                     message: "App scene switch (old: \(oldScene)) - (new: \(newScene))"
                 )
-
+                
                 switch newScene {
                 case .active:
                     isOrWasActive = true
@@ -77,7 +77,14 @@ struct MainApp: App {
                 }
             }
             .mainAlert($appState.sessionExpiredDialog) { action in
-                appState.vm.cancelSessionExpired()
+                if let dialog = appState.uiState.sessionExpiredDialog {
+                    appState.vm.onEvent(event: MainActivityUiEventDialogAction(action: AlertDialogAction(dialog: dialog, action: action)))
+                }
+            }
+            .mainAlert($appState.appUpdateDialog) { action in
+                if let dialog = appState.uiState.appUpdateDialog {
+                    appState.vm.onEvent(event: MainActivityUiEventDialogAction(action: AlertDialogAction(dialog: dialog, action: action)))
+                }
             }
             .loadingOverlay(
                 isLoading: appState.uiState.dataRefreshBlockingLoadingShown
@@ -93,26 +100,26 @@ struct MainApp: App {
                     message: "Trigger iOS app rating dialog"
                 )
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    #if os(iOS)
-                        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                            SKStoreReviewController.requestReview(in: scene)
-                        }
-                    #else
-                        SKStoreReviewController.requestReview()
-                    #endif
+#if os(iOS)
+                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                        SKStoreReviewController.requestReview(in: scene)
+                    }
+#else
+                    SKStoreReviewController.requestReview()
+#endif
                 }
             }
         }
     }
-
+    
     private func notifyScene(id: String = "scene", message: String) {
-
+        
         guard AppBuildConfig.Companion.shared.instance.isDevMode else { return }
-
+        
         let content = UNMutableNotificationContent()
         content.title = "Paralino scene switch"
         content.body = message
-
+        
         let request = UNNotificationRequest(
             identifier: id,
             content: content,

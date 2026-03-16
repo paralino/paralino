@@ -184,6 +184,7 @@ object KoinIOS {
                     single { LocationRepositoryWrapper(get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
+                    single { PlatformUrlHandler() } bind IPlatformUrlHandler::class
 
                     when (appBuildConfig.appHost) {
                         AppHost.MAIN_APP -> {
@@ -246,7 +247,7 @@ object KoinIOS {
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get())
             }
-            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get(), get()) }
             factory { ChangePasswordViewModel(get(), get(), get(), get()) }
             factory { ConvertAccountViewModel(get(), get(), get()) }
