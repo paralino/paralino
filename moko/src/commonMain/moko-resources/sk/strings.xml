@@ -375,7 +375,7 @@
     <string name="plans_banner_inline_personal_space">Sledujte viac zariadení a získajte viac histórie polohy!</string>
     <string name="plans_banner_inline_places">Pridajte viac miest a užívajte si neobmedzené upozornenia!</string>
     <string name="plans_banner_inline_groups_picker">Vytvorte viac skupín a spojte sa s viac milými ľuďmi!</string>
-    <string name="plans_management_screen_title">Predplatné</string>
+    <string name="plans_management_screen_title">Členstvo</string>
     <string name="plans_management_info_not_subscribed">Momentálne nie ste prihlásení na prémiový plán!</string>
     <string name="plans_management_info_wrong_platform_message">Použite zariadenie, ktoré ste pôvodne použili na nákup.</string>
     <string name="plans_management_info_plan">Momentálne máte plán **%1$s**!</string>

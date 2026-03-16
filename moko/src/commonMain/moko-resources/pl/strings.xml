@@ -284,7 +284,7 @@
     <string name="plans_banner_inline_personal_space">Śledź więcej urządzeń i uzyskaj więcej historii lokalizacji!</string>
     <string name="plans_banner_inline_places">Dodaj więcej miejsc i ciesz się nieograniczonymi powiadomieniami!</string>
     <string name="plans_banner_inline_groups_picker">Twórz więcej grup i łącz się z większą liczbą bliskich osób!</string>
-    <string name="plans_management_screen_title">Subskrypcja</string>
+    <string name="plans_management_screen_title">Członkostwo</string>
     <string name="plans_management_info_not_subscribed">Obecnie nie jesteś subskrybowany w planie Premium!</string>
     <string name="plans_management_info_wrong_platform_title">Nie możesz zarządzać swoją subskrypcją na tym urządzeniu!</string>
     <string name="plans_management_info_wrong_platform_message">Użyj urządzenia, którego pierwotnie użyłeś do zakupu.</string>

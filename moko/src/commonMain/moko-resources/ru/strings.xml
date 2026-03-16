@@ -279,7 +279,7 @@
     <string name="plans_banner_inline_personal_space">Отслеживайте больше устройств и получайте больше истории местоположений!</string>
     <string name="plans_banner_inline_places">Добавьте больше мест и наслаждайтесь неограниченными уведомлениями!</string>
     <string name="plans_banner_inline_groups_picker">Создайте больше групп и свяжитесь с большим количеством дорогих людей!</string>
-    <string name="plans_management_screen_title">Подписка</string>
+    <string name="plans_management_screen_title">Членство</string>
     <string name="plans_management_info_not_subscribed">Вы в настоящее время не подписаны на премиум-план!</string>
     <string name="plans_management_info_wrong_platform_title">Вы не можете управлять своей подпиской на этом устройстве!</string>
     <string name="plans_management_info_wrong_platform_message">Используйте устройство, которое вы изначально использовали для покупки.</string>

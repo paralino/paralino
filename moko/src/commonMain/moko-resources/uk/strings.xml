@@ -272,7 +272,7 @@
     <string name="plans_banner_inline_personal_space">Відстежуйте більше пристроїв та отримуйте більше історії місцезнаходження!</string>
     <string name="plans_banner_inline_places">Додайте більше місць і насолоджуйтеся необмеженими сповіщеннями!</string>
     <string name="plans_banner_inline_groups_picker">Створіть більше груп і зв\'яжіться з більшою кількістю дорогих людей!</string>
-    <string name="plans_management_screen_title">Підписка</string>
+    <string name="plans_management_screen_title">Членство</string>
     <string name="plans_management_info_not_subscribed">Ви наразі не підписані на Premium план!</string>
     <string name="plans_management_info_wrong_platform_title">Ви не можете керувати своєю підпискою на цьому пристрої!</string>
     <string name="plans_management_info_wrong_platform_message">Використовуйте пристрій, який ви спочатку використовували для покупки.</string>

@@ -234,7 +234,7 @@
     <string name="plans_banner_inline_group_detail">Erhalten Sie mehr Standortverlauf für alle!</string>
     <string name="plans_banner_inline_places">Fügen Sie mehr Orte hinzu und genießen Sie unbegrenzte Warnungen!</string>
     <string name="plans_banner_inline_groups_picker">Erstellen Sie mehr Gruppen und verbinden Sie sich mit mehr lieben Menschen!</string>
-    <string name="plans_management_screen_title">Abonnement</string>
+    <string name="plans_management_screen_title">Mitgliedschaft</string>
     <string name="plans_management_info_not_subscribed">Sie haben derzeit kein Premium-Abonnement!</string>
     <string name="plans_management_info_wrong_platform">Sie können diesen Plan auf diesem Gerät nicht verwalten!\n\nVerwenden Sie das Gerät, mit dem Sie ursprünglich gekauft haben.</string>
     <string name="plans_management_info_plan">Sie haben derzeit einen **%1$s**-Plan!</string>

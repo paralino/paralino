@@ -283,7 +283,7 @@
     <string name="plans_banner_inline_personal_space">Spor mer enheter og få mer plasseringhistorikk!</string>
     <string name="plans_banner_inline_places">Legg til flere steder og nyt ubegrensede varsler!</string>
     <string name="plans_banner_inline_groups_picker">Opprett flere grupper og koble deg til flere kjære mennesker!</string>
-    <string name="plans_management_screen_title">Abonnement</string>
+    <string name="plans_management_screen_title">Medlemskap</string>
     <string name="plans_management_info_not_subscribed">Du er for øyeblikket ikke abonnert på en Premium-plan!</string>
     <string name="plans_management_info_wrong_platform_title">Du kan ikke administrere abonnementet ditt på denne enheten!</string>
     <string name="plans_management_info_wrong_platform_message">Bruk enheten du opprinnelig brukte for å kjøpe.</string>

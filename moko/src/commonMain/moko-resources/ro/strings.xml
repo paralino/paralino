@@ -290,7 +290,7 @@
     <string name="plans_banner_inline_personal_space">Urmăriți mai multe dispozitive și obțineți mai mult istoric de locație!</string>
     <string name="plans_banner_inline_places">Adăugați mai multe locuri și bucurați-vă de alerte nelimitate!</string>
     <string name="plans_banner_inline_groups_picker">Creați mai multe grupuri și conectați-vă cu mai mulți oameni dragi!</string>
-    <string name="plans_management_screen_title">Abonament</string>
+    <string name="plans_management_screen_title">Membru</string>
     <string name="plans_management_info_not_subscribed">În prezent, nu sunteți abonat la un plan Premium!</string>
     <string name="plans_management_info_wrong_platform_title">Nu puteți gestiona abonamentul pe acest dispozitiv!</string>
     <string name="plans_management_info_wrong_platform_message">Utilizați dispozitivul pe care l-ați folosit inițial pentru achiziționare.</string>

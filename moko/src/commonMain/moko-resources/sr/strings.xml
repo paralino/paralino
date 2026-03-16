@@ -200,7 +200,7 @@
     <string name="setting_location_balanced_level_3_info">Редовна ажурирања локације.\nУмерена минимална удаљеност између ажурирања.</string>
     <string name="setting_location_balanced_level_4_info">Честа ажурирања локације.\nМала минимална удаљеност између ажурирања.</string>
     <string name="setting_location_balanced_level_5_info">Брза ажурирања локације.\nНема ограничења удаљености између ажурирања.</string>
-    <string name="plans_management_screen_title">Претплата</string>
+    <string name="plans_management_screen_title">Чланство</string>
     <string name="plans_management_info_not_subscribed">Тренутно нисте претплаћени на Премиум план!</string>
     <string name="plans_management_info_wrong_platform_title">Не можете управљати својом претплатом на овом уређају!</string>
     <string name="plans_management_info_wrong_platform_message">Користите уређај који сте првобитно користили за куповину.</string>

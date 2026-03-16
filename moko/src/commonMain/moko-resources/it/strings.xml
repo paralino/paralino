@@ -234,7 +234,7 @@
     <string name="plans_banner_inline_group_detail">Ottieni più cronologia delle posizioni per tutti!</string>
     <string name="plans_banner_inline_places">Aggiungi più luoghi e goditi avvisi illimitati!</string>
     <string name="plans_banner_inline_groups_picker">Crea più gruppi e connettiti con più persone care!</string>
-    <string name="plans_management_screen_title">Abbonamento</string>
+    <string name="plans_management_screen_title">Membri</string>
     <string name="plans_management_info_not_subscribed">Attualmente non sei iscritto a un piano Premium!</string>
     <string name="plans_management_info_wrong_platform">Non puoi gestire questo piano su questo dispositivo!  \n\nUtilizza il dispositivo che hai originariamente usato per l\'acquisto.</string>
     <string name="plans_management_info_plan">Attualmente hai un piano **%1$s**!</string>

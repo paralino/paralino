@@ -307,7 +307,7 @@
     <string name="plans_banner_inline_personal_space">Spoznajte več naprav in pridobite več zgodovine lokacije!</string>
     <string name="plans_banner_inline_places">Dodajte več mest in uživajte v neomejenih obvestilih!</string>
     <string name="plans_banner_inline_groups_picker">Ustvarite več skupin in povežite se z več dragimi ljudmi!</string>
-    <string name="plans_management_screen_title">Naročnina</string>
+    <string name="plans_management_screen_title">Članstvo</string>
     <string name="plans_management_info_not_subscribed">Trenutno niste naročeni na Premium načrt!</string>
     <string name="plans_management_info_wrong_platform_title">Na tem napravi ne morete upravljati svoje naročnine!</string>
     <string name="plans_management_info_wrong_platform_message">Uporabite napravo, ki ste jo prvotno uporabili za nakup.</string>

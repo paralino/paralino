@@ -283,7 +283,7 @@
     <string name="plans_banner_inline_personal_space">Fes un seguiment de més dispositius i obtén més història de localització!</string>
     <string name="plans_banner_inline_places">Afegiu més llocs i gaudiu d\'alertes il·limitades!</string>
     <string name="plans_banner_inline_groups_picker">Creeu més grups i connecteu-vos amb més persones estimades!</string>
-    <string name="plans_management_screen_title">Subscripció</string>
+    <string name="plans_management_screen_title">Membresia</string>
     <string name="plans_management_info_not_subscribed">Actualment no estàs subscrit a un pla Premium!</string>
     <string name="plans_management_info_wrong_platform_title">No pots gestionar la teva subscripció en aquest dispositiu!</string>
     <string name="plans_management_info_wrong_platform_message">Utilitza el dispositiu que vas fer servir originalment per a la compra.</string>

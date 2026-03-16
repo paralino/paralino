@@ -307,7 +307,7 @@
     <string name="plans_banner_inline_personal_space">Seuraa enemmän laitteita ja saat enemmän sijaintihistoriaa!</string>
     <string name="plans_banner_inline_places">Lisää enemmän paikkoja ja nauti rajattomista ilmoituksista!</string>
     <string name="plans_banner_inline_groups_picker">Luo enemmän ryhmiä ja yhdistä rakkaiden ihmisten kanssa!</string>
-    <string name="plans_management_screen_title">Tilauksen hallinta</string>
+    <string name="plans_management_screen_title">Jäsenyys</string>
     <string name="plans_management_info_not_subscribed">Et ole tällä hetkellä tilannut Premium-suunnitelmaa!</string>
     <string name="plans_management_info_wrong_platform_title">Et voi hallita tilaustasi tällä laitteella!</string>
     <string name="plans_management_info_wrong_platform_message">Käytä laitetta, jota käytit alun perin ostaessasi.</string>

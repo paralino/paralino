@@ -241,7 +241,7 @@
     <string name="plans_banner_inline_group_detail">Krijg meer locatiegeschiedenis voor iedereen!</string>
     <string name="plans_banner_inline_places">Voeg meer plaatsen toe en geniet van onbeperkte waarschuwingen!</string>
     <string name="plans_banner_inline_groups_picker">Maak meer groepen en verbind met meer dierbaren!</string>
-    <string name="plans_management_screen_title">Abonnement</string>
+    <string name="plans_management_screen_title">Lidmaatschap</string>
     <string name="plans_management_info_not_subscribed">U bent momenteel niet geabonneerd op een Premium-plan!</string>
     <string name="plans_management_info_wrong_platform">U kunt dit plan niet beheren op dit apparaat!  \n\nGebruik het apparaat dat u oorspronkelijk heeft gebruikt voor de aankoop.</string>
     <string name="plans_management_info_plan">U heeft momenteel een **%1$s** plan!</string>

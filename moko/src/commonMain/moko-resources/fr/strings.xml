@@ -319,7 +319,7 @@
     <string name="plans_banner_inline_group_detail">Obtenez plus d\'historique de localisation pour tout le monde !</string>
     <string name="plans_banner_inline_places">Ajoutez plus d\'endroits et profitez d\'alertes illimitées !</string>
     <string name="plans_banner_inline_groups_picker">Créez plus de groupes et connectez-vous avec plus de personnes chères !</string>
-    <string name="plans_management_screen_title">Abonnement</string>
+    <string name="plans_management_screen_title">Adhésion</string>
     <string name="plans_management_info_not_subscribed">Vous n\'êtes actuellement pas abonné à un plan Premium !</string>
     <string name="plans_management_info_wrong_platform">Vous ne pouvez pas gérer ce plan sur cet appareil !\n\nUtilisez l\'appareil que vous avez initialement utilisé pour l\'achat.</string>
     <string name="plans_management_info_plan">Vous avez actuellement un plan **%1$s** !</string>

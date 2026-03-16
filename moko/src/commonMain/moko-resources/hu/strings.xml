@@ -280,7 +280,7 @@
     <string name="plans_banner_inline_personal_space">Kövesse nyomon több eszközt, és szerezzen több helyszíntörténetet!</string>
     <string name="plans_banner_inline_places">Adjon hozzá több helyet, és élvezze a korlátlan értesítéseket!</string>
     <string name="plans_banner_inline_groups_picker">Hozzon létre több csoportot, és kapcsolódjon több kedves emberhez!</string>
-    <string name="plans_management_screen_title">Előfizetés</string>
+    <string name="plans_management_screen_title">Tagság</string>
     <string name="plans_management_info_not_subscribed">Jelenleg nem vagy előfizetve a Prémium csomagra!</string>
     <string name="plans_management_info_wrong_platform_title">Ezen az eszközön nem tudod kezelni az előfizetésedet!</string>
     <string name="plans_management_info_wrong_platform_message">Használj egy olyan eszközt, amelyet eredetileg a vásárláshoz használtál.</string>

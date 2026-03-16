@@ -234,7 +234,7 @@
     <string name="plans_banner_inline_group_detail">¡Obtén más historial de ubicaciones para todos!</string>
     <string name="plans_banner_inline_places">¡Agrega más lugares y disfruta de alertas ilimitadas!</string>
     <string name="plans_banner_inline_groups_picker">¡Crea más grupos y conéctate con más personas queridas!</string>
-    <string name="plans_management_screen_title">Suscripción</string>
+    <string name="plans_management_screen_title">Membresía</string>
     <string name="plans_management_info_not_subscribed">¡Actualmente no estás suscrito a un plan Premium!</string>
     <string name="plans_management_info_wrong_platform">¡No puedes gestionar este plan en este dispositivo!\n\nUsa el dispositivo que usaste originalmente para la compra.</string>
     <string name="plans_management_info_plan">¡Actualmente tienes un plan **%1$s**!</string>

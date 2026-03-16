@@ -234,7 +234,7 @@
     <string name="plans_banner_inline_group_detail">Povežite se sa više prijatelja i članova obitelji!</string>
     <string name="plans_banner_inline_places">Kreirajte više mjesta i uživajte u neograničenim obavijestima!</string>
     <string name="plans_banner_inline_groups_picker">Kreirajte više grupa i povežite se sa još više dragih osoba!</string>
-    <string name="plans_management_screen_title">Pretplata</string>
+    <string name="plans_management_screen_title">Članstvo</string>
     <string name="plans_management_info_not_subscribed">Trenutno niste pretplaćeni na Premium plan!</string>
     <string name="plans_management_info_wrong_platform">Ne možete upravljati Vašom pretplatom na ovom uređaju!\nKoristite uređaj sa kojim je aktivirana pretplata.</string>
     <string name="plans_management_info_plan">Trenutno imate **%1$s** plan!</string>
