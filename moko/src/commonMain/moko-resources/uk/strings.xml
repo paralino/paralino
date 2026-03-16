@@ -21,7 +21,7 @@
     <string name="button_open_settings">Відкрити налаштування</string>
     <string name="alert_title_confirm">Будь ласка, підтвердіть</string>
     <string name="alert_sessionExpired_title">Сесію завершено</string>
-    <string name="alert_sessionExpired_message">Ваша сесія завершена, будь ласка, увійдіть знову.</string>
+    <string name="alert_sessionExpired_message">Ваша сесія закінчилася, будь ласка, увійдіть ще раз.</string>
     <string name="alert_comingSoon_title">Скоро буде 🤞</string>
     <string name="alert_comingSoon_message">Ця функція вже в розробці і скоро з\'явиться.</string>
     <string name="error_unstable_connection">Ваше **інтернет-з\'єднання** дуже нестабільне, і деякі запити не виконуються.\nБудь ласка, перевірте свої налаштування.</string>
@@ -31,7 +31,7 @@
     <string name="error_permissionDenied_remote">Запит не дозволено!</string>
     <string name="error_something_wrong">Щось пішло не так!</string>
     <string name="error_something_wrong_http">Щось пішло не так! [%d]</string>
-    <string name="error_generic_snacbar">Ой, будь ласка, спробуйте ще раз.</string>
+    <string name="error_generic_snacbar">Упс, будь ласка, спробуйте ще раз.</string>
     <string name="error_still_loading_snackbar">Оновлення, **будь ласка, спробуйте ще раз через кілька секунд.**</string>
     <string name="error_location_permission_missing_sheet_message">Дозвіл на доступ до місцезнаходження є **обов\'язковим** для успішного відстеження та спільного використання вашого місцезнаходження з іншими.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Будь ласка, надайте **точний дозвіл на місцезнаходження** для успішного відстеження та спільного використання вашого місцезнаходження з іншими.</string>
@@ -42,7 +42,7 @@
     <string name="error_notification_permission_missing_sheet_message">Будь ласка, увімкніть **сповіщення** для отримання **важливих** сповіщень про ваші групові події, місця та обліковий запис.</string>
     <string name="error_location_background_permission_missing_notification_message">Спільне використання місцезнаходження не може розпочатися, оскільки у вас відсутні дозволи на місцезнаходження!\nБудь ласка, відкрийте додаток, щоб перезапустити спільне використання місцезнаходження!</string>
     <string name="error_location_sharing_start_notification_message">Спільне використання місцезнаходження не може розпочатися!\nБудь ласка, знову відкрийте додаток!</string>
-    <string name="error_device_registration_notification_message">Ваш пристрій не може бути зареєстрований!\nБудь ласка, перезапустіть спільне використання місцезнаходження!</string>
+    <string name="error_device_registration_notification_message">Ваш пристрій не може бути зареєстровано!  \nБудь ласка, перезавантажте спільний доступ до місцезнаходження!</string>
     <string name="error_unverified_member_notification_message">Вашу участь не вдалося перевірити. Будь ласка, спробуйте оновити дані або зв\'яжіться з адміністратором групи.</string>
     <string name="error_crypto_key_missing">Дані шифрування неповні (%s), будь ласка, спробуйте оновити.</string>
     <string name="error_crypto_key_missing_user">Ваші криптографічні ключі неправильно налаштовані.</string>
@@ -233,8 +233,8 @@
     <string name="setting_description_locationBoost_enabled">Максимальна продуктивність місцезнаходження буде скинута о %s. **Використовує більше акумулятора!!!**</string>
     <string name="setting_description_locationBoost_disabled">Використовуйте максимальну продуктивність для місцезнаходження протягом до 2 годин. **Використовуватиме більше акумулятора!!!**</string>
     <string name="setting_title_placeActivityThrottle">Обмеження активності місця</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Ваш пристрій створить сповіщення про активність місця, якщо ви проведете більше часу в певному місці або поза ним.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Ваш пристрій буде швидше реагувати на зміни місця і може створити кілька сповіщень про активність місця за короткий час (наприклад: якщо ви швидко проїжджаєте повз певне місце).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Ваш пристрій створить сповіщення про активність у місці, якщо ви витратите більше часу в певному місці або за його межами.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Ваш пристрій реагуватиме на зміни місць швидше і може створювати кілька сповіщень про активність у місці за короткий проміжок часу (наприклад: якщо ви коротко проїжджаєте повз певне місце).</string>
     <string name="setting_appSettings_title">Налаштування програми</string>
     <string name="setting_measurementSystem_title">Система вимірювання</string>
     <string name="setting_measurementSystem_default_title">За замовчуванням пристрою</string>
@@ -505,7 +505,7 @@
     <string name="group_member_title">Член</string>
     <string name="group_member_device_title">Пристрій</string>
     <string name="group_members_block_user">Заблокувати користувача</string>
-    <string name="group_members_block_user_alert_message">Якщо ви продовжите, користувач не зможе додати вас до групи, і ви не отримаєте сповіщення про місцезнаходження користувачів у будь-яких спільних групах.</string>
+    <string name="group_members_block_user_alert_message">Якщо ви продовжите, користувач не зможе додати вас до групи, і ви не отримаєте сповіщення про місцезнаходження користувачів у жодних спільних групах.</string>
     <string name="group_members_remove_alert_title">Ви впевнені, що хочете видалити %s з групи?</string>
     <string name="group_members_device_other_remove_alert_title">Ви впевнені, що хочете видалити пристрій %s з цієї групи?\n\nЦе не видалить користувача з групи.</string>
     <string name="group_members_device_own_remove_alert_title">Ви впевнені, що хочете видалити свій пристрій з цієї групи?\n\nЦе не видалить вас з групи.</string>
@@ -516,9 +516,9 @@
     <string name="group_details_menu_delete">Видалити групу</string>
     <string name="group_details_menu_leave">Покинути групу</string>
     <string name="group_details_menu_block">Заблокувати групу</string>
-    <string name="group_details_delete_group_alert_title">Ви впевнені, що хочете видалити цю групу?  \nЦе незворотно і призведе до видалення всіх даних групи та зняття всіх зв\'язків з учасниками!</string>
+    <string name="group_details_delete_group_alert_title">Ви впевнені, що хочете видалити цю групу?  \nЦе незворотньо і призведе до видалення всіх даних групи та зникнення всіх зв\'язків з учасниками!</string>
     <string name="group_details_delete_group_alert_button">Видалити</string>
-    <string name="group_details_leave_group_alert_title">Ви впевнені, що хочете покинути цю групу?  \nЦе незворотно і призведе до видалення всіх даних, які ви поділилися, та зняття всіх зв\'язків з учасниками!</string>
+    <string name="group_details_leave_group_alert_title">Ви впевнені, що хочете покинути цю групу?  \nЦе незворотно й видалить усю інформацію, яку ви поділили, і припинить усі зв\'язки з учасниками!</string>
     <string name="group_details_leave_group_alert_button">Покинути</string>
     <string name="group_details_remove_member_alert_button">Видалити...</string>
     <string name="group_details_block_group_alert_title">Ви впевнені, що хочете заблокувати цю групу?  \nЦе незворотно, призведе до видалення всіх даних, які ви поділилися з групою, і ви не зможете повторно приєднатися до групи!</string>
@@ -645,7 +645,7 @@
     <string name="placeholder_unit_mile">%s милі</string>
     <string name="placeholder_unit_feet">%s фути</string>
     <string name="placeholder_unit_speed_kmph">%s км/год</string>
-    <string name="placeholder_unit_speed_mph">%s м/год</string>
+    <string name="placeholder_unit_speed_mph">%s миль/год</string>
     <string name="welcome_screen_info_1">ЗАХИЩЕНО - ПРИВАТНО - ЗАШИФРОВАНО</string>
     <string name="welcome_screen_button_join">Приєднатися</string>
     <string name="welcome_account_edit_profile">Завершіть свій профіль</string>
@@ -657,9 +657,9 @@
     <string name="recover_account_step_password_correct">Ключ можна відновити 🙌</string>
     <string name="recover_account_step_password_wrong">Пароль не збігається</string>
     <string name="recover_account_header_recover_possible">Ваш пароль не збігає з вашими криптографічними ключами</string>
-    <string name="recover_account_caption_recover_possible">Щоб відновити свій обліковий запис, спробуйте відновити ключ за допомогою старого пароля.</string>
+    <string name="recover_account_caption_recover_possible">Щоб відновити свій акаунт, спробуйте відновити ключ за допомогою вашого старого пароля.</string>
     <string name="recover_account_header_recover_not_possible">Ваш обліковий запис не має відповідних ключів! Будь ласка, скиньте свій обліковий запис.</string>
-    <string name="recover_account_caption_recover_not_possible">Якщо ви не можете відновити ключ, ви можете скинути свій обліковий запис. **Скидання вашого облікового запису видалить всі ваші дані!**</string>
+    <string name="recover_account_caption_recover_not_possible">Якщо ви не можете відновити ключ, ви можете скинути свій акаунт. **Скидання вашого акаунту призведе до видалення всіх ваших даних!**</string>
     <string name="recover_account_caption_reset">**Скидання вашого облікового запису видалить всі ваші дані!**</string>
     <string name="password_confirmation_screen_title">Підтвердження пароля</string>
     <string name="password_confirmation_header">Ваші ключі шифрування були змінені</string>
@@ -693,7 +693,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Відстеження місцезнаходження обмежене!**  \nВи перевищили ресурси свого плану.</string>
     <string name="plan_limit_generic_message">Обмеження плану досягнуто!</string>
     <string name="app_version_alert_title">Новий оновлення додатку</string>
-    <string name="app_version_alert_message">Нова версія Paralino доступна, будь ласка, оновіть для кращого досвіду!</string>
+    <string name="app_version_alert_message">Доступна нова верзија Paralino, будь ласка, оновіть для кращого досвіду!</string>
     <string name="app_version_alert_title_mandatory">Будь ласка, оновіть</string>
     <string name="app_version_alert_message_mandatory">Ця версія додатку застаріла!  \n\nЩоб продовжити користування додатком, будь ласка, оновіть до останньої версії!</string>
     <string name="app_version_alert_button_update">Оновити</string>
@@ -799,7 +799,7 @@
     <string name="login_step_error_logIn">Помилка під час входу</string>
     <string name="login_step_error_recoverGuest">Не вдалося відновити гостьовий обліковий запис</string>
     <string name="login_step_error_blockedAccount">**Ваш обліковий запис наразі заблоковано.**\n\nБудь ласка, спробуйте ще раз пізніше або зверніться до служби підтримки для вирішення проблеми.</string>
-    <string name="login_step_error_encryption_logIn">Ваші ключі шифрування, здається, пошкоджені або не існують, будь ласка, спробуйте ще раз або скиньте свій пароль (Це видалить всі ваші попередні дані)</string>
+    <string name="login_step_error_encryption_logIn">Ваші ключі шифрування, здається, пошкоджені або неіснуючі, будь ласка, спробуйте ще раз або скиньте свій пароль (це призведе до видалення всіх ваших попередніх даних)</string>
     <string name="form_invalid_email_description">Ваша електронна адреса недійсна.</string>
     <string name="form_invalid_credentials_description">Будь ласка, перевірте свої облікові дані та спробуйте ще раз.</string>
     <string name="form_invalid_email_conflict_description">Будь ласка, використовуйте іншу електронну пошту.</string>
@@ -924,7 +924,7 @@
     <string name="notifications_socketService_message_lastSync">Останнє оновлення: %s</string>
     <string name="licence_screen_title">Ліцензійний ключ</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Використання батареї: низьке</string>
-    <string name="setting_notificationSocket_registration_error_message">З\'єднання можна підтвердити, будь ласка, спробуйте ще раз!</string>
+    <string name="setting_notificationSocket_registration_error_message">З\'єднання не вдалося підтвердити, будь ласка, спробуйте ще раз!</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Кілька разів на годину</string>
     <string name="setting_notificationSocket_notificationPermission_error">Будь ласка, увімкніть дозвіл на системні сповіщення перед початком служби push-сповіщень!</string>
     <string name="setting_notificationSocket_connectionType_realtime_title">Постійне з\'єднання</string>
@@ -937,7 +937,7 @@
     <string name="setting_notificationSocket_connectionType_title">Тип з\'єднання</string>
     <string name="setting_notificationSocket_connectionType_info">Виберіть свій улюблений тип з\'єднання на основі ваших уподобань для кращого акумулятора або швидшої доставки сповіщень.</string>
     <string name="setting_notificationSocket_connectionType_notice">З періодичним оновленням ручні запити на місцезнаходження для цього пристрою не працюватимуть надійно.</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Сповіщення періодично оновлюються кілька разів на годину</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Сповіщення оновлюються періодично кілька разів на годину</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Використання батареї: середнє</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Кожні кілька годин</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Сповіщення оновлюються періодично кожні кілька годин</string>

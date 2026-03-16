@@ -52,8 +52,8 @@
     <string name="error_permissionDenied_remote">Pyyntöä ei sallita!</string>
     <string name="error_something_wrong">Jotain meni pieleen!</string>
     <string name="error_something_wrong_http">Jotain meni pieleen! [%d]</string>
-    <string name="error_generic_snacbar">Ups, yritä uudelleen.</string>
-    <string name="error_still_loading_snackbar">Päivitä, **yritä uudelleen muutaman sekunnin kuluttua.**</string>
+    <string name="error_generic_snacbar">Hups, yritä jälleen.</string>
+    <string name="error_still_loading_snackbar">Päivitetään, **yritä uudelleen muutaman sekunnin kuluttua.**</string>
     <string name="error_location_permission_missing_sheet_message">Sijaintilupa on **vaadittu** onnistuneen sijainnin seuraamisen ja jakamisen vuoksi.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Ole hyvä ja myönnä **tarkka sijaintilupa** onnistuneen sijainnin seuraamisen ja jakamisen vuoksi.</string>
     <string name="error_location_background_permission_missing_sheet_message">Ole hyvä ja salli **aina** sijaintipääsy, jotta voit **luotettavasti ja aina** seurata ja jakaa sijaintiasi muiden kanssa.</string>
@@ -144,11 +144,11 @@
     <string name="button_open_settings">Avaa asetukset</string>
     <string name="alert_title_confirm">Vahvista, ole hyvä</string>
     <string name="alert_sessionExpired_title">Istunto on vanhentunut</string>
-    <string name="alert_sessionExpired_message">Istuntosi on vanhentunut, kirjaudu sisään uudelleen.</string>
+    <string name="alert_sessionExpired_message">Istunasi on umpeutunut, ole hyvä ja kirjaudu sisään uudelleen.</string>
     <string name="alert_comingSoon_title">Tulossa pian 🤞</string>
     <string name="alert_comingSoon_message">Tämä ominaisuus on jo kehitteillä ja tulee pian.</string>
     <string name="error_unstable_connection">**Internet-yhteytesi** on erittäin epävakaa ja jotkin pyynnöt epäonnistuvat.  \nTarkista asetuksesi.</string>
-    <string name="error_device_registration_notification_message">Laitettasi ei voida rekisteröidä! \nOle hyvä ja käynnistä sijainnin jakaminen uudelleen!</string>
+    <string name="error_device_registration_notification_message">Laiteasi ei voi rekisteröidä!  \nOle hyvä ja käynnistä sijaintijako uudelleen!</string>
     <string name="error_unverified_member_notification_message">Jäsenyyttäsi ei voitu vahvistaa. Ole hyvä ja yritä päivittää tietoja tai ota yhteyttä ryhmän ylläpitäjään.</string>
     <string name="error_crypto_key_missing">Salaustiedot ovat puutteelliset (%s), ole hyvä ja yritä päivittää.</string>
     <string name="error_crypto_key_missing_user">Salauksen avaimiasi ei ole konfiguroitu oikein.</string>
@@ -280,8 +280,8 @@
     <string name="setting_description_locationBoost_enabled">Maksimaalinen sijaintisuorituskyky nollataan kohdassa %s. **Käyttää enemmän akkua!!!**</string>
     <string name="setting_description_locationBoost_disabled">Käytä maksimaalista suorituskykyä sijainnille enintään 2 tuntia. **Käyttää enemmän akkua!!!**</string>
     <string name="setting_title_placeActivityThrottle">Rajoita paikka-aktiviteettia</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Laiteesi luo paikka-aktiviteetti-ilmoituksen, jos vietät enemmän aikaa tietyssä paikassa tai sen ulkopuolella.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Laiteesi reagoi paikka muutoksiin nopeammin ja saattaa luoda useita paikka-aktiviteetti-ilmoituksia lyhyessä ajassa (esimerkiksi: jos ajat nopeasti tietyn paikan ohi).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Laitteesi luo paikka-aktiivisuuden ilmoituksen, jos vietät enemmän aikaa tietyssä paikassa tai sen ulkopuolella.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Laiteesi reagoi paikka muutoksiin nopeammin ja saattaa luoda useita paikka aktiviteetti ilmoituksia lyhyessä ajassa (esimerkiksi: jos ajat lyhyesti tietyn paikan ohi).</string>
     <string name="setting_appSettings_title">Sovelluksen asetukset</string>
     <string name="setting_measurementSystem_title">Mittaustapa</string>
     <string name="setting_measurementSystem_default_title">Laitteen oletus</string>
@@ -399,7 +399,7 @@
     <string name="paywall_faq_answer_payment_security_google">Kyllä, maksusi käsitellään suoraan Google Play Storessa. Emme käsittele tai tallenna mitään maksutietoja.</string>
     <string name="paywall_faq_answer_free_trial">Kyllä, tarjoamme ilmaisen kokeilujakson ensimmäistä kertaa tilauksen aloittamisen yhteydessä. Voit sitten nauttia premium-ominaisuuksista ilman kustannuksia.</string>
     <string name="paywall_faq_answer_contact_support">Voit ottaa yhteyttä tukitiimiimme lähettämällä sähköpostia osoitteeseen **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Juhlistetaan!</string>
+    <string name="plans_gift_screen_title">Juhlistakaamme!</string>
     <string name="plans_gift_screen_box_title">Varhaisen omaksujan lahja</string>
     <string name="plans_gift_screen_box_message">Saat erityisen elinikäisen **Starter**-suunnitelman täysin ILMAISEKSI!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ Mitä saat ⭐️</string>
@@ -515,7 +515,7 @@
     <string name="group_member_title">Jäsen</string>
     <string name="group_member_device_title">Laite</string>
     <string name="group_members_block_user">Estä käyttäjä</string>
-    <string name="group_members_block_user_alert_message">Jos jatkat, käyttäjä ei voi lisätä sinua ryhmään, etkä saa käyttäjien sijainti-ilmoituksia jaetuissa ryhmissä.</string>
+    <string name="group_members_block_user_alert_message">Jos jatkat, käyttäjä ei voi lisätä sinua ryhmään, etkä saa käyttäjien sijaintihälytyksiä minkään jaetun ryhmän osalta.</string>
     <string name="group_members_remove_alert_title">Oletko varma, että haluat poistaa %s ryhmästä?</string>
     <string name="group_members_device_other_remove_alert_title">Oletko varma, että haluat poistaa laitteen %s tästä ryhmästä?  \n\nTämä ei poista käyttäjää ryhmästä.</string>
     <string name="group_members_device_own_remove_alert_title">Oletko varma, että haluat poistaa laitteesi tästä ryhmästä?  \n\nTämä ei poista sinua ryhmästä.</string>
@@ -526,9 +526,9 @@
     <string name="group_details_menu_delete">Poista ryhmä</string>
     <string name="group_details_menu_leave">Jätä ryhmä</string>
     <string name="group_details_menu_block">Estä ryhmä</string>
-    <string name="group_details_delete_group_alert_title">Oletko varma, että haluat poistaa tämän ryhmän?  \nTämä on peruuttamatonta ja poistaa kaikki ryhmän tiedot sekä katkaisee kaikki yhteydet jäseniin!</string>
+    <string name="group_details_delete_group_alert_title">Oletko varmasti varma, että haluat poistaa tämän ryhmän?  \nTämä on peruuttamatonta ja poistaa kaikki ryhmätiedot ja katkaisee kaikki yhteydet jäseniin!</string>
     <string name="group_details_delete_group_alert_button">Poista</string>
-    <string name="group_details_leave_group_alert_title">Oletko varma, että haluat jättää tämän ryhmän?  \nTämä on peruuttamatonta ja poistaa kaikki jakamasi tiedot sekä katkaisee kaikki yhteydet jäseniin!</string>
+    <string name="group_details_leave_group_alert_title">Oletko varma, että haluat poistua tästä ryhmästä?  \nTämä on peruuttamatonta ja poistaa kaiken jakamasi tiedon sekä katkaisee kaikki yhteydet jäseniin!</string>
     <string name="group_details_leave_group_alert_button">Jätä</string>
     <string name="group_details_remove_member_alert_button">Poista...</string>
     <string name="group_details_block_group_alert_title">Oletko varma, että haluat estää tämän ryhmän?  \nTämä on peruuttamatonta, poistaa kaikki tiedot, jotka olet jakanut ryhmälle, etkä voi liittyä ryhmään uudelleen!</string>
@@ -652,7 +652,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">TURVALLINEN - YKSITYINEN - SALATTU</string>
     <string name="welcome_screen_button_join">Liity</string>
     <string name="welcome_account_edit_profile">Täydennä profiilisi</string>
@@ -666,9 +666,9 @@
     <string name="recover_account_step_password_correct">Avain voidaan palauttaa 🙌</string>
     <string name="recover_account_step_password_wrong">Salasana ei täsmää</string>
     <string name="recover_account_header_recover_possible">Salasanasi ei vastaa kryptografisia avaimiasi</string>
-    <string name="recover_account_caption_recover_possible">Palauttaaksesi tilisi, yritä palauttaa avain vanhalla salasanalla.</string>
+    <string name="recover_account_caption_recover_possible">Tilaa tiliäsi varten, yritä palauttaa avain vanhalla salasanallasi.</string>
     <string name="recover_account_header_recover_not_possible">Tililläsi ei ole vastaavia avaimia! Ole hyvä ja nollaa tilisi.</string>
-    <string name="recover_account_caption_recover_not_possible">Jos et voi palauttaa avainta, voit nollata tilisi. **Tilin nollaaminen poistaa kaikki tietosi!**</string>
+    <string name="recover_account_caption_recover_not_possible">Jos et voi palauttaa avainta, voit palauttaa tilisi. **Tilisi palauttaminen poistaa kaikki tietosi!**</string>
     <string name="recover_account_caption_reset">**Tilin nollaaminen poistaa kaikki tietosi!**</string>
     <string name="password_confirmation_screen_title">Salasanan vahvistus</string>
     <string name="password_confirmation_header">Salauksen avaimiasi on muutettu</string>
@@ -701,7 +701,7 @@
     <string name="plan_limit_overLimit_sharing_banner_title">**Sijainnin jakaminen on rajoitettua!**  \nTämä ryhmä on ylittänyt resurssinsa.</string>
     <string name="plan_limit_overLimit_tracking_banner_title">**Sijainnin seuranta on rajoitettua!**  \nOlet ylittänyt suunnitelmasi resurssit.</string>
     <string name="plan_limit_generic_message">Suunnitelman raja saavutettu!</string>
-    <string name="app_version_alert_message">Uusi versio Paralino-sovelluksesta on saatavilla, päivitä saadaksesi paremman käyttökokemuksen!</string>
+    <string name="app_version_alert_message">Uusi versio Paralino-sovelluksesta on saatavilla, päivitä se paremman kokemuksen saavuttamiseksi!</string>
     <string name="app_version_alert_title_mandatory">Päivitä</string>
     <string name="history_delete_irreversible_action_notice">Tätä toimintoa ei voi peruuttaa.</string>
     <string name="app_version_alert_message_mandatory">Tämä sovellusversio on vanhentunut!\n\nJatkaaksesi sovelluksen käyttöä, päivitä viimeisimpään versioon!</string>
@@ -781,7 +781,7 @@
     <string name="login_step_error_logIn">Virhe kirjautumisessa</string>
     <string name="login_step_error_recoverGuest">Vierastilin palauttaminen epäonnistui</string>
     <string name="login_step_error_blockedAccount">**Tilisi on tällä hetkellä estetty.**\n\nYritä uudelleen myöhemmin tai ota yhteyttä tukeen ongelman ratkaisemiseksi.</string>
-    <string name="login_step_error_encryption_logIn">Salausavaimesi näyttävät olevan vaurioituneet tai olemattomat, yritä uudelleen tai nollaa salasanasi (tämä poistaa kaikki aiemmat tietosi)</string>
+    <string name="login_step_error_encryption_logIn">Salaisuuden avaimet näyttävät olevan vaurioituneet tai olemattomat, yritä uudelleen tai nollaa salasanasi (tämä poistaa kaikki aiemmat tietosi)</string>
     <string name="form_invalid_email_description">Sähköpostiosoitteesi ei ole voimassa.</string>
     <string name="form_invalid_credentials_description">Tarkista tunnuksesi ja yritä uudelleen.</string>
     <string name="form_invalid_email_conflict_description">Käytä toista sähköpostia.</string>
@@ -851,7 +851,7 @@
     <string name="notifications_socketService_status_error">Push-palvelu 🔴</string>
     <string name="notifications_socketService_message_errors">Push-ilmoituspalvelu on keskeytetty:  \n%s</string>
     <string name="notifications_socketService_message_connecting">Yhdistetään...</string>
-    <string name="notifications_socketService_message_disconnected">Ilmoituspalvelu on väliaikaisesti katkaistu.</string>
+    <string name="notifications_socketService_message_disconnected">Ilmoituspalvelu on väliaikaisesti katkaistu</string>
     <string name="location_banner_error_background_access">Puuttuu rajoittamaton taustakäyttö</string>
     <string name="setting_mapsProvider_title">Karttapalveluntarjoaja</string>
     <string name="setting_mapsProvider_info">Valitse haluamasi palveluntarjoaja kartoille, joita käytetään sovelluksessa. Kartan tyyli, animaatiot ja suorituskyky vaihtelevat eri tarjoajien välillä.</string>
@@ -925,11 +925,11 @@
     <string name="setting_notificationSocket_connectionType_periodic3_title">Joka muutama tunti</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Ilmoituksia päivitetään aikavälein joka muutama tunti</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Akun käyttö: Matala</string>
-    <string name="setting_notificationSocket_registration_error_message">Yhteys voidaan vahvistaa, yritä uudelleen!</string>
+    <string name="setting_notificationSocket_registration_error_message">Yhteyttä ei voitu vahvistaa, yritä uudelleen!</string>
     <string name="notifications_socketService_message_lastSync">Viimeisin päivitys: %s</string>
     <string name="licence_screen_title">Lisenssiavain</string>
     <string name="licence_screen_info">Jos sinulla on lisenssiavain, syötä se tänne yhdistääksesi premium-suunnitelman Paralino-tiliisi.</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Ilmoitukset päivitetään säännöllisesti useita kertoja tunnissa</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Ilmoituksia päivitetään aikavälein muutaman kerran tunnissa</string>
     <string name="setting_notificationSocket_distributor_loading_text">**Rekisteröidään...**  \nTämä voi viedä muutaman sekunnin.</string>
     <string name="setting_notificationSocket_connectionType_title">Yhteyden tyyppi</string>
     <string name="setting_notificationSocket_connectionType_info">Valitse mieltymyksiesi mukaan suosittu yhteystyyppi paremman akun keston tai nopeamman ilmoituksen toimituksen saavuttamiseksi.</string>

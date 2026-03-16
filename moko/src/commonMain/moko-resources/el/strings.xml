@@ -24,7 +24,7 @@
     <string name="personalSpace_device_deactivate_dialogMessage">Η παρακολούθηση τοποθεσίας από αυτή τη συσκευή θα σταματήσει.  \nΗ συσκευή θα παραμείνει συνδεδεμένη.</string>
     <string name="personalSpace_device_delete_dialogButton">Διαγραφή...</string>
     <string name="personalSpace_device_delete_dialogMessage">Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή τη συσκευή;</string>
-    <string name="recover_account_caption_recover_possible">Για να ανακτήσετε τον λογαριασμό σας, προσπαθήστε να ανακτήσετε το κλειδί με τον παλιό κωδικό πρόσβασης.</string>
+    <string name="recover_account_caption_recover_possible">Για να επαναφέρετε τον λογαριασμό σας, δοκιμάστε να επαναφέρετε το κλειδί με τον παλιό σας κωδικό πρόσβασης.</string>
     <string name="recover_account_header_recover_not_possible">Ο λογαριασμός σας δεν έχει ταιριαστά κλειδιά! Παρακαλώ επαναφέρετε τον λογαριασμό σας.</string>
     <string name="plan_limit_overLimit_tracking_banner_title">**Η παρακολούθηση τοποθεσίας είναι περιορισμένη!**  \nΈχετε υπερβεί τους πόρους του σχεδίου σας.</string>
     <string name="plan_limit_generic_message">Έφτασε το όριο του σχεδίου!</string>
@@ -46,11 +46,11 @@
     <string name="setting_location_history_level_1">Μεσαίο</string>
     <string name="login_step_allDone">Επιτυχία!</string>
     <string name="app_version_alert_title">Νέα ενημέρωση εφαρμογής</string>
-    <string name="app_version_alert_message">Η νέα έκδοση του Paralino είναι διαθέσιμη, παρακαλώ ενημερώστε την για μια καλύτερη εμπειρία!</string>
+    <string name="app_version_alert_message">Μια νέα έκδοση του Paralino είναι διαθέσιμη, παρακαλώ αναβαθμίστε για καλύτερη εμπειρία!</string>
     <string name="app_version_alert_title_mandatory">Παρακαλώ ενημερώστε</string>
     <string name="history_entry_range_delete_alert_title">Διαγραφή ιστορικού τοποθεσίας;</string>
     <string name="history_entry_range_delete_alert_message">Έναρξη: %1$s\nΛήξη: %2$s\nΣυνολικές εγγραφές: %3$s</string>
-    <string name="recover_account_caption_recover_not_possible">Εάν δεν μπορείτε να ανακτήσετε το κλειδί, μπορείτε να επαναφέρετε τον λογαριασμό σας. **Η επαναφορά του λογαριασμού σας θα διαγράψει όλα τα δεδομένα σας!**</string>
+    <string name="recover_account_caption_recover_not_possible">Αν δεν μπορείτε να ανακτήσετε το κλειδί, μπορείτε να επαναφέρετε τον λογαριασμό σας. **Η επαναφορά του λογαριασμού σας θα διαγράψει όλα σας τα δεδομένα!**</string>
     <string name="recover_account_caption_reset">**Η επαναφορά του λογαριασμού σας θα διαγράψει όλα τα δεδομένα σας!**</string>
     <string name="password_confirmation_screen_title">Επιβεβαίωση κωδικού πρόσβασης</string>
     <string name="password_confirmation_header">Τα κρυπτογραφικά σας κλειδιά έχουν αλλάξει</string>
@@ -75,7 +75,7 @@
     <string name="button_open_settings">Ανοίξτε τις ρυθμίσεις</string>
     <string name="alert_title_confirm">Παρακαλώ επιβεβαιώστε</string>
     <string name="alert_sessionExpired_title">Η συνεδρία έχει λήξει</string>
-    <string name="alert_sessionExpired_message">Η συνεδρία σας έχει λήξει, παρακαλώ συνδεθείτε ξανά.</string>
+    <string name="alert_sessionExpired_message">Η συνεδρία σας εξέpiρε, παρακαλώ συνδεθείτε ξανά.</string>
     <string name="alert_comingSoon_title">Έρχεται σύντομα 🤞</string>
     <string name="alert_comingSoon_message">Αυτή η δυνατότητα είναι ήδη σε ανάπτυξη και έρχεται σύντομα.</string>
     <string name="error_unstable_connection">Η **σύνδεση στο διαδίκτυο** σας είναι πολύ ασταθής και ορισμένα αιτήματα αποτυγχάνουν.  \nΠαρακαλώ ελέγξτε τις ρυθμίσεις σας.</string>
@@ -85,8 +85,8 @@
     <string name="error_permissionDenied_remote">Το αίτημα δεν επιτρέπεται!</string>
     <string name="error_something_wrong">Κάτι πήγε στραβά!</string>
     <string name="error_something_wrong_http">Κάτι πήγε στραβά! [%d]</string>
-    <string name="error_generic_snacbar">Ωχ, παρακαλώ δοκιμάστε ξανά.</string>
-    <string name="error_still_loading_snackbar">Ανανεώνω, **παρακαλώ δοκιμάστε ξανά σε λίγα δευτερόλεπτα.**</string>
+    <string name="error_generic_snacbar">Ουπς, παρακαλώ προσπαθήστε ξανά.</string>
+    <string name="error_still_loading_snackbar">Ανανεώνεται, **παρακαλώ δοκιμάστε ξανά σε λίγα δευτερόλεπτα.**</string>
     <string name="error_location_permission_missing_sheet_message">Η άδεια τοποθεσίας είναι **απαραίτητη** προκειμένου να παρακολουθείτε και να μοιράζεστε με επιτυχία την τοποθεσία σας με άλλους.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Παρακαλώ δώστε **ακριβή άδεια τοποθεσίας** προκειμένου να παρακολουθείτε και να μοιράζεστε με επιτυχία την τοποθεσία σας με άλλους.</string>
     <string name="error_location_background_permission_missing_sheet_message">Παρακαλώ επιτρέψτε την πρόσβαση τοποθεσίας **όλη την ώρα** προκειμένου να **παρακολουθείτε και να μοιράζεστε αξιόπιστα και πάντα** την τοποθεσία σας με άλλους.</string>
@@ -287,8 +287,8 @@
     <string name="setting_description_locationBoost_enabled">Η μέγιστη απόδοση τοποθεσίας θα επαναρυθμιστεί στις %s. **Χρησιμοποιεί περισσότερη μπαταρία!!!**</string>
     <string name="setting_description_locationBoost_disabled">Χρησιμοποιήστε τη μέγιστη απόδοση για την τοποθεσία για έως 2 ώρες. **Θα χρησιμοποιήσει περισσότερη μπαταρία!!!**</string>
     <string name="setting_title_placeActivityThrottle">Δραστηριότητα τοποθεσίας περιορισμού</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Η συσκευή σας θα δημιουργήσει ειδοποίηση δραστηριότητας τοποθεσίας εάν περάσετε περισσότερο χρόνο σε ή εκτός μιας συγκεκριμένης τοποθεσίας.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Η συσκευή σας θα αντιδράσει σε αλλαγές τοποθεσίας πιο γρήγορα και μπορεί να δημιουργήσει πολλές ειδοποιήσεις δραστηριότητας τοποθεσίας σε σύντομο χρονικό διάστημα (για παράδειγμα: εάν περάσετε γρήγορα από μια συγκεκριμένη τοποθεσία).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Η συσκευή σας θα δημιουργήσει μια ειδοποίηση δραστηριότητας τοποθεσίας εάν περάσετε περισσότερο χρόνο μέσα ή έξω από μια συγκεκριμένη τοποθεσία.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Η συσκευή σας θα αντιδρά σε αλλαγές τοποθεσίας πιο γρήγορα και ενδέχεται να δημιουργήσει πολλές ειδοποιήσεις δραστηριότητας τοποθεσίας σε σύντομο χρονικό διάστημα (για παράδειγμα: αν περάσετε γρήγορα από μια συγκεκριμένη τοποθεσία).</string>
     <string name="setting_appSettings_title">Ρυθμίσεις εφαρμογής</string>
     <string name="setting_measurementSystem_title">Σύστημα μέτρησης</string>
     <string name="setting_measurementSystem_default_title">Προεπιλογή συσκευής</string>
@@ -538,8 +538,8 @@
     <string name="group_member_title">Μέλος</string>
     <string name="group_member_device_title">Συσκευή</string>
     <string name="group_members_block_user">Αποκλεισμός χρήστη</string>
-    <string name="group_members_block_user_alert_message">Εάν προχωρήσετε, ο χρήστης δεν θα μπορεί να σας προσθέσει σε μια ομάδα και δεν θα λάβετε ειδοποίηση τοποθεσίας χρηστών σε καμία κοινή ομάδα.</string>
-    <string name="group_members_remove_alert_title">Είστε σίγουροι ότι θέλετε να αφαιρέσετε τον %s από την ομάδα;</string>
+    <string name="group_members_block_user_alert_message">Αν συνεχίσετε, ο χρήστης δεν θα μπορεί να σας προσθέσει σε μια ομάδα και δεν θα λαμβάνετε ειδοποιήσεις τοποθεσίας χρηστών σε καμία κοινή ομάδα.</string>
+    <string name="group_members_remove_alert_title">Είστε σίγουροι ότι θέλετε να αφαιρέσετε το %s από την ομάδα;</string>
     <string name="group_members_device_other_remove_alert_title">Είστε σίγουροι ότι θέλετε να αφαιρέσετε τη συσκευή από τον %s από αυτήν την ομάδα;  \n\nΑυτό δεν θα αφαιρέσει τον χρήστη από μια ομάδα.</string>
     <string name="group_members_device_own_remove_alert_title">Είστε σίγουροι ότι θέλετε να αφαιρέσετε τη συσκευή σας από αυτήν την ομάδα;  \n\nΑυτό δεν θα σας αφαιρέσει από μια ομάδα.</string>
     <string name="group_members_device_confirm_remove_alert_title">Η αφαίρεση μιας συσκευής θα διαγράψει επίσης όλο το σχετικό ιστορικό τοποθεσίας και θα σταματήσει την κοινή χρήση τοποθεσίας!  \n\nΑυτή η ενέργεια είναι μη αναστρέψιμη.</string>
@@ -549,9 +549,9 @@
     <string name="group_details_menu_delete">Διαγραφή ομάδας</string>
     <string name="group_details_menu_leave">Αποχώρηση από την ομάδα</string>
     <string name="group_details_menu_block">Αποκλεισμός ομάδας</string>
-    <string name="group_details_delete_group_alert_title">Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν την ομάδα;  \nΑυτό είναι μη αναστρέψιμο και θα διαγράψει όλα τα δεδομένα της ομάδας και θα αφαιρέσει όλες τις συνδέσεις με τα μέλη!</string>
+    <string name="group_details_delete_group_alert_title">Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή την ομάδα;  \nΑυτό είναι μη αναστρέψιμο και θα διαγράψει όλα τα δεδομένα της ομάδας και θα αφαιρέσει toute σύνδεση με τα μέλη!</string>
     <string name="group_details_delete_group_alert_button">Διαγραφή</string>
-    <string name="group_details_leave_group_alert_title">Είστε σίγουροι ότι θέλετε να αποχωρήσετε από αυτήν την ομάδα;  \nΑυτό είναι μη αναστρέψιμο και θα διαγράψει όλα τα δεδομένα που μοιραστήκατε και θα αφαιρέσει όλες τις συνδέσεις με τα μέλη!</string>
+    <string name="group_details_leave_group_alert_title">Είστε σίγουροι ότι θέλετε να αποχωρήσετε από αυτήν την ομάδα;  \nΑυτό είναι μη αναστρέψιμο και θα διαγράψει όλα τα δεδομένα που μοιραστήκατε και θα αφαιρέσει όλους τους συνδέσμους με τα μέλη!</string>
     <string name="group_details_leave_group_alert_button">Αποχώρηση</string>
     <string name="group_details_remove_member_alert_button">Αφαίρεση...</string>
     <string name="group_details_block_group_alert_title">Είστε σίγουροι ότι θέλετε να αποκλείσετε αυτήν την ομάδα;  \nΑυτό είναι μη αναστρέψιμο, θα διαγράψει όλα τα δεδομένα που μοιραστήκατε στην ομάδα και δεν θα μπορείτε να επανενωθείτε με την ομάδα!</string>
@@ -591,7 +591,7 @@
     <string name="places_create_location_hint_tap">**ΣΥΜΒΟΥΛΗ:** Πατήστε στον χάρτη για να προσθέσετε ή να προσαρμόσετε την τοποθεσία σας</string>
     <string name="places_create_plan_limit_info">Για να δημιουργήσετε περισσότερες τοποθεσίες, αναβαθμίστε το σχέδιό σας.</string>
     <string name="place_list_menu_delete">Διαγραφή τοποθεσίας</string>
-    <string name="place_list_delete_place_alert_title">Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν την τοποθεσία;</string>
+    <string name="place_list_delete_place_alert_title">Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το μέρος;</string>
     <string name="place_detail_setting_button_notify_enter">Είσοδος</string>
     <string name="place_detail_setting_button_notify_exit">Έξοδος</string>
     <string name="place_detail_notification_settings_title">Ειδοποιήσεις τοποθεσίας</string>
@@ -659,7 +659,7 @@
     <string name="placeholder_unit_mile">%s μίλια</string>
     <string name="placeholder_unit_feet">%s πόδια</string>
     <string name="placeholder_unit_speed_kmph">%s χλμ/ώρα</string>
-    <string name="placeholder_unit_speed_mph">%s μ/ώρα</string>
+    <string name="placeholder_unit_speed_mph">%s μίλια/ώρα</string>
     <string name="welcome_screen_info_1">ΑΣΦΑΛΕΙΑ - ΙΔΙΩΤΙΚΟΤΗΤΑ - ΚΡΥΠΤΟΓΡΑΦΗΜΕΝΟ</string>
     <string name="welcome_screen_button_join">Συμμετοχή</string>
     <string name="welcome_account_edit_profile">Ολοκληρώστε το προφίλ σας</string>
@@ -783,7 +783,7 @@
     <string name="login_step_error_logIn">Σφάλμα κατά την είσοδό σας</string>
     <string name="login_step_error_recoverGuest">Αδύνατη η ανάκτηση του λογαριασμού επισκέπτη</string>
     <string name="login_step_error_blockedAccount">**Ο λογαριασμός σας είναι αυτή τη στιγμή αποκλεισμένος.**  \nΠαρακαλώ προσπαθήστε ξανά αργότερα ή επικοινωνήστε με την υποστήριξη για να επιλύσετε το πρόβλημα.</string>
-    <string name="login_step_error_encryption_logIn">Τα κλειδιά κρυπτογράφησής σας φαίνεται να είναι κατεστραμμένα ή ανύπαρκτα, παρακαλώ προσπαθήστε ξανά ή επαναφέρετε τον κωδικό πρόσβασής σας (Αυτό θα διαγράψει όλα τα προηγούμενα δεδομένα σας)</string>
+    <string name="login_step_error_encryption_logIn">Οι κωδικοί κρυπτογράφησής σας φαίνεται να είναι κατεστραμμένοι ή ανύπαρκτοι, παρακαλώ προσπαθήστε ξανά ή επαναφέρετε τον κωδικό πρόσβασής σας (η ενέργεια αυτή θα διαγράψει όλα τα προηγούμενα δεδομένα σας).</string>
     <string name="form_invalid_email_description">Η διεύθυνση ηλεκτρονικού ταχυδρομείου σας δεν είναι έγκυρη.</string>
     <string name="form_invalid_credentials_description">Παρακαλώ ελέγξτε τα διαπιστευτήριά σας και προσπαθήστε ξανά.</string>
     <string name="form_invalid_email_conflict_description">Παρακαλώ χρησιμοποιήστε μια άλλη διεύθυνση ηλεκτρονικού ταχυδρομείου.</string>
@@ -891,12 +891,12 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">Ανάλογα με το τρέχον επίπεδο μπαταρίας, οι ειδοποιήσεις ανανεώνονται περιοδικά κάθε 5-15 λεπτά</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Χρήση Μπαταρίας: Υψηλή</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Λίγες φορές ανά ώρα</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Οι ειδοποιήσεις ανανεώνονται περιοδικά λίγες φορές ανά ώρα</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Οι ειδοποιήσεις ανανεώνονται περιοδικά μερικές φορές ανά ώρα</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Χρήση Μπαταρίας: Μέτρια</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Κάθε λίγες ώρες</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Οι ειδοποιήσεις ανανεώνονται περιοδικά κάθε λίγες ώρες</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Χρήση Μπαταρίας: Χαμηλή</string>
-    <string name="setting_notificationSocket_registration_error_message">Η σύνδεση μπορεί να επιβεβαιωθεί, παρακαλώ δοκιμάστε ξανά!</string>
+    <string name="setting_notificationSocket_registration_error_message">Η σύνδεση δεν μπόρεσε να επιβεβαιωθεί, παρακαλώ δοκιμάστε ξανά!</string>
     <string name="licence_screen_title">Κλειδί άδειας</string>
     <string name="licence_screen_info">Εάν έχετε ένα κλειδί άδειας, εισάγετέ το εδώ για να συνδέσετε ένα premium σχέδιο με τον λογαριασμό σας Paralino.</string>
     <string name="licence_code_hint">Κλειδί άδειας</string>
@@ -921,7 +921,7 @@
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="button_hold_hint">Πατήστε και κρατήστε</string>
     <string name="notifications_socketService_message_connecting">Σύνδεση...</string>
-    <string name="notifications_socketService_message_disconnected">Η υπηρεσία ειδοποίησης έχει αποσυνδεθεί προσωρινά.</string>
+    <string name="notifications_socketService_message_disconnected">Η υπηρεσία ειδοποιήσεων έχει αποσυνδεθεί προσωρινά</string>
     <string name="notifications_channel_socket_service">Υπηρεσία Push Notifications</string>
     <string name="setting_mapsProvider_mapLibrePremium_title">MapLibre Premium</string>
     <string name="setting_mapsProvider_mapLibrePremium_info">MapLibre SDK με χάρτες δρόμων και δορυφόρων MapTiler και χάρτες δρόμων OpenFreeMap.</string>

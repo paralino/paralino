@@ -13,7 +13,7 @@
     <string name="places_create_location_hint_tap">**ASTUCE :** Appuyez sur la carte pour ajouter ou ajuster votre lieu</string>
     <string name="places_create_plan_limit_info">Pour créer plus de lieux, mettez à niveau votre plan.</string>
     <string name="place_list_menu_delete">Supprimer le lieu</string>
-    <string name="place_list_delete_place_alert_title">Êtes-vous sûr de vouloir supprimer cet endroit ?</string>
+    <string name="place_list_delete_place_alert_title">Êtes-vous sûr de vouloir supprimer ce lieu ?</string>
     <string name="place_detail_setting_button_notify_enter">Entrer</string>
     <string name="place_detail_setting_button_notify_exit">Sortie</string>
     <string name="place_detail_notification_settings_title">Alertes de lieu</string>
@@ -39,7 +39,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SÉCURISÉ - PRIVÉ - CHIFFRÉ</string>
     <string name="welcome_screen_button_join">Rejoindre</string>
     <string name="welcome_account_edit_profile">Complétez votre profil</string>
@@ -59,9 +59,9 @@
     <string name="recover_account_step_password_correct">La clé peut être récupérée 🙌</string>
     <string name="recover_account_step_password_wrong">Le mot de passe ne correspond pas</string>
     <string name="recover_account_header_recover_possible">Votre mot de passe ne correspond pas à vos clés cryptographiques</string>
-    <string name="recover_account_caption_recover_possible">Pour récupérer votre compte, essayez de récupérer la clé avec l\'ancien mot de passe.</string>
+    <string name="recover_account_caption_recover_possible">Pour récupérer votre compte, essayez de récupérer la clé avec votre ancien mot de passe.</string>
     <string name="recover_account_header_recover_not_possible">Votre compte ne possède pas de clés correspondantes ! Veuillez réinitialiser votre compte.</string>
-    <string name="recover_account_caption_recover_not_possible">Si vous ne pouvez pas récupérer la clé, vous pouvez réinitialiser votre compte. **Réinitialiser votre compte supprimera toutes vos données !**</string>
+    <string name="recover_account_caption_recover_not_possible">Si vous ne pouvez pas récupérer la clé, vous pouvez réinitialiser votre compte. **La réinitialisation de votre compte supprimera toutes vos données !**</string>
     <string name="recover_account_caption_reset">**Réinitialiser votre compte supprimera toutes vos données !**</string>
     <string name="reset_password_screen_title">Réinitialiser le mot de passe</string>
     <string name="reset_password_success_message">Veuillez vous reconnecter !</string>
@@ -120,7 +120,7 @@
     <string name="error_something_wrong">Quelque chose a mal tourné !</string>
     <string name="error_something_wrong_http">Quelque chose a mal tourné ! [%d]</string>
     <string name="error_generic_snacbar">Oups, veuillez réessayer.</string>
-    <string name="error_still_loading_snackbar">Rafraîchissement, **veuillez réessayer dans quelques secondes.**</string>
+    <string name="error_still_loading_snackbar">Actualisation, **veuillez réessayer dans quelques secondes.**</string>
     <string name="error_location_permission_missing_sheet_message">L\'autorisation de localisation est **requise** pour suivre et partager votre localisation avec d\'autres.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Veuillez accorder la **permission de localisation précise** afin de suivre et de partager votre emplacement avec d\'autres.</string>
     <string name="error_location_background_permission_missing_sheet_message">Veuillez autoriser l\'accès à la localisation **tout le temps** afin de suivre et de partager votre localisation avec d\'autres de manière **fiable et constante**.</string>
@@ -129,7 +129,7 @@
     <string name="error_notification_permission_missing_sheet_message">Veuillez activer les **notifications** afin de recevoir des alertes **importantes** pour vos événements de groupe, lieux et compte.</string>
     <string name="error_location_background_permission_missing_notification_message">Le partage de localisation ne peut pas commencer car vous n\'avez pas les autorisations de localisation !\nVeuillez ouvrir l\'application pour redémarrer le partage de localisation !</string>
     <string name="error_location_sharing_start_notification_message">Le partage de localisation ne peut pas commencer !\nVeuillez rouvrir l\'application !</string>
-    <string name="error_device_registration_notification_message">Votre appareil ne peut pas être enregistré !\nVeuillez redémarrer le partage de localisation !</string>
+    <string name="error_device_registration_notification_message">Votre appareil ne peut pas être enregistré !  \nVeuillez redémarrer le partage de localisation !</string>
     <string name="error_unverified_member_notification_message">Votre adhésion n\'a pas pu être vérifiée. Veuillez essayer de rafraîchir les données ou contacter l\'administrateur du groupe.</string>
     <string name="error_crypto_key_missing">Les données de cryptage sont incomplètes (%s), veuillez essayer de rafraîchir.</string>
     <string name="error_crypto_key_missing_user">Vos clés cryptographiques ne sont pas correctement configurées.</string>
@@ -293,8 +293,8 @@
     <string name="setting_description_locationBoost_enabled">La performance maximale de localisation sera réinitialisée à %s. **Utilise plus de batterie !!!**</string>
     <string name="setting_description_locationBoost_disabled">Utilisez des performances maximales pour la localisation pendant jusqu\'à 2h. **Utilisera plus de batterie !!!**</string>
     <string name="setting_title_placeActivityThrottle">Limiter l\'activité de l\'endroit</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Votre appareil créera une notification d\'activité de lieu si vous passez plus de temps dans ou hors d\'un certain lieu.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Votre appareil réagira plus rapidement aux changements de lieu et pourrait créer plusieurs notifications d\'activité de lieu en peu de temps (par exemple : si vous passez rapidement devant un certain endroit).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Votre appareil créera une notification d\'activité de lieu si vous passez plus de temps à l\'intérieur ou à l\'extérieur d\'un certain lieu.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Votre appareil réagira plus rapidement aux changements de lieu et pourrait créer plusieurs notifications d\'activité de lieu en peu de temps (par exemple : si vous passez brièvement devant un certain lieu).</string>
     <string name="setting_appSettings_title">Paramètres de l\'application</string>
     <string name="setting_measurementSystem_title">Système de mesure</string>
     <string name="setting_measurementSystem_default_title">Par défaut de l\'appareil</string>
@@ -472,7 +472,7 @@
     <string name="login_step_error_logIn">Erreur lors de votre connexion</string>
     <string name="login_step_error_recoverGuest">Impossible de récupérer le compte invité</string>
     <string name="login_step_error_blockedAccount">**Votre compte est actuellement bloqué.**\n\nVeuillez réessayer plus tard ou contacter le support pour résoudre le problème.</string>
-    <string name="login_step_error_encryption_logIn">Vos clés de chiffrement semblent être corrompues ou inexistantes, veuillez réessayer ou réinitialiser votre mot de passe (Cela supprimera toutes vos données précédentes)</string>
+    <string name="login_step_error_encryption_logIn">Vos clés de cryptage semblent être corrompues ou inexistantes, veuillez réessayer ou réinitialiser votre mot de passe (cela supprimera toutes vos données précédentes)</string>
     <string name="form_invalid_email_description">Votre adresse e-mail n\'est pas valide.</string>
     <string name="form_invalid_credentials_description">Veuillez vérifier vos identifiants et réessayer.</string>
     <string name="form_invalid_email_conflict_description">Veuillez utiliser une autre adresse e-mail.</string>
@@ -546,7 +546,7 @@
     <string name="group_member_title">Membre</string>
     <string name="group_member_device_title">Appareil</string>
     <string name="group_members_block_user">Bloquer l\'utilisateur</string>
-    <string name="group_members_block_user_alert_message">Si vous continuez, l\'utilisateur ne pourra pas vous ajouter à un groupe et vous ne recevrez pas de notification de localisation des utilisateurs dans les groupes partagés.</string>
+    <string name="group_members_block_user_alert_message">Si vous continuez, l\'utilisateur ne pourra pas vous ajouter à un groupe et vous ne recevrez pas les notifications de localisation des utilisateurs dans les groupes partagés.</string>
     <string name="group_members_remove_alert_title">Êtes-vous sûr de vouloir retirer %s du groupe ?</string>
     <string name="group_members_device_other_remove_alert_title">Êtes-vous sûr de vouloir retirer l\'appareil de %s de ce groupe ?  \n\nCela ne retirera pas l\'utilisateur d\'un groupe.</string>
     <string name="group_members_device_own_remove_alert_title">Êtes-vous sûr de vouloir retirer votre appareil de ce groupe ?  \n\nCela ne vous retirera pas d\'un groupe.</string>
@@ -555,9 +555,9 @@
     <string name="group_details_menu_delete">Supprimer le groupe</string>
     <string name="group_details_menu_leave">Quitter le groupe</string>
     <string name="group_details_menu_block">Bloquer le groupe</string>
-    <string name="group_details_delete_group_alert_title">Êtes-vous sûr de vouloir supprimer ce groupe ?\nCeci est irréversible et supprimera toutes les données du groupe et enlèvera toute connexion avec les membres !</string>
+    <string name="group_details_delete_group_alert_title">Êtes-vous sûr de vouloir supprimer ce groupe ?  \nCeci est irréversible et supprimera toutes les données du groupe et retirera toute connexion avec les membres !</string>
     <string name="group_details_delete_group_alert_button">Supprimer</string>
-    <string name="group_details_leave_group_alert_title">Êtes-vous sûr de vouloir quitter ce groupe ?\nCeci est irréversible et supprimera toutes les données que vous avez partagées et retirera toute connexion avec les membres !</string>
+    <string name="group_details_leave_group_alert_title">Êtes-vous sûr de vouloir quitter ce groupe ?  \nCeci est irréversible et supprimera toutes les données que vous avez partagées et mettra fin à toute connexion avec les membres !</string>
     <string name="group_details_leave_group_alert_button">Quitter</string>
     <string name="group_details_remove_member_alert_button">Supprimer...</string>
     <string name="group_details_block_group_alert_title">Êtes-vous sûr de vouloir bloquer ce groupe ?\nCeci est irréversible, cela supprimera toutes les données que vous avez partagées avec le groupe et vous ne pourrez pas rejoindre à nouveau le groupe !</string>
@@ -925,7 +925,7 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">En fonction du niveau actuel de la batterie, les notifications sont actualisées périodiquement toutes les 5-15 minutes.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Les notifications sont actualisées périodiquement toutes les quelques heures.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Utilisation de la batterie : Faible</string>
-    <string name="setting_notificationSocket_registration_error_message">La connexion pourrait être confirmée, veuillez réessayer !</string>
+    <string name="setting_notificationSocket_registration_error_message">La connexion n\'a pas pu être confirmée, veuillez réessayer !</string>
     <string name="notifications_socketService_message_lastSync">Dernière mise à jour : %s</string>
     <string name="licence_screen_title">Clé de licence</string>
     <string name="licence_screen_info">Si vous avez une clé de licence, saisissez-la ici pour connecter un plan premium à votre compte Paralino.</string>
@@ -936,7 +936,7 @@
     <string name="licence_loadingStep_activating">Activation en cours</string>
     <string name="licence_loadingStep_confirming">En attente de confirmation</string>
     <string name="licence_loadingStep_activated">Licence activée</string>
-    <string name="notifications_socketService_message_disconnected">Service de notification temporairement déconnecté.</string>
+    <string name="notifications_socketService_message_disconnected">Service de notification temporairement déconnecté</string>
     <string name="notifications_channel_socket_service">Service de notifications push</string>
     <string name="location_banner_error_background_access">Accès en arrière-plan sans restrictions manquant</string>
     <string name="setting_mapsProvider_info">Choisissez votre fournisseur de services préféré pour les cartes utilisées dans l\'application. Le style de carte, les animations et les performances varieront selon les différents fournisseurs.</string>
@@ -953,7 +953,7 @@
     <string name="setting_notificationSocket_connectionType_title">Type de connexion</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Utilisation de la batterie : Élevée</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Quelques fois par heure</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Les notifications sont rafraîchies périodiquement quelques fois par heure.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Les notifications sont actualisées périodiquement quelques fois par heure.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Utilisation de la batterie : Moyenne</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Tous les quelques heures</string>
 </resources>

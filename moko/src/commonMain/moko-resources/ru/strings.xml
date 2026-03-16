@@ -28,8 +28,8 @@
     <string name="error_permissionDenied_remote">Запрос не разрешен!</string>
     <string name="error_something_wrong">Что-то пошло не так!</string>
     <string name="error_something_wrong_http">Что-то пошло не так! [%d]</string>
-    <string name="error_generic_snacbar">Упс, пожалуйста, попробуйте еще раз.</string>
-    <string name="error_still_loading_snackbar">Обновление, **пожалуйста, попробуйте через несколько секунд.**</string>
+    <string name="error_generic_snacbar">Ой, пожалуйста, попробуйте снова.</string>
+    <string name="error_still_loading_snackbar">Обновление, **пожалуйста, попробуйте еще раз через несколько секунд.**</string>
     <string name="error_location_permission_missing_sheet_message">Разрешение на доступ к местоположению **обязательно** для успешного отслеживания и обмена вашим местоположением с другими.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Пожалуйста, предоставьте **точное разрешение на местоположение** для успешного отслеживания и обмена вашим местоположением с другими.</string>
     <string name="error_location_background_permission_missing_sheet_message">Пожалуйста, разрешите доступ к местоположению **всегда** для **надежного и постоянного** отслеживания и обмена вашим местоположением с другими.</string>
@@ -38,7 +38,7 @@
     <string name="error_notification_permission_missing_sheet_message">Пожалуйста, включите **уведомления** для получения **важных** оповещений о ваших групповых мероприятиях, местах и аккаунте.</string>
     <string name="error_location_background_permission_missing_notification_message">Обмен местоположением не может начаться, так как у вас отсутствуют разрешения на местоположение!  \nПожалуйста, откройте приложение, чтобы перезапустить обмен местоположением!</string>
     <string name="error_location_sharing_start_notification_message">Обмен местоположением не может начаться!  \nПожалуйста, откройте приложение снова!</string>
-    <string name="error_device_registration_notification_message">Ваше устройство не может быть зарегистрировано!  \nПожалуйста, перезапустите обмен местоположением!</string>
+    <string name="error_device_registration_notification_message">Ваше устройство не может быть зарегистрировано! Пожалуйста, перезапустите совместное использование местоположения!</string>
     <string name="onboarding_step_accountStart_personalSpaceMode_title">Только я</string>
     <string name="setting_title_help">Помощь и поддержка</string>
     <string name="error_unverified_member_notification_message">Ваше членство не удалось подтвердить. Пожалуйста, попробуйте обновить данные или свяжитесь с администратором группы.</string>
@@ -240,8 +240,8 @@
     <string name="setting_description_locationBoost_enabled">Максимальная производительность местоположения будет сброшена в %s. **Использует больше батареи!!!**</string>
     <string name="setting_description_locationBoost_disabled">Используйте максимальную производительность для местоположения в течение до 2 часов. **Будет использовать больше батареи!!!**</string>
     <string name="setting_title_placeActivityThrottle">Ограничить активность места</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Ваше устройство создаст уведомление об активности места, если вы проведете больше времени в определенном месте или вне его.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Ваше устройство будет быстрее реагировать на изменения мест и может создать несколько уведомлений об активности места за короткое время (например, если вы быстро проезжаете мимо определенного места).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Ваше устройство создаст уведомление о активности в месте, если вы проведете больше времени в определенном месте или вне его.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Ваше устройство будет быстрее реагировать на изменения местоположения и может создать несколько уведомлений о действиях в местах за короткий промежуток времени (например, если вы на короткое время проедете мимо определенного места).</string>
     <string name="setting_appSettings_title">Настройки приложения</string>
     <string name="setting_measurementSystem_title">Система измерений</string>
     <string name="setting_measurementSystem_default_title">По умолчанию устройства</string>
@@ -440,7 +440,7 @@
     <string name="login_step_error_logIn">Ошибка при входе в систему</string>
     <string name="login_step_error_recoverGuest">Не удалось восстановить учетную запись гостя</string>
     <string name="login_step_error_blockedAccount">**Ваша учетная запись в настоящее время заблокирована.**  \n\nПожалуйста, попробуйте позже или свяжитесь с поддержкой для решения проблемы.</string>
-    <string name="login_step_error_encryption_logIn">Ваши ключи шифрования, похоже, повреждены или отсутствуют, пожалуйста, попробуйте снова или сбросьте свой пароль (это удалит все ваши предыдущие данные)</string>
+    <string name="login_step_error_encryption_logIn">Ваши ключи шифрования, похоже, повреждены или отсутствуют. Пожалуйста, попробуйте еще раз или сбросьте свой пароль (это удалит все ваши предыдущие данные).</string>
     <string name="form_invalid_email_description">Ваш адрес электронной почты недействителен.</string>
     <string name="form_invalid_credentials_description">Пожалуйста, проверьте свои учетные данные и попробуйте снова.</string>
     <string name="form_invalid_email_conflict_description">Пожалуйста, используйте другую электронную почту.</string>
@@ -526,7 +526,7 @@
     <string name="group_member_title">Участник</string>
     <string name="group_member_device_title">Устройство</string>
     <string name="group_members_block_user">Заблокировать пользователя</string>
-    <string name="group_members_block_user_alert_message">Если вы продолжите, пользователь не сможет добавить вас в группу, и вы не получите уведомления о местоположении пользователей в любых общих группах.</string>
+    <string name="group_members_block_user_alert_message">Если вы продолжите, пользователь не сможет добавить вас в группу, и вы не будете получать уведомления о местоположении пользователей в любых общих группах.</string>
     <string name="group_members_remove_alert_title">Вы уверены, что хотите удалить %s из группы?</string>
     <string name="group_members_device_other_remove_alert_title">Вы уверены, что хотите удалить устройство %s из этой группы?  \n\nЭто не удалит пользователя из группы.</string>
     <string name="group_members_device_own_remove_alert_title">Вы уверены, что хотите удалить ваше устройство из этой группы?\n\nЭто не удалит вас из группы.</string>
@@ -537,9 +537,9 @@
     <string name="group_details_menu_delete">Удалить группу</string>
     <string name="group_details_menu_leave">Покинуть группу</string>
     <string name="group_details_menu_block">Заблокировать группу</string>
-    <string name="group_details_delete_group_alert_title">Вы уверены, что хотите удалить эту группу?\nЭто необратимо и приведет к удалению всех данных группы и разрыву всех связей с участниками!</string>
+    <string name="group_details_delete_group_alert_title">Вы уверены, что хотите удалить эту группу? Это необратимо и приведет к удалению всех данных группы и прекращению всех связей с участниками!</string>
     <string name="group_details_delete_group_alert_button">Удалить</string>
-    <string name="group_details_leave_group_alert_title">Вы уверены, что хотите покинуть эту группу?\nЭто необратимо и приведет к удалению всех данных, которые вы поделились, и разрыву всех связей с участниками!</string>
+    <string name="group_details_leave_group_alert_title">Вы уверены, что хотите покинуть эту группу?  \nЭто необратимо и приведет к удалению всех данных, которые вы поделились, и к устранению всех связей с участниками!</string>
     <string name="group_details_leave_group_alert_button">Покинуть</string>
     <string name="group_details_remove_member_alert_button">Удалить...</string>
     <string name="group_details_block_group_alert_title">Вы уверены, что хотите заблокировать эту группу?\nЭто необратимо, приведет к удалению всех данных, которые вы поделились с группой, и вы не сможете снова присоединиться к группе!</string>
@@ -661,7 +661,7 @@
     <string name="placeholder_unit_mile">%s миль</string>
     <string name="placeholder_unit_feet">%s футов</string>
     <string name="placeholder_unit_speed_kmph">%s км/ч</string>
-    <string name="placeholder_unit_speed_mph">%s м/ч</string>
+    <string name="placeholder_unit_speed_mph">%s миль/ч</string>
     <string name="welcome_screen_info_1">ЗАЩИЩЕНО - ЧАСТНО - ЗАШИФРОВАНО</string>
     <string name="welcome_screen_button_join">Присоединиться</string>
     <string name="welcome_account_edit_profile">Завершите свой профиль</string>
@@ -675,10 +675,10 @@
     <string name="recover_account_step_password_correct">Ключ может быть восстановлен 🙌</string>
     <string name="recover_account_step_password_wrong">Пароль не совпадает</string>
     <string name="recover_account_header_recover_possible">Ваш пароль не совпадает с вашими криптографическими ключами</string>
-    <string name="recover_account_caption_recover_possible">Чтобы восстановить ваш аккаунт, попробуйте восстановить ключ с помощью старого пароля.</string>
+    <string name="recover_account_caption_recover_possible">Чтобы восстановить вашу учетную запись, попробуйте восстановить ключ с помощью вашего старого пароля.</string>
     <string name="recover_account_header_recover_not_possible">У вашего аккаунта нет совпадающих ключей! Пожалуйста, сбросьте ваш аккаунт.</string>
     <string name="setting_title_dangerZone">Опасная зона</string>
-    <string name="recover_account_caption_recover_not_possible">Если вы не можете восстановить ключ, вы можете сбросить ваш аккаунт. **Сброс вашего аккаунта приведет к удалению всех ваших данных!**</string>
+    <string name="recover_account_caption_recover_not_possible">Если вы не можете восстановить ключ, вы можете сбросить свою учетную запись. **Сброс учетной записи приведет к удалению всех ваших данных!**</string>
     <string name="recover_account_caption_reset">**Сброс вашего аккаунта приведет к удалению всех ваших данных!**</string>
     <string name="password_confirmation_screen_title">Подтверждение пароля</string>
     <string name="password_confirmation_header">Ваши ключи шифрования были изменены</string>
@@ -903,7 +903,7 @@
     <string name="setting_notificationSocket_connectionType_periodic1_title">Каждые 5-15 минут</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Использование батареи: высокое</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Несколько раз в час</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Уведомления обновляются периодически несколько раз в час</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Уведомления обновляются периодически несколько раз в час.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Использование батареи: среднее</string>
     <string name="licence_code_hint">Ключ лицензии</string>
     <string name="licence_error_invalid">Введённый код лицензии недействителен, пожалуйста, проверьте ваш ввод и попробуйте снова.</string>
@@ -931,7 +931,7 @@
     <string name="setting_notificationSocket_connectionType_periodic3_title">Каждые несколько часов</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Уведомления обновляются периодически каждые несколько часов.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Использование батареи: низкое</string>
-    <string name="setting_notificationSocket_registration_error_message">Соединение может быть подтверждено, пожалуйста, повторите попытку!</string>
+    <string name="setting_notificationSocket_registration_error_message">Подключение не удалось подтвердить, пожалуйста, попробуйте еще раз!</string>
     <string name="notifications_socketService_message_lastSync">Последнее обновление: %s</string>
     <string name="licence_screen_info">Если у вас есть ключ лицензии, введите его здесь, чтобы подключить премиум-план к вашей учетной записи Paralino.</string>
     <string name="licence_button_activate">Активировать</string>

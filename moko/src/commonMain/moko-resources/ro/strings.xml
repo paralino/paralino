@@ -55,7 +55,7 @@
     <string name="button_open_settings">Deschide setările</string>
     <string name="alert_title_confirm">Te rugăm să confirmi</string>
     <string name="alert_sessionExpired_title">Sesiune expirată</string>
-    <string name="alert_sessionExpired_message">Sesiunea ta a expirat, te rugăm să te conectezi din nou.</string>
+    <string name="alert_sessionExpired_message">Ses iunea dumneavoastră a expirat, vă rugăm să vă conectați din nou.</string>
     <string name="alert_comingSoon_title">În curând 🤞</string>
     <string name="alert_comingSoon_message">Această funcție este deja în dezvoltare și va veni în curând.</string>
     <string name="error_unstable_connection">Conexiunea ta **la internet** este foarte instabilă și unele cereri eșuează.\nTe rugăm să verifici setările tale.</string>
@@ -66,7 +66,7 @@
     <string name="error_something_wrong">Ceva a mers prost!</string>
     <string name="error_something_wrong_http">Ceva a mers prost! [%d]</string>
     <string name="error_generic_snacbar">Ups, vă rugăm să încercați din nou.</string>
-    <string name="error_still_loading_snackbar">Se reîmprospătează, **vă rugăm să încercați din nou în câteva secunde.**</string>
+    <string name="error_still_loading_snackbar">Răcoritor, **vă rugăm să încercați din nou în câteva secunde.**</string>
     <string name="error_location_permission_missing_sheet_message">Permisiunea de locație este **necesară** pentru a urmări și a partaja cu succes locația dumneavoastră cu alții.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Vă rugăm să acordați **permisiunea de locație precisă** pentru a urmări și a partaja cu succes locația dumneavoastră cu alții.</string>
     <string name="error_location_background_permission_missing_sheet_message">Vă rugăm să permiteți accesul la locație **în orice moment** pentru a **urmări și a partaja** cu fiabilitate și întotdeauna locația dumneavoastră cu alții.</string>
@@ -75,7 +75,7 @@
     <string name="error_notification_permission_missing_sheet_message">Vă rugăm să activați **notificările** pentru a primi **alerte importante** pentru evenimentele grupului, locurile și contul dumneavoastră.</string>
     <string name="error_location_background_permission_missing_notification_message">Partajarea locației nu poate începe deoarece lipsesc permisiunile de locație!\nVă rugăm să deschideți aplicația pentru a reporni partajarea locației!</string>
     <string name="error_location_sharing_start_notification_message">Partajarea locației nu poate începe!\nVă rugăm să deschideți din nou aplicația!</string>
-    <string name="error_device_registration_notification_message">Dispozitivul dumneavoastră nu poate fi înregistrat!\nVă rugăm să reporniți partajarea locației!</string>
+    <string name="error_device_registration_notification_message">Dispozitivul dumneavoastră nu poate fi înregistrat!  \nVă rugăm să reporniți partajarea locației!</string>
     <string name="error_unverified_member_notification_message">Calitatea membrului dumneavoastră nu a putut fi verificată. Vă rugăm să încercați să reîmprospătați datele sau să contactați administratorul grupului.</string>
     <string name="error_crypto_key_missing">Datele de criptare sunt incomplete (%s), vă rugăm să încercați să reîmprospătați.</string>
     <string name="error_crypto_key_missing_user">Cheile dumneavoastră criptografice nu sunt configurate corect.</string>
@@ -250,8 +250,8 @@
     <string name="setting_description_locationBoost_enabled">Performanța maximă a locației se va reseta la %s. **Folosește mai multă baterie!!!**</string>
     <string name="setting_description_locationBoost_disabled">Utilizați performanța maximă pentru locație timp de până la 2h. **Va folosi mai multă baterie!!!**</string>
     <string name="setting_title_placeActivityThrottle">Limitare a activității locului</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Dispozitivul dumneavoastră va crea o notificare de activitate a locului dacă petreceți mai mult timp într-un anumit loc sau în afara acestuia.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Dispozitivul dumneavoastră va reacționa mai repede la schimbările de loc și ar putea crea mai multe notificări de activitate a locului într-un timp scurt (de exemplu: dacă treceți pe lângă un anumit loc).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Dispozitivul dumneavoastră va crea o notificare de activitate locativă dacă petreceți mai mult timp într-un anumit loc sau în afara acestuia.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Dispozitivul dumneavoastră va reacționa mai repede la schimbările de locație și ar putea crea multiple notificări de activitate a locației într-un timp scurt (de exemplu: dacă treceți pe lângă un anumit loc pentru scurt timp).</string>
     <string name="setting_appSettings_title">Setările aplicației</string>
     <string name="history_delete_deletionInfo_until">Ștergerea întregului istoric al locației până la **%s**</string>
     <string name="setting_measurementSystem_title">Sistem de măsurare</string>
@@ -396,7 +396,7 @@
     <string name="paywall_faq_answer_payment_security_google">Da, plata ta este procesată direct de Google Play Store. Nu procesăm și nu stocăm nicio informație de plată.</string>
     <string name="paywall_faq_answer_free_trial">Da, oferim o perioadă de probă gratuită pentru prima dată când începeți abonamentul. Apoi, puteți beneficia de funcții premium fără costuri.</string>
     <string name="paywall_faq_answer_contact_support">Poți contacta echipa noastră de suport prin e-mail la **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Să sărbătorim!</string>
+    <string name="plans_gift_screen_title">Să celebrăm!</string>
     <string name="plans_gift_screen_box_title">Cadou pentru utilizatorii timpurii</string>
     <string name="plans_gift_screen_box_message">Primiți un plan special **Starter** pe viață, complet GRATUIT!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ Ce primiți ⭐️</string>
@@ -446,7 +446,7 @@
     <string name="login_step_error_logIn">Eroare la conectarea dumneavoastră</string>
     <string name="login_step_error_recoverGuest">Imposibil de recuperat contul de oaspeți</string>
     <string name="login_step_error_blockedAccount">**Contul dumneavoastră este în prezent blocat.**\n\nVă rugăm să încercați din nou mai târziu sau să contactați suportul pentru a rezolva problema.</string>
-    <string name="login_step_error_encryption_logIn">Cheile dumneavoastră de criptare par a fi corupte sau inexistent, vă rugăm să încercați din nou sau să resetați parola (Aceasta va șterge toate datele dumneavoastră anterioare)</string>
+    <string name="login_step_error_encryption_logIn">Cheile dumneavoastră de criptare par a fi corupte sau ineficiente, vă rugăm să încercați din nou sau să vă resetați parola (aceasta va șterge toate datele dumneavoastră anterioare)</string>
     <string name="form_invalid_email_description">Adresa dumneavoastră de email nu este validă.</string>
     <string name="form_invalid_credentials_description">Vă rugăm să verificați acreditivele și să încercați din nou.</string>
     <string name="form_invalid_email_conflict_description">Vă rugăm să folosiți un alt email.</string>
@@ -531,8 +531,8 @@
     <string name="group_member_title">Membru</string>
     <string name="group_member_device_title">Dispozitiv</string>
     <string name="group_members_block_user">Blochează utilizatorul</string>
-    <string name="group_members_block_user_alert_message">Dacă continui, utilizatorul nu va putea să te adauge într-un grup și nu vei primi notificări despre locația utilizatorilor în niciun grup partajat.</string>
-    <string name="group_members_remove_alert_title">Sigur doriți să eliminați %s din grup?</string>
+    <string name="group_members_block_user_alert_message">Dacă continuați, utilizatorul nu va putea să vă adauge într-un grup și nu veți primi notificări de locație de la utilizatori în niciun grup partajat.</string>
+    <string name="group_members_remove_alert_title">Ești sigur că vrei să îl elimini pe %s din grup?</string>
     <string name="group_members_device_other_remove_alert_title">Ești sigur că vrei să elimini dispozitivul %s din acest grup?\n\nAceasta nu va elimina utilizatorul dintr-un grup.</string>
     <string name="group_members_device_own_remove_alert_title">Ești sigur că vrei să îndepărtezi dispozitivul tău din acest grup?\n\nAceasta nu te va îndepărta dintr-un grup.</string>
     <string name="group_members_device_confirm_remove_alert_title">Îndepărtarea unui dispozitiv va șterge, de asemenea, toată istoricul de locație asociat și va opri partajarea locației!\n\nAceastă acțiune este ireversibilă.</string>
@@ -542,9 +542,9 @@
     <string name="group_details_menu_delete">Șterge grupul</string>
     <string name="group_details_menu_leave">Părăsește grupul</string>
     <string name="group_details_menu_block">Blochează grupul</string>
-    <string name="group_details_delete_group_alert_title">Ești sigur că vrei să ștergi acest grup?\nAceasta este ireversibilă și va șterge toate datele grupului și va elimina toate conexiunile cu membrii!</string>
+    <string name="group_details_delete_group_alert_title">Ești sigur că dorești să ștergi acest grup?  \nAceasta este ireversibilă și va șterge toate datele grupului și va elimina toate legăturile cu membrii!</string>
     <string name="group_details_delete_group_alert_button">Șterge</string>
-    <string name="group_details_leave_group_alert_title">Ești sigur că vrei să părăsești acest grup?\nAceasta este ireversibilă și va șterge toate datele pe care le-ai partajat și va elimina toate conexiunile cu membrii!</string>
+    <string name="group_details_leave_group_alert_title">Ești sigur că vrei să părăsești acest grup?  \nAceasta este ireversibilă și va șterge toate datele pe care le-ai împărtășit și va elimina orice conexiune cu membrii!</string>
     <string name="group_details_leave_group_alert_button">Părăsește</string>
     <string name="group_details_remove_member_alert_button">Îndepărtează...</string>
     <string name="group_details_block_group_alert_title">Ești sigur că vrei să blochezi acest grup?\nAceasta este ireversibilă, va șterge toate datele pe care le-ai partajat cu grupul și nu vei putea să te reîntorci în grup!</string>
@@ -603,7 +603,7 @@
     <string name="places_create_location_hint_tap">**SUGESTIE:** Apasă pe hartă pentru a adăuga sau ajusta locul tău</string>
     <string name="places_create_plan_limit_info">Pentru a crea mai multe locuri, îmbunătățește-ți planul.</string>
     <string name="place_list_menu_delete">Șterge locul</string>
-    <string name="place_list_delete_place_alert_title">Ești sigur că vrei să ștergi acest loc?</string>
+    <string name="place_list_delete_place_alert_title">Sunteți sigur că doriți să ștergeți acest loc?</string>
     <string name="place_detail_setting_button_notify_enter">Intră</string>
     <string name="place_detail_setting_button_notify_exit">Ieși</string>
     <string name="place_detail_notification_settings_title">Alerte de locație</string>
@@ -669,7 +669,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SECURIZAT - PRIVAT - CRIPTAT</string>
     <string name="welcome_screen_button_join">Alătură-te</string>
     <string name="welcome_account_edit_profile">Completează-ți profilul</string>
@@ -684,9 +684,9 @@
     <string name="history_delete_deletionInfo_rangeFromUntil">Ștergerea întregului istoric al locației\nDe la: **%1$s**\nPână la: **%2$s**</string>
     <string name="recover_account_step_password_wrong">Parola nu se potrivește</string>
     <string name="recover_account_header_recover_possible">Parola dvs. nu se potrivește cu cheile criptografice</string>
-    <string name="recover_account_caption_recover_possible">Pentru a vă recupera contul, încercați să recuperați cheia cu parola veche.</string>
+    <string name="recover_account_caption_recover_possible">Pentru a-ți recupera contul, încearcă să recuperezi cheia cu parola ta veche.</string>
     <string name="recover_account_header_recover_not_possible">Contul dvs. nu are chei corespunzătoare! Vă rugăm să vă resetați contul.</string>
-    <string name="recover_account_caption_recover_not_possible">Dacă nu puteți recupera cheia, puteți să vă resetați contul. **Resetarea contului dvs. va șterge toate datele!**</string>
+    <string name="recover_account_caption_recover_not_possible">Dacă nu puteți recupera cheie, puteți reseta contul dumneavoastră. *Resetarea contului dumneavoastră va șterge toate datele!*</string>
     <string name="recover_account_caption_reset">**Resetarea contului dvs. va șterge toate datele!**</string>
     <string name="password_confirmation_screen_title">Confirmarea parolei</string>
     <string name="password_confirmation_header">Cheile dvs. de criptare au fost schimbate</string>
@@ -720,7 +720,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Urmărirea locației este limitată!**  \nAți depășit resursele planului dumneavoastră.</string>
     <string name="plan_limit_generic_message">Limita planului a fost atinsă!</string>
     <string name="app_version_alert_title">Actualizare nouă a aplicației</string>
-    <string name="app_version_alert_message">O nouă versiune a Paralino este disponibilă, vă rugăm să actualizați pentru o experiență mai bună!</string>
+    <string name="app_version_alert_message">O versiune nouă a Paralino este disponibilă, vă rugăm să actualizați pentru o experiență mai bună!</string>
     <string name="app_version_alert_title_mandatory">Vă rugăm să actualizați</string>
     <string name="app_version_alert_message_mandatory">Această versiune a aplicației este învechită!  \n\nPentru a continua să utilizați aplicația, vă rugăm să actualizați la cea mai recentă versiune!</string>
     <string name="app_version_alert_button_update">Actualizare</string>
@@ -890,12 +890,12 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">În funcție de nivelul curent al bateriei, notificările sunt actualizate periodic la fiecare 5-15 minute</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Utilizarea bateriei: Ridicată</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">De câteva ori pe oră</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Notificările sunt refresh-uite periodic, de câteva ori pe oră.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Notificările sunt actualizate periodic de câteva ori pe oră</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Utilizarea bateriei: Medie</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">La fiecare câteva ore</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Notificările sunt actualizate periodic la fiecare câteva ore</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Utilizarea bateriei: Scăzută</string>
-    <string name="setting_notificationSocket_registration_error_message">Conexiunea ar putea fi confirmată, vă rugăm să încercați din nou!</string>
+    <string name="setting_notificationSocket_registration_error_message">Conexiunea nu a putut fi confirmată, vă rugăm să încercați din nou!</string>
     <string name="notifications_socketService_message_lastSync">Ultima actualizare: %s</string>
     <string name="licence_screen_title">Cheie de licență</string>
     <string name="licence_screen_info">Dacă aveți o cheie de licență, introduceți-o aici pentru a conecta un plan premium cu contul dvs. Paralino.</string>
@@ -922,7 +922,7 @@
     <string name="notifications_socketService_status_error">Serviciul de notificare 🟡</string>
     <string name="notifications_socketService_message_errors">Serviciul de notificare este suspendat: \n%s</string>
     <string name="notifications_socketService_message_connecting">Conectare...</string>
-    <string name="notifications_socketService_message_disconnected">Serviciul de notificare a fost temporar deconectat.</string>
+    <string name="notifications_socketService_message_disconnected">Serviciul de notificare a fost deconectat temporar</string>
     <string name="notifications_channel_socket_service">Serviciul de notificări push</string>
     <string name="location_banner_error_background_access">Lipsă acces nelimitat în fundal</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>

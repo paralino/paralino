@@ -35,7 +35,7 @@
     <string name="button_open_settings">Otevřít nastavení</string>
     <string name="alert_title_confirm">Prosím potvrďte</string>
     <string name="alert_sessionExpired_title">Relace vypršela</string>
-    <string name="alert_sessionExpired_message">Vaše relace vypršela, prosím přihlaste se znovu.</string>
+    <string name="alert_sessionExpired_message">Vaše relace vypršela, prosím, přihlaste se znovu.</string>
     <string name="alert_comingSoon_title">Brzy přijde 🤞</string>
     <string name="alert_comingSoon_message">Tato funkce je již ve vývoji a brzy bude k dispozici.</string>
     <string name="error_unstable_connection">Vaše **internetové připojení** je velmi nestabilní a některé požadavky selhávají.  \nProsím zkontrolujte svá nastavení.</string>
@@ -45,8 +45,8 @@
     <string name="error_permissionDenied_remote">Požadavek není povolen!</string>
     <string name="error_something_wrong">Něco se pokazilo!</string>
     <string name="error_something_wrong_http">Něco se pokazilo! [%d]</string>
-    <string name="error_generic_snacbar">Ups, prosím zkuste to znovu.</string>
-    <string name="error_still_loading_snackbar">Obnovuji, **prosím zkuste to znovu za pár sekund.**</string>
+    <string name="error_generic_snacbar">Omlouvám se, prosím zkuste to znovu.</string>
+    <string name="error_still_loading_snackbar">Osvěžování, **zkuste to prosím znovu za několik sekund.**</string>
     <string name="error_location_permission_missing_sheet_message">Povolení polohy je **požadováno** pro úspěšné sledování a sdílení vaší polohy s ostatními.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Prosím, udělte **přesné povolení polohy** pro úspěšné sledování a sdílení vaší polohy s ostatními.</string>
     <string name="error_location_background_permission_missing_sheet_message">Prosím, povolte přístup k poloze **po celou dobu**, abyste **spolehlivě a vždy** sledovali a sdíleli svou polohu s ostatními.</string>
@@ -56,7 +56,7 @@
     <string name="error_notification_permission_missing_sheet_message">Prosím, povolte **notifikace**, abyste mohli přijímat **důležité** upozornění na vaše skupinové akce, místa a účet.</string>
     <string name="error_location_background_permission_missing_notification_message">Sdílení polohy nemůže začít, protože vám chybí povolení polohy!  \nProsím, otevřete aplikaci, abyste znovu spustili sdílení polohy!</string>
     <string name="error_location_sharing_start_notification_message">Sdílení polohy nemůže začít!  \nProsím, znovu otevřete aplikaci!</string>
-    <string name="error_device_registration_notification_message">Vaše zařízení nemůže být registrováno!  \nProsím, restartujte sdílení polohy!</string>
+    <string name="error_device_registration_notification_message">Vaše zařízení nelze zaregistrovat!  \nProsím, restartujte sdílení polohy!</string>
     <string name="error_unverified_member_notification_message">Vaše členství nemohlo být ověřeno. Zkuste prosím obnovit data nebo kontaktujte správce skupiny.</string>
     <string name="error_crypto_key_missing">Data šifrování jsou neúplná (%s), zkuste prosím obnovit.</string>
     <string name="error_crypto_key_missing_user">Vaše kryptografické klíče nejsou správně nakonfigurovány.</string>
@@ -247,8 +247,8 @@
     <string name="setting_description_locationBoost_enabled">Maximální výkon polohy se resetuje na %s. **Používá více baterie!!!**</string>
     <string name="setting_description_locationBoost_disabled">Použijte maximální výkon pro polohu po dobu až 2 hodin. **Bude používat více baterie!!!**</string>
     <string name="setting_title_placeActivityThrottle">Omezení aktivity místa</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Vaše zařízení vytvoří oznámení o aktivitě místa, pokud strávíte více času v určitém místě nebo mimo něj.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Vaše zařízení bude na změny místa reagovat rychleji a může vytvořit více oznámení o aktivitě místa v krátkém čase (například pokud krátce projíždíte kolem určitého místa).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Vaše zařízení vytvoří upozornění na aktivitu v místě, pokud strávíte více času uvnitř nebo vně určitého místa.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Vaše zařízení bude reagovat na změny místa rychleji a může vytvářet více notifikací o aktivitě místa během krátké doby (například pokud mírně projedete kolem určitého místa).</string>
     <string name="setting_appSettings_title">Nastavení aplikace</string>
     <string name="setting_measurementSystem_title">Měřící systém</string>
     <string name="setting_measurementSystem_default_title">Výchozí zařízení</string>
@@ -514,8 +514,8 @@
     <string name="group_members_marker_circle_info_inaccurate">%s by mohl být někde uvnitř tohoto kruhu</string>
     <string name="group_member_device_title">Zařízení</string>
     <string name="group_members_block_user">Zablokovat uživatele</string>
-    <string name="group_members_block_user_alert_message">Pokud pokračujete, uživatel vás nebude moci přidat do skupiny a nebudete dostávat oznámení o poloze uživatelů ve sdílených skupinách.</string>
-    <string name="group_members_remove_alert_title">Jste si jisti, že chcete odstranit %s ze skupiny?</string>
+    <string name="group_members_block_user_alert_message">Pokud budete pokračovat, uživatel vás nebude moci přidat do skupiny a nebudete dostávat oznámení o poloze uživatelů v žádných sdílených skupinách.</string>
+    <string name="group_members_remove_alert_title">Opravdu chcete odstranit %s ze skupiny?</string>
     <string name="group_members_device_other_remove_alert_title">Jste si jisti, že chcete odstranit zařízení %s z této skupiny?\n\nToto neodstraní uživatele ze skupiny.</string>
     <string name="group_members_device_own_remove_alert_title">Jste si jisti, že chcete odstranit své zařízení z této skupiny?\n\nToto vás neodstraní ze skupiny.</string>
     <string name="group_members_device_confirm_remove_alert_title">Odstranění zařízení také vymaže veškerou související historii polohy a zastaví sdílení polohy!\n\nTato akce je nevratná.</string>
@@ -525,9 +525,9 @@
     <string name="group_details_menu_delete">Smazat skupinu</string>
     <string name="group_details_menu_leave">Opustit skupinu</string>
     <string name="group_details_menu_block">Zablokovat skupinu</string>
-    <string name="group_details_delete_group_alert_title">Jste si jisti, že chcete tuto skupinu smazat?  \nToto je nevratné a odstraní všechny údaje skupiny a zruší veškeré spojení s členy!</string>
+    <string name="group_details_delete_group_alert_title">Jste si jisti, že chcete tuto skupinu smazat?  \nTento krok je nevratný a vymaže všechna data skupiny a odstraní veškeré spojení s členy!</string>
     <string name="group_details_delete_group_alert_button">Smazat</string>
-    <string name="group_details_leave_group_alert_title">Jste si jisti, že chcete opustit tuto skupinu?  \nToto je nevratné a odstraní všechny údaje, které jste sdíleli, a zruší veškeré spojení s členy!</string>
+    <string name="group_details_leave_group_alert_title">Opravdu si jistý, že chcete opustit tuto skupinu?  \nToto je nevratné a vymaže všechny údaje, které jste sdíleli, a odstraní všechny vazby s členy!</string>
     <string name="group_details_leave_group_alert_button">Opustit</string>
     <string name="group_details_remove_member_alert_button">Odstranit...</string>
     <string name="group_details_block_group_alert_title">Jste si jisti, že chcete tuto skupinu zablokovat?  \nToto je nevratné, odstraní všechny údaje, které jste sdíleli se skupinou, a nebudete moci se do skupiny znovu připojit!</string>
@@ -605,7 +605,7 @@
     <string name="places_create_location_hint_tap">**TIP:** Klepněte na mapu, abyste přidali nebo upravili své místo</string>
     <string name="places_create_plan_limit_info">Pro vytvoření více míst upgradujte svůj plán.</string>
     <string name="place_list_menu_delete">Smazat místo</string>
-    <string name="place_list_delete_place_alert_title">Opravdu chcete toto místo smazat?</string>
+    <string name="place_list_delete_place_alert_title">Opravdu si jist, že chceš toto místo smazat?</string>
     <string name="place_detail_setting_button_notify_enter">Zadat</string>
     <string name="place_detail_setting_button_notify_exit">Ukončit</string>
     <string name="place_detail_notification_settings_title">Upozornění na místa</string>
@@ -671,7 +671,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">BEZPEČNÉ - SOUKROMÉ - ŠIFROVANÉ</string>
     <string name="welcome_screen_button_join">Připojit</string>
     <string name="welcome_account_edit_profile">Doplňte svůj profil</string>
@@ -685,9 +685,9 @@
     <string name="recover_account_step_password_correct">Klíč lze obnovit 🙌</string>
     <string name="recover_account_step_password_wrong">Heslo se neshoduje</string>
     <string name="recover_account_header_recover_possible">Vaše heslo se neshoduje s vašimi kryptografickými klíči</string>
-    <string name="recover_account_caption_recover_possible">Pro obnovení vašeho účtu zkuste obnovit klíč se starým heslem.</string>
+    <string name="recover_account_caption_recover_possible">Abyste obnovili svůj účet, zkuste obnovit klíč se svým starým heslem.</string>
     <string name="recover_account_header_recover_not_possible">Váš účet nemá odpovídající klíče! Prosím, resetujte svůj účet.</string>
-    <string name="recover_account_caption_recover_not_possible">Pokud nemůžete obnovit klíč, můžete resetovat svůj účet. **Resetování vašeho účtu vymaže všechna vaše data!**</string>
+    <string name="recover_account_caption_recover_not_possible">Pokud nemůžete obnovit klíč, můžete resetovat svůj účet. **Resetování účtu odstraní všechna vaše data!**</string>
     <string name="recover_account_caption_reset">**Resetování vašeho účtu vymaže všechna vaše data!**</string>
     <string name="password_confirmation_screen_title">Potvrzení hesla</string>
     <string name="password_confirmation_header">Vaše šifrovací klíče byly změněny</string>
@@ -721,7 +721,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Sledování polohy je omezeno!**  \nPřekročili jste zdroje svého plánu.</string>
     <string name="plan_limit_generic_message">Limit plánu dosažen!</string>
     <string name="app_version_alert_title">Nová aktualizace aplikace</string>
-    <string name="app_version_alert_message">Nová verze Paralino je k dispozici, prosím aktualizujte pro lepší zážitek!</string>
+    <string name="app_version_alert_message">Nová verze Paralino je k dispozici, prosím aktualizujte ji pro lepší zážitek!</string>
     <string name="app_version_alert_title_mandatory">Prosím aktualizujte</string>
     <string name="app_version_alert_message_mandatory">Tato verze aplikace je zastaralá!  \n\nAbychom mohli pokračovat v používání aplikace, prosím aktualizujte na nejnovější verzi!</string>
     <string name="app_version_alert_button_update">Aktualizovat</string>
@@ -797,7 +797,7 @@
     <string name="login_step_error_logIn">Chyba při přihlašování</string>
     <string name="login_step_error_recoverGuest">Nelze obnovit hostitelský účet</string>
     <string name="login_step_error_blockedAccount">**Váš účet je momentálně zablokován.**  \n\nZkuste to prosím znovu později nebo kontaktujte podporu, aby problém vyřešila.</string>
-    <string name="login_step_error_encryption_logIn">Vaše šifrovací klíče se zdají být poškozené nebo neexistující, zkuste to prosím znovu nebo resetujte své heslo (to vymaže všechna vaše předchozí data)</string>
+    <string name="login_step_error_encryption_logIn">Vaše šifrovací klíče se zdají být poškozené nebo neexistující, prosím zkuste to znovu nebo resetujte své heslo (to vymaže všechna vaše předchozí data)</string>
     <string name="form_invalid_email_description">Vaše e-mailová adresa není platná.</string>
     <string name="form_invalid_credentials_description">Zkontrolujte prosím své přihlašovací údaje a zkuste to znovu.</string>
     <string name="form_invalid_email_conflict_description">Použijte prosím jiný e-mail.</string>
@@ -912,7 +912,7 @@
     <string name="notifications_socketService_status_active">Služba push 🟢</string>
     <string name="notifications_socketService_status_warning">Služba push 🟠</string>
     <string name="notifications_socketService_status_error">Služba push 🔴</string>
-    <string name="notifications_socketService_message_disconnected">Služba oznámení dočasně odpojena</string>
+    <string name="notifications_socketService_message_disconnected">Služba oznámení byla dočasně odpojena</string>
     <string name="notifications_channel_socket_service">Služba push oznámení</string>
     <string name="setting_mapsProvider_mapLibreFree_tag">Žádné satelitní mapy</string>
     <string name="setting_mapsProvider_mapLibreFree_warning_title">Žádné satelitní mapy</string>
@@ -933,12 +933,12 @@
     <string name="licence_code_hint">Licenční klíč</string>
     <string name="licence_button_activate">Aktivovat</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Několikrát za hodinu</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Oznámení se periodicky obnovují několikrát za hodinu.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Oznámení se pravidelně obnovují několikrát za hodinu</string>
     <string name="setting_notificationSocket_connectionType_notice">Při periodickém obnovení nebudou manuální žádosti o lokaci pro toto zařízení spolehlivě fungovat.</string>
     <string name="setting_notificationSocket_connectionType_realtime_title">Trvalé připojení</string>
     <string name="setting_notificationSocket_connectionType_realtime_info">Trvalé připojení v reálném čase s téměř okamžitým doručováním oznámení.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_info">V závislosti na aktuální úrovni baterie se oznámení pravidelně obnovují každých 5-15 minut</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Spotřeba baterie: střední</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Spotřeba baterie: nízká</string>
-    <string name="setting_notificationSocket_registration_error_message">Připojení může být potvrzeno, prosím zkuste to znovu!</string>
+    <string name="setting_notificationSocket_registration_error_message">Připojení nemohlo být potvrzeno, zkuste to prosím znovu!</string>
 </resources>

@@ -24,7 +24,7 @@
     <string name="button_open_settings">Otvorite postavke</string>
     <string name="alert_title_confirm">Molimo potvrdite</string>
     <string name="alert_sessionExpired_title">Prijava istekla</string>
-    <string name="alert_sessionExpired_message">Vaša prijava je istekla, molimo prijavite se ponovno.</string>
+    <string name="alert_sessionExpired_message">Vaša sesija je istekla, molimo vas da se ponovo prijavite.</string>
     <string name="alert_comingSoon_title">U izradi 🤞</string>
     <string name="alert_comingSoon_message">Ova opcija je trenutno u razvoju i dolazi ubrzo.</string>
     <string name="error_unstable_connection">Vaša **internetska veza** je vrlo nestabilna i neki zahtjevi ne uspijevaju.\nMolimo provjerite svoje postavke.</string>
@@ -33,8 +33,8 @@
     <string name="error_server_unavailable">Trenutačno nije moguće uspostaviti vezu, molimo pokušajte ponovno uskoro.</string>
     <string name="error_something_wrong">Nešto nije uredu!</string>
     <string name="error_something_wrong_http">Nešto nije uredu! [%d]</string>
-    <string name="error_generic_snacbar">Ups, pokušajte ponovno.</string>
-    <string name="error_still_loading_snackbar">Osvježavanje podataka u tijeku,\n**pokušajte ponovno za par sekundi.**</string>
+    <string name="error_generic_snacbar">Oops, molim vas pokušajte ponovo.</string>
+    <string name="error_still_loading_snackbar">Osvježavanje, **molimo pokušajte ponovo za nekoliko sekundi.**</string>
     <string name="error_location_permission_missing_sheet_message">Dopuštenje za lokaciju je **potrebno** kako bi se uspješno pratila i dijelila Vaša lokacija s drugima.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Molimo omogućite **točno dopuštenje za lokaciju** kako biste uspješno pratili i dijelili Vašu lokaciju s drugima.</string>
     <string name="error_location_background_permission_missing_sheet_message">Molimo omogućite pristup lokaciji **cijelo vrijeme** kako biste **pouzdano i uvijek** pratili i dijelili Vašu lokaciju s drugima.</string>
@@ -43,7 +43,7 @@
     <string name="error_notification_permission_missing_sheet_message">Molimo omogućite **obavijesti** kako biste primali **važne** obavijesti za događaje u grupi, mjesta i Vaš račun.</string>
     <string name="error_location_background_permission_missing_notification_message">Nemoguće pokrenuti dijeljenje lokacije jer nedostaje dopuštenje za stalnu lokaciju!\nPonovno pokrenite aplikaciju da bi nastavili dijeliti lokaciju!</string>
     <string name="error_location_sharing_start_notification_message">Nemoguće pokrenuti dijeljenje lokacije!\nPonovno pokrenite aplikaciju!</string>
-    <string name="error_device_registration_notification_message">Vaš uređaj nije registriran!\nMolimo ponovno započnite dijeljenje lokacije!</string>
+    <string name="error_device_registration_notification_message">Vaš uređaj ne može biti registrovan!  \nMolimo ponovo pokrenite deljenje lokacije!</string>
     <string name="error_unverified_member_notification_message">Vaše članstvo u grupi nije potvrđeno.\nPonovno osvježite podatke ili kontaktirajte vlasnika grupe.</string>
     <string name="error_crypto_key_missing">Kriptirani podaci su nepotpuni (%s), molimo pokušajte osvježiti.</string>
     <string name="error_crypto_key_missing_user">Vaši kriptografski ključevi nisu pravilno konfigurirani.</string>
@@ -208,8 +208,8 @@
     <string name="setting_description_locationBoost_enabled">Maksimalne performanse lokacije će se resetirati u %s. **Koristi više baterije!!!**</string>
     <string name="setting_description_locationBoost_disabled">Koristi maksimalne performanse za lokaciju do 2 sata. **Koristi više baterije!!!**</string>
     <string name="setting_title_placeActivityThrottle">Filter aktivnosti mjesta</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Vaš uređaj će kreirati notifikaciju o mjestu ako se zadržite u ili izvan određenog mjesta.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Vaš uređaj će brže reagirati na promjene mjesta te je moguće da će kreirati više notifikacija o mjestu (npr: ako kratko prođete kraj mjesta).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Vaš uređaj će kreirati obaveštenje o aktivnostima na lokaciji ako provedete više vremena unutar ili van određene lokacije.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Vaš uređaj će brže reagovati na promene mesta i može kreirati više obaveštenja o aktivnostima na mestu u kratkom vremenskom periodu (na primer: ako kratko prođete pored određenog mesta).</string>
     <string name="setting_appSettings_title">Postavke aplikacije</string>
     <string name="setting_measurementSystem_title">Mjerne jedinice</string>
     <string name="setting_measurementSystem_default_title">Zadano na uređaju</string>
@@ -336,7 +336,7 @@
     <string name="paywall_faq_answer_payment_security_google">Da, Vaše plaćanje izravno obrađuje Google Play Store. Mi ne obrađujemo niti pohranjujemo nikakve platne informacije.</string>
     <string name="paywall_faq_answer_free_trial">Da, nudimo besplatno probno razdoblje prvi put kada pokrenete Vašu pretplatu. Tada možete uživati u premium značajkama bez ikakvih troškova.</string>
     <string name="paywall_faq_answer_contact_support">Možete kontaktirati naš tim za podršku putem e-pošte na **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Slavimo zajedno!</string>
+    <string name="plans_gift_screen_title">Proslavimo!</string>
     <string name="plans_gift_screen_box_title">Poseban Poklon</string>
     <string name="plans_gift_screen_box_message">Kao jedan od prvih korisnika dobivate specijalan plan, potpuno besplatno!</string>
     <string name="plans_gift_screen_benefits_title">⭐️Što je uključeno⭐️</string>
@@ -387,7 +387,7 @@
     <string name="login_step_error_logIn">Pogreška prilikom prijave</string>
     <string name="login_step_error_recoverGuest">Nemoguće spasiti gostujući račun</string>
     <string name="login_step_error_blockedAccount">**Vaš račun je trenutno blokiran.**\n\nPokušajte ponovno kasnije ili kontaktirajte podršku kako biste riješili problem.</string>
-    <string name="login_step_error_encryption_logIn">Vaši ključevi za enkripciju čine se oštećeni ili nepostojeći, pokušajte ponovno ili resetirajte lozinku (To će izbrisati sve Vaše prethodne podatke)</string>
+    <string name="login_step_error_encryption_logIn">Vaši ključevi za enkripciju čine se oštećenim ili nepostojećim, molimo pokušajte ponovo ili resetujte svoju lozinku (ovo će obrisati sve vaše prethodne podatke)</string>
     <string name="form_invalid_email_description">Vaša e-mail adresa nije valjana.</string>
     <string name="form_invalid_credentials_description">Molimo provjerite svoje podatke i pokušajte ponovno.</string>
     <string name="form_invalid_email_conflict_description">Molimo odaberite drugi e-mail.</string>
@@ -462,8 +462,8 @@
     <string name="group_member_title">Korisnik</string>
     <string name="group_member_device_title">Uređaj</string>
     <string name="group_members_block_user">Blokirajte korisnika</string>
-    <string name="group_members_block_user_alert_message">Ako nastavite, korisnik Vas neće moći dodati u grupu, te nećete primati obavijesti o lokaciji korisnika u niti jednoj zajedničkoj grupi.</string>
-    <string name="group_members_remove_alert_title">Jeste li sigurni da želite ukloniti %s iz grupe?</string>
+    <string name="group_members_block_user_alert_message">Ako nastavite, korisnik neće moći da vas doda u grupu i nećete primati obaveštenja o lokaciji korisnika u bilo kojim deljenim grupama.</string>
+    <string name="group_members_remove_alert_title">Da li ste sigurni da želite da uklonite %s iz grupe?</string>
     <string name="group_members_device_other_remove_alert_title">Jeste li sigurni da želite ukloniti uređaj korisnika %s iz grupe?\n\nOvo neće ukloniti korisnika iz grupe.</string>
     <string name="group_members_device_own_remove_alert_title">Jeste li sigurni da želite ukloniti Vaš uređaj iz grupe?\n\nOvo neće ukloniti Vas iz grupe.</string>
     <string name="group_members_device_name_default">Uređaj</string>
@@ -471,9 +471,9 @@
     <string name="group_details_menu_delete">Izbrišite grupu</string>
     <string name="group_details_menu_leave">Napustite grupu</string>
     <string name="group_details_menu_block">Blokirajte grupu</string>
-    <string name="group_details_delete_group_alert_title">Jeste li sigurni da želite izbrisati ovu grupu?\nOvo je nepovratno i izbrisat će sve podatke grupe i ukloniti sve veze s članovima!</string>
+    <string name="group_details_delete_group_alert_title">Da li ste sigurni da želite da obrišete ovu grupu?  \nOvo je nepopravljivo i obrišiće sve podatke grupe i ukloniti svu povezanost s članovima!</string>
     <string name="group_details_delete_group_alert_button">Izbrišite</string>
-    <string name="group_details_leave_group_alert_title">Jeste li sigurni da želite napustiti ovu grupu?\nOvo je nepovratno i izbrisat će sve podatke koje ste podijelili i ukloniti sve veze s članovima!</string>
+    <string name="group_details_leave_group_alert_title">Da li ste sigurni da želite napustiti ovu grupu?  \nOvo je nepovratno i izbrisat će sve podatke koje ste podijelili i ukloniti sve veze s članovima!</string>
     <string name="group_details_leave_group_alert_button">Napustite</string>
     <string name="group_details_remove_member_alert_button">Uklonite</string>
     <string name="group_details_block_group_alert_title">Jeste li sigurni da želite blokirati ovu grupu?\nOvo je nepovratno, izbrisat će sve podatke koje ste podijelili s grupom i nećete moći ponovno se pridružiti grupi!</string>
@@ -547,7 +547,7 @@
     <string name="places_create_location_hint_tap">**SAVJET:** Dodirom na kartu dodajte ili prilagodite Vaše mjesto</string>
     <string name="places_create_plan_limit_info">Da bi kreirali više mjesta, nadogradite svoj plan.</string>
     <string name="place_list_menu_delete">Izbrišite mjesto</string>
-    <string name="place_list_delete_place_alert_title">Jeste li sigurni da želite izbrisati ovo mjesto?</string>
+    <string name="place_list_delete_place_alert_title">Da li ste sigurni da želite da obrišete ovo mesto?</string>
     <string name="place_detail_setting_button_notify_enter">Dolazak</string>
     <string name="place_detail_setting_button_notify_exit">Odlazak</string>
     <string name="place_detail_notification_settings_title">Postavke obavijesti</string>
@@ -573,7 +573,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SIGURNO - PRIVATNO - KRIPTIRANO</string>
     <string name="welcome_screen_button_join">Pridružite se</string>
     <string name="welcome_account_edit_profile">Popunite svoj profil</string>
@@ -587,9 +587,9 @@
     <string name="recover_account_step_password_correct">Ključ se može vratiti 🙌</string>
     <string name="recover_account_step_password_wrong">Lozinka se ne podudara</string>
     <string name="recover_account_header_recover_possible">Vaša lozinka se ne podudara s ključem za dekripciju</string>
-    <string name="recover_account_caption_recover_possible">Da biste vratili račun, pokušajte vratiti ključ s starom lozinkom.</string>
+    <string name="recover_account_caption_recover_possible">Da biste povratili svoj račun, pokušajte da povratite ključ sa svojom starom lozinkom.</string>
     <string name="recover_account_header_recover_not_possible">Vaš račun nema podudarajuće ključeve! Molimo poništite Vaš račun.</string>
-    <string name="recover_account_caption_recover_not_possible">Ako ne možete vratiti ključ, možete poništiti Vaš račun. **Poništenje računa će izbrisati sve Vaše podatke!**</string>
+    <string name="recover_account_caption_recover_not_possible">Ako ne možete povratiti ključ, možete resetovati svoj nalog. **Resetovanje vašeg naloga će obrisati sve vaše podatke!**</string>
     <string name="recover_account_caption_reset">**Poništenje računa će izbrisati sve Vaše podatke!**</string>
     <string name="reset_password_screen_title">Ponovno postavljanje lozinke</string>
     <string name="reset_password_success_message">Molimo prijavite se ponovno!</string>
@@ -613,7 +613,7 @@
     <string name="plan_limit_overLimit_user_message">Dijeljenje lokacije u nekim grupama će prestati jer su premašili ograničenja plana.\n\nPrilagodite svoje grupe ili nadogradite plan kako biste nastavili dijeliti lokaciju!</string>
     <string name="plan_limit_overLimit_places_banner_title">**Obavijesti o mjestima su onemogućene!**\nOva grupa ima previše mjesta.</string>
     <string name="app_version_alert_title">Nova nadogradnja aplikacije</string>
-    <string name="app_version_alert_message">Nova verzija aplikacije Paralino je dostupna, molimo Vas da je ažurirate za bolje iskustvo!</string>
+    <string name="app_version_alert_message">Nova verzija Paralino je dostupna, molimo vas da ažurirate za bolje iskustvo!</string>
     <string name="app_version_alert_title_mandatory">Ažurirati</string>
     <string name="app_version_alert_message_mandatory">Ova verzija aplikacije više nije podržana!\n\nKako biste nastavili koristiti aplikaciju, molimo Vas da ažurirate na najnoviju verziju!</string>
     <string name="app_version_alert_button_update">Ažurirajte</string>
@@ -900,7 +900,7 @@
     <string name="setting_mapsProvider_title">Provajder karata</string>
     <string name="setting_notificationSocket_title">Servis za obaveštenja</string>
     <string name="setting_notificationSocket_channelSettings_title">Podešavanja sistemskih obaveštenja</string>
-    <string name="notifications_socketService_message_disconnected">Usluga obavještavanja privremeno je isključena.</string>
+    <string name="notifications_socketService_message_disconnected">Usluga obavijesti privremeno prekinuta</string>
     <string name="notifications_channel_socket_service">Usluga push obaveštenja</string>
     <string name="location_banner_error_background_access">Nedostaje neograničen pristup u pozadini</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
@@ -941,11 +941,11 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">U zavisnosti od trenutnog nivoa baterije, obaveštenja se periodično osvežavaju svake 5-15 minuta.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Potrošnja baterije: Visoka</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Nekoliko puta na sat</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Obavještenja se periodično osvježavaju nekoliko puta na sat.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Obaveštenja se periodično osvežavaju nekoliko puta na sat.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Svake nekoliko sati</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Obaveštenja se periodično osvežavaju svake nekoliko sati.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Potrošnja baterije: Niska</string>
-    <string name="setting_notificationSocket_registration_error_message">Veza se može potvrditi, molimo pokušajte ponovo!</string>
+    <string name="setting_notificationSocket_registration_error_message">Veza nije mogla biti potvrđena, molimo pokušajte ponovo!</string>
     <string name="licence_screen_title">Ključ licence</string>
     <string name="setting_notificationSocket_connectionType_periodic1_title">Svake 5-15 minuta</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Potrošnja baterije: Srednja</string>

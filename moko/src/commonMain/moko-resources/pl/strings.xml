@@ -33,7 +33,7 @@
     <string name="button_open_settings">Otwórz ustawienia</string>
     <string name="alert_title_confirm">Proszę potwierdzić</string>
     <string name="alert_sessionExpired_title">Sesja wygasła</string>
-    <string name="alert_sessionExpired_message">Twoja sesja wygasła, proszę zalogować się ponownie.</string>
+    <string name="alert_sessionExpired_message">Twoja sesja wygasła, proszę zaloguj się ponownie.</string>
     <string name="alert_comingSoon_title">Już wkrótce 🤞</string>
     <string name="alert_comingSoon_message">Ta funkcja jest już w fazie rozwoju i wkrótce będzie dostępna.</string>
     <string name="error_unstable_connection">Twoje **połączenie internetowe** jest bardzo niestabilne i niektóre żądania nie powiodły się.\nProszę sprawdzić swoje ustawienia.</string>
@@ -43,8 +43,8 @@
     <string name="error_permissionDenied_remote">Żądanie niedozwolone!</string>
     <string name="error_something_wrong">Coś poszło nie tak!</string>
     <string name="error_something_wrong_http">Coś poszło nie tak! [%d]</string>
-    <string name="error_generic_snacbar">Ups, proszę spróbować ponownie.</string>
-    <string name="error_still_loading_snackbar">Odświeżenie, **proszę spróbować ponownie za kilka sekund.**</string>
+    <string name="error_generic_snacbar">Ups, spróbuj ponownie.</string>
+    <string name="error_still_loading_snackbar">Odświeżanie, **proszę spróbować ponownie za kilka sekund.**</string>
     <string name="error_location_permission_missing_sheet_message">Uprawnienia lokalizacji są **wymagane**, aby pomyślnie śledzić i dzielić się swoją lokalizacją z innymi.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Proszę przyznać **dokładne uprawnienia lokalizacji**, aby pomyślnie śledzić i dzielić się swoją lokalizacją z innymi.</string>
     <string name="error_location_background_permission_missing_sheet_message">Proszę zezwolić na dostęp do lokalizacji **przez cały czas**, aby **wiarygodnie i zawsze** śledzić i dzielić się swoją lokalizacją z innymi.</string>
@@ -53,7 +53,7 @@
     <string name="error_notification_permission_missing_sheet_message">Proszę włączyć **powiadomienia**, aby otrzymywać **ważne** powiadomienia dotyczące wydarzeń grupowych, miejsc i konta.</string>
     <string name="error_location_background_permission_missing_notification_message">Udostępnianie lokalizacji nie może się rozpocząć, ponieważ brakuje uprawnień lokalizacji!\nProszę otworzyć aplikację, aby ponownie uruchomić udostępnianie lokalizacji!</string>
     <string name="error_location_sharing_start_notification_message">Udostępnianie lokalizacji nie może się rozpocząć!\nProszę ponownie otworzyć aplikację!</string>
-    <string name="error_device_registration_notification_message">Twoje urządzenie nie może być zarejestrowane!\nProszę ponownie uruchomić udostępnianie lokalizacji!</string>
+    <string name="error_device_registration_notification_message">Twoje urządzenie nie może zostać zarejestrowane!  \nProszę uruchomić ponownie udostępnianie lokalizacji!</string>
     <string name="error_unverified_member_notification_message">Twoje członkostwo nie mogło zostać zweryfikowane. Proszę spróbować odświeżyć dane lub skontaktować się z administratorem grupy.</string>
     <string name="error_crypto_key_missing">Dane szyfrowania są niekompletne (%s), proszę spróbować odświeżyć.</string>
     <string name="error_crypto_key_missing_user">Twoje klucze kryptograficzne nie są prawidłowo skonfigurowane.</string>
@@ -245,8 +245,8 @@
     <string name="setting_description_locationBoost_enabled">Maksymalna wydajność lokalizacji zostanie zresetowana o %s. **Zużywa więcej baterii!!!**</string>
     <string name="setting_description_locationBoost_disabled">Użyj maksymalnej wydajności lokalizacji przez maksymalnie 2 godziny. **Zużyje więcej baterii!!!**</string>
     <string name="setting_title_placeActivityThrottle">Aktywność miejsca ograniczenia</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Twoje urządzenie utworzy powiadomienie o aktywności miejsca, jeśli spędzisz więcej czasu w lub poza określonym miejscem.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Twoje urządzenie zareaguje na zmiany miejsc szybciej i może utworzyć wiele powiadomień o aktywności miejsca w krótkim czasie (na przykład: jeśli krótko przejedziesz obok określonego miejsca).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Twoje urządzenie utworzy powiadomienie o aktywności w danym miejscu, jeśli spędzisz w nim lub poza nim więcej czasu.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Twoje urządzenie szybciej zareaguje na zmiany lokalizacji i może generować wiele powiadomień o aktywności w danym miejscu w krótkim czasie (na przykład: jeśli na krótko przejedziesz obok określonego miejsca).</string>
     <string name="setting_appSettings_title">Ustawienia aplikacji</string>
     <string name="setting_measurementSystem_title">System pomiarowy</string>
     <string name="setting_measurementSystem_default_title">Domyślnie urządzenia</string>
@@ -515,7 +515,7 @@
     <string name="group_member_title">Członek</string>
     <string name="group_member_device_title">Urządzenie</string>
     <string name="group_members_block_user">Zablokuj użytkownika</string>
-    <string name="group_members_block_user_alert_message">Jeśli kontynuujesz, użytkownik nie będzie mógł dodać cię do grupy, a ty nie otrzymasz powiadomień o lokalizacji użytkowników w żadnych wspólnych grupach.</string>
+    <string name="group_members_block_user_alert_message">Jeśli kontynuujesz, użytkownik nie będzie mógł dodać cię do grupy, a ty nie będziesz otrzymywać powiadomień o lokalizacji użytkowników w żadnych wspólnych grupach.</string>
     <string name="group_members_remove_alert_title">Czy na pewno chcesz usunąć %s z grupy?</string>
     <string name="group_members_device_other_remove_alert_title">Czy na pewno chcesz usunąć urządzenie z %s z tej grupy?\n\nTo nie usunie użytkownika z grupy.</string>
     <string name="group_members_device_own_remove_alert_title">Czy na pewno chcesz usunąć swoje urządzenie z tej grupy?\n\nTo nie usunie cię z grupy.</string>
@@ -526,9 +526,9 @@
     <string name="group_details_menu_delete">Usuń grupę</string>
     <string name="group_details_menu_leave">Opuszcz grupę</string>
     <string name="group_details_menu_block">Zablokuj grupę</string>
-    <string name="group_details_delete_group_alert_title">Czy na pewno chcesz usunąć tę grupę?  \nTo jest nieodwracalne i spowoduje usunięcie wszystkich danych grupy oraz usunięcie wszystkich połączeń z członkami!</string>
+    <string name="group_details_delete_group_alert_title">Czy na pewno chcesz usunąć tę grupę?  \nTo jest nieodwracalne i spowoduje usunięcie wszystkich danych grupy oraz usunięcie wszelkich powiązań z członkami!</string>
     <string name="group_details_delete_group_alert_button">Usuń</string>
-    <string name="group_details_leave_group_alert_title">Czy na pewno chcesz opuścić tę grupę?  \nTo jest nieodwracalne i spowoduje usunięcie wszystkich danych, które udostępniłeś, oraz usunięcie wszystkich połączeń z członkami!</string>
+    <string name="group_details_leave_group_alert_title">Czy jesteś pewny, że chcesz opuścić tę grupę?  \nTo jest nieodwracalne i spowoduje usunięcie wszystkich danych, które udostępniłeś, oraz zerwanie wszelkich połączeń z członkami!</string>
     <string name="group_details_leave_group_alert_button">Opuść</string>
     <string name="group_details_remove_member_alert_button">Usuń...</string>
     <string name="group_details_block_group_alert_title">Czy na pewno chcesz zablokować tę grupę?  \nTo jest nieodwracalne, spowoduje usunięcie wszystkich danych, które udostępniłeś grupie, a Ty nie będziesz mógł ponownie dołączyć do grupy!</string>
@@ -672,7 +672,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">BEZPIECZNE - PRYWATNE - ZASZYFROWANE</string>
     <string name="welcome_screen_button_join">Dołącz</string>
     <string name="welcome_account_edit_profile">Uzupełnij swój profil</string>
@@ -685,9 +685,9 @@
     <string name="recover_account_step_password_correct">Klucz można odzyskać 🙌</string>
     <string name="recover_account_step_password_wrong">Hasło nie pasuje</string>
     <string name="recover_account_header_recover_possible">Twoje hasło nie pasuje do Twoich kluczy kryptograficznych</string>
-    <string name="recover_account_caption_recover_possible">Aby odzyskać swoje konto, spróbuj odzyskać klucz za pomocą starego hasła.</string>
+    <string name="recover_account_caption_recover_possible">Aby odzyskać swoje konto, spróbuj odzyskać klucz za pomocą swojego starego hasła.</string>
     <string name="recover_account_header_recover_not_possible">Twoje konto nie ma pasujących kluczy! Proszę zresetować swoje konto.</string>
-    <string name="recover_account_caption_recover_not_possible">Jeśli nie możesz odzyskać klucza, możesz zresetować swoje konto. **Resetowanie konta spowoduje usunięcie wszystkich Twoich danych!**</string>
+    <string name="recover_account_caption_recover_not_possible">Jeśli nie możesz odzyskać klucza, możesz zresetować swoje konto. **Resetowanie konta usunie wszystkie Twoje dane!**</string>
     <string name="recover_account_caption_reset">**Resetowanie konta spowoduje usunięcie wszystkich Twoich danych!**</string>
     <string name="password_confirmation_screen_title">Potwierdzenie hasła</string>
     <string name="password_confirmation_header">Twoje klucze szyfrowania zostały zmienione</string>
@@ -721,7 +721,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Śledzenie lokalizacji jest ograniczone!**  \nPrzekroczyłeś zasoby swojego planu.</string>
     <string name="plan_limit_generic_message">Limit planu osiągnięty!</string>
     <string name="app_version_alert_title">Nowa aktualizacja aplikacji</string>
-    <string name="app_version_alert_message">Nowa wersja Paralino jest dostępna, proszę zaktualizować, aby uzyskać lepsze doświadczenia!</string>
+    <string name="app_version_alert_message">Dostępna jest nowa wersja Paralino, proszę zaktualizować, aby uzyskać lepsze doświadczenia!</string>
     <string name="app_version_alert_title_mandatory">Proszę zaktualizować</string>
     <string name="app_version_alert_message_mandatory">Ta wersja aplikacji jest przestarzała!  \n\nAby kontynuować korzystanie z aplikacji, proszę zaktualizować do najnowszej wersji!</string>
     <string name="app_version_alert_button_update">Aktualizuj</string>
@@ -802,7 +802,7 @@
     <string name="login_step_error_logIn">Błąd podczas logowania</string>
     <string name="login_step_error_recoverGuest">Nie można odzyskać konta gościa</string>
     <string name="login_step_error_blockedAccount">**Twoje konto jest obecnie zablokowane.**  \n\nProszę spróbować ponownie później lub skontaktować się z pomocą techniczną w celu rozwiązania problemu.</string>
-    <string name="login_step_error_encryption_logIn">Twoje klucze szyfrujące wydają się być uszkodzone lub nie istnieją, spróbuj ponownie lub zresetuj swoje hasło (to usunie wszystkie Twoje wcześniejsze dane)</string>
+    <string name="login_step_error_encryption_logIn">Twoje klucze szyfrowania wydają się być uszkodzone lub nieistniejące, proszę spróbować ponownie lub zresetować swoje hasło (to spowoduje usunięcie wszystkich twoich wcześniejszych danych).</string>
     <string name="form_invalid_email_description">Twój adres e-mail jest nieprawidłowy.</string>
     <string name="form_invalid_credentials_description">Proszę sprawdzić swoje dane uwierzytelniające i spróbować ponownie.</string>
     <string name="form_invalid_email_conflict_description">Proszę użyć innego adresu e-mail.</string>
@@ -926,10 +926,10 @@
     <string name="setting_notificationSocket_connectionType_realtime_info">Stałe połączenie w czasie rzeczywistym z niemal natychmiastową dostawą powiadomień.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Zużycie baterii: wysokie</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Kilka razy na godzinę</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Powiadomienia są odświeżane okresowo kilka razy na godzinę.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Powiadomienia są odświeżane okresowo kilka razy na godzinę</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Zużycie baterii: średnie</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Co kilka godzin</string>
-    <string name="setting_notificationSocket_registration_error_message">Połączenie może być potwierdzone, spróbuj ponownie!</string>
+    <string name="setting_notificationSocket_registration_error_message">Nie udało się potwierdzić połączenia, spróbuj ponownie!</string>
     <string name="licence_screen_title">Klucz licencyjny</string>
     <string name="setting_notificationSocket_connectionType_realtime_tag">Zużycie baterii: potencjalnie wysokie</string>
     <string name="setting_notificationSocket_connectionType_periodic1_title">Co 5-15 minut</string>

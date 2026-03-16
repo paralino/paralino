@@ -38,8 +38,8 @@
     <string name="error_permissionDenied_remote">A kérés nem engedélyezett!</string>
     <string name="error_something_wrong">Valami hiba történt!</string>
     <string name="error_something_wrong_http">Valami hiba történt! [%d]</string>
-    <string name="error_generic_snacbar">Ups, kérjük, próbálja meg újra.</string>
-    <string name="error_still_loading_snackbar">Frissítés, **kérjük, próbálja meg néhány másodperc múlva.**</string>
+    <string name="error_generic_snacbar">Hoppá, kérlek próbáld újra.</string>
+    <string name="error_still_loading_snackbar">Frissítés, **kérjük, próbálja meg újra néhány másodperc múlva.**</string>
     <string name="error_location_permission_missing_sheet_message">A helymeghatározási engedély **szükséges** ahhoz, hogy sikeresen nyomon követhesse és megoszthassa helyét másokkal.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Kérjük, adja meg a **pontos helymeghatározási engedélyt** ahhoz, hogy sikeresen nyomon követhesse és megoszthassa helyét másokkal.</string>
     <string name="error_location_background_permission_missing_sheet_message">Kérjük, engedélyezze a **mindig** helyhozzáférést ahhoz, hogy **megbízhatóan és mindig** nyomon követhesse és megoszthassa helyét másokkal.</string>
@@ -48,7 +48,7 @@
     <string name="error_notification_permission_missing_sheet_message">Kérjük, engedélyezze a **értesítéseket** ahhoz, hogy **fontos** értesítéseket kapjon csoportos eseményeiről, helyeiről és fiókjáról.</string>
     <string name="error_location_background_permission_missing_notification_message">A helymegosztás nem indítható, mert hiányoznak a helymeghatározási engedélyek! Kérjük, nyissa meg az alkalmazást a helymegosztás újraindításához!</string>
     <string name="error_location_sharing_start_notification_message">A helymegosztás nem indítható! Kérjük, nyissa meg újra az alkalmazást!</string>
-    <string name="error_device_registration_notification_message">A készüléke nem regisztrálható! Kérjük, indítsa újra a helymegosztást!</string>
+    <string name="error_device_registration_notification_message">Az eszköze nem regisztrálható! Kérjük, indítsa újra a helymegosztást!</string>
     <string name="error_unverified_member_notification_message">A tagságát nem sikerült ellenőrizni. Kérjük, próbálja meg frissíteni az adatokat, vagy lépjen kapcsolatba a csoport adminisztrátorával.</string>
     <string name="error_crypto_key_missing">A titkosítási adatok hiányosak (%s), kérjük, próbálja meg frissíteni.</string>
     <string name="error_crypto_key_missing_user">A kriptográfiai kulcsai nincsenek megfelelően konfigurálva.</string>
@@ -241,8 +241,8 @@
     <string name="setting_description_locationBoost_enabled">A maximális helymeghatározási teljesítmény %s-kor visszaáll. **Több akkumulátort használ!!!**</string>
     <string name="setting_description_locationBoost_disabled">Használja a maximális teljesítményt a helymeghatározáshoz legfeljebb 2 órán át. **Több akkumulátort fog használni!!!**</string>
     <string name="setting_title_placeActivityThrottle">Hely aktivitás korlátozása</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Az eszközöd hely aktivitás értesítést fog létrehozni, ha több időt töltesz egy bizonyos helyen vagy azon kívül.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Az eszközöd gyorsabban reagál a helyváltozásokra, és rövid időn belül több hely aktivitás értesítést is létrehozhat (például: ha rövid időre elhaladsz egy bizonyos hely mellett).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Az eszközöd helyi aktivitási értesítést fog létrehozni, ha hosszabb időt töltesz egy adott helyen belül vagy kívül.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Az eszköze gyorsabban reagál a helyváltozásokra, és rövid időn belül több helyi aktivitási értesítést is létrehozhat (például: ha rövid időre elhalad egy bizonyos hely mellett).</string>
     <string name="setting_appSettings_title">Alkalmazás beállítások</string>
     <string name="setting_measurementSystem_title">Mérési rendszer</string>
     <string name="setting_measurementSystem_default_title">Eszköz alapértelmezett</string>
@@ -513,8 +513,8 @@
     <string name="group_member_title">Tag</string>
     <string name="group_member_device_title">Eszköz</string>
     <string name="group_members_block_user">Felhasználó blokkolása</string>
-    <string name="group_members_block_user_alert_message">Ha folytatja, a felhasználó nem tudja Önt csoporthoz hozzáadni, és nem fogja megkapni a felhasználók helyéről szóló értesítéseket a megosztott csoportokban.</string>
-    <string name="group_members_remove_alert_title">Biztos benne, hogy el akarja távolítani %s-t a csoportból?</string>
+    <string name="group_members_block_user_alert_message">Ha folytatja, a felhasználó nem tudja Önt egy csoporthoz hozzáadni, és nem fogja megkapni a felhasználók tartózkodási helyértesítéseit semmilyen megosztott csoportban.</string>
+    <string name="group_members_remove_alert_title">Biztos benne van, hogy el akarja távolítani %s-t a csoportból?</string>
     <string name="group_members_device_other_remove_alert_title">Biztos benne, hogy el akarja távolítani az %s eszközt ebből a csoportból?\n\nEz nem távolítja el a felhasználót a csoportból.</string>
     <string name="group_members_device_own_remove_alert_title">Biztos benne, hogy el akarja távolítani az eszközét ebből a csoportból?\n\nEz nem távolítja el Önt a csoportból.</string>
     <string name="group_members_device_confirm_remove_alert_title">Egy eszköz eltávolítása törli az összes kapcsolódó helytörténetet, és leállítja a helymegosztást!\n\nEz a művelet visszafordíthatatlan.</string>
@@ -525,9 +525,9 @@
     <string name="group_details_menu_leave">Csoport elhagyása</string>
     <string name="group_details_menu_block">Csoport blokkolása</string>
     <string name="group_create_button_text">Csoport létrehozása</string>
-    <string name="group_details_delete_group_alert_title">Biztos benne, hogy törölni szeretné ezt a csoportot?\nEz visszafordíthatatlan, és törli az összes csoportadatot, valamint megszünteti az összes kapcsolatot a tagokkal!</string>
+    <string name="group_details_delete_group_alert_title">Biztos benne, hogy törölni szeretné ezt a csoportot?  \nEz nem visszafordítható, és törli az összes csoportadatot, valamint megszünteti az összes kapcsolatot a tagokkal!</string>
     <string name="group_details_delete_group_alert_button">Törlés</string>
-    <string name="group_details_leave_group_alert_title">Biztos benne, hogy el szeretné hagyni ezt a csoportot?\nEz visszafordíthatatlan, és törli az összes megosztott adatot, valamint megszünteti az összes kapcsolatot a tagokkal!</string>
+    <string name="group_details_leave_group_alert_title">Biztos benne, hogy el szeretné hagyni ezt a csoportot?  \nEz visszafordíthatatlan, és törli az összes megosztott adatát, valamint eltávolítja a kapcsolatot a tagokkal!</string>
     <string name="group_details_leave_group_alert_button">Elhagyás</string>
     <string name="group_details_remove_member_alert_button">Eltávolítás...</string>
     <string name="group_details_block_group_alert_title">Biztos benne, hogy blokkolni szeretné ezt a csoportot?\nEz visszafordíthatatlan, törli az összes megosztott adatot a csoportban, és nem tud újra csatlakozni a csoporthoz!</string>
@@ -585,7 +585,7 @@
     <string name="places_create_location_hint_tap">**TIPP:** Érintse meg a térképet a hely hozzáadásához vagy módosításához</string>
     <string name="places_create_plan_limit_info">További helyek létrehozásához frissítse a tervét.</string>
     <string name="place_list_menu_delete">Hely törlése</string>
-    <string name="place_list_delete_place_alert_title">Biztosan törölni szeretné ezt a helyet?</string>
+    <string name="place_list_delete_place_alert_title">Biztos benne, hogy el akarja távolítani ezt a helyet?</string>
     <string name="place_detail_setting_button_notify_enter">Belépés</string>
     <string name="place_detail_setting_button_notify_exit">Kilépés</string>
     <string name="place_detail_notification_settings_title">Helyértesítések</string>
@@ -631,7 +631,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">BIZTONSÁGOS - MAGÁN - TITKOSÍTOTT</string>
     <string name="welcome_screen_button_join">Csatlakozás</string>
     <string name="welcome_account_edit_profile">Profilod kitöltése</string>
@@ -645,9 +645,9 @@
     <string name="recover_account_step_password_correct">A kulcs helyreállítható 🙌</string>
     <string name="recover_account_step_password_wrong">A jelszó nem egyezik</string>
     <string name="recover_account_header_recover_possible">A jelszavad nem egyezik a kriptográfiai kulcsaiddal</string>
-    <string name="recover_account_caption_recover_possible">A fiókod helyreállításához próbáld meg helyreállítani a kulcsot a régi jelszóval.</string>
+    <string name="recover_account_caption_recover_possible">A fiókod helyreállításához próbáld meg a kulcsot a régi jelszavad használatával helyreállítani.</string>
     <string name="recover_account_header_recover_not_possible">A fiókod nem rendelkezik egyező kulcsokkal! Kérlek, állítsd vissza a fiókodat.</string>
-    <string name="recover_account_caption_recover_not_possible">Ha nem tudod helyreállítani a kulcsot, visszaállíthatod a fiókodat. **A fiókod visszaállítása törli az összes adatodat!**</string>
+    <string name="recover_account_caption_recover_not_possible">Ha nem tudja visszaállítani a kulcsot, akkor visszaállíthatja a fiókját. **A fiókja visszaállítása minden adatát törli!**</string>
     <string name="recover_account_caption_reset">**A fiókod visszaállítása törli az összes adatodat!**</string>
     <string name="password_confirmation_screen_title">Jelszó megerősítése</string>
     <string name="password_confirmation_header">A titkosítási kulcsaid megváltoztak</string>
@@ -681,7 +681,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**A helymeghatározás korlátozott!**  \nTúllépte a terv erőforrásait.</string>
     <string name="plan_limit_generic_message">Tervkorlát elérve!</string>
     <string name="app_version_alert_title">Új alkalmazásfrissítés</string>
-    <string name="app_version_alert_message">A Paralino új verziója elérhető, kérjük, frissítsen a jobb élmény érdekében!</string>
+    <string name="app_version_alert_message">Elérhető egy új verzió a Paralino alkalmazásból, kérjük, frissítse az alkalmazást a jobb élmény érdekében!</string>
     <string name="app_version_alert_title_mandatory">Kérjük, frissítsen</string>
     <string name="app_version_alert_message_mandatory">Ez az alkalmazásverzió elavult!  \n\nAz alkalmazás folytatásához kérjük, frissítsen a legújabb verzióra!</string>
     <string name="app_version_alert_button_update">Frissítés</string>
@@ -779,7 +779,7 @@
     <string name="login_step_error_logIn">Hiba a bejelentkezés során</string>
     <string name="login_step_error_recoverGuest">Nem sikerült helyreállítani a vendégfiókot</string>
     <string name="login_step_error_blockedAccount">**A fiókja jelenleg blokkolva van.**  \n\nKérjük, próbálja meg később, vagy lépjen kapcsolatba a támogatással a probléma megoldása érdekében.</string>
-    <string name="login_step_error_encryption_logIn">Az Ön titkosító kulcsai sérültek vagy nem léteznek, kérjük, próbálja meg újra, vagy állítsa vissza a jelszavát (Ez törli az összes korábbi adatát)</string>
+    <string name="login_step_error_encryption_logIn">Az Ön titkosító kulcsai úgy tűnik, hogy sérültek vagy nem léteznek, kérjük, próbálkozzon újra, vagy állítsa vissza a jelszavát (ez törölni fogja az összes korábbi adatát)</string>
     <string name="form_invalid_email_description">Az e-mail címe érvénytelen.</string>
     <string name="form_invalid_credentials_description">Kérjük, ellenőrizze a hitelesítő adatait, és próbálja meg újra.</string>
     <string name="form_invalid_email_conflict_description">Kérjük, használjon másik e-mailt.</string>
@@ -857,7 +857,7 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">A jelenlegi akkumulátor szintjétől függően az értesítések időszakosan frissülnek 5-15 percenként.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Akkumulátor Használat: Magas</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Néhány alkalommal óránként</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">A értesítések időszakonként, óránként többször frissülnek.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Az értesítések időszakosan frissülnek néhány alkalommal óránként.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Akkumulátor Használat: Közepes</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Minden néhány órában</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Az értesítések időszakosan frissülnek minden néhány órában.</string>
@@ -871,7 +871,7 @@
     <string name="plans_management_providerInfo_polar">Az előfizetést a **Polar.sh** weben biztosítja.</string>
     <string name="plans_management_providerInfo_paralino">A tagsági lehetőséget **Paralino** biztosít.</string>
     <string name="licence_code_hint">Licenckulcs</string>
-    <string name="notifications_socketService_message_disconnected">Értesítési szolgáltatás ideiglenesen megszakadt.</string>
+    <string name="notifications_socketService_message_disconnected">Az értesítési szolgáltatás ideiglenesen lebontva</string>
     <string name="notifications_channel_socket_service">Push Értesítési Szolgáltatás</string>
     <string name="setting_mapsProvider_title">Térképszolgáltató</string>
     <string name="setting_mapsProvider_mapLibrePremium_title">MapLibre Premium</string>
@@ -887,7 +887,7 @@
     <string name="error_notification_service_error_message">Értesítési szolgáltatás nem indítható el. \nKérjük, nyissa meg az alkalmazást az értesítési szolgáltatás újraindításához!</string>
     <string name="setting_notificationSocket_connectionType_realtime_info">Állandó, valós idejű kapcsolat a szinte azonnali értesítések kézbesítésével.</string>
     <string name="setting_notificationSocket_connectionType_realtime_tag">Akkumulátor Használat: Potenciálisan Magas</string>
-    <string name="setting_notificationSocket_registration_error_message">A kapcsolat megerősíthető, kérem próbálja újra!</string>
+    <string name="setting_notificationSocket_registration_error_message">A kapcsolat nem megerősíthető, kérjük, próbálja újra!</string>
     <string name="notifications_socketService_message_lastSync">Utolsó frissítés: %s</string>
     <string name="licence_screen_title">Licenckulcs</string>
     <string name="licence_screen_info">Ha rendelkezik licenckulccsal, itt adhatja meg, hogy prémium tervet kapcsoljon a Paralino fiókjához.</string>

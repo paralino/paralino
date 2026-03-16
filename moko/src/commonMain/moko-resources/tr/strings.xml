@@ -33,7 +33,7 @@
     <string name="button_open_settings">Ayarları aç</string>
     <string name="alert_title_confirm">Lütfen onaylayın</string>
     <string name="alert_sessionExpired_title">Oturum süresi doldu</string>
-    <string name="alert_sessionExpired_message">Oturumunuzun süresi doldu, lütfen tekrar giriş yapın.</string>
+    <string name="alert_sessionExpired_message">Oturum süreniz doldu, lütfen tekrar giriş yapın.</string>
     <string name="alert_comingSoon_title">Yakında geliyor 🤞</string>
     <string name="alert_comingSoon_message">Bu özellik zaten geliştirilme aşamasında ve yakında geliyor.</string>
     <string name="error_unstable_connection">**İnternet bağlantınız** çok kararsız ve bazı istekler başarısız oluyor.  \nAyarlarınızı kontrol edin.</string>
@@ -43,8 +43,8 @@
     <string name="error_permissionDenied_remote">İstek izin verilmedi!</string>
     <string name="error_something_wrong">Bir şeyler ters gitti!</string>
     <string name="error_something_wrong_http">Bir şeyler ters gitti! [%d]</string>
-    <string name="error_generic_snacbar">Ups, lütfen tekrar deneyin.</string>
-    <string name="error_still_loading_snackbar">Yenileniyor, **lütfen birkaç saniye içinde tekrar deneyin.**</string>
+    <string name="error_generic_snacbar">Üzgünüm, lütfen tekrar deneyin.</string>
+    <string name="error_still_loading_snackbar">Yenileme yapılıyor, **lütfen birkaç saniye içinde tekrar deneyin.**</string>
     <string name="error_location_permission_missing_sheet_message">Konum izni, konumunuzu başkalarıyla başarıyla takip etmek ve paylaşmak için **gerekli**dir.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Lütfen konumunuzu başkalarıyla başarıyla takip etmek ve paylaşmak için **kesin konum izni** verin.</string>
     <string name="location_banner_error_no_permission_notifications">Bildirim izni eksik</string>
@@ -54,7 +54,7 @@
     <string name="error_notification_permission_missing_sheet_message">Lütfen **bildirimleri** etkinleştirin, böylece grup etkinlikleriniz, yerleriniz ve hesabınız için **önemli** uyarılar alabilirsiniz.</string>
     <string name="error_location_background_permission_missing_notification_message">Konum paylaşımı başlayamaz çünkü konum izinleriniz eksik!  \nLütfen konum paylaşımını yeniden başlatmak için uygulamayı açın!</string>
     <string name="error_location_sharing_start_notification_message">Konum paylaşımı başlayamaz!  \nLütfen uygulamayı tekrar açın!</string>
-    <string name="error_device_registration_notification_message">Cihazınız kaydedilemedi!  \nLütfen konum paylaşımını yeniden başlatın!</string>
+    <string name="error_device_registration_notification_message">Cihazınız kaydedilemez!  \nLütfen konum paylaşımını yeniden başlatın!</string>
     <string name="error_unverified_member_notification_message">Üyeliğiniz doğrulanamadı. Lütfen verileri yenilemeyi deneyin veya grup yöneticisiyle iletişime geçin.</string>
     <string name="error_crypto_key_missing">Şifreleme verisi eksik (%s), lütfen yenilemeyi deneyin.</string>
     <string name="error_crypto_key_missing_user">Kriptografik anahtarlarınız düzgün yapılandırılmamış.</string>
@@ -249,8 +249,8 @@
     <string name="setting_title_placeActivityThrottle">Yer etkinliğini kısıtla</string>
     <string name="plans_banner_settings_action">Şimdi yükseltin</string>
     <string name="plans_banner_settings_action_small">Yükselt</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Cihazınız, belirli bir yerde daha fazla zaman geçirirseniz veya belirli bir yerden çıkarsanız yer etkinliği bildirimi oluşturacaktır.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Cihazınız, yer değişikliklerine daha hızlı yanıt verecek ve kısa bir süre içinde birden fazla yer etkinliği bildirimi oluşturabilir (örneğin: belirli bir yerin yanından kısa bir süreyle geçerseniz).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Cihazınız, belirli bir mekanda daha fazla zaman geçirirseniz veya dışarıda daha fazla zaman geçirirseniz, bir yer aktivitesi bildirimi oluşturacaktır.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Cihazınız yer değişikliklerine daha hızlı yanıt verecek ve kısa bir süre içinde birden fazla yer etkinliği bildirimi oluşturabilir (örneğin: belirli bir yerin yanından kısa bir süreliğine geçerseniz).</string>
     <string name="setting_appSettings_title">Uygulama ayarları</string>
     <string name="setting_measurementSystem_title">Ölçüm sistemi</string>
     <string name="setting_measurementSystem_default_title">Cihaz varsayılanı</string>
@@ -401,7 +401,7 @@
     <string name="login_step_error_encryption_signUp">Şifreleme ayarlanırken hata oluştu</string>
     <string name="paywall_faq_answer_free_trial">Evet, aboneliğinizi ilk kez başlattığınızda ücretsiz deneme süresi sunuyoruz. Daha sonra premium özelliklerin tadını ücretsiz olarak çıkarabilirsiniz.</string>
     <string name="paywall_faq_answer_contact_support">Destek ekibimizle **contact@paralino.com** adresine e-posta göndererek iletişime geçebilirsiniz.</string>
-    <string name="plans_gift_screen_title">Hadi kutlayalım!</string>
+    <string name="plans_gift_screen_title">Haydi kutlayalım!</string>
     <string name="plans_gift_screen_box_title">Erken Benimseyici Hediyesi</string>
     <string name="plans_gift_screen_box_message">Özel bir ömür boyu **Başlangıç** planı alıyorsunuz, tamamen ÜCRETSİZ!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ Ne alıyorsunuz ⭐️</string>
@@ -449,7 +449,7 @@
     <string name="login_step_error_recoverGuest">Misafir hesabını kurtarmak mümkün olmadı</string>
     <string name="invite_connect_code_placeholder">Kullanıcının Paralino.ID\'si</string>
     <string name="login_step_error_blockedAccount">**Hesabınız şu anda engellendi.**\n\nLütfen daha sonra tekrar deneyin veya sorunu çözmek için destekle iletişime geçin.</string>
-    <string name="login_step_error_encryption_logIn">Şifreleme anahtarlarınız bozulmuş veya mevcut değil, lütfen tekrar deneyin veya şifrenizi sıfırlayın (Bu, tüm önceki verilerinizi silecektir)</string>
+    <string name="login_step_error_encryption_logIn">Şifreleme anahtarlarınız bozulmuş veya mevcut değil gibi görünüyor, lütfen tekrar deneyin veya şifrenizi sıfırlayın (bu, önceki verilerinizin tamamını silecektir).</string>
     <string name="form_invalid_email_description">E-posta adresiniz geçerli değil.</string>
     <string name="form_invalid_credentials_description">Lütfen kimlik bilgilerinizi kontrol edin ve tekrar deneyin.</string>
     <string name="form_invalid_email_conflict_description">Lütfen başka bir e-posta kullanın.</string>
@@ -534,8 +534,8 @@
     <string name="group_member_title">Üye</string>
     <string name="group_member_device_title">Cihaz</string>
     <string name="group_members_block_user">Kullanıcıyı engelle</string>
-    <string name="group_members_block_user_alert_message">Devam ederseniz, kullanıcı sizi bir gruba ekleyemeyecek ve paylaşılan gruplarda kullanıcıların konum bildirimlerini almayacaksınız.</string>
-    <string name="group_members_remove_alert_title">%s\'i gruptan çıkarmak istediğinizden emin misiniz?</string>
+    <string name="group_members_block_user_alert_message">Eğer devam ederseniz, kullanıcı sizi bir gruba ekleyemeyecek ve paylaşılan gruplarda kullanıcıların konum bildirimlerini almayacaksınız.</string>
+    <string name="group_members_remove_alert_title">Kesin olarak %s grubundan kaldırmak istediğinizden emin misiniz?</string>
     <string name="group_members_device_other_remove_alert_title">%s\'den cihazı bu gruptan çıkarmak istediğinizden emin misiniz?\n\nBu, kullanıcıyı bir gruptan çıkarmayacaktır.</string>
     <string name="group_members_device_own_remove_alert_title">Cihazınızı bu gruptan çıkarmak istediğinizden emin misiniz?\n\nBu, sizi bir gruptan çıkarmayacaktır.</string>
     <string name="group_members_device_confirm_remove_alert_title">Bir cihazı kaldırmak, ilgili tüm konum geçmişini de silecektir ve konum paylaşımını durduracaktır!\n\nBu işlem geri alınamaz.</string>
@@ -546,9 +546,9 @@
     <string name="group_details_menu_leave">Grubu terk et</string>
     <string name="group_details_menu_block">Grubu engelle</string>
     <string name="group_create_name_placeholder">Grup adı</string>
-    <string name="group_details_delete_group_alert_title">Bu grubu silmek istediğinize emin misiniz?\nBu geri alınamaz ve tüm grup verilerini silecek ve üyelerle olan tüm bağlantıları kaldıracaktır!</string>
+    <string name="group_details_delete_group_alert_title">Bu grubu silmek istediğinizden emin misiniz? Bu geri dönüşü olmayan bir işlemdir ve tüm grup verilerini silecek ve üyelerle olan tüm bağlantıyı kaldıracaktır!</string>
     <string name="group_details_delete_group_alert_button">Sil</string>
-    <string name="group_details_leave_group_alert_title">Bu grubu terk etmek istediğinize emin misiniz?\nBu geri alınamaz ve paylaştığınız tüm verileri silecek ve üyelerle olan tüm bağlantıları kaldıracaktır!</string>
+    <string name="group_details_leave_group_alert_title">Bu gruptan ayrılmak istediğinizden emin misiniz?  \nBu geri alınamaz ve paylaştığınız tüm verileri silecektir ve üyelerle olan tüm bağlantınızı kaldıracaktır!</string>
     <string name="group_details_leave_group_alert_button">Terk et</string>
     <string name="group_details_remove_member_alert_button">Kaldır...</string>
     <string name="group_details_block_group_alert_title">Bu grubu engellemek istediğinize emin misiniz?\nBu geri alınamaz, gruba paylaştığınız tüm verileri silecek ve gruba yeniden katılamayacaksınız!</string>
@@ -626,7 +626,7 @@
     <string name="places_create_location_hint_tap">**İPUCU:** Yer eklemek veya ayarlamak için haritada dokunun</string>
     <string name="places_create_plan_limit_info">Daha fazla yer oluşturmak için planınızı yükseltin.</string>
     <string name="place_list_menu_delete">Yeri sil</string>
-    <string name="place_list_delete_place_alert_title">Bu yeri silmek istediğinizden emin misiniz?</string>
+    <string name="place_list_delete_place_alert_title">Bu yeri silmek istediğinize emin misiniz?</string>
     <string name="place_detail_setting_button_notify_enter">Giriş</string>
     <string name="place_detail_setting_button_notify_exit">Çıkış</string>
     <string name="place_detail_notification_settings_title">Yer bildirimleri</string>
@@ -692,7 +692,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/s</string>
-    <string name="placeholder_unit_speed_mph">%s m/s</string>
+    <string name="placeholder_unit_speed_mph">%s mil/saat</string>
     <string name="welcome_screen_info_1">GÜVENLİ - ÖZEL - ŞİFRELİ</string>
     <string name="welcome_screen_button_join">Katıl</string>
     <string name="welcome_account_edit_profile">Profilinizi tamamlayın</string>
@@ -706,9 +706,9 @@
     <string name="recover_account_step_password_correct">Anahtar kurtarılabilir 🙌</string>
     <string name="recover_account_step_password_wrong">Şifre eşleşmiyor</string>
     <string name="recover_account_header_recover_possible">Şifreniz, kriptografik anahtarlarınızla eşleşmiyor</string>
-    <string name="recover_account_caption_recover_possible">Hesabınızı kurtarmak için, eski şifre ile anahtarı kurtarmayı deneyin.</string>
+    <string name="recover_account_caption_recover_possible">Hesabınızı kurtarmak için, eski şifrenizle anahtarı kurtarmayı deneyin.</string>
     <string name="recover_account_header_recover_not_possible">Hesabınızda eşleşen anahtarlar yok! Lütfen hesabınızı sıfırlayın.</string>
-    <string name="recover_account_caption_recover_not_possible">Anahtarı kurtaramıyorsanız, hesabınızı sıfırlayabilirsiniz. **Hesabınızı sıfırlamak tüm verilerinizi silecektir!**</string>
+    <string name="recover_account_caption_recover_not_possible">Eğer anahtarınızı geri kazanamıyorsanız, hesabınızı sıfırlayabilirsiniz. **Hesabınızı sıfırlamak, tüm verilerinizi silecektir!**</string>
     <string name="recover_account_caption_reset">**Hesabınızı sıfırlamak tüm verilerinizi silecektir!**</string>
     <string name="password_confirmation_screen_title">Şifre onayı</string>
     <string name="password_confirmation_header">Şifreleme anahtarlarınız değiştirildi</string>
@@ -742,7 +742,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Konum takibi sınırlıdır!**  \nPlan kaynaklarınızı aştınız.</string>
     <string name="plan_limit_generic_message">Plan limiti aşıldı!</string>
     <string name="app_version_alert_title">Yeni uygulama güncellemesi</string>
-    <string name="app_version_alert_message">Paralino\'nun yeni versiyonu mevcut, lütfen daha iyi bir deneyim için güncelleyin!</string>
+    <string name="app_version_alert_message">Paralino\'nun yeni bir sürümü mevcut, lütfen daha iyi bir deneyim için güncelleyin!</string>
     <string name="app_version_alert_title_mandatory">Lütfen güncelleyin</string>
     <string name="app_version_alert_message_mandatory">Bu uygulama versiyonu kullanımdan kaldırılmıştır!\n\nUygulamayı kullanmaya devam etmek için lütfen en son versiyona güncelleyin!</string>
     <string name="app_version_alert_button_update">Güncelle</string>
@@ -902,7 +902,7 @@
     <string name="licence_error_invalid">Girilen lisans kodu geçersiz, lütfen girişinizi kontrol edin ve tekrar deneyin.</string>
     <string name="licence_error_expired">Bu lisans kodu süresi dolmuş, lütfen başka bir tane kullanın.</string>
     <string name="licence_loadingStep_notFound">Lisans bulunamadı</string>
-    <string name="notifications_socketService_message_disconnected">Bildirim hizmeti geçici olarak bağlantıyı kesti.</string>
+    <string name="notifications_socketService_message_disconnected">Bildirim hizmeti geçici olarak bağlantısı kesildi</string>
     <string name="setting_mapsProvider_info">Uygulamada kullanılan haritalar için tercih ettiğiniz hizmet sağlayıcısını seçin. Harita tarzı, animasyonlar ve performans farklı sağlayıcılara göre değişiklik gösterecektir.</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Haritalar</string>
     <string name="setting_mapsProvider_mapLibreFree_title">MapLibre Ücretsiz</string>
@@ -929,14 +929,14 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">Mevcut pil seviyesine bağlı olarak, bildirimler periyodik olarak her 5-15 dakikada bir yenilenmektedir.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Pil Kullanımı: Yüksek</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Saate birkaç kez</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Bildirimler belirli aralıklarla, saatte birkaç kez yenilenir.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Bildirimler periyodik olarak saatte birkaç kez yenilenmektedir.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Pil Kullanımı: Orta</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Bildirimler periyodik olarak her birkaç saatte bir yenilenmektedir.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Pil Kullanımı: Düşük</string>
     <string name="licence_screen_info">Bir lisans anahtarınız varsa, burada girin ve Paralino hesabınızla premium planını bağlayın.</string>
     <string name="setting_notificationSocket_connectionType_info">Tercihinize göre daha iyi pil veya daha hızlı bildirim teslimatı için tercih ettiğiniz bağlantı türünü seçin.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Her birkaç saatte bir</string>
-    <string name="setting_notificationSocket_registration_error_message">Bağlantı onaylanabilir, lütfen tekrar deneyin!</string>
+    <string name="setting_notificationSocket_registration_error_message">Bağlantı onaylanamadı, lütfen tekrar deneyin!</string>
     <string name="notifications_socketService_message_lastSync">Son güncelleme: %s</string>
     <string name="licence_screen_title">Lisans anahtarı</string>
     <string name="licence_code_hint">Lisans anahtarı</string>

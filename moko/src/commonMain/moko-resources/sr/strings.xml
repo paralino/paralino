@@ -28,7 +28,7 @@
     <string name="button_open_settings">Отворите подешавања</string>
     <string name="alert_title_confirm">Молимо потврдите</string>
     <string name="alert_sessionExpired_title">Сесија је истекла</string>
-    <string name="alert_sessionExpired_message">Ваша сесија је истекла, молимо пријавите се поново.</string>
+    <string name="alert_sessionExpired_message">Ваша сесија је истекла, молимо вас да се поново пријавите.</string>
     <string name="alert_comingSoon_title">Ускоро 🤞</string>
     <string name="alert_comingSoon_message">Ова функција је већ у развоју и ускоро ће бити доступна.</string>
     <string name="error_unstable_connection">Ваша **интернет веза** је веома нестабилна и неки захтеви не успевају.\nМолимо проверите подешавања.</string>
@@ -38,7 +38,7 @@
     <string name="error_permissionDenied_remote">Захтев није дозвољен!</string>
     <string name="error_something_wrong">Нешто је пошло по злу!</string>
     <string name="error_something_wrong_http">Нешто је пошло по злу! [%d]</string>
-    <string name="error_generic_snacbar">Упс, молимо покушајте поново.</string>
+    <string name="error_generic_snacbar">Опа, молимо покушајте поново.</string>
     <string name="error_still_loading_snackbar">Освежавање, **молимо покушајте поново за неколико секунди.**</string>
     <string name="error_location_permission_missing_sheet_message">Доступ до локације је **неопходан** да бисте успешно пратили и делили своју локацију са другима.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Молимо вас да одобрите дозволу за **прецизну локацију** како бисте успешно пратили и делили своју локацију са другима.</string>
@@ -48,7 +48,7 @@
     <string name="error_notification_permission_missing_sheet_message">Молимо вас омогућите **обавештења** како бисте примали **важна** упозорења за групне догађаје, места и налог.</string>
     <string name="error_location_background_permission_missing_notification_message">Дељење локације не може да почне јер немате дозволе за локацију! Молимо вас отворите апликацију да бисте поново покренули дељење локације!</string>
     <string name="error_location_sharing_start_notification_message">Дељење локације не може да почне! Молимо вас да поново отворите апликацију!</string>
-    <string name="error_device_registration_notification_message">Ваш уређај не може бити регистрован! Молимо вас да поново покренете дељење локације!</string>
+    <string name="error_device_registration_notification_message">Ваш уређај не може бити регистрован!  \nМолимо вас да поново покренете дељење локације!</string>
     <string name="error_unverified_member_notification_message">Чланство није могло бити потврђено. Покушајте да освежите податке или контактирајте администратора групе.</string>
     <string name="error_crypto_key_missing">Подаци за шифровање су непотпуни (%s), покушајте да освежите.</string>
     <string name="error_crypto_key_missing_user">Ваши криптографски кључеви нису правилно конфигурисани.</string>
@@ -277,7 +277,7 @@
     <string name="paywall_faq_answer_payment_security_google">Да, ваше плаћање се обрађује директно преко Google Play продавнице. Ми не обрађујемо нити чувамо било какве податке о плаћању.</string>
     <string name="paywall_faq_answer_free_trial">Да, нудимо бесплатан пробни период када први пут покренете претплату. Током тог периода можете уживати у премијум функцијама без трошкова.</string>
     <string name="paywall_faq_answer_contact_support">Можете да контактирате наш тим за подршку слањем мејла на **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Прославимо!</string>
+    <string name="plans_gift_screen_title">Хајде да прославимо!</string>
     <string name="plans_gift_screen_box_title">Поклон за ране кориснике</string>
     <string name="plans_gift_screen_box_message">Добијате посебан доживотни **Starter** план, потпуно БЕСПЛАТНО!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ Шта добијате ⭐️</string>
@@ -327,7 +327,7 @@
     <string name="login_step_error_logIn">Грешка током пријављивања</string>
     <string name="login_step_error_recoverGuest">Није могуће опоравити гостујући налог</string>
     <string name="login_step_error_blockedAccount">**Ваш налог је тренутно блокиран.**\n\nМолимо покушајте касније или контактирајте подршку како бисте решили проблем.</string>
-    <string name="login_step_error_encryption_logIn">Изгледа да су ваши кључеви за шифровање оштећени или не постоје, покушајте поново или ресетујте лозинку (ово ће обрисати све ваше претходне податке)</string>
+    <string name="login_step_error_encryption_logIn">Ваши кључеви за шифровање чини се да су оштећени или не постоје, молимо покушајте поново или ресетујте вашу лозинку (ово ће обрисати све ваше претходне податке)</string>
     <string name="form_invalid_email_description">Ваша адреса е-поште није важећа.</string>
     <string name="form_invalid_credentials_description">Проверите податке за пријаву и покушајте поново.</string>
     <string name="form_invalid_email_conflict_description">Молимо користите другу адресу е-поште.</string>
@@ -392,7 +392,7 @@
     <string name="group_member_title">Члан</string>
     <string name="group_member_device_title">Уређај</string>
     <string name="group_members_block_user">Блокирајте корисника</string>
-    <string name="group_members_block_user_alert_message">Ако наставите, корисник вас неће моћи додати у групу и нећете примати обавештења о локацији корисника у ниједној заједничкој групи.</string>
+    <string name="group_members_block_user_alert_message">Ако наставите, корисник неће моћи да вас дода у групу и нећете примати обавештења о локацији корисника у било којим делјеним групама.</string>
     <string name="group_members_remove_alert_title">Да ли сте сигурни да желите да уклоните %s из групе?</string>
     <string name="group_members_device_other_remove_alert_title">Да ли сте сигурни да желите да уклоните уређај %s из ове групе?\n\nОво неће уклонити корисника из групе.</string>
     <string name="group_members_device_own_remove_alert_title">Да ли сте сигурни да желите да уклоните свој уређај из ове групе?\n\nОво вас неће уклонити из групе.</string>
@@ -403,9 +403,9 @@
     <string name="group_details_menu_delete">Избриши групу</string>
     <string name="group_details_menu_leave">Напусти групу</string>
     <string name="group_details_menu_block">Блокирај групу</string>
-    <string name="group_details_delete_group_alert_title">Да ли сте сигурни да желите да избришете ову групу?\nОво је неповратно и обрисaће све податке групе и уклонити све везе са члановима!</string>
+    <string name="group_details_delete_group_alert_title">Да ли сте сигурни да желите да избришете ову групу?  \nОво је необратно и биће обрисани сви подаци о групи и уклоњене све везе са члановима!</string>
     <string name="group_details_delete_group_alert_button">Избришите</string>
-    <string name="group_details_leave_group_alert_title">Да ли сте сигурни да желите да напустите ову групу?\nОво је неповратно и обрисaће све податке које сте поделили и уклониће све везе са члановима!</string>
+    <string name="group_details_leave_group_alert_title">Да ли сте сигурни да желите да напустите ову групу?  \nОво је необратно и биће обрисани сви подаци које сте поделили и уклоњене све везе са члановима!</string>
     <string name="group_details_leave_group_alert_button">Напусти</string>
     <string name="group_details_remove_member_alert_button">Уклони...</string>
     <string name="group_details_block_group_alert_title">Да ли сте сигурни да желите да блокирате ову групу?\nОво је неповратно, обрисaће све податке које сте поделили у групи и нећете моћи поново да се придружите групи!</string>
@@ -444,7 +444,7 @@
     <string name="places_create_location_hint_tap">**TIP:** Додирните мапу да бисте додали или прилагодили своју локацију</string>
     <string name="places_create_plan_limit_info">Да бисте креирали више локација, надоградите свој план.</string>
     <string name="place_list_menu_delete">Избриши локацију</string>
-    <string name="place_list_delete_place_alert_title">Да ли сте сигурни да желите да избришете ову локацију?</string>
+    <string name="place_list_delete_place_alert_title">Да ли сте сигурни да желите да избришете ово место?</string>
     <string name="place_detail_setting_button_notify_enter">Улаз</string>
     <string name="place_detail_setting_button_notify_exit">Излаз</string>
     <string name="place_detail_notification_settings_title">Упозорења о местима</string>
@@ -510,7 +510,7 @@
     <string name="placeholder_unit_mile">%s ми</string>
     <string name="placeholder_unit_feet">%s фт</string>
     <string name="placeholder_unit_speed_kmph">%s км/ч</string>
-    <string name="placeholder_unit_speed_mph">%s м/ч</string>
+    <string name="placeholder_unit_speed_mph">%s миља на час</string>
     <string name="welcome_screen_info_1">СИГУРНО - ПРИВАТНО - ШИФРОВАНО</string>
     <string name="welcome_screen_button_join">Придружите се</string>
     <string name="welcome_account_edit_profile">Попуните свој профил</string>
@@ -540,7 +540,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Праћење локације је ограничено!**\nПрекорачили сте ресурсе свог плана.</string>
     <string name="plan_limit_generic_message">Достигнуто ограничење плана!</string>
     <string name="app_version_alert_title">Ново ажурирање апликације</string>
-    <string name="app_version_alert_message">Нова верзија Paralino је доступна, молимо ажурирајте ради бољег искуства!</string>
+    <string name="app_version_alert_message">Нова верзија Paralino је доступна, молим вас да ажурирате за боље искуство!</string>
     <string name="app_version_alert_title_mandatory">Молимо ажурирајте</string>
     <string name="app_version_alert_message_mandatory">Ова верзија апликације је застарела!\n\nДа бисте наставили да користите апликацију, молимо ажурирајте на најновију верзију!</string>
     <string name="app_version_alert_button_update">Ажурирај</string>
@@ -710,8 +710,8 @@
     <string name="setting_description_locationBoost_enabled">Максимална перформанса локације ће бити враћена у %s. **Трошиће више батерије!!!**</string>
     <string name="setting_description_locationBoost_disabled">Користи максималне перформансе локације до 2 сата. **Трошиће више батерије!!!**</string>
     <string name="setting_title_placeActivityThrottle">Ограничи обавештења о активностима места</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Ваш уређај ће створити обавештење о активностима места ако проведете више времена у одређеном месту или изван њега.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Ваш уређај ће брже реаговати на промене места и може у кратком времену да креира више обавештења о активностима на месту (на пример: ако кратко прођете колима поред одређеног места).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Ваш уређај ће створити обавештење о активностима на локацији ако проведете више времена у или ван одређеног места.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Ваш уређај ће брже реаговати на промене места и може створити више обавештења о активностима на месту у кратком времену (на пример: ако кратко прођете поред одређеног места).</string>
     <string name="setting_appSettings_title">Подешавања апликације</string>
     <string name="setting_measurementSystem_title">Систем мерења</string>
     <string name="setting_measurementSystem_default_title">Подразумевано за уређај</string>
@@ -734,9 +734,9 @@
     <string name="recover_account_step_password_correct">Кључ се може опоравити 🙌</string>
     <string name="recover_account_step_password_wrong">Лозинка се не поклапа</string>
     <string name="recover_account_header_recover_possible">Ваша лозинка се не поклапа са вашим криптографским кључевима</string>
-    <string name="recover_account_caption_recover_possible">Да бисте опоравили налог, покушајте да опоравите кључ старом лозинком.</string>
+    <string name="recover_account_caption_recover_possible">Да бисте повратили свој налог, покушајте да повратите кључ са вашим старим лозинком.</string>
     <string name="recover_account_header_recover_not_possible">Ваш налог нема одговарајуће кључеве! Молимо вас да ресетујете налог.</string>
-    <string name="recover_account_caption_recover_not_possible">Ако не можете да опоравите кључ, можете ресетовати свој налог. **Ресетовање налога ће избрисати све ваше податке!**</string>
+    <string name="recover_account_caption_recover_not_possible">Ако не можете да повратите кључ, можете ресетовати свој налог. **Ресетовање вашег налога ће обрисати све ваше податке!**</string>
     <string name="recover_account_caption_reset">**Ресетовање налога ће избрисати све ваше податке!**</string>
     <string name="password_confirmation_screen_title">Потврда лозинке</string>
     <string name="password_confirmation_header">Ваши кључеви за шифровање су промењени</string>
@@ -854,7 +854,7 @@
     <string name="error_unrestricted_background_access_message_ios">Молим вас да омогућите **Омогући освежење апликација у позадини** да бисте дозволили Paralino да ради у позадини без прекида.</string>
     <string name="notifications_socketService_status_active">Сервис пуш обавештења 🟢</string>
     <string name="notifications_socketService_message_errors">Сервис пуш обавештења је на чекању:  \n%s</string>
-    <string name="notifications_socketService_message_disconnected">Услуга обавештења је привремено прекинута</string>
+    <string name="notifications_socketService_message_disconnected">Услуга обавештавања је привремено прекинута</string>
     <string name="notifications_channel_socket_service">Услуга пуш обавештења</string>
     <string name="setting_mapsProvider_title">Провајдер мапа</string>
     <string name="setting_mapsProvider_info">Изаберите свог препорученог провајдера услуга за мапе које се користе у апликацији. Стил мапе, анимације и перформансе ће се разликовати код различитих провајдера.</string>
@@ -896,7 +896,7 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">У зависности од актуелног нивоа батерије, обавештења се периодично освеже сваке 5-15 минута</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Коришћење батерије: Високо</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Неколико пута на сат</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Обавештења се периодично освежавају неколико пута на сат.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Обавештења се периодично освеже неколико пута на сат</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Употреба батерије: Средња</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Сваког неколико сати</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Обавештења се периодично освежавају сваког неколико сати</string>
@@ -923,7 +923,7 @@
     <string name="setting_mapsProvider_mapLibrePremium_title">MapLibre Premium</string>
     <string name="group_member_device_maybe_unreachable">Уређај ће дуже одговарати</string>
     <string name="setting_notificationSocket_connectionType_realtime_tag">Коришћење батерије: Потенцијално високо</string>
-    <string name="setting_notificationSocket_registration_error_message">Конекција је могла бити потврђена, молимо вас да покушате поново!</string>
+    <string name="setting_notificationSocket_registration_error_message">Повезивање није могло бити потврђено, покушајте поново!</string>
     <string name="licence_code_hint">Кључ за лиценцу</string>
     <string name="licence_button_activate">Активирај</string>
     <string name="licence_success_message">Лиценца је успешно активирана</string>

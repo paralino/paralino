@@ -44,8 +44,8 @@
     <string name="error_server_unavailable">Momenteel kan er geen verbinding worden gemaakt, probeer het alstublieft over een korte tijd opnieuw.</string>
     <string name="error_something_wrong">Er is iets misgegaan!</string>
     <string name="error_something_wrong_http">Er is iets misgegaan! [%d]</string>
-    <string name="error_generic_snacbar">Oeps, probeer het alstublieft opnieuw.</string>
-    <string name="error_still_loading_snackbar">Vernieuwen, **probeer het alstublieft over enkele seconden opnieuw.**</string>
+    <string name="error_generic_snacbar">Oops, probeer het alstublieft opnieuw.</string>
+    <string name="error_still_loading_snackbar">Verfrissen, **probeer het alstublieft opnieuw over een paar seconden.**</string>
     <string name="error_location_permission_missing_sheet_message">Locatie toestemming is **vereist** om uw locatie succesvol te volgen en te delen met anderen.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Verleen alstublieft **nauwkeurige locatie toestemming** om uw locatie succesvol te volgen en te delen met anderen.</string>
     <string name="error_location_background_permission_missing_sheet_message">Sta alstublieft **altijd** locatie toegang toe om uw locatie **betrouwbaar en altijd** te volgen en te delen met anderen.</string>
@@ -54,7 +54,7 @@
     <string name="error_notification_permission_missing_sheet_message">Schakel **meldingen** in om **belangrijke** waarschuwingen voor uw groepsevenementen, locaties en account te ontvangen.</string>
     <string name="error_location_background_permission_missing_notification_message">Locatie delen kan niet starten omdat u locatiepermissies mist!  \nOpen de app om het delen van de locatie opnieuw te starten!</string>
     <string name="error_location_sharing_start_notification_message">Locatie delen kan niet starten!  \nOpen de app opnieuw!</string>
-    <string name="error_device_registration_notification_message">Uw apparaat kan niet worden geregistreerd!  \nHerstart het delen van de locatie!</string>
+    <string name="error_device_registration_notification_message">Uw apparaat kan niet worden geregistreerd!  \nHerstart alstublieft het delen van uw locatie!</string>
     <string name="error_unverified_member_notification_message">Uw lidmaatschap kon niet worden geverifieerd. Probeer de gegevens te vernieuwen of neem contact op met de groepsbeheerder.</string>
     <string name="error_crypto_key_missing">Versleutelingsgegevens zijn onvolledig (%s), probeer het opnieuw te vernieuwen.</string>
     <string name="error_crypto_key_missing_user">Uw cryptografische sleutels zijn niet correct geconfigureerd.</string>
@@ -215,8 +215,8 @@
     <string name="setting_description_locationBoost_enabled">Maximale locatieprestaties worden gereset om %s. **Verbruikt meer batterij!!!**</string>
     <string name="setting_description_locationBoost_disabled">Gebruik maximale prestaties voor locatie tot 2 uur. **Zal meer batterij verbruiken!!!**</string>
     <string name="setting_title_placeActivityThrottle">Beperk plaatsactiviteit</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Uw apparaat zal een melding voor plaatsactiviteit creëren als u meer tijd in of uit een bepaalde plaats doorbrengt.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Uw apparaat zal sneller reageren op plaatsveranderingen en kan meerdere meldingen voor plaatsactiviteit in korte tijd creëren (bijvoorbeeld: als u kort langs een bepaalde plaats rijdt).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Uw apparaat zal een plaatsactiviteitsmelding creëren als u meer tijd doorbrengt in of uit een bepaalde plaats.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Uw apparaat zal sneller reageren op plaatswijzigingen en kan meerdere plaatsactiviteitsmeldingen in korte tijd genereren (bijvoorbeeld: als u kort langs een bepaalde plaats rijdt).</string>
     <string name="setting_appSettings_title">App-instellingen</string>
     <string name="setting_measurementSystem_title">Meet systeem</string>
     <string name="setting_measurementSystem_default_title">Standaard apparaat</string>
@@ -343,7 +343,7 @@
     <string name="paywall_faq_answer_payment_security_google">Ja, uw betaling wordt rechtstreeks verwerkt door de Google Play Store. Wij verwerken of slaan geen betalingsinformatie op.</string>
     <string name="paywall_faq_answer_free_trial">Ja, we bieden een gratis proefperiode aan voor de eerste keer dat u uw abonnement start. U kunt dan premium functies zonder kosten genieten.</string>
     <string name="paywall_faq_answer_contact_support">U kunt ons ondersteuningsteam bereiken door een e-mail te sturen naar **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Laten we feest vieren!</string>
+    <string name="plans_gift_screen_title">Laten we vieren!</string>
     <string name="plans_gift_screen_box_title">Vroegbieder Geschenk</string>
     <string name="plans_gift_screen_box_message">U krijgt een speciaal levenslang **Starter** plan, helemaal GRATIS!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ Wat u krijgt ⭐️</string>
@@ -393,7 +393,7 @@
     <string name="login_step_error_logIn">Fout bij het inloggen</string>
     <string name="login_step_error_recoverGuest">Kan gastenaccount niet herstellen</string>
     <string name="login_step_error_blockedAccount">**Uw account is momenteel geblokkeerd.**  \n\nProbeer het later opnieuw of neem contact op met de ondersteuning om het probleem op te lossen.</string>
-    <string name="login_step_error_encryption_logIn">Uw versleutelingssleutels lijken beschadigd of niet bestaand, probeer het opnieuw of reset uw wachtwoord (dit zal al uw eerdere gegevens verwijderen)</string>
+    <string name="login_step_error_encryption_logIn">Uw versleuteling sleutels lijken te zijn beschadigd of niet bestaand, probeer het alstublieft opnieuw of reset uw wachtwoord (dit zal al uw vorige gegevens verwijderen)</string>
     <string name="form_invalid_email_description">Uw e-mailadres is ongeldig.</string>
     <string name="form_invalid_credentials_description">Controleer uw inloggegevens en probeer het opnieuw.</string>
     <string name="form_invalid_email_conflict_description">Gebruik alstublieft een ander e-mailadres.</string>
@@ -448,7 +448,7 @@
     <string name="group_member_title">Lid</string>
     <string name="group_member_device_title">Apparaat</string>
     <string name="group_members_block_user">Blokkeer gebruiker</string>
-    <string name="group_members_block_user_alert_message">Als u doorgaat, kan de gebruiker u niet aan een groep toevoegen en ontvangt u geen locatie notificaties van gebruikers in gedeelde groepen.</string>
+    <string name="group_members_block_user_alert_message">Als u doorgaat, kan de gebruiker u niet aan een groep toevoegen en ontvangt u geen locatie meldingen van gebruikers in gedeelde groepen.</string>
     <string name="group_members_remove_alert_title">Weet u zeker dat u %s uit de groep wilt verwijderen?</string>
     <string name="group_members_device_other_remove_alert_title">Weet u zeker dat u het apparaat van %s uit deze groep wilt verwijderen?\n\nDit zal de gebruiker niet uit een groep verwijderen.</string>
     <string name="group_members_device_own_remove_alert_title">Weet u zeker dat u uw apparaat uit deze groep wilt verwijderen?\n\nDit zal u niet uit een groep verwijderen.</string>
@@ -457,9 +457,9 @@
     <string name="group_details_menu_delete">Verwijder groep</string>
     <string name="group_details_menu_leave">Verlaat groep</string>
     <string name="group_details_menu_block">Blokkeer groep</string>
-    <string name="group_details_delete_group_alert_title">Weet u zeker dat u deze groep wilt verwijderen?  \nDit is onomkeerbaar en zal alle groepsgegevens verwijderen en alle verbinding met leden verbreken!</string>
+    <string name="group_details_delete_group_alert_title">Weet u zeker dat u deze groep wilt verwijderen?  \nDit is onomkeerbaar en zal alle groepsgegevens verwijderen en alle verbinding met leden verwijderen!</string>
     <string name="group_details_delete_group_alert_button">Verwijderen</string>
-    <string name="group_details_leave_group_alert_title">Weet u zeker dat u deze groep wilt verlaten?  \nDit is onomkeerbaar en zal alle gegevens die u hebt gedeeld verwijderen en alle verbinding met leden verbreken!</string>
+    <string name="group_details_leave_group_alert_title">Weet u zeker dat u deze groep wilt verlaten?  \nDit is onomkeerbaar en zal alle gegevens die u hebt gedeeld verwijderen en alle verbinding met leden verwijderen!</string>
     <string name="group_details_leave_group_alert_button">Verlaten</string>
     <string name="group_details_remove_member_alert_button">Verwijder...</string>
     <string name="group_details_block_group_alert_title">Weet u zeker dat u deze groep wilt blokkeren?  \nDit is onomkeerbaar, zal alle gegevens die u met de groep hebt gedeeld verwijderen en u kunt de groep niet opnieuw joinen!</string>
@@ -533,7 +533,7 @@
     <string name="places_create_location_hint_tap">**TIP:** Tik op de kaart om uw plaats toe te voegen of aan te passen</string>
     <string name="places_create_plan_limit_info">Om meer plaatsen te creëren, upgrade uw plan.</string>
     <string name="place_list_menu_delete">Verwijder plaats</string>
-    <string name="place_list_delete_place_alert_title">Weet u zeker dat u deze locatie wilt verwijderen?</string>
+    <string name="place_list_delete_place_alert_title">Weet u zeker dat u deze plaats wilt verwijderen?</string>
     <string name="place_detail_setting_button_notify_enter">Voer in</string>
     <string name="place_detail_setting_button_notify_exit">Verlaat</string>
     <string name="place_detail_notification_settings_title">Plaatswaarschuwingen</string>
@@ -559,7 +559,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">VEILIG - PRIVÉ - ENCRYPTED</string>
     <string name="welcome_screen_button_join">Deelnemen</string>
     <string name="welcome_account_edit_profile">Voltooi uw profiel</string>
@@ -573,9 +573,9 @@
     <string name="recover_account_step_password_correct">Sleutel kan worden hersteld 🙌</string>
     <string name="recover_account_step_password_wrong">Wachtwoord komt niet overeen</string>
     <string name="recover_account_header_recover_possible">Uw wachtwoord komt niet overeen met uw cryptografische sleutels</string>
-    <string name="recover_account_caption_recover_possible">Om uw account te herstellen, probeer de sleutel te herstellen met het oude wachtwoord.</string>
+    <string name="recover_account_caption_recover_possible">Om uw account te herstellen, probeert u de sleutel te herstellen met uw oude wachtwoord.</string>
     <string name="recover_account_header_recover_not_possible">Uw account heeft geen overeenkomende sleutels! Reset alstublieft uw account.</string>
-    <string name="recover_account_caption_recover_not_possible">Als u de sleutel niet kunt herstellen, kunt u uw account resetten. **Het resetten van uw account zal al uw gegevens verwijderen!**</string>
+    <string name="recover_account_caption_recover_not_possible">Als u de sleutel niet kunt herstellen, kunt u uw account resetten. **Het resetten van uw account verwijdert al uw gegevens!**</string>
     <string name="recover_account_caption_reset">**Het resetten van uw account verwijdert al uw gegevens!**</string>
     <string name="reset_password_screen_title">Wachtwoord opnieuw instellen</string>
     <string name="reset_password_success_message">Gelieve u opnieuw aan te melden!</string>
@@ -593,7 +593,7 @@
     <string name="plan_limit_overLimit_user_message">Locatie delen in sommige groepen zal stoppen omdat ze de planningslimieten hebben overschreden.  \n\nPas uw groepen aan of upgrade uw plan om het delen van locaties te hervatten!</string>
     <string name="plan_limit_overLimit_places_banner_title">**Plaatswaarschuwingen zijn uitgeschakeld!**\nHet toegestane aantal plaatsen is overschreden.</string>
     <string name="app_version_alert_title">Nieuwe app-update</string>
-    <string name="app_version_alert_message">Nieuwe versie van Paralino is beschikbaar, werk alstublieft bij voor een betere ervaring!</string>
+    <string name="app_version_alert_message">Er is een nieuwe versie van Paralino beschikbaar, werk alstublieft bij voor een betere ervaring!</string>
     <string name="app_version_alert_title_mandatory">Werk bij</string>
     <string name="app_version_alert_message_mandatory">Deze app-versie is verouderd!  \n\nOm de app te blijven gebruiken, werk alstublieft bij naar de nieuwste versie!</string>
     <string name="app_version_alert_button_update">Bijwerken</string>
@@ -863,7 +863,7 @@
     <string name="setting_placeSearch_info">Om nauwkeurigere zoekresultaten voor plaatsen te bieden, kunt u ervoor kiezen om de geschatte locatie van het geselecteerde kaartgebied in uw zoekopdracht op te nemen. Deze gegevens worden alleen tijdelijk voor zoekdoeleinden gebruikt en worden nergens opgeslagen of gelogd. Als u dit uitschakelt, zal uw zoekopdracht het kaartgebied niet gebruiken en mogelijk minder nauwkeurig zijn.</string>
     <string name="setting_placeSearch_location_title">Huidig kaartgebied</string>
     <string name="setting_placeSearch_location_info">Wanneer ingeschakeld, wordt de geschatte locatie van het momenteel geselecteerde kaartgebied naar de server gestuurd om gelokaliseerde zoekresultaten te bieden.</string>
-    <string name="notifications_socketService_message_disconnected">Meldingsdienst tijdelijk verbroken</string>
+    <string name="notifications_socketService_message_disconnected">Meldingenservice tijdelijk losgekoppeld</string>
     <string name="notifications_channel_socket_service">Pushmeldingenservice</string>
     <string name="location_banner_error_background_access">Ontbrekende onbeperkte achtergrondtoegang</string>
     <string name="setting_mapsProvider_title">Kaartenprovider</string>
@@ -912,10 +912,10 @@
     <string name="setting_notificationSocket_connectionType_realtime_tag">Batterijverbruik: Mogelijk hoog</string>
     <string name="setting_notificationSocket_connectionType_periodic1_title">Elke 5-15 minuten</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Een paar keer per uur</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Notificaties worden periodiek een paar keer per uur vernieuwd.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Meldingen worden periodiek een paar keer per uur ververst.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Batterijverbruik: Gemiddeld</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Elke paar uur</string>
-    <string name="setting_notificationSocket_registration_error_message">Verbinding kon niet bevestigd worden, probeer het alstublieft opnieuw!</string>
+    <string name="setting_notificationSocket_registration_error_message">Verbinding kon niet worden bevestigd, probeer het alstublieft opnieuw!</string>
     <string name="licence_screen_title">Licentiesleutel</string>
     <string name="licence_screen_info">Als u een licentiesleutel heeft, voer deze hier in om een premium abonnement aan uw Paralino-account te koppelen.</string>
     <string name="licence_code_hint">Licentiesleutel</string>

@@ -30,7 +30,7 @@
     <string name="login_step_error_logIn">Chyba pri prihlasovaní</string>
     <string name="login_step_error_recoverGuest">Nemožno obnoviť hosťovský účet</string>
     <string name="login_step_error_blockedAccount">**Váš účet je momentálne zablokovaný.**\n\nProsím, skúste to znova neskôr alebo kontaktujte podporu, aby ste problém vyriešili.</string>
-    <string name="login_step_error_encryption_logIn">Vaše šifrovacie kľúče sa zdajú byť poškodené alebo neexistujú, prosím, skúste to znova alebo resetujte svoje heslo (týmto sa vymažú všetky vaše predchádzajúce údaje)</string>
+    <string name="login_step_error_encryption_logIn">Vaše šifrovacie kľúče sa zdajú byť poškodené alebo neexistujú, skúste to prosím znova alebo resetujte svoje heslo (to vymaže všetky vaše predchádzajúce údaje)</string>
     <string name="form_invalid_email_description">Vaša e-mailová adresa nie je platná.</string>
     <string name="group_create_name_placeholder">Názov skupiny</string>
     <string name="form_invalid_credentials_description">Skontrolujte svoje poverenia a skúste to znova.</string>
@@ -130,8 +130,8 @@
     <string name="error_permissionDenied_remote">Požiadavka nie je povolená!</string>
     <string name="error_something_wrong">Niečo sa pokazilo!</string>
     <string name="error_something_wrong_http">Niečo sa pokazilo! [%d]</string>
-    <string name="error_generic_snacbar">Ups, prosím skúste to znova.</string>
-    <string name="error_still_loading_snackbar">Obnovujem, **prosím skúste to znova o niekoľko sekúnd.**</string>
+    <string name="error_generic_snacbar">Prepáčte, prosím, skúste to znova.</string>
+    <string name="error_still_loading_snackbar">Obnovujem, **prosím skúste to znovu za pár sekúnd.**</string>
     <string name="error_location_permission_missing_sheet_message">Povolenie na lokalizáciu je **požadované** na úspešné sledovanie a zdieľanie vašej polohy s ostatnými.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Prosím, povoľte **presné povolenie na lokalizáciu** na úspešné sledovanie a zdieľanie vašej polohy s ostatnými.</string>
     <string name="error_location_background_permission_missing_sheet_message">Prosím, povoľte prístup k lokalizácii **po celý čas**, aby ste mohli **spoľahlivo a vždy** sledovať a zdieľať svoju polohu s ostatnými.</string>
@@ -140,7 +140,7 @@
     <string name="error_notification_permission_missing_sheet_message">Prosím, povoľte **notifikácie**, aby ste mohli prijímať **dôležité** upozornenia na vaše skupinové podujatia, miesta a účet.</string>
     <string name="error_location_background_permission_missing_notification_message">Zdieľanie polohy sa nemôže začať, pretože vám chýbajú povolenia na lokalizáciu! \nProsím, otvorte aplikáciu, aby ste reštartovali zdieľanie polohy!</string>
     <string name="error_location_sharing_start_notification_message">Zdieľanie polohy sa nemôže začať! \nProsím, otvorte aplikáciu znova!</string>
-    <string name="error_device_registration_notification_message">Vaše zariadenie nemôže byť registrované! \nProsím, reštartujte zdieľanie polohy!</string>
+    <string name="error_device_registration_notification_message">Vaša zariadenie nemôže byť zaregistrované!  \nProsím reštartujte zdieľanie polohy!</string>
     <string name="error_unverified_member_notification_message">Vaše členstvo sa nedalo overiť. Prosím, skúste obnoviť údaje alebo kontaktujte správcu skupiny.</string>
     <string name="error_crypto_key_missing">Údaje o šifrovaní sú neúplné (%s), skúste to prosím znova.</string>
     <string name="error_crypto_key_missing_user">Vaše kryptografické kľúče nie sú správne nakonfigurované.</string>
@@ -336,8 +336,8 @@
     <string name="setting_description_locationBoost_enabled">Maximálny výkon polohy sa resetuje o %s. **Používa viac batérie!!!**</string>
     <string name="setting_description_locationBoost_disabled">Použite maximálny výkon pre polohu až na 2 hodiny. **Bude používať viac batérie!!!**</string>
     <string name="setting_title_placeActivityThrottle">Obmedziť aktivitu miesta</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Vaše zariadenie vytvorí oznámenie o aktivite miesta, ak strávite viac času v určitom mieste alebo mimo neho.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Vaše zariadenie bude reagovať na zmeny miest rýchlejšie a môže vytvoriť viacero oznámení o aktivite miesta v krátkom čase (napríklad: ak krátko prejdete okolo určitého miesta).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Vaše zariadenie vytvorí oznámenie o aktivite na mieste, ak strávite viac času v určitom mieste alebo mimo neho.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Vaše zariadenie bude reagovať na zmeny umiestnenia rýchlejšie a môže vytvoriť niekoľko notifikácií o aktivite na mieste za krátky čas (napríklad: ak sa na chvíľu prejdete okolo určitého miesta).</string>
     <string name="setting_appSettings_title">Nastavenia aplikácie</string>
     <string name="setting_measurementSystem_title">Systém merania</string>
     <string name="setting_measurementSystem_default_title">Predvolené zariadenia</string>
@@ -489,11 +489,11 @@
     <string name="paywall_faq_answer_refund_google">Našu podporu môžete kontaktovať zaslaním e-mailu na **contact@paralino.com**.</string>
     <string name="paywall_faq_answer_payment_security_apple">Áno, vaša platba je spracovaná priamo prostredníctvom Apple App Store. My nespracovávame ani neukladáme žiadne platobné informácie.</string>
     <string name="paywall_faq_answer_payment_security_google">Áno, vaša platba je spracovaná priamo prostredníctvom Google Play Store. My nespracovávame ani neukladáme žiadne platobné informácie.</string>
-    <string name="recover_account_caption_recover_possible">Aby ste obnovili svoj účet, skúste obnoviť kľúč so starým heslom.</string>
+    <string name="recover_account_caption_recover_possible">Aby ste obnovili svoj účet, skúste obnoviť kľúč so svojím starým heslom.</string>
     <string name="personalSpace_current_device_withName">**Toto zariadenie** (%s)</string>
     <string name="paywall_faq_answer_free_trial">Áno, ponúkame bezplatné skúšobné obdobie pri prvom spustení vášho predplatného. Potom si môžete užívať prémiové funkcie bez nákladov.</string>
     <string name="paywall_faq_answer_contact_support">Našu podporu môžete kontaktovať zaslaním e-mailu na **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Oslavujme!</string>
+    <string name="plans_gift_screen_title">Oslávme to!</string>
     <string name="plans_gift_screen_box_title">Darček pre skorých používateľov</string>
     <string name="plans_gift_screen_box_message">Získavate špeciálny doživotný **Starter** plán, úplne ZADARMO!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ Čo získate ⭐️</string>
@@ -554,8 +554,8 @@
     <string name="group_member_title">Člen</string>
     <string name="group_member_device_title">Zariadenie</string>
     <string name="group_members_block_user">Zablokovať používateľa</string>
-    <string name="group_members_block_user_alert_message">Ak pokračujete, používateľ vás nebude môcť pridať do skupiny a nebudete dostávať oznámenia o polohe používateľov v žiadnych zdieľaných skupinách.</string>
-    <string name="group_members_remove_alert_title">Ste si istý, že chcete odstrániť %s zo skupiny?</string>
+    <string name="group_members_block_user_alert_message">Ak pokračujete, používateľ vás nebude môcť pridať do skupiny a nebudete dostávať upozornenia na polohu používateľov v žiadnych zdieľaných skupinách.</string>
+    <string name="group_members_remove_alert_title">Ste si si istí, že chcete odstrániť %s z skupiny?</string>
     <string name="group_members_device_other_remove_alert_title">Ste si istý, že chcete odstrániť zariadenie %s z tejto skupiny?  \n\nToto neodstráni používateľa zo skupiny.</string>
     <string name="group_members_device_own_remove_alert_title">Ste si istý, že chcete odstrániť svoje zariadenie z tejto skupiny?  \n\nToto neodstráni vás zo skupiny.</string>
     <string name="group_members_device_confirm_remove_alert_title">Odstránenie zariadenia tiež vymaže všetku súvisiacu históriu polohy a zastaví zdieľanie polohy!  \n\nTento krok je nezvratný.</string>
@@ -565,7 +565,7 @@
     <string name="group_details_menu_delete">Odstrániť skupinu</string>
     <string name="group_details_menu_leave">Opustiť skupinu</string>
     <string name="group_details_menu_block">Zablokovať skupinu</string>
-    <string name="group_details_delete_group_alert_title">Ste si istý, že chcete odstrániť túto skupinu?  \nToto je nezvratné a vymaže všetky údaje skupiny a odstráni všetky spojenia s členmi!</string>
+    <string name="group_details_delete_group_alert_title">Ste si istí, že chcete túto skupinu zmazať?  \nToto je nezvratné a vymaže všetky údaje skupiny a odstráni všetky spojenia s členmi!</string>
     <string name="group_details_delete_group_alert_button">Odstrániť</string>
     <string name="group_details_leave_group_alert_title">Ste si istý, že chcete opustiť túto skupinu?  \nToto je nezvratné a vymaže všetky údaje, ktoré ste zdieľali, a odstráni všetky spojenia s členmi!</string>
     <string name="group_details_leave_group_alert_button">Opustiť</string>
@@ -640,7 +640,7 @@
     <string name="places_create_location_hint_tap">**TIP:** Ťuknite na mapu, aby ste pridali alebo upravili svoje miesto</string>
     <string name="places_create_plan_limit_info">Na vytvorenie ďalších miest, vylepšite svoj plán.</string>
     <string name="place_list_menu_delete">Odstrániť miesto</string>
-    <string name="place_list_delete_place_alert_title">Ste si istý, že chcete odstrániť toto miesto?</string>
+    <string name="place_list_delete_place_alert_title">Ste si naozaj istí, že chcete zmazať toto miesto?</string>
     <string name="place_detail_setting_button_notify_enter">Zadajte</string>
     <string name="place_detail_setting_button_notify_exit">Výstup</string>
     <string name="place_detail_notification_settings_title">Umiestniť upozornenia</string>
@@ -707,7 +707,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">BEZPEČNÉ - SÚKROMNÉ - ŠIFROVANÉ</string>
     <string name="welcome_screen_button_join">Pripojiť sa</string>
     <string name="welcome_account_edit_profile">Dokončite svoj profil</string>
@@ -718,7 +718,7 @@
     <string name="recover_account_step_password_correct">Kľúč môže byť obnovený 🙌</string>
     <string name="recover_account_step_password_wrong">Heslo sa nezhoduje</string>
     <string name="recover_account_header_recover_not_possible">Váš účet nemá zhodujúce sa kľúče! Prosím, resetujte svoj účet.</string>
-    <string name="recover_account_caption_recover_not_possible">Ak nemôžete obnoviť kľúč, môžete resetovať svoj účet. **Resetovanie vášho účtu odstráni všetky vaše údaje!**</string>
+    <string name="recover_account_caption_recover_not_possible">Ak nemôžete obnoviť kľúč, môžete resetovať svoj účet. **Resetovanie vášho účtu vymaže všetky vaše údaje!**</string>
     <string name="recover_account_caption_reset">**Resetovanie vášho účtu vymaže všetky vaše údaje!**</string>
     <string name="password_confirmation_screen_title">Potvrdenie hesla</string>
     <string name="password_confirmation_header">Vaše šifrovacie kľúče boli zmenené</string>
@@ -752,7 +752,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Sledovanie polohy je obmedzené!**  \nPrekročili ste zdroje svojho plánu.</string>
     <string name="plan_limit_generic_message">Limit plánu bol dosiahnutý!</string>
     <string name="app_version_alert_title">Nová aktualizácia aplikácie</string>
-    <string name="app_version_alert_message">Nová verzia Paralino je k dispozícii, prosím, aktualizujte ju pre lepší zážitok!</string>
+    <string name="app_version_alert_message">Nová verzia Paralino je k dispozícii, prosím, aktualizujte pre lepší zážitok!</string>
     <string name="app_version_alert_title_mandatory">Prosím, aktualizujte</string>
     <string name="app_version_alert_message_mandatory">Táto verzia aplikácie je zastaraná!  \n\nAby ste mohli pokračovať v používaní aplikácie, prosím, aktualizujte na najnovšiu verziu!</string>
     <string name="app_version_alert_button_update">Aktualizovať</string>
@@ -854,7 +854,7 @@
     <string name="notifications_socketService_status_error">Služba push 🔴</string>
     <string name="notifications_socketService_message_errors">Služba push oznámení je pozastavená:  \n%s</string>
     <string name="notifications_socketService_message_connecting">Pripojovanie...</string>
-    <string name="notifications_socketService_message_disconnected">Služba upozornení bola dočasne odpojená.</string>
+    <string name="notifications_socketService_message_disconnected">Služba oznámení dočasne odpojená</string>
     <string name="notifications_channel_socket_service">Služba push notifikácií</string>
     <string name="location_banner_error_background_access">Chýba neobmedzený prístup na pozadí</string>
     <string name="setting_mapsProvider_info">Vyberte svoj preferovaný poskytovateľ služieb máp používaných v aplikácii. Štýl máp, animácie a výkon sa budú líšiť medzi rôznymi poskytovateľmi.</string>
@@ -893,11 +893,11 @@
     <string name="setting_notificationSocket_connectionType_realtime_tag">Spotreba batérie: Potenciálne vysoká</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Spotreba batérie: Vysoká</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Niekolkokrát za hodinu</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Notifikácie sa pravidelne obnovujú niekoľkokrát za hodinu.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Notifikácie sa pravidelne obnovujú niekoľkokrát za hodinu</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Spotreba batérie: Stredná</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Každých niekoľko hodín</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Spotreba batérie: Nízka</string>
-    <string name="setting_notificationSocket_registration_error_message">Pripojenie bolo možné potvrdiť, prosím, skúste znova!</string>
+    <string name="setting_notificationSocket_registration_error_message">Pripojenie sa nedalo potvrdiť, prosím skúste to znova!</string>
     <string name="notifications_socketService_message_lastSync">Posledná aktualizácia: %s</string>
     <string name="licence_screen_title">Licenčný kľúč</string>
     <string name="licence_screen_info">Ak máte licenčný kľúč, zadajte ho sem, aby ste sa pripojili k prémiovému plánu so svojím účtom Paralino.</string>

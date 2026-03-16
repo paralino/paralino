@@ -61,7 +61,7 @@
     <string name="group_member_title">Medlem</string>
     <string name="group_member_device_title">Enhet</string>
     <string name="group_members_block_user">Blockera användare</string>
-    <string name="group_members_block_user_alert_message">Om du fortsätter kommer användaren inte kunna lägga till dig i en grupp och du kommer inte att få användarens platsnotifikationer i några delade grupper.</string>
+    <string name="group_members_block_user_alert_message">Om du fortsätter kommer användaren inte att kunna lägga till dig i en grupp och du kommer inte att få platsaviseringar från användare i några delade grupper.</string>
     <string name="personalSpace_tracking_activate">Aktivera</string>
     <string name="button_ok">OK</string>
     <string name="button_done">Färdig</string>
@@ -83,7 +83,7 @@
     <string name="button_open_settings">Öppna inställningar</string>
     <string name="alert_title_confirm">Vänligen bekräfta</string>
     <string name="alert_sessionExpired_title">Sessionen har löpt ut</string>
-    <string name="alert_sessionExpired_message">Din session har löpt ut, vänligen logga in igen.</string>
+    <string name="alert_sessionExpired_message">Din session har gått ut, vänligen logga in igen.</string>
     <string name="alert_comingSoon_title">Kommer snart 🤞</string>
     <string name="alert_comingSoon_message">Denna funktion är redan under utveckling och kommer snart.</string>
     <string name="error_unstable_connection">Din **internetanslutning** är mycket instabil och vissa förfrågningar misslyckas.\nVänligen kontrollera dina inställningar.</string>
@@ -94,7 +94,7 @@
     <string name="error_something_wrong">Något gick fel!</string>
     <string name="error_something_wrong_http">Något gick fel! [%d]</string>
     <string name="error_generic_snacbar">Oj, vänligen försök igen.</string>
-    <string name="error_still_loading_snackbar">Uppdaterar, **vänligen försök igen om några sekunder.**</string>
+    <string name="error_still_loading_snackbar">Uppdaterar, *vänligen försök igen om några sekunder.*</string>
     <string name="error_location_permission_missing_sheet_message">Platsbehörighet är **nödvändig** för att framgångsrikt spåra och dela din plats med andra.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Vänligen ge **exakt platsbehörighet** för att framgångsrikt spåra och dela din plats med andra.</string>
     <string name="error_location_background_permission_missing_sheet_message">Vänligen tillåt **alltid** platsåtkomst för att **pålitligt och alltid** spåra och dela din plats med andra.</string>
@@ -104,7 +104,7 @@
     <string name="error_notification_permission_missing_sheet_message">Vänligen aktivera **aviseringar** för att ta emot **viktiga** meddelanden för dina gruppaktiviteter, platser och konto.</string>
     <string name="error_location_background_permission_missing_notification_message">Platsdelning kan inte starta eftersom du saknar platsbehörigheter!  \nVänligen öppna appen för att starta om platsdelning!</string>
     <string name="error_location_sharing_start_notification_message">Platsdelning kan inte starta!  \nVänligen öppna appen igen!</string>
-    <string name="error_device_registration_notification_message">Din enhet kan inte registreras!  \nVänligen starta om platsdelning!</string>
+    <string name="error_device_registration_notification_message">Din enhet kan inte registreras!  \nVänligen starta om delning av plats!</string>
     <string name="error_unverified_member_notification_message">Ditt medlemskap kunde inte verifieras. Vänligen försök att uppdatera data eller kontakta gruppadministratören.</string>
     <string name="error_crypto_key_missing">Krypteringsdata är ofullständig (%s), vänligen försök att uppdatera.</string>
     <string name="error_crypto_key_missing_user">Dina kryptografiska nycklar är inte korrekt konfigurerade.</string>
@@ -300,8 +300,8 @@
     <string name="setting_description_locationBoost_enabled">Maximal platsprestanda kommer att återställas vid %s. **Använder mer batteri!!!**</string>
     <string name="setting_description_locationBoost_disabled">Använd maximal prestanda för plats i upp till 2 timmar. **Kommer att använda mer batteri!!!**</string>
     <string name="setting_title_placeActivityThrottle">Dämpa platsaktivitet</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Din enhet kommer att skapa en platsaktivitet notifiering om du spenderar mer tid på eller utanför en viss plats.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Din enhet kommer att reagera snabbare på platsändringar och kan skapa flera platsaktivitet notifieringar på kort tid (till exempel: om du kort kör förbi en viss plats).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Din enhet kommer att skapa en platsaktivitet notifikation om du spenderar mer tid på eller utanför en viss plats.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Din enhet kommer att reagera snabbare på förändringar av platser och kan skapa flera meddelanden om platsaktivitet på kort tid (till exempel: om du kort kör förbi en viss plats).</string>
     <string name="setting_appSettings_title">Appinställningar</string>
     <string name="setting_measurementSystem_title">Mätsystem</string>
     <string name="setting_measurementSystem_default_title">Enhetsstandard</string>
@@ -526,7 +526,7 @@
     <string name="login_step_error_logIn">Fel vid inloggning</string>
     <string name="login_step_error_recoverGuest">Kunde inte återställa gästkonto</string>
     <string name="login_step_error_blockedAccount">**Ditt konto är för närvarande blockerat.**  \n\nVänligen försök igen senare eller kontakta support för att lösa problemet.</string>
-    <string name="login_step_error_encryption_logIn">Dina krypteringsnycklar verkar vara korrupta eller icke-existerande, vänligen försök igen eller återställ ditt lösenord (Detta kommer att radera all din tidigare data)</string>
+    <string name="login_step_error_encryption_logIn">Dina krypteringsnycklar verkar vara korrupta eller icke-existerande, vänligen försök igen eller återställ ditt lösenord (detta kommer att radera all din tidigare data)</string>
     <string name="form_invalid_email_description">Din e-postadress är inte giltig.</string>
     <string name="form_invalid_credentials_description">Vänligen kontrollera dina referenser och försök igen.</string>
     <string name="form_invalid_email_conflict_description">Vänligen använd en annan e-post.</string>
@@ -560,9 +560,9 @@
     <string name="group_details_menu_delete">Ta bort grupp</string>
     <string name="group_details_menu_leave">Lämna grupp</string>
     <string name="group_details_menu_block">Blockera grupp</string>
-    <string name="group_details_delete_group_alert_title">Är du säker på att du vill ta bort denna grupp?\nDetta är oåterkalleligt och kommer att radera all gruppdata och ta bort alla kopplingar till medlemmar!</string>
+    <string name="group_details_delete_group_alert_title">Är du säker på att du vill radera denna grupp?  \nDetta är oåterkalleligt och kommer att radera all gruppdata och ta bort alla kopplingar till medlemmarna!</string>
     <string name="group_details_delete_group_alert_button">Ta bort</string>
-    <string name="group_details_leave_group_alert_title">Är du säker på att du vill lämna denna grupp?\nDetta är oåterkalleligt och kommer att radera all data du delat och ta bort alla kopplingar till medlemmar!</string>
+    <string name="group_details_leave_group_alert_title">Är du säker på att du vill lämna den här gruppen?  \nDetta är oåterkalleligt och kommer att radera all data du delat och ta bort alla kopplingar till medlemmar!</string>
     <string name="group_details_leave_group_alert_button">Lämna</string>
     <string name="group_details_remove_member_alert_button">Ta bort...</string>
     <string name="group_details_block_group_alert_title">Är du säker på att du vill blockera denna grupp?\nDetta är oåterkalleligt, kommer att radera all data du delat med gruppen och du kommer inte att kunna återansluta till gruppen!</string>
@@ -640,7 +640,7 @@
     <string name="places_create_location_hint_tap">**TIPS:** Tryck på kartan för att lägga till eller justera din plats</string>
     <string name="places_create_plan_limit_info">För att skapa fler platser, uppgradera din plan.</string>
     <string name="place_list_menu_delete">Ta bort plats</string>
-    <string name="place_list_delete_place_alert_title">Är du säker på att du vill ta bort denna plats?</string>
+    <string name="place_list_delete_place_alert_title">Är du säker på att du vill radera den här platsen?</string>
     <string name="place_detail_setting_button_notify_enter">Ange</string>
     <string name="place_detail_setting_button_notify_exit">Avsluta</string>
     <string name="place_detail_notification_settings_title">Platsaviseringar</string>
@@ -686,7 +686,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SÄKER - PRIVAT - KRYPTERAD</string>
     <string name="welcome_screen_button_join">Gå med</string>
     <string name="welcome_account_edit_profile">Slutför din profil</string>
@@ -700,9 +700,9 @@
     <string name="recover_account_step_password_correct">Nyckeln kan återställas 🙌</string>
     <string name="recover_account_step_password_wrong">Lösenordet matchar inte</string>
     <string name="recover_account_header_recover_possible">Ditt lösenord matchar inte dina kryptografiska nycklar</string>
-    <string name="recover_account_caption_recover_possible">För att återställa ditt konto, försök att återställa nyckeln med det gamla lösenordet.</string>
+    <string name="recover_account_caption_recover_possible">För att återhämta ditt konto, försök återhämta nyckeln med ditt gamla lösenord.</string>
     <string name="recover_account_header_recover_not_possible">Ditt konto har inga matchande nycklar! Vänligen återställ ditt konto.</string>
-    <string name="recover_account_caption_recover_not_possible">Om du inte kan återställa nyckeln kan du återställa ditt konto. **Att återställa ditt konto kommer att radera all din data!**</string>
+    <string name="recover_account_caption_recover_not_possible">Om du inte kan återfå nyckeln kan du återställa ditt konto. **Återställning av ditt konto kommer att radera alla dina uppgifter!**</string>
     <string name="recover_account_caption_reset">**Att återställa ditt konto kommer att radera all din data!**</string>
     <string name="password_confirmation_screen_title">Lösenordsbekräftelse</string>
     <string name="password_confirmation_header">Dina krypteringsnycklar har ändrats</string>
@@ -734,7 +734,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Platsspårning är begränsad!**  \nDu har överskridit dina planresurser.</string>
     <string name="plan_limit_generic_message">Plangräns nådd!</string>
     <string name="app_version_alert_title">Ny appuppdatering</string>
-    <string name="app_version_alert_message">Ny version av Paralino är tillgänglig, vänligen uppdatera för en bättre upplevelse!</string>
+    <string name="app_version_alert_message">En ny version av Paralino är tillgänglig, vänligen uppdatera för en bättre upplevelse!</string>
     <string name="app_version_alert_title_mandatory">Vänligen uppdatera</string>
     <string name="app_version_alert_message_mandatory">Denna appversion är föråldrad!  \n\nFör att fortsätta använda appen, vänligen uppdatera till den senaste versionen!</string>
     <string name="app_version_alert_button_update">Uppdatera</string>
@@ -850,7 +850,7 @@
     <string name="setting_placeSearch_location_info">När denna funktion är aktiverad kommer den ungefärliga platsen för det för närvarande valda kartaområdet att skickas till servern för att ge lokaliserade sökresultat.</string>
     <string name="button_hold_hint">Tryck och håll</string>
     <string name="notifications_socketService_status_error">Push-tjänst 🔴</string>
-    <string name="notifications_socketService_message_disconnected">Notifications tjänst tillfälligt frånkopplad</string>
+    <string name="notifications_socketService_message_disconnected">Notifieringstjänst tillfälligt frånkopplad</string>
     <string name="notifications_channel_socket_service">Push-notifieringstjänst</string>
     <string name="location_banner_error_background_access">Saknar obegränsad bakgrundsåtkomst</string>
     <string name="setting_mapsProvider_info">Välj din föredragna tjänsteleverantör för kartor som används i appen. Kartstil, animationer och prestanda kommer att skilja sig åt mellan olika leverantörer.</string>
@@ -872,7 +872,7 @@
     <string name="setting_notificationSocket_connectionType_realtime_title">Konstant anslutning</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Batterianvändning: Hög</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Notifikationerna uppdateras periodiskt var några timmar</string>
-    <string name="setting_notificationSocket_registration_error_message">Anslutningen kan bekräftas, försök igen!</string>
+    <string name="setting_notificationSocket_registration_error_message">Anslutningen kunde inte bekräftas, vänligen försök igen!</string>
     <string name="notifications_socketService_message_lastSync">Senaste uppdatering: %s</string>
     <string name="licence_error_expired">Denna licenskod har gått ut, vänligen använd en annan.</string>
     <string name="licence_error_inUse">Denna licens är redan aktiverad och i användning.</string>
@@ -915,7 +915,7 @@
     <string name="setting_notificationSocket_connectionType_periodic1_title">Varje 5-15 minuter</string>
     <string name="setting_notificationSocket_connectionType_periodic1_info">Beroende på aktuell batterinivå uppdateras notifikationerna periodiskt var 5-15:e minut</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Några gånger per timme</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Notifikationer uppdateras periodiskt flera gånger per timme</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Notifikationerna uppdateras periodiskt några gånger per timme</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Batterianvändning: Medel</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Varje par timme</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Batterianvändning: Låg</string>

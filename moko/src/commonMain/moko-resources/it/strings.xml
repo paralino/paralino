@@ -26,7 +26,7 @@
     <string name="button_open_settings">Apri le impostazioni</string>
     <string name="alert_title_confirm">Si prega di confermare</string>
     <string name="alert_sessionExpired_title">Sessione scaduta</string>
-    <string name="alert_sessionExpired_message">La tua sessione è scaduta, per favore accedi di nuovo.</string>
+    <string name="alert_sessionExpired_message">La tua sessione è scaduta, ti preghiamo di effettuare nuovamente il login.</string>
     <string name="alert_comingSoon_title">In arrivo presto 🤞</string>
     <string name="alert_comingSoon_message">Questa funzionalità è già in fase di sviluppo e arriverà presto.</string>
     <string name="error_unstable_connection">La tua **connessione internet** è molto instabile e alcune richieste stanno fallendo.\nControlla le tue impostazioni.</string>
@@ -34,8 +34,8 @@
     <string name="error_no_connection_snackbar">Impossibile connettersi\n**Controlla la tua connessione internet.**</string>
     <string name="error_server_unavailable">Impossibile connettersi al momento, per favore riprova tra poco.</string>
     <string name="error_something_wrong_http">Qualcosa è andato storto! [%d]</string>
-    <string name="error_generic_snacbar">Ops, per favore riprova.</string>
-    <string name="error_still_loading_snackbar">Aggiornando, **per favore riprova tra pochi secondi.**</string>
+    <string name="error_generic_snacbar">Ops, ti preghiamo di riprovare.</string>
+    <string name="error_still_loading_snackbar">Ricaricando, **ti preghiamo di riprovare tra qualche secondo.**</string>
     <string name="error_location_permission_missing_sheet_message">Il permesso di localizzazione è **richiesto** per tracciare e condividere con successo la tua posizione con gli altri.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Si prega di concedere il **permesso di localizzazione precisa** per tracciare e condividere con successo la tua posizione con gli altri.</string>
     <string name="error_location_background_permission_missing_sheet_message">Si prega di consentire l\'accesso alla posizione **tutto il tempo** per **tracciare e condividere** la tua posizione con gli altri in modo **affidabile e sempre**.</string>
@@ -44,7 +44,7 @@
     <string name="error_notification_permission_missing_sheet_message">Si prega di abilitare le **notifiche** per ricevere avvisi **importanti** per gli eventi di gruppo, i luoghi e l\'account.</string>
     <string name="error_location_background_permission_missing_notification_message">La condivisione della posizione non può iniziare perché mancano i permessi di posizione!\nSi prega di aprire l\'app per riavviare la condivisione della posizione!</string>
     <string name="error_location_sharing_start_notification_message">La condivisione della posizione non può iniziare!\nSi prega di aprire nuovamente l\'app!</string>
-    <string name="error_device_registration_notification_message">Il tuo dispositivo non può essere registrato!\nSi prega di riavviare la condivisione della posizione!</string>
+    <string name="error_device_registration_notification_message">Il tuo dispositivo non può essere registrato!  \nPer favore riavvia la condivisione della posizione!</string>
     <string name="error_unverified_member_notification_message">La tua appartenenza non può essere verificata. Si prega di provare a aggiornare i dati o contattare l\'amministratore del gruppo.</string>
     <string name="error_crypto_key_missing">I dati di crittografia sono incompleti (%s), si prega di provare a aggiornare.</string>
     <string name="error_crypto_key_missing_user">Le tue chiavi crittografiche non sono configurate correttamente.</string>
@@ -208,8 +208,8 @@
     <string name="setting_description_locationBoost_enabled">Le prestazioni massime della posizione verranno ripristinate a %s. **Utilizza più batteria!!!**</string>
     <string name="setting_description_locationBoost_disabled">Utilizza le prestazioni massime per la posizione per un massimo di 2 ore. **Utilizzerà più batteria!!!**</string>
     <string name="setting_title_placeActivityThrottle">Limitare l\'attività del luogo</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Il tuo dispositivo creerà una notifica di attività del luogo se trascorri più tempo dentro o fuori da un certo luogo.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Il tuo dispositivo reagirà ai cambiamenti del luogo più rapidamente e potrebbe creare più notifiche di attività del luogo in breve tempo (ad esempio: se passi brevemente davanti a un certo luogo).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Il tuo dispositivo creerà una notifica di attività sul posto se trascorri più tempo in o fuori da un certo luogo.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Il tuo dispositivo reagirà più rapidamente ai cambiamenti di luogo e potrebbe creare più notifiche di attività sul posto in un breve lasso di tempo (ad esempio: se passi rapidamente davanti a un certo luogo).</string>
     <string name="setting_appSettings_title">Impostazioni dell\'app</string>
     <string name="setting_measurementSystem_title">Sistema di misurazione</string>
     <string name="setting_measurementSystem_default_title">Predefinito del dispositivo</string>
@@ -387,7 +387,7 @@
     <string name="login_step_error_logIn">Errore durante il login</string>
     <string name="login_step_error_recoverGuest">Impossibile recuperare l\'account ospite</string>
     <string name="login_step_error_blockedAccount">**Il tuo account è attualmente bloccato.**  \n\nPer favore, riprova più tardi o contatta il supporto per risolvere il problema.</string>
-    <string name="login_step_error_encryption_logIn">Le tue chiavi di crittografia sembrano essere danneggiate o inesistenti, per favore riprova o reimposta la tua password (questo eliminerà tutti i tuoi dati precedenti)</string>
+    <string name="login_step_error_encryption_logIn">Le tue chiavi di crittografia sembrano essere corrotte o non esistenti, ti preghiamo di riprovare o reimpostare la tua password (questo cancellerà tutti i tuoi dati precedenti)</string>
     <string name="form_invalid_email_description">Il tuo indirizzo email non è valido.</string>
     <string name="form_invalid_credentials_description">Controlla le tue credenziali e riprova.</string>
     <string name="form_invalid_email_conflict_description">Per favore, utilizza un\'altra email.</string>
@@ -462,7 +462,7 @@
     <string name="group_member_title">Membro</string>
     <string name="group_member_device_title">Dispositivo</string>
     <string name="group_members_block_user">Blocca utente</string>
-    <string name="group_members_block_user_alert_message">Se procedi, l\'utente non potrà aggiungerti a un gruppo e non riceverai le notifiche sulla posizione degli utenti in nessun gruppo condiviso.</string>
+    <string name="group_members_block_user_alert_message">Se procedi, l\'utente non sarà in grado di aggiungerti a un gruppo e non riceverai le notifiche di posizione degli utenti in nessun gruppo condiviso.</string>
     <string name="group_members_remove_alert_title">Sei sicuro di voler rimuovere %s dal gruppo?</string>
     <string name="group_members_device_other_remove_alert_title">Sei sicuro di voler rimuovere il dispositivo da %s da questo gruppo?\n\nQuesto non rimuoverà l\'utente da un gruppo.</string>
     <string name="group_members_device_own_remove_alert_title">Sei sicuro di voler rimuovere il tuo dispositivo da questo gruppo?\n\nQuesto non ti rimuoverà da un gruppo.</string>
@@ -471,9 +471,9 @@
     <string name="group_details_menu_delete">Elimina gruppo</string>
     <string name="group_details_menu_leave">Lascia gruppo</string>
     <string name="group_details_menu_block">Blocca gruppo</string>
-    <string name="group_details_delete_group_alert_title">Sei sicuro di voler eliminare questo gruppo?  \nQuesto è irreversibile e eliminerà tutti i dati del gruppo e rimuoverà tutte le connessioni con i membri!</string>
+    <string name="group_details_delete_group_alert_title">Sei sicuro di voler eliminare questo gruppo?\nQuesto è irreversibile e cancellerà tutti i dati del gruppo e rimuoverà tutta la connessione con i membri!</string>
     <string name="group_details_delete_group_alert_button">Elimina</string>
-    <string name="group_details_leave_group_alert_title">Sei sicuro di voler lasciare questo gruppo?  \nQuesto è irreversibile e eliminerà tutti i dati che hai condiviso e rimuoverà tutte le connessioni con i membri!</string>
+    <string name="group_details_leave_group_alert_title">Sei sicuro di voler lasciare questo gruppo?\nQuesto è irreversibile e cancellerà tutti i dati che hai condiviso e rimuoverà tutta la connessione con i membri!</string>
     <string name="group_details_leave_group_alert_button">Lascia</string>
     <string name="group_details_remove_member_alert_button">Rimuovi...</string>
     <string name="group_details_block_group_alert_title">Sei sicuro di voler bloccare questo gruppo?  \nQuesto è irreversibile, eliminerà tutti i dati che hai condiviso con il gruppo e non potrai più unirti al gruppo!</string>
@@ -553,7 +553,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SICURO - PRIVATO - CRIPTATO</string>
     <string name="welcome_screen_button_join">Unisciti</string>
     <string name="welcome_account_edit_profile">Completa il tuo profilo</string>
@@ -567,9 +567,9 @@
     <string name="recover_account_step_password_correct">La chiave può essere recuperata 🙌</string>
     <string name="recover_account_step_password_wrong">La password non corrisponde</string>
     <string name="recover_account_header_recover_possible">La tua password non corrisponde alle tue chiavi crittografiche</string>
-    <string name="recover_account_caption_recover_possible">Per recuperare il tuo account, prova a recuperare la chiave con la vecchia password.</string>
+    <string name="recover_account_caption_recover_possible">Per recuperare il tuo account, prova a recuperare la chiave con la tua vecchia password.</string>
     <string name="recover_account_header_recover_not_possible">Il tuo account non ha chiavi corrispondenti! Si prega di ripristinare il proprio account.</string>
-    <string name="recover_account_caption_recover_not_possible">Se non riesci a recuperare la chiave, puoi ripristinare il tuo account. **Il ripristino del tuo account eliminerà tutti i tuoi dati!**</string>
+    <string name="recover_account_caption_recover_not_possible">Se non riesci a recuperare la chiave, puoi reimpostare il tuo account. **Reimpostare il tuo account eliminerà tutti i tuoi dati!**</string>
     <string name="recover_account_caption_reset">**Il ripristino del tuo account eliminerà tutti i tuoi dati!**</string>
     <string name="reset_password_screen_title">Reimposta la password</string>
     <string name="reset_password_success_message">Si prega di accedere di nuovo!</string>
@@ -593,7 +593,7 @@
     <string name="plan_limit_overLimit_user_message">La condivisione della posizione in alcuni gruppi si fermerà perché hanno superato i limiti del piano.  \n\nRegola i tuoi gruppi o aggiorna il tuo piano per riprendere la condivisione della posizione!</string>
     <string name="plan_limit_overLimit_places_banner_title">**Gli avvisi sui luoghi sono disabilitati!**\nIl numero consentito di luoghi è stato superato.</string>
     <string name="app_version_alert_title">Nuovo aggiornamento dell\'app</string>
-    <string name="app_version_alert_message">È disponibile una nuova versione di Paralino, si prega di aggiornare per un\'esperienza migliore!</string>
+    <string name="app_version_alert_message">Una nuova versione di Paralino è disponibile, si prega di aggiornare per una migliore esperienza!</string>
     <string name="app_version_alert_title_mandatory">Si prega di aggiornare</string>
     <string name="app_version_alert_message_mandatory">Questa versione dell\'app è obsoleta!  \n\nPer continuare a utilizzare l\'app, si prega di aggiornare all\'ultima versione!</string>
     <string name="app_version_alert_button_update">Aggiorna</string>
@@ -891,7 +891,7 @@
     <string name="notifications_socketService_status_warning">Servizio push 🟠</string>
     <string name="notifications_socketService_status_error">Servizio push 🔴</string>
     <string name="notifications_socketService_message_connecting">Collegamento...</string>
-    <string name="notifications_socketService_message_disconnected">Servizio di notifica temporaneamente disconnesso.</string>
+    <string name="notifications_socketService_message_disconnected">Servizio di notifica temporaneamente disconnesso</string>
     <string name="setting_mapsProvider_mapLibreFree_tag">Nessuna mappa satellitare</string>
     <string name="plans_management_activePlan_tag">Piano attivo</string>
     <string name="plans_management_providerInfo_polar">L\'abbonamento è fornito da **Polar.sh** online.</string>
@@ -908,7 +908,7 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">A seconda del livello attuale della batteria, le notifiche vengono aggiornate periodicamente ogni 5-15 minuti.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Utilizzo della batteria: Alto</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Poche volte per ora</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Le notifiche vengono aggiornate periodicamente alcune volte all\'ora.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Le notifiche vengono aggiornate periodicamente poche volte all\'ora.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Utilizzo della batteria: Medio</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Ogni poche ore</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Le notifiche vengono aggiornate periodicamente ogni poche ore.</string>
@@ -950,7 +950,7 @@
     <string name="setting_notificationSocket_connectionType_realtime_info">Connessione costante in tempo reale con consegna delle notifiche quasi istantanea.</string>
     <string name="setting_notificationSocket_connectionType_realtime_tag">Utilizzo della batteria: Potenzialmente alto</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Utilizzo della batteria: Basso</string>
-    <string name="setting_notificationSocket_registration_error_message">La connessione potrebbe essere confermata, ti preghiamo di riprovare!</string>
+    <string name="setting_notificationSocket_registration_error_message">La connessione non può essere confermata, riprovare per favore!</string>
     <string name="licence_error_invalid">Il codice di licenza inserito non è valido, controlla il tuo input e riprova.</string>
     <string name="licence_error_expired">Questo codice di licenza è scaduto, utilizza un altro.</string>
     <string name="licence_error_planActive">Il piano del tuo account è già conforme al piano di questa licenza.</string>

@@ -24,7 +24,7 @@
     <string name="button_open_settings">Einstellungen öffnen</string>
     <string name="alert_title_confirm">Bitte bestätigen</string>
     <string name="alert_sessionExpired_title">Sitzung abgelaufen</string>
-    <string name="alert_sessionExpired_message">Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.</string>
+    <string name="alert_sessionExpired_message">Ihre Sitzung ist abgelaufen, bitte loggen Sie sich erneut ein.</string>
     <string name="alert_comingSoon_title">Kommt bald 🤞</string>
     <string name="alert_comingSoon_message">Diese Funktion ist bereits in Entwicklung und kommt bald.</string>
     <string name="error_unstable_connection">Ihre **Internetverbindung** ist sehr instabil und einige Anfragen schlagen fehl.\nBitte überprüfen Sie Ihre Einstellungen.</string>
@@ -34,7 +34,7 @@
     <string name="error_something_wrong">Etwas ist schiefgelaufen!</string>
     <string name="error_something_wrong_http">Etwas ist schiefgelaufen! [%d]</string>
     <string name="error_generic_snacbar">Ups, bitte versuchen Sie es erneut.</string>
-    <string name="error_still_loading_snackbar">Aktualisierung läuft, **bitte versuchen Sie es in wenigen Sekunden erneut.**</string>
+    <string name="error_still_loading_snackbar">Aktualisieren, **bitte versuchen Sie es in wenigen Sekunden erneut.**</string>
     <string name="error_location_permission_missing_sheet_message">Standortberechtigung ist **erforderlich**, um Ihren Standort erfolgreich zu verfolgen und mit anderen zu teilen.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Bitte erteilen Sie die **genaue Standortberechtigung**, um Ihren Standort erfolgreich zu verfolgen und mit anderen zu teilen.</string>
     <string name="error_location_background_permission_missing_sheet_message">Bitte erlauben Sie **jederzeit** den Standortzugriff, um Ihren Standort **zuverlässig und dauerhaft** zu verfolgen und mit anderen zu teilen.</string>
@@ -43,7 +43,7 @@
     <string name="error_notification_permission_missing_sheet_message">Bitte aktivieren Sie **Benachrichtigungen**, um **wichtige** Warnungen für Ihre Gruppenevents, Orte und Ihr Konto zu erhalten.</string>
     <string name="error_location_background_permission_missing_notification_message">Die Standortfreigabe kann nicht gestartet werden, da die Berechtigung für den dauerhaften Standortzugriff fehlt!\nBitte öffnen Sie die App, um die Standortfreigabe neu zu starten!</string>
     <string name="error_location_sharing_start_notification_message">Die Standortfreigabe kann nicht gestartet werden!\nBitte öffnen Sie die App erneut!</string>
-    <string name="error_device_registration_notification_message">Ihr Gerät kann nicht registriert werden!\nBitte starten Sie die Standortfreigabe neu!</string>
+    <string name="error_device_registration_notification_message">Ihr Gerät kann nicht registriert werden!  \nBitte starten Sie die Standortsfreigabe neu!</string>
     <string name="error_unverified_member_notification_message">Ihre Mitgliedschaft konnte nicht verifiziert werden. Bitte versuchen Sie, die Daten zu aktualisieren, oder kontaktieren Sie den Gruppenadministrator.</string>
     <string name="error_crypto_key_missing">Verschlüsselungsdaten sind unvollständig (%s), bitte versuchen Sie zu aktualisieren.</string>
     <string name="error_crypto_key_missing_user">Ihre kryptografischen Schlüssel sind nicht richtig konfiguriert.</string>
@@ -208,8 +208,8 @@
     <string name="setting_description_locationBoost_enabled">Maximale Standortleistung wird um %s zurückgesetzt. **Verbraucht mehr Akku!!!**</string>
     <string name="setting_description_locationBoost_disabled">Nutzen Sie maximale Standortleistung für bis zu 2 Stunden. **Wird mehr Akku verbrauchen!!!**</string>
     <string name="setting_title_placeActivityThrottle">Ortsaktivität drosseln</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Ihr Gerät wird Ortswarnungen erstellen, wenn Sie mehr Zeit in oder außerhalb eines bestimmten Ortes verbringen.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Ihr Gerät wird schneller auf Ortsänderungen reagieren und möglicherweise mehrere Ortswarnungen in kurzer Zeit erstellen (zum Beispiel, wenn Sie kurz an einem bestimmten Ort vorbeifahren).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Ihr Gerät wird eine Benachrichtigung über die Aktivitäten an einem Ort erstellen, wenn Sie mehr Zeit an einem bestimmten Ort verbringen oder sich außerhalb dieses Ortes aufhalten.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Ihr Gerät wird schneller auf Ortsänderungen reagieren und könnte in kurzer Zeit mehrere Benachrichtigungen zu Ortsaktivitäten erstellen (zum Beispiel: wenn Sie kurz an einem bestimmten Ort vorbeifahren).</string>
     <string name="setting_appSettings_title">App-Einstellungen</string>
     <string name="setting_measurementSystem_title">Messsystem</string>
     <string name="setting_measurementSystem_default_title">Geräte-Standard</string>
@@ -336,7 +336,7 @@
     <string name="paywall_faq_answer_payment_security_google">Ja, Ihre Zahlung wird direkt vom Google Play Store verarbeitet. Wir verarbeiten oder speichern keine Zahlungsinformationen.</string>
     <string name="paywall_faq_answer_free_trial">Ja, wir bieten eine kostenlose Testphase an, wenn Sie Ihr Abonnement zum ersten Mal starten. Sie können dann Premium-Funktionen kostenlos genießen.</string>
     <string name="paywall_faq_answer_contact_support">Sie können unser Support-Team kontaktieren, indem Sie eine E-Mail an **contact@paralino.com** senden.</string>
-    <string name="plans_gift_screen_title">Lassen Sie uns feiern!</string>
+    <string name="plans_gift_screen_title">Lass uns feiern!</string>
     <string name="plans_gift_screen_box_title">Geschenk für Erstnutzer</string>
     <string name="plans_gift_screen_box_message">Sie erhalten einen speziellen lebenslangen **Starter**-Plan, komplett KOSTENLOS!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ Was Sie erhalten ⭐️</string>
@@ -387,7 +387,7 @@
     <string name="login_step_error_logIn">Fehler bei der Anmeldung</string>
     <string name="login_step_error_recoverGuest">Gastkonto konnte nicht wiederhergestellt werden</string>
     <string name="login_step_error_blockedAccount">**Ihr Konto ist derzeit gesperrt.**\n\nBitte versuchen Sie es später erneut oder kontaktieren Sie den Support, um das Problem zu lösen.</string>
-    <string name="login_step_error_encryption_logIn">Ihre Verschlüsselungsschlüssel scheinen beschädigt oder nicht vorhanden zu sein, bitte versuchen Sie es erneut oder setzen Sie Ihr Passwort zurück (Dadurch werden alle Ihre vorherigen Daten gelöscht)</string>
+    <string name="login_step_error_encryption_logIn">Ihre Verschlüsselungsschlüssel scheinen beschädigt oder nicht vorhanden zu sein. Bitte versuchen Sie es erneut oder setzen Sie Ihr Passwort zurück (dies wird alle Ihre vorherigen Daten löschen).</string>
     <string name="form_invalid_email_description">Ihre E-Mail-Adresse ist ungültig.</string>
     <string name="form_invalid_credentials_description">Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.</string>
     <string name="form_invalid_email_conflict_description">Bitte verwenden Sie eine andere E-Mail.</string>
@@ -462,8 +462,8 @@
     <string name="group_member_title">Mitglied</string>
     <string name="group_member_device_title">Gerät</string>
     <string name="group_members_block_user">Benutzer blockieren</string>
-    <string name="group_members_block_user_alert_message">Wenn Sie fortfahren, kann der Benutzer Sie nicht zu einer Gruppe hinzufügen und Sie erhalten keine Standortbenachrichtigungen des Benutzers in gemeinsam genutzten Gruppen.</string>
-    <string name="group_members_remove_alert_title">Sind Sie sicher, dass Sie %s aus der Gruppe entfernen möchten?</string>
+    <string name="group_members_block_user_alert_message">Wenn Sie fortfahren, wird der Benutzer Sie nicht zu einer Gruppe hinzufügen können und Sie werden keine Standortbenachrichtigungen von Benutzern in gemeinsam genutzten Gruppen erhalten.</string>
+    <string name="group_members_remove_alert_title">Sind Sie sich sicher, dass Sie %s aus der Gruppe entfernen möchten?</string>
     <string name="group_members_device_other_remove_alert_title">Sind Sie sicher, dass Sie das Gerät von %s aus dieser Gruppe entfernen möchten?\n\nDies wird den Benutzer nicht aus einer Gruppe entfernen.</string>
     <string name="group_members_device_own_remove_alert_title">Sind Sie sicher, dass Sie Ihr Gerät aus dieser Gruppe entfernen möchten?\n\nDies wird Sie nicht aus einer Gruppe entfernen.</string>
     <string name="group_members_device_name_default">Gerät</string>
@@ -471,9 +471,9 @@
     <string name="group_details_menu_delete">Gruppe löschen</string>
     <string name="group_details_menu_leave">Gruppe verlassen</string>
     <string name="group_details_menu_block">Gruppe blockieren</string>
-    <string name="group_details_delete_group_alert_title">Sind Sie sicher, dass Sie diese Gruppe löschen möchten?\nDies ist unwiderruflich und löscht alle Gruppendaten und entfernt alle Verbindungen zu Mitgliedern!</string>
+    <string name="group_details_delete_group_alert_title">Sind Sie sicher, dass Sie diese Gruppe löschen möchten?  \nDies ist irreversibel und wird alle Gruppendaten löschen sowie die Verbindung zu allen Mitgliedern entfernen!</string>
     <string name="group_details_delete_group_alert_button">Löschen</string>
-    <string name="group_details_leave_group_alert_title">Sind Sie sicher, dass Sie diese Gruppe verlassen möchten?\nDies ist unwiderruflich und löscht alle von Ihnen geteilten Daten und entfernt alle Verbindungen zu Mitgliedern!</string>
+    <string name="group_details_leave_group_alert_title">Sind Sie sicher, dass Sie diese Gruppe verlassen möchten?  \nDies ist irreversibel und wird alle Daten, die Sie geteilt haben, löschen und alle Verbindungen zu den Mitgliedern entfernen!</string>
     <string name="group_details_leave_group_alert_button">Verlassen</string>
     <string name="group_details_remove_member_alert_button">Entfernen...</string>
     <string name="group_details_block_group_alert_title">Sind Sie sicher, dass Sie diese Gruppe blockieren möchten?\nDies ist unwiderruflich, löscht alle von Ihnen geteilten Daten mit der Gruppe und Sie werden nicht in der Lage sein, der Gruppe erneut beizutreten!</string>
@@ -573,7 +573,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s Meilen pro Stunde</string>
     <string name="welcome_screen_info_1">SICHER - PRIVAT - VERSCHLÜSSELT</string>
     <string name="welcome_screen_button_join">Beitreten</string>
     <string name="welcome_account_edit_profile">Vervollständigen Sie Ihr Profil</string>
@@ -587,9 +587,9 @@
     <string name="recover_account_step_password_correct">Schlüssel kann wiederhergestellt werden 🙌</string>
     <string name="recover_account_step_password_wrong">Passwort stimmt nicht überein</string>
     <string name="recover_account_header_recover_possible">Ihr Passwort stimmt nicht mit Ihren kryptografischen Schlüsseln überein</string>
-    <string name="recover_account_caption_recover_possible">Um Ihr Konto wiederherzustellen, versuchen Sie, den Schlüssel mit dem alten Passwort wiederherzustellen.</string>
+    <string name="recover_account_caption_recover_possible">Um Ihr Konto wiederherzustellen, versuchen Sie, den Schlüssel mit Ihrem alten Passwort wiederherzustellen.</string>
     <string name="recover_account_header_recover_not_possible">Ihr Konto hat keine passenden Schlüssel! Bitte setzen Sie Ihr Konto zurück.</string>
-    <string name="recover_account_caption_recover_not_possible">Wenn Sie den Schlüssel nicht wiederherstellen können, können Sie Ihr Konto zurücksetzen. **Durch das Zurücksetzen Ihres Kontos werden alle Ihre Daten gelöscht!**</string>
+    <string name="recover_account_caption_recover_not_possible">Wenn Sie den Schlüssel nicht wiederherstellen können, können Sie Ihr Konto zurücksetzen. **Das Zurücksetzen Ihres Kontos löscht alle Ihre Daten!**</string>
     <string name="recover_account_caption_reset">**Durch das Zurücksetzen Ihres Kontos werden alle Ihre Daten gelöscht!**</string>
     <string name="reset_password_screen_title">Passwort zurücksetzen</string>
     <string name="reset_password_success_message">Bitte melden Sie sich erneut an!</string>
@@ -901,12 +901,12 @@
     <string name="setting_notificationSocket_connectionType_notice">Bei periodischer Aktualisierung funktionieren manuelle Standortanfragen für dieses Gerät möglicherweise nicht zuverlässig.</string>
     <string name="setting_notificationSocket_connectionType_realtime_title">Ständige Verbindung</string>
     <string name="setting_notificationSocket_connectionType_realtime_info">Ständige Echtzeitverbindung mit nahezu sofortiger Benachrichtigungszustellung.</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Benachrichtigungen werden regelmäßig einige Male pro Stunde aktualisiert.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Benachrichtigungen werden regelmäßig ein paar Mal pro Stunde aktualisiert.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Akkunutzung: Mittel</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Alle paar Stunden</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Benachrichtigungen werden regelmäßig alle paar Stunden aktualisiert.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Akkunutzung: Niedrig</string>
-    <string name="setting_notificationSocket_registration_error_message">Die Verbindung könnte bestätigt werden, bitte versuchen Sie es erneut!</string>
+    <string name="setting_notificationSocket_registration_error_message">Verbindung konnte nicht bestätigt werden, bitte versuchen Sie es erneut!</string>
     <string name="notifications_socketService_message_lastSync">Letzte Aktualisierung: %s</string>
     <string name="licence_screen_info">Wenn Sie einen Lizenzschlüssel haben, geben Sie ihn hier ein, um einen Premium-Plan mit Ihrem Paralino-Konto zu verbinden.</string>
     <string name="licence_code_hint">Lizenzschlüssel</string>

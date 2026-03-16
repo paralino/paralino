@@ -14,7 +14,7 @@
     <string name="button_open_settings">Odpri nastavitve</string>
     <string name="alert_title_confirm">Prosimo, potrdite</string>
     <string name="alert_sessionExpired_title">Seja je potekla</string>
-    <string name="alert_sessionExpired_message">Vaša seja je potekla, prosimo, prijavite se znova.</string>
+    <string name="alert_sessionExpired_message">Vaša seansa je potekla, prosimo, prijavite se ponovno.</string>
     <string name="alert_comingSoon_title">Kmalu prihaja 🤞</string>
     <string name="alert_comingSoon_message">Ta funkcija je že v razvoju in kmalu prihaja.</string>
     <string name="error_unstable_connection">Vaša **internetna povezava** je zelo nestabilna in nekateri zahtevki ne uspejo.\nProsimo, preverite svoje nastavitve.</string>
@@ -24,8 +24,8 @@
     <string name="error_permissionDenied_remote">Zahtevek ni dovoljen!</string>
     <string name="error_something_wrong">Nekaj je šlo narobe!</string>
     <string name="error_something_wrong_http">Nekaj je šlo narobe! [%d]</string>
-    <string name="error_generic_snacbar">Ups, prosimo, poskusite znova.</string>
-    <string name="error_still_loading_snackbar">Osvežitev, **poskusite znova čez nekaj sekund.**</string>
+    <string name="error_generic_snacbar">Opravičujem se, prosim poskusite znova.</string>
+    <string name="error_still_loading_snackbar">Osvježavanje, **posljedite ponovo za nekoliko sekundi.**</string>
     <string name="error_location_permission_missing_sheet_message">Dovoljenje za lokacijo je **potrebno** za uspešno sledenje in deljenje vaše lokacije z drugimi.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Prosimo, da dodelite **natančno dovoljenje za lokacijo** za uspešno sledenje in deljenje vaše lokacije z drugimi.</string>
     <string name="onboarding_step_location_info">Baterija, hitrost, višina in spremljanje omrežja. Zasebne skupine s družino, prijatelji ali samo vašimi napravami.</string>
@@ -90,8 +90,8 @@
     <string name="setting_description_locationBoost_enabled">Maksimalna zmogljivost lokacije se bo ponastavila ob %s. **Porabi več baterije!!!**</string>
     <string name="setting_description_locationBoost_disabled">Uporabite maksimalno zmogljivost za lokacijo do 2 uri. **Porabil bo več baterije!!!**</string>
     <string name="setting_title_placeActivityThrottle">Upravljanje dejavnosti kraja</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Vaša naprava bo ustvarila obvestilo o dejavnosti kraja, če boste preživeli več časa v ali izven določenega kraja.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Vaša naprava bo hitreje reagirala na spremembe kraja in morda ustvarila več obvestil o dejavnosti kraja v kratkem času (na primer: če hitro prevozite mimo določenega kraja).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Vaša naprava bo ustvarila obvestilo o dejavnosti v kraju, če boste preživeli več časa v ali iz določenega kraja.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Vaša naprava se bo na spremembe lokacij hitro odzvala in lahko ustvari več obvestil o dejavnostih na lokaciji v kratkem času (na primer: če le na kratko zapeljete mimo določene lokacije).</string>
     <string name="setting_appSettings_title">Nastavitve aplikacije</string>
     <string name="setting_measurementSystem_title">Merilni sistem</string>
     <string name="button_continue">Nadaljuj</string>
@@ -153,7 +153,7 @@
     <string name="error_notification_permission_missing_sheet_message">Prosimo, omogočite **obvestila**, da boste prejemali **pomembna** obvestila za vaše skupinske dogodke, kraje in račun.</string>
     <string name="error_location_background_permission_missing_notification_message">Deljenje lokacije se ne more začeti, ker vam manjkajo dovoljenja za lokacijo!  \nProsimo, odprite aplikacijo, da ponovno zaženete deljenje lokacije!</string>
     <string name="error_location_sharing_start_notification_message">Deljenje lokacije se ne more začeti!  \nProsimo, znova odprite aplikacijo!</string>
-    <string name="error_device_registration_notification_message">Vaša naprava ne more biti registrirana!  \nProsimo, ponovno zaženite deljenje lokacije!</string>
+    <string name="error_device_registration_notification_message">Vaš uređaj ne more biti registriran!  \nProsimo, ponovno zaženite deljenje lokacije!</string>
     <string name="error_unverified_member_notification_message">Vaše članstvo ni bilo mogoče preveriti. Prosimo, poskusite osvežiti podatke ali kontaktirajte skrbnika skupine.</string>
     <string name="error_crypto_key_missing">Podatki o šifriranju so nepopolni (%s), prosimo, poskusite osvežiti.</string>
     <string name="error_crypto_key_missing_user">Vaši kriptografski ključi niso pravilno konfigurirani.</string>
@@ -533,8 +533,8 @@
     <string name="group_member_title">Član</string>
     <string name="group_member_device_title">Napravа</string>
     <string name="group_members_block_user">Blokiraj uporabnika</string>
-    <string name="group_members_block_user_alert_message">Če nadaljujete, uporabnik ne bo mogel dodati vas v skupino in ne boste prejemali obvestil o lokaciji uporabnikov v nobenih skupnih skupinah.</string>
-    <string name="group_members_remove_alert_title">Ali ste prepričani, da želite odstraniti %s iz skupine?</string>
+    <string name="group_members_block_user_alert_message">Če nadaljujete, uporabnik vas ne bo mogel dodati v skupino in ne boste prejemali obvestil o lokaciji uporabnikov v katerikoli skupini.</string>
+    <string name="group_members_remove_alert_title">Ste prepričani, da želite odstraniti %s iz skupine?</string>
     <string name="group_members_device_other_remove_alert_title">Ali ste prepričani, da želite odstraniti napravo %s iz te skupine?\n\nTo ne bo odstranilo uporabnika iz skupine.</string>
     <string name="group_members_device_own_remove_alert_title">Ali ste prepričani, da želite odstraniti svojo napravo iz te skupine?\n\nTo ne bo odstranilo vas iz skupine.</string>
     <string name="group_members_device_confirm_remove_alert_title">Odstranitev naprave bo prav tako izbrisala vso povezano zgodovino lokacij in ustavila deljenje lokacij!\n\nTa akcija je nepovratna.</string>
@@ -544,9 +544,9 @@
     <string name="group_details_menu_delete">Izbriši skupino</string>
     <string name="group_details_menu_leave">Zapusti skupino</string>
     <string name="group_details_menu_block">Blokiraj skupino</string>
-    <string name="group_details_delete_group_alert_title">Ali ste prepričani, da želite izbrisati to skupino?  \nTo je nepovratno in bo izbrisalo vse podatke skupine ter odstranilo vse povezave z člani!</string>
+    <string name="group_details_delete_group_alert_title">Ali ste prepričani, da želite izbrisati to skupino? To je neopozljivo in bo izbrisalo vse podatke o skupini ter odstranilo vse povezave s člani!</string>
     <string name="group_details_delete_group_alert_button">Izbriši</string>
-    <string name="group_details_leave_group_alert_title">Ali ste prepričani, da želite zapustiti to skupino?  \nTo je nepovratno in bo izbrisalo vse podatke, ki ste jih delili, ter odstranilo vse povezave z člani!</string>
+    <string name="group_details_leave_group_alert_title">Ali ste prepričani, da želite zapustiti to skupino?  \nTo je nepovratno in bo izbrisalo vse podatke, ki ste jih delili, ter odstranilo vse povezave s člani!</string>
     <string name="group_details_leave_group_alert_button">Zapusti</string>
     <string name="group_details_remove_member_alert_button">Odstrani...</string>
     <string name="group_details_block_group_alert_title">Ali ste prepričani, da želite blokirati to skupino?  \nTo je nepovratno, izbrisalo bo vse podatke, ki ste jih delili s skupino, in ne boste mogli ponovno pridružiti skupini!</string>
@@ -672,7 +672,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">ZASEBNO - PRIVATNO - ŠIFRANO</string>
     <string name="welcome_screen_button_join">Pridruži se</string>
     <string name="recover_account_screen_error">Ni mogoče naložiti obnovitve računa</string>
@@ -685,9 +685,9 @@
     <string name="recover_account_step_password_correct">Ključ je mogoče obnoviti 🙌</string>
     <string name="recover_account_step_password_wrong">Geslo se ne ujema</string>
     <string name="recover_account_header_recover_possible">Vaše geslo se ne ujema z vašimi kriptografskimi ključi</string>
-    <string name="recover_account_caption_recover_possible">Za obnovitev vašega računa poskusite obnoviti ključ s starim geslom.</string>
+    <string name="recover_account_caption_recover_possible">Da bi obnovili svoj račun, poskusite obnoviti ključ s vašom staro geslo.</string>
     <string name="recover_account_header_recover_not_possible">Vaš račun nima ujemajočih se ključev! Prosimo, ponastavite svoj račun.</string>
-    <string name="recover_account_caption_recover_not_possible">Če ključa ne morete obnoviti, lahko ponastavite svoj račun. **Ponastavitev vašega računa bo izbrisala vse vaše podatke!**</string>
+    <string name="recover_account_caption_recover_not_possible">Če ne morete obnoviti ključa, lahko ponastavite svoj račun. **Ponastavitev vašega računa bo izbrisala vse vaše podatke!**</string>
     <string name="recover_account_caption_reset">**Ponastavitev vašega računa bo izbrisala vse vaše podatke!**</string>
     <string name="password_confirmation_screen_title">Potrditev gesla</string>
     <string name="password_confirmation_header">Vaši šifrirni ključi so bili spremenjeni</string>
@@ -721,7 +721,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Sledenje lokacijam je omejeno!**  \nPresegli ste vire svojega načrta.</string>
     <string name="plan_limit_generic_message">Omejitev načrta dosežena!</string>
     <string name="app_version_alert_title">Nova posodobitev aplikacije</string>
-    <string name="app_version_alert_message">Nova različica Paralino je na voljo, prosimo posodobite za boljšo izkušnjo!</string>
+    <string name="app_version_alert_message">Na voljo je nova različica Paralino, prosimo, posodobite za boljšo izkušnjo!</string>
     <string name="app_version_alert_title_mandatory">Prosimo, posodobite</string>
     <string name="app_version_alert_message_mandatory">Ta različica aplikacije je zastarela!  \n\nDa bi nadaljevali z uporabo aplikacije, prosimo, posodobite na najnovejšo različico!</string>
     <string name="app_version_alert_button_update">Posodobi</string>
@@ -802,7 +802,7 @@
     <string name="login_step_error_logIn">Napaka pri prijavi</string>
     <string name="login_step_error_recoverGuest">Ni mogoče obnoviti gostujočega računa</string>
     <string name="login_step_error_blockedAccount">**Vaš račun je trenutno blokiran.**  \n\nProsimo, poskusite znova pozneje ali kontaktirajte podporo, da rešite težavo.</string>
-    <string name="login_step_error_encryption_logIn">Vaši šifrirni ključi se zdi, da so poškodovani ali neobstoječi, prosimo, poskusite znova ali ponastavite svoje geslo (to bo izbrisalo vse vaše prejšnje podatke)</string>
+    <string name="login_step_error_encryption_logIn">Vaši ključevi za šifrovanje se čine oštećenim ili nepostojećim, pokušajte ponovo ili resetujte svoju lozinku (to će obrisati sve vaše prethodne podatke)</string>
     <string name="form_invalid_email_description">Vaš e-poštni naslov ni veljaven.</string>
     <string name="form_invalid_credentials_description">Preverite svoje poverilnice in poskusite znova.</string>
     <string name="form_invalid_email_conflict_description">Prosimo, uporabite drug e-poštni naslov.</string>
@@ -899,7 +899,7 @@
     <string name="setting_mapsProvider_title">Ponudnik zemljevidov</string>
     <string name="notifications_socketService_message_errors">Storitev obvestil je na čakanju:  \n%s</string>
     <string name="notifications_socketService_message_connecting">Povezovanje...</string>
-    <string name="notifications_socketService_message_disconnected">Obveščevalna storitev je začasno odklopljena.</string>
+    <string name="notifications_socketService_message_disconnected">Storitev obvestil je začasno odklopljena</string>
     <string name="notifications_channel_socket_service">Storitev obvestil</string>
     <string name="location_banner_error_background_access">Manjka neomejen dostop v ozadju</string>
     <string name="setting_mapsProvider_info">Izberite svoj želeni ponudnik storitev za zemljevide, uporabljene v aplikaciji. Slog zemljevida, animacije in uspešnost se bodo razlikovale med različnimi ponudniki.</string>
@@ -932,12 +932,12 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">Glede na trenutno raven baterije se obvestila osvežujejo občasno vsakih 5-15 minut.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Poraba baterije: Visoka</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Nekajkrat na uro</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Obvestila se obnavljajo periodično, večkrat na uro.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Obvestila se občasno osvežujejo nekajkrat na uro.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Poraba baterije: Srednja</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Vsake nekaj ur</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Obvestila se občasno osvežujejo vsake nekaj ur.</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Poraba baterije: Nizka</string>
-    <string name="setting_notificationSocket_registration_error_message">Povezava je bila potrjena, prosim poskusite znova!</string>
+    <string name="setting_notificationSocket_registration_error_message">Povezave ni bilo mogoče potrditi, prosimo, poskusite znova!</string>
     <string name="notifications_socketService_message_lastSync">Zadnja posodobitev: %s</string>
     <string name="licence_screen_title">Licenčna koda</string>
     <string name="licence_screen_info">Če imate licenčno kodo, jo tukaj vnesite, da povežete premium paket s svojim računom Paralino.</string>

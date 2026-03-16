@@ -32,7 +32,7 @@
     <string name="button_open_settings">Åpne innstillinger</string>
     <string name="alert_title_confirm">Vennligst bekreft</string>
     <string name="alert_sessionExpired_title">Økten utløpt</string>
-    <string name="alert_sessionExpired_message">Økten din utløp, vennligst logg inn igjen.</string>
+    <string name="alert_sessionExpired_message">Din økt har utløpt, vennligst logg inn igjen.</string>
     <string name="alert_comingSoon_title">Kommer snart 🤞</string>
     <string name="alert_comingSoon_message">Denne funksjonen er allerede under utvikling og kommer snart.</string>
     <string name="error_unstable_connection">Din **internettforbindelse** er veldig ustabil, og noen forespørselene mislykkes.\nVennligst sjekk innstillingene dine.</string>
@@ -42,8 +42,8 @@
     <string name="error_permissionDenied_remote">Forespørsel ikke tillatt!</string>
     <string name="error_something_wrong">Noe gikk galt!</string>
     <string name="error_something_wrong_http">Noe gikk galt! [%d]</string>
-    <string name="error_generic_snacbar">Ups, vennligst prøv igjen.</string>
-    <string name="error_still_loading_snackbar">Oppdaterer, **vennligst prøv igjen om få sekunder.**</string>
+    <string name="error_generic_snacbar">Beklager, vennligst prøv på nytt.</string>
+    <string name="error_still_loading_snackbar">Oppdaterer, **vennligst prøv igjen om noen sekunder.**</string>
     <string name="error_location_permission_missing_sheet_message">Stedstillatelse er **nødvendig** for å kunne spore og dele din plassering med andre.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Vennligst gi **presis stedstillatelse** for å kunne spore og dele din plassering med andre.</string>
     <string name="error_location_background_permission_missing_sheet_message">Vennligst tillat **tilgang til sted hele tiden** for å **pålitelige og alltid** spore og dele din plassering med andre.</string>
@@ -52,7 +52,7 @@
     <string name="error_notification_permission_missing_sheet_message">Vennligst aktiver **varsler** for å motta **viktige** varsler for dine gruppearrangementer, steder og konto.</string>
     <string name="error_location_background_permission_missing_notification_message">Deling av plassering kan ikke starte fordi du mangler stedstillatelser! Vennligst åpne appen for å starte deling av plassering på nytt!</string>
     <string name="error_location_sharing_start_notification_message">Deling av plassering kan ikke starte! Vennligst åpne appen igjen!</string>
-    <string name="error_device_registration_notification_message">Enheten din kan ikke registreres! Vennligst start deling av plassering på nytt!</string>
+    <string name="error_device_registration_notification_message">Enheten din kan ikke registreres!  \nVennligst start deling av posisjon på nytt!</string>
     <string name="error_unverified_member_notification_message">Medlemskapet ditt kunne ikke bekreftes. Vennligst prøv å oppdatere dataene eller kontakt gruppeadministratoren.</string>
     <string name="error_crypto_key_missing">Krypteringsdata er ufullstendige (%s), vennligst prøv å oppdatere.</string>
     <string name="error_crypto_key_missing_user">Dine kryptografiske nøkler er ikke riktig konfigurert.</string>
@@ -244,8 +244,8 @@
     <string name="setting_description_locationBoost_enabled">Maksimal plasseringytelse vil tilbakestilles ved %s. **Bruker mer batteri!!!**</string>
     <string name="setting_description_locationBoost_disabled">Bruk maksimal ytelse for plassering i opptil 2 timer. **Vil bruke mer batteri!!!**</string>
     <string name="setting_title_placeActivityThrottle">Demp aktivitet for sted</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Enheten din vil opprette varsler om stedaktivitet hvis du tilbringer mer tid i eller utenfor et bestemt sted.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Enheten din vil reagere raskere på endringer i steder og kan opprette flere varsler om stedaktivitet på kort tid (for eksempel: hvis du kjører forbi et bestemt sted i kort tid).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Enheten din vil lage en varsling om stedaktivitet hvis du tilbringer mer tid i eller utenfor et bestemt sted.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Enheten din vil reagere raskere på endringer i steder og kan lage flere varsler om stedaktivitet på kort tid (for eksempel: hvis du kort kjører forbi et bestemt sted).</string>
     <string name="setting_appSettings_title">Appinnstillinger</string>
     <string name="setting_measurementSystem_title">Målesystem</string>
     <string name="setting_measurementSystem_default_title">Enhetsstandard</string>
@@ -450,7 +450,7 @@
     <string name="login_step_error_logIn">Feil under innlogging</string>
     <string name="login_step_error_recoverGuest">Kan ikke gjenopprette gjestekonto</string>
     <string name="login_step_error_blockedAccount">**Kontoen din er for øyeblikket blokkert.**  \n\nVennligst prøv igjen senere eller kontakt support for å løse problemet.</string>
-    <string name="login_step_error_encryption_logIn">Dine krypteringsnøkler ser ut til å være ødelagte eller ikke eksisterende, vennligst prøv igjen eller tilbakestill passordet ditt (Dette vil slette all din tidligere data)</string>
+    <string name="login_step_error_encryption_logIn">Dine krypteringsnøkler ser ut til å være ødelagt eller ikke eksisterende, vennligst prøv igjen eller tilbakestill passordet ditt (dette vil slette all din tidligere data).</string>
     <string name="form_invalid_email_description">E-postadressen din er ikke gyldig.</string>
     <string name="form_invalid_credentials_description">Vennligst sjekk legitimasjonen din og prøv igjen.</string>
     <string name="form_invalid_email_conflict_description">Vennligst bruk en annen e-post.</string>
@@ -515,7 +515,7 @@
     <string name="group_member_title">Medlem</string>
     <string name="group_member_device_title">Enhet</string>
     <string name="group_members_block_user">Blokker bruker</string>
-    <string name="group_members_block_user_alert_message">Hvis du fortsetter, vil brukeren ikke kunne legge deg til i en gruppe, og du vil ikke motta varsler om brukerens plassering i noen delte grupper.</string>
+    <string name="group_members_block_user_alert_message">Hvis du fortsetter, vil ikke brukeren kunne legge deg til i en gruppe, og du vil ikke motta brukernes lokasjonsvarsler i noen delte grupper.</string>
     <string name="group_members_remove_alert_title">Er du sikker på at du vil fjerne %s fra gruppen?</string>
     <string name="group_members_device_other_remove_alert_title">Er du sikker på at du vil fjerne enheten fra %s fra denne gruppen?  \n\nDette vil ikke fjerne brukeren fra en gruppe.</string>
     <string name="group_members_device_own_remove_alert_title">Er du sikker på at du vil fjerne enheten din fra denne gruppen?  \n\nDette vil ikke fjerne deg fra en gruppe.</string>
@@ -526,9 +526,9 @@
     <string name="group_details_menu_delete">Slett gruppe</string>
     <string name="group_details_menu_leave">Forlat gruppe</string>
     <string name="group_details_menu_block">Blokker gruppe</string>
-    <string name="group_details_delete_group_alert_title">Er du sikker på at du vil slette denne gruppen?  \nDette er irreversibelt og vil slette all gruppeinformasjon og fjerne all tilknytning til medlemmene!</string>
+    <string name="group_details_delete_group_alert_title">Er du sikker på at du vil slette denne gruppen?  \nDette er irreversibelt og vil slette all gruppeinformasjon og fjerne all forbindelse med medlemmene!</string>
     <string name="group_details_delete_group_alert_button">Slett</string>
-    <string name="group_details_leave_group_alert_title">Er du sikker på at du vil forlate denne gruppen?  \nDette er irreversibelt og vil slette all informasjon du har delt og fjerne all tilknytning til medlemmene!</string>
+    <string name="group_details_leave_group_alert_title">Er du sikker på at du vil forlate denne gruppen?  \nDette er irreversibelt og vil slette all informasjon du har delt og fjerne all forbindelse med medlemmene!</string>
     <string name="group_details_leave_group_alert_button">Forlat</string>
     <string name="group_details_remove_member_alert_button">Fjern...</string>
     <string name="group_details_block_group_alert_title">Er du sikker på at du vil blokkere denne gruppen?  \nDette er irreversibelt, vil slette all informasjon du har delt med gruppen, og du vil ikke kunne bli med i gruppen igjen!</string>
@@ -652,7 +652,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SIKKER - PRIVAT - KRYPTERT</string>
     <string name="welcome_screen_button_join">Bli med</string>
     <string name="welcome_account_edit_profile">Fullfør profilen din</string>
@@ -666,9 +666,9 @@
     <string name="recover_account_step_password_correct">Nøkkelen kan gjenopprettes 🙌</string>
     <string name="recover_account_step_password_wrong">Passordet samsvarer ikke</string>
     <string name="recover_account_header_recover_possible">Passordet ditt samsvarer ikke med de kryptografiske nøklene dine</string>
-    <string name="recover_account_caption_recover_possible">For å gjenopprette kontoen din, prøv å gjenopprette nøkkelen med det gamle passordet.</string>
+    <string name="recover_account_caption_recover_possible">For å gjenvinne kontoen din, prøv å gjenvinne nøkkelen med ditt gamle passord.</string>
     <string name="recover_account_header_recover_not_possible">Kontoen din har ikke samsvarende nøkler! Vennligst tilbakestill kontoen din.</string>
-    <string name="recover_account_caption_recover_not_possible">Hvis du ikke kan gjenopprette nøkkelen, kan du tilbakestille kontoen din. **Tilbakestilling av kontoen din vil slette alle dataene dine!**</string>
+    <string name="recover_account_caption_recover_not_possible">Hvis du ikke kan gjenopprette nøkkelen, kan du tilbakestille kontoen din. **Tilbakestilling av kontoen din vil slette all dataen din!**</string>
     <string name="recover_account_caption_reset">**Tilbakestilling av kontoen din vil slette all dataen din!**</string>
     <string name="password_confirmation_screen_title">Passordbekreftelse</string>
     <string name="password_confirmation_header">Dine krypteringsnøkler har blitt endret</string>
@@ -701,7 +701,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Stedssporing er begrenset!**\nDu har overskredet planens ressurser.</string>
     <string name="plan_limit_generic_message">Plangrense nådd!</string>
     <string name="app_version_alert_title">Ny appoppdatering</string>
-    <string name="app_version_alert_message">Ny versjon av Paralino er tilgjengelig, vennligst oppdater for en bedre opplevelse!</string>
+    <string name="app_version_alert_message">En ny versjon av Paralino er tilgjengelig, vennligst oppdater for en bedre opplevelse!</string>
     <string name="app_version_alert_title_mandatory">Vennligst oppdater</string>
     <string name="app_version_alert_message_mandatory">Denne appversjonen er foreldet!  \n\nFor å fortsette å bruke appen, vennligst oppdater til den nyeste versjonen!</string>
     <string name="app_version_alert_button_update">Oppdater</string>
@@ -854,7 +854,7 @@
     <string name="notifications_socketService_status_error">Push-tjeneste 🔴</string>
     <string name="notifications_socketService_message_errors">Push-varslings tjenesten er på hold:\n%s</string>
     <string name="notifications_socketService_message_connecting">Kobler til...</string>
-    <string name="notifications_socketService_message_disconnected">Varslingstjenesten ble midlertidig frakoblet.</string>
+    <string name="notifications_socketService_message_disconnected">Varslingstjenesten midlertidig frakoblet</string>
     <string name="notifications_channel_socket_service">Push-varslingstjeneste</string>
     <string name="location_banner_error_background_access">Manglende uhindret bakgrunns tilgang</string>
     <string name="setting_mapsProvider_info">Velg din foretrukne tjenesteleverandør for kart brukt i appen. Kartstil, animasjoner og ytelse vil variere mellom forskjellige leverandører.</string>
@@ -895,7 +895,7 @@
     <string name="setting_notificationSocket_connectionType_realtime_title">Kontinuerlig tilkobling</string>
     <string name="setting_notificationSocket_connectionType_realtime_info">Kontinuerlig sanntidstilkobling med nesten øyeblikkelig varselforsendelse.</string>
     <string name="setting_notificationSocket_connectionType_realtime_tag">Batteribruk: Potensielt høy</string>
-    <string name="setting_notificationSocket_registration_error_message">Tilkoblingen kunne bekreftes, vennligst prøv igjen!</string>
+    <string name="setting_notificationSocket_registration_error_message">Tilkoblingen kunne ikke bekreftes, vennligst prøv igjen!</string>
     <string name="notifications_socketService_message_lastSync">Siste oppdatering: %s</string>
     <string name="licence_screen_info">Hvis du har en lisensnøkkel, skriv den inn her for å knytte et premium-abonnement til din Paralino-konto.</string>
     <string name="licence_code_hint">Lisensnøkkel</string>
@@ -914,7 +914,7 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">Avhengig av gjeldende batterinivå, blir varsler oppdatert periodisk hvert 5-15 minutt.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Batteribruk: Høy</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Noen ganger per time</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Varsler oppdateres periodisk noen ganger per time</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Varsler blir oppdatert periodisk noen ganger per time.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Batteribruk: Middels</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Hver few timer</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Varsler blir oppdatert periodisk hver noen timer.</string>

@@ -29,7 +29,7 @@
     <string name="button_open_settings">Obrir configuració</string>
     <string name="alert_title_confirm">Si us plau, confirmeu</string>
     <string name="alert_sessionExpired_title">Sessió expirada</string>
-    <string name="alert_sessionExpired_message">La vostra sessió ha expirat, si us plau, torneu a iniciar sessió.</string>
+    <string name="alert_sessionExpired_message">La teva sessió ha caducat, si us plau, inicia sessió de nou.</string>
     <string name="alert_comingSoon_title">Properament 🤞</string>
     <string name="alert_comingSoon_message">Aquesta funció ja està en desenvolupament i arribarà aviat.</string>
     <string name="error_unstable_connection">La vostra **connexió a internet** és molt inestable i algunes sol·licituds estan fallant.  \nSi us plau, comproveu la vostra configuració.</string>
@@ -39,8 +39,8 @@
     <string name="error_permissionDenied_remote">Sol·licitud no permesa!</string>
     <string name="error_something_wrong">Alguna cosa ha anat malament!</string>
     <string name="error_something_wrong_http">Alguna cosa ha anat malament! [%d]</string>
-    <string name="error_generic_snacbar">Ups, si us plau, torneu a provar-ho.</string>
-    <string name="error_still_loading_snackbar">Refrescant, **si us plau torna a provar-ho en pocs segons.**</string>
+    <string name="error_generic_snacbar">Ups, si us plau, torneu-ho a intentar.</string>
+    <string name="error_still_loading_snackbar">Actualitzant, **si us plau, torneu a provar-ho en uns segons.**</string>
     <string name="error_location_permission_missing_sheet_message">El permís de localització és **requerit** per poder rastrejar i compartir amb èxit la vostra ubicació amb altres.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Si us plau, concedeix **permís de localització precisa** per poder rastrejar i compartir amb èxit la vostra ubicació amb altres.</string>
     <string name="error_location_background_permission_missing_sheet_message">Si us plau, permet l\'accés a la localització **tot el temps** per poder **rastrejar i compartir** la vostra ubicació amb altres de manera **fiable i constant**.</string>
@@ -50,7 +50,7 @@
     <string name="error_location_background_permission_missing_notification_message">No es pot iniciar el compartiment de localització perquè us falten permisos de localització! Si us plau, obriu l\'aplicació per reiniciar el compartiment de localització!</string>
     <string name="error_location_sharing_start_notification_message">No es pot iniciar el compartiment de localització! Si us plau, obriu l\'aplicació de nou!</string>
     <string name="login_step_allDone">Èxit!</string>
-    <string name="error_device_registration_notification_message">El vostre dispositiu no pot ser registrat! Si us plau, reinicieu el compartiment de localització!</string>
+    <string name="error_device_registration_notification_message">El teu dispositiu no pot ser registrat!  \nSi us plau, reinicia l\'compartició de la ubicació!</string>
     <string name="error_unverified_member_notification_message">La vostra membresia no es va poder verificar. Si us plau, proveu de refrescar les dades o contacteu amb l\'administrador del grup.</string>
     <string name="error_crypto_key_missing">Les dades d\'encriptació són incompletes (%s), si us plau, proveu de refrescar.</string>
     <string name="error_crypto_key_missing_user">Les vostres claus criptogràfiques no estan configurades correctament.</string>
@@ -244,8 +244,8 @@
     <string name="setting_description_locationBoost_enabled">El rendiment màxim de la ubicació es restablirà a %s. **Utilitza més bateria!!!**</string>
     <string name="setting_description_locationBoost_disabled">Utilitzeu el rendiment màxim per a la ubicació durant fins a 2h. **Utilitzarà més bateria!!!**</string>
     <string name="setting_title_placeActivityThrottle">Activitat de lloc de limitació</string>
-    <string name="setting_description_placeActivityThrottle_enabled">El teu dispositiu crearà una notificació d\'activitat de lloc si passes més temps dins o fora d\'un cert lloc.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">El teu dispositiu reaccionarà als canvis de lloc més ràpidament i podria crear múltiples notificacions d\'activitat de lloc en poc temps (per exemple: si passes breument per un cert lloc).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">El teu dispositiu crearà una notificació d\'activitat del lloc si passes més temps dins o fora d\'un cert lloc.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">El teu dispositiu reaccionarà als canvis de lloc més ràpidament i podria crear múltiples notificacions d\'activitat de lloc en un curt període de temps (per exemple: si passes breument per un determinat lloc).</string>
     <string name="setting_appSettings_title">Configuració de l\'aplicació</string>
     <string name="setting_measurementSystem_title">Sistema de mesura</string>
     <string name="setting_measurementSystem_default_title">Per defecte del dispositiu</string>
@@ -400,7 +400,7 @@
     <string name="paywall_faq_answer_payment_security_google">Sí, el seu pagament es processa directament a través de la Google Play Store. No processem ni emmagatzemem cap informació de pagament.</string>
     <string name="paywall_faq_answer_free_trial">Sí, oferim un període de prova gratuït per la primera vegada que comenceu la vostra subscripció. Podeu gaudir de les funcions premium sense cost.</string>
     <string name="paywall_faq_answer_contact_support">Podeu contactar amb el nostre equip de suport enviant un correu electrònic a **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Celebrem-ho!</string>
+    <string name="plans_gift_screen_title">Celebrem!</string>
     <string name="plans_gift_screen_box_title">Regal per a primers adoptants</string>
     <string name="login_signup_guest_recover_alert_message">S\'ha trobat un compte d\'usuari convidat en aquest dispositiu.  \nVoleu intentar recuperar-lo?</string>
     <string name="login_signup_guest_recover_alert_confirm">Intenteu recuperar</string>
@@ -494,8 +494,8 @@
     <string name="group_member_title">Membre</string>
     <string name="group_member_device_title">Dispositiu</string>
     <string name="group_members_block_user">Bloquejar usuari</string>
-    <string name="group_members_block_user_alert_message">Si continues, l\'usuari no podrà afegir-te a un grup i no rebràs notificacions de la ubicació dels usuaris en cap grup compartit.</string>
-    <string name="group_members_remove_alert_title">Esteu segur que voleu eliminar %s del grup?</string>
+    <string name="group_members_block_user_alert_message">Si continues, l\'usuari no podrà afegir-te a un grup i no rebràs les notificacions de localització dels usuaris en cap grup compartit.</string>
+    <string name="group_members_remove_alert_title">Estàs segur que vols eliminar %s del grup?</string>
     <string name="group_members_device_other_remove_alert_title">Estàs segur que vols eliminar el dispositiu de %s d\'aquest grup?  \n\nAixò no eliminarà l\'usuari d\'un grup.</string>
     <string name="group_members_device_own_remove_alert_title">Estàs segur que vols eliminar el teu dispositiu d\'aquest grup?  \n\nAixò no et eliminarà d\'un grup.</string>
     <string name="group_members_device_confirm_remove_alert_title">Eliminar un dispositiu també esborrarà tot l\'historial de ubicació relacionat i aturarà el compartiment de la ubicació!  \n\nAquesta acció és irreversible.</string>
@@ -505,9 +505,9 @@
     <string name="group_details_menu_delete">Eliminar grup</string>
     <string name="group_details_menu_leave">Deixar grup</string>
     <string name="group_details_menu_block">Bloquejar grup</string>
-    <string name="group_details_delete_group_alert_title">Esteu segur que voleu eliminar aquest grup?\nAixò és irreversible i esborrarà totes les dades del grup i eliminarà totes les connexions amb els membres!</string>
+    <string name="group_details_delete_group_alert_title">Estàs segur que vols esborrar aquest grup?  \nAixò és irreversible i esborrarà totes les dades del grup i eliminarà totes les connexions amb els membres!</string>
     <string name="group_details_delete_group_alert_button">Eliminar</string>
-    <string name="group_details_leave_group_alert_title">Esteu segur que voleu deixar aquest grup?\nAixò és irreversible i esborrarà totes les dades que heu compartit i eliminarà totes les connexions amb els membres!</string>
+    <string name="group_details_leave_group_alert_title">Estàs segur que vols abandonar aquest grup?  \nAixò és irreversible i eliminarà totes les dades que has compartit i retirarà tota connexió amb els membres!</string>
     <string name="group_details_leave_group_alert_button">Deixar</string>
     <string name="group_details_remove_member_alert_button">Eliminar...</string>
     <string name="group_details_block_group_alert_title">Esteu segur que voleu bloquejar aquest grup?\nAixò és irreversible, esborrarà totes les dades que heu compartit amb el grup i no podreu tornar a unir-vos al grup!</string>
@@ -565,7 +565,7 @@
     <string name="places_create_location_hint_tap">**CONSELL:** Toqueu el mapa per afegir o ajustar el vostre lloc</string>
     <string name="places_create_plan_limit_info">Per crear més llocs, actualitzeu el vostre pla.</string>
     <string name="place_list_menu_delete">Esborrar lloc</string>
-    <string name="place_list_delete_place_alert_title">Esteu segur que voleu esborrar aquest lloc?</string>
+    <string name="place_list_delete_place_alert_title">Esteu segurs que voleu eliminar aquest lloc?</string>
     <string name="place_detail_setting_button_notify_enter">Entrar</string>
     <string name="place_detail_setting_button_notify_exit">Sortir</string>
     <string name="place_detail_notification_settings_title">Alertes de lloc</string>
@@ -631,7 +631,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SEGUR - PRIVAT - ENCRIPTAT</string>
     <string name="welcome_screen_button_join">Unir-se</string>
     <string name="welcome_account_edit_profile">Completa el teu perfil</string>
@@ -645,9 +645,9 @@
     <string name="recover_account_step_password_correct">La clau es pot recuperar 🙌</string>
     <string name="recover_account_step_password_wrong">La contrasenya no coincideix</string>
     <string name="recover_account_header_recover_possible">La teva contrasenya no coincideix amb les teves claus criptogràfiques</string>
-    <string name="recover_account_caption_recover_possible">Per recuperar el teu compte, intenta recuperar la clau amb la contrasenya antiga.</string>
+    <string name="recover_account_caption_recover_possible">Per recuperar el teu compte, intenta recuperar la clau amb la teva contrasenya antiga.</string>
     <string name="recover_account_header_recover_not_possible">El teu compte no té claus coincidents! Si us plau, restableix el teu compte.</string>
-    <string name="recover_account_caption_recover_not_possible">Si no pots recuperar la clau, pots restablir el teu compte. **Restablir el teu compte suprimirà totes les teves dades!**</string>
+    <string name="recover_account_caption_recover_not_possible">Si no podeu recuperar la clau, podeu restablir el vostre compte. **Restablir el vostre compte esborrarà totes les vostres dades!**</string>
     <string name="recover_account_caption_reset">**Restablir el teu compte suprimirà totes les teves dades!**</string>
     <string name="password_confirmation_screen_title">Confirmació de la contrasenya</string>
     <string name="password_confirmation_header">Les teves claus de xifratge han estat canviades</string>
@@ -682,7 +682,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**El seguiment de la localització és limitat!**  \nHeu superat els recursos del vostre pla.</string>
     <string name="plan_limit_generic_message">Límits del pla assolits!</string>
     <string name="app_version_alert_title">Nova actualització de l\'aplicació</string>
-    <string name="app_version_alert_message">Nova versió de Paralino està disponible, si us plau actualitzeu per a una millor experiència!</string>
+    <string name="app_version_alert_message">Hi ha una nova versió de Paralino disponible, si us plau, actualitzeu per obtenir una millor experiència!</string>
     <string name="app_version_alert_title_mandatory">Si us plau actualitzeu</string>
     <string name="app_version_alert_message_mandatory">Aquesta versió de l\'aplicació està obsoleta!  \n\nPer continuar utilitzant l\'aplicació, si us plau actualitzeu a la darrera versió!</string>
     <string name="app_version_alert_button_update">Actualitzar</string>
@@ -807,7 +807,7 @@
     <string name="login_step_error_logIn">Error mentre s\'intentava iniciar sessió</string>
     <string name="login_step_error_recoverGuest">No es pot recuperar el compte d\'hoste</string>
     <string name="login_step_error_blockedAccount">**La vostra compte està actualment bloquejada.**  \n\nSi us plau, torneu a intentar més tard o contacteu amb el suport per resoldre el problema.</string>
-    <string name="login_step_error_encryption_logIn">Les vostres claus d\'encriptació semblen estar corrompudes o no existeixen, si us plau, torneu a intentar-ho o restabliu la vostra contrasenya (Això esborrarà totes les vostres dades anteriors)</string>
+    <string name="login_step_error_encryption_logIn">Les teves claus de xifrat semblen estar corrompudes o no existir, si us plau, torna a intentar-ho o restableix la teva contrasenya (això esborrarà totes les teves dades anteriors)</string>
     <string name="form_invalid_email_description">La vostra adreça de correu electrònic no és vàlida.</string>
     <string name="form_rules_password_match">Les contrasenyes coincideixen</string>
     <string name="info_email_confirm">Si us plau, verifiqueu la vostra adreça de correu electrònic!</string>
@@ -874,7 +874,7 @@
     <string name="licence_loadingStep_invalid">Llicència no vàlida</string>
     <string name="error_unrestricted_background_access_message_android">Si us plau, permet **l\'ús il·limitat en segon pla** i desactiva **les optimitzacions de bateria del sistema** per permetre que Paralino s\'executi en segon pla sense interrupcions.</string>
     <string name="notifications_socketService_message_connecting">Connectant...</string>
-    <string name="notifications_socketService_message_disconnected">El servei de notificacions està temporalment desconnectat.</string>
+    <string name="notifications_socketService_message_disconnected">El servei de notificacions està temporalment desconectat</string>
     <string name="notifications_channel_socket_service">Servei de notificacions push</string>
     <string name="setting_mapsProvider_googleMaps_title">Google Maps</string>
     <string name="setting_mapsProvider_googleMaps_info">SDK de Google Maps per defecte amb mapes de carrer i satèl·lit.</string>
@@ -926,7 +926,7 @@
     <string name="licence_code_hint">Codi de llicència</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Consum de bateria: baix</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Les notificacions es refresquen periòdicament cada pocs hores.</string>
-    <string name="setting_notificationSocket_registration_error_message">La connexió es podria confirmar, per favor, torna a provar-ho!</string>
+    <string name="setting_notificationSocket_registration_error_message">La connexió no es va poder confirmar, se si us plau, torneu-ho a intentar!</string>
     <string name="licence_screen_info">Si teniu un codi de llicència, entreu-lo aquí per connectar un pla premium amb el vostre compte de Paralino.</string>
     <string name="setting_notificationSocket_connectionType_title">Tip de connexió</string>
     <string name="setting_notificationSocket_connectionType_info">Trieu el tipus de connexió preferit en funció de les seves preferències per a una millor durada de la bateria o un lliurament més ràpid de les notificacions.</string>
@@ -938,7 +938,7 @@
     <string name="setting_notificationSocket_connectionType_realtime_info">Connexió constant en temps real amb entrega de notificacions gairebé instantània.</string>
     <string name="setting_notificationSocket_connectionType_realtime_tag">Ús del bateria: Potencialment alt</string>
     <string name="setting_notificationSocket_connectionType_periodic1_title">Cada 5-15 minuts</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Les notificacions s\'actualitzen periòdicament unes quantes vegades per hora.</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Les notificacions es refresquen periòdicament poques vegades per hora.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Ús de la bateria: Mitjà</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Cada pocs hores</string>
 </resources>
