@@ -16,12 +16,7 @@ class AppRatingManager(
 ) : BaseRepository() {
 
     fun tryShowingAppRating(source: AppRatingSource) {
-        val  canRetryForTime = appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(
-            when (deviceApiProvider.deviceType) {
-                DeviceType.Android -> 30.days
-                    DeviceType.iOS -> 10.days
-            }
-        )
+        val  canRetryForTime = appPrefs.lastShowedAppRatingDialogUTC.isOlderThan(5.days)
         val shouldRetryOverride = shouldRetryAppRating(source)
 
         if (canRetryForTime || shouldRetryOverride) {
