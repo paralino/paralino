@@ -108,6 +108,14 @@ internal fun MapHomeScreenEventHandler(
                     )
                 }
 
+                is MapHomeScreenEvent.OpenMemberInviteScreen -> {
+                    appState.navController.navigate(
+                        AppScreen.MainHome.GroupMemberAdd.route(
+                            groupId = event.groupId
+                        )
+                    )
+                }
+
                 MapHomeScreenEvent.OpenSettings -> {
                     appState.navController.navigate(AppScreen.Settings.routeSignature)
                 }

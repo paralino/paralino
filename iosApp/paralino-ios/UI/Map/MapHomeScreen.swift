@@ -47,6 +47,9 @@ struct MapHomeScreen: View {
                     onHistorySettingsClick: { groupId in
                         path.append(.home(.locationHistorySettings(groupId: GroupOrSpaceIdHelper.shared.unwrap(id: groupId)!)))
                     },
+                    onMemberInviteClick: { groupId in
+                        path.append(.home(.memberInvite(groupId: groupId, code: nil, isOnboarding: false)))
+                    },
                     onSettingsClick: {
                         path.append(.settings(.settings))
                     },

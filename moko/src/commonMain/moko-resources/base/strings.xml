@@ -568,7 +568,7 @@
     <string name="invite_create_alternative_description">Alternative Paralino.IDs allow you to diversify your identity and share different IDs with different people. You can have **%s** Paralino.IDs with your plan.</string>
     <string name="invite_connect_code_placeholder">User\'s Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
-    <string name="invite_connect_button_addToGroup">ADD TO GROUP</string>
+    <string name="invite_connect_button_addToGroup">Add member</string>
     <string name="invite_connect_button_pickGroup">Choose a group</string>
     <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_alert_wrongCode">Please check your code or try another one</string>

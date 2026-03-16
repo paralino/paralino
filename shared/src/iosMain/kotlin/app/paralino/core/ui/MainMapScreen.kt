@@ -54,6 +54,7 @@ object MainMapScreen {
         onGroupDetailsClick: (String) -> Unit,
         onSharingStartClick: (String) -> Unit,
         onHistorySettingsClick: (String) -> Unit,
+        onMemberInviteClick: (String) -> Unit,
         onSettingsClick: () -> Unit,
         onPlaceClick: (MapHomeScreenEvent.OpenPlaceDetails) -> Unit,
         onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
@@ -110,6 +111,7 @@ object MainMapScreen {
                             is MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick(event.showPersonalSpace)
                             is MapHomeScreenEvent.OpenPlaceDetails -> onPlaceClick(event)
                             is MapHomeScreenEvent.OpenPlaces -> onOpenPlacesScreen(event.groupId)
+                            is MapHomeScreenEvent.OpenMemberInviteScreen -> onMemberInviteClick(event.groupId)
                             MapHomeScreenEvent.OpenSettings -> onSettingsClick()
                             is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
                             is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)

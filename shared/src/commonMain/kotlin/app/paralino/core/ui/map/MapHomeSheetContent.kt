@@ -2,7 +2,6 @@ package app.paralino.core.ui.map
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -272,6 +271,9 @@ fun MapHomeSheetContent(
                         members = members,
                         onEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
+                        },
+                        onAddNewMember = {
+                            onEvent(MapHomeScreenUiEvent.OnOpenMemberInviteScreen)
                         }
                     )
                 }
@@ -284,7 +286,8 @@ fun MapHomeSheetContent(
 
 private fun LazyListScope.membersList(
     members: List<GroupMemberItemState>,
-    onEvent: (GroupMemberItemEvent) -> Unit
+    onEvent: (GroupMemberItemEvent) -> Unit,
+    onAddNewMember: () -> Unit
 ) {
     this.itemsIndexed(
         items = members,
@@ -297,6 +300,14 @@ private fun LazyListScope.membersList(
             collapseOnActionClick = true,
             forceExpandAction = itemState.locations.size > 1,
             onEvent = onEvent
+        )
+    }
+
+    this.item(key = "add_new_member") {
+        AddNewActionButton(
+            modifier = Modifier,
+            text = stringResource(MR.strings.invite_connect_screen_title),
+            action = onAddNewMember
         )
     }
 }
@@ -338,29 +349,42 @@ private fun LazyListScope.placesList(
             )
         }
         this.item(key = "places_list") {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                FilledButton(
-                    modifier = Modifier.padding(top = 20.dp),
-                    style = ButtonStyle.SMALL,
-                    icon = null,
-                    elevation = 0.dp,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
-                    onClick = onOpenPlaces
-                ) {
-                    Text(stringResource(MR.strings.button_showAll))
-                    Icon(
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .width(20.dp),
-                        painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                        contentDescription = null
-                    )
-                }
-            }
+            AddNewActionButton(
+                modifier = Modifier,
+                text = stringResource(MR.strings.button_showAll),
+                action = onOpenPlaces
+            )
+        }
+    }
+}
+
+@Composable
+private fun AddNewActionButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    action: () -> Unit
+) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        FilledButton(
+            modifier = Modifier.padding(top = 20.dp),
+            style = ButtonStyle.SMALL,
+            icon = null,
+            elevation = 0.dp,
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.background),
+            onClick = action
+        ) {
+            Text(text)
+            Icon(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .width(20.dp),
+                painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                contentDescription = null
+            )
         }
     }
 }

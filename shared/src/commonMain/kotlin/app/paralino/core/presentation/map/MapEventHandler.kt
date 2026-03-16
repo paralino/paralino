@@ -142,6 +142,12 @@ class MapEventHandler(
                 }
             }
 
+            MapHomeScreenUiEvent.OnOpenMemberInviteScreen -> {
+                uiState.value.asReady()?.let {
+                    eventChannel.trySend(MapHomeScreenEvent.OpenMemberInviteScreen(groupId = it.groupOrSpaceId.id))
+                }
+            }
+
             is MapHomeScreenUiEvent.OnPlaceClick -> {
                 handlePlaceClick(event)
             }
