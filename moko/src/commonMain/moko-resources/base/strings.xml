@@ -201,7 +201,7 @@
     <string name="setting_description_errorReporting">Share anonymous error logs, in case of app crash or other issues.\nLogs do not contain any personal data, and we use self-hosted infrastructure so nothing ever leaves Paralino!</string>
     <string name="setting_location_title">Location Settings</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message" version="v2">Enabling this setting requires a premium plan.\n\nUpgrade your plan to unlock all options.</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Enabling this setting requires a premium plan.\n\nUpgrade your plan to unlock all options.</string>
     <string name="setting_location_highPerformance_section_title">When in Use</string>
     <string name="setting_location_highPerformance_section_info">**High performance** mode is active only if you, or one of your group members, are looking at the map while location sharing is on.</string>
     <string name="setting_location_highPerformance_duration_title">Allowed</string>
@@ -319,7 +319,7 @@
     <string name="plans_banner_inline_personal_space">Track more devices and get more location history!</string>
     <string name="plans_banner_inline_places">Add more places and enjoy unlimited alerts!</string>
     <string name="plans_banner_inline_groups_picker">Create more groups and connect with more dear people!</string>
-    <string name="plans_management_screen_title" version="v2">Membership</string>
+    <string name="plans_management_screen_title">Membership</string>
     <string name="plans_management_info_not_subscribed">You are currently not subscribed to a Premium plan!</string>
     <string name="plans_management_info_wrong_platform_title">You can not manage this subscription on this device!</string>
     <string name="plans_management_info_wrong_platform_message">Use the device you originally used for purchasing.</string>
@@ -333,7 +333,7 @@
     <string name="plans_management_expiresAt_label">Valid until: %1$s</string>
     <string name="plans_management_provider_label">Provider: %1$s</string>
     <string name="plans_management_activePlan_tag">Active plan</string>
-    <string name="plans_management_action_manage">Manage or cancel</string>
+    <string name="plans_management_action_manage_v2">Manage or cancel</string>
     <string name="plans_management_action_change">Change plan</string>
     <string name="plans_management_action_explore">Plans</string>
     <string name="plans_management_providerInfo_google">Subscription is provided by **Google Play Store**.</string>
@@ -454,7 +454,7 @@
     <string name="paywall_faq_answer_refund_google">You can contact our support team by emailing **contact@paralino.com**.</string>
     <string name="paywall_faq_answer_payment_security_apple">Yes, your payment is processed directly by the Apple App Store. We do not process or store any payment information.</string>
     <string name="paywall_faq_answer_payment_security_google">Yes, your payment is processed directly by the Google Play Store. We do not process or store any payment information.</string>
-    <string name="paywall_faq_answer_free_trial" version="v2">
+    <string name="paywall_faq_answer_free_trial_v2">
         Yes, we offer a free trial period on some plans and billing cycles, available for the first time you start your subscription. You can then enjoy all the premium features at no cost for the duration of the trial.\n\n
         After the trial ends, subscription will be automatically renewed at the selected plan price.
     </string>
@@ -568,7 +568,7 @@
     <string name="invite_create_alternative_description">Alternative Paralino.IDs allow you to diversify your identity and share different IDs with different people. You can have **%s** Paralino.IDs with your plan.</string>
     <string name="invite_connect_code_placeholder">User\'s Paralino.ID</string>
     <string name="invite_connect_disclaimer_user">You are about to add **%1$s** to **%2$s** group.\nAfter that you can start securely sharing your location.</string>
-    <string name="invite_connect_button_addToGroup">Add member</string>
+    <string name="invite_connect_button_addToGroup_v2">Add member</string>
     <string name="invite_connect_button_pickGroup">Choose a group</string>
     <string name="invite_connect_alert_pickGroup">Please choose a group</string>
     <string name="invite_connect_alert_wrongCode">Please check your code or try another one</string>
