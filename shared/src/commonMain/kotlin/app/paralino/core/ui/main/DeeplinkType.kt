@@ -140,7 +140,6 @@ sealed class DeeplinkType() {
         private fun String.matches(deeplinkRoute: String): Boolean {
             val currentComponents = this.split("/").filter { it.isNotBlank() }
             val otherComponents = deeplinkRoute.split("/").filter { it.isNotBlank() }
-            if (currentComponents.size != otherComponents.size) return false
             if (currentComponents.firstOrNull() != otherComponents.firstOrNull()) return false
 
             return currentComponents.zip(otherComponents).all {
