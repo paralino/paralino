@@ -181,7 +181,7 @@
     <string name="setting_description_errorReporting">Ossza meg a névtelen hibanaplókat, ha az alkalmazás összeomlik vagy más problémák merülnek fel.  \nA naplók nem tartalmaznak személyes adatokat, és saját üzemeltetésű infrastruktúrát használunk, így semmi sem hagyja el a Paralino-t!</string>
     <string name="setting_location_title">Helybeállítások</string>
     <string name="setting_location_premium_banner_title">Prémium</string>
-    <string name="setting_location_premium_banner_alert_message">Ennek a beállításnak az engedélyezéséhez prémium terv szükséges.  \n\nFrissítse a tervét a legjobb teljesítmény érdekében.</string>
+    <string name="setting_location_premium_banner_alert_message">Ennek a beállításnak az engedélyezéséhez prémium terv szükséges. \n\nFrissítse a tervét a legjobb teljesítmény érdekében.</string>
     <string name="setting_location_highPerformance_section_title">Használat közben</string>
     <string name="setting_location_highPerformance_section_info">A **magas teljesítmény** mód csak akkor aktív, ha Ön vagy a csoportjának egyik tagja a térképet nézi, miközben a helymegosztás be van kapcsolva.</string>
     <string name="setting_location_highPerformance_duration_title">Engedélyezett</string>

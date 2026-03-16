@@ -238,7 +238,7 @@
     <string name="setting_description_errorReporting">Dela anonyma felrapporter, i händelse av appkrasch eller andra problem.  \nLoggarna innehåller inga personuppgifter, och vi använder egenhostad infrastruktur så inget lämnar någonsin Paralino!</string>
     <string name="setting_location_title">Platsinställningar</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Att aktivera denna inställning kräver en premiumplan.  \n\nUppgradera din plan för att få bästa prestanda.</string>
+    <string name="setting_location_premium_banner_alert_message">Att aktivera denna inställning kräver en premiumplan. \n\nUppgradera din plan för att få bästa prestanda.</string>
     <string name="setting_location_highPerformance_section_title">När den används</string>
     <string name="setting_location_highPerformance_section_info">**Hög prestanda**-läge är aktivt endast om du, eller en av dina gruppmedlemmar, tittar på kartan medan platsdelning är på.</string>
     <string name="setting_location_highPerformance_duration_title">Tillåten</string>

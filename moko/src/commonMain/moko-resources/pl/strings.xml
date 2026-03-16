@@ -185,7 +185,7 @@
     <string name="setting_description_errorReporting">Udostępnij anonimowe logi błędów w przypadku awarii aplikacji lub innych problemów.  \nLogi nie zawierają żadnych danych osobowych, a my korzystamy z infrastruktury hostowanej na własnych serwerach, więc nic nigdy nie opuszcza Paralino!</string>
     <string name="setting_location_title">Ustawienia lokalizacji</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Włączenie tej opcji wymaga planu premium.  \n\nZaktualizuj swój plan, aby uzyskać najlepszą wydajność.</string>
+    <string name="setting_location_premium_banner_alert_message">Włączenie tej opcji wymaga planu premium. \n\nZaktualizuj swój plan, aby uzyskać najlepszą wydajność.</string>
     <string name="setting_location_highPerformance_section_title">Gdy jest używane</string>
     <string name="setting_location_highPerformance_section_info">Tryb **wysokiej wydajności** jest aktywny tylko wtedy, gdy Ty lub jeden z członków Twojej grupy przeglądacie mapę, gdy udostępnianie lokalizacji jest włączone.</string>
     <string name="setting_location_highPerformance_duration_title">Dozwolone</string>

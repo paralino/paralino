@@ -189,7 +189,7 @@
     <string name="setting_location_title">Konum Ayarları</string>
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_highPerformance_level_4">Sınırsız</string>
-    <string name="setting_location_premium_banner_alert_message">Bu ayarın etkinleştirilmesi, bir premium plan gerektirir.  \n\nEn iyi performansı elde etmek için planınızı yükseltin.</string>
+    <string name="setting_location_premium_banner_alert_message">Bu ayarın etkinleştirilmesi, bir premium plan gerektirir. \n\nEn iyi performansı elde etmek için planınızı yükseltin.</string>
     <string name="setting_location_highPerformance_section_title">Kullanımda</string>
     <string name="setting_location_highPerformance_section_info">**Yüksek performans** modu, siz veya grup üyeleriniz haritaya bakarken konum paylaşımı açık olduğunda aktiftir.</string>
     <string name="setting_location_highPerformance_duration_title">İzin Verildi</string>

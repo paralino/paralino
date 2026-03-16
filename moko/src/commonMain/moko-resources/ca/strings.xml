@@ -184,7 +184,7 @@
     <string name="setting_description_errorReporting">Comparteix registres d\'errors anònims, en cas de fallada de l\'aplicació o altres problemes.  \nEls registres no contenen dades personals, i utilitzem infraestructura auto-hostejada, així que res no surt mai de Paralino!</string>
     <string name="setting_location_title">Configuració de la ubicació</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Activar aquesta configuració requereix un pla premium.  \n\nActualitzeu el vostre pla per obtenir el millor rendiment.</string>
+    <string name="setting_location_premium_banner_alert_message">Activar aquesta configuració requereix un pla premium. \n\nActualitzeu el vostre pla per obtenir el millor rendiment.</string>
     <string name="setting_location_highPerformance_section_title">Quan s\'utilitza</string>
     <string name="setting_location_highPerformance_section_info">El mode de **molt alt rendiment** està actiu només si vostè, o un dels membres del seu grup, estan mirant el mapa mentre el compartiment de localització està activat.</string>
     <string name="setting_location_highPerformance_duration_title">Permès</string>

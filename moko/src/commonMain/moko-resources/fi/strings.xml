@@ -245,7 +245,7 @@
     <string name="setting_description_errorReporting">Jaa anonyymit virhelokit, jos sovellus kaatuu tai ilmenee muita ongelmia.  \nLokit eivät sisällä mitään henkilötietoja, ja käytämme itse isännöityä infrastruktuuria, joten mikään ei koskaan poistu Paralino:sta!</string>
     <string name="setting_location_title">Sijaintiasetukset</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Tämän asetuksen käyttöönotto vaatii premium-suunnitelman.  \n\nPäivitä suunnitelmasi saadaksesi parhaan suorituskyvyn.</string>
+    <string name="setting_location_premium_banner_alert_message">Tämän asetuksen käyttöönotto vaatii premium-suunnitelman. \n\nPäivitä suunnitelmasi saadaksesi parhaan suorituskyvyn.</string>
     <string name="setting_location_highPerformance_section_title">Kun käytössä</string>
     <string name="setting_location_highPerformance_section_info">**Korkean suorituskyvyn** tila on aktiivinen vain, jos sinä tai joku ryhmäsi jäsenistä katsoo karttaa sijaintijako päällä.</string>
     <string name="setting_location_highPerformance_duration_title">Sallittu</string>

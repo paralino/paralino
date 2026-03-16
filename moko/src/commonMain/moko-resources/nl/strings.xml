@@ -163,7 +163,7 @@
     <string name="setting_description_errorReporting">Deel anonieme foutlogs, in het geval van een app-crash of andere problemen.\nLogs bevatten geen persoonlijke gegevens, en we gebruiken zelf-gehoste infrastructuur zodat er niets ooit Paralino verlaat!</string>
     <string name="setting_location_title">Locatie-instellingen</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Het inschakelen van deze instelling vereist een premium plan.  \n\nUpgrade uw plan om de beste prestaties te krijgen.</string>
+    <string name="setting_location_premium_banner_alert_message">Het inschakelen van deze instelling vereist een premium plan. \n\nUpgrade uw plan om de beste prestaties te krijgen.</string>
     <string name="setting_location_highPerformance_section_title">Wanneer in gebruik</string>
     <string name="setting_location_highPerformance_section_info">**Hoge prestaties** modus is alleen actief als u, of een van uw groepsleden, naar de kaart kijkt terwijl locatie delen is ingeschakeld.</string>
     <string name="setting_location_highPerformance_duration_title">Toegestaan</string>

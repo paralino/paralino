@@ -156,7 +156,7 @@
     <string name="setting_description_errorReporting">Condividi log di errore anonimi, in caso di crash dell\'app o altri problemi.  \nI log non contengono dati personali e utilizziamo un\'infrastruttura auto-ospitata, quindi nulla lascia mai Paralino!</string>
     <string name="setting_location_title">Impostazioni di posizione</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">L\'attivazione di questa impostazione richiede un piano premium.  \n\nAggiorna il tuo piano per ottenere le migliori prestazioni.</string>
+    <string name="setting_location_premium_banner_alert_message">L\'attivazione di questa impostazione richiede un piano premium. \n\nAggiorna il tuo piano per ottenere le migliori prestazioni.</string>
     <string name="setting_location_highPerformance_section_title">Quando in uso</string>
     <string name="setting_location_highPerformance_section_info">La modalità **alta prestazione** è attiva solo se tu, o uno dei membri del tuo gruppo, state guardando la mappa mentre la condivisione della posizione è attivata.</string>
     <string name="setting_location_highPerformance_duration_title">Consentito</string>

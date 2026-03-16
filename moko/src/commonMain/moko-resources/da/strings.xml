@@ -157,7 +157,7 @@
     <string name="setting_description_errorReporting">Del anonyme fejllogs i tilfælde af app-nedbrud eller andre problemer. \nLogfilerne indeholder ikke personlige data, og vi bruger selvhostet infrastruktur, så intet forlader nogensinde Paralino!</string>
     <string name="setting_location_title">Placeringindstillinger</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">At aktivere denne indstilling kræver en premium plan.  \n\nOpgrader din plan for at få den bedste ydeevne.</string>
+    <string name="setting_location_premium_banner_alert_message">At aktivere denne indstilling kræver en premium plan. \n\nOpgrader din plan for at få den bedste ydeevne.</string>
     <string name="setting_location_highPerformance_section_title">Når i brug</string>
     <string name="setting_location_highPerformance_section_info">**Høj ydeevne** tilstand er aktiv kun hvis du, eller en af dine gruppe medlemmer, ser på kortet mens deling af placering er tændt.</string>
     <string name="setting_location_highPerformance_duration_title">Tilladt</string>

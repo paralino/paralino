@@ -244,7 +244,7 @@
     <string name="setting_description_errorReporting">Delite anonimne dnevnike napak, v primeru zrušitve aplikacije ali drugih težav.  \nDnevniki ne vsebujejo osebnih podatkov, in uporabljamo lastno infrastrukturo, tako da nič nikoli ne zapusti Paralino!</string>
     <string name="setting_location_title">Nastavitve lokacije</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Omogočanje te nastavitve zahteva premium načrt.  \n\nNadgradite svoj načrt, da dosežete najboljšo zmogljivost.</string>
+    <string name="setting_location_premium_banner_alert_message">Omogočanje te nastavitve zahteva premium načrt. \n\nNadgradite svoj načrt, da dosežete najboljšo zmogljivost.</string>
     <string name="setting_location_highPerformance_section_title">Ko je v uporabi</string>
     <string name="setting_location_highPerformance_section_info">**Način visoke zmogljivosti** je aktiven le, če vi ali eden od članov vaše skupine gledate na zemljevid, medtem ko je deljenje lokacije vklopljeno.</string>
     <string name="setting_location_highPerformance_duration_title">Dovoljeno</string>

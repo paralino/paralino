@@ -180,7 +180,7 @@
     <string name="setting_description_errorReporting">Поделиться анонимными журналами ошибок в случае сбоя приложения или других проблем.  \nЖурналы не содержат никаких персональных данных, и мы используем собственную инфраструктуру, поэтому ничего не покидает Paralino!</string>
     <string name="setting_location_title">Настройки местоположения</string>
     <string name="setting_location_premium_banner_title">Премиум</string>
-    <string name="setting_location_premium_banner_alert_message">Включение этой настройки требует премиум-плана.  \n\nОбновите свой план, чтобы получить наилучшие показатели производительности.</string>
+    <string name="setting_location_premium_banner_alert_message">Включение этой настройки требует премиум-плана. \n\nОбновите свой план, чтобы получить наилучшие показатели производительности.</string>
     <string name="setting_location_highPerformance_section_title">При использовании</string>
     <string name="setting_location_highPerformance_section_info">Режим **высокой производительности** активен только если вы или один из членов вашей группы смотрите на карту, пока включен обмен местоположением.</string>
     <string name="setting_location_highPerformance_duration_title">Разрешено</string>

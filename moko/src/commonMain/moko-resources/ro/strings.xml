@@ -764,7 +764,7 @@
     <string name="setting_description_errorReporting">Partajați jurnalele de erori anonime, în caz de blocare a aplicației sau alte probleme.  \nJurnalele nu conțin date personale, iar noi folosim o infrastructură auto-găzduită, astfel încât nimic nu părăsește niciodată Paralino!</string>
     <string name="setting_location_title">Setări de locație</string>
     <string name="setting_location_premium_banner_title">Premium</string>
-    <string name="setting_location_premium_banner_alert_message">Activarea acestei setări necesită un plan premium.  \n\nÎmbunătățiți-vă planul pentru a obține cea mai bună performanță.</string>
+    <string name="setting_location_premium_banner_alert_message">Activarea acestei setări necesită un plan premium. \n\nÎmbunătățiți-vă planul pentru a obține cea mai bună performanță.</string>
     <string name="setting_location_highPerformance_section_title">Când este utilizat</string>
     <string name="setting_location_highPerformance_section_info">Modul **performanță ridicată** este activ doar dacă dumneavoastră sau unul dintre membrii grupului dumneavoastră vizionați harta în timp ce partajarea locației este activată.</string>
     <string name="setting_location_highPerformance_duration_title">Permis</string>

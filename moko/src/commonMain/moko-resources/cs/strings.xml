@@ -187,7 +187,7 @@
     <string name="setting_description_errorReporting">Sdílejte anonymní protokoly o chybách v případě pádu aplikace nebo jiných problémů.  \nProtokoly neobsahují žádné osobní údaje a používáme vlastní infrastrukturu, takže nic nikdy neopustí Paralino!</string>
     <string name="setting_location_title">Nastavení polohy</string>
     <string name="setting_location_premium_banner_title">Prémiový</string>
-    <string name="setting_location_premium_banner_alert_message">Povolení tohoto nastavení vyžaduje prémiový plán.  \n\nUpgradujte svůj plán, abyste dosáhli nejlepšího výkonu.</string>
+    <string name="setting_location_premium_banner_alert_message">Povolení tohoto nastavení vyžaduje prémiový plán. \n\nUpgradujte svůj plán, abyste dosáhli nejlepšího výkonu.</string>
     <string name="setting_location_highPerformance_section_title">Když je používáno</string>
     <string name="setting_location_highPerformance_section_info">**Režim vysokého výkonu** je aktivní pouze tehdy, pokud se vy nebo jeden z členů vaší skupiny díváte na mapu, zatímco je sdílení polohy zapnuto.</string>
     <string name="setting_location_highPerformance_duration_title">Povolené</string>
