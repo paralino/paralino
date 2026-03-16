@@ -31,7 +31,7 @@
     <string name="button_open_settings">Open settings</string>
     <string name="alert_title_confirm">Please confirm</string>
     <string name="alert_sessionExpired_title">Session expired</string>
-    <string name="alert_sessionExpired_message">Your session expired, please login again.</string>
+    <string name="alert_sessionExpired_message">Your session expired, please log in again.</string>
     <string name="alert_comingSoon_title">Coming soon 🤞</string>
     <string name="alert_comingSoon_message">This feature is already in development and is coming soon.</string>
     <string name="error_unstable_connection">Your **internet connection** is very unstable and some requests are failing.\nPlease check your settings.</string>
@@ -41,8 +41,8 @@
     <string name="error_permissionDenied_remote">Request not allowed!</string>
     <string name="error_something_wrong">Something went wrong!</string>
     <string name="error_something_wrong_http">Something went wrong! [%d]</string>
-    <string name="error_generic_snacbar">Ups, please try again.</string>
-    <string name="error_still_loading_snackbar">Refreshing, **please try again in few seconds.**</string>
+    <string name="error_generic_snacbar">Oops, please try again.</string>
+    <string name="error_still_loading_snackbar">Refreshing, **please try again in a few seconds.**</string>
     <string name="error_location_permission_missing_sheet_message">Location permission is **required** in order to successfully track and share your location with others.</string>
     <string name="error_location_precise_permission_missing_sheet_message">Please grant **precise location permission** in order to successfully track and share your location with others.</string>
     <string name="error_location_background_permission_missing_sheet_message">Please allow **all the time** location access in order to **reliably and always** track and share your location with others.</string>
@@ -51,7 +51,7 @@
     <string name="error_notification_permission_missing_sheet_message">Please enable **notifications** in order to receive **important** alerts for your group events, places, and account.</string>
     <string name="error_location_background_permission_missing_notification_message">Location sharing can\'t start because you are missing location permissions!\nPlease open the app to restart location sharing!</string>
     <string name="error_location_sharing_start_notification_message">Location sharing can\'t start!\nPlease open the app again!</string>
-    <string name="error_device_registration_notification_message">Your device can not be registered!\nPlease restart location sharing!</string>
+    <string name="error_device_registration_notification_message">Your device cannot be registered!\nPlease restart location sharing!</string>
     <string name="error_unverified_member_notification_message">Your membership could not be verified. Please try refreshing data or contact group admin.</string>
     <string name="error_crypto_key_missing">Encryption data is incomplete (%s), please try refreshing.</string>
     <string name="error_crypto_key_missing_user">Your cryptographic keys are not properly configured.</string>
@@ -69,7 +69,7 @@
     <string name="notifications_socketService_status_error">Push service 🔴</string>
     <string name="notifications_socketService_message_errors">Push notification service is on hold:\n%s</string>
     <string name="notifications_socketService_message_connecting">Connecting...</string>
-    <string name="notifications_socketService_message_disconnected">Notification service temporary disconnected</string>
+    <string name="notifications_socketService_message_disconnected">Notification service temporarily disconnected</string>
     <string name="notifications_channel_active_location">Active location sharing</string>
     <string name="notifications_channel_place_alert">Place alerts</string>
     <string name="notifications_channel_group_activity">Group activity</string>
@@ -261,8 +261,8 @@
     <string name="setting_description_locationBoost_enabled">Maximum location performance will reset at %s. **Uses more battery!!!**</string>
     <string name="setting_description_locationBoost_disabled">Use maximum performance for location for up to 2h. **Will use more battery!!!**</string>
     <string name="setting_title_placeActivityThrottle">Throttle place activity</string>
-    <string name="setting_description_placeActivityThrottle_enabled">Your device will create place activity notification if you spend more time in or out of certain place.</string>
-    <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in short time (for example: if you shortly drive by a certain place).</string>
+    <string name="setting_description_placeActivityThrottle_enabled">Your device will create a place activity notification if you spend more time in or out of a certain place.</string>
+    <string name="setting_description_placeActivityThrottle_disabled">Your device will react to place changes faster and might create multiple place activity notifications in a short time (for example: if you briefly drive by a certain place).</string>
     <string name="setting_appSettings_title">App settings</string>
     <string name="setting_measurementSystem_title">Measurement system</string>
     <string name="setting_measurementSystem_default_title">Device default</string>
@@ -459,7 +459,7 @@
         After the trial ends, subscription will be automatically renewed at the selected plan price.
     </string>
     <string name="paywall_faq_answer_contact_support">You can contact our support team by emailing **contact@paralino.com**.</string>
-    <string name="plans_gift_screen_title">Lets celebrate!</string>
+    <string name="plans_gift_screen_title">Let\'s celebrate!</string>
     <string name="plans_gift_screen_box_title">Early Adopter Gift</string>
     <string name="plans_gift_screen_box_message">You get a special lifetime **Starter** plan, completely for FREE!</string>
     <string name="plans_gift_screen_benefits_title">⭐️ What you get ⭐️</string>
@@ -507,7 +507,7 @@
     <string name="login_step_error_logIn">Error while logging you in</string>
     <string name="login_step_error_recoverGuest">Unable to recover guest account</string>
     <string name="login_step_error_blockedAccount">**Your account is currently blocked.**\n\nPlease try again later or contact support to resolve the issue.</string>
-    <string name="login_step_error_encryption_logIn">Your encryption keys seems to be corrupted or non existent, please try again or reset your password (This will delete all your previous data)</string>
+    <string name="login_step_error_encryption_logIn">Your encryption keys seem to be corrupted or non-existent, please try again or reset your password (this will delete all your previous data)</string>
     <string name="form_invalid_email_description">Your e-mail address is not valid.</string>
     <string name="form_invalid_credentials_description">Please check your credentials and try again.</string>
     <string name="form_invalid_email_conflict_description">Please use another email.</string>
@@ -594,8 +594,8 @@
     <string name="group_member_title">Member</string>
     <string name="group_member_device_title">Device</string>
     <string name="group_members_block_user">Block user</string>
-    <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notification in any shared groups.</string>
-    <string name="group_members_remove_alert_title">Are you sure you want remove %s from group?</string>
+    <string name="group_members_block_user_alert_message">If you proceed, user will not be able to add you to a group and you will not receive users\' location notifications in any shared groups.</string>
+    <string name="group_members_remove_alert_title">Are you sure you want to remove %s from group?</string>
     <string name="group_members_device_other_remove_alert_title">Are you sure you want to remove the device from %s from this group?\n\nThis will not remove the user from a group.</string>
     <string name="group_members_device_own_remove_alert_title">Are you sure you want to remove your device from this group?\n\nThis will not remove you from a group.</string>
     <string name="group_members_device_confirm_remove_alert_title">Removing a device will also delete all related location history and will stop location sharing!\n\nThis action is irreversible.</string>
@@ -605,9 +605,9 @@
     <string name="group_details_menu_delete">Delete group</string>
     <string name="group_details_menu_leave">Leave group</string>
     <string name="group_details_menu_block">Block group</string>
-    <string name="group_details_delete_group_alert_title">Are you sure you want delete this group?\nThis is irreversible and will delete all group data and remove all connection with members!</string>
+    <string name="group_details_delete_group_alert_title">Are you sure you want to delete this group?\nThis is irreversible and will delete all group data and remove all connection with members!</string>
     <string name="group_details_delete_group_alert_button">Delete</string>
-    <string name="group_details_leave_group_alert_title">Are you sure you want leave this group?\nThis is irreversible and will delete all data you shared and remove all connection with members!</string>
+    <string name="group_details_leave_group_alert_title">Are you sure you want to leave this group?\nThis is irreversible and will delete all data you shared and remove all connection with members!</string>
     <string name="group_details_leave_group_alert_button">Leave</string>
     <string name="group_details_remove_member_alert_button">Remove...</string>
     <string name="group_details_block_group_alert_title">Are you sure you want to block this group?\nThis is irreversible, will delete all data you shared to group and you will not be able to rejoin the group!</string>
@@ -700,7 +700,7 @@
     <string name="place_create_suggestion_bakery">Sweet Corner</string>
     <string name="place_create_suggestion_coffee">Best Coffee</string>
     <string name="place_list_menu_delete">Delete place</string>
-    <string name="place_list_delete_place_alert_title">Are you sure you want delete this place?</string>
+    <string name="place_list_delete_place_alert_title">Are you sure you want to delete this place?</string>
     <string name="place_detail_setting_button_notify_enter">Enter</string>
     <string name="place_detail_setting_button_notify_exit">Exit</string>
     <string name="place_detail_notification_settings_title">Place alerts</string>
@@ -766,7 +766,7 @@
     <string name="placeholder_unit_mile">%s mi</string>
     <string name="placeholder_unit_feet">%s ft</string>
     <string name="placeholder_unit_speed_kmph">%s km/h</string>
-    <string name="placeholder_unit_speed_mph">%s m/h</string>
+    <string name="placeholder_unit_speed_mph">%s mph</string>
     <string name="welcome_screen_info_1">SECURE - PRIVATE - ENCRYPTED</string>
     <string name="welcome_screen_button_join">Join</string>
     <string name="welcome_account_edit_profile">Complete your profile</string>
@@ -780,9 +780,9 @@
     <string name="recover_account_step_password_correct">Key can be recovered 🙌</string>
     <string name="recover_account_step_password_wrong">Password does not match</string>
     <string name="recover_account_header_recover_possible">Your password does not match your cryptographic keys</string>
-    <string name="recover_account_caption_recover_possible">To recover your account, try recovering the key with old password.</string>
+    <string name="recover_account_caption_recover_possible">To recover your account, try recovering the key with your old password.</string>
     <string name="recover_account_header_recover_not_possible">Your account does not have matching keys! Please reset your account.</string>
-    <string name="recover_account_caption_recover_not_possible">If you can not recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
+    <string name="recover_account_caption_recover_not_possible">If you cannot recover the key, you can reset your account. **Resetting your account will delete all your data!**</string>
     <string name="recover_account_caption_reset">**Resetting your account will delete all your data!**</string>
     <string name="password_confirmation_screen_title">Password confirmation</string>
     <string name="password_confirmation_header">Your encryption keys have been changed</string>
@@ -816,7 +816,7 @@
     <string name="plan_limit_overLimit_tracking_banner_title">**Location tracking is limited!**\nYou exceeded your plan resources.</string>
     <string name="plan_limit_generic_message">Plan limit reached!</string>
     <string name="app_version_alert_title">New app update</string>
-    <string name="app_version_alert_message">New version of Paralino is available, please update for a better experience!</string>
+    <string name="app_version_alert_message">A new version of Paralino is available, please update for a better experience!</string>
     <string name="app_version_alert_title_mandatory">Please update</string>
     <string name="app_version_alert_message_mandatory">This app version is deprecated!\n\nTo continue using the app, please update to the latest version!</string>
     <string name="app_version_alert_button_update">Update</string>
@@ -920,12 +920,12 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">Depending on current battery level, notifications are refreshed periodically every 5-15 minutes</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Battery Usage: High</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Few times per hour</string>
-    <string name="setting_notificationSocket_connectionType_periodic2_info">Notifications are refreshed periodically few times per hour</string>
+    <string name="setting_notificationSocket_connectionType_periodic2_info">Notifications are refreshed periodically a few times per hour</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Battery Usage: Medium</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Every few hours</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Notifications are refreshed periodically every few hours</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Battery Usage: Low</string>
-    <string name="setting_notificationSocket_registration_error_message">Connection could be confirmed, please try again!</string>
+    <string name="setting_notificationSocket_registration_error_message">Connection could not be confirmed, please try again!</string>
     <string name="notifications_socketService_message_lastSync">Last update: %s</string>
     <string name="licence_screen_title">License key</string>
     <string name="licence_screen_info">If you have a license key, enter it here to connect a premium plan with your Paralino account.</string>
