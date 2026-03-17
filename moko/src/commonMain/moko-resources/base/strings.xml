@@ -108,7 +108,9 @@
     <string name="onboarding_step_places_info">Get notified when someone enters or leaves your predefined area.</string>
     <string name="onboarding_step_options_title">Full sharing control</string>
     <string name="onboarding_step_options_title_tag">Control</string>
-    <string name="onboarding_step_options_info">You are always in control of what you share and how you share it.</string>
+    <string name="onboarding_step_options_info">No two days are the same. Sometimes you need peace and quiet.</string>
+    <string name="onboarding_step_options_second_title">Sharing without pressure</string>
+    <string name="onboarding_step_options_second_info">You are always in control of what you share and how you share it.</string>
     <string name="onboarding_step_paralinoID_title_tag">Welcome</string>
     <string name="onboarding_step_paralinoID_title_intro">Want to be part of a group?</string>
     <string name="onboarding_step_paralinoID_title_shared">You will be notified when you are added to a group!</string>

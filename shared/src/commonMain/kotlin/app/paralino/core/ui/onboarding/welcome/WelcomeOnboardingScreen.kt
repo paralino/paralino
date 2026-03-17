@@ -128,10 +128,10 @@ enum class WelcomeOnboardingContent(
     ),
     STEP_OPTIONS_2(
         parentKey = 300,
-        titleKey = 300,
+        titleKey = 320,
         titleTag = MR.strings.onboarding_step_options_title_tag,
-        title = MR.strings.onboarding_step_options_title,
-        info = MR.strings.onboarding_step_options_info,
+        title = MR.strings.onboarding_step_options_second_title,
+        info = MR.strings.onboarding_step_options_second_info,
         buttonText = MR.strings.button_continue
     );
 
@@ -140,10 +140,7 @@ enum class WelcomeOnboardingContent(
     }
 
     fun previous(): WelcomeOnboardingContent? {
-        return when (this) {
-            STEP_OPTIONS_2 -> entries.getOrNull(index = this.ordinal - 2)
-            else -> entries.getOrNull(index = this.ordinal - 1)
-        }
+        return entries.getOrNull(index = this.ordinal - 1)
     }
 
     companion object {

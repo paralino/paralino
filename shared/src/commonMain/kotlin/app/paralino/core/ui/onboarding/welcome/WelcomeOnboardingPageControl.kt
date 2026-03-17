@@ -149,7 +149,8 @@ fun WelcomeOnboardingPageControl(
                     ).value
                 )
                 .rotate(-4f)
-                .scale(0.9f)
+                .scale(0.9f),
+            animationStarted = animationStarted
         )
 
         DurationSwitch(
@@ -307,13 +308,14 @@ private fun HighAccuracySwitch(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationStarted: Boolean) {
+private fun BatteryPerformanceSwitch(
+    modifier: Modifier = Modifier,
+    animationStarted: Boolean
+) {
     var itemState by remember { mutableStateOf(false) }
     LaunchedEffect(animationStarted) {
-        if (animationStarted) {
-            delay(700)
-            itemState = !itemState
-        }
+        delay(1000)
+        itemState = animationStarted
     }
     GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
@@ -329,8 +331,15 @@ private fun BatteryPerformanceSwitch(modifier: Modifier = Modifier, animationSta
 }
 
 @Composable
-private fun BatteryPerformanceSwitch2(modifier: Modifier = Modifier) {
-    var itemState by remember { mutableStateOf(false) }
+private fun BatteryPerformanceSwitch2(
+    modifier: Modifier = Modifier,
+    animationStarted: Boolean
+) {
+    var itemState by remember { mutableStateOf(true) }
+    LaunchedEffect(animationStarted) {
+        delay(1000)
+        itemState = !animationStarted
+    }
     GenericSettingsOptionItem(
         modifier = modifier.shadow(16.dp, RoundedCornerShape(10.dp)),
         title = stringResource(MR.strings.setting_location_balanced_level_1),
@@ -351,8 +360,6 @@ private fun SharingStopButton(modifier: Modifier = Modifier, animationStarted: B
         if (animationStarted) {
             delay(2000)
             itemState = !itemState
-//            delay(2000)
-//            itemState = !itemState
         }
     }
     if (itemState) {
