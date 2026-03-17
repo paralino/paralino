@@ -941,8 +941,8 @@
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Spotřeba baterie: střední</string>
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Spotřeba baterie: nízká</string>
     <string name="setting_notificationSocket_registration_error_message">Připojení nemohlo být potvrzeno, zkuste to prosím znovu!</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Aktivace tohoto nastavení vyžaduje prémiový plán.\n\nPřejděte na prémiový plán, abyste odemkli všechny možnosti.</string>
-    <string name="plans_management_action_manage_v2">Spravovat nebo zrušit</string>
-    <string name="paywall_faq_answer_free_trial_v2">Ano, u některých plánů a fakturačních cyklů nabízíme bezplatnou zkušební dobu, dostupnou při prvním spuštění vašeho předplatného. Během zkušební doby pak můžete využívat všechny prémiové funkce zdarma.\n\n Po skončení zkušební doby bude předplatné automaticky obnoveno za cenu vybraného plánu.</string>
-    <string name="invite_connect_button_addToGroup_v2">Přidat člena</string>
+    <string name="setting_location_premium_banner_alert_message">Aktivace tohoto nastavení vyžaduje prémiový plán.\n\nPřejděte na prémiový plán, abyste odemkli všechny možnosti.</string>
+    <string name="plans_management_action_manage">Spravovat nebo zrušit</string>
+    <string name="paywall_faq_answer_free_trial">Ano, u některých plánů a fakturačních cyklů nabízíme bezplatnou zkušební dobu, dostupnou při prvním spuštění vašeho předplatného. Během zkušební doby pak můžete využívat všechny prémiové funkce zdarma.\n\n Po skončení zkušební doby bude předplatné automaticky obnoveno za cenu vybraného plánu.</string>
+    <string name="invite_connect_button_addToGroup">Přidat člena</string>
 </resources>

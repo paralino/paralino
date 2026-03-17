@@ -941,8 +941,8 @@
     <string name="setting_notificationSocket_connectionType_periodic2_info">Les notificacions es refresquen periòdicament poques vegades per hora.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Ús de la bateria: Mitjà</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Cada pocs hores</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Habilitar aquesta configuració requereix un pla premium.\n\nActualitzeu el vostre pla per desbloquejar totes les opcions.</string>
-    <string name="plans_management_action_manage_v2">Gestionar o cancel·lar</string>
-    <string name="paywall_faq_answer_free_trial_v2">Sí, oferim un període de prova gratuït en alguns plans i cicles de facturació, disponible la primera vegada que comenceu la vostra subscripció. Podeu gaudir de totes les funcions premium sense cost durant la durada de la prova.\n\n Després que finalitzi la prova, la subscripció es renovarà automàticament al preu del pla seleccionat.</string>
-    <string name="invite_connect_button_addToGroup_v2">Afegir membre</string>
+    <string name="setting_location_premium_banner_alert_message">Habilitar aquesta configuració requereix un pla premium.\n\nActualitzeu el vostre pla per desbloquejar totes les opcions.</string>
+    <string name="plans_management_action_manage">Gestionar o cancel·lar</string>
+    <string name="paywall_faq_answer_free_trial">Sí, oferim un període de prova gratuït en alguns plans i cicles de facturació, disponible la primera vegada que comenceu la vostra subscripció. Podeu gaudir de totes les funcions premium sense cost durant la durada de la prova.\n\n Després que finalitzi la prova, la subscripció es renovarà automàticament al preu del pla seleccionat.</string>
+    <string name="invite_connect_button_addToGroup">Afegir membre</string>
 </resources>

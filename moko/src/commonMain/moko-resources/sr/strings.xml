@@ -941,8 +941,8 @@
     <string name="plans_management_providerName_google">Google Play Store</string>
     <string name="plans_management_providerName_polar">Polar.sh</string>
     <string name="licence_loadingStep_planActive">Конфликт у плану лиценце</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Омогућавање овог подешавања захтева премиум план.\n\nАжурирајте ваш план да бисте откључали све опције.</string>
-    <string name="plans_management_action_manage_v2">Управљајте или откажите</string>
-    <string name="paywall_faq_answer_free_trial_v2">Да, нудимо бесплатни пробни период за неке планове и циклусе наплате, доступан при првом покретању ваше претплате. Тада можете користити све премиум функције без накнаде током трајања пробе.\n\nНакон што пробни период заврши, претплата ће бити аутоматски обновљена по цени изабраног плана.</string>
-    <string name="invite_connect_button_addToGroup_v2">Додајте члана</string>
+    <string name="setting_location_premium_banner_alert_message">Омогућавање овог подешавања захтева премиум план.\n\nАжурирајте ваш план да бисте откључали све опције.</string>
+    <string name="plans_management_action_manage">Управљајте или откажите</string>
+    <string name="paywall_faq_answer_free_trial">Да, нудимо бесплатни пробни период за неке планове и циклусе наплате, доступан при првом покретању ваше претплате. Тада можете користити све премиум функције без накнаде током трајања пробе.\n\nНакон што пробни период заврши, претплата ће бити аутоматски обновљена по цени изабраног плана.</string>
+    <string name="invite_connect_button_addToGroup">Додајте члана</string>
 </resources>

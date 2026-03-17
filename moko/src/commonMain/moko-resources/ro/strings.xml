@@ -941,8 +941,8 @@
     <string name="licence_loadingStep_notFound">Licența nu a fost găsită</string>
     <string name="licence_loadingStep_invalid">Licența este invalidă</string>
     <string name="licence_loadingStep_planActive">Conflict de plan de licență</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Activarea acestei setări necesită un plan premium.</string>
-    <string name="plans_management_action_manage_v2">Actualizați planul pentru a debloca toate opțiunile.</string>
-    <string name="paywall_faq_answer_free_trial_v2">Da, oferim o perioadă de probă gratuită pentru anumite planuri și cicluri de facturare, disponibilă la prima activare a abonamentului. Puteți beneficia de toate funcționalitățile premium fără cost pe durata perioadei de probă.\n\n După încheierea perioadei de probă, abonamentul va fi reînnoit automat la prețul planului selectat.</string>
-    <string name="invite_connect_button_addToGroup_v2">Adăugați un membru</string>
+    <string name="setting_location_premium_banner_alert_message">Activarea acestei setări necesită un plan premium.</string>
+    <string name="plans_management_action_manage">Actualizați planul pentru a debloca toate opțiunile.</string>
+    <string name="paywall_faq_answer_free_trial">Da, oferim o perioadă de probă gratuită pentru anumite planuri și cicluri de facturare, disponibilă la prima activare a abonamentului. Puteți beneficia de toate funcționalitățile premium fără cost pe durata perioadei de probă.\n\n După încheierea perioadei de probă, abonamentul va fi reînnoit automat la prețul planului selectat.</string>
+    <string name="invite_connect_button_addToGroup">Adăugați un membru</string>
 </resources>

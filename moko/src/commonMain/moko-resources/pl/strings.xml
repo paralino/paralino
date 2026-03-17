@@ -941,8 +941,8 @@
     <string name="setting_notificationSocket_distributor_loading_text">**Rejestracja...**  \nTo może zająć kilka sekund.</string>
     <string name="setting_notificationSocket_connectionType_title">Typ połączenia</string>
     <string name="setting_notificationSocket_connectionType_info">Wybierz preferowany typ połączenia w oparciu o swoje preferencje dotyczące lepszej żywotności baterii lub szybszej dostawy powiadomień.</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Włączenie tego ustawienia wymaga planu premium.\n\nUaktualnij swój plan, aby odblokować wszystkie opcje.</string>
-    <string name="plans_management_action_manage_v2">Zarządzaj lub anuluj</string>
-    <string name="paywall_faq_answer_free_trial_v2">Tak, oferujemy okres próbny w niektórych planach i cyklach rozliczeniowych, dostępny przy pierwszym uruchomieniu subskrypcji. Możesz wtedy korzystać ze wszystkich funkcji premium bezpłatnie przez czas trwania okresu próbnego.\n\n Po zakończeniu okresu próbnego subskrypcja zostanie automatycznie odnowiona w cenie wybranego planu.</string>
-    <string name="invite_connect_button_addToGroup_v2">Dodaj członka</string>
+    <string name="setting_location_premium_banner_alert_message">Włączenie tego ustawienia wymaga planu premium.\n\nUaktualnij swój plan, aby odblokować wszystkie opcje.</string>
+    <string name="plans_management_action_manage">Zarządzaj lub anuluj</string>
+    <string name="paywall_faq_answer_free_trial">Tak, oferujemy okres próbny w niektórych planach i cyklach rozliczeniowych, dostępny przy pierwszym uruchomieniu subskrypcji. Możesz wtedy korzystać ze wszystkich funkcji premium bezpłatnie przez czas trwania okresu próbnego.\n\n Po zakończeniu okresu próbnego subskrypcja zostanie automatycznie odnowiona w cenie wybranego planu.</string>
+    <string name="invite_connect_button_addToGroup">Dodaj członka</string>
 </resources>

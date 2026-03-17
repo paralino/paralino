@@ -941,8 +941,8 @@
     <string name="setting_mapsProvider_style_openFreeMap">OpenFreeMap</string>
     <string name="paywall_active_planBillingPeriod_label">Aktiv</string>
     <string name="licence_loadingStep_planActive">Licensplan konflikt</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Aktivering av den här inställningen kräver ett premiumabonnemang.\n\nUppgradera ditt abonnemang för att låsa upp alla alternativ.</string>
-    <string name="plans_management_action_manage_v2">Hantera eller avsluta</string>
-    <string name="paywall_faq_answer_free_trial_v2">Ja, vi erbjuder en kostnadsfri provperiod för vissa planer och faktureringsperioder, tillgänglig första gången du startar din prenumeration. Du kan då använda alla premiumfunktioner utan kostnad under provperioden.\n\nNär provperioden avslutas förnyas prenumerationen automatiskt till det valda planpriset.</string>
-    <string name="invite_connect_button_addToGroup_v2">Lägg till medlem</string>
+    <string name="setting_location_premium_banner_alert_message">Aktivering av den här inställningen kräver ett premiumabonnemang.\n\nUppgradera ditt abonnemang för att låsa upp alla alternativ.</string>
+    <string name="plans_management_action_manage">Hantera eller avsluta</string>
+    <string name="paywall_faq_answer_free_trial">Ja, vi erbjuder en kostnadsfri provperiod för vissa planer och faktureringsperioder, tillgänglig första gången du startar din prenumeration. Du kan då använda alla premiumfunktioner utan kostnad under provperioden.\n\nNär provperioden avslutas förnyas prenumerationen automatiskt till det valda planpriset.</string>
+    <string name="invite_connect_button_addToGroup">Lägg till medlem</string>
 </resources>

@@ -956,8 +956,8 @@
     <string name="setting_notificationSocket_connectionType_periodic2_info">Les notifications sont actualisées périodiquement quelques fois par heure.</string>
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Utilisation de la batterie : Moyenne</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Tous les quelques heures</string>
-    <string name="setting_location_premium_banner_alert_message_v2">L\'activation de ce paramètre nécessite un forfait premium.\n\nMettez à niveau votre forfait pour débloquer toutes les options.</string>
-    <string name="plans_management_action_manage_v2">Gérer ou annuler</string>
-    <string name="paywall_faq_answer_free_trial_v2">Oui, nous proposons une période d\'essai gratuite sur certains forfaits et cycles de facturation, disponible la première fois que vous commencez votre abonnement. Vous pouvez alors profiter de toutes les fonctionnalités premium gratuitement pendant la durée de l\'essai.\n\n Après la fin de l\'essai, l\'abonnement sera automatiquement renouvelé au tarif du forfait sélectionné.</string>
-    <string name="invite_connect_button_addToGroup_v2">Ajouter un membre</string>
+    <string name="setting_location_premium_banner_alert_message">L\'activation de ce paramètre nécessite un forfait premium.\n\nMettez à niveau votre forfait pour débloquer toutes les options.</string>
+    <string name="plans_management_action_manage">Gérer ou annuler</string>
+    <string name="paywall_faq_answer_free_trial">Oui, nous proposons une période d\'essai gratuite sur certains forfaits et cycles de facturation, disponible la première fois que vous commencez votre abonnement. Vous pouvez alors profiter de toutes les fonctionnalités premium gratuitement pendant la durée de l\'essai.\n\n Après la fin de l\'essai, l\'abonnement sera automatiquement renouvelé au tarif du forfait sélectionné.</string>
+    <string name="invite_connect_button_addToGroup">Ajouter un membre</string>
 </resources>

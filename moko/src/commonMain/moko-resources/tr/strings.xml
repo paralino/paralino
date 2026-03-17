@@ -941,8 +941,8 @@
     <string name="licence_screen_title">Lisans anahtarı</string>
     <string name="licence_code_hint">Lisans anahtarı</string>
     <string name="licence_button_activate">Aktif et</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Bu ayarı etkinleştirmek için premium bir plana sahip olmanız gerekir.</string>
-    <string name="plans_management_action_manage_v2">Yönetiniz veya iptal ediniz</string>
-    <string name="paywall_faq_answer_free_trial_v2">Evet, bazı planlarda ve faturalandırma döngülerinde, aboneliğinizi ilk başlattığınızda geçerli olan ücretsiz bir deneme süresi sunuyoruz. Deneme süresi boyunca tüm premium özelliklerden ücretsiz olarak yararlanabilirsiniz.\n\n Deneme süresi sona erdiğinde, abonelik seçilen plan fiyatı üzerinden otomatik olarak yenilenecektir.</string>
-    <string name="invite_connect_button_addToGroup_v2">Üye ekleyin</string>
+    <string name="setting_location_premium_banner_alert_message">Bu ayarı etkinleştirmek için premium bir plana sahip olmanız gerekir.</string>
+    <string name="plans_management_action_manage">Yönetiniz veya iptal ediniz</string>
+    <string name="paywall_faq_answer_free_trial">Evet, bazı planlarda ve faturalandırma döngülerinde, aboneliğinizi ilk başlattığınızda geçerli olan ücretsiz bir deneme süresi sunuyoruz. Deneme süresi boyunca tüm premium özelliklerden ücretsiz olarak yararlanabilirsiniz.\n\n Deneme süresi sona erdiğinde, abonelik seçilen plan fiyatı üzerinden otomatik olarak yenilenecektir.</string>
+    <string name="invite_connect_button_addToGroup">Üye ekleyin</string>
 </resources>

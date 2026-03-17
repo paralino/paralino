@@ -956,8 +956,8 @@
     <string name="licence_success_message">Licença ativada com sucesso</string>
     <string name="licence_error_invalid">O código da licença inserido é inválido, por favor verifique sua entrada e tente novamente.</string>
     <string name="licence_error_expired">Este código de licença está expirado, por favor utilize outro.</string>
-    <string name="setting_location_premium_banner_alert_message_v2">Ativar esta configuração requer um plano premium.\n\nAtualize o seu plano para desbloquear todas as opções.</string>
-    <string name="plans_management_action_manage_v2">Gerir ou cancelar</string>
-    <string name="paywall_faq_answer_free_trial_v2">Sim, oferecemos um período de avaliação gratuito em alguns planos e ciclos de faturação, disponível na primeira vez em que iniciar a sua subscrição. Pode então usufruir de todas as funcionalidades premium sem custo durante a duração do período de avaliação.\n\nApós o término do período de avaliação, a subscrição será renovada automaticamente pelo preço do plano selecionado.</string>
-    <string name="invite_connect_button_addToGroup_v2">Adicionar membro</string>
+    <string name="setting_location_premium_banner_alert_message">Ativar esta configuração requer um plano premium.\n\nAtualize o seu plano para desbloquear todas as opções.</string>
+    <string name="plans_management_action_manage">Gerir ou cancelar</string>
+    <string name="paywall_faq_answer_free_trial">Sim, oferecemos um período de avaliação gratuito em alguns planos e ciclos de faturação, disponível na primeira vez em que iniciar a sua subscrição. Pode então usufruir de todas as funcionalidades premium sem custo durante a duração do período de avaliação.\n\nApós o término do período de avaliação, a subscrição será renovada automaticamente pelo preço do plano selecionado.</string>
+    <string name="invite_connect_button_addToGroup">Adicionar membro</string>
 </resources>

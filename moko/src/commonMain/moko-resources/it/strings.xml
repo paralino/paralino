@@ -956,8 +956,8 @@
     <string name="licence_error_planActive">Il piano del tuo account è già conforme al piano di questa licenza.</string>
     <string name="licence_loadingStep_confirming">In attesa di conferma</string>
     <string name="licence_loadingStep_activated">Licenza attivata</string>
-    <string name="setting_location_premium_banner_alert_message_v2">L\'attivazione di questa impostazione richiede un piano premium.\n\nAggiorni il suo piano per sbloccare tutte le opzioni.</string>
-    <string name="plans_management_action_manage_v2">Gestisca o annulli</string>
-    <string name="paywall_faq_answer_free_trial_v2">Sì, offriamo un periodo di prova gratuito su alcuni piani e cicli di fatturazione, disponibile la prima volta che avvia la sottoscrizione. Potrà quindi usufruire di tutte le funzionalità premium gratuitamente per la durata della prova.\n\nAl termine della prova, l\'abbonamento verrà rinnovato automaticamente al prezzo del piano selezionato.</string>
-    <string name="invite_connect_button_addToGroup_v2">Aggiunga un membro</string>
+    <string name="setting_location_premium_banner_alert_message">L\'attivazione di questa impostazione richiede un piano premium.\n\nAggiorni il suo piano per sbloccare tutte le opzioni.</string>
+    <string name="plans_management_action_manage">Gestisca o annulli</string>
+    <string name="paywall_faq_answer_free_trial">Sì, offriamo un periodo di prova gratuito su alcuni piani e cicli di fatturazione, disponibile la prima volta che avvia la sottoscrizione. Potrà quindi usufruire di tutte le funzionalità premium gratuitamente per la durata della prova.\n\nAl termine della prova, l\'abbonamento verrà rinnovato automaticamente al prezzo del piano selezionato.</string>
+    <string name="invite_connect_button_addToGroup">Aggiunga un membro</string>
 </resources>
