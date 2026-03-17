@@ -145,17 +145,15 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 74
-            versionName = "2.1.3"
+            versionCode = 75
+            versionName = "2.2.0"
             buildConfigField("boolean", "hasGoogleMaps", "true")
             buildConfigField("boolean", "hasNotificationSocketService", "false")
         }
         create("direct") {
             dimension = "version"
-            versionCode = 74
-            versionName = "2.1.3"
-            versionNameSuffix = "-int"
-            applicationIdSuffix = ".int"
+            versionCode = 75
+            versionName = "2.2.0"
             buildConfigField("boolean", "hasGoogleMaps", "false")
             buildConfigField("boolean", "hasNotificationSocketService", "true")
         }
