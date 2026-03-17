@@ -272,7 +272,7 @@ sealed interface MapsSDKProvider {
             mapTilerToken: String,
             lightStyle: MapStyle = MapStyle.OPEN_FREE_MAP,
             darkStyle: MapStyle = MapStyle.OPEN_FREE_MAP
-        ): MapsSDKProvider {
+        ): MapsSDKProvider? {
             return when (key) {
                 GOOGLE.key -> GOOGLE
                 MAPLIBRE_FREE.key -> MAPLIBRE_FREE
@@ -284,7 +284,7 @@ sealed interface MapsSDKProvider {
                     )
                 }
 
-                else -> MAPLIBRE_FREE
+                else -> null
             }
         }
     }

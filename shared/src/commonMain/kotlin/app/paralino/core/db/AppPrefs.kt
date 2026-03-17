@@ -585,12 +585,6 @@ class AppPrefs(
         val lightStyle = MapsSDKProvider.MapStyle.fromKey(lightStyleKey)
         val darkStyle = MapsSDKProvider.MapStyle.fromKey(darkStyleKey)
 
-        val setting = MapsSDKProvider.fromKey(
-            key = settingKey,
-            mapTilerToken = mapTilerToken ?: "",
-            lightStyle = lightStyle,
-            darkStyle = darkStyle
-        )
         val default = if (hasGoogleMaps) {
             MapsSDKProvider.GOOGLE
         } else if (isPremiumPlan && !mapTilerToken.isNullOrBlank()) {
@@ -598,6 +592,13 @@ class AppPrefs(
         } else {
             MapsSDKProvider.MAPLIBRE_FREE
         }
+
+        val setting = MapsSDKProvider.fromKey(
+            key = settingKey,
+            mapTilerToken = mapTilerToken ?: "",
+            lightStyle = lightStyle,
+            darkStyle = darkStyle
+        ) ?: default
 
         return if (!isPremiumPlan && setting.isPremium) {
             MapsSDKProvider.MAPLIBRE_FREE
