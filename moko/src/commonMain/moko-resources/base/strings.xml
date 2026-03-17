@@ -738,10 +738,10 @@
     <string name="place_sensitivity_optionRefresh2_info">Gets an accurate location beforehand but may suppress or delay some alerts. Make sure you are connected to the Internet and the app can run in the background without restrictions.</string>
     <string name="place_sensitivity_optionRefresh3_title">After Alert Is Sent</string>
     <string name="place_sensitivity_optionRefresh3_info">An accurate location is requested as the final step to ensure you don’t miss any alerts, but it might cause extra or false alerts.</string>
-    <string name="place_notification_enter" note="Used to tell that someone has arrived at certain place as in: User arrived at Home">%1$s arrived at %2$s</string>
-    <string name="place_notification_exit" note="Used to tell that someone has left some place as in: User left Home">%1$s left %2$s</string>
-    <string name="place_notification_device_enter">%1$s arrived at %2$s</string>
-    <string name="place_notification_device_exit">%1$s left %2$s</string>
+    <string name="place_notification_enter_v2" note="Used to tell that someone (person) has arrived at certain place as in: User arrived at Home">%1$s arrived at %2$s</string>
+    <string name="place_notification_exit_v2" note="Used to tell that someone (person) has left some place as in: User left Home">%1$s left %2$s</string>
+    <string name="place_notification_device_enter_v2" note="Used to tell that device has arrived at certain place as in: Your device left Home">%1$s arrived at %2$s</string>
+    <string name="place_notification_device_exit_v2" note="Used to tell that device has left some place as in: Your device left Home">%1$s left %2$s</string>
     <string name="place_notification_default">Your place had an activity</string>
     <string name="place_notification_personal_default">Your personal place had an activity</string>
     <string name="place_created_group_notification">Group %1$s just got a new place: %2$s</string>
