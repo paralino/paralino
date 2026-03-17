@@ -161,7 +161,7 @@
     <string name="settings_account_guest_convert_intro_personal_device_tracking">Personal device tracking</string>
     <string name="settings_account_guest_convert_intro_personal_device_tracking_tag">Track and manage all your devices under one account.</string>
     <string name="settings_account_edit_guest_account_button">Convert account</string>
-    <string name="settings_account_edit_guest_account_info">Your data is end-to-end encrypted, so make sure you don't lose your password. Without it, you won’t be able to recover any of your data.</string>
+    <string name="settings_account_edit_guest_account_info">Your data is end-to-end encrypted, so make sure you don\'t lose your password. Without it, you won’t be able to recover any of your data.</string>
     <string name="settings_account_credentialsChange_step_prepare">Preparing</string>
     <string name="settings_account_credentialsChange_step_change">Changing credentials</string>
     <string name="settings_account_credentialsChange_step_verify">Verifying keys</string>
@@ -454,10 +454,7 @@
     <string name="paywall_faq_answer_refund_google">You can contact our support team by emailing **contact@paralino.com**.</string>
     <string name="paywall_faq_answer_payment_security_apple">Yes, your payment is processed directly by the Apple App Store. We do not process or store any payment information.</string>
     <string name="paywall_faq_answer_payment_security_google">Yes, your payment is processed directly by the Google Play Store. We do not process or store any payment information.</string>
-    <string name="paywall_faq_answer_free_trial">
-        Yes, we offer a free trial period on some plans and billing cycles, available for the first time you start your subscription. You can then enjoy all the premium features at no cost for the duration of the trial.\n\n
-        After the trial ends, subscription will be automatically renewed at the selected plan price.
-    </string>
+    <string name="paywall_faq_answer_free_trial">Yes, we offer a free trial period on some plans and billing cycles, available for the first time you start your subscription. You can then enjoy all the premium features at no cost for the duration of the trial.\n\n After the trial ends, subscription will be automatically renewed at the selected plan price.</string>
     <string name="paywall_faq_answer_contact_support">You can contact our support team by emailing **contact@paralino.com**.</string>
     <string name="plans_gift_screen_title">Let\'s celebrate!</string>
     <string name="plans_gift_screen_box_title">Early Adopter Gift</string>
@@ -530,7 +527,7 @@
     <string name="info_email_confirm_alert_button_resend">Resend verification link</string>
     <string name="info_email_verified">Email verified successfully</string>
     <string name="info_email_check_instructions">Check your email for instructions:\n**%s**</string>
-    <string name="info_email_check_instructions_popup">**Check your email for instructions**\n\nThe email should arrive shortly, but if you don't receive it within a few minutes, try resending the verification again.</string>
+    <string name="info_email_check_instructions_popup">**Check your email for instructions**\n\nThe email should arrive shortly, but if you don\'t receive it within a few minutes, try resending the verification again.</string>
     <string name="groups_sharing_section_title_group">Group</string>
     <string name="groups_sharing_section_title_duration">Duration</string>
     <string name="groups_sharing_setting_battery_share">Battery level</string>
@@ -625,7 +622,7 @@
     <string name="group_settings_verification_dialog_message_off">Disabling member verification will allow others to add new members to your group.</string>
     <string name="group_settings_battery_notifications_title">Battery Notifications</string>
     <string name="group_settings_low_battery_alerts_title">Low battery alerts</string>
-    <string name="group_settings_battery_notifications_info">Decide if you want to be notified when a group member's battery level is low.</string>
+    <string name="group_settings_battery_notifications_info">Decide if you want to be notified when a group member\'s battery level is low.</string>
     <string name="group_settings_battery_notifications_notice">Notifications will only be sent if members choose to share their battery data and their device detects a battery level below **15%**.</string>
     <string name="personalSpace_settings_battery_notifications_info">Decide if you want to be notified on this device if any of your devices have a low battery level.</string>
     <string name="personalSpace_settings_battery_notifications_notice">Notifications will only be sent if location tracking is activated on target device and if that device detects a battery level below **15%**.</string>
@@ -738,10 +735,10 @@
     <string name="place_sensitivity_optionRefresh2_info">Gets an accurate location beforehand but may suppress or delay some alerts. Make sure you are connected to the Internet and the app can run in the background without restrictions.</string>
     <string name="place_sensitivity_optionRefresh3_title">After Alert Is Sent</string>
     <string name="place_sensitivity_optionRefresh3_info">An accurate location is requested as the final step to ensure you don’t miss any alerts, but it might cause extra or false alerts.</string>
-    <string name="place_notification_enter_v2" note="Used to tell that someone (person) has arrived at certain place as in: User arrived at Home">%1$s arrived at %2$s</string>
-    <string name="place_notification_exit_v2" note="Used to tell that someone (person) has left some place as in: User left Home">%1$s left %2$s</string>
-    <string name="place_notification_device_enter_v2" note="Used to tell that device has arrived at certain place as in: Your device left Home">%1$s arrived at %2$s</string>
-    <string name="place_notification_device_exit_v2" note="Used to tell that device has left some place as in: Your device left Home">%1$s left %2$s</string>
+    <string name="place_notification_enter" note="Used to tell that someone (person) has arrived at certain place as in: User arrived at Home">%1$s arrived at %2$s</string>
+    <string name="place_notification_exit" note="Used to tell that someone (person) has left some place as in: User left Home">%1$s left %2$s</string>
+    <string name="place_notification_device_enter" note="Used to tell that device has arrived at certain place as in: Your device left Home">%1$s arrived at %2$s</string>
+    <string name="place_notification_device_exit" note="Used to tell that device has left some place as in: Your device left Home">%1$s left %2$s</string>
     <string name="place_notification_default">Your place had an activity</string>
     <string name="place_notification_personal_default">Your personal place had an activity</string>
     <string name="place_created_group_notification">Group %1$s just got a new place: %2$s</string>
@@ -885,13 +882,7 @@
     <string name="personalSpace_tracking_encryption_info">Your location and related data are always **end-to-end encrypted** and only accessible to you on your devices.</string>
     <string name="personalSpace_tracking_status_infinite">**Always on** tracking is active</string>
     <string name="personalSpace_sheet_introBanner_title">Your personal space</string>
-    <string name="personalSpace_sheet_introBanner_message">
-        This is a private area just for you and your devices.\n\n
-        • View your own location history\n
-        • Manage and keep track of your own devices\n
-        • Create places that matter only to you\n\n
-        Your space, your rules.
-    </string>
+    <string name="personalSpace_sheet_introBanner_message">This is a private area just for you and your devices.\n\n • View your own location history\n • Manage and keep track of your own devices\n • Create places that matter only to you\n\n Your space, your rules.</string>
     <string name="history_stats_distance">Distance</string>
     <string name="history_stats_entries">Entries</string>
     <string name="history_stats_max_speed">Max Speed</string>
