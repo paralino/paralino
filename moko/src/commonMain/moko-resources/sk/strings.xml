@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Buďte informovaní, keď niekto vstúpi alebo opustí vašu preddefinovanú oblasť.</string>
     <string name="onboarding_step_options_title">Úplná kontrola zdieľania</string>
     <string name="onboarding_step_options_title_tag">Kontrola</string>
-    <string name="onboarding_step_options_info">Vždy máte kontrolu nad tým, čo zdieľate a ako to zdieľate.</string>
+    <string name="onboarding_step_options_info">Žiadne dva dni nie sú rovnaké. Niekedy potrebujete pokoj a ticho.</string>
     <string name="onboarding_step_paralinoID_title_tag">Vitajte</string>
     <string name="onboarding_step_paralinoID_title_intro">Chcete byť súčasťou skupiny?</string>
     <string name="onboarding_step_paralinoID_title_shared">Budete informovaní, keď budete pridaní do skupiny!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licencia sa nenašla</string>
     <string name="licence_loadingStep_invalid">Licencia je neplatná</string>
     <string name="licence_loadingStep_planActive">Konflikt plánov licencie</string>
+    <string name="onboarding_step_options_second_title">Zdieľanie bez nátlaku</string>
+    <string name="onboarding_step_options_second_info">Vždy máte kontrolu nad tým, čo zdieľate a ako to zdieľate.</string>
 </resources>

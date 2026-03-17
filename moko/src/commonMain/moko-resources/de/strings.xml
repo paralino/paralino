@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Erhalten Sie eine Benachrichtigung, wenn jemand einen vordefinierten Bereich betritt oder verlässt.</string>
     <string name="onboarding_step_options_title">Volle Freigabekontrolle</string>
     <string name="onboarding_step_options_title_tag">Kontrolle</string>
-    <string name="onboarding_step_options_info">Sie haben immer die Kontrolle darüber, was und wie Sie etwas teilen.</string>
+    <string name="onboarding_step_options_info">Kein Tag gleicht dem anderen. Manchmal benötigen Sie Ruhe und Stille.</string>
     <string name="onboarding_step_paralinoID_title_tag">Willkommen</string>
     <string name="onboarding_step_paralinoID_title_intro">Möchten Sie Teil einer Gruppe sein?</string>
     <string name="onboarding_step_paralinoID_title_shared">Sie werden benachrichtigt, wenn Sie zu einer Gruppe hinzugefügt werden!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Lizenz nicht gefunden</string>
     <string name="licence_loadingStep_invalid">Lizenz ungültig</string>
     <string name="licence_loadingStep_planActive">Lizenzplan-Konflikt</string>
+    <string name="onboarding_step_options_second_title">Teilen ohne Druck</string>
+    <string name="onboarding_step_options_second_info">Sie haben jederzeit die Kontrolle darüber, was Sie teilen und wie Sie es teilen.</string>
 </resources>

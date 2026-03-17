@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Saat ilmoituksen, kun joku saapuu tai poistuu määritellyltä alueeltasi.</string>
     <string name="onboarding_step_options_title">Täydellinen jakamisen hallinta</string>
     <string name="onboarding_step_options_title_tag">Hallinta</string>
-    <string name="onboarding_step_options_info">Olet aina hallinnassa siitä, mitä jaat ja miten jaat sen.</string>
+    <string name="onboarding_step_options_info">Ei kahta samanlaista päivää ole. Joskus tarvitaan rauhaa ja hiljaisuutta.</string>
     <string name="onboarding_step_paralinoID_title_tag">Tervetuloa</string>
     <string name="onboarding_step_paralinoID_title_intro">Haluatko olla osa ryhmää?</string>
     <string name="onboarding_step_paralinoID_title_shared">Saat ilmoituksen, kun sinut lisätään ryhmään!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Lisenssiä ei löytynyt</string>
     <string name="licence_loadingStep_invalid">Lisenssi on virheellinen</string>
     <string name="licence_loadingStep_planActive">Lisenssisuunnitelman konflikti</string>
+    <string name="onboarding_step_options_second_title">Jakaminen ilman painostusta</string>
+    <string name="onboarding_step_options_second_info">Päätät aina itse, mitä jaat ja miten jaat sen.</string>
 </resources>

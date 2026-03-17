@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Отримуйте сповіщення, коли хтось входить або виходить з вашої попередньо визначеної зони.</string>
     <string name="onboarding_step_options_title">Повний контроль над обміном</string>
     <string name="onboarding_step_options_title_tag">Контроль</string>
-    <string name="onboarding_step_options_info">Ви завжди контролюєте, що ви ділитеся і як ви це робите.</string>
+    <string name="onboarding_step_options_info">Жодні два дні не бувають однаковими. Іноді вам потрібні спокій та тиша.</string>
     <string name="onboarding_step_paralinoID_title_tag">Ласкаво просимо</string>
     <string name="onboarding_step_paralinoID_title_intro">Хочете стати частиною групи?</string>
     <string name="onboarding_step_paralinoID_title_shared">Вам надійдуть сповіщення, коли вас додадуть до групи!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Ліцензія не знайдена</string>
     <string name="licence_loadingStep_invalid">Ліцензія недійсна</string>
     <string name="licence_loadingStep_planActive">Конфлікт плану ліцензії</string>
+    <string name="onboarding_step_options_second_title">Обмін без тиску</string>
+    <string name="onboarding_step_options_second_info">Ви завжди контролюєте, що саме ви поширюєте, і як це робите.</string>
 </resources>

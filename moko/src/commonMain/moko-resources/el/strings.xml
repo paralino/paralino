@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Λάβετε ειδοποίηση όταν κάποιος εισέρχεται ή εξέρχεται από την προκαθορισμένη περιοχή σας.</string>
     <string name="onboarding_step_options_title">Πλήρης έλεγχος κοινής χρήσης</string>
     <string name="onboarding_step_options_title_tag">Έλεγχος</string>
-    <string name="onboarding_step_options_info">Είστε πάντα υπό έλεγχο του τι μοιράζεστε και πώς το μοιράζεστε.</string>
+    <string name="onboarding_step_options_info">Καμία μέρα δεν είναι ίδια με την άλλη. Μερικές φορές χρειάζεστε ηρεμία και ησυχία.</string>
     <string name="onboarding_step_paralinoID_title_tag">Καλώς ήρθατε</string>
     <string name="onboarding_step_paralinoID_title_intro">Θέλετε να γίνετε μέλος μιας ομάδας;</string>
     <string name="onboarding_step_paralinoID_title_shared">Θα ειδοποιηθείτε όταν προστεθείτε σε μια ομάδα!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Η άδεια δεν βρέθηκε</string>
     <string name="licence_loadingStep_invalid">Μη έγκυρη άδεια</string>
     <string name="licence_loadingStep_planActive">Σύγκρουση σχεδίου άδειας</string>
+    <string name="onboarding_step_options_second_title">Κοινοποίηση χωρίς πίεση</string>
+    <string name="onboarding_step_options_second_info">Έχετε πάντα τον έλεγχο του τι μοιράζεστε και του πώς το μοιράζεστε.</string>
 </resources>

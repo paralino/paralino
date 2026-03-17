@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Obveščeni boste, ko nekdo vstopi ali zapusti vašo vnaprej določeno območje.</string>
     <string name="onboarding_step_options_title">Polna kontrola deljenja</string>
     <string name="onboarding_step_options_title_tag">Nadzor</string>
-    <string name="onboarding_step_options_info">Vedno imate nadzor nad tem, kaj delite in kako to delite.</string>
+    <string name="onboarding_step_options_info">Niti dva dneva nista enaka. Včasih potrebujete mir in tišino.</string>
     <string name="onboarding_step_paralinoID_title_tag">Dobrodošli</string>
     <string name="onboarding_step_paralinoID_title_intro">Želite biti del skupine?</string>
     <string name="onboarding_step_paralinoID_title_shared">Obveščeni boste, ko boste dodani v skupino!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licenca ni bila najdena</string>
     <string name="licence_loadingStep_invalid">Licenca je neveljavna</string>
     <string name="licence_loadingStep_planActive">Konflikt načrta licence</string>
+    <string name="onboarding_step_options_second_title">Deljenje brez pritiska</string>
+    <string name="onboarding_step_options_second_info">Vedno imate nadzor nad tem, kaj in kako delite.</string>
 </resources>

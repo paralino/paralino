@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Önceden tanımlanmış alanınıza birinin girdiğinde veya çıktığında bildirim alın.</string>
     <string name="onboarding_step_options_title">Tam paylaşım kontrolü</string>
     <string name="onboarding_step_options_title_tag">Kontrol</string>
-    <string name="onboarding_step_options_info">Paylaştığınız şeyler ve nasıl paylaştığınız üzerinde her zaman kontrol sizde.</string>
+    <string name="onboarding_step_options_info">Hiçbir gün birbirinin aynısı değildir. Bazen huzur ve sessizliğe ihtiyaç duyarsınız.</string>
     <string name="onboarding_step_paralinoID_title_tag">Hoş geldiniz</string>
     <string name="onboarding_step_paralinoID_title_intro">Bir grubun parçası olmak ister misiniz?</string>
     <string name="onboarding_step_paralinoID_title_shared">Bir gruba eklendiğinizde bildirim alacaksınız!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Lisans bulunamadı</string>
     <string name="licence_loadingStep_invalid">Lisans geçersiz</string>
     <string name="licence_loadingStep_planActive">Lisans planı çakışması</string>
+    <string name="onboarding_step_options_second_title">Baskı olmadan paylaşma</string>
+    <string name="onboarding_step_options_second_info">Ne paylaştığınız ve nasıl paylaştığınızın kontrolü her zaman sizdedir.</string>
 </resources>

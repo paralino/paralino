@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Få meddelande när någon går in eller lämnar ditt fördefinierade område.</string>
     <string name="onboarding_step_options_title">Full delningskontroll</string>
     <string name="onboarding_step_options_title_tag">Kontroll</string>
-    <string name="onboarding_step_options_info">Du har alltid kontroll över vad du delar och hur du delar det.</string>
+    <string name="onboarding_step_options_info">Ingen dag är den andra lik. Ibland behöver man lugn och ro.</string>
     <string name="onboarding_step_paralinoID_title_tag">Välkommen</string>
     <string name="onboarding_step_paralinoID_title_intro">Vill du vara en del av en grupp?</string>
     <string name="onboarding_step_paralinoID_title_shared">Du kommer att meddelas när du läggs till i en grupp!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licens hittades inte</string>
     <string name="licence_loadingStep_invalid">Licens ogiltig</string>
     <string name="licence_loadingStep_planActive">Licensplan konflikt</string>
+    <string name="onboarding_step_options_second_title">Dela utan påtryckningar</string>
+    <string name="onboarding_step_options_second_info">Du har alltid kontroll över vad du delar och hur du delar det.</string>
 </resources>

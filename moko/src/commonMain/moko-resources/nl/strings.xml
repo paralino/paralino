@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Ontvang een melding wanneer iemand uw gedefinieerde gebied binnenkomt of verlaat.</string>
     <string name="onboarding_step_options_title">Volledige controle over delen</string>
     <string name="onboarding_step_options_title_tag">Controle</string>
-    <string name="onboarding_step_options_info">U heeft altijd de controle over wat u deelt en hoe u het deelt.</string>
+    <string name="onboarding_step_options_info">Geen twee dagen zijn hetzelfde. Soms heeft u behoefte aan rust en stilte.</string>
     <string name="onboarding_step_paralinoID_title_tag">Welkom</string>
     <string name="onboarding_step_paralinoID_title_intro">Wilt u deel uitmaken van een groep?</string>
     <string name="onboarding_step_paralinoID_title_shared">U wordt op de hoogte gesteld wanneer u aan een groep wordt toegevoegd!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licentie niet gevonden</string>
     <string name="licence_loadingStep_invalid">Licentie ongeldig</string>
     <string name="licence_loadingStep_planActive">Conflict van het licentieplan</string>
+    <string name="onboarding_step_options_second_title">Delen zonder druk</string>
+    <string name="onboarding_step_options_second_info">U behoudt te allen tijde de controle over wat u deelt en hoe u dat doet.</string>
 </resources>

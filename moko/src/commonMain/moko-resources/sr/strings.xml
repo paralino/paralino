@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Будите обавештени када неко уђе у или напусти вашу унапред дефинисану зону.</string>
     <string name="onboarding_step_options_title">Потпуна контрола дељења</string>
     <string name="onboarding_step_options_title_tag">Контрола</string>
-    <string name="onboarding_step_options_info">Увек имате контролу над тим шта делите и како то делите.</string>
+    <string name="onboarding_step_options_info">Ниједан дан није исти. Понекад вам треба мир и тишина.</string>
     <string name="onboarding_step_paralinoID_title_tag">Добродошли</string>
     <string name="onboarding_step_paralinoID_title_intro">Желите ли да будете део групе?</string>
     <string name="onboarding_step_paralinoID_title_shared">Бићете обавештени када будете додати у групу!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Лиценца није пронађена</string>
     <string name="licence_loadingStep_invalid">Лиценца је неважећа</string>
     <string name="licence_loadingStep_planActive">Конфликт у плану лиценце</string>
+    <string name="onboarding_step_options_second_title">Дељење без притиска</string>
+    <string name="onboarding_step_options_second_info">Ви увек имате контролу над тим шта делите и како то делите.</string>
 </resources>

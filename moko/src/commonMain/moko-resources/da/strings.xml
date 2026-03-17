@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Bliv underrettet, når nogen træder ind i eller forlader dit foruddefinerede område.</string>
     <string name="onboarding_step_options_title">Fuld delingskontrol</string>
     <string name="onboarding_step_options_title_tag">Kontrol</string>
-    <string name="onboarding_step_options_info">Du har altid kontrol over, hvad du deler, og hvordan du deler det.</string>
+    <string name="onboarding_step_options_info">Ingen to dage er ens. Nogle gange har man brug for fred og ro.</string>
     <string name="onboarding_step_paralinoID_title_tag">Velkommen</string>
     <string name="onboarding_step_paralinoID_title_intro">Vil du være en del af en gruppe?</string>
     <string name="onboarding_step_paralinoID_title_shared">Du vil blive underrettet, når du bliver tilføjet til en gruppe!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licens ikke fundet</string>
     <string name="licence_loadingStep_invalid">Licens ugyldig</string>
     <string name="licence_loadingStep_planActive">Licensplan konflikt</string>
+    <string name="onboarding_step_options_second_title">Deling uden pres</string>
+    <string name="onboarding_step_options_second_info">De har altid kontrol over, hvad De deler, og hvordan De deler det.</string>
 </resources>

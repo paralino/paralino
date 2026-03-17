@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Fii notificat când cineva intră sau părăsește zona ta predefinită.</string>
     <string name="onboarding_step_options_title">Control total al partajării</string>
     <string name="onboarding_step_options_title_tag">Control</string>
-    <string name="onboarding_step_options_info">Ești întotdeauna în controlul a ceea ce împărtășești și cum o împărtășești.</string>
+    <string name="onboarding_step_options_info">Nicio zi nu este la fel. Uneori aveți nevoie de liniște și pace.</string>
     <string name="onboarding_step_paralinoID_title_tag">Bun venit</string>
     <string name="onboarding_step_paralinoID_title_intro">Vrei să faci parte dintr-un grup?</string>
     <string name="onboarding_step_paralinoID_title_shared">Veți fi notificat când sunteți adăugat într-un grup!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licența nu a fost găsită</string>
     <string name="licence_loadingStep_invalid">Licența este invalidă</string>
     <string name="licence_loadingStep_planActive">Conflict de plan de licență</string>
+    <string name="onboarding_step_options_second_title">Partajare fără presiune</string>
+    <string name="onboarding_step_options_second_info">Aveți întotdeauna controlul asupra a ceea ce partajați și asupra modului în care o faceți.</string>
 </resources>

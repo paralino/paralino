@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Értesítést kapsz, amikor valaki belép vagy elhagyja a meghatározott területedet.</string>
     <string name="onboarding_step_options_title">Teljes megosztási kontroll</string>
     <string name="onboarding_step_options_title_tag">Irányítás</string>
-    <string name="onboarding_step_options_info">Mindig te irányítod, hogy mit osztasz meg és hogyan osztod meg.</string>
+    <string name="onboarding_step_options_info">Nincs két egyforma nap. Néha szükség van a nyugalomra és a csendre.</string>
     <string name="onboarding_step_paralinoID_title_tag">Üdvözöljük</string>
     <string name="onboarding_step_paralinoID_title_intro">Szeretnél egy csoport tagja lenni?</string>
     <string name="onboarding_step_paralinoID_title_shared">Értesítést kapsz, amikor hozzáadsz egy csoporthoz!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">A licensz nem található</string>
     <string name="licence_loadingStep_invalid">A licensz érvénytelen</string>
     <string name="licence_loadingStep_planActive">Licenszterv ütközés</string>
+    <string name="onboarding_step_options_second_title">Kényszertől mentes megosztás</string>
+    <string name="onboarding_step_options_second_info">Ön mindig irányítja, hogy mit és hogyan oszt meg.</string>
 </resources>

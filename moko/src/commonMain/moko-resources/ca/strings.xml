@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Rebràs una notificació quan algú entri o surti de la teva àrea predefinida.</string>
     <string name="onboarding_step_options_title">Control total de compartició</string>
     <string name="onboarding_step_options_title_tag">Control</string>
-    <string name="onboarding_step_options_info">Sempre estàs al control del que comparteixes i com ho comparteixes.</string>
+    <string name="onboarding_step_options_info">No hi ha dos dies iguals. De vegades cal buscar pau i tranquil·litat.</string>
     <string name="onboarding_step_paralinoID_title_tag">Benvingut</string>
     <string name="onboarding_step_paralinoID_title_intro">Vols formar part d\'un grup?</string>
     <string name="onboarding_step_paralinoID_title_shared">Rebràs una notificació quan siguis afegit a un grup!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Llicència no trobada</string>
     <string name="licence_loadingStep_invalid">Llicència no vàlida</string>
     <string name="licence_loadingStep_planActive">Conflicte de pla de llicència</string>
+    <string name="onboarding_step_options_second_title">Compartir sense pressió</string>
+    <string name="onboarding_step_options_second_info">Vostè té sempre el control del que comparteix i de la manera en què ho comparteix.</string>
 </resources>

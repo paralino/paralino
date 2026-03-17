@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Otrzymuj powiadomienia, gdy ktoś wchodzi lub opuszcza Twój zdefiniowany obszar.</string>
     <string name="onboarding_step_options_title">Pełna kontrola nad udostępnianiem</string>
     <string name="onboarding_step_options_title_tag">Kontrola</string>
-    <string name="onboarding_step_options_info">Zawsze masz kontrolę nad tym, co udostępniasz i jak to robisz.</string>
+    <string name="onboarding_step_options_info">Żadne dwa dni nie są takie same. Czasami potrzeba ciszy i spokoju.</string>
     <string name="onboarding_step_paralinoID_title_tag">Witamy</string>
     <string name="onboarding_step_paralinoID_title_intro">Chcesz być częścią grupy?</string>
     <string name="onboarding_step_paralinoID_title_shared">Otrzymasz powiadomienie, gdy zostaniesz dodany do grupy!</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licencja nie znaleziona</string>
     <string name="licence_loadingStep_invalid">Licencja nieprawidłowa</string>
     <string name="licence_loadingStep_planActive">Konflikt planu licencji</string>
+    <string name="onboarding_step_options_second_title">Udostępnianie bez presji</string>
+    <string name="onboarding_step_options_second_info">Zawsze masz kontrolę nad tym, co udostępniasz, i nad sposobem, w jaki to robisz.</string>
 </resources>

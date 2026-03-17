@@ -108,7 +108,7 @@
     <string name="onboarding_step_places_info">Recevez une notification lorsque quelqu\'un entre ou sort de votre zone prédéfinie.</string>
     <string name="onboarding_step_options_title">Contrôle total du partage</string>
     <string name="onboarding_step_options_title_tag">Contrôle</string>
-    <string name="onboarding_step_options_info">Vous contrôlez toujours ce que vous partagez et comment vous le partagez.</string>
+    <string name="onboarding_step_options_info">Il n\'y a pas deux jours qui se ressemblent. Parfois, vous avez besoin de calme et de tranquillité.</string>
     <string name="onboarding_step_paralinoID_title_tag">Bienvenue</string>
     <string name="onboarding_step_paralinoID_title_intro">Vous souhaitez faire partie d\'un groupe ?</string>
     <string name="onboarding_step_paralinoID_title_shared">Vous serez informé lorsque vous serez ajouté à un groupe !</string>
@@ -936,4 +936,6 @@
     <string name="licence_loadingStep_notFound">Licence introuvable</string>
     <string name="licence_loadingStep_invalid">Licence invalide</string>
     <string name="licence_loadingStep_planActive">Conflit de plan de licence</string>
+    <string name="onboarding_step_options_second_title">Partager sans pression</string>
+    <string name="onboarding_step_options_second_info">Vous avez toujours le contrôle sur ce que vous partagez et sur la façon dont vous le partagez.</string>
 </resources>
