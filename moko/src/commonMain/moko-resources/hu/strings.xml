@@ -941,4 +941,8 @@
     <string name="plans_management_providerName_apple">Apple Áruház</string>
     <string name="plans_management_providerName_google">Google Play Áruház</string>
     <string name="licence_loadingStep_planActive">Licenszterv ütközés</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Ennek a beállításnak az engedélyezéséhez prémium előfizetés szükséges.\n\nFrissítse előfizetését az összes lehetőség feloldásához.</string>
+    <string name="plans_management_action_manage_v2">Kezelés vagy lemondás</string>
+    <string name="paywall_faq_answer_free_trial_v2">Igen, bizonyos tervekhez és számlázási ciklusokhoz ingyenes próbaidőszakot kínálunk, amely a feliratkozás első indításakor érhető el. Ezután a próba időtartama alatt díjmentesen élvezheti az összes prémium funkciót.\n\nA próbaidőszak lejárta után az előfizetés a kiválasztott csomag ára alapján automatikusan megújul.</string>
+    <string name="invite_connect_button_addToGroup_v2">Tag hozzáadása</string>
 </resources>

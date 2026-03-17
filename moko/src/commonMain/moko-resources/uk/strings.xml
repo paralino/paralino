@@ -941,4 +941,8 @@
     <string name="setting_notificationSocket_connectionType_periodic2_tag">Використання батареї: середнє</string>
     <string name="setting_notificationSocket_connectionType_periodic3_title">Кожні кілька годин</string>
     <string name="setting_notificationSocket_connectionType_periodic3_info">Сповіщення оновлюються періодично кожні кілька годин</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Увімкнення цього налаштування вимагає преміум-плану.\n\nОновіть свій план, щоб отримати доступ до всіх опцій.</string>
+    <string name="plans_management_action_manage_v2">Керувати або скасувати</string>
+    <string name="paywall_faq_answer_free_trial_v2">Так, ми пропонуємо безкоштовний пробний період для деяких планів і платіжних циклів, доступний при першому оформленні підписки. Ви зможете користуватися всіма преміум‑функціями безкоштовно протягом дії пробного періоду.\n\n Після завершення пробного періоду підписка буде автоматично поновлена за вартістю обраного плану.</string>
+    <string name="invite_connect_button_addToGroup_v2">Додати учасника</string>
 </resources>

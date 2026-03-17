@@ -941,4 +941,8 @@
     <string name="notifications_socketService_message_lastSync">Zadnja posodobitev: %s</string>
     <string name="licence_screen_title">Licenčna koda</string>
     <string name="licence_screen_info">Če imate licenčno kodo, jo tukaj vnesite, da povežete premium paket s svojim računom Paralino.</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Za omogočanje te nastavitve potrebujete premijski načrt.\n\nNadgradite svoj načrt, da odklenete vse možnosti.</string>
+    <string name="plans_management_action_manage_v2">Upravljajte ali prekličite</string>
+    <string name="paywall_faq_answer_free_trial_v2">Da, pri nekaterih načrtih in obračunskih ciklih ponujamo brezplačno preizkusno obdobje, na voljo ob prvi aktivaciji naročnine. Nato lahko med trajanjem preizkusa brezplačno uporabljate vse premijske funkcije.\n\n Po izteku preizkusnega obdobja se bo naročnina samodejno podaljšala po ceni izbranega načrta.</string>
+    <string name="invite_connect_button_addToGroup_v2">Dodajte člana/članico</string>
 </resources>

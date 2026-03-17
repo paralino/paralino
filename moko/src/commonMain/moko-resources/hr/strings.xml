@@ -956,4 +956,8 @@
     <string name="licence_error_inUse">Ova licenca je već aktivirana i u upotrebi.</string>
     <string name="licence_error_notFound">Uneseni kod licence nije pronađen, molimo provjerite unos i pokušajte ponovo.</string>
     <string name="licence_loadingStep_activated">Licenca aktivirana</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Omogućavanje ove postavke zahtijeva premium pretplatu.\n\nNadogradite vašu pretplatu kako biste otključali sve opcije.</string>
+    <string name="plans_management_action_manage_v2">Upravljajte ili otkažite</string>
+    <string name="paywall_faq_answer_free_trial_v2">Da, nudimo besplatno probno razdoblje za neke planove i cikluse naplate, dostupno prvi put kada započnete pretplatu. Tijekom probnog razdoblja možete besplatno koristiti sve premium značajke.\n\n Nakon isteka probnog razdoblja, pretplata će se automatski obnoviti po odabranoj cijeni plana.</string>
+    <string name="invite_connect_button_addToGroup_v2">Dodaj člana</string>
 </resources>

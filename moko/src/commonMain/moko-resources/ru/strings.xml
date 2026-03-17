@@ -941,4 +941,8 @@
     <string name="licence_loadingStep_expired">Лицензия истекла</string>
     <string name="licence_loadingStep_notFound">Лицензия не найдена</string>
     <string name="licence_loadingStep_invalid">Лицензия недействительна</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Включение этой настройки требует премиум-плана.\n\nОбновите свой план, чтобы получить доступ ко всем параметрам.</string>
+    <string name="plans_management_action_manage_v2">Управлять или отменить</string>
+    <string name="paywall_faq_answer_free_trial_v2">Да, для некоторых тарифов и периодов оплаты мы предоставляем бесплатный пробный период, доступный при первом оформлении подписки. Вы сможете пользоваться всеми премиум-функциями бесплатно в течение пробного периода.\n\nПосле окончания пробного периода подписка будет автоматически продлена по цене выбранного плана.</string>
+    <string name="invite_connect_button_addToGroup_v2">Добавить участника</string>
 </resources>

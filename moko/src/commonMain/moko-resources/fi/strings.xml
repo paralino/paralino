@@ -941,4 +941,8 @@
     <string name="setting_notificationSocket_connectionType_periodic1_info">Riippuen nykyisestä akkutasosta, ilmoituksia päivitettään säännöllisesti 5-15 minuutin välein.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Akkukäyttö: Korkea</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Muutos muutaman kerran tunnissa</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Tämän asetuksen ottaminen käyttöön vaatii premium-tilauksen.\n\nPäivitä tilauksesi saadaksesi kaikki vaihtoehdot käyttöösi.</string>
+    <string name="plans_management_action_manage_v2">Hallitse tai peruuta</string>
+    <string name="paywall_faq_answer_free_trial_v2">Kyllä. Tarjoamme ilmaisen kokeilujakson joissakin suunnitelmissa ja laskutusjaksoissa, kun aloitat tilauksesi ensimmäistä kertaa. Voit nauttia kaikista premium-ominaisuuksista ilmaiseksi kokeilujakson ajan.\n\nKokeilujakson päätyttyä tilaus uusiutuu automaattisesti valitun suunnitelman hinnalla.</string>
+    <string name="invite_connect_button_addToGroup_v2">Lisää jäsen</string>
 </resources>

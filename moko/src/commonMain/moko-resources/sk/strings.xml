@@ -941,4 +941,8 @@
     <string name="setting_notificationSocket_connectionType_realtime_info">Stále pripojenie v reálnom čase s takmer okamžitým doručovaním notifikácií.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_title">Každých 5-15 minút</string>
     <string name="setting_notificationSocket_connectionType_periodic1_info">V závislosti od aktuálnej úrovne batérie sa notifikácie pravidelne obnovujú každých 5-15 minút</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Povolenie tohto nastavenia vyžaduje prémiový plán.\n\nAktualizujte svoj plán, aby ste odomkli všetky možnosti.</string>
+    <string name="plans_management_action_manage_v2">Spravovať alebo zrušiť</string>
+    <string name="paywall_faq_answer_free_trial_v2">Áno, pri niektorých plánoch a cykloch fakturácie ponúkame bezplatné skúšobné obdobie, ktoré je dostupné pri prvom spustení predplatného. Počas skúšobnej doby môžete využívať všetky prémiové funkcie bez poplatku.\n\n Po skončení skúšobnej doby sa predplatné automaticky obnoví za cenu vybraného plánu.</string>
+    <string name="invite_connect_button_addToGroup_v2">Pridať člena</string>
 </resources>

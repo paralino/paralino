@@ -941,4 +941,8 @@
     <string name="plans_management_providerInfo_google">Η συνδρομή παρέχεται από **Google Play Store**.</string>
     <string name="plans_management_providerInfo_apple">Η συνδρομή παρέχεται από **Apple App Store**.</string>
     <string name="group_member_device_maybe_unreachable_message">Αυτή η συσκευή δεν μπορεί να προσπελαστεί κατόπιν αιτήματος και θα χρειαστεί περισσότερος χρόνος για να ανταποκριθεί.  \nΠαρακαλώ ελέγξτε ξανά την τοποθεσία μετά από κάποιο χρονικό διάστημα.</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Η ενεργοποίηση αυτής της ρύθμισης απαιτεί σχέδιο premium.\n\nΑναβαθμίστε το σχέδιό σας για να ξεκλειδώσετε όλες τις επιλογές.</string>
+    <string name="plans_management_action_manage_v2">Διαχείριση ή ακύρωση</string>
+    <string name="paywall_faq_answer_free_trial_v2">Ναι, προσφέρουμε δωρεάν δοκιμαστική περίοδο σε ορισμένα σχέδια και κύκλους χρέωσης, διαθέσιμη την πρώτη φορά που ξεκινάτε τη συνδρομή σας. Στη συνέχεια μπορείτε να απολαύσετε όλες τις premium λειτουργίες χωρίς χρέωση για τη διάρκεια της δοκιμής.\n\n Μετά τη λήξη της δοκιμής, η συνδρομή θα ανανεωθεί αυτόματα στην επιλεγμένη τιμή του σχεδίου.</string>
+    <string name="invite_connect_button_addToGroup_v2">Προσθήκη μέλους</string>
 </resources>

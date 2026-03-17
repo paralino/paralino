@@ -941,4 +941,8 @@
     <string name="licence_error_notFound">Den angitte lisenskoden ble ikke funnet, vennligst sjekk innføringen din og prøv igjen.</string>
     <string name="licence_loadingStep_expired">Lisens utløpt</string>
     <string name="licence_loadingStep_notFound">Lisens ikke funnet</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Aktivering av denne innstillingen krever et premiumabonnement.\n\nOppgrader abonnementet ditt for å låse opp alle alternativer.</string>
+    <string name="plans_management_action_manage_v2">Administrer eller si opp</string>
+    <string name="paywall_faq_answer_free_trial_v2">Ja, vi tilbyr en gratis prøveperiode på noen planer og faktureringssykluser, tilgjengelig første gang du starter abonnementet ditt. Du kan da bruke alle premiumfunksjonene uten kostnad i prøveperiodens varighet.\n\n Etter at prøveperioden avsluttes, fornyes abonnementet automatisk til den valgte planprisen.</string>
+    <string name="invite_connect_button_addToGroup_v2">Legg til medlem</string>
 </resources>

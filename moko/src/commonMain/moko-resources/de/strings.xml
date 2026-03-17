@@ -956,4 +956,8 @@
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Akkunutzung: Hoch</string>
     <string name="setting_notificationSocket_connectionType_periodic2_title">Einige Male pro Stunde</string>
     <string name="licence_screen_title">Lizenzschlüssel</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Zum Aktivieren dieser Einstellung ist ein Premium‑Tarif erforderlich.\n\nAktualisieren Sie Ihren Tarif, um alle Optionen freizuschalten.</string>
+    <string name="plans_management_action_manage_v2">Verwalten oder kündigen</string>
+    <string name="paywall_faq_answer_free_trial_v2">Ja, wir bieten eine kostenlose Testphase bei einigen Tarifen und Abrechnungszeiträumen an, die beim erstmaligen Start Ihres Abonnements verfügbar ist. Sie können dann alle Premium‑Funktionen während der Dauer der Testphase kostenlos nutzen.\n\nNach Ablauf der Testphase wird das Abonnement automatisch zum ausgewählten Tarifpreis verlängert.</string>
+    <string name="invite_connect_button_addToGroup_v2">Mitglied hinzufügen</string>
 </resources>

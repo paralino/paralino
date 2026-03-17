@@ -941,4 +941,8 @@
     <string name="licence_loadingStep_expired">Licens udløbet</string>
     <string name="licence_loadingStep_notFound">Licens ikke fundet</string>
     <string name="licence_loadingStep_planActive">Licensplan konflikt</string>
+    <string name="setting_location_premium_banner_alert_message_v2">For at aktivere denne indstilling kræves et premiumabonnement.\n\nOpgrader dit abonnement for at få adgang til alle muligheder.</string>
+    <string name="plans_management_action_manage_v2">Administrer eller annuller</string>
+    <string name="paywall_faq_answer_free_trial_v2">Ja, vi tilbyder en gratis prøveperiode på nogle planer og faktureringsperioder, tilgængelig første gang du starter dit abonnement. Du kan derefter nyde alle premiumfunktioner gratis i prøveperiodens varighed.\n\n Efter prøveperioden fornyes abonnementet automatisk til den valgte planpris.</string>
+    <string name="invite_connect_button_addToGroup_v2">Tilføj medlem</string>
 </resources>

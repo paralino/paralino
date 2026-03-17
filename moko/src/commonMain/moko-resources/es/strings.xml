@@ -956,4 +956,8 @@
     <string name="setting_notificationSocket_connectionType_periodic3_tag">Uso de batería: Bajo</string>
     <string name="setting_notificationSocket_registration_error_message">¡No se pudo confirmar la conexión, intente nuevamente!</string>
     <string name="notifications_socketService_message_lastSync">Última actualización: %s</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Activar esta configuración requiere un plan premium.\n\nActualice su plan para desbloquear todas las opciones.</string>
+    <string name="plans_management_action_manage_v2">Administrar o cancelar</string>
+    <string name="paywall_faq_answer_free_trial_v2">Sí, ofrecemos un período de prueba gratuito en algunos planes y ciclos de facturación, disponible la primera vez que inicie su suscripción. Podrá disfrutar de todas las funciones premium sin coste durante la duración de la prueba.\n\nDespués de que finalice la prueba, la suscripción se renovará automáticamente al precio del plan seleccionado.</string>
+    <string name="invite_connect_button_addToGroup_v2">Agregar miembro</string>
 </resources>

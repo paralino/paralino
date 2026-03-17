@@ -956,4 +956,8 @@
     <string name="notifications_socketService_message_connecting">Verbinden...</string>
     <string name="setting_notificationSocket_connectionType_periodic1_info">Afhankelijk van het huidige batterijniveau worden meldingen periodiek om de 5-15 minuten ververst.</string>
     <string name="setting_notificationSocket_connectionType_periodic1_tag">Batterijverbruik: Hoog</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Het inschakelen van deze instelling vereist een premium-abonnement.\n\nUpgrade uw abonnement om alle opties te ontgrendelen.</string>
+    <string name="plans_management_action_manage_v2">Beheren of annuleren</string>
+    <string name="paywall_faq_answer_free_trial_v2">Ja, we bieden een gratis proefperiode aan voor sommige plannen en factureringscycli, beschikbaar de eerste keer dat u uw abonnement start. U kunt dan alle premiumfuncties kosteloos gebruiken gedurende de proefperiode.\n\nNa afloop van de proefperiode wordt het abonnement automatisch verlengd tegen de prijs van het gekozen plan.</string>
+    <string name="invite_connect_button_addToGroup_v2">Lid toevoegen</string>
 </resources>

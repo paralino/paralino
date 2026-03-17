@@ -956,4 +956,8 @@
     <string name="licence_code_hint">Ključ licence</string>
     <string name="licence_button_activate">Aktiviraj</string>
     <string name="licence_success_message">Licenca je uspješno aktivirana</string>
+    <string name="setting_location_premium_banner_alert_message_v2">Omogućavanje ove postavke zahtijeva premium plan.\n\nNadogradite svoj plan kako biste otključali sve opcije.</string>
+    <string name="plans_management_action_manage_v2">Upravljajte ili otkažite</string>
+    <string name="paywall_faq_answer_free_trial_v2">Da, nudimo besplatni probni period za neke planove i cikluse naplate, dostupan prvi put kada započnete pretplatu. Tada možete uživati u svim premium funkcijama bez naknade tokom trajanja probnog perioda.\n\n Nakon isteka probnog perioda, pretplata će se automatski obnoviti po cijeni odabranog plana.</string>
+    <string name="invite_connect_button_addToGroup_v2">Dodajte člana</string>
 </resources>
