@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.unifiedpush.android.connector.UnifiedPush
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class UnifiedPushManager(
@@ -60,7 +59,7 @@ class UnifiedPushManager(
             val savedDistributor = appPrefs.selectedUnifiedPushDistributor
             logg.tag("push_notifications").i("Refresh unifiedPush distributor, current: ${currentDistributor}, saved: $savedDistributor")
             if (currentDistributor == savedDistributor && !savedDistributor.isNullOrBlank()) {
-                if (_refreshTime.value?.isOlderThan(2.minutes) != false) {
+                if (_refreshTime.value?.isOlderThan(2.days) != false) {
                     logg.tag("push_notifications").i("Distributors match, refresh registration")
                     _refreshTime.update { nowUTC() }
                     registerApp(distributor = savedDistributor)
