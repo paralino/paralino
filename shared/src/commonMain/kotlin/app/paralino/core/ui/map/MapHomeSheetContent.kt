@@ -268,6 +268,7 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
+                        isPersonalSpace = readyState.isPersonalSpace,
                         members = members,
                         onEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
@@ -285,6 +286,7 @@ fun MapHomeSheetContent(
 }
 
 private fun LazyListScope.membersList(
+    isPersonalSpace: Boolean,
     members: List<GroupMemberItemState>,
     onEvent: (GroupMemberItemEvent) -> Unit,
     onAddNewMember: () -> Unit
@@ -303,12 +305,14 @@ private fun LazyListScope.membersList(
         )
     }
 
-    this.item(key = "add_new_member") {
-        AddNewActionButton(
-            modifier = Modifier,
-            text = stringResource(MR.strings.invite_connect_screen_title),
-            action = onAddNewMember
-        )
+    if (!isPersonalSpace) {
+        this.item(key = "add_new_member") {
+            AddNewActionButton(
+                modifier = Modifier,
+                text = stringResource(MR.strings.invite_connect_screen_title),
+                action = onAddNewMember
+            )
+        }
     }
 }
 
