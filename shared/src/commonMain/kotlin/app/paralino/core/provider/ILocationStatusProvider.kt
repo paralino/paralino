@@ -26,7 +26,8 @@ data class LocationConditionStatus constructor(
     val isGpsOn: Boolean,
     val isFinePermissionAllowed: Boolean,
     val isCoarsePermissionAllowed: Boolean,
-    val isBackgroundPermissionAllowed: Boolean
+    val isBackgroundPermissionAllowed: Boolean,
+    val isUnrestrictedBackgroundPermissionAllowed: Boolean,
 ) {
 
     val isAnyLocationPermissionAllowed: Boolean = isCoarsePermissionAllowed || isFinePermissionAllowed
@@ -39,14 +40,14 @@ data class LocationConditionStatus constructor(
         return isAnyLocationPermissionAllowed && (if (forAlwaysOnAccess) isBackgroundPermissionAllowed else true)
     }
 
-    fun getPossibleErrors(forBackground: Boolean = true): MutableList<ConditionErrorType> {
+    fun getPossibleErrors(): MutableList<ConditionErrorType> {
         val list = mutableListOf<ConditionErrorType>()
         if (!isGpsOn) list.add(ConditionErrorType.GPS)
 
         if (!isCoarsePermissionAllowed) list.add(ConditionErrorType.PermissionLocation.PermissionLocationAny)
         else if (!isFinePermissionAllowed) list.add(ConditionErrorType.PermissionLocation.PermissionLocationPrecise)
 
-        if (!isBackgroundPermissionAllowed && forBackground) list.add(ConditionErrorType.PermissionLocationBackground)
+        if (!isBackgroundPermissionAllowed) list.add(ConditionErrorType.PermissionLocationBackground)
         return list
     }
 

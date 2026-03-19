@@ -7,16 +7,17 @@ import app.paralino.core.models.base.PlanConfig
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.group.UserGroupWithMembers
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.models.location.LocationSharingContract
 import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemState
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
-import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
@@ -24,15 +25,21 @@ import app.paralino.core.ui.map.BottomSheetPosition
 
 sealed class MapHomeScreenState {
     abstract val currentUserImage: ImageModel
-    abstract val isSatelliteMode: Boolean
+    abstract val isSatelliteModeEnabled: Boolean
     abstract val alertDialog: MainAlertDialog?
     abstract val selectedGroupId: String?
     abstract val selectedGroupImage: ImageModel?
     abstract val isPersonalSpace: Boolean
     abstract val isSheetEnabled: Boolean
     abstract val defaultSheetPosition: BottomSheetPosition
+    abstract val androidMapSDKProvider: MapsSDKProvider?
 
     val deviceType: DeviceType = DeviceType.current
+    val hasSatelliteMode: Boolean get() = when (deviceType) {
+        DeviceType.Android -> androidMapSDKProvider?.hasSatelliteMaps != false
+        DeviceType.iOS -> true
+    }
+    val isSatelliteModeActive: Boolean get() = if (hasSatelliteMode) isSatelliteModeEnabled else false
 
     data class Ready constructor(
         val groupOrSpaceId: GroupOrSpaceId,
@@ -62,8 +69,10 @@ sealed class MapHomeScreenState {
         val sharingEndTime: String?,
         val verified: Boolean,
         val groupPlanConfig: PlanConfig,
+        val isOverLimit: Boolean,
+        override val androidMapSDKProvider: MapsSDKProvider,
         override val alertDialog: MainAlertDialog?,
-        override val isSatelliteMode: Boolean = false
+        override val isSatelliteModeEnabled: Boolean = false
     ) : MapHomeScreenState() {
         override val isPersonalSpace = groupOrSpaceId.isPersonalSpace
         val hasPersonalSpaceIntroBanner = isPersonalSpace && isFirstTimeInPersonalSpace
@@ -108,9 +117,9 @@ sealed class MapHomeScreenState {
         val locationHistoryMode: MapHomeScreenFocusType.LOCATION_HISTORY? = mapHomeScreenFocusType.asLocationHistory
 
         override val isSheetEnabled: Boolean = if (isPersonalSpace) {
-            !isFirstTimeInPersonalSpace
+            !isFirstTimeInPersonalSpace && !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
         } else {
-            true
+            !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
         }
 
         override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
@@ -130,7 +139,8 @@ sealed class MapHomeScreenState {
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
         override val isPersonalSpace: Boolean,
-        override val isSatelliteMode: Boolean = false,
+        override val androidMapSDKProvider: MapsSDKProvider?,
+        override val isSatelliteModeEnabled: Boolean = false,
         override val alertDialog: MainAlertDialog? = null,
     ) : MapHomeScreenState() {
         override val isSheetEnabled: Boolean = false
@@ -150,20 +160,17 @@ sealed class MapHomeScreenEvent {
     data object OpenGroupCreateScreen : MapHomeScreenEvent()
     data object OpenPaywall : MapHomeScreenEvent()
     data object OpenSettings : MapHomeScreenEvent()
+    data object OpenMapProviderSettings : MapHomeScreenEvent()
     data class OpenGroupPicker(val showPersonalSpace: Boolean) : MapHomeScreenEvent()
     data object OpenPersonalSpace : MapHomeScreenEvent()
     data class SharePersonalCode(val content: String): MapHomeScreenEvent()
     data class ShowPlanLimitAlert(val limit: Int?) : MapHomeScreenEvent()
     data class OpenSharingStart(val groupId: String) : MapHomeScreenEvent()
+    data class OpenMemberInviteScreen(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaces(val groupId: String) : MapHomeScreenEvent()
-    data class OpenCreatePlace(val groupId: String) : MapHomeScreenEvent()
+    data class OpenCreatePlace(val groupId: String, val location: LatLng?) : MapHomeScreenEvent()
     data class OpenGroupDetails(val groupId: String) : MapHomeScreenEvent()
     data class OpenPlaceDetails(val groupId: String, val placeId: String) : MapHomeScreenEvent()
-    data class OpenLocationHistory(
-        val groupId: String,
-        val memberUserId: String,
-        val deviceId: String?
-    ) : MapHomeScreenEvent()
     data class OpenExternalNavigation(
         val lat: Double,
         val lng: Double,
@@ -188,7 +195,8 @@ sealed interface MapHomeScreenUiEvent {
     data object OnFocusOnMembersClick : MapHomeScreenUiEvent
     data object OnFocusOnPlacesClick : MapHomeScreenUiEvent
     data object OnOpenPlacesScreen : MapHomeScreenUiEvent
-    data object OnOpenCreatePlaceScreen : MapHomeScreenUiEvent
+    data object OnOpenMemberInviteScreen : MapHomeScreenUiEvent
+    data class OnOpenCreatePlaceScreen(val location: LatLng?) : MapHomeScreenUiEvent
     data object OnMapTouch : MapHomeScreenUiEvent
     data object OnGroupPickerClick : MapHomeScreenUiEvent
     data object OnGroupDetailsClick : MapHomeScreenUiEvent
@@ -199,6 +207,7 @@ sealed interface MapHomeScreenUiEvent {
     data object OnBackClicked : MapHomeScreenUiEvent
     data object ConfirmPersonalSpaceIntro : MapHomeScreenUiEvent
     data object CloseLocationHistory : MapHomeScreenUiEvent
+    data object OnOverLimitsBannerTap : MapHomeScreenUiEvent
 }
 
 enum class MapSheetSelectedContentType {
@@ -249,17 +258,8 @@ sealed interface MapScreenViewSourceType {
 
 data class MapScreenLifecycleData(
     val groupId: GroupOrSpaceId,
+    val planConfig: PlanConfig,
     val isAppFocused: Boolean,
     val isUiFocused: Boolean,
     val mapFocusType: MapHomeScreenFocusType,
 )
-
-sealed interface GroupWithMembersOrUserSpace {
-    val id: GroupOrSpaceId
-    data class Group(val group: UserGroupWithMembers): GroupWithMembersOrUserSpace {
-        override val id: GroupOrSpaceId = group.id.asGroupOrSpaceId()
-    }
-    data class PersonalSpace(val space: UserPersonalSpaceModel): GroupWithMembersOrUserSpace {
-        override val id: GroupOrSpaceId = UserGroup.groupPersonalDevicesId.asGroupOrSpaceId()
-    }
-}

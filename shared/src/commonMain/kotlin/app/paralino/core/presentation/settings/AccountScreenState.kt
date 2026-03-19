@@ -20,7 +20,8 @@ data class AccountScreenState constructor(
     val userPlan: PlanConfig,
     val appReviewUrl: String,
     val isAppReviewExpanded: Boolean,
-    val isAppReviewVisible: Boolean
+    val isAppReviewVisible: Boolean,
+    val errors: List<ConditionErrorType>
 ) {
     val loadingAction get() = logoutState is Payload.Loading || deleteAccountState is Payload.Loading
 }
@@ -30,8 +31,7 @@ data class UserState constructor(
     val image: ImageModel?,
     val email: String,
     val personalCode: String?,
-    val isGuestUser: Boolean,
-    val errorItem: ConditionErrorType?,
+    val isGuestUser: Boolean
 )
 
 sealed class AccountScreenEvent() {
@@ -47,6 +47,7 @@ sealed class AccountScreenUiEvent() {
     data object TryToOpenAppReview: AccountScreenUiEvent()
     data object OpenAppReview: AccountScreenUiEvent()
     data object CloseAppReview: AccountScreenUiEvent()
+    data object TriggerAppUpdate: AccountScreenUiEvent()
     data class Copy(val content: String): AccountScreenUiEvent()
     data class DialogAction(val action: AlertDialogAction) : AccountScreenUiEvent()
 }

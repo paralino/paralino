@@ -58,7 +58,6 @@ data class LocationHistoryScreenState(
     val selectedLocationId: String?,
     val daySelectorState: LocationHistoryDateSelectorState,
     val planConfig: PlanConfig?,
-    val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
 ) {
     val startDate: LocalDate = selectedDate.minus(DatePeriod(days = daySelectorState.dateRangeDays?.minus(1) ?: 0))
@@ -307,7 +306,6 @@ data class LocationHistoryScreenState(
                 selectedLocationId = null,
                 daySelectorState = LocationHistoryDateSelectorState(maxDateRangeDays = null),
                 planConfig = null,
-                isSatelliteMode = false,
                 alertDialog = null
             )
         }
@@ -339,7 +337,6 @@ data class LocationHistoryScreenUiState(
     val previousFocusType: LocationHistoryScreenFocusType,
     val selectedLocationId: String?,
     val daySelectorState: LocationHistoryDateSelectorState,
-    val isSatelliteMode: Boolean = false,
     val alertDialog: MainAlertDialog? = null,
     
     // Computed properties from LocationHistoryScreenState
@@ -383,7 +380,6 @@ data class LocationHistoryScreenUiState(
                 previousFocusType = screenState.previousFocusType,
                 selectedLocationId = screenState.selectedLocationId,
                 daySelectorState = screenState.daySelectorState,
-                isSatelliteMode = screenState.isSatelliteMode,
                 alertDialog = screenState.alertDialog,
                 
                 // Computed properties
@@ -568,6 +564,7 @@ sealed interface LocationHistoryUiEvent {
     data class DialogAction(val action: AlertDialogAction) : LocationHistoryUiEvent
     data class OnMarkerClick(val pin: MapPinData) : LocationHistoryUiEvent
     data class OnPointClicked(val point: LocationHistoryPointState) : LocationHistoryUiEvent
+    data class OnPointIdClicked(val pointId: String) : LocationHistoryUiEvent
     data class ExpandCluster(val cluster: LocationHistoryPointState.Cluster) : LocationHistoryUiEvent
     data class OnMapLongPress(val lat: Double, val lng: Double) : LocationHistoryUiEvent
     data class SetHistoryProgress(val progress: Int) : LocationHistoryUiEvent
@@ -582,7 +579,6 @@ sealed interface LocationHistoryUiEvent {
     data object ToggleClusterPins : LocationHistoryUiEvent
     data object OnDeleteSelectedLocationRequest : LocationHistoryUiEvent
     data class OnSelectFocusType(val type: LocationHistoryScreenFocusType) : LocationHistoryUiEvent
-    data object OnMapModeSwitch : LocationHistoryUiEvent
     data object OnMapTouch : LocationHistoryUiEvent
     data object ToggleMapFilter : LocationHistoryUiEvent
     data class OnDateSelectorAction(val action: LocationHistoryDateSelectionAction) : LocationHistoryUiEvent

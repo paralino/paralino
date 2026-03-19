@@ -32,14 +32,14 @@ import app.paralino.android.ui.navigation.loggedOutGraph
 import app.paralino.core.MR
 import app.paralino.core.app_update.AppUpdateStatus
 import app.paralino.core.domain.user.AppAccountState
+import app.paralino.core.logg
 import app.paralino.core.models.Resource
-import app.paralino.core.models.base.ConfigData
+import app.paralino.core.presentation.main.MainActivityUiEvent
 import app.paralino.core.presentation.main.MainViewModel
-import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.ui.components.AppSnackbar
 import app.paralino.core.ui.components.MessageDispatcherEffect
+import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.LoadingDialog
-import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.ui.settings.billing.BillingScreenSourceType
@@ -62,8 +62,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             RootApp(
                 vm = vm,
-                onAppClose = { finishAffinity() },
-                onNewVersionDownload = { vm.startAppUpdate() }
+                onAppClose = { finishAffinity() }
             )
         }
         handleExtraDeeplink(intent?.data)
@@ -92,8 +91,7 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun RootApp(
     vm: MainViewModel,
-    onAppClose: () -> Unit,
-    onNewVersionDownload: (ConfigData) -> Unit
+    onAppClose: () -> Unit
 ) {
     AppTheme {
         val appState = rememberAppState()
@@ -179,24 +177,15 @@ fun RootApp(
                     }
                 }
 
-                if (uiState.isSessionExpiredShown) {
-                    MainAlertDialog.SessionExpired.Show {
-                        vm.cancelSessionExpired()
+                uiState.sessionExpiredDialog?.let { dialog ->
+                    dialog.Show {
+                        vm.onEvent(MainActivityUiEvent.DialogAction(AlertDialogAction(dialog, it)))
                     }
                 }
 
-                when (uiState.updateType) {
-                    null, is AppUpdateType.NONE -> null
-                    is AppUpdateType.SOFT -> MainAlertDialog.AppVersionInfo(forceUpdate = false)
-                    is AppUpdateType.FORCE,
-                    is AppUpdateType.FORCE_AND_CANCEL -> MainAlertDialog.AppVersionInfo(forceUpdate = true)
-                }?.Show {
-                    if (it == MainAlertDialog.Buttons.buttonCancel) {
-                        vm.cancelVersion()
-                    } else if (it == MainAlertDialog.Buttons.buttonOk) {
-                        uiState.updateType?.configData?.let {
-                            onNewVersionDownload(it)
-                        }
+                uiState.appUpdateDialog?.let { dialog ->
+                    dialog.Show {
+                        vm.onEvent(MainActivityUiEvent.DialogAction(AlertDialogAction(dialog, it)))
                     }
                 }
             }
@@ -205,7 +194,11 @@ fun RootApp(
         when (val finalState = uiState.appUpdateStatus) {
             AppUpdateStatus.Idle -> {}
             is AppUpdateStatus.Downloading -> {
-                LoadingDialog(text = "Downloading...", progress = finalState.progress)
+                LoadingDialog(
+                    text = listOfNotNull("Downloading...", finalState.mb).joinToString(separator = "\n"),
+                    progress = finalState.progress,
+                    isCircular = false
+                )
             }
 
             AppUpdateStatus.Installing -> {
@@ -255,7 +248,7 @@ fun AppStartScreen(
         ) { innerPadding ->
             NavHost(
                 modifier = Modifier.padding(innerPadding),
-                navController = appState.navController,
+                navController = appState.navController.navController,
                 startDestination = AppScreen.LoggedOut.routeSignature
             ) {
                 loggedOutGraph(appState, start = start)
@@ -286,11 +279,19 @@ fun MainAppScreen(
             }
 
             is DeeplinkType.PaywallScreen -> {
+                logg.w("billing", "Open billing deeplink -> type: ${pendingDeeplink.type} - action: ${pendingDeeplink.action}")
                 appState.navController.navigate(
                     AppScreen.MainHome.BillingPaywall.route(
                         groupId = null,
                         type = BillingScreenSourceType.NORMAL
                     )
+                )
+                onDeeplinkComplete()
+            }
+
+            is DeeplinkType.PushNotificationServiceScreen -> {
+                appState.navController.navigate(
+                    AppScreen.Settings.NotificationSocket.routeSignature
                 )
                 onDeeplinkComplete()
             }

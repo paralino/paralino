@@ -1,20 +1,22 @@
 package app.paralino.core.presentation.map
 
+import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.models.base.asGroupOrSpaceId
+import app.paralino.core.models.data
 import app.paralino.core.models.group.UserGroup
+import app.paralino.core.presentation.common.ICoreMessageDispatcher
 import app.paralino.core.presentation.groups.GroupMemberItemEvent
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
-import app.paralino.core.presentation.map.MapHomeScreenEvent.*
-import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenCreatePlace
-import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenExternalNavigation
-import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaceDetails
-import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenPlaces
-import app.paralino.core.presentation.map.MapHomeScreenEvent.OpenSharingStart
-import app.paralino.core.presentation.map.MapScreenViewSourceType.*
+import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
+import app.paralino.core.provider.localizedString
+import app.paralino.core.repo.group.UserGroupLocalDataSource
+import app.paralino.core.ui.components.AppSnackbarData
+import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.onAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +33,9 @@ class MapEventHandler(
     private val uiState: StateFlow<MapHomeScreenState>,
     private val eventChannel: Channel<MapHomeScreenEvent?>,
     private val appPrefs: AppPrefs,
+    private val groupLocal: UserGroupLocalDataSource,
     private val uiFocusedStatus: MutableStateFlow<Boolean>,
+    private val messageDispatcher: ICoreMessageDispatcher,
     private val updateUiState: (MapHomeScreenState) -> Unit,
     private val updateReadyState: ((MapHomeScreenState.Ready) -> MapHomeScreenState.Ready) -> Unit,
     private val coroutineScope: CoroutineScope
@@ -90,7 +94,7 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OnMapModeSwitch -> {
-                mapStateManager.switchMapMode { transform ->
+                mapStateManager.switchMapMode(uiState) { transform ->
                     updateUiState(transform(uiState.value))
                 }
             }
@@ -110,26 +114,37 @@ class MapEventHandler(
             MapHomeScreenUiEvent.OnGroupDetailsClick -> {
                 uiState.value.asReady()?.let {
                     if (it.groupOrSpaceId.isPersonalSpace) {
-                        eventChannel.trySend(OpenPersonalSpace)
+                        eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
                     } else {
-                        eventChannel.trySend(OpenGroupDetails(groupId = it.groupOrSpaceId.id))
+                        eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = it.groupOrSpaceId.id))
                     }
                 }
             }
 
             MapHomeScreenUiEvent.OnGroupPickerClick -> {
-                eventChannel.trySend(OpenGroupPicker(showPersonalSpace = false))
+                eventChannel.trySend(MapHomeScreenEvent.OpenGroupPicker(showPersonalSpace = false))
             }
 
-            MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
+            is MapHomeScreenUiEvent.OnOpenCreatePlaceScreen -> {
                 uiState.value.asReady()?.let {
-                    eventChannel.trySend(OpenCreatePlace(groupId = it.groupOrSpaceId.id))
+                    eventChannel.trySend(
+                        MapHomeScreenEvent.OpenCreatePlace(
+                            groupId = it.groupOrSpaceId.id,
+                            location = event.location
+                        )
+                    )
                 }
             }
 
             MapHomeScreenUiEvent.OnOpenPlacesScreen -> {
                 uiState.value.asReady()?.let {
-                    eventChannel.trySend(OpenPlaces(groupId = it.groupOrSpaceId.id))
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPlaces(groupId = it.groupOrSpaceId.id))
+                }
+            }
+
+            MapHomeScreenUiEvent.OnOpenMemberInviteScreen -> {
+                uiState.value.asReady()?.let {
+                    eventChannel.trySend(MapHomeScreenEvent.OpenMemberInviteScreen(groupId = it.groupOrSpaceId.id))
                 }
             }
 
@@ -138,20 +153,20 @@ class MapEventHandler(
             }
 
             MapHomeScreenUiEvent.OnSettingsClick -> {
-                eventChannel.trySend(OpenSettings)
+                eventChannel.trySend(MapHomeScreenEvent.OpenSettings)
             }
 
             MapHomeScreenUiEvent.OnSharingStartClick -> {
                 uiState.value.asReady()?.let {
-                    eventChannel.trySend(OpenSharingStart(groupId = it.groupOrSpaceId.id))
+                    eventChannel.trySend(MapHomeScreenEvent.OpenSharingStart(groupId = it.groupOrSpaceId.id))
                 }
             }
 
             is MapHomeScreenUiEvent.OpenGroupDetails -> {
                 if (event.groupId.isPersonalSpace) {
-                    eventChannel.trySend(OpenPersonalSpace)
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPersonalSpace)
                 } else {
-                    eventChannel.trySend(OpenGroupDetails(groupId = event.groupId.id))
+                    eventChannel.trySend(MapHomeScreenEvent.OpenGroupDetails(groupId = event.groupId.id))
                 }
             }
 
@@ -165,13 +180,13 @@ class MapEventHandler(
                         )
                     }
                 } else {
-                    eventChannel.trySend(OpenGroupPicker(showPersonalSpace = false))
+                    eventChannel.trySend(MapHomeScreenEvent.OpenGroupPicker(showPersonalSpace = false))
                 }
             }
 
             MapHomeScreenUiEvent.SwitchToPersonalSpace -> {
                 if (uiState.value.isPersonalSpace) {
-                    eventChannel.trySend(OpenGroupPicker(showPersonalSpace = true))
+                    eventChannel.trySend(MapHomeScreenEvent.OpenGroupPicker(showPersonalSpace = true))
                 } else {
                     coroutineScope.launch {
                         groupStateManager.switchGroup(MapScreenViewSourceType.PersonalSpace)
@@ -210,6 +225,12 @@ class MapEventHandler(
                             ?.member
                             ?: MapHomeScreenFocusType.NONE
                     )
+                }
+            }
+
+            MapHomeScreenUiEvent.OnOverLimitsBannerTap -> {
+                coroutineScope.launch {
+                    showOverLimitInfoMessage()
                 }
             }
         }
@@ -296,7 +317,7 @@ class MapEventHandler(
             is GroupMemberItemEvent.onDirectionsRequest -> {
                 uiState.value.asReady()?.let {
                     eventChannel.trySend(
-                        OpenExternalNavigation(
+                        MapHomeScreenEvent.OpenExternalNavigation(
                             lat = event.action.lat,
                             lng = event.action.lng,
                             name = event.action.title,
@@ -312,7 +333,7 @@ class MapEventHandler(
         uiState.value.asReady()?.let { readyState ->
             if (readyState.focusedPlace?.id == event.place.id) {
                 eventChannel.trySend(
-                    OpenPlaceDetails(
+                    MapHomeScreenEvent.OpenPlaceDetails(
                         groupId = readyState.groupOrSpaceId.id,
                         placeId = event.place.id
                     )
@@ -322,6 +343,41 @@ class MapEventHandler(
                     uiState,
                     updateReadyState,
                     event.place.asFocusedMarker()
+                )
+            }
+        }
+    }
+
+    private suspend fun showOverLimitInfoMessage() {
+        if (uiState.value.isPersonalSpace) {
+            messageDispatcher.showSnackbarForResult(
+                data = AppSnackbarData(
+                    text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
+                    duration = SnackbarDuration.Forever,
+                    actionText = MR.strings.plans_banner_settings_action_small.localizedString()
+                )
+            )?.result?.onAction {
+                eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+            }
+        } else {
+            val group = groupLocal.allGroupsState.value.data?.firstOrNull {
+                it.id == uiState.value.selectedGroupId
+            }
+
+            if (group?.group?.isCurrentUserOwner == true) {
+                messageDispatcher.showSnackbarForResult(
+                    data = AppSnackbarData(
+                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever,
+                        actionText = MR.strings.plans_banner_settings_action_small.localizedString()
+                    )
+                )?.result?.onAction {
+                    eventChannel.trySend(MapHomeScreenEvent.OpenPaywall)
+                }
+            } else {
+                messageDispatcher.showSnackbar(
+                    text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
+                    duration = SnackbarDuration.Forever
                 )
             }
         }

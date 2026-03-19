@@ -11,14 +11,11 @@ import app.paralino.core.logg
 import app.paralino.core.models.raw.UserCryptoKeyRaw
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
-import app.paralino.core.repo.LocationSharingManager
+import app.paralino.core.provider.NotificationSocketServiceManager
 import app.paralino.core.repo.base.AccessLogDataSource
-import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.location.IGeofenceManager
-import app.paralino.core.repo.personal_code.PersonalCodesRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.IPushProviderManager
-import app.paralino.core.repo.user.UserConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.utils.exceptions.UnauthorizedException
 import kotlinx.coroutines.cancelChildren
@@ -37,6 +34,7 @@ class LogoutUseCase(
     private val limitedExecutionParentManager: LimitedExecutionParentManager,
     private val accessLogs: AccessLogDataSource,
     private val appPrefs: AppPrefs,
+    private val notificationServiceManager: NotificationSocketServiceManager,
     private val appMainDatabase: MainDatabaseHelper
 ) : LimitedExecution(scope = limitedExecutionParentManager) {
 

@@ -20,13 +20,13 @@ import app.paralino.core.domain.crypto.NoOpMemberCryptoKeyRotation
 import app.paralino.core.domain.crypto.NoOpMemberDeviceKeyRotation
 import app.paralino.core.domain.crypto.NoOpPersonalDeviceKeyRotation
 import app.paralino.core.domain.crypto.PersonalDeviceCryptoKeyRotation
-import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
-import app.paralino.core.domain.location.history.IOSLocationHistoryUploadEngine
 import app.paralino.core.domain.location.IReRegisterDeviceUseCase
 import app.paralino.core.domain.location.LocationCacheRepository
-import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.location.NoOpReRegisterDeviceUseCase
 import app.paralino.core.domain.location.ReRegisterDeviceUseCase
+import app.paralino.core.domain.location.history.ILocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.IOSLocationHistoryUploadEngine
+import app.paralino.core.domain.location.history.LocationHistoryUploadEngine
 import app.paralino.core.domain.notifications.IGroupActivityNotificationPresenter
 import app.paralino.core.domain.notifications.IInfoMessagesNotificationPresenter
 import app.paralino.core.domain.notifications.IPlaceActivityNotificationPresenter
@@ -41,11 +41,9 @@ import app.paralino.core.notifications.IOSNSEPlaceCreatedNotificationProcessor
 import app.paralino.core.notifications.IOSNSEPushNotificationHandler
 import app.paralino.core.presentation.groups.detail.GroupDetailViewModel
 import app.paralino.core.presentation.groups.edit.CreateGroupViewModel
-import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.groups.settings.BatteryNotificationsViewModel
 import app.paralino.core.presentation.groups.settings.GroupSettingsViewModel
 import app.paralino.core.presentation.history.LocationHistoryDeleteViewModel
-import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.presentation.invite.input.MemberInviteViewModel
 import app.paralino.core.presentation.invite.manage.PersonalCodeViewModel
 import app.paralino.core.presentation.login.LoggedOutViewModel
@@ -57,6 +55,7 @@ import app.paralino.core.presentation.login.passwordreset.ResetPasswordViewModel
 import app.paralino.core.presentation.login.recover.RecoverKeysViewModel
 import app.paralino.core.presentation.main.MainViewModel
 import app.paralino.core.presentation.map.MapHomeViewModel
+import app.paralino.core.presentation.onboarding.AccountOnboardingViewModel
 import app.paralino.core.presentation.onboarding.WelcomeOnboardingViewModel
 import app.paralino.core.presentation.personal_space.PersonalSpaceViewModel
 import app.paralino.core.presentation.personal_space.settings.PersonalSpaceSettingsViewModel
@@ -71,11 +70,13 @@ import app.paralino.core.presentation.settings.appstatus.AppStatusDebugViewModel
 import app.paralino.core.presentation.settings.billing.PaywallViewModel
 import app.paralino.core.presentation.settings.billing.PlanInfoViewModel
 import app.paralino.core.presentation.settings.billing.SubscriptionViewModel
+import app.paralino.core.presentation.settings.billing.licence.LicenceCodeViewModel
 import app.paralino.core.presentation.settings.blocklist.BlocklistViewModel
 import app.paralino.core.presentation.settings.convertaccount.ConvertAccountViewModel
 import app.paralino.core.presentation.settings.editprofile.EditProfileViewModel
 import app.paralino.core.presentation.settings.emailchange.ChangeEmailViewModel
 import app.paralino.core.presentation.settings.general.GeneralInfoViewModel
+import app.paralino.core.presentation.settings.generic.AppSettingsViewModel
 import app.paralino.core.presentation.settings.generic.DefaultNavigationAppViewModel
 import app.paralino.core.presentation.settings.generic.MeasurementSystemViewModel
 import app.paralino.core.presentation.settings.generic.NotificationsGroupingViewModel
@@ -183,6 +184,7 @@ object KoinIOS {
                     single { LocationRepositoryWrapper(get(), get(), get()) }
                     single { IOSNSEPlaceCreatedNotificationProcessor(get(), get(), get(), get()) }
                     single { IOSNSEPushNotificationHandler(get(), get(), get(), get()) }
+                    single { PlatformUrlHandler() } bind IPlatformUrlHandler::class
 
                     when (appBuildConfig.appHost) {
                         AppHost.MAIN_APP -> {
@@ -213,11 +215,11 @@ object KoinIOS {
 
     private fun createViewModelModule(): Module {
         return module {
-            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get()) }
+            factory { AccountOnboardingViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
             factory {
-                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+                MapHomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
             }
-            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { SettingsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (startScreenType: LoginScreenUiType) ->
                 LoginViewModel(get(), get(), get(), get(), startScreenType, get(), get())
             }
@@ -245,7 +247,7 @@ object KoinIOS {
             factory { (groupID: String) ->
                 GroupSettingsViewModel(groupID, get(), get(), get(), get(), get(), get())
             }
-            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { ChangeEmailViewModel(get(), get(), get()) }
             factory { ChangePasswordViewModel(get(), get(), get(), get()) }
             factory { ConvertAccountViewModel(get(), get(), get()) }
@@ -270,7 +272,8 @@ object KoinIOS {
                     groupRepo = get(),
                     personalSpaceRepo = get(),
                     cryptoCore = get(),
-                    appPrefs = get()
+                    appPrefs = get(),
+                    premiumStatusManager = get()
                 )
             }
             factory { (groupID: String, placeId: String?, lat: Double?, lng: Double?) ->
@@ -297,8 +300,8 @@ object KoinIOS {
             }
             factory { BlocklistViewModel(get()) }
             factory { AppStatusDebugViewModel(get(), get(), get(), get(), get()) }
-            factory { SubscriptionViewModel(get(), get(), get(), get()) }
-            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get()) }
+            factory { SubscriptionViewModel(get(), get(), get(), get(), get(), get()) }
+            factory { (type: BillingScreenSourceType) -> PaywallViewModel(type, get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PlanInfoViewModel(get(), get()) }
             factory { GeneralInfoViewModel(get(), get()) }
             factory { LocationSettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
@@ -308,11 +311,12 @@ object KoinIOS {
             factory { NotificationsGroupingViewModel(get()) }
             factory { DefaultNavigationAppViewModel(get()) }
             factory { PlaceSearchSettingsViewModel(get(), get()) }
-            factory { (groupId: String, memberUserId: String, deviceId: String?) -> LocationHistoryViewModel(groupId = groupId, memberUserId = memberUserId, deviceId = deviceId, get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { (groupId: String) -> LocationHistoryDeleteViewModel(groupId = groupId.asGroupOrSpaceId(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             factory { PersonalSpaceSettingsViewModel(get()) }
             factory { (groupId: String, placeId: String) -> PlaceSensitivityViewModel(groupId = groupId, placeId = placeId, get(), get(), get(), get()) }
+            factory { AppSettingsViewModel(get(), get()) }
+            factory { LicenceCodeViewModel(get(), get()) }
         }
     }
 
@@ -391,10 +395,11 @@ object KoinIOS {
         val notificationGroupingVM get() = get<NotificationsGroupingViewModel>()
         val navigationAppVM get() = get<DefaultNavigationAppViewModel>()
         val placeSearchSettingsVM get() = get<PlaceSearchSettingsViewModel>()
-        fun locationHistoryVM(groupId: String, memberUserId: String, deviceId: String?) = get<LocationHistoryViewModel> { parametersOf(groupId, memberUserId, deviceId) }
         fun locationHistorySettingsVM(groupId: String) = get<LocationHistoryDeleteViewModel>() { parametersOf(groupId) }
         val personalSpaceVM get() = get<PersonalSpaceViewModel>()
         val personalSpaceSettingsVM get() = get<PersonalSpaceSettingsViewModel>()
         fun placeSensitivityVM(groupId: String, placeId: String) = get<PlaceSensitivityViewModel>() { parametersOf(groupId, placeId) }
+        val appSettingsVM get() = get<AppSettingsViewModel>()
+        val licenceCodeVM get() = get<LicenceCodeViewModel>()
     }
 }

@@ -5,16 +5,21 @@ import app.paralino.core.app_update.IAppUpdateManager
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.AppAccountState
 import app.paralino.core.domain.user.AppAccountStateMonitor
+import app.paralino.core.domain.user.BillingRefreshMonitor
 import app.paralino.core.domain.user.ExpiredSessionHandler
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.domain.user.UserSessionMonitor
+import app.paralino.core.logg
+import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
+import app.paralino.core.provider.IPlatformUrlHandler
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.base.AppUpdateType
 import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.user.UserRepository
 import app.paralino.core.ui.components.SnackbarDuration
+import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.main.DeeplinkType
 import app.paralino.core.utils.NetworkQualityMonitor
 import app.paralino.core.utils.extensions.errorString
@@ -41,7 +46,9 @@ class MainViewModel constructor(
     private val expiredSessionHandler: ExpiredSessionHandler,
     private val appUpdateManager: IAppUpdateManager,
     private val premiumStatusManager: PremiumStatusManager,
-    private val appPrefs: AppPrefs
+    private val appPrefs: AppPrefs,
+    private val billingRefreshMonitor: BillingRefreshMonitor,
+    private val urlHandler: IPlatformUrlHandler
 ) : CoreViewModel() {
 
     private val _uiState = MutableStateFlow(MainActivityState())
@@ -52,7 +59,7 @@ class MainViewModel constructor(
 
     init {
         sessionMonitor.listenForFullyExpiredSession()
-            .onEach { _uiState.update { it.copy(isSessionExpiredShown = true) } }
+            .onEach { _uiState.update { it.copy(sessionExpiredDialog = MainAlertDialog.SessionExpired) } }
             .launchIn(coroutineScope)
 
         userStateMonitor.userState
@@ -68,7 +75,7 @@ class MainViewModel constructor(
             }
             .launchIn(coroutineScope)
 
-        remoteConfigRepository.getUpdateType()
+        remoteConfigRepository.listenForNewAppVersionEvents()
             .onEach { updateType -> _uiState.update { it.copy(updateType = updateType) } }
             .flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
@@ -101,7 +108,31 @@ class MainViewModel constructor(
             .launchIn(coroutineScope)
     }
 
-    fun cancelVersion() {
+    fun onEvent(event: MainActivityUiEvent) {
+        when (event) {
+            is MainActivityUiEvent.DialogAction -> {
+                when (event.action.dialog) {
+                    is MainAlertDialog.AppVersionInfo -> {
+                        if (event.action.action == MainAlertDialog.AppVersionInfo.buttonChangelog) {
+                            urlHandler.openUrl(BackendResourceIDs.feedbackPortalChangelog)
+                        } else if (event.action.isOk) {
+                            startAppUpdate()
+                        } else if (event.action.isCancel){
+                            cancelVersion()
+                        }
+                    }
+
+                    is MainAlertDialog.SessionExpired -> {
+                        _uiState.update { it.copy(sessionExpiredDialog = null) }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun cancelVersion() {
         coroutineScope.launch {
             remoteConfigRepository.cancelNewAppVersion()
             if (_uiState.value.updateType?.isForced != true) {
@@ -146,6 +177,15 @@ class MainViewModel constructor(
             }
 
             is DeeplinkType.PaywallScreen -> {
+                if (deeplinkType.action == "refresh") {
+                    billingRefreshMonitor.triggerRefresh()
+                } else {
+                    logg.w("billing", "Set billing deeplink")
+                    _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
+                }
+            }
+
+            is DeeplinkType.PushNotificationServiceScreen -> {
                 _uiState.update { it.copy(pendingDeeplinkType = deeplinkType) }
             }
 
@@ -155,14 +195,12 @@ class MainViewModel constructor(
         }
     }
 
-    fun cancelSessionExpired() {
-        _uiState.update { it.copy(isSessionExpiredShown = false) }
-    }
-
-    fun startAppUpdate() {
+    private fun startAppUpdate() {
         when (uiState.value.updateType) {
             is AppUpdateType.FORCE,
             is AppUpdateType.FORCE_AND_CANCEL,
+            is AppUpdateType.PASSIVE,
+            is AppUpdateType.SOFT_CONSTANT,
             is AppUpdateType.SOFT -> {
                 uiState.value.updateType?.configData?.let {
                     appUpdateManager.startUpdateProcess(it)

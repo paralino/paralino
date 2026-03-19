@@ -1,6 +1,7 @@
 package app.paralino.core.provider
 
 import app.paralino.core.logg
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.base.DeviceType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -69,7 +70,7 @@ abstract class IDeviceApiProvider(
     }
 
     val batteryLevel: Int? get() = if (_batteryLevel in 0..100) _batteryLevel else null
-    val clientHeaderValue: String get() = "${packageName}/${deviceOSVersion}/${appVersionCode}/${appVersion}"
+    val clientHeaderValue: String get() = "${packageName}/${deviceOSVersion}/${appVersionCode}/${appVersion}/${appFlavor.key}"
     val appVersionText get() = "v$appVersion ($appVersionCode)"
 
     protected abstract val _batteryLevel: Int
@@ -81,6 +82,7 @@ abstract class IDeviceApiProvider(
     abstract val appVersion: String
     abstract val defaultDeviceName: String
     abstract val packageName: String
+    abstract val appFlavor: AppFlavor
     abstract fun createSystemLogr(): SystemLogr
     abstract fun deviceCornerRadius(): Float
     abstract fun copyToClipboard(data: String)

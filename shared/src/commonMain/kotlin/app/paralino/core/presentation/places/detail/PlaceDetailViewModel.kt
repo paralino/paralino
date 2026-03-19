@@ -3,21 +3,18 @@ package app.paralino.core.presentation.places.detail
 import app.paralino.core.crypto.CryptoCore
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.group.PlaceAlertsSettingsUpdateUseCase
+import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
+import app.paralino.core.models.base.GroupWithMembersOrUserSpace
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.base.asGroupOrSpaceId
 import app.paralino.core.models.data
-import app.paralino.core.models.group.UserGroup
-import app.paralino.core.models.group.UserGroupWithMembers
-import app.paralino.core.models.location.UserPersonalSpaceModel
 import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.places.GroupPlaceSettingsEntry
 import app.paralino.core.models.places.GroupPlaceWithSettings
 import app.paralino.core.presentation.CoreViewModel
-import app.paralino.core.presentation.map.GroupWithMembersOrUserSpace
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlacesRepository
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
@@ -48,6 +45,7 @@ class PlaceDetailViewModel(
     private val updatePlaceAlerts: PlaceAlertsSettingsUpdateUseCase,
     private val groupRepo: UserGroupLocalDataSource,
     private val personalSpaceRepo: UserPersonalSpaceLocalDataSource,
+    private val premiumStatusManager: PremiumStatusManager,
     private val cryptoCore: CryptoCore,
     private val appPrefs: AppPrefs
 ) : CoreViewModel() {
@@ -131,7 +129,8 @@ class PlaceDetailViewModel(
                 fullLoading = false,
                 arePlaceAlertsActive = place.settings?.alertData?.isActive != false,
                 isPlaceAlertsSwitchLoading = false,
-                settings = settings
+                settings = settings,
+                androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
             )
         }
     }
@@ -185,7 +184,8 @@ class PlaceDetailViewModel(
                 fullLoading = false,
                 arePlaceAlertsActive = place.settings?.alertData?.isActive != false,
                 isPlaceAlertsSwitchLoading = false,
-                settings = settings
+                settings = settings,
+                androidMapSDKProvider = premiumStatusManager.defaultMapProvider()
             )
         }
     }

@@ -31,6 +31,8 @@ import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 import app.paralino.core.ui.components.nameRes
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
 import app.paralino.core.utils.SharingDurationPreset
 import app.paralino.core.utils.exceptions.TimeoutException
 import app.paralino.core.utils.exceptions.asRemoteException
@@ -122,10 +124,14 @@ class SharingStartViewModel(
             .onEach { deviceStatus ->
                 _uiState.update {
                     it.copy(
-                        errors = getErrors(it.isLongTerm),
+                        errors = getAllErrors(isForLongTerm = it.isLongTerm),
                         warnings = buildList {
                             if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
                                 add(ConditionErrorType.PermissionNotifications)
+                            }
+
+                            if (!deviceStatus.locationStatus.isUnrestrictedBackgroundPermissionAllowed) {
+                                add(ConditionErrorType.UnrestrictedBackgroundAccess)
                             }
                         }
                     )
@@ -395,54 +401,40 @@ class SharingStartViewModel(
 
     private fun startSharing() {
         if (_uiState.value.shouldRegisterDevice) {
-            if (getErrors(forLongTerm = _uiState.value.isLongTerm).isEmpty() && _uiState.value.canShare) {
-                proceedWithSharing()
-                return
-            }
+            proceedWithSharing()
         } else {
             // update
-            coroutineScope.launch {
-                val currentGroup = currentGroup.value
-                if (currentGroup != null) {
-                    val contract =
-                        sharingManager.currentSharingContractForGroup(id = currentGroup.id.asGroupOrSpaceId())
-                    val newContract = contract?.copy(
-                        shareBattery = _uiState.value.shareBattery,
-                        shareSpeed = _uiState.value.shareSpeed,
-                        shareElevation = _uiState.value.shareElevation,
-                        shareNetwork = _uiState.value.shareNetwork,
-                        shareDeviceStatus = _uiState.value.shareDeviceStatus,
-                        approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
-                        saveToHistory = _uiState.value.saveToHistory,
-                    )
+            updateCurrentContract()
+        }
+    }
 
-                    if (newContract != null) {
-                        sharingManager.startSharing(newContract)
-                        _eventChannel.send(SharingStartScreenEvent.Updated)
-                    }
+    private fun updateCurrentContract() {
+        coroutineScope.launch {
+            val currentGroup = currentGroup.value
+            if (currentGroup != null) {
+                val contract =
+                    sharingManager.currentSharingContractForGroup(id = currentGroup.id.asGroupOrSpaceId())
+                val newContract = contract?.copy(
+                    shareBattery = _uiState.value.shareBattery,
+                    shareSpeed = _uiState.value.shareSpeed,
+                    shareElevation = _uiState.value.shareElevation,
+                    shareNetwork = _uiState.value.shareNetwork,
+                    shareDeviceStatus = _uiState.value.shareDeviceStatus,
+                    approximateLocationInMeters = _uiState.value.approximateLocationMeters.takeIf { _uiState.value.shareApproximateLocation },
+                    saveToHistory = _uiState.value.saveToHistory,
+                )
+
+                if (newContract != null) {
+                    sharingManager.startSharing(newContract)
+                    _eventChannel.send(SharingStartScreenEvent.Updated)
                 }
             }
-            return
-        }
-
-        _uiState.value.groupState.data ?: let {
-            showSnackbar(MR.strings.invite_connect_alert_pickGroup.localizedString())
-            return
-        }
-
-        if (_uiState.value.groupState.data?.uiType == GroupItemState.GroupUiType.UNVERIFIED) {
-            _uiState.update { it.copy(alertDialog = MainAlertDialog.UnverifiedGroupInfo) }
-        } else if (getErrors(forLongTerm = false).isEmpty() && _uiState.value.isLongTerm) {
-            // only background location permission is missing
-            _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingBackgroundLocationMissing) }
-        } else {
-            _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingErrors(uiState.value.errors.map { it.nameRes.localizedString() })) }
         }
     }
 
     private fun proceedWithSharing() {
 
-        if (registerDevice.isProcessingAny()) {
+        if (registerDevice.isProcessingAny() || uiState.value.loadingAction) {
             return
         }
 
@@ -451,12 +443,29 @@ class SharingStartViewModel(
             return
         }
 
-        coroutineScope.launch {
-            _uiState.update { it.copy(loadingAction = true) }
-            if (didPassPlanLimits(group)) {
-                registerDeviceAndStartSharing(group)
-            } else {
-                _uiState.update { it.copy(loadingAction = false) }
+        if (!hasSharingStartErrors(isForLongTerm = _uiState.value.isLongTerm) && _uiState.value.canShare) {
+            coroutineScope.launch {
+                _uiState.update { it.copy(loadingAction = true) }
+                if (didPassPlanLimits(group)) {
+                    registerDeviceAndStartSharing(group)
+                } else {
+                    _uiState.update { it.copy(loadingAction = false) }
+                }
+            }
+        } else if (group.uiType == GroupItemState.GroupUiType.UNVERIFIED) {
+            _uiState.update { it.copy(alertDialog = MainAlertDialog.UnverifiedGroupInfo) }
+        } else if (hasSharingStartErrors(isForLongTerm = false) && _uiState.value.isLongTerm) {
+            // only background location permission is missing
+            _uiState.update { it.copy(alertDialog = MainAlertDialog.SharingBackgroundLocationMissing) }
+        } else {
+            _uiState.update {
+                it.copy(
+                    alertDialog = MainAlertDialog.SharingErrors(
+                        errorMessages = getAllErrors(isForLongTerm = uiState.value.isLongTerm)
+                            .filter { it is MandatoryBackgroundLocationSharingConditionType }
+                            .map { it.nameRes.localizedString() }
+                    )
+                )
             }
         }
     }
@@ -526,7 +535,11 @@ class SharingStartViewModel(
                 groupId = group.id,
                 deviceName = _uiState.value.deviceName,
                 contract = contract,
-                notifyOthers = _uiState.value.notifyOthers,
+                notifyOthers = if (_uiState.value.currentContract != null) {
+                    false
+                } else {
+                    _uiState.value.notifyOthers
+                },
                 isRetry = false
             )
         } catch (e: Exception) {
@@ -623,7 +636,7 @@ class SharingStartViewModel(
                     ?: SharingDurationPreset.hour
             it.copy(
                 sharingTimeMillis = time,
-                errors = getErrors(LocationSharingContract.isLongTerm(time))
+                errors = getAllErrors(isForLongTerm = LocationSharingContract.isLongTerm(time))
             )
         }
     }
@@ -677,11 +690,28 @@ class SharingStartViewModel(
         _uiState.update { it.copy(deviceName = name) }
     }
 
-    private fun getErrors(forLongTerm: Boolean): List<ConditionErrorType> {
+    private fun hasSharingStartErrors(isForLongTerm: Boolean): Boolean {
+        return getAllErrors(isForLongTerm = isForLongTerm).any {
+            if (isForLongTerm) {
+                it is MandatoryBackgroundLocationSharingConditionType
+            } else {
+                it is MandatoryForegroundLocationSharingConditionType
+            }
+        }
+    }
+
+    private fun getAllErrors(isForLongTerm: Boolean): List<ConditionErrorType> {
         return buildList {
             val deviceStatus = deviceApiProvider.currentDeviceStatus()
             addAll(
-                deviceStatus.locationStatus.getPossibleErrors(forLongTerm)
+                deviceStatus.locationStatus.getPossibleErrors()
+                    .filter {
+                        if (isForLongTerm) {
+                            true
+                        } else {
+                            it is MandatoryForegroundLocationSharingConditionType
+                        }
+                    }
             )
             if (!deviceStatus.networkStatus.isOnline) {
                 add(ConditionErrorType.Network)

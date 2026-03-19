@@ -50,7 +50,7 @@ class CoreAppManager(
             AppHost.MAIN_APP -> {
                 sessionMonitorJob = sessionMonitor.listenForSessionExpired()
                     .onEach {
-                        logg.tag("account_session").v("Got session expired event")
+                        logg.tag("account_session").d("Got session expired event")
                         expiredSessionHandler.processExpiredSession()
                     }
                     .catch {
@@ -62,7 +62,7 @@ class CoreAppManager(
                     if (state.current == AppLifecycleType.ACTIVE) {
                         updateLocationStatus()
                         updateConnectionStatus()
-                        deviceApiProvider.notificationStatusProvider.refreshNotificationsStatus()
+                        updateNotificationsStatus()
 
                         updateConfig()
                     }
@@ -73,7 +73,7 @@ class CoreAppManager(
                 }
                     .launchIn(scopeProvider.defaultIOScope)
 
-                appUpdateTypeJob = configRepo.getUpdateType()
+                appUpdateTypeJob = configRepo.listenForNewAppVersionEvents()
                     .onEach { updateType ->
                         if (updateType is AppUpdateType.FORCE_AND_CANCEL) {
                             try {
@@ -110,6 +110,10 @@ class CoreAppManager(
 
     fun updateLocationStatus() {
         deviceApiProvider.locationStatusProvider.refreshLocationStatus()
+    }
+
+    fun updateNotificationsStatus() {
+        deviceApiProvider.notificationStatusProvider.refreshNotificationsStatus()
     }
 
     fun updateConnectionStatus() {

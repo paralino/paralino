@@ -65,6 +65,7 @@ class CreatePlaceViewModel(
     val events = _eventChannel.receiveAsFlow()
     private var addressSearchJob: Job? = null
     private var mapPosition: LatLng? = null
+    val isNewPlace: Boolean = placeId.isNullOrBlank()
 
     val placeNameLengthLimit = 30
 
@@ -103,6 +104,7 @@ class CreatePlaceViewModel(
                                 meters = CreatePlaceScreenState.defaultRadiusMeters.toDouble(),
                                 distanceType = DistanceType.DISTANCE
                             ),
+                            androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                             nameSuggestions = getNameSuggestions()
                         )
                     )
@@ -131,8 +133,9 @@ class CreatePlaceViewModel(
                             ),
                             actionLoading = false,
                             fullLoading = false,
+                            isSatelliteModeEnabled = false,
+                            androidMapSDKProvider = premiumStatusManager.defaultMapProvider(),
                             alertDialog = null,
-                            isSatelliteMode = false
                         )
                     }
                 }
@@ -181,7 +184,7 @@ class CreatePlaceViewModel(
             is CreatePlaceScreenUiEvent.OnMapModeSwitch -> {
                 _uiState.update {
                     it.mapSuccess {
-                        it.copy(isSatelliteMode = !it.isSatelliteMode)
+                        it.copy(isSatelliteModeEnabled = !it.isSatelliteModeEnabled)
                     }
                 }
             }

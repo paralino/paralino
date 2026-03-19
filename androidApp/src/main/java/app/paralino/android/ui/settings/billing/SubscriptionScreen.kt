@@ -45,6 +45,9 @@ fun SubscriptionScreen(
             },
             openPaywall = {
                 appState.navController.navigate(AppScreen.Settings.BillingPaywall.route(type = BillingScreenSourceType.NORMAL))
+            },
+            openLicenceScreen = {
+                appState.navController.navigate(AppScreen.Settings.LicenceCode.routeSignature)
             }
         )
     }

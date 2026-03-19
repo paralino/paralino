@@ -71,6 +71,10 @@ class DeviceApiProvider: IDeviceApiProvider {
     override var defaultDeviceName: String {
         "iPhone"
     }
+    
+    override var appFlavor: AppFlavor {
+        return AppFlavor.appleIos
+    }
 
     override func createSystemLogr() -> SystemLogr {
         return DebbugLogr(canLogToConsole: appBuildConfig.logToConsole)

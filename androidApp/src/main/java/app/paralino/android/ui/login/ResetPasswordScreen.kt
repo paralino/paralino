@@ -40,9 +40,9 @@ fun ResetPasswordScreen(
             appState = appState,
             vm = vm,
             openLoginScreen = {
-                appState.navController.navigate(
-                    AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN),
-                    navOptions {
+                appState.navController.navController.navigate(
+                    route = AppScreen.LoggedOut.Login.route(LoginScreenUiType.LOGIN),
+                    navOptions = navOptions {
                         popUpTo(AppScreen.LoggedOut.PasswordReset.routeSignature) {
                             inclusive = true
                         }

@@ -19,7 +19,7 @@ import org.koin.core.component.inject
 class InstalledReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        logg.v("app_update", "App update installed")
+        logg.i("app_update", "App update installed")
         context ?: return
         if (intent?.action?.equals(Intent.ACTION_MY_PACKAGE_REPLACED) == true) {
             try {
@@ -28,37 +28,12 @@ class InstalledReceiver : BroadcastReceiver() {
                 context.startActivity(intent)
             } catch (e: Exception) {
             }
-            sendNotification(context)
+            AppUpdateComponent.sendNotification(
+                context = context,
+                title = "Paralino",
+                text = "New update installed!"
+            )
         }
-    }
-
-    private fun sendNotification(context: Context) {
-        val intent = Intent(context, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        val pendingIntent =
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-
-        val channelId = "auto_update_channel"
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setContentTitle("New update installed")
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val channel = NotificationChannel(
-            channelId,
-            context.getString(R.string.app_name),
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        notificationManager.createNotificationChannel(channel)
-
-        notificationManager.notify(14455, notificationBuilder.build())
     }
 }
 
@@ -74,7 +49,7 @@ class InstallRequestReceiver : BroadcastReceiver() {
 
         when (val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1)) {
             PackageInstaller.STATUS_PENDING_USER_ACTION -> {
-                logg.v("app_update", "Request app install")
+                logg.i("app_update", "Request app install - pending user action")
                 intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)?.let {
                     context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 } ?: let {
@@ -82,8 +57,18 @@ class InstallRequestReceiver : BroadcastReceiver() {
                 }
             }
 
-            PackageInstaller.STATUS_SUCCESS -> {}
+            PackageInstaller.STATUS_SUCCESS -> {
+                logg.i("app_update", "New package installed")
+            }
+
             else -> {
+                logg.w("app_update", "Package update failed, status: $status")
+                AppUpdateComponent.sendNotification(
+                    context = context,
+                    title = "Update failed",
+                    text = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
+                        ?: "System failed to update Paralino app."
+                )
                 updateComponent.appUpdateManager.cancelUpdate()
             }
         }
@@ -92,4 +77,41 @@ class InstallRequestReceiver : BroadcastReceiver() {
 
 class AppUpdateComponent() : KoinComponent {
     val appUpdateManager: AppUpdateManager by inject()
+
+    companion object {
+        fun sendNotification(
+            context: Context,
+            title: String,
+            text: String
+        ) {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            val pendingIntent =
+                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+            val channelId = "auto_update_channel"
+            val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val notificationBuilder = NotificationCompat.Builder(context, channelId)
+                .setStyle(NotificationCompat.BigTextStyle())
+                .setContentTitle(title)
+                .setContentText(text)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val channel = NotificationChannel(
+                channelId,
+                "Auto Update",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(channel)
+
+            notificationManager.notify(title.hashCode(), notificationBuilder.build())
+        }
+    }
 }

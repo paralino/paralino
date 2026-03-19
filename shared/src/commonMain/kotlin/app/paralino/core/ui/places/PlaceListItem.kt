@@ -18,18 +18,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.utils.extensions.conditional
 
 @Composable
 fun PlaceListItem(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colors.surface,
+    shadow: Dp? = null,
     state: PlaceListItemData,
     hasEndArrow: Boolean = true,
     onClick: (() -> Unit)? = null
@@ -41,6 +46,15 @@ fun PlaceListItem(
                 if (onClick != null)
                     it.clickable { onClick() }
                 else it
+            }
+            .conditional(shadow != null) {
+                dropShadow(
+                    shape = RoundedCornerShape(12.dp),
+                    shadow = Shadow(
+                        radius = shadow ?: 0.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
             }
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)

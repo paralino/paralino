@@ -13,6 +13,10 @@ import shared
 
 class BillingProviderIOS: IBillingProvider {
     
+    var isExternalProvider: Bool {
+        return false
+    }
+    
     private lazy var appBuildConfig: AppBuildConfig = { KoinIOS.Instances.shared.appBuildConfig }()
     private lazy var userConfigRepo: UserConfigRepository = { KoinIOS.Instances.shared.userConfigRepo }()
     private lazy var remoteConfigRepo: RemoteConfigRepository = { KoinIOS.Instances.shared.remoteConfigRepo }()
@@ -219,6 +223,10 @@ class BillingProviderIOS: IBillingProvider {
             )
             throw PurchaseError(sharedError: sharedError)
         }
+    }
+    
+    func startDirectPurchase(url: String) async throws {
+        // NO-OP
     }
     
     private struct CurrentPlanConfig {

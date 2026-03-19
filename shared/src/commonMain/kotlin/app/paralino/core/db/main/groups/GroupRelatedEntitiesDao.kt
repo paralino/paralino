@@ -249,8 +249,8 @@ interface GroupRelatedEntitiesDao {
     @Query("DELETE FROM memberLocationEntity WHERE memberId = :memberId")
     suspend fun clearLocationsForMember(memberId: String)
 
-    @Query("SELECT COUNT(id) FROM memberLocationEntity WHERE groupId = :groupId AND userId = :userId")
-    fun getLocationCountForUserInGroup(groupId: String, userId: String): Flow<Int?>
+    @Query("SELECT groupId, userId, COUNT(id) AS count FROM memberLocationEntity WHERE groupId = :groupId GROUP BY groupId, userId")
+    fun getLocationCountForUsersInGroup(groupId: String): Flow<List<MemberRegisteredLocationCount>>
 
     @Query("UPDATE OR IGNORE memberLocationEntity SET locationData = NULL, locationHistory = NULL WHERE id = :locationId")
     suspend fun clearLocationDataForLocation(locationId: String)

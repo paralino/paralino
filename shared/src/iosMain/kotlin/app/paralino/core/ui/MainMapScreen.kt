@@ -21,11 +21,10 @@ import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitViewController
 import androidx.compose.ui.window.ComposeUIViewController
 import app.paralino.core.logg
+import app.paralino.core.models.location.LatLng
 import app.paralino.core.presentation.history.LocationHistoryScreenEvent
 import app.paralino.core.presentation.history.LocationHistoryUiEvent
-import app.paralino.core.presentation.history.LocationHistoryViewModel
 import app.paralino.core.presentation.map.MapHomeScreenEvent
-import app.paralino.core.presentation.map.MapHomeScreenState
 import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.map.MapHomeViewModel
 import app.paralino.core.presentation.map.asReady
@@ -34,13 +33,11 @@ import app.paralino.core.ui.components.MessageDispatcherEffect
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.Show
 import app.paralino.core.ui.history.LocationHistoryMapCardUi
-import app.paralino.core.ui.history.LocationHistoryScreenElements
 import app.paralino.core.ui.map.BottomSheetPosition
 import app.paralino.core.ui.map.MainMapSheet
 import app.paralino.core.ui.map.MapHomeElementMainCards
 import app.paralino.core.ui.map.MapHomeScreenElements
 import app.paralino.core.ui.map.rememberSwipeableSheetState
-import app.paralino.core.ui.settings.billing.BillingScreenSourceType
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import platform.UIKit.UIViewController
@@ -51,12 +48,13 @@ object MainMapScreen {
         vm: MapHomeViewModel,
         paddingValues: AppleScreenPaddingValues,
         onOpenPlacesScreen: (String) -> Unit,
-        onOpenCreatePlaceScreen: (String) -> Unit,
+        onOpenCreatePlaceScreen: (groupId: String, location: LatLng?) -> Unit,
         onSheetOffsetChange: (Float) -> Unit,
         onGroupPickerClick: (Boolean) -> Unit,
         onGroupDetailsClick: (String) -> Unit,
         onSharingStartClick: (String) -> Unit,
         onHistorySettingsClick: (String) -> Unit,
+        onMemberInviteClick: (String) -> Unit,
         onSettingsClick: () -> Unit,
         onPlaceClick: (MapHomeScreenEvent.OpenPlaceDetails) -> Unit,
         onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
@@ -67,7 +65,6 @@ object MainMapScreen {
         openRawDataScreen: (RawPresentationDataType) -> Unit,
         onSharePersonalCode: (String) -> Unit,
         askNotificationPermission: () -> Unit,
-        openLocationHistory: (MapHomeScreenEvent.OpenLocationHistory) -> Unit,
         mapUIView: () -> UIViewController,
     ) = ComposeUIViewController() {
         RootScreenIOS {
@@ -109,17 +106,18 @@ object MainMapScreen {
                         when (event) {
                             MapHomeScreenEvent.OpenGroupCreateScreen -> onCreateGroup()
                             MapHomeScreenEvent.OpenPaywall -> openPaywall()
-                            is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId)
+                            is MapHomeScreenEvent.OpenCreatePlace -> onOpenCreatePlaceScreen(event.groupId, event.location)
                             is MapHomeScreenEvent.OpenGroupDetails -> onGroupDetailsClick(event.groupId)
                             is MapHomeScreenEvent.OpenGroupPicker -> onGroupPickerClick(event.showPersonalSpace)
                             is MapHomeScreenEvent.OpenPlaceDetails -> onPlaceClick(event)
                             is MapHomeScreenEvent.OpenPlaces -> onOpenPlacesScreen(event.groupId)
+                            is MapHomeScreenEvent.OpenMemberInviteScreen -> onMemberInviteClick(event.groupId)
                             MapHomeScreenEvent.OpenSettings -> onSettingsClick()
                             is MapHomeScreenEvent.OpenSharingStart -> onSharingStartClick(event.groupId)
                             is MapHomeScreenEvent.OpenExternalNavigation -> onDirectionsRequest(event)
-                            is MapHomeScreenEvent.OpenLocationHistory -> openLocationHistory(event)
                             MapHomeScreenEvent.OpenPersonalSpace -> openPersonalSpace()
                             is MapHomeScreenEvent.ShowPlanLimitAlert -> openPaywall()
+                            MapHomeScreenEvent.OpenMapProviderSettings -> {}
                             null -> {}
                             MapHomeScreenEvent.AskNotificationPermission -> askNotificationPermission()
                             MapHomeScreenEvent.OpenPersonalCodes -> openPersonalCodes()
@@ -230,63 +228,6 @@ object MainMapScreen {
                         )
                     }
                 )
-            }
-        }
-    }
-
-    @OptIn(ExperimentalComposeUiApi::class)
-    fun LocationHistoryMapScreen(
-        vm: LocationHistoryViewModel,
-        paddingValues: AppleScreenPaddingValues,
-        onCardHeightChange: (Float) -> Unit,
-        onDirectionsRequest: (MapHomeScreenEvent.OpenExternalNavigation) -> Unit,
-        openRawDataScreen: (RawPresentationDataType) -> Unit,
-        openHistorySettings: () -> Unit,
-        openPaywall: () -> Unit,
-        onNavigateBack: () -> Unit,
-        mapUIView: () -> UIViewController,
-    ) = ComposeUIViewController() {
-        RootScreenIOS {
-            MessageDispatcherEffect(vm, it)
-            val uiState by vm.uiState.collectAsState()
-
-            BoxWithConstraints {
-                LaunchedEffect(key1 = Unit) {
-                    vm.events.collectLatest { event ->
-                        when (event) {
-                            LocationHistoryScreenEvent.NavigateBack -> onNavigateBack()
-                            LocationHistoryScreenEvent.OpenHistorySettings -> openHistorySettings()
-                            is LocationHistoryScreenEvent.OpenNavigation -> onDirectionsRequest(event.event)
-                            LocationHistoryScreenEvent.OpenPaywall -> openPaywall()
-                            is LocationHistoryScreenEvent.OpenRawDataScreen -> openRawDataScreen(event.type)
-                            null -> {}
-                        }
-                    }
-                }
-
-                val dialog = uiState.alertDialog
-                dialog?.Show {
-                    vm.onEvent(LocationHistoryUiEvent.DialogAction(AlertDialogAction(dialog, it)))
-                }
-
-                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                    UIKitViewController(
-                        modifier = Modifier.fillMaxSize(),
-                        factory = mapUIView,
-                        properties = UIKitInteropProperties(
-                            interactionMode = UIKitInteropInteractionMode.NonCooperative,
-                            isNativeAccessibilityEnabled = true
-                        )
-                    )
-
-                    LocationHistoryScreenElements(
-                        modifier = Modifier,
-                        uiState = uiState,
-                        topPadding = paddingValues.top.dp,
-                        cardHeight = { onCardHeightChange(it.value) },
-                        onEvent = vm::onEvent
-                    )
-                }
             }
         }
     }

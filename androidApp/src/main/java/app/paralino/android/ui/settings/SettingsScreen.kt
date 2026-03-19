@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
@@ -28,10 +29,15 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingsScreen(
     appState: MainAppState,
-    viewModel: SettingsViewModel = koinViewModel(),
+    vm: SettingsViewModel = koinViewModel(),
 ) {
-
     val context = LocalContext.current
+    val notificationPermissionHandler = rememberNotificationsPermissionHandler(
+        appState = appState,
+        messageDispatcher = vm.messageDispatcher,
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
+    )
+
     Scaffold(
         modifier = Modifier
             .background(MaterialTheme.colors.background)
@@ -45,7 +51,7 @@ fun SettingsScreen(
     ) {
         SettingsScreenCore(
             appState = appState,
-            viewModel = viewModel,
+            viewModel = vm,
             onShareApp = { context.share(it) },
             openConvertAccount = {
                 appState.navController.navigate(
@@ -78,6 +84,9 @@ fun SettingsScreen(
             },
             openLocationSettings = {
                 appState.navController.navigate(AppScreen.Settings.LocationSettings.routeSignature)
+            },
+            askNotificationPermission = {
+                notificationPermissionHandler.askNotificationPermission()
             },
             onShareCode = {
                 context.share(it)

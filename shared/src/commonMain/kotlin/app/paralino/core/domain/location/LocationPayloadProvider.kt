@@ -55,8 +55,8 @@ class LocationPayloadProvider(
                     LocationDataModel(
                         timeUTC = data.timeUTC,
                         endTimeUTC = contract.endTimeUTC?.takeIf { contract.shareDeviceStatus },
-                        lat = data.lat,
-                        lng = data.lng,
+                        lat = data.lat.roundToPrecision(decimalPlaces = 6),
+                        lng = data.lng.roundToPrecision(decimalPlaces = 6),
                         accuracy = data.accuracy,
                         speed = data.speed?.takeIf { contract.shareSpeed && it != 0f },
                         altitude = data.altitude?.takeIf { contract.shareElevation && it != 0f },
@@ -74,8 +74,8 @@ class LocationPayloadProvider(
                             loc = LocationHistoryPointLocationModel(
                                 tA = data.timeUTC,
                                 tB = null,
-                                lat = data.lat,
-                                lng = data.lng,
+                                lat = data.lat.roundToPrecision(decimalPlaces = 5),
+                                lng = data.lng.roundToPrecision(decimalPlaces = 5),
                                 // we only need partial decimal places for accuracy, speed and elevation
                                 // that is already more than enough
                                 acc = data.accuracy.roundToPrecision(decimalPlaces = -1),

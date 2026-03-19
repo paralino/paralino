@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+import app.paralino.android.provider.hasUnrestrictedBackgroundAccess
 import app.paralino.android.provider.isLocationOn
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.core.MR
@@ -57,6 +59,12 @@ fun rememberLocationPermissionHandler(
         state.askLocationService()
     }
 
+    val backgroundAccessLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        state.askUnrestrictedBackgroundAccess(forcePrompt = false)
+    }
+
     val locationPermissionsState = rememberMultiplePermissionsState(
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             listOf(
@@ -89,6 +97,11 @@ fun rememberLocationPermissionHandler(
         onDispose { state.gpsLauncher = null }
     }
 
+    DisposableEffect(state, backgroundAccessLauncher) {
+        state.backgroundAccessLauncher = backgroundAccessLauncher
+        onDispose { state.backgroundAccessLauncher = null }
+    }
+
     DisposableEffect(state, locationPermissionsState) {
         state.locationPermissionsState = locationPermissionsState
         onDispose { state.locationPermissionsState = null }
@@ -112,6 +125,7 @@ data class LocationPermissionHandlerState constructor(
     internal var locationPermissionsState: MultiplePermissionsState? = null
     internal var backgroundLocationPermissionState: PermissionState? = null
     internal var gpsLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
+    internal var backgroundAccessLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null
 
     private var denied: Boolean = false
     private var backgroundDenied: Boolean = false
@@ -191,8 +205,47 @@ data class LocationPermissionHandlerState constructor(
         }
     }
 
+    fun askUnrestrictedBackgroundAccess(forcePrompt: Boolean) {
+        if (LocationConditionStatus.hasUnrestrictedBackgroundAccess(context)) {
+            updateStatus()
+        } else {
+            if (forcePrompt) {
+                try {
+                    backgroundAccessLauncher?.launch(
+                        Intent(
+                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                            Uri.fromParts("package", context.packageName, null)
+                        )
+                    )
+                } catch (e: Exception) {
+                    showBackgroundAccessOffInfo()
+                }
+            } else {
+                showBackgroundAccessOffInfo()
+            }
+        }
+    }
+
     private fun updateStatus() {
         locationStatusProvider.refreshLocationStatus()
+    }
+
+    private fun showBackgroundAccessOffInfo() {
+        appState.uiScope.launch {
+            messageDispatcher.showSnackbarForResult(
+                AppSnackbarData(
+                    text = context.getString(MR.strings.error_unrestricted_background_access_message_android.resourceId),
+                    actionText = MR.strings.button_open_settings.getString(context),
+                    duration = SnackbarDuration.Long
+                )
+            )?.result?.onAction {
+                try {
+                    backgroundAccessLauncher?.launch(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                } catch (e: Exception) {
+                    openApplicationDetailsSettings()
+                }
+            }
+        }
     }
 
     private fun showGPSOffInfo() {
@@ -223,11 +276,7 @@ data class LocationPermissionHandlerState constructor(
                     duration = SnackbarDuration.Long
                 )
             )?.result?.onAction {
-                val intent = Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", context.packageName, null)
-                }
-                context.startActivity(intent)
+                openApplicationDetailsSettings()
             }
         }
     }
@@ -252,13 +301,16 @@ data class LocationPermissionHandlerState constructor(
                     duration = SnackbarDuration.Long
                 )
             )?.result?.onAction {
-                val intent = Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", context.packageName, null)
-                }
-                context.startActivity(intent)
+                openApplicationDetailsSettings()
             }
         }
     }
 
+    private fun openApplicationDetailsSettings() {
+        val intent = Intent().apply {
+            action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            data = Uri.fromParts("package", context.packageName, null)
+        }
+        context.startActivity(intent)
+    }
 }

@@ -27,6 +27,7 @@ import app.paralino.core.MR
 import app.paralino.core.models.CryptoResource
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.ImageModel
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.location.MemberDeviceData
 import app.paralino.core.models.location.MemberDeviceOnlineStatusType
 import app.paralino.core.models.location.MemberDeviceStatusType
@@ -257,7 +258,9 @@ private fun createDummyDeviceWithSession(
                 deviceType = "mobile"
             )
         ),
-        batteryAlertSettings = null
+        batteryAlertSettings = null,
+        pushProviderConfig = null,
+        pushProvider = PushProvider.DEVICE_NATIVE
     )
 
     val deviceItemState = UserDeviceItemState(

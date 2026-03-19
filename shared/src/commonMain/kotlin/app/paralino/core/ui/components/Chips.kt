@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
@@ -70,6 +71,7 @@ fun NoticeInfoChip(
                 color = textColor
             )
         },
+        endSection = null,
         onClick = onClick
     )
 }
@@ -111,6 +113,7 @@ fun DataInfoChip(
     shape: CornerBasedShape = RoundedCornerShape(10.dp),
     imageShape: CornerBasedShape = RoundedCornerShape(6.dp),
     hasEndArrow: Boolean = false,
+    isLoading: Boolean = false,
     onClick: (() -> Unit)? = null
 ) {
     DataInfoChip(
@@ -118,7 +121,6 @@ fun DataInfoChip(
         innerPaddingValues = innerPaddingValues,
         backgroundColor = backgroundColor,
         shape = shape,
-        hasEndArrow = hasEndArrow,
         imageOrIcon = if (image != null) {
             {
                 ImageModelImage(
@@ -134,13 +136,39 @@ fun DataInfoChip(
                 )
                 Spacer(modifier = Modifier.size(8.dp))
             }
-        } else null,
+        } else {
+            null
+        },
         text = {
             Text(
                 text = text,
                 style = MaterialTheme.typography.subtitle1.copy(lineHeight = 18.sp),
                 color = contentColorFor(backgroundColor)
             )
+        },
+        endSection = if (isLoading) {
+            {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = contentColorFor(backgroundColor)
+                )
+            }
+        } else if (hasEndArrow) {
+            {
+                Icon(
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .width(20.dp),
+                    painter = CoreAppIcons.ChevronRight.asPainterResource(),
+                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                    contentDescription = null
+                )
+            }
+        } else {
+            null
         },
         onClick = onClick
     )
@@ -152,9 +180,9 @@ fun DataInfoChip(
     innerPaddingValues: PaddingValues? = null,
     backgroundColor: Color = MaterialTheme.colors.surface,
     shape: CornerBasedShape = RoundedCornerShape(10.dp),
-    hasEndArrow: Boolean = false,
     imageOrIcon: (@Composable RowScope.() -> Unit)?,
     text: @Composable RowScope.() -> Unit,
+    endSection: (@Composable RowScope.() -> Unit)?,
     onClick: (() -> Unit)? = null
 ) {
     Row(
@@ -182,15 +210,8 @@ fun DataInfoChip(
             Spacer(modifier = Modifier.size(3.dp))
         }
         text()
-        if (hasEndArrow) {
-            Icon(
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .width(20.dp),
-                painter = CoreAppIcons.ChevronRight.asPainterResource(),
-                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                contentDescription = null
-            )
+        if (endSection != null) {
+            endSection()
         }
     }
 }
@@ -201,11 +222,12 @@ fun SmallActionButton(
     backgroundColor: Color = MaterialTheme.colors.error,
     contentColor: Color = MaterialTheme.colors.onError,
     shape: Shape = RoundedCornerShape(percent = 50),
+    isLoading: Boolean = false,
     hasEndArrow: Boolean = false,
     compactMode: Boolean = false,
     icon: Painter?,
     iconSize: Dp = 14.dp,
-    text: @Composable () -> Unit,
+    text: @Composable RowScope.() -> Unit,
     onClick: (() -> Unit)?
 ) {
     Row(
@@ -233,7 +255,16 @@ fun SmallActionButton(
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.caption.copy(color = contentColor)) {
             text()
         }
-        if (hasEndArrow) {
+
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(20.dp)
+                    .padding(4.dp),
+                strokeWidth = 1.5.dp,
+                color = contentColor
+            )
+        } else if (hasEndArrow) {
             Icon(
                 modifier = Modifier
                     .width(20.dp),
@@ -242,7 +273,7 @@ fun SmallActionButton(
                 contentDescription = null
             )
         } else {
-            Spacer(modifier = Modifier.size(4.dp))
+            Spacer(modifier = Modifier.size(if (compactMode && icon != null) 0.dp else 4.dp))
         }
     }
 }

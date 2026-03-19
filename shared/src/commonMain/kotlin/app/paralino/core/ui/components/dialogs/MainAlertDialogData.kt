@@ -3,10 +3,14 @@ package app.paralino.core.ui.components.dialogs
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import app.paralino.core.MR
+import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PlanProvider
+import app.paralino.core.models.base.PlanType
 import app.paralino.core.models.base.SubscriptionOfferDialogContent
 import app.paralino.core.models.location.UserDeviceModel
 import app.paralino.core.models.user.BlocklistType
 import app.paralino.core.models.user.UserSession
+import app.paralino.core.presentation.settings.billing.PaywallScreenUiEvent
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.theme.AppColors
 import dev.icerock.moko.resources.StringResource
@@ -705,6 +709,9 @@ sealed interface MainAlertDialog {
         val forceUpdate: Boolean
     ) : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
+        companion object {
+            val buttonChangelog = "changelog"
+        }
 
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
@@ -713,11 +720,20 @@ sealed interface MainAlertDialog {
             buttons = buildList {
                 add(
                     AlertDialogButtonData(
+                        id = buttonChangelog,
+                        text = stringResource(resource = MR.strings.setting_feedbackChangelog_title),
+                        color = Color.Transparent
+                    )
+                )
+
+                add(
+                    AlertDialogButtonData(
                         id = Buttons.buttonOk,
                         text = stringResource(resource = MR.strings.app_version_alert_button_update),
                         color = AlertDialogButtonData.positiveColor
                     )
                 )
+
                 if (!forceUpdate) {
                     add(
                         AlertDialogButtonData(
@@ -1064,6 +1080,7 @@ sealed interface MainAlertDialog {
         val dialogOffer: SubscriptionOfferDialogContent,
     ) : MainAlertDialog {
         override val key: String = this::class.simpleName ?: "dialog"
+        // unused dialogData, this dialog has separate composable
         override val dialogData: AlertDialogData = AlertDialogData(
             id = key,
             title = "",
@@ -1075,6 +1092,48 @@ sealed interface MainAlertDialog {
                     color = AlertDialogButtonData.positiveColor,
                 )
             )
+        )
+    }
+
+    data class SubscriptionActiveOnAnotherPlatform(
+        val planName: String,
+        val planProvider: String,
+        val event: PaywallScreenUiEvent
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(MR.strings.plans_management_alert_otherPlatformPlan_title),
+            message = stringResource(MR.strings.plans_management_alert_otherPlatformPlan_message, planName, planProvider),
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(MR.strings.button_continue),
+                    color = AlertDialogButtonData.positiveColor,
+                ),
+                AlertDialogButtonData(
+                    id = Buttons.buttonCancel,
+                    text = stringResource(resource = MR.strings.button_cancel)
+                )
+            )
+        )
+    }
+
+    data class UnifiedPushRegistrationError(
+        val reason: String
+    ) : MainAlertDialog {
+        override val key: String = this::class.simpleName ?: "dialog"
+        override val dialogData: AlertDialogData = AlertDialogData(
+            id = key,
+            title = stringResource(resource = MR.strings.error_something_wrong),
+            message = reason,
+            buttons = listOf(
+                AlertDialogButtonData(
+                    id = Buttons.buttonOk,
+                    text = stringResource(resource = MR.strings.button_ok),
+                    color = AlertDialogButtonData.positiveColor
+                )
+            ),
         )
     }
 }

@@ -56,6 +56,8 @@ class FunctionsApi constructor(
                 headers = mutableMapOf(clientHeader)
             )
 
+            logg.d("server_function", "Response: ${execution.responseStatusCode} ${function.functionId}${function.path} - (sync: false, sdk: ${function.useSdk})")
+
             FunctionExecutionRaw(
                 id = execution.id,
                 functionId = execution.functionId,

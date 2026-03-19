@@ -51,9 +51,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -116,7 +116,13 @@ fun LocationHistoryDetailCard(
                         }
                     }
                 )
-                .shadow(6.dp, RoundedCornerShape(cornerShape))
+                .dropShadow(
+                    shape = RoundedCornerShape(cornerShape),
+                    shadow = Shadow(
+                        radius = 12.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
                 .clip(RoundedCornerShape(cornerShape))
                 .background(MaterialTheme.colors.background)
         ) {
@@ -519,7 +525,15 @@ fun LocationHistoryDetailCard(
                                     }
                                     .clip(RoundedCornerShape(innerCornerShape))
                                     .background(
-                                        color = if (uiState.hasPreviousLocation) MaterialTheme.colors.surface else Color.Transparent,
+                                        color = if (uiState.hasPreviousLocation) {
+                                            if (isSystemInDarkTheme()) {
+                                                AppColors.accentLight.copy(alpha = 0.2f)
+                                            } else {
+                                                AppColors.accent.copy(alpha = 0.2f)
+                                            }
+                                        } else {
+                                            MaterialTheme.colors.surface.copy(alpha = 0.4f)
+                                        },
                                         shape = RoundedCornerShape(innerCornerShape)
                                     ),
                                 contentAlignment = Alignment.Center
@@ -529,7 +543,7 @@ fun LocationHistoryDetailCard(
                                         .size(22.dp),
                                     painter = CoreAppIcons.ChevronLeft.asPainterResource(),
                                     contentDescription = "Previous",
-                                    tint = MaterialTheme.colors.primary.copy(alpha = if (uiState.hasPreviousLocation) 1f else 0.3f)
+                                    tint = MaterialTheme.colors.onBackground.copy(alpha = if (uiState.hasPreviousLocation) 1f else 0.3f)
                                 )
                             }
 
@@ -590,7 +604,15 @@ fun LocationHistoryDetailCard(
                                     }
                                     .clip(RoundedCornerShape(innerCornerShape))
                                     .background(
-                                        color = if (uiState.hasNextLocation) MaterialTheme.colors.surface else Color.Transparent,
+                                        color = if (uiState.hasNextLocation) {
+                                            if (isSystemInDarkTheme()) {
+                                                AppColors.accentLight.copy(alpha = 0.2f)
+                                            } else {
+                                                AppColors.accent.copy(alpha = 0.2f)
+                                            }
+                                        } else {
+                                            MaterialTheme.colors.surface.copy(alpha = 0.4f)
+                                        },
                                         shape = RoundedCornerShape(innerCornerShape)
                                     ),
                                 contentAlignment = Alignment.Center
@@ -600,7 +622,7 @@ fun LocationHistoryDetailCard(
                                         .size(22.dp),
                                     painter = CoreAppIcons.ChevronRight.asPainterResource(),
                                     contentDescription = "Next",
-                                    tint = MaterialTheme.colors.primary.copy(alpha = if (uiState.hasNextLocation) 1f else 0.3f)
+                                    tint = MaterialTheme.colors.onBackground.copy(alpha = if (uiState.hasNextLocation) 1f else 0.3f)
                                 )
                             }
                         }
@@ -698,7 +720,6 @@ private fun UserDeviceChip(
         } else {
             null
         },
-        hasEndArrow = false,
         text = {
             Text(
                 text = name,
@@ -710,6 +731,7 @@ private fun UserDeviceChip(
                 modifier = Modifier
             )
         },
+        endSection = null,
         onClick = onClick
     )
 }

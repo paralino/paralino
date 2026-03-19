@@ -4,29 +4,43 @@ import app.paralino.core.ui.components.dialogs.AlertDialogAction
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
 
 data class SubscriptionScreenState(
-    val subscriptionState: SubscriptionInfoState? = null,
+    val allActivePlans: List<SubscriptionDetailsState> = emptyList(),
     val alertDialog: MainAlertDialog? = null,
     val isLoading: Boolean = true,
-    val canShowMoreInfo: Boolean = false,
+    val currentPlanName: String,
     val featureTableState: FeatureTableState
 ) {
-    val isSubscribed: Boolean = subscriptionState != null
+    val hasPremiumPlan: Boolean = allActivePlans.any { it.isPremiumPlan }
+    val canChangePlanOnThisDevice: Boolean = if (allActivePlans.size == 1) {
+        allActivePlans.first().canChangePlanOnThisDevice
+    } else {
+        false
+    }
+    val canManagePlanOnThisDevice: Boolean = allActivePlans.any { it.canManagePlanOnThisDevice == true }
 }
 
-data class SubscriptionInfoState(
-    val name: String,
-    val expiresAt: String,
-    val billingPeriod: String,
-    val hasPremiumPlan: Boolean,
-    val isCurrentPlatform: Boolean,
-    val isFromParalino: Boolean,
+data class SubscriptionDetailsState(
+    val planId: String,
+    val isCurrentPlan: Boolean,
+    val isPremiumPlan: Boolean,
+    val canManagePlanOnThisDevice: Boolean?,
+    val canChangePlanOnThisDevice: Boolean,
+    val isManageLoading: Boolean,
+    val planName: String = "---",
+    val billingPeriod: String?,
+    val nextRenewal: String?,
+    val expiresAt: String?,
+    val planProviderText: String?,
 )
 
 sealed class SubscriptionScreenEvent() {
     data object OnNavigateBack : SubscriptionScreenEvent()
+    data class OpenDirectPlanManagementPage(val url: String) : SubscriptionScreenEvent()
+    data object OpenNativeBillingStorePage : SubscriptionScreenEvent()
 }
 
 sealed class SubscriptionScreenUiEvent() {
     data class DialogAction(val action: AlertDialogAction) : SubscriptionScreenUiEvent()
     data class OnCellItemClick(val table: FeatureTableItemState, val cellItem: FeatureTableItemValue) : SubscriptionScreenUiEvent()
+    data class OnManagePlanClick(val planId: String) : SubscriptionScreenUiEvent()
 }

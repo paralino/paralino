@@ -95,7 +95,7 @@ class PlaceCreateState: BaseMapObservableObject {
                 } else {
                     self?.screenTitle = MR.shared.strings.places_edit_screen_title.localizedString()
                 }
-                self?.isSatelliteMode = uiState.isSatelliteMode
+                self?.isSatelliteMode = uiState.isSatelliteModeActive
             }
         }
     }

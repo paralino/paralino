@@ -1,12 +1,9 @@
 package app.paralino.core.repo.user
 
+import app.paralino.core.db.AppPrefs
 import app.paralino.core.db.MainDatabaseHelper
-import app.paralino.core.db.main.user.UserConfigEntity
-import app.paralino.core.models.base.BackendDatabaseType
-import app.paralino.core.models.base.BackendResourceIDs
 import app.paralino.core.models.user.UserConfigModel
 import app.paralino.core.provider.ICoroutineScopeProvider
-import app.paralino.core.repo.api.IDocumentsApi
 import app.paralino.core.repo.api.IFunctionsApi
 import app.paralino.core.repo.api.ServerFunction
 import app.paralino.core.repo.base.BaseRepository
@@ -18,41 +15,41 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class UserConfigRepository(
     private val database: MainDatabaseHelper,
-    private val documentsApi: IDocumentsApi,
     private val functionsApi: IFunctionsApi,
     private val scopeProvider: ICoroutineScopeProvider,
+    private val appPrefs: AppPrefs
 ) : BaseRepository() {
 
     val configState: StateFlow<UserConfigModel> = getConfig()
         .stateIn(
             scope = scopeProvider.defaultIOScope,
             started = SharingStarted.Eagerly,
-            initialValue = UserConfigModel.fromDatabase(emptyList())
+            initialValue = UserConfigModel.fromDatabase(
+                nodes = emptyList(),
+                mapTilerToken = null
+            )
         )
 
-    suspend fun refreshAndGetConfig(force: Boolean = false): UserConfigModel? {
+    suspend fun refreshMaybeAndGetConfig(
+        cacheTime: Duration
+    ): UserConfigModel? {
         return triggerRemoteMaybe(
             remotePreference = RemotePreference.CACHE(
-                key = "config_refresh",
-                timeMillis = if (force) 0 else 2.minutes.inWholeMilliseconds,
+                key = "user_config_refresh",
+                timeMillis = cacheTime.inWholeMilliseconds,
                 failOnError = false
             )
-        ) { getConfigFromRemote() }
+        ) {
+            getConfigFromRemote()
+        }
             ?.also { config ->
-                database.userConfigDao.recreateConfig(
-                    config.nodes.map { node ->
-                        UserConfigEntity(
-                            id = node.id,
-                            ownerUserId = node.ownerUserId,
-                            type = node.type,
-                            data = node.data
-                        )
-                    }
-                )
+                database.userConfigDao.recreateConfig(config.toDatabaseEntities())
+                appPrefs.mapTilerToken = config.mapTilerToken
             }
     }
 
@@ -63,7 +60,7 @@ class UserConfigRepository(
             return billingCustomerId
         }
 
-        val freshCustomerId = refreshAndGetConfig(force = true)?.billingCustomerId
+        val freshCustomerId = refreshMaybeAndGetConfig(cacheTime = 0.seconds)?.billingCustomerId
 
         if (!freshCustomerId.isNullOrBlank()) {
             return freshCustomerId
@@ -74,23 +71,28 @@ class UserConfigRepository(
             data = null
         )
 
-        return refreshAndGetConfig(force = true)?.billingCustomerId!!
+        return refreshMaybeAndGetConfig(cacheTime = 0.seconds)?.billingCustomerId!!
     }
 
     private fun getConfig(): Flow<UserConfigModel> {
         return database.userConfigDao.getAll()
-            .map { UserConfigModel.fromDatabase(it) }
+            .map { UserConfigModel.fromDatabase(nodes = it, mapTilerToken = appPrefs.mapTilerToken) }
             .distinctUntilChanged()
     }
 
     private suspend fun getConfigFromRemote(): UserConfigModel {
         return blocking {
-            val documents = documentsApi.listAllDocuments(
-                databaseType = BackendDatabaseType.PRODUCT,
-                collectionId = BackendResourceIDs.collectionUserConfigID
+            val execution = functionsApi.runAndWait(
+                function = ServerFunction.USER_CONFIG,
+                data = null
             )
 
-            UserConfigModel.fromRemote(documents)
+            if (!execution.isSuccess) {
+                throw execution.remoteException
+            }
+
+            val data = execution.responseDataMap
+            UserConfigModel.fromRemote(data)
         }
     }
 }

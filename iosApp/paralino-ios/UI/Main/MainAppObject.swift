@@ -16,13 +16,21 @@ class MainAppObject: ObservableObject {
     @Published var uiState: MainActivityState = MainActivityState.companion.doNewInstance() {
         didSet {
             accountState = ResourceSwift(data: uiState.userState)
-            let isSessionExpired = uiState.isSessionExpiredShown
-            sessionExpiredDialog = isSessionExpired ? AlertDialogData(coreData: MainAlertDialogSessionExpired.shared) : nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+                guard let self else { return }
+                if let sessionExpiredDialog = self.uiState.sessionExpiredDialog {
+                    self.sessionExpiredDialog = AlertDialogData(coreData: sessionExpiredDialog)
+                }
+                if let appUpdateDialog = self.uiState.appUpdateDialog {
+                    self.appUpdateDialog = AlertDialogData(coreData: appUpdateDialog)
+                }
+            }
         }
     }
     
     @Published private(set) var accountState: ResourceSwift<AppAccountState> = .notInitialized
     @Published var sessionExpiredDialog: AlertDialogData? = nil
+    @Published var appUpdateDialog: AlertDialogData? = nil
     
     @Published var appStartGraph: [WelcomeGraph] = []
     @Published var emailVerificationGraph: [EmailVerificationGraph] = []

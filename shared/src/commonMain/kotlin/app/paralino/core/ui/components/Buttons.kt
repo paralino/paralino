@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonColors
@@ -39,9 +37,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -49,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.theme.ButtonStyle
+import app.paralino.core.utils.extensions.conditional
 import kotlinx.coroutines.delay
 
 @Composable
@@ -98,7 +98,15 @@ fun FilledButton(
                     onClick()
                 }
             })
-            .shadow(elevation = elevation, shape = style.shape, spotColor = Color.DarkGray)
+            .conditional(elevation > 0.dp) {
+                dropShadow(
+                    shape = style.shape,
+                    shadow = Shadow(
+                        radius = elevation,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
+            }
             .clip(style.shape)
             .background(color = colors.backgroundColor(enabled = enabled).value)
             .alpha(if (enabled) 1f else 0.4f)

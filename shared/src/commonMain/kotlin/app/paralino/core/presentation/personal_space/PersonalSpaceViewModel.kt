@@ -15,7 +15,6 @@ import app.paralino.core.models.data
 import app.paralino.core.models.exception
 import app.paralino.core.models.group.UserGroup
 import app.paralino.core.models.location.UserDeviceModel
-import app.paralino.core.models.mapSuccess
 import app.paralino.core.models.user.UserSession
 import app.paralino.core.presentation.CoreViewModel
 import app.paralino.core.presentation.groups.detail.LocationSharingState
@@ -28,9 +27,13 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserPersonalSpaceLocalDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.onAction
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
 import app.paralino.core.utils.extensions.errorString
 import app.paralino.core.utils.extensions.isoWithOffsetToInstant
 import app.paralino.core.utils.extensions.mapToPayload
@@ -111,12 +114,21 @@ class PersonalSpaceViewModel(
         ) { deviceStatus, personalSpaceData, sharingStatus, user, userPlans ->
 
             val errors = buildList {
-                sharingStatus?.let {
+                sharingStatus?.let { status ->
                     if (!deviceStatus.networkStatus.isOnline) {
                         add(ConditionErrorType.Network)
                     }
 
-                    addAll(deviceStatus.locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
+                    addAll(
+                        deviceStatus.locationStatus.getPossibleErrors()
+                            .filter {
+                                if (status.isLongTerm) {
+                                    it is MandatoryBackgroundLocationSharingConditionType
+                                } else {
+                                    it is MandatoryForegroundLocationSharingConditionType
+                                }
+                            }
+                    )
                 }
 
                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
@@ -200,13 +212,15 @@ class PersonalSpaceViewModel(
             .map { it.isSpaceOverLimit == true }
             .distinctUntilChanged()
             .onEach {
-                showSnackbar(
-                    text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
-                    duration = SnackbarDuration.Forever
-                )
-
-                delay(1000)
-                _eventChannel.trySend(PersonalSpaceScreenEvent.OpenPaywall)
+                showSnackbarForResult(
+                    data = AppSnackbarData(
+                        text = MR.strings.plan_limit_overLimit_personalSpace_banner_title.localizedString(),
+                        duration = SnackbarDuration.Forever,
+                        actionText = MR.strings.plans_banner_settings_action_small.localizedString()
+                    )
+                )?.result?.onAction {
+                    _eventChannel.trySend(PersonalSpaceScreenEvent.OpenPaywall)
+                }
             }
             .launchIn(coroutineScope)
     }

@@ -211,7 +211,7 @@ data class MemberActionsState(
     val deleteLocation: MemberActionItemState? = null,
     val blockUser: MemberActionItemState? = null,
     val unblockUser: MemberActionItemState? = null,
-    val history: MemberActionItemState? = null,
+    val history: LocationHistoryActionItemState? = null,
     val navigate: MemberNavigateItemState? = null,
     val locationRequest: LocationRequestItemState? = null,
     val securityAction: Boolean = false
@@ -234,6 +234,11 @@ data class MemberActionItemState(
     val isEnabled: Boolean = true,
 )
 
+data class LocationHistoryActionItemState(
+    val isLoading: Boolean = false,
+    val isEnabled: Boolean = true,
+)
+
 data class MemberNavigateItemState(
     val lat: Double,
     val lng: Double,
@@ -246,6 +251,7 @@ data class LocationRequestItemState(
     val hasRequestError: Boolean = false,
     val hasDeviceSetupWrongError: Boolean = false,
     val hasDeviceUnreachableError: Boolean = false,
+    val hasDeviceMaybeUnreachableError: Boolean = false,
     val isLoading: Boolean = false,
     val isEnabled: Boolean = true,
     val isPremiumFeatureEnabled: Boolean,
@@ -253,12 +259,12 @@ data class LocationRequestItemState(
     val lastDeviceUpdate: Instant? = null
 ) {
     val canInteract: Boolean = !isLoading && !isWaitingForUser
-    val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError
+    val hasError = hasRequestError || hasDeviceSetupWrongError || hasDeviceUnreachableError || hasDeviceMaybeUnreachableError
     val isStatusRecent: Boolean = lastDeviceUpdate?.isOlderThan(10.minutes) == false
 }
 
 enum class MemberActionType {
-    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER, LOCATION_HISTORY;
+    DELETE_MEMBER, DELETE_LOCATION, BLOCK_USER, UNBLOCK_USER;
 }
 
 enum class MemberLocationVisibilityType {

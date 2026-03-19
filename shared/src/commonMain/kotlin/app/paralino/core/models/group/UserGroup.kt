@@ -1,6 +1,7 @@
 package app.paralino.core.models.group
 
 import app.paralino.core.appPrefs
+import app.paralino.core.db.main.groups.MemberRegisteredLocationCount
 import app.paralino.core.domain.crypto.VerificationResult
 import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.CryptoResource
@@ -116,10 +117,11 @@ data class UserGroupWithMetadata constructor(
     val group: UserGroup,
     val memberCount: Int,
     val placesCount: Int,
-    val devicesCount: Int,
+    val devicesPerMember: List<MemberRegisteredLocationCount>,
     val verification: VerificationResult,
 ) {
     val id: String get() = group.id
+    val devicesCount: Int get() = devicesPerMember.firstOrNull { it.userId == appPrefs.userId }?.count ?: 0
     val isVerified get() = verification.isVerified(includeMemberVerification = group.enforceMemberAuthentication)
     val name: String get() = nameOrNull ?: "---"
     val nameOrNull: String? get() = group.nameOrNull

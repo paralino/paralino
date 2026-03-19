@@ -33,7 +33,12 @@ open class BaseRemoteException constructor(
             type: String? = null,
         ): BaseRemoteException {
             return when (code) {
-                400 -> InvalidRequestException(message, cause)
+                400 -> InvalidRequestException(
+                    code = code,
+                    type = type,
+                    message = message,
+                    cause = cause
+                )
                 401 -> UnauthorizedException(code, type, message, cause)
                 403, 402 -> {
                     PermissionDeniedException(
@@ -44,7 +49,12 @@ open class BaseRemoteException constructor(
                     )
                 }
                 404 -> NotFoundException(type = type, message = message, cause = cause)
-                409 -> ConflictException(message, cause)
+                409 -> ConflictException(
+                    code = code,
+                    type = type,
+                    message = message,
+                    cause = cause
+                )
                 429, 503, 504 -> RemoteConnectionException(message, code, cause)
                 else -> GenericServerException(
                     message = message,
@@ -79,7 +89,17 @@ open class UnauthorizedException(code: Int?, type: String?, message: String?, ca
     val isUserBlocked: Boolean = type == UserSessionMonitor.userBlocked
 }
 
-class InvalidRequestException(message: String?, cause: Throwable? = null): BaseRemoteException(message, cause)
+class InvalidRequestException(
+    code: Int?,
+    type: String?,
+    message: String?,
+    cause: Throwable? = null
+): BaseRemoteException(
+    message = message,
+    cause = cause,
+    code = code,
+    type = type
+)
 
 open class NotFoundException(message: String?, type: String? = null, cause: Throwable? = null): BaseRemoteException(
     type = type,
@@ -87,10 +107,16 @@ open class NotFoundException(message: String?, type: String? = null, cause: Thro
     cause = cause,
     code = 404
 )
-class ConflictException(message: String?, cause: Throwable? = null): BaseRemoteException(
+class ConflictException(
+    code: Int?,
+    type: String?,
+    message: String?,
+    cause: Throwable? = null
+): BaseRemoteException(
     message = message,
     cause = cause,
-    code = 409
+    code = code,
+    type = type
 )
 
 class GenericServerException(

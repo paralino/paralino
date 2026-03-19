@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
@@ -33,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -80,6 +82,7 @@ fun SettingsScreenCore(
     openPaywall: () -> Unit,
     openLocationSettings: () -> Unit,
     openAppSettings: () -> Unit,
+    askNotificationPermission: () -> Unit,
     onShareCode: (String) -> Unit,
 ) {
 
@@ -124,7 +127,7 @@ fun SettingsScreenCore(
                 personalCode = readyState.userState.personalCode,
                 isGuestUser = readyState.userState.isGuestUser,
                 userPlan = readyState.userPlan,
-                errorItem = readyState.userState.errorItem,
+                errors = readyState.errors,
                 onGuestAccountClick = {
                     if (readyState.canUseEmail) {
                         openConvertAccount()
@@ -134,6 +137,14 @@ fun SettingsScreenCore(
                     when (it) {
                         is ConditionErrorType.EmailVerification -> {
                             viewModel.onEvent(AccountScreenUiEvent.SendEmailVerification)
+                        }
+
+                        is ConditionErrorType.PermissionNotifications -> {
+                            askNotificationPermission()
+                        }
+
+                        is ConditionErrorType.NewAppUpdate -> {
+                            viewModel.onEvent(AccountScreenUiEvent.TriggerAppUpdate)
                         }
 
                         else -> {}
@@ -341,6 +352,7 @@ fun SettingsActionItem(
                     )
                     .padding(12.dp)
             )
+
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -363,6 +375,7 @@ fun SettingsActionItem(
                     }
                 }
             }
+
             when (type) {
                 SettingsActionItemType.Action -> {}
                 SettingsActionItemType.Navigation -> {
@@ -375,7 +388,7 @@ fun SettingsActionItem(
                 }
                 SettingsActionItemType.Link -> {
                     Icon(
-                        modifier = Modifier.width(24.dp),
+                        modifier = Modifier.width(20.dp),
                         painter = CoreAppIcons.ArrowOpenNew.asPainterResource(),
                         tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
                         contentDescription = null
@@ -412,6 +425,15 @@ fun SettingsActionItem(
                         }
                     }
                 }
+
+                SettingsActionItemType.Loading -> {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colors.onBackground,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier
+                            .size(22.dp)
+                    )
+                }
             }
         }
         if (description != null) {
@@ -433,5 +455,6 @@ sealed interface SettingsActionItemType {
     object Navigation : SettingsActionItemType
     object Action : SettingsActionItemType
     object Link : SettingsActionItemType
+    object Loading : SettingsActionItemType
     data class Switch(val checked: Boolean) : SettingsActionItemType
 }

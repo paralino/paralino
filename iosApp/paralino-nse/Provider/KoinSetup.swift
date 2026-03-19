@@ -41,6 +41,10 @@ class KoinSetup {
     }
     
     class BillingProviderIOS: IBillingProvider {
+        var isExternalProvider: Bool {
+            false
+        }
+        func startDirectPurchase(url: String) async throws {}
         func configure() async throws -> IBillingProviderSubscriptionProviderData {
             return IBillingProviderSubscriptionProviderData(plans: [], billingConfig: nil, canCloseOnboardingPaywall: true)
         }
@@ -48,7 +52,13 @@ class KoinSetup {
     
     class LocationStatusProvider: ILocationStatusProvider {
         override func createCurrentStatus() -> LocationConditionStatus {
-            return LocationConditionStatus(isGpsOn: true, isFinePermissionAllowed: false, isCoarsePermissionAllowed: false, isBackgroundPermissionAllowed: false)
+            return LocationConditionStatus(
+                isGpsOn: true,
+                isFinePermissionAllowed: false,
+                isCoarsePermissionAllowed: false,
+                isBackgroundPermissionAllowed: false,
+                isUnrestrictedBackgroundPermissionAllowed: false
+            )
         }
     }
     

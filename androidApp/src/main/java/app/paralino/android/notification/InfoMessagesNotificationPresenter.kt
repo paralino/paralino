@@ -131,6 +131,23 @@ class InfoMessagesNotificationPresenter(
             }
         notify(
             IPushNotificationPresenter.Payload(
+                notificationId = 54382,
+                notificationGroupId = IPushNotificationPresenter.notificationGroupSystem,
+                title = MR.strings.error_something_wrong.getString(context),
+                message = message,
+                timeMillis = null,
+                timeInfo = null
+            )
+        )
+    }
+
+    fun notifyNotificationSocketServiceError(
+        context: Context,
+        backgroundStartError: Boolean
+    ) {
+        val message = MR.strings.error_notification_service_error_message.getString(context)
+        notify(
+            IPushNotificationPresenter.Payload(
                 notificationId = 54343,
                 notificationGroupId = IPushNotificationPresenter.notificationGroupSystem,
                 title = MR.strings.error_something_wrong.getString(context),

@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -43,8 +42,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -79,13 +80,19 @@ fun LocationHistoryDateSelector(
     ) {
         // Scrollable days container
         var scrollOnInit by rememberSaveable { mutableStateOf(true) }
-        Card(
+        Box(
             modifier = Modifier
                 .weight(1f, fill = state.isLimitedHistoryPlanMode)
-                .wrapContentWidth(),
-            shape = RoundedCornerShape(12.dp),
-            backgroundColor = MaterialTheme.colors.background,
-            elevation = elevation
+                .wrapContentWidth()
+                .dropShadow(
+                    shape = RoundedCornerShape(12.dp),
+                    shadow = Shadow(
+                        radius = elevation,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colors.background)
         ) {
             val scrollState = rememberLazyListState(0)
             val scope = rememberCoroutineScope()
@@ -183,7 +190,13 @@ fun LocationHistoryDateSelector(
                     .padding(start = 8.dp)
                     .size(width = 50.dp, height = 48.dp)
                     .clickable { onEvent(LocationHistoryUiEvent.ToggleDayRange) }
-//                    .shadow(elevation = elevation, RoundedCornerShape(12.dp))
+                    .dropShadow(
+                        shape = RoundedCornerShape(12.dp),
+                        shadow = Shadow(
+                            radius = elevation,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                        )
+                    )
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colors.background),
                 horizontalAlignment = Alignment.CenterHorizontally,

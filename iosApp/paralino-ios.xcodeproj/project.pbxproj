@@ -72,11 +72,10 @@
 		25B2DB472A44DABC0007E89D /* PersonalCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */; };
 		25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */; };
 		25BFB32B2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BFB32A2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift */; };
-		25BFB32D2E0D865700298B20 /* LocationHistoryMapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BFB32C2E0D864E00298B20 /* LocationHistoryMapScreen.swift */; };
-		25BFB32F2E0D866800298B20 /* LocationHistoryMapState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BFB32E2E0D866300298B20 /* LocationHistoryMapState.swift */; };
 		25C03A6829CCE77100646364 /* MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C03A6729CCE77100646364 /* MainApp.swift */; };
 		25C03A6C29CCE77200646364 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6B29CCE77200646364 /* Assets.xcassets */; };
 		25C03A6F29CCE77200646364 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C03A6E29CCE77200646364 /* Preview Assets.xcassets */; };
+		25C6E4FC2F63729600641E3C /* LicenceCodeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C6E4FB2F63729600641E3C /* LicenceCodeScreen.swift */; };
 		25C7DD722BEC16BC00D16BC9 /* AppStatusDebugScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C7DD712BEC16BC00D16BC9 /* AppStatusDebugScreen.swift */; };
 		25C91A2F2A57EFC600A49F06 /* PhotoPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A2E2A57EFC600A49F06 /* PhotoPickerSheet.swift */; };
 		25C91A322A57F38A00A49F06 /* GroupCreateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */; };
@@ -250,12 +249,11 @@
 		25B2DB462A44DABC0007E89D /* PersonalCodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCodeScreen.swift; sourceTree = "<group>"; };
 		25BB8A712B63A93B0000CBD5 /* PlaceCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCreateScreen.swift; sourceTree = "<group>"; };
 		25BFB32A2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHistoryDeleteScreen.swift; sourceTree = "<group>"; };
-		25BFB32C2E0D864E00298B20 /* LocationHistoryMapScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHistoryMapScreen.swift; sourceTree = "<group>"; };
-		25BFB32E2E0D866300298B20 /* LocationHistoryMapState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHistoryMapState.swift; sourceTree = "<group>"; };
 		25C03A6429CCE77100646364 /* paralino-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "paralino-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C03A6729CCE77100646364 /* MainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainApp.swift; sourceTree = "<group>"; };
 		25C03A6B29CCE77200646364 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		25C03A6E29CCE77200646364 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		25C6E4FB2F63729600641E3C /* LicenceCodeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenceCodeScreen.swift; sourceTree = "<group>"; };
 		25C7DD712BEC16BC00D16BC9 /* AppStatusDebugScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStatusDebugScreen.swift; sourceTree = "<group>"; };
 		25C91A2E2A57EFC600A49F06 /* PhotoPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerSheet.swift; sourceTree = "<group>"; };
 		25C91A312A57F38A00A49F06 /* GroupCreateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCreateScreen.swift; sourceTree = "<group>"; };
@@ -548,8 +546,6 @@
 			children = (
 				255B0CA22E20568C001426C3 /* HistoryClusterView.swift */,
 				255B0CA32E20568C001426C3 /* SwiftUIHistoryClusterAnnotationView.swift */,
-				25BFB32E2E0D866300298B20 /* LocationHistoryMapState.swift */,
-				25BFB32C2E0D864E00298B20 /* LocationHistoryMapScreen.swift */,
 				25A228672CC7F7BF004577BE /* MapComponentVC.swift */,
 				259AEF9B2A3DB1C70083FF4B /* MapRootScreen.swift */,
 				259AEF9D2A3DB1E40083FF4B /* AccountOnboardingScreen.swift */,
@@ -570,6 +566,7 @@
 				252040C82CFDF93600793B2D /* LocationSettingsScreen.swift */,
 				25EF802A2CAEAB5A00DFC890 /* SubscriptionsScreen.swift */,
 				2592D9ED2CE9291F00ECAC3C /* GeneralInfoScreen.swift */,
+				25C6E4FB2F63729600641E3C /* LicenceCodeScreen.swift */,
 				25F8DB912DB912E3007AECEB /* GenericSettingsScreen.swift */,
 				25F8DB8F2DB91268007AECEB /* AppSettingsScreen.swift */,
 				25EF802C2CAEABB800DFC890 /* PaywallScreen.swift */,
@@ -1083,6 +1080,7 @@
 				25D8A43529CE24A00023A0E5 /* AppDelegate.swift in Sources */,
 				25BB8A722B63A93B0000CBD5 /* PlaceCreateScreen.swift in Sources */,
 				258E9BF729EBDEBF006BD46C /* AlertDialog.swift in Sources */,
+				25C6E4FC2F63729600641E3C /* LicenceCodeScreen.swift in Sources */,
 				252040C92CFDF93B00793B2D /* LocationSettingsScreen.swift in Sources */,
 				25F234CD2CE12FAA007208CD /* GroupPickerGroupCreateSection.swift in Sources */,
 				25EFDE2C2A5B250600522293 /* GroupPickerSheet.swift in Sources */,
@@ -1126,7 +1124,6 @@
 				25EF802F2CAEABD000DFC890 /* FreePlanInfoScreen.swift in Sources */,
 				25592FB02D11E370003EECCB /* AppRatingPresenter.swift in Sources */,
 				25B2DB432A44D7F60007E89D /* SettingsScreen.swift in Sources */,
-				25BFB32F2E0D866800298B20 /* LocationHistoryMapState.swift in Sources */,
 				25BFB32B2E0D6F9800298B20 /* LocationHistoryDeleteScreen.swift in Sources */,
 				2507A9702B5D6E3F008E9FF0 /* PlacesScreen.swift in Sources */,
 				25DA00932D307BEE00F705FB /* BatteryNotificationsSettingsScreen.swift in Sources */,
@@ -1135,7 +1132,6 @@
 				25EFDE282A5AF6DF00522293 /* GroupStatusTag.swift in Sources */,
 				25F8DB922DB912E3007AECEB /* GenericSettingsScreen.swift in Sources */,
 				25F234CB2CE12F16007208CD /* PlanLimitCount.swift in Sources */,
-				25BFB32D2E0D865700298B20 /* LocationHistoryMapScreen.swift in Sources */,
 				252035C82D311D8900926962 /* PlaceAlertsSettingsScreen.swift in Sources */,
 				25F37E342A5AC6EE00317D85 /* ImageModelImage.swift in Sources */,
 				25EF802B2CAEAB5D00DFC890 /* SubscriptionsScreen.swift in Sources */,
@@ -1637,7 +1633,7 @@
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-iosDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1663,7 +1659,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.3;
+				MARKETING_VERSION = 2.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",
@@ -1692,7 +1688,7 @@
 				CODE_SIGN_ENTITLEMENTS = "paralino-ios/paralino-ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_ASSET_PATHS = "\"paralino-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				ENABLE_PREVIEWS = YES;
@@ -1718,7 +1714,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.3;
+				MARKETING_VERSION = 2.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lsqlite3",

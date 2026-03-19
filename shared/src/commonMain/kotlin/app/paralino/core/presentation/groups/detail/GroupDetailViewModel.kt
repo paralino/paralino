@@ -37,9 +37,13 @@ import app.paralino.core.repo.base.RemoteConfigRepository
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.repo.places.PlaceActivityDataSource
 import app.paralino.core.repo.user.UserRepository
+import app.paralino.core.ui.components.AppSnackbarData
 import app.paralino.core.ui.components.SnackbarDuration
 import app.paralino.core.ui.components.dialogs.MainAlertDialog
+import app.paralino.core.ui.components.onAction
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
 import app.paralino.core.utils.exceptions.NotFoundException
 import app.paralino.core.utils.exceptions.asRemoteException
 import app.paralino.core.utils.extensions.errorString
@@ -145,12 +149,21 @@ class GroupDetailViewModel(
                 }
 
             val errors = buildList {
-                sharingStatus?.let {
+                sharingStatus?.let { status ->
                     if (!deviceStatus.networkStatus.isOnline) {
                         add(ConditionErrorType.Network)
                     }
 
-                    addAll(deviceStatus.locationStatus.getPossibleErrors(forBackground = it.isLongTerm))
+                    addAll(
+                        deviceStatus.locationStatus.getPossibleErrors()
+                            .filter {
+                                if (status.isLongTerm) {
+                                    it is MandatoryBackgroundLocationSharingConditionType
+                                } else {
+                                    it is MandatoryForegroundLocationSharingConditionType
+                                }
+                            }
+                    )
                 }
 
                 if (!deviceStatus.notificationStatus.isNotificationPermissionAllowed) {
@@ -193,7 +206,7 @@ class GroupDetailViewModel(
                 members = members,
                 focusedMemberId = currentState.data?.focusedMemberId,
                 membersLimit = membersLimit,
-                canShowMembersLimit = group.isCurrentUserOwner,
+                canShowMembersLimit = group.isCurrentUserOwner || membersLimit < members.size,
                 shouldShowPlanBanner = group.isCurrentUserOwner && !group.group.isGroupPremium(
                     remoteConfigRepo.getConfigOnce()
                 ),
@@ -231,13 +244,15 @@ class GroupDetailViewModel(
                     }
                 }
                 if (group.group.isCurrentUserOwner) {
-                    showSnackbar(
-                        text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
-                        duration = SnackbarDuration.Forever
-                    )
-
-                    delay(1000)
-                    _eventChannel.trySend(GroupDetailScreenEvent.OpenPaywall)
+                    showSnackbarForResult(
+                        data = AppSnackbarData(
+                            text = MR.strings.plan_limit_overLimit_groupOwner_banner_title.localizedString(),
+                            duration = SnackbarDuration.Forever,
+                            actionText = MR.strings.plans_banner_settings_action_small.localizedString()
+                        )
+                    )?.result?.onAction {
+                        _eventChannel.trySend(GroupDetailScreenEvent.OpenPaywall)
+                    }
                 } else {
                     showSnackbar(
                         text = MR.strings.plan_limit_overLimit_groupMember_banner_title.localizedString(),
@@ -367,7 +382,6 @@ class GroupDetailViewModel(
                             }
 
                             MemberActionType.DELETE_LOCATION -> {}
-                            MemberActionType.LOCATION_HISTORY -> {}
                         }
                     }
 

@@ -1,20 +1,25 @@
 package app.paralino.core.ui.components.dialogs
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.contentColorFor
@@ -25,14 +30,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import app.paralino.core.MR
 import app.paralino.core.ui.theme.AppColors
 import app.paralino.core.ui.theme.AppTheme
 import app.paralino.core.utils.extensions.annotatedBoldCompose
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlin.math.pow
 
@@ -109,6 +118,7 @@ fun MainAlertDialogActionButton(
 ) {
     val interactionSource = remember(dialogId) { MutableInteractionSource() }
     var clickAnimation by remember(dialogId) { mutableStateOf(false) }
+    var shouldShowLongTapInfo by remember(dialogId) { mutableStateOf(false) }
 
     if (buttonData.needsLongConfirmation) {
         val isPressed by interactionSource.collectIsPressedAsState()
@@ -126,6 +136,7 @@ fun MainAlertDialogActionButton(
                 // check timer, reset
                 wasPressed = false
                 clickAnimation = false
+                shouldShowLongTapInfo = true
             }
         }
     }
@@ -171,9 +182,24 @@ fun MainAlertDialogActionButton(
                 backgroundColor = buttonData.color
             ),
             shape = RoundedCornerShape(12.dp),
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
         ) {
-            Text(buttonData.text)
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(buttonData.text)
+                AnimatedVisibility(shouldShowLongTapInfo) {
+                    Text(
+                        text = stringResource(MR.strings.button_hold_hint),
+                        style = MaterialTheme.typography.overline.copy(
+                            color = LocalContentColor.current.copy(alpha = 0.6f),
+                            letterSpacing = 0.5.sp
+                        )
+                    )
+                }
+            }
         }
     }
 }

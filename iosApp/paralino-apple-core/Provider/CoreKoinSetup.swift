@@ -79,7 +79,10 @@ public class CoreKoinSetup {
             isDevMode: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
             hasPreviewFeatures: (Bundle.main.object(forInfoDictionaryKey: "internalTesting") as! String) == "true",
             logToConsole: (Bundle.main.object(forInfoDictionaryKey: "forceLogToSystem") as! String) == "true",
-            logErrorsToRemote: true
+            logErrorsToRemote: true,
+            hasGoogleMaps: false,
+            hasNotificationSocketService: false,
+            appFlavor: AppFlavor.appleIos
         )
         
 //        let locationStatusProvider = LocationStatusProvider()

@@ -10,6 +10,7 @@ import paralino_apple_core
 import shared
 import Network
 import CoreTelephony
+import CoreLocation
 
 class KoinSetup {
     
@@ -43,8 +44,19 @@ class KoinSetup {
     }
     
     class BillingProviderIOS: IBillingProvider {
+        var isExternalProvider: Bool {
+            return false
+        }
+        func startDirectPurchase(url: String) async throws {}
         func configure() async throws -> IBillingProviderSubscriptionProviderData {
             return IBillingProviderSubscriptionProviderData(plans: [], billingConfig: nil, canCloseOnboardingPaywall: true)
+        }
+    }
+    
+    class LocationStatusProvider: ILocationStatusProvider {
+        override func createCurrentStatus() -> LocationConditionStatus {
+            let locationManager = CLLocationManager()
+            return locationManager.locationCondtionStatus(isUnrestrictedBackgroundPermissionAllowed: true)
         }
     }
     

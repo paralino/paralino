@@ -6,6 +6,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import app.paralino.android.notification.rememberNotificationsPermissionHandler
 import app.paralino.android.ui.main.MainAppState
 import app.paralino.android.ui.navigation.AppScreen
 import app.paralino.android.utils.extensions.share
@@ -22,9 +23,14 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AccountScreen(
     appState: MainAppState,
-    viewModel: SettingsViewModel = koinViewModel(),
+    vm: SettingsViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
+    val notificationPermissionHandler = rememberNotificationsPermissionHandler(
+        appState = appState,
+        messageDispatcher = vm.messageDispatcher,
+        notificationStatusProvider = vm.deviceApiProvider.notificationStatusProvider
+    )
 
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),
@@ -37,7 +43,7 @@ fun AccountScreen(
     ) {
         AccountScreenCore(
             appState = appState,
-            viewModel = viewModel,
+            viewModel = vm,
             openConvertAccount = {
                 appState.navController.navigate(
                     AppScreen.Settings.ProfileDetails.ConvertAccount.routeSignature
@@ -61,6 +67,9 @@ fun AccountScreen(
             },
             openChangePassword = {
                 appState.navController.navigate(AppScreen.Settings.ProfileDetails.ChangePassword.routeSignature)
+            },
+            askNotificationPermission = {
+                notificationPermissionHandler.askNotificationPermission()
             },
             onShare = {
                 context.share(it)

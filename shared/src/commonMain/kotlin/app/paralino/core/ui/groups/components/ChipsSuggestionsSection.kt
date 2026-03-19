@@ -56,8 +56,8 @@ fun ChipsSuggestionsSection(
                     color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
                 )
             },
+            endSection = null,
             backgroundColor = Color.Transparent,
-            hasEndArrow = false,
             onClick = null
         )
 

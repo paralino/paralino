@@ -15,9 +15,11 @@ class LocationPermissionHandler {
     private var requestedBackground: Bool = false
     
     let locationManager: LocationManager
+    let locationStatusProvider: ILocationStatusProvider
     
-    init(locationManager: LocationManager) {
+    init(locationManager: LocationManager, locationStatusProvider: ILocationStatusProvider) {
         self.locationManager = locationManager
+        self.locationStatusProvider = locationStatusProvider
     }
     
     func requestLocationServices(
@@ -37,7 +39,7 @@ class LocationPermissionHandler {
     func requestLocationPermission(
         messageDispather: ICoreMessageDispatcher
     ) {
-        let status = locationManager.manager.locationCondtionStatus()
+        let status = locationStatusProvider.createCurrentStatus()
         
         guard !status.isFinePermissionAllowed || !status.isBackgroundPermissionAllowed else {
             return
@@ -91,6 +93,21 @@ class LocationPermissionHandler {
                 // have all permissions
             }
         }
+    }
+    
+    func requestBackgroundRefreshPermission(
+        messageDispather: ICoreMessageDispatcher
+    ) {
+        let status = locationStatusProvider.createCurrentStatus()
+        
+        guard !status.isUnrestrictedBackgroundPermissionAllowed else {
+            return
+        }
+        
+        showSnackbar(
+            messageDispather: messageDispather,
+            message: MR.shared.strings.error_unrestricted_background_access_message_ios.localizedString()
+        )
     }
     
     private func requestLocationPermission(_ status: LocationConditionStatus) {

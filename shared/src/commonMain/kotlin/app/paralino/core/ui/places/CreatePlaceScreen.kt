@@ -69,9 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.paralino.core.MR
 import app.paralino.core.models.Payload
-import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
-import app.paralino.core.presentation.map.MapHomeScreenUiEvent
 import app.paralino.core.presentation.places.create.CreatePlaceAddressSearchUiMode
 import app.paralino.core.presentation.places.create.CreatePlaceScreenEvent
 import app.paralino.core.presentation.places.create.CreatePlaceScreenState
@@ -86,6 +84,7 @@ import app.paralino.core.ui.components.BottomSheetPickerType
 import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.DefaultEmptyState
+import app.paralino.core.ui.components.EditImageIcon
 import app.paralino.core.ui.components.EmbeddedSlider
 import app.paralino.core.ui.components.EmbeddedSliderSize
 import app.paralino.core.ui.components.ImageModelImage
@@ -311,7 +310,7 @@ private fun CreatePlaceNameSuggestionStep(
         Spacer(modifier = Modifier.weight(1f))
 
         Box(
-            modifier = Modifier.size(100.dp),
+            modifier = Modifier.size(120.dp),
             contentAlignment = Alignment.Center
         ) {
             ImageModelImage(
@@ -319,6 +318,11 @@ private fun CreatePlaceNameSuggestionStep(
                 modifier = Modifier
                     .size(100.dp)
                     .rotate(rotation)
+                    .clickable(onClick = onImageClick)
+            )
+            EditImageIcon(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
                     .clickable(onClick = onImageClick)
             )
         }
@@ -465,28 +469,30 @@ private fun CreatePlaceMapStep(
                 }
             }
 
-            Image(
-                painter = if (!state.isSatelliteMode) {
-                    MR.images.image_map_type_satellite.asPainterResource()
-                } else if (isSystemInDarkTheme()) {
-                    MR.images.image_map_type_default_dark.asPainterResource()
-                } else {
-                    MR.images.image_map_type_default_light.asPainterResource()
-                },
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(top = 16.dp, end = 16.dp, start = 16.dp)
-                    .size(40.dp)
-                    .clickable { onEvent(CreatePlaceScreenUiEvent.OnMapModeSwitch) }
-                    .background(
-                        color = AppColors.accentDark,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+            if (state.hasSatelliteMode) {
+                Image(
+                    painter = if (!state.isSatelliteModeActive) {
+                        MR.images.image_map_type_satellite.asPainterResource()
+                    } else if (isSystemInDarkTheme()) {
+                        MR.images.image_map_type_default_dark.asPainterResource()
+                    } else {
+                        MR.images.image_map_type_default_light.asPainterResource()
+                    },
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(top = 16.dp, end = 16.dp, start = 16.dp)
+                        .size(40.dp)
+                        .clickable { onEvent(CreatePlaceScreenUiEvent.OnMapModeSwitch) }
+                        .background(
+                            color = AppColors.accentDark,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             PlaceAddressSearchComponent(
                 modifier = Modifier

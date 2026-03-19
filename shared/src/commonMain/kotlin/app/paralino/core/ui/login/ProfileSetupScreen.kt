@@ -39,6 +39,7 @@ fun ProfileSetupScreenCore(
     ) {
         EditProfileScreen(
             state = uiState,
+            canShakeImage = true,
             onImageClick = { onBottomSheetAction(BottomSheetPickerType.EmojiPickerBottomSheet(Emojis.userEmojis)) },
             onNameChange = { vm.onNameChange(it) },
             onConfirm = { vm.proceed() }

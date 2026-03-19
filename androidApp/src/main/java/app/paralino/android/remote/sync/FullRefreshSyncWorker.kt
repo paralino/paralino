@@ -30,7 +30,7 @@ class FullRefreshSyncWorker(
         catch (_: Exception) { }
 
         try {
-            logg.tag("refresh").v("Try to sync everything from server")
+            logg.tag("refresh").i("Try to sync everything from server")
             dataSync.fullRefresh.refreshEverything(
                 forceGroupRefresh = false,
                 minimumDelayMillis = 12.hours.inWholeMilliseconds

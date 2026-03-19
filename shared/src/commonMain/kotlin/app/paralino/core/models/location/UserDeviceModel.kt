@@ -2,9 +2,9 @@ package app.paralino.core.models.location
 
 import app.paralino.core.appPrefs
 import app.paralino.core.models.CryptoResource
-import app.paralino.core.models.base.ConfigData
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.PlanConfig
+import app.paralino.core.models.base.PushProvider
 import app.paralino.core.models.data
 import app.paralino.core.models.group.BatteryNotificationsSettingsData
 import app.paralino.core.models.user.UserMe
@@ -21,7 +21,9 @@ data class UserDeviceModel(
     val location: MemberLocation?,
     @Contextual
     val deviceData: CryptoResource<MemberDeviceData>,
-    val batteryAlertSettings: BatteryNotificationsSettingsData?
+    val batteryAlertSettings: BatteryNotificationsSettingsData?,
+    val pushProviderConfig: String?,
+    val pushProvider: PushProvider
 ) {
     val deviceNameOrNull: String? = deviceData.data?.deviceName?.takeIf { it.isNotBlank() }
 }
@@ -34,6 +36,11 @@ data class UserPersonalSpaceModel(
 ) {
     val plan: PlanConfig = plans.highestValidPlanConfig
     val activeDeviceCount: Int = devices.count { it.location != null }
+    val areOtherDevicesActive: Boolean get() {
+        return devices
+            .filter { it.location != null }
+            .any { it.id != currentDevice?.id }
+    }
     val currentDevice: UserDeviceModel? get() {
         val userId = appPrefs.userId
         val deviceId = appPrefs.deviceId

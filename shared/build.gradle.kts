@@ -1,17 +1,18 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.gradle.kotlin.dsl.aboutLibraries
 import org.jetbrains.kotlin.daemon.common.trimQuotes
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.multiplatformLibrary)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.compose)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.moko.resources)
     alias(libs.plugins.ksp)
@@ -20,7 +21,14 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+    android {
+        namespace = "app.paralino.core"
+        compileSdk = 36
+        minSdk = 29
+        compilerOptions.jvmTarget = JvmTarget.JVM_17
+        compilerOptions.optIn.add("kotlin.RequiresOptIn")
+        androidResources.enable = true
+    }
 
     iosX64()
     iosArm64()
@@ -41,12 +49,10 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            // using api here so we can access resources in android as well
-            api(compose.components.resources)
+            implementation(libs.jetbrains.compose.runtime)
+            implementation(libs.jetbrains.compose.foundation)
+            implementation(libs.jetbrains.compose.material)
+            api(libs.jetbrains.compose.components.resources)
             api(project(":moko"))
             api(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.datetime)
@@ -55,9 +61,9 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.multiplatform.settings)
-            implementation(libs.network.ktor.client.core)
-            implementation(libs.network.ktor.client.logging)
-            implementation(libs.network.ktor.content.negotiation)
+            api(libs.network.ktor.client.core)
+            api(libs.network.ktor.client.logging)
+            api(libs.network.ktor.content.negotiation)
             implementation(libs.network.ktor.serialization)
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
@@ -88,25 +94,8 @@ kotlin {
         optIn.add("kotlin.RequiresOptIn")
         optIn.add("kotlin.time.ExperimentalTime")
     }
-}
 
-android {
-    namespace = "app.paralino.android"
-    compileSdk = 36
-
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/moko-resources")
-
-    defaultConfig {
-        minSdk = 29
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
+    jvmToolchain(21)
 }
 
 dependencies {

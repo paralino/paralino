@@ -26,6 +26,8 @@ import app.paralino.core.provider.NotificationConditionStatus
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
 import app.paralino.core.utils.ConditionErrorType
+import app.paralino.core.utils.MandatoryForegroundLocationSharingConditionType
+import app.paralino.core.utils.MandatoryBackgroundLocationSharingConditionType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -58,7 +60,7 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Location service created"
         )
@@ -69,7 +71,7 @@ class LocationService : Service() {
 
         launchedInForeground = intent?.getBooleanExtra(startedInForeground, false) ?: false
 
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Location service starting - action: ${intent?.action} - launched in foreground: $launchedInForeground"
         )
@@ -129,7 +131,7 @@ class LocationService : Service() {
     }
 
     private fun initTracking() {
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Subscribe to location and sharing status"
         )
@@ -173,9 +175,13 @@ class LocationService : Service() {
     private fun updateNotification() {
         val errors = buildList {
             addAll(
-                deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors(
-                    forBackground = !launchedInForeground
-                )
+                deviceApiProvider.locationStatusProvider.currentStatus.getPossibleErrors().filter {
+                    if (launchedInForeground) {
+                        it is MandatoryForegroundLocationSharingConditionType
+                    } else {
+                        it is MandatoryBackgroundLocationSharingConditionType
+                    }
+                }
             )
             if (!deviceApiProvider.connectionStatusProvider.status.value.isOnline) {
                 add(ConditionErrorType.Network)
@@ -194,7 +200,7 @@ class LocationService : Service() {
     private fun startTracking() {
         updateNotification()
 
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "Subscribing to location updates"
         )
@@ -204,7 +210,7 @@ class LocationService : Service() {
             .onEach {
                 when (val location = it.data) {
                     null -> {
-                        logg.v(
+                        logg.d(
                             tag = "location_service_${this.hashCode()}",
                             message = "Got null location"
                         )
@@ -249,7 +255,7 @@ class LocationService : Service() {
     }
 
     private fun stopAll() {
-        logg.v(
+        logg.d(
             tag = "location_service_${this.hashCode()}",
             message = "Stop all - location service"
         )
@@ -260,7 +266,7 @@ class LocationService : Service() {
     }
 
     override fun onDestroy() {
-        logg.v(
+        logg.i(
             tag = "location_service_${this.hashCode()}",
             message = "onDestroy - Killing location service"
         )

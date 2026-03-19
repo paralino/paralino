@@ -3,7 +3,6 @@ package app.paralino.core.presentation.settings.location
 import app.paralino.core.MR
 import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.PremiumStatusManager
-import app.paralino.core.models.AppBuildConfig
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.data
 import app.paralino.core.presentation.CoreViewModel
@@ -92,8 +91,8 @@ class LocationSettingsViewModel(
                         isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
-                        batteryImpact = getOptionBatteryImpact(level),
-                        highBatteryImpact = level is LocationPerformanceSettingsType.HighPerformance.LevelMax || level is LocationPerformanceSettingsType.HighPerformance.Level3,
+                        tag = getOptionBatteryImpact(level),
+                        isTagWarning = level is LocationPerformanceSettingsType.HighPerformance.LevelMax || level is LocationPerformanceSettingsType.HighPerformance.Level3,
                         isSelected = level.key == (appPrefs.locationSettingsHighPerformanceDurationType
                             ?: LocationPerformanceSettingsType.HighPerformance.default.key)
                     )
@@ -112,8 +111,8 @@ class LocationSettingsViewModel(
                         isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
-                        batteryImpact = getOptionBatteryImpact(level),
-                        highBatteryImpact = level is LocationPerformanceSettingsType.BatterySaver.Level3,
+                        tag = getOptionBatteryImpact(level),
+                        isTagWarning = level is LocationPerformanceSettingsType.BatterySaver.Level3,
                         isSelected = level.key == (appPrefs.locationSettingsBatterySaverPerformanceType
                             ?: LocationPerformanceSettingsType.BatterySaver.default.key)
                     )
@@ -142,8 +141,8 @@ class LocationSettingsViewModel(
                         isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
-                        batteryImpact = getOptionBatteryImpact(level),
-                        highBatteryImpact = level is LocationPerformanceSettingsType.Balanced.Level5,
+                        tag = getOptionBatteryImpact(level),
+                        isTagWarning = level is LocationPerformanceSettingsType.Balanced.Level5,
                         isSelected = level.key == (appPrefs.locationSettingsBalancedPerformanceType
                             ?: LocationPerformanceSettingsType.Balanced.default.key)
                     )
@@ -161,8 +160,8 @@ class LocationSettingsViewModel(
                         isPremiumFeatureEnabled = canHavePremiumModes || !level.isPremiumFeature,
                         title = getOptionTitle(level),
                         description = getOptionDescription(level),
-                        batteryImpact = null,
-                        highBatteryImpact = false,
+                        tag = null,
+                        isTagWarning = false,
                         isSelected = level.key == (appPrefs.locationSettingsHistoryPerformanceType
                             ?: LocationPerformanceSettingsType.History.default.key)
                     )

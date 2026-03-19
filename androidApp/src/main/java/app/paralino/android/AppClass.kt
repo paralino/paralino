@@ -16,11 +16,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import app.paralino.android.data.PreCheckControl
 import app.paralino.android.di.KoinSetup
+import app.paralino.android.notification.NotificationSocketServiceLauncher
 import app.paralino.android.tracking.LocationService
 import app.paralino.android.tracking.LocationServiceLauncher
 import app.paralino.core.CoreAppManager
 import app.paralino.core.ParalinoCore
 import app.paralino.core.db.AppPrefs
+import app.paralino.core.logg
 import app.paralino.core.provider.AppLifecycleType
 import app.paralino.core.provider.CoreAppClass
 import app.paralino.core.provider.ICoroutineScopeProvider
@@ -61,6 +63,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
     private val locationSharingManager: LocationSharingManager by inject()
     private val deviceApiProvider: IDeviceApiProvider by inject()
     private val locationServiceLauncher: LocationServiceLauncher by inject()
+    private val notificationSocketServiceLauncher: NotificationSocketServiceLauncher by inject()
     private val appPrefs: AppPrefs by inject()
 
     val appState get() = ProcessLifecycleOwner.get().lifecycle.currentState
@@ -84,7 +87,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
 
         androidPreCheck.start()
         coreAppManager.onAppStart()
-        initLocationService()
+        initBackgroundServices()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(
@@ -98,17 +101,24 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
                 IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION).apply { addAction(Intent.ACTION_PROVIDER_CHANGED) }
             )
         }
-        getSystemService<ConnectivityManager>()?.registerDefaultNetworkCallback(
-            object : NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    coreAppManager.updateConnectionStatus()
-                }
+        getSystemService<ConnectivityManager>().let {
+            if (it != null) {
+                logg.i("app_state", "Register system connectivity monitor")
+                it.registerDefaultNetworkCallback(
+                    object : NetworkCallback() {
+                        override fun onAvailable(network: Network) {
+                            coreAppManager.updateConnectionStatus()
+                        }
 
-                override fun onLost(network: Network) {
-                    coreAppManager.updateConnectionStatus()
-                }
+                        override fun onLost(network: Network) {
+                            coreAppManager.updateConnectionStatus()
+                        }
+                    }
+                )
+            } else {
+                logg.i("app_state", "System connectivity monitor not available")
             }
-        )
+        }
     }
 
     private fun initCrashReporting() {
@@ -118,7 +128,7 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
         }
     }
 
-    private fun initLocationService() {
+    private fun initBackgroundServices() {
         combine(
             locationSharingManager.sharingStatus,
             deviceApiProvider.appLifecycleState
@@ -128,10 +138,14 @@ class AppClass : CoreAppClass(), ICoroutineScopeProvider, DefaultLifecycleObserv
             .debounce(500)
             .onEach {
                 if (it.second.current == AppLifecycleType.ACTIVE) {
-                    locationServiceLauncher.startLocationService(action = LocationService.INTENT_ACTION_LOCATION_SERVICE_START)
+                    locationServiceLauncher.startLocationService(
+                        action = LocationService.INTENT_ACTION_LOCATION_SERVICE_START
+                    )
                 }
             }
             .launchIn(defaultScope)
+
+        notificationSocketServiceLauncher.startMonitoring(defaultScope)
     }
 
     override fun onStart(owner: LifecycleOwner) {

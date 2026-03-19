@@ -20,7 +20,8 @@ class MapHomeState : BaseMapObservableObject {
         selectedGroupImage: nil,
         currentUserImage: ImageModel.companion.placeholder(),
         isPersonalSpace: true,
-        isSatelliteMode: false,
+        androidMapSDKProvider: nil,
+        isSatelliteModeEnabled: false,
         alertDialog: nil
     )
     
@@ -59,7 +60,7 @@ class MapHomeState : BaseMapObservableObject {
                     }
                 }
                 
-                self?.isSatelliteMode = state.isSatelliteMode
+                self?.isSatelliteMode = state.isSatelliteModeActive
             }
         }
         

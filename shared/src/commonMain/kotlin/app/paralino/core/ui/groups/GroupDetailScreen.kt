@@ -207,7 +207,7 @@ fun GroupDetailScreenCore(
                     )
                 ) {
                     if (state.data.arePlacesOverLimit == true) {
-                        this.item(key = "over_limit_notice") {
+                        this.item(key = "place_limit_notice") {
                             NoticeInfoChip(
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                                 text = stringResource(MR.strings.plan_limit_overLimit_places_banner_title),
@@ -217,8 +217,10 @@ fun GroupDetailScreenCore(
                                 iconTint = MaterialTheme.colors.onError
                             )
                         }
-                    } else if (state.data.isGroupOverLimit == true) {
-                        this.item(key = "over_limit_notice") {
+                    }
+
+                    if (state.data.isGroupOverLimit == true) {
+                        this.item(key = "member_limit_notice") {
                             NoticeInfoChip(
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                                 text = stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title),

@@ -7,6 +7,7 @@ import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
 import app.paralino.core.models.location.LatLng
+import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.provider.localizedString
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -33,11 +34,19 @@ data class CreatePlaceScreenState constructor(
     val radiusMeters: Int,
     val radiusText: String,
     val hasNameError: Boolean,
-    val isSatelliteMode: Boolean,
+    val isSatelliteModeEnabled: Boolean,
     val actionLoading: Boolean,
     val fullLoading: Boolean,
+    val androidMapSDKProvider: MapsSDKProvider?,
     val alertDialog: MainAlertDialog?
 ) {
+    val deviceType: DeviceType = DeviceType.current
+    val hasSatelliteMode: Boolean = when (deviceType) {
+        DeviceType.Android -> androidMapSDKProvider?.hasSatelliteMaps != false
+        DeviceType.iOS -> true
+    }
+    val isSatelliteModeActive: Boolean = if (hasSatelliteMode) isSatelliteModeEnabled else false
+
     val hintText: AnnotatedString = when (addressUiMode) {
         CreatePlaceAddressSearchUiMode.HIDDEN -> {
             when (DeviceType.current) {
@@ -89,6 +98,7 @@ data class CreatePlaceScreenState constructor(
             lng: Double? = null,
             radiusMeters: Int,
             radiusText: String,
+            androidMapSDKProvider: MapsSDKProvider?,
             fallbackCenterLatLng: PlaceMapFallbackLatLng?,
             nameSuggestions: List<SuggestionSectionChipData>
         ): CreatePlaceScreenState {
@@ -117,7 +127,8 @@ data class CreatePlaceScreenState constructor(
                 actionLoading = false,
                 fullLoading = false,
                 alertDialog = null,
-                isSatelliteMode = false
+                androidMapSDKProvider = androidMapSDKProvider,
+                isSatelliteModeEnabled = false
             )
         }
     }

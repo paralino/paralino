@@ -9,6 +9,8 @@ import SwiftUI
 import shared
 
 struct GenericSettingsScreen: View {
+    
+    @EnvironmentObject var appDelegate: AppDelegate
     @Binding var path: [NavigationGraph]
     @StateObject var appState: GenericSettingsScreenState
     
@@ -20,6 +22,16 @@ struct GenericSettingsScreen: View {
                     vm: appState.vm,
                     openPaywall: {
                         path.append(.settings(.paywall(type: BillingScreenSourceType.upgrade)))
+                    },
+                    askNotificationPermission: {
+                        appDelegate.notificationPermissionHandler.requestNotificationPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
+                    },
+                    askBackgroundAccessPermission: {
+                        appDelegate.locationPermissionHandler.requestBackgroundRefreshPermission(
+                            messageDispather: appState.vm.messageDispatcher
+                        )
                     }
                 )
             }

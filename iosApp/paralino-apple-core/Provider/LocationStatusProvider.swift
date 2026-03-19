@@ -8,22 +8,16 @@
 import shared
 import CoreLocation
 
-class LocationStatusProvider: ILocationStatusProvider {
-    override func createCurrentStatus() -> LocationConditionStatus {
-        let locationManager = CLLocationManager()
-        return locationManager.locationCondtionStatus()
-    }
-}
-
 extension CLLocationManager {
-    func locationCondtionStatus() -> LocationConditionStatus {
+    func locationCondtionStatus(isUnrestrictedBackgroundPermissionAllowed: Bool) -> LocationConditionStatus {
         let permissionStatus = self.authorizationStatus
         let locationAccuracy = self.accuracyAuthorization
         return LocationConditionStatus(
             isGpsOn: CLLocationManager.locationServicesEnabled(),
             isFinePermissionAllowed: (permissionStatus == .authorizedWhenInUse || permissionStatus == .authorizedAlways) && locationAccuracy == .fullAccuracy,
             isCoarsePermissionAllowed: permissionStatus == .authorizedWhenInUse || permissionStatus == .authorizedAlways,
-            isBackgroundPermissionAllowed: permissionStatus == .authorizedAlways
+            isBackgroundPermissionAllowed: permissionStatus == .authorizedAlways,
+            isUnrestrictedBackgroundPermissionAllowed: isUnrestrictedBackgroundPermissionAllowed
         )
     }
 }

@@ -43,6 +43,11 @@ struct MemberInviteScreen: View {
         .toolbarTitleDisplayMode(.inline)
         .navigationTitle(MR.shared.strings.invite_connect_screen_title.localizedString())
         .navigationBarBackButtonHidden(appState.isOnboarding)
+        .highPriorityGesture(
+            DragGesture(minimumDistance: 30, coordinateSpace: .local)
+                .onChanged { _ in /* no-op, just to claim */ }
+                .onEnded { _ in }
+        )
         .groupPickerSheet(
             $groupPicker,
             onSelectGroup: { state in

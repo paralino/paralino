@@ -14,6 +14,7 @@ struct PaywallScreen: View {
     @StateObject var state: PaywallScreenState
     
     @Environment(\.safeAreaInsets) private var safeAreaInsets
+    @State private var isSubscriptionManagementScreenShown: Bool = false
     
     var body: some View {
         ZStack {
@@ -30,6 +31,12 @@ struct PaywallScreen: View {
                     },
                     onRestorePurchase: { event in
                         state.restorePurchase(event)
+                    },
+                    openLicenceScreen: {
+                        path.append(.settings(.licenceCode))
+                    },
+                    openBillingStore: {
+                        isSubscriptionManagementScreenShown = true
                     }
                 )
             }
@@ -38,6 +45,7 @@ struct PaywallScreen: View {
             .toolbar(.hidden, for: .navigationBar)
             .ignoresSafeArea(.all, edges: .vertical)
         }
+        .manageSubscriptionsSheet(isPresented: $isSubscriptionManagementScreenShown)
     }
     
     private func goBack(isSuccess: Bool) {

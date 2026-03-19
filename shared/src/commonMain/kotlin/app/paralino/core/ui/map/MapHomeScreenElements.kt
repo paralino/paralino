@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,7 +46,6 @@ import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -67,6 +67,7 @@ import app.paralino.core.ui.components.CoreAppIcons
 import app.paralino.core.ui.components.CoreAppIcons.asPainterResource
 import app.paralino.core.ui.components.FilledButton
 import app.paralino.core.ui.components.ImageModelImage
+import app.paralino.core.ui.components.NoticeInfoChip
 import app.paralino.core.ui.groups.components.GroupMember
 import app.paralino.core.ui.groups.components.GroupMemberActionButton
 import app.paralino.core.ui.places.PlaceListItem
@@ -158,7 +159,7 @@ fun MapHomeScreenElements(
                 onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
                 icon = null,
                 style = ButtonStyle.ICON,
-                elevation = 8.dp,
+                elevation = 12.dp,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.surface
                 ),
@@ -182,7 +183,7 @@ fun MapHomeScreenElements(
         // map mode
         if (readyState != null) {
             Image(
-                painter = if (!state.isSatelliteMode) {
+                painter = if (!state.isSatelliteModeActive) {
                     MR.images.image_map_type_satellite.asPainterResource()
                 } else if (isSystemInDarkTheme()) {
                     MR.images.image_map_type_default_dark.asPainterResource()
@@ -225,6 +226,22 @@ fun MapHomeScreenElements(
                     readyState = readyState,
                     onEvent = onEvent
                 )
+
+                if (readyState?.isOverLimit == true) {
+                    NoticeInfoChip(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(unbounded = true)
+                            .padding(horizontal = 20.dp)
+                            .padding(bottom = 6.dp),
+                        text = stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title),
+                        icon = CoreAppIcons.Warning.asPainterResource(),
+                        backgroundColor = MaterialTheme.colors.error,
+                        textColor = MaterialTheme.colors.onError,
+                        iconTint = MaterialTheme.colors.onError,
+                        onClick = { onEvent(MapHomeScreenUiEvent.OnOverLimitsBannerTap) }
+                    )
+                }
             }
 
             bottomCards(sheetPeekHeight)
@@ -265,6 +282,7 @@ fun BoxScope.MapHomeElementMainCards(
                 ) {
                     PlaceListItem(
                         modifier = Modifier.padding(top = 38.dp),
+                        shadow = 12.dp,
                         state = placeState,
                         hasEndArrow = true,
                         onClick = { onEvent(MapHomeScreenUiEvent.OnPlaceClick(placeState)) }
@@ -305,10 +323,12 @@ fun BoxScope.MapHomeElementMainCards(
                     )
                 ) {
                     GroupMember(
-                        modifier = Modifier.padding(top = 38.dp),
+                        modifier = Modifier
+                            .padding(top = 38.dp),
                         state = memberState,
                         backgroundColor = MaterialTheme.colors.background,
                         shape = RoundedCornerShape(16.dp),
+                        shadow = 12.dp,
                         collapseOnActionClick = false,
                         forceExpandAction = true,
                         canShowOldLocation = true,
@@ -364,7 +384,7 @@ private fun MapHomeElementSharingRow(
                         shape = RoundedCornerShape(100),
                         shadow = Shadow(
                             radius = 16.dp,
-                            color = Color.Black.copy(alpha = 0.2f),
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                         )
                     ),
                 startIcon = CoreAppIcons.TimelinePathWithPins.asPainterResource(),
@@ -385,7 +405,7 @@ private fun MapHomeElementSharingRow(
                         shape = RoundedCornerShape(100),
                         shadow = Shadow(
                             radius = 16.dp,
-                            color = Color.Black.copy(alpha = 0.2f),
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
                         )
                     ),
                 startIcon = if (readyState.isPersonalSpace) {
@@ -479,6 +499,13 @@ private fun MapGroupOrSpacePickerTabs(
             modifier = Modifier
                 .matchParentSize()
                 .padding(6.dp)
+                .dropShadow(
+                    shape = RoundedCornerShape(100),
+                    shadow = Shadow(
+                        radius = 15.dp,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                    )
+                )
                 .clip(RoundedCornerShape(100))
                 .background(MaterialTheme.colors.background)
                 .background(
@@ -514,9 +541,12 @@ private fun MapGroupOrSpacePickerTabs(
                             }
                         }
                     )
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(100)
+                    .dropShadow(
+                        shape = RoundedCornerShape(100),
+                        shadow = Shadow(
+                            radius = 8.dp,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.2f),
+                        )
                     )
                     .clip(RoundedCornerShape(100))
                     .background(MaterialTheme.colors.background)
