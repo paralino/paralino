@@ -105,7 +105,6 @@ android {
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
             props.load(FileInputStream(propsFile))
-            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
             buildConfigField("String", "serverUrl", props["productionServerUrl"] as String)
             buildConfigField("String", "serverKey", props["productionServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["productionPublicServerUrl"] as String)
@@ -124,7 +123,6 @@ android {
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
             props.load(FileInputStream(propsFile))
-            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
             buildConfigField("String", "serverUrl", props["devServerUrl"] as String)
             buildConfigField("String", "serverKey", props["devServerKey"] as String)
             buildConfigField("String", "publicServerUrl", props["devPublicServerUrl"] as String)
@@ -145,15 +143,23 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 76
+            versionCode = 77
             versionName = "2.2.0"
+
+            val propsFile = rootProject.file("user.properties")
+            val props = Properties()
+            props.load(FileInputStream(propsFile))
+            buildConfigField("String", "revenueCatApiKey", props["revenueCatApiKey"] as String)
+
             buildConfigField("boolean", "hasGoogleMaps", "true")
             buildConfigField("boolean", "hasNotificationSocketService", "false")
         }
         create("direct") {
             dimension = "version"
-            versionCode = 75
+            versionCode = 77
             versionName = "2.2.0"
+
+            buildConfigField("String", "revenueCatApiKey", "\"\"")
             buildConfigField("boolean", "hasGoogleMaps", "false")
             buildConfigField("boolean", "hasNotificationSocketService", "true")
         }
