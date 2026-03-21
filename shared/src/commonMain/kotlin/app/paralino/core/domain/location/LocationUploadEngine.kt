@@ -59,10 +59,10 @@ class LocationUploadEngine constructor(
                 AppHost.MAIN_APP,
                 AppHost.IOS_NOTIFICATION_EXTENSION -> {
                     return when (locationPerformanceManager.locationPerformanceType.value.current) {
-                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 20.seconds
-                        LocationPerformanceType.BATTERY_SAVER -> 10.seconds
+                        LocationPerformanceType.HIGH_BATTERY_SAVER -> 30.seconds
+                        LocationPerformanceType.BATTERY_SAVER -> 20.seconds
 
-                        LocationPerformanceType.BALANCED,
+                        LocationPerformanceType.BALANCED -> 12.seconds
                         LocationPerformanceType.MEDIUM_HIGH -> 6.seconds
 
                         LocationPerformanceType.HIGH,
