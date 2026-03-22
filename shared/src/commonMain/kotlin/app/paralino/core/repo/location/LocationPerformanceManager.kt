@@ -192,56 +192,56 @@ class LocationPerformanceManager constructor(
         }
 
         val now = nowUTC().epochSeconds
+        val last10min = nowUTC().minus(10, DateTimeUnit.MINUTE).epochSeconds
         val last20min = nowUTC().minus(20, DateTimeUnit.MINUTE).epochSeconds
-        val lastHour = nowUTC().minus(1, DateTimeUnit.HOUR).epochSeconds
-        val last4Hours = nowUTC().minus(4, DateTimeUnit.HOUR).epochSeconds
+        val last2Hours = nowUTC().minus(2, DateTimeUnit.HOUR).epochSeconds
 
-        // keep only last 4 hours as record
-        locationBoostTracker = locationBoostTracker.filter { it.key > last4Hours }.toMutableMap()
+        // keep only last few hours as record
+        locationBoostTracker = locationBoostTracker.filter { it.key > last2Hours }.toMutableMap()
 
-        // take only last hour for optimization
-        val hourIterator = locationBoostTracker.filter { it.key > lastHour }.toList()
-        val minuteIterator = locationBoostTracker.filter { it.key > last20min }.toList()
+        // take only recent period for optimization
+        val iterator10Min = locationBoostTracker.filter { it.key > last10min }.toList()
+        val iterator20Min = locationBoostTracker.filter { it.key > last20min }.toList()
 
-        var lastVeryHighBoostDiff = Duration.ZERO
-        var lastHighBoostDiff = Duration.ZERO
-        var lastMediumBoostDiff = Duration.ZERO
+        var currentVeryHighBoostDuration = Duration.ZERO
+        var currentHighBoostDuration = Duration.ZERO
+        var currentMediumBoostDuration = Duration.ZERO
 
-        // sum duration of VERY_HIGH requests in 20 minutes
-        minuteIterator.forEachIndexed { index, pair ->
+        // sum duration of VERY_HIGH requests in 10 minutes
+        iterator10Min.forEachIndexed { index, pair ->
             // don't consider user own boost
             if (pair.second < LocationPerformanceType.MANUAL_BOOST) {
-                val next = minuteIterator.getOrNull(index + 1)
+                val next = iterator10Min.getOrNull(index + 1)
                 val durationInSec = ((next?.first ?: now) - pair.first).seconds
 
-                // consider very_high performance in the last 20 min
+                // consider very_high performance in the last 10 min
                 if (pair.second >= LocationPerformanceType.VERY_HIGH) {
-                    lastVeryHighBoostDiff += durationInSec
+                    currentVeryHighBoostDuration += durationInSec
                 }
             }
         }
 
-        // sum duration of HIGH and MEDIUM_HIGH requests in last hour
-        hourIterator.forEachIndexed { index, pair ->
+        // sum duration of HIGH and MEDIUM_HIGH requests in last 20 min
+        iterator20Min.forEachIndexed { index, pair ->
             // don't consider user own boost
             if (pair.second < LocationPerformanceType.MANUAL_BOOST) {
-                val next = hourIterator.getOrNull(index + 1)
+                val next = iterator20Min.getOrNull(index + 1)
                 val durationInSec = ((next?.first ?: now) - pair.first).seconds
 
                 if (pair.second >= LocationPerformanceType.HIGH) {
-                    lastHighBoostDiff += durationInSec
+                    currentHighBoostDuration += durationInSec
                 }
                 if (pair.second >= LocationPerformanceType.MEDIUM_HIGH) {
-                    lastMediumBoostDiff += durationInSec
+                    currentMediumBoostDuration += durationInSec
                 }
             }
         }
 
         val newType = adjustPerformanceType(
             type = type,
-            lastMediumBoostDiff = lastMediumBoostDiff,
-            lastHighBoostDiff = lastHighBoostDiff,
-            lastVeryHighBoostDiff = lastVeryHighBoostDiff,
+            currentMediumBoostDuration = currentMediumBoostDuration,
+            currentHighBoostDuration = currentHighBoostDuration,
+            currentVeryHighBoostDuration = currentVeryHighBoostDuration,
             batteryLevel = deviceStatus.batteryLevel,
             lowPowerMode = deviceStatus.isLowPowerMode
         )
@@ -249,13 +249,14 @@ class LocationPerformanceManager constructor(
         logg.tag("location_performance")
             .v(
                 "Performance - requested: $type, new: $newType, old: ${_locationPerformanceType.value.current} [${_locationPerformanceType.value}] - for: " +
-                        "BAT: ${deviceStatus.batteryLevel}%, " +
-                        "VERY_HIGH: $lastVeryHighBoostDiff, " +
-                        "HIGH: $lastHighBoostDiff, " +
-                        "MEDIUM: $lastMediumBoostDiff"
+                        "BAT: ${deviceStatus.batteryLevel}%,\n" +
+                        "time: $now,\n" +
+                        "VERY_HIGH: $currentVeryHighBoostDuration,\n" +
+                        "HIGH: $currentHighBoostDuration,\n" +
+                        "MEDIUM: $currentMediumBoostDuration"
             )
 
-        locationBoostTracker.put(now, newType)
+        locationBoostTracker[now] = newType
         _locationPerformanceType.value = _locationPerformanceType.value.copy(
             old = _locationPerformanceType.value.current,
             requested = type,
@@ -265,23 +266,20 @@ class LocationPerformanceManager constructor(
 
     private fun adjustPerformanceType(
         type: LocationPerformanceType,
-        lastMediumBoostDiff: Duration,
-        lastHighBoostDiff: Duration,
-        lastVeryHighBoostDiff: Duration,
+        currentMediumBoostDuration: Duration,
+        currentHighBoostDuration: Duration,
+        currentVeryHighBoostDuration: Duration,
         batteryLevel: Int?,
         lowPowerMode: Boolean
     ): LocationPerformanceType {
 
         // allow only certain amount of boost per hour
-        val highPerformanceDuration = LocationPerformanceSettingsType
+        val highPerformanceSettings = LocationPerformanceSettingsType
             .HighPerformance
             .fromKey(appPrefs.locationSettingsHighPerformanceDurationType)
-            .maxAllowedDuration
-            .coerceIn(10.minutes, 60.minutes)
-        val timeCriteriaHigh = lastHighBoostDiff > highPerformanceDuration
-        val timeCriteriaLow = lastMediumBoostDiff > highPerformanceDuration.plus(20.minutes)
-            .coerceIn(10.minutes, 60.minutes)
-        val timeCriteriaVeryHigh = lastVeryHighBoostDiff > 3.minutes
+        val didConsumedMediumPerformanceAllowance = currentMediumBoostDuration >= highPerformanceSettings.allowedMediumPerformanceDuration
+        val didConsumedHighPerformanceAllowance = currentHighBoostDuration >= highPerformanceSettings.allowedHighPerformanceDuration
+        val didConsumedVeryHighPerformanceAllowance = currentVeryHighBoostDuration >= 3.minutes
 
         // take certain range of battery in account
         // assume decent battery level if battery level unavailable
@@ -297,13 +295,13 @@ class LocationPerformanceManager constructor(
             }
 
             LocationPerformanceType.VERY_HIGH -> {
-                if (timeCriteriaVeryHigh) {
+                if (didConsumedVeryHighPerformanceAllowance) {
                     // user consumed very high performance allowance, check with HIGH
                     adjustPerformanceType(
                         type = LocationPerformanceType.HIGH,
-                        lastMediumBoostDiff = lastMediumBoostDiff,
-                        lastHighBoostDiff = lastHighBoostDiff,
-                        lastVeryHighBoostDiff = lastVeryHighBoostDiff,
+                        currentMediumBoostDuration = currentMediumBoostDuration,
+                        currentHighBoostDuration = currentHighBoostDuration,
+                        currentVeryHighBoostDuration = currentVeryHighBoostDuration,
                         batteryLevel = batteryLevel,
                         lowPowerMode = lowPowerMode
                     )
@@ -316,7 +314,7 @@ class LocationPerformanceManager constructor(
                 if (batteryVeryLow) {
                     LocationPerformanceType.BATTERY_SAVER
                 } else if (shouldUseLowPowerMode) {
-                    if (timeCriteriaLow || timeCriteriaHigh) {
+                    if (didConsumedMediumPerformanceAllowance || didConsumedHighPerformanceAllowance) {
                         // when battery is less than 30% and we spent all medium and high allowance
                         // revert to BALANCED to conserve battery
                         LocationPerformanceType.BATTERY_SAVER
@@ -324,10 +322,10 @@ class LocationPerformanceManager constructor(
                         // otherwise go for medium performance to preserve more battery
                         LocationPerformanceType.MEDIUM_HIGH
                     }
-                } else if (timeCriteriaLow) {
+                } else if (didConsumedMediumPerformanceAllowance) {
                     // user consumed both high and medium performance allowance
                     LocationPerformanceType.BALANCED
-                } else if (timeCriteriaHigh) {
+                } else if (didConsumedHighPerformanceAllowance) {
                     // user consumed only high performance allowance but there is still some time left in medium
                     LocationPerformanceType.MEDIUM_HIGH
                 } else {
@@ -338,7 +336,7 @@ class LocationPerformanceManager constructor(
             LocationPerformanceType.MEDIUM_HIGH -> {
                 if (batteryVeryLow) LocationPerformanceType.BATTERY_SAVER
                 else if (shouldUseLowPowerMode) LocationPerformanceType.BALANCED
-                else if (timeCriteriaLow) LocationPerformanceType.BALANCED
+                else if (didConsumedMediumPerformanceAllowance) LocationPerformanceType.BALANCED
                 else LocationPerformanceType.MEDIUM_HIGH
             }
 

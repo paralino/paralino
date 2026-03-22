@@ -205,10 +205,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Enabling this setting requires a premium plan.\n\nUpgrade your plan to unlock all options.</string>
     <string name="setting_location_highPerformance_section_title">When in Use</string>
-    <string name="setting_location_highPerformance_section_info">**High performance** mode is active only if you, or one of your group members, are looking at the map while location sharing is on.</string>
+    <string name="setting_location_highPerformance_section_info">**High performance** mode is active if you or one of your group members are looking at the map.</string>
     <string name="setting_location_highPerformance_duration_title">Allowed</string>
-    <string name="setting_location_highPerformance_duration_info">Choose the maximum amount of time your device can spend in high performance mode within a moving 1-hour window.</string>
-    <string name="setting_location_balanced_section_title">When in Background</string>
+    <string name="setting_location_highPerformance_duration_info">Choose the maximum amount of time your device can spend in high performance mode within a moving 20-minutes window.</string>
+    <string name="setting_location_balanced_section_title">When not actively used</string>
     <string name="setting_location_balanced_section_info">Choose your preferred location update frequency when your battery is at least 30% charged and the app is inactive.\nThe app will switch to **high performance** mode if you or one of your group members are looking at the map.</string>
     <string name="setting_location_balanced_highAccuracy_title">High Accuracy Location</string>
     <string name="setting_location_balanced_highAccuracy_description">Use precise, high-accuracy location sensor (GPS) when idle in the background. This will use more battery power.</string>
@@ -228,9 +228,9 @@
     <string name="setting_location_highPerformance_level_2">Medium</string>
     <string name="setting_location_highPerformance_level_3">Long</string>
     <string name="setting_location_highPerformance_level_4">No Limit</string>
-    <string name="setting_location_highPerformance_level_1_info">Up to 10–20 minutes</string>
-    <string name="setting_location_highPerformance_level_2_info">Up to 15–30 minutes</string>
-    <string name="setting_location_highPerformance_level_3_info">Up to 30–40 minutes</string>
+    <string name="setting_location_highPerformance_level_1_info">Up to 3–5 minutes</string>
+    <string name="setting_location_highPerformance_level_2_info">Up to 5–10 minutes</string>
+    <string name="setting_location_highPerformance_level_3_info">Up to 10–15 minutes</string>
     <string name="setting_location_highPerformance_level_4_info">Can be used all the time</string>
     <string name="setting_location_balanced_level_1">Best Battery</string>
     <string name="setting_location_balanced_level_2">Better Battery</string>

@@ -16,28 +16,33 @@ sealed interface LocationPerformanceSettingsType {
         override val updateInterval: Duration = 3.seconds
         override val minUpdateInterval: Duration = 2.seconds
         override val minUpdateDistanceMeters: Int = 0
-        abstract val maxAllowedDuration: Duration
+        abstract val allowedHighPerformanceDuration: Duration
+        abstract val allowedMediumPerformanceDuration: Duration
 
         data object Level1 : HighPerformance() {
-            override val maxAllowedDuration: Duration = 10.minutes
+            override val allowedHighPerformanceDuration: Duration = 2.minutes
+            override val allowedMediumPerformanceDuration: Duration = 4.minutes
             override val isPremiumFeature: Boolean = false
             override val key: String = "high_performance_100"
         }
 
         data object Level2 : HighPerformance() {
-            override val maxAllowedDuration: Duration = 20.minutes
+            override val allowedHighPerformanceDuration: Duration = 6.minutes
+            override val allowedMediumPerformanceDuration: Duration = 12.minutes
             override val isPremiumFeature: Boolean = true
             override val key: String = "high_performance_200"
         }
 
         data object Level3 : HighPerformance() {
-            override val maxAllowedDuration: Duration = 30.minutes
+            override val allowedHighPerformanceDuration: Duration = 12.minutes
+            override val allowedMediumPerformanceDuration: Duration = 18.minutes
             override val isPremiumFeature: Boolean = true
             override val key: String = "high_performance_300"
         }
 
         data object LevelMax : HighPerformance() {
-            override val maxAllowedDuration: Duration = 60.minutes
+            override val allowedHighPerformanceDuration: Duration = 20.minutes
+            override val allowedMediumPerformanceDuration: Duration = 20.minutes
             override val isPremiumFeature: Boolean = true
             override val key: String = "high_performance_400"
         }
