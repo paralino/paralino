@@ -42,6 +42,9 @@ import app.paralino.core.domain.location.RegisterDeviceForSharingUseCase
 import app.paralino.core.domain.location.RevokeDeviceActiveStatusUseCase
 import app.paralino.core.domain.location.SaveLocationUseCase
 import app.paralino.core.domain.location.UserMemberIdUseCase
+import app.paralino.core.domain.location.engine.HandleGetLocationPayloadRequest
+import app.paralino.core.domain.location.engine.LocationSaveEventProcessingEngine
+import app.paralino.core.domain.location.engine.LocationUploadEventProcessingEngine
 import app.paralino.core.domain.location.history.DeleteLocationHistoryEntryUseCase
 import app.paralino.core.domain.location.history.DeleteLocationHistoryPeriodUseCase
 import app.paralino.core.domain.location.history.DeleteObsoleteLocationHistoryUseCase
@@ -315,7 +318,10 @@ val coreModule = module {
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { HandleGetLocationPayloadRequest(get(), get(), get(), get()) }
     single { BatteryAlertUploadEngine(get(), get(), get(), get(), get()) }
     single { LocationCacheRepository() }
     single { PlacesRepository(get(), get(), get(), get(), get(), get()) }
