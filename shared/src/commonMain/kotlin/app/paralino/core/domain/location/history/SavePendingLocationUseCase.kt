@@ -23,6 +23,10 @@ class SavePendingLocationUseCase(
 ) {
     @Throws(CryptoException::class, MissingCryptoKeyException::class, CancellationException::class)
     suspend fun saveNewLocations(data: List<MemberGroupId>) {
+        if (data.isEmpty()) {
+            return
+        }
+
         val userKey = cryptoUserKeysRepo.activePersonalKeyWithVersion()
 
         val entries = data.mapNotNull { entry ->

@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Bu ayarı etkinleştirmek için premium bir plana sahip olmanız gerekir.</string>
     <string name="setting_location_highPerformance_section_title">Kullanımda</string>
-    <string name="setting_location_highPerformance_section_info">**Yüksek performans** modu, siz veya grup üyeleriniz haritaya bakarken konum paylaşımı açık olduğunda aktiftir.</string>
+    <string name="setting_location_highPerformance_section_info">**Yüksek performans** modu, siz veya grup üyelerinizden herhangi biri haritaya bakıyorsa aktiftir.</string>
     <string name="setting_location_highPerformance_duration_title">İzin Verildi</string>
-    <string name="setting_location_highPerformance_duration_info">Cihazınızın hareketli 1 saatlik bir zaman diliminde yüksek performans modunda geçirebileceği maksimum süreyi seçin.</string>
-    <string name="setting_location_balanced_section_title">Arka Planda</string>
+    <string name="setting_location_highPerformance_duration_info">Cihazınızın yüksek performans modunda geçirebileceği azami süreyi kayan 20 dakikalık pencere içinde seçin.</string>
+    <string name="setting_location_balanced_section_title">Aktif olarak kullanılmadığında</string>
     <string name="setting_location_balanced_section_info">Uygulama etkin olmadığında ve bataryanız en az %30 şarjlı olduğunda tercih ettiğiniz konum güncelleme sıklığını seçin. \nEğer siz veya grup üyeleriniz haritaya bakıyorsanız, uygulama **yüksek performans** moduna geçecektir.</string>
     <string name="setting_location_balanced_highAccuracy_title">Yüksek Hassasiyetli Konum</string>
     <string name="setting_location_balanced_highAccuracy_description">Arka planda boşta iken hassas, yüksek hassasiyetli konum sensörünü (GPS) kullanın. Bu daha fazla batarya gücü kullanacaktır.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Orta</string>
     <string name="setting_location_highPerformance_level_3">Uzun</string>
     <string name="setting_location_highPerformance_level_4">Sınırsız</string>
-    <string name="setting_location_highPerformance_level_1_info">10–20 dakikaya kadar</string>
-    <string name="setting_location_highPerformance_level_2_info">15–30 dakikaya kadar</string>
-    <string name="setting_location_highPerformance_level_3_info">30–40 dakikaya kadar</string>
+    <string name="setting_location_highPerformance_level_1_info">3–5 dakikaya kadar</string>
+    <string name="setting_location_highPerformance_level_2_info">5–10 dakikaya kadar</string>
+    <string name="setting_location_highPerformance_level_3_info">En fazla 10–15 dakika</string>
     <string name="setting_location_highPerformance_level_4_info">Her zaman kullanılabilir</string>
     <string name="setting_location_balanced_level_1">En İyi Pil</string>
     <string name="setting_location_balanced_level_2">Daha İyi Pil</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Lisans planı çakışması</string>
     <string name="onboarding_step_options_second_title">Baskı olmadan paylaşma</string>
     <string name="onboarding_step_options_second_info">Ne paylaştığınız ve nasıl paylaştığınızın kontrolü her zaman sizdedir.</string>
+    <string name="app_version_alert_message_updateInstalled">Yeni Paralino sürümü yüklendi.</string>
 </resources>

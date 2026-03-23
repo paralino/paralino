@@ -11,6 +11,7 @@ import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 import app.paralino.android.R
 import app.paralino.android.ui.main.MainActivity
+import app.paralino.core.MR
 import app.paralino.core.logg
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -28,10 +29,11 @@ class InstalledReceiver : BroadcastReceiver() {
                 context.startActivity(intent)
             } catch (e: Exception) {
             }
+
             AppUpdateComponent.sendNotification(
                 context = context,
-                title = "Paralino",
-                text = "New update installed!"
+                title = MR.strings.app_name.getString(context),
+                text = MR.strings.app_version_alert_message_updateInstalled.getString(context)
             )
         }
     }

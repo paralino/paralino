@@ -46,11 +46,11 @@ class AppRatingManager(
             else -> {
                 when (deviceApiProvider.deviceType) {
                     DeviceType.Android -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion < 65
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 75
                     }
 
                     DeviceType.iOS -> {
-                        appPrefs.lastShowedAppRatingDialogAppVersion < 46
+                        appPrefs.lastShowedAppRatingDialogAppVersion < 54
                     }
                 }
             }

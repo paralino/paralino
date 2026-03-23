@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">L\'attivazione di questa impostazione richiede un piano premium.\n\nAggiorni il suo piano per sbloccare tutte le opzioni.</string>
     <string name="setting_location_highPerformance_section_title">Quando in uso</string>
-    <string name="setting_location_highPerformance_section_info">La modalità **alta prestazione** è attiva solo se tu, o uno dei membri del tuo gruppo, state guardando la mappa mentre la condivisione della posizione è attivata.</string>
+    <string name="setting_location_highPerformance_section_info">La modalità **ad alte prestazioni** è attiva se Lei o un membro del suo gruppo sta guardando la mappa.</string>
     <string name="setting_location_highPerformance_duration_title">Consentito</string>
-    <string name="setting_location_highPerformance_duration_info">Scegli la massima quantità di tempo che il tuo dispositivo può trascorrere in modalità **alta prestazione** all\'interno di una finestra mobile di 1 ora.</string>
-    <string name="setting_location_balanced_section_title">Quando in background</string>
+    <string name="setting_location_highPerformance_duration_info">Selezioni la durata massima che il dispositivo può trascorrere in modalità ad alte prestazioni all\'interno di una finestra mobile di 20 minuti.</string>
+    <string name="setting_location_balanced_section_title">Quando non viene utilizzato attivamente</string>
     <string name="setting_location_balanced_section_info">Scegli la tua frequenza di aggiornamento della posizione preferita quando la batteria è carica almeno al 30% e l\'app è inattiva.\nL\'app passerà in modalità **alta prestazione** se tu o uno dei membri del tuo gruppo state guardando la mappa.</string>
     <string name="setting_location_balanced_highAccuracy_title">Posizione ad alta precisione</string>
     <string name="setting_location_balanced_highAccuracy_description">Utilizza un sensore di posizione preciso e ad alta precisione (GPS) quando è inattivo in background. Questo utilizzerà più energia della batteria.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Medio</string>
     <string name="setting_location_highPerformance_level_3">Lungo</string>
     <string name="setting_location_highPerformance_level_4">Nessun limite</string>
-    <string name="setting_location_highPerformance_level_1_info">Fino a 10–20 minuti</string>
-    <string name="setting_location_highPerformance_level_2_info">Fino a 15–30 minuti</string>
-    <string name="setting_location_highPerformance_level_3_info">Fino a 30–40 minuti</string>
+    <string name="setting_location_highPerformance_level_1_info">Fino a 3–5 minuti</string>
+    <string name="setting_location_highPerformance_level_2_info">Fino a 5–10 minuti</string>
+    <string name="setting_location_highPerformance_level_3_info">Fino a 10–15 minuti</string>
     <string name="setting_location_highPerformance_level_4_info">Può essere utilizzato tutto il tempo</string>
     <string name="setting_location_balanced_level_1">Migliore Batteria</string>
     <string name="setting_location_balanced_level_2">Batteria Migliore</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Conflitto di piano di licenza</string>
     <string name="onboarding_step_options_second_title">Condividere senza pressioni</string>
     <string name="onboarding_step_options_second_info">Lei ha sempre il controllo su ciò che condivide e sul modo in cui lo condivide.</string>
+    <string name="app_version_alert_message_updateInstalled">È stata installata una nuova versione di Paralino.</string>
 </resources>

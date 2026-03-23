@@ -476,7 +476,7 @@ class PlacesActivityProcessor(
             locationPerformanceManager.locationBoostRequested(
                 request = LocationPerformanceRequest(
                     type = LocationPerformanceType.HIGH,
-                    durationMillis = duration.inWholeMilliseconds
+                    duration = duration
                 ),
                 groupId = place.groupOrSpaceId,
                 from = "place $activityTag"

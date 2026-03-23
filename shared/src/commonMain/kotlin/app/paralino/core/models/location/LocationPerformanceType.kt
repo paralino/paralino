@@ -1,5 +1,8 @@
 package app.paralino.core.models.location
 
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+
 enum class LocationPerformanceType {
     HIGH_BATTERY_SAVER,
     BATTERY_SAVER,
@@ -9,15 +12,15 @@ enum class LocationPerformanceType {
     VERY_HIGH,
     MANUAL_BOOST;
 
-    val defaultDurationMillis: Long
+    val defaultDuration: Duration
         get() = when (this) {
-            HIGH_BATTERY_SAVER -> 0
-            BATTERY_SAVER -> 0
-            BALANCED -> 0
-            MEDIUM_HIGH -> 30_000
-            HIGH -> 30_000
-            VERY_HIGH -> 60_000
-            MANUAL_BOOST -> 120_000
+            HIGH_BATTERY_SAVER -> 0.seconds
+            BATTERY_SAVER -> 0.seconds
+            BALANCED -> 0.seconds
+            MEDIUM_HIGH -> 30.seconds
+            HIGH -> 30.seconds
+            VERY_HIGH -> 60.seconds
+            MANUAL_BOOST -> 120.seconds
         }
 
     val stepDown: LocationPerformanceType
@@ -34,5 +37,5 @@ enum class LocationPerformanceType {
 
 data class LocationPerformanceRequest(
     val type: LocationPerformanceType,
-    val durationMillis: Long
+    val duration: Duration
 )

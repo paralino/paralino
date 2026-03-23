@@ -8,6 +8,7 @@ import app.paralino.core.db.AppPrefs
 import app.paralino.core.domain.user.LogoutUseCase
 import app.paralino.core.domain.user.PremiumStatusManager
 import app.paralino.core.logg
+import app.paralino.core.models.AppFlavor
 import app.paralino.core.models.Payload
 import app.paralino.core.models.Resource
 import app.paralino.core.models.base.BackendResourceIDs
@@ -161,7 +162,11 @@ class SettingsViewModel(
                                 DeviceType.iOS -> BackendResourceIDs.storeUrlDeeplinkAppleAppStoreReview
                             },
                             isAppReviewExpanded = previousState?.isAppReviewExpanded ?: false,
-                            isAppReviewVisible = !appPrefs.wasAppReviewOpened,
+                            isAppReviewVisible = when (appConfig.appFlavor) {
+                                AppFlavor.APPLE_IOS,
+                                AppFlavor.ANDROID_GOOGLE -> !appPrefs.wasAppReviewOpened
+                                AppFlavor.ANDROID_DIRECT -> false
+                            },
                             errors = buildList {
                                 if (userState.data.canVerifyEmail) {
                                     add(ConditionErrorType.EmailVerification(userState.data.email))

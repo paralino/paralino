@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Prémiový</string>
     <string name="setting_location_premium_banner_alert_message">Aktivace tohoto nastavení vyžaduje prémiový plán.\n\nPřejděte na prémiový plán, abyste odemkli všechny možnosti.</string>
     <string name="setting_location_highPerformance_section_title">Když je používáno</string>
-    <string name="setting_location_highPerformance_section_info">**Režim vysokého výkonu** je aktivní pouze tehdy, pokud se vy nebo jeden z členů vaší skupiny díváte na mapu, zatímco je sdílení polohy zapnuto.</string>
+    <string name="setting_location_highPerformance_section_info">Režim **Vysoký výkon** je aktivní, pokud vy nebo někdo z vaší skupiny sleduje mapu.</string>
     <string name="setting_location_highPerformance_duration_title">Povolené</string>
-    <string name="setting_location_highPerformance_duration_info">Vyberte maximální dobu, po kterou může vaše zařízení strávit v režimu vysokého výkonu v rámci pohybového okna 1 hodiny.</string>
-    <string name="setting_location_balanced_section_title">Když je na pozadí</string>
+    <string name="setting_location_highPerformance_duration_info">Zvolte maximální dobu, po kterou se může vaše zařízení nacházet v režimu vysokého výkonu v rámci klouzavého 20minutového okna.</string>
+    <string name="setting_location_balanced_section_title">Když se aktivně nepoužívá</string>
     <string name="setting_location_balanced_section_info">Vyberte si preferovanou frekvenci aktualizace polohy, když je vaše baterie nabitá alespoň na 30 % a aplikace je neaktivní. \nAplikace přepne do **režimu vysokého výkonu**, pokud se vy nebo jeden z členů vaší skupiny díváte na mapu.</string>
     <string name="setting_location_balanced_highAccuracy_title">Vysoká přesnost polohy</string>
     <string name="setting_location_balanced_highAccuracy_description">Použijte přesný senzor polohy s vysokou přesností (GPS), když je aplikace nečinná na pozadí. To spotřebovává více energie.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Střední</string>
     <string name="setting_location_highPerformance_level_3">Dlouhý</string>
     <string name="setting_location_highPerformance_level_4">Žádný limit</string>
-    <string name="setting_location_highPerformance_level_1_info">Až 10–20 minut</string>
-    <string name="setting_location_highPerformance_level_2_info">Až 15–30 minut</string>
-    <string name="setting_location_highPerformance_level_3_info">Až 30–40 minut</string>
+    <string name="setting_location_highPerformance_level_1_info">Do 3–5 minut</string>
+    <string name="setting_location_highPerformance_level_2_info">Až 5–10 minut</string>
+    <string name="setting_location_highPerformance_level_3_info">Až 10–15 minut</string>
     <string name="setting_location_highPerformance_level_4_info">Může být používáno neustále</string>
     <string name="setting_location_balanced_level_1">Nejlepší výdrž baterie</string>
     <string name="setting_location_balanced_level_2">Lepší výdrž baterie</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Konflikt plánu licence</string>
     <string name="onboarding_step_options_second_title">Sdílení bez nátlaku</string>
     <string name="onboarding_step_options_second_info">Vždy máte pod kontrolou, co sdílíte, a způsob, jakým to sdílíte.</string>
+    <string name="app_version_alert_message_updateInstalled">Nová verze Paralino byla nainstalována.</string>
 </resources>

@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Włączenie tego ustawienia wymaga planu premium.\n\nUaktualnij swój plan, aby odblokować wszystkie opcje.</string>
     <string name="setting_location_highPerformance_section_title">Gdy jest używane</string>
-    <string name="setting_location_highPerformance_section_info">Tryb **wysokiej wydajności** jest aktywny tylko wtedy, gdy Ty lub jeden z członków Twojej grupy przeglądacie mapę, gdy udostępnianie lokalizacji jest włączone.</string>
+    <string name="setting_location_highPerformance_section_info">Tryb **High performance** jest aktywny, jeśli Ty lub któryś z członków Twojej grupy przegląda mapę.</string>
     <string name="setting_location_highPerformance_duration_title">Dozwolone</string>
-    <string name="setting_location_highPerformance_duration_info">Wybierz maksymalny czas, jaki Twoje urządzenie może spędzić w trybie wysokiej wydajności w ruchomym oknie 1-godzinowym.</string>
-    <string name="setting_location_balanced_section_title">Gdy w tle</string>
+    <string name="setting_location_highPerformance_duration_info">Wybierz maksymalny czas, przez jaki urządzenie może pozostawać w trybie wysokiej wydajności w przesuwanym 20‑minutowym oknie.</string>
+    <string name="setting_location_balanced_section_title">Gdy nie jest aktywnie używane</string>
     <string name="setting_location_balanced_section_info">Wybierz preferowaną częstotliwość aktualizacji lokalizacji, gdy bateria jest naładowana w co najmniej 30% i aplikacja jest nieaktywna. \nAplikacja przełączy się na tryb **wysokiej wydajności**, jeśli Ty lub jeden z członków Twojej grupy przeglądacie mapę.</string>
     <string name="setting_location_balanced_highAccuracy_title">Lokalizacja o wysokiej dokładności</string>
     <string name="setting_location_balanced_highAccuracy_description">Użyj precyzyjnego, wysokodokładnego czujnika lokalizacji (GPS) podczas bezczynności w tle. To zużyje więcej energii.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Średni</string>
     <string name="setting_location_highPerformance_level_3">Długi</string>
     <string name="setting_location_highPerformance_level_4">Bez ograniczeń</string>
-    <string name="setting_location_highPerformance_level_1_info">Do 10–20 minut</string>
-    <string name="setting_location_highPerformance_level_2_info">Do 15–30 minut</string>
-    <string name="setting_location_highPerformance_level_3_info">Do 30–40 minut</string>
+    <string name="setting_location_highPerformance_level_1_info">Do 3–5 minut</string>
+    <string name="setting_location_highPerformance_level_2_info">Do 5–10 minut</string>
+    <string name="setting_location_highPerformance_level_3_info">Do 10–15 minut</string>
     <string name="setting_location_highPerformance_level_4_info">Może być używane przez cały czas</string>
     <string name="setting_location_balanced_level_1">Najlepsza bateria</string>
     <string name="setting_location_balanced_level_2">Lepsza bateria</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Konflikt planu licencji</string>
     <string name="onboarding_step_options_second_title">Udostępnianie bez presji</string>
     <string name="onboarding_step_options_second_info">Zawsze masz kontrolę nad tym, co udostępniasz, i nad sposobem, w jaki to robisz.</string>
+    <string name="app_version_alert_message_updateInstalled">Nowa wersja Paralino została zainstalowana.</string>
 </resources>

@@ -380,6 +380,7 @@ class AccountOnboardingViewModel(
 
     private fun finishOnboarding() {
         markOnboardingFinished()
+        activatePushNotificationServiceIfNeeded()
         _uiState.update { it.mapReady { it.copy(onboardingStep = null) } }
     }
 
@@ -459,12 +460,15 @@ class AccountOnboardingViewModel(
         }
     }
 
+    private fun activatePushNotificationServiceIfNeeded() {
+        if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
+            notificationServiceManager.setNotificationPushProvider(provider = PushProvider.default)
+        }
+    }
+
     override fun onMessageEvent(event: ICoreMessageDispatcherEvent): Boolean {
         if (event is NotificationPermissionResultEvent && uiState.value.data?.onboardingStep is AccountOnboardingContent.PushNotifications) {
-            if (deviceApiProvider.notificationStatusProvider.currentStatus.isNotificationPermissionAllowed) {
-                notificationServiceManager.setNotificationPushProvider(provider = PushProvider.default)
-            }
-
+            activatePushNotificationServiceIfNeeded()
             onEvent(AccountOnboardingScreenUiEvent.OnboardingStep(AccountOnboardingUiEvent.SkipOnboarding))
             return true
         }

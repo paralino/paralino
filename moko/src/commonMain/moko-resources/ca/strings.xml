@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Habilitar aquesta configuració requereix un pla premium.\n\nActualitzeu el vostre pla per desbloquejar totes les opcions.</string>
     <string name="setting_location_highPerformance_section_title">Quan s\'utilitza</string>
-    <string name="setting_location_highPerformance_section_info">El mode de **molt alt rendiment** està actiu només si vostè, o un dels membres del seu grup, estan mirant el mapa mentre el compartiment de localització està activat.</string>
+    <string name="setting_location_highPerformance_section_info">La modalitat **Alt rendiment** està activa si vostè o algun membre del seu grup està consultant el mapa.</string>
     <string name="setting_location_highPerformance_duration_title">Permès</string>
-    <string name="setting_location_highPerformance_duration_info">Trieu la quantitat màxima de temps que el vostre dispositiu pot passar en mode de molt alt rendiment dins d\'una finestra de 1 hora en moviment.</string>
-    <string name="setting_location_balanced_section_title">Quan en segon pla</string>
+    <string name="setting_location_highPerformance_duration_info">Seleccioneu el temps màxim que el vostre dispositiu pot romandre en mode d\'alt rendiment dins d\'una finestra mòbil de 20 minuts.</string>
+    <string name="setting_location_balanced_section_title">Quan no s\'utilitza activament</string>
     <string name="setting_location_balanced_section_info">Trieu la freqüència d\'actualització de la localització que preferiu quan la vostra bateria estigui almenys al 30% carregada i l\'aplicació estigui inactiva. \nL\'aplicació canviarà a mode de **molt alt rendiment** si vostè o un dels membres del seu grup estan mirant el mapa.</string>
     <string name="setting_location_balanced_highAccuracy_title">Localització d\'alta precisió</string>
     <string name="setting_location_balanced_highAccuracy_description">Utilitzeu un sensor de localització precís i d\'alta precisió (GPS) quan estigui inactiu en segon pla. Això consumirà més energia de la bateria.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Mitjà</string>
     <string name="setting_location_highPerformance_level_3">Llarg</string>
     <string name="setting_location_highPerformance_level_4">Sense límit</string>
-    <string name="setting_location_highPerformance_level_1_info">Fins a 10–20 minuts</string>
-    <string name="setting_location_highPerformance_level_2_info">Fins a 15–30 minuts</string>
-    <string name="setting_location_highPerformance_level_3_info">Fins a 30–40 minuts</string>
+    <string name="setting_location_highPerformance_level_1_info">Fins a 3–5 minuts</string>
+    <string name="setting_location_highPerformance_level_2_info">Fins a 5–10 minuts</string>
+    <string name="setting_location_highPerformance_level_3_info">Fins a 10–15 minuts</string>
     <string name="setting_location_highPerformance_level_4_info">Es pot utilitzar tot el temps</string>
     <string name="setting_location_balanced_level_1">Millor bateria</string>
     <string name="setting_location_balanced_level_2">Millor bateria</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Conflicte de pla de llicència</string>
     <string name="onboarding_step_options_second_title">Compartir sense pressió</string>
     <string name="onboarding_step_options_second_info">Vostè té sempre el control del que comparteix i de la manera en què ho comparteix.</string>
+    <string name="app_version_alert_message_updateInstalled">S\'ha instal·lat una nova versió de Paralino.</string>
 </resources>

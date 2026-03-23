@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Премиум</string>
     <string name="setting_location_premium_banner_alert_message">Омогућавање овог подешавања захтева премиум план.\n\nАжурирајте ваш план да бисте откључали све опције.</string>
     <string name="setting_location_highPerformance_section_title">Када је у употреби</string>
-    <string name="setting_location_highPerformance_section_info">Режим **високих перформанси** је активан само ако ви, или неки од чланова ваше групе, гледате мапу док је дељење локације укључено.</string>
+    <string name="setting_location_highPerformance_section_info">Режим **високих перформанси** је активан ако ви или неки од чланова ваше групе гледате мапу.</string>
     <string name="setting_location_highPerformance_duration_title">Дозвољено</string>
-    <string name="setting_location_highPerformance_duration_info">Одаберите максимално време које ваш уређај може провести у режиму високих перформанси у оквиру покретног једносатног прозора.</string>
-    <string name="setting_location_balanced_section_title">Када је у позадини</string>
+    <string name="setting_location_highPerformance_duration_info">Изаберите максимално време које ваш уређај може да проведе у режиму високих перформанси унутар покретног 20-минутног прозора.</string>
+    <string name="setting_location_balanced_section_title">Када није активно у употреби</string>
     <string name="setting_location_balanced_section_info">Одаберите жељену учесталост ажурирања локације када је батерија напуњена најмање 30% и апликација је неактивна.\nАпликација ће се пребацити у режим **високих перформанси** ако ви или неки члан ваше групе гледате мапу.</string>
     <string name="setting_location_balanced_highAccuracy_title">Локација високе тачности</string>
     <string name="setting_location_balanced_highAccuracy_description">Користите прецизан сензор за локацију високе тачности (GPS) када је апликација неактивна у позадини. Ово ће повећати потрошњу батерије.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Средње</string>
     <string name="setting_location_highPerformance_level_3">Дуго</string>
     <string name="setting_location_highPerformance_level_4">Без ограничења</string>
-    <string name="setting_location_highPerformance_level_1_info">До 10–20 минута</string>
-    <string name="setting_location_highPerformance_level_2_info">До 15–30 минута</string>
-    <string name="setting_location_highPerformance_level_3_info">До 30–40 минута</string>
+    <string name="setting_location_highPerformance_level_1_info">До 3–5 минута</string>
+    <string name="setting_location_highPerformance_level_2_info">До 5–10 минута</string>
+    <string name="setting_location_highPerformance_level_3_info">До 10–15 минута</string>
     <string name="setting_location_highPerformance_level_4_info">Може се користити у свако време</string>
     <string name="setting_location_balanced_level_1">Најбоља батерија</string>
     <string name="setting_location_balanced_level_2">Боља батерија</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Конфликт у плану лиценце</string>
     <string name="onboarding_step_options_second_title">Дељење без притиска</string>
     <string name="onboarding_step_options_second_info">Ви увек имате контролу над тим шта делите и како то делите.</string>
+    <string name="app_version_alert_message_updateInstalled">Нова верзија Paralino је инсталирана.</string>
 </resources>
