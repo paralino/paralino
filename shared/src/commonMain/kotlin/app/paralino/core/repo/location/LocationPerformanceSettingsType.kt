@@ -20,8 +20,8 @@ sealed interface LocationPerformanceSettingsType {
         abstract val allowedMediumPerformanceDuration: Duration
 
         data object Level1 : HighPerformance() {
-            override val allowedHighPerformanceDuration: Duration = 2.minutes
-            override val allowedMediumPerformanceDuration: Duration = 4.minutes
+            override val allowedHighPerformanceDuration: Duration = 3.minutes
+            override val allowedMediumPerformanceDuration: Duration = 6.minutes
             override val isPremiumFeature: Boolean = false
             override val key: String = "high_performance_100"
         }
