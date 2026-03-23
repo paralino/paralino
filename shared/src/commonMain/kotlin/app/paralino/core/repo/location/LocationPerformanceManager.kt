@@ -7,6 +7,7 @@ import app.paralino.core.models.location.LocationPerformanceRequest
 import app.paralino.core.models.location.LocationPerformanceType
 import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IDeviceApiProvider
+import app.paralino.core.utils.extensions.isOlderThan
 import app.paralino.core.utils.extensions.nowUTC
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,6 +22,7 @@ import kotlinx.datetime.minus
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class LocationPerformanceManager constructor(
     private val scope: ICoroutineScopeProvider,
@@ -54,6 +56,7 @@ class LocationPerformanceManager constructor(
     val locationPerformanceType: StateFlow<LocationPerformanceModel> = _locationPerformanceType
     private var performanceUpdateJob: Job? = null
     private var locationBoostTracker = mutableMapOf<Long, LocationPerformanceType>()
+    private var performanceResetScheduleTime: Pair<Instant, Duration>? = null
 
     /**
      * Used for subscription in iOS
@@ -70,7 +73,7 @@ class LocationPerformanceManager constructor(
         locationBoostRequested(
             request = LocationPerformanceRequest(
                 type = performanceType,
-                durationMillis = performanceType.defaultDurationMillis
+                duration = performanceType.defaultDuration
             ),
             groupId = groupId,
             from = from
@@ -90,7 +93,7 @@ class LocationPerformanceManager constructor(
 
     fun disableManualBoost() {
         setPerformance(type = LocationPerformanceType.HIGH, allowDowngrade = true)
-        schedulePerformanceReset(type = LocationPerformanceType.BALANCED, resetDelayMillis = 30_000)
+        schedulePerformanceReset(type = LocationPerformanceType.BALANCED, resetDelay = 30.seconds)
     }
 
     fun updateLocationSettings(
@@ -118,6 +121,21 @@ class LocationPerformanceManager constructor(
         }
     }
 
+    fun checkPerformanceResetState() {
+        // fallback check in case reset gets canceled for whatever reason
+        // here we give it enough buffer and reset
+        performanceResetScheduleTime?.let {
+            if (it.first.plus(it.second).isOlderThan(20.seconds)) {
+                logg.tag("location_performance")
+                    .w("Device performance reset is overdue, schedule reset again")
+                schedulePerformanceReset(
+                    type = LocationPerformanceType.BALANCED,
+                    resetDelay = 30.seconds
+                )
+            }
+        }
+    }
+
     private fun preparePerformanceReset(
         request: LocationPerformanceRequest
     ) {
@@ -127,26 +145,25 @@ class LocationPerformanceManager constructor(
         if (request.type == LocationPerformanceType.MANUAL_BOOST || _locationPerformanceType.value.current == LocationPerformanceType.MANUAL_BOOST) {
             logg.tag("location_performance")
                 .v("Device in manual boost, ignore performance reset for (${request.type})")
-            performanceUpdateJob?.cancel()
-            val remainingDuration =
-                appPrefs.trackingBoostEndTime?.let { it - nowUTC() }?.takeIf { it.isPositive() }
+
+            val remainingDuration = appPrefs.trackingBoostEndTime?.let { it - nowUTC() }?.takeIf { it.isPositive() }
             if (remainingDuration != null) {
                 schedulePerformanceReset(
                     type = LocationPerformanceType.BALANCED,
-                    resetDelayMillis = remainingDuration.inWholeMilliseconds
+                    resetDelay = remainingDuration
                 )
             } else {
                 schedulePerformanceReset(
                     type = LocationPerformanceType.BALANCED,
-                    resetDelayMillis = 10.seconds.inWholeMilliseconds
+                    resetDelay = 10.seconds
                 )
             }
         } else if (request.type == LocationPerformanceType.VERY_HIGH) {
-            schedulePerformanceReset(type = request.type.stepDown, resetDelayMillis = 60_000)
+            schedulePerformanceReset(type = request.type.stepDown, resetDelay = 60.seconds)
         } else if (_locationPerformanceType.value.current < LocationPerformanceType.VERY_HIGH) {
             schedulePerformanceReset(
                 type = request.type.stepDown,
-                resetDelayMillis = request.durationMillis
+                resetDelay = request.duration
             )
         } else {
             logg.tag("location_performance")
@@ -156,26 +173,30 @@ class LocationPerformanceManager constructor(
 
     private fun schedulePerformanceReset(
         type: LocationPerformanceType,
-        resetDelayMillis: Long
+        resetDelay: Duration
     ) {
+        performanceResetScheduleTime = nowUTC() to resetDelay
         performanceUpdateJob?.cancel()
         performanceUpdateJob = scope.userSessionIOScope.launch {
             logg.tag("location_performance")
-                .v("Schedule location performance reset from ${_locationPerformanceType.value.current} to $type in $resetDelayMillis")
-            delay(resetDelayMillis)
+                .v("Schedule location performance reset from ${_locationPerformanceType.value.current} to $type in $resetDelay")
+            delay(resetDelay)
             val isManualBoostExpired = appPrefs.trackingBoostEndTime?.let { it < nowUTC() } ?: true
             if (_locationPerformanceType.value.current < LocationPerformanceType.MANUAL_BOOST) {
                 logg.tag("location_performance")
                     .v("Reset location performance from ${_locationPerformanceType.value.current} to $type")
                 setPerformance(type = type, allowDowngrade = true)
+                performanceResetScheduleTime = null
+
                 if (type.stepDown != type) {
                     schedulePerformanceReset(
                         type = type.stepDown,
-                        resetDelayMillis = type.defaultDurationMillis
+                        resetDelay = type.defaultDuration
                     )
                 }
             } else if (isManualBoostExpired) {
                 disableManualBoost()
+                performanceResetScheduleTime = null
             }
         }
     }

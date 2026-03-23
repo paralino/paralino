@@ -10,6 +10,7 @@ import app.paralino.core.provider.ICoroutineScopeProvider
 import app.paralino.core.provider.IOneTimeLocationProvider
 import app.paralino.core.repo.LocationSharingManager
 import app.paralino.core.repo.NoValidContractsException
+import app.paralino.core.repo.location.LocationPerformanceManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -20,6 +21,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class LocationUploadEngine constructor(
     private val locationSharingManager: LocationSharingManager,
+    private val locationPerformanceManager: LocationPerformanceManager,
     private val registerDeviceForSharing: IReRegisterDeviceUseCase,
     private val locationCacheRepo: LocationCacheRepository,
     private val scopeProvider: ICoroutineScopeProvider,
@@ -65,6 +67,8 @@ class LocationUploadEngine constructor(
         _pendingLocation.update { current ->
             LocationDataModel.getBetter(current, data)
         }
+
+        locationPerformanceManager.checkPerformanceResetState()
     }
 
     suspend fun updateDeviceStatusOnly(tryToFetchCachedLocation: Boolean = true) {

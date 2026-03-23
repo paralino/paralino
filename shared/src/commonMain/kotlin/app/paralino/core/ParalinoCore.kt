@@ -318,7 +318,7 @@ val coreModule = module {
 
     single { PersonalCodesRepository(get(), get(), get(), get(), get(), get(), get()) }
     single { UserRepository(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationUploadEngine(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { LocationSaveEventProcessingEngine(get(), get(), get(), get(), get(), get(), get()) }
     single { LocationUploadEventProcessingEngine(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { HandleGetLocationPayloadRequest(get(), get(), get(), get()) }
