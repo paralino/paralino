@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Η ενεργοποίηση αυτής της ρύθμισης απαιτεί σχέδιο premium.\n\nΑναβαθμίστε το σχέδιό σας για να ξεκλειδώσετε όλες τις επιλογές.</string>
     <string name="setting_location_highPerformance_section_title">Όταν είναι σε Χρήση</string>
-    <string name="setting_location_highPerformance_section_info">Η λειτουργία **Υψηλής απόδοσης** είναι ενεργή μόνο αν εσείς ή ένα από τα μέλη της ομάδας σας κοιτάτε τον χάρτη ενώ η κοινή χρήση τοποθεσίας είναι ενεργοποιημένη.</string>
+    <string name="setting_location_highPerformance_section_info">Η λειτουργία **Υψηλής απόδοσης** είναι ενεργή εάν ο χάρτης βρίσκεται υπό παρακολούθηση από εσάς ή από κάποιο μέλος της ομάδας σας.</string>
     <string name="setting_location_highPerformance_duration_title">Επιτρεπόμενο</string>
-    <string name="setting_location_highPerformance_duration_info">Επιλέξτε τη μέγιστη διάρκεια που μπορεί να παραμείνει η συσκευή σας σε λειτουργία υψηλής απόδοσης εντός ενός κινούμενου παραθύρου 1 ώρας.</string>
-    <string name="setting_location_balanced_section_title">Όταν είναι σε Υπόβαθρο</string>
+    <string name="setting_location_highPerformance_duration_info">Επιλέξτε τον μέγιστο χρόνο που μπορεί να παραμείνει η συσκευή σας σε λειτουργία υψηλής απόδοσης εντός ενός κυλιόμενου παραθύρου διάρκειας 20 λεπτών.</string>
+    <string name="setting_location_balanced_section_title">Όταν δεν χρησιμοποιείται ενεργά</string>
     <string name="setting_location_balanced_section_info">Επιλέξτε τη συχνότητα ενημέρωσης τοποθεσίας που προτιμάτε όταν η μπαταρία σας είναι τουλάχιστον 30% φορτισμένη και η εφαρμογή είναι ανενεργή.\nΗ εφαρμογή θα αλλάξει σε λειτουργία **υψηλής απόδοσης** αν εσείς ή ένα από τα μέλη της ομάδας σας κοιτάτε τον χάρτη.</string>
     <string name="setting_location_balanced_highAccuracy_title">Υψηλή Ακρίβεια Τοποθεσίας</string>
     <string name="setting_location_balanced_highAccuracy_description">Χρησιμοποιήστε ακριβή, υψηλής ακρίβειας αισθητήρα τοποθεσίας (GPS) όταν είναι ανενεργός στο υπόβαθρο. Αυτό θα χρησιμοποιήσει περισσότερη ενέργεια της μπαταρίας.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Μεσαίο</string>
     <string name="setting_location_highPerformance_level_3">Μακρύ</string>
     <string name="setting_location_highPerformance_level_4">Χωρίς όριο</string>
-    <string name="setting_location_highPerformance_level_1_info">Μέχρι 10–20 λεπτά</string>
-    <string name="setting_location_highPerformance_level_2_info">Μέχρι 15–30 λεπτά</string>
-    <string name="setting_location_highPerformance_level_3_info">Μέχρι 30–40 λεπτά</string>
+    <string name="setting_location_highPerformance_level_1_info">Έως 3–5 λεπτά</string>
+    <string name="setting_location_highPerformance_level_2_info">Έως 5–10 λεπτά</string>
+    <string name="setting_location_highPerformance_level_3_info">Έως 10–15 λεπτά</string>
     <string name="setting_location_highPerformance_level_4_info">Μπορεί να χρησιμοποιείται όλη την ώρα</string>
     <string name="setting_location_balanced_level_1">Καλύτερη μπαταρία</string>
     <string name="setting_location_balanced_level_2">Καλύτερη μπαταρία</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Σύγκρουση σχεδίου άδειας</string>
     <string name="onboarding_step_options_second_title">Κοινοποίηση χωρίς πίεση</string>
     <string name="onboarding_step_options_second_info">Έχετε πάντα τον έλεγχο του τι μοιράζεστε και του πώς το μοιράζεστε.</string>
+    <string name="app_version_alert_message_updateInstalled">Η νέα έκδοση του Paralino έχει εγκατασταθεί.</string>
 </resources>

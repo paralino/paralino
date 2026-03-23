@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Премиум</string>
     <string name="setting_location_premium_banner_alert_message">Включение этой настройки требует премиум-плана.\n\nОбновите свой план, чтобы получить доступ ко всем параметрам.</string>
     <string name="setting_location_highPerformance_section_title">При использовании</string>
-    <string name="setting_location_highPerformance_section_info">Режим **высокой производительности** активен только если вы или один из членов вашей группы смотрите на карту, пока включен обмен местоположением.</string>
+    <string name="setting_location_highPerformance_section_info">Режим **Высокая производительность** активен, если вы или один из участников вашей группы просматриваете карту.</string>
     <string name="setting_location_highPerformance_duration_title">Разрешено</string>
-    <string name="setting_location_highPerformance_duration_info">Выберите максимальное количество времени, которое ваше устройство может проводить в режиме высокой производительности в течение движущегося 1-часового окна.</string>
-    <string name="setting_location_balanced_section_title">Когда в фоновом режиме</string>
+    <string name="setting_location_highPerformance_duration_info">Выберите максимальную продолжительность, в течение которой ваше устройство может находиться в режиме высокой производительности в пределах скользящего 20-минутного интервала.</string>
+    <string name="setting_location_balanced_section_title">Когда не используется активно</string>
     <string name="setting_location_balanced_section_info">Выберите предпочитаемую частоту обновления местоположения, когда заряд батареи составляет не менее 30%, и приложение не активно. \nПриложение перейдет в режим **высокой производительности**, если вы или один из членов вашей группы смотрите на карту.</string>
     <string name="setting_location_balanced_highAccuracy_title">Высокая точность местоположения</string>
     <string name="setting_location_balanced_highAccuracy_description">Используйте точный датчик местоположения с высокой точностью (GPS), когда приложение не активно в фоновом режиме. Это будет использовать больше энергии батареи.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Средний</string>
     <string name="setting_location_highPerformance_level_3">Длинный</string>
     <string name="setting_location_highPerformance_level_4">Без ограничений</string>
-    <string name="setting_location_highPerformance_level_1_info">До 10–20 минут</string>
-    <string name="setting_location_highPerformance_level_2_info">До 15–30 минут</string>
-    <string name="setting_location_highPerformance_level_3_info">До 30–40 минут</string>
+    <string name="setting_location_highPerformance_level_1_info">До 3–5 минут</string>
+    <string name="setting_location_highPerformance_level_2_info">До 5–10 минут</string>
+    <string name="setting_location_highPerformance_level_3_info">До 10–15 минут</string>
     <string name="setting_location_highPerformance_level_4_info">Может использоваться все время</string>
     <string name="setting_location_balanced_level_1">Лучшая батарея</string>
     <string name="setting_location_balanced_level_2">Лучше батарея</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Конфликт плана лицензии</string>
     <string name="onboarding_step_options_second_title">Обмен без давления</string>
     <string name="onboarding_step_options_second_info">Вы всегда контролируете, что и каким образом вы делитесь.</string>
+    <string name="app_version_alert_message_updateInstalled">Установлена новая версия Paralino.</string>
 </resources>

@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Het inschakelen van deze instelling vereist een premium-abonnement.\n\nUpgrade uw abonnement om alle opties te ontgrendelen.</string>
     <string name="setting_location_highPerformance_section_title">Wanneer in gebruik</string>
-    <string name="setting_location_highPerformance_section_info">**Hoge prestaties** modus is alleen actief als u, of een van uw groepsleden, naar de kaart kijkt terwijl locatie delen is ingeschakeld.</string>
+    <string name="setting_location_highPerformance_section_info">**High performance**-modus is actief als u of een van uw groepsleden naar de kaart kijkt.</string>
     <string name="setting_location_highPerformance_duration_title">Toegestaan</string>
-    <string name="setting_location_highPerformance_duration_info">Kies de maximale tijd die uw apparaat in de modus voor hoge prestaties kan doorbrengen binnen een bewegend venster van 1 uur.</string>
-    <string name="setting_location_balanced_section_title">Wanneer op de achtergrond</string>
+    <string name="setting_location_highPerformance_duration_info">Kies de maximale tijd die uw apparaat binnen een schuivend venster van 20 minuten in de modus voor hoge prestaties kan doorbrengen.</string>
+    <string name="setting_location_balanced_section_title">Wanneer niet actief gebruikt wordt</string>
     <string name="setting_location_balanced_section_info">Kies uw voorkeursfrequentie voor locatie-updates wanneer uw batterij minstens 30% is opgeladen en de app inactief is.\nDe app schakelt over naar **hoge prestaties** modus als u of een van uw groepsleden naar de kaart kijkt.</string>
     <string name="setting_location_balanced_highAccuracy_title">Hoge nauwkeurigheid locatie</string>
     <string name="setting_location_balanced_highAccuracy_description">Gebruik een nauwkeurige, hoge-nauwkeurigheid locatie sensor (GPS) wanneer deze inactief is op de achtergrond. Dit verbruikt meer batterijvermogen.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Gemiddeld</string>
     <string name="setting_location_highPerformance_level_3">Lang</string>
     <string name="setting_location_highPerformance_level_4">Geen limiet</string>
-    <string name="setting_location_highPerformance_level_1_info">Tot 10–20 minuten</string>
-    <string name="setting_location_highPerformance_level_2_info">Tot 15–30 minuten</string>
-    <string name="setting_location_highPerformance_level_3_info">Tot 30–40 minuten</string>
+    <string name="setting_location_highPerformance_level_1_info">Tot 3–5 minuten</string>
+    <string name="setting_location_highPerformance_level_2_info">Tot 5–10 minuten</string>
+    <string name="setting_location_highPerformance_level_3_info">Maximaal 10–15 minuten</string>
     <string name="setting_location_highPerformance_level_4_info">Kan de hele tijd worden gebruikt</string>
     <string name="setting_location_balanced_level_1">Beste batterij</string>
     <string name="setting_location_balanced_level_2">Betere batterij</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Conflict van het licentieplan</string>
     <string name="onboarding_step_options_second_title">Delen zonder druk</string>
     <string name="onboarding_step_options_second_info">U behoudt te allen tijde de controle over wat u deelt en hoe u dat doet.</string>
+    <string name="app_version_alert_message_updateInstalled">Nieuwe Paralino-versie is geïnstalleerd.</string>
 </resources>

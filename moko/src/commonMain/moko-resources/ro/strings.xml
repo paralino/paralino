@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Activarea acestei setări necesită un plan premium.</string>
     <string name="setting_location_highPerformance_section_title">Când este utilizat</string>
-    <string name="setting_location_highPerformance_section_info">Modul **performanță ridicată** este activ doar dacă dumneavoastră sau unul dintre membrii grupului dumneavoastră vizionați harta în timp ce partajarea locației este activată.</string>
+    <string name="setting_location_highPerformance_section_info">**Modul de înaltă performanță** este activ dacă dumneavoastră sau unul dintre membrii grupului dumneavoastră se uită la hartă.</string>
     <string name="setting_location_highPerformance_duration_title">Permis</string>
-    <string name="setting_location_highPerformance_duration_info">Alegeți cantitatea maximă de timp pe care dispozitivul dumneavoastră o poate petrece în modul de performanță ridicată într-un interval mobil de 1 oră.</string>
-    <string name="setting_location_balanced_section_title">Când este în fundal</string>
+    <string name="setting_location_highPerformance_duration_info">Alegeți durata maximă pe care dispozitivul o poate petrece în modul de înaltă performanță într-o fereastră mobilă de 20 de minute.</string>
+    <string name="setting_location_balanced_section_title">Când nu este utilizat în mod activ</string>
     <string name="setting_location_balanced_section_info">Alegeți frecvența preferată de actualizare a locației atunci când bateria dumneavoastră este încărcată cel puțin 30% și aplicația este inactivă. \nAplicația va comuta în modul **performanță ridicată** dacă dumneavoastră sau unul dintre membrii grupului dumneavoastră vizionați harta.</string>
     <string name="setting_location_balanced_highAccuracy_title">Locație de mare precizie</string>
     <string name="setting_location_balanced_highAccuracy_description">Utilizați senzorul de locație precis, de mare precizie (GPS) atunci când este inactiv în fundal. Acest lucru va consuma mai multă energie a bateriei.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Mediu</string>
     <string name="setting_location_highPerformance_level_3">Lung</string>
     <string name="setting_location_highPerformance_level_4">Fără limită</string>
-    <string name="setting_location_highPerformance_level_1_info">Până la 10–20 de minute</string>
-    <string name="setting_location_highPerformance_level_2_info">Până la 15–30 de minute</string>
-    <string name="setting_location_highPerformance_level_3_info">Până la 30–40 de minute</string>
+    <string name="setting_location_highPerformance_level_1_info">Până la 3–5 minute</string>
+    <string name="setting_location_highPerformance_level_2_info">Până la 5–10 minute</string>
+    <string name="setting_location_highPerformance_level_3_info">Până la 10–15 minute</string>
     <string name="setting_location_highPerformance_level_4_info">Poate fi folosit tot timpul</string>
     <string name="setting_location_balanced_level_1">Cea mai bună baterie</string>
     <string name="setting_location_balanced_level_2">Baterie mai bună</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Conflict de plan de licență</string>
     <string name="onboarding_step_options_second_title">Partajare fără presiune</string>
     <string name="onboarding_step_options_second_info">Aveți întotdeauna controlul asupra a ceea ce partajați și asupra modului în care o faceți.</string>
+    <string name="app_version_alert_message_updateInstalled">Noua versiune a Paralino a fost instalată.</string>
 </resources>

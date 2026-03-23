@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Tämän asetuksen ottaminen käyttöön vaatii premium-tilauksen.\n\nPäivitä tilauksesi saadaksesi kaikki vaihtoehdot käyttöösi.</string>
     <string name="setting_location_highPerformance_section_title">Kun käytössä</string>
-    <string name="setting_location_highPerformance_section_info">**Korkean suorituskyvyn** tila on aktiivinen vain, jos sinä tai joku ryhmäsi jäsenistä katsoo karttaa sijaintijako päällä.</string>
+    <string name="setting_location_highPerformance_section_info">**Korkean suorituskyvyn** tila on käytössä, jos sinä tai joku ryhmäsi jäsenistä tarkastelee karttaa.</string>
     <string name="setting_location_highPerformance_duration_title">Sallittu</string>
-    <string name="setting_location_highPerformance_duration_info">Valitse enimmäisaika, jonka laitteesi voi olla korkeassa suorituskyvyssä liikkuvassa 1 tunnin aikarajassa.</string>
-    <string name="setting_location_balanced_section_title">Taustalla</string>
+    <string name="setting_location_highPerformance_duration_info">Valitse suurin aika, jonka laitteesi voi olla korkean suorituskyvyn tilassa 20 minuutin liukuvassa aikaikkunassa.</string>
+    <string name="setting_location_balanced_section_title">Kun ei ole aktiivisessa käytössä</string>
     <string name="setting_location_balanced_section_info">Valitse haluamasi sijaintipäivityksen taajuus, kun akku on vähintään 30 % ladattu ja sovellus on inaktiivinen. \nSovellus siirtyy **korkean suorituskyvyn** tilaan, jos sinä tai joku ryhmäsi jäsenistä katsoo karttaa.</string>
     <string name="setting_location_balanced_highAccuracy_title">Korkean tarkkuuden sijainti</string>
     <string name="setting_location_balanced_highAccuracy_description">Käytä tarkkaa, korkean tarkkuuden sijaintisensoria (GPS) taustalla ollessasi. Tämä kuluttaa enemmän akkua.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Keskipitkä</string>
     <string name="setting_location_highPerformance_level_3">Pitkä</string>
     <string name="setting_location_highPerformance_level_4">Ei rajoituksia</string>
-    <string name="setting_location_highPerformance_level_1_info">Jopa 10–20 minuuttia</string>
-    <string name="setting_location_highPerformance_level_2_info">Jopa 15–30 minuuttia</string>
-    <string name="setting_location_highPerformance_level_3_info">Jopa 30–40 minuuttia</string>
+    <string name="setting_location_highPerformance_level_1_info">Enintään 3–5 minuuttia</string>
+    <string name="setting_location_highPerformance_level_2_info">Noin 5–10 minuuttia</string>
+    <string name="setting_location_highPerformance_level_3_info">Enintään 10–15 minuuttia</string>
     <string name="setting_location_highPerformance_level_4_info">Voidaan käyttää koko ajan</string>
     <string name="setting_location_balanced_level_1">Paras akunkesto</string>
     <string name="setting_location_balanced_level_2">Parempi akunkesto</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Lisenssisuunnitelman konflikti</string>
     <string name="onboarding_step_options_second_title">Jakaminen ilman painostusta</string>
     <string name="onboarding_step_options_second_info">Päätät aina itse, mitä jaat ja miten jaat sen.</string>
+    <string name="app_version_alert_message_updateInstalled">Uusi Paralino-versio on asennettu.</string>
 </resources>

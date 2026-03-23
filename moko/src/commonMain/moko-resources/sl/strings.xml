@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Za omogočanje te nastavitve potrebujete premijski načrt.\n\nNadgradite svoj načrt, da odklenete vse možnosti.</string>
     <string name="setting_location_highPerformance_section_title">Ko je v uporabi</string>
-    <string name="setting_location_highPerformance_section_info">**Način visoke zmogljivosti** je aktiven le, če vi ali eden od članov vaše skupine gledate na zemljevid, medtem ko je deljenje lokacije vklopljeno.</string>
+    <string name="setting_location_highPerformance_section_info">**Način visoke zmogljivosti** je aktiven, kadar Vi ali kateri koli član Vaše skupine ogleduje zemljevid.</string>
     <string name="setting_location_highPerformance_duration_title">Dovoljeno</string>
-    <string name="setting_location_highPerformance_duration_info">Izberite največje število časa, ki ga lahko vaše naprave preživi v načinu visoke zmogljivosti v premikajočem se 1-urnem oknu.</string>
-    <string name="setting_location_balanced_section_title">Ko je v ozadju</string>
+    <string name="setting_location_highPerformance_duration_info">Izberite največ časa, ki ga lahko vaša naprava porabi v načinu visoke zmogljivosti znotraj drsečega 20-minutnega okna.</string>
+    <string name="setting_location_balanced_section_title">Ko ni v aktivni uporabi</string>
     <string name="setting_location_balanced_section_info">Izberite svojo želeno frekvenco posodobitev lokacije, ko je vaša baterija vsaj 30 % napolnjena in aplikacija je neaktivna. \nAplikacija se bo preklopila v **način visoke zmogljivosti**, če vi ali eden od članov vaše skupine gledate na zemljevid.</string>
     <string name="setting_location_balanced_highAccuracy_title">Visoka natančnost lokacije</string>
     <string name="setting_location_balanced_highAccuracy_description">Uporabite natančen, visoko natančen senzor lokacije (GPS), ko je aplikacija neaktivna v ozadju. To bo porabilo več baterijske energije.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Srednje</string>
     <string name="setting_location_highPerformance_level_3">Dolgo</string>
     <string name="setting_location_highPerformance_level_4">Brez omejitev</string>
-    <string name="setting_location_highPerformance_level_1_info">Do 10–20 minut</string>
-    <string name="setting_location_highPerformance_level_2_info">Do 15–30 minut</string>
-    <string name="setting_location_highPerformance_level_3_info">Do 30–40 minut</string>
+    <string name="setting_location_highPerformance_level_1_info">Do 3–5 minut</string>
+    <string name="setting_location_highPerformance_level_2_info">Približno 5–10 minut</string>
+    <string name="setting_location_highPerformance_level_3_info">Do 10–15 minut</string>
     <string name="setting_location_highPerformance_level_4_info">Lahko se uporablja ves čas</string>
     <string name="setting_location_balanced_level_1">Najboljša baterija</string>
     <string name="setting_location_balanced_level_2">Boljša baterija</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Konflikt načrta licence</string>
     <string name="onboarding_step_options_second_title">Deljenje brez pritiska</string>
     <string name="onboarding_step_options_second_info">Vedno imate nadzor nad tem, kaj in kako delite.</string>
+    <string name="app_version_alert_message_updateInstalled">Nova različica aplikacije Paralino je nameščena.</string>
 </resources>

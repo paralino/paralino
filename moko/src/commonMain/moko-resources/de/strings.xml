@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Zum Aktivieren dieser Einstellung ist ein Premium‑Tarif erforderlich.\n\nAktualisieren Sie Ihren Tarif, um alle Optionen freizuschalten.</string>
     <string name="setting_location_highPerformance_section_title">Während der Nutzung</string>
-    <string name="setting_location_highPerformance_section_info">Der Modus **Hohe Leistung** ist nur aktiv, wenn Sie oder eines Ihrer Gruppenmitglieder die Karte ansehen, während die Standortfreigabe aktiviert ist.</string>
+    <string name="setting_location_highPerformance_section_info">**Hochleistungsmodus** ist aktiv, wenn Sie oder eines Ihrer Gruppenmitglieder die Karte betrachten.</string>
     <string name="setting_location_highPerformance_duration_title">Erlaubt</string>
-    <string name="setting_location_highPerformance_duration_info">Wählen Sie die maximale Zeit, die Ihr Gerät im Hochleistungsmodus innerhalb eines gleitenden 1-Stunden-Fensters verbringen kann.</string>
-    <string name="setting_location_balanced_section_title">Im Hintergrund</string>
+    <string name="setting_location_highPerformance_duration_info">Wählen Sie die maximale Dauer, die Ihr Gerät innerhalb eines rollierenden 20‑Minuten‑Fensters im Hochleistungsmodus verbringen darf.</string>
+    <string name="setting_location_balanced_section_title">Wenn es nicht aktiv verwendet wird</string>
     <string name="setting_location_balanced_section_info">Wählen Sie Ihre bevorzugte Standortaktualisierungsfrequenz, wenn Ihr Akku mindestens zu 30% geladen ist und die App inaktiv ist.\nDie App wechselt in den Modus **Hohe Leistung**, wenn Sie oder eines Ihrer Gruppenmitglieder die Karte ansehen.</string>
     <string name="setting_location_balanced_highAccuracy_title">Hohe Standortgenauigkeit</string>
     <string name="setting_location_balanced_highAccuracy_description">Verwenden Sie den präzisen, hochgenauen Standortsensor (GPS), wenn das Gerät im Hintergrund im Leerlauf ist. Verbraucht mehr Batterieleistung.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Mittel</string>
     <string name="setting_location_highPerformance_level_3">Lang</string>
     <string name="setting_location_highPerformance_level_4">Kein Limit</string>
-    <string name="setting_location_highPerformance_level_1_info">Bis zu 10–20 Minuten</string>
-    <string name="setting_location_highPerformance_level_2_info">Bis zu 15–30 Minuten</string>
-    <string name="setting_location_highPerformance_level_3_info">Bis zu 30–40 Minuten</string>
+    <string name="setting_location_highPerformance_level_1_info">Bis zu 3–5 Minuten</string>
+    <string name="setting_location_highPerformance_level_2_info">Ungefähr 5–10 Minuten</string>
+    <string name="setting_location_highPerformance_level_3_info">Bis zu 10–15 Minuten</string>
     <string name="setting_location_highPerformance_level_4_info">Kann die ganze Zeit verwendet werden</string>
     <string name="setting_location_balanced_level_1">Beste Akkulaufzeit</string>
     <string name="setting_location_balanced_level_2">Bessere Akkulaufzeit</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Lizenzplan-Konflikt</string>
     <string name="onboarding_step_options_second_title">Teilen ohne Druck</string>
     <string name="onboarding_step_options_second_info">Sie haben jederzeit die Kontrolle darüber, was Sie teilen und wie Sie es teilen.</string>
+    <string name="app_version_alert_message_updateInstalled">Die neue Paralino-Version wurde installiert.</string>
 </resources>

@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">Aktivering av denne innstillingen krever et premiumabonnement.\n\nOppgrader abonnementet ditt for å låse opp alle alternativer.</string>
     <string name="setting_location_highPerformance_section_title">Når i bruk</string>
-    <string name="setting_location_highPerformance_section_info">**Høy ytelse**-modus er aktiv bare hvis du, eller en av medlemmene i gruppen din, ser på kartet mens deling av posisjon er aktivert.</string>
+    <string name="setting_location_highPerformance_section_info">**Høy ytelse**-modus er aktiv hvis du eller et av gruppemedlemmene dine ser på kartet.</string>
     <string name="setting_location_highPerformance_duration_title">Tillatt</string>
-    <string name="setting_location_highPerformance_duration_info">Velg den maksimale tiden enheten din kan bruke i høy ytelse-modus innenfor et bevegelig 1-timers vindu.</string>
-    <string name="setting_location_balanced_section_title">Når i bakgrunnen</string>
+    <string name="setting_location_highPerformance_duration_info">Velg maksimalt tidsrom enheten din kan være i høyytelsesmodus innenfor et rullende 20-minuttersvindu.</string>
+    <string name="setting_location_balanced_section_title">Når det ikke er i aktiv bruk</string>
     <string name="setting_location_balanced_section_info">Velg din foretrukne frekvens for oppdatering av posisjon når batteriet ditt er minst 30% ladet og appen er inaktiv.\nAppen vil bytte til **høy ytelse**-modus hvis du eller en av medlemmene i gruppen din ser på kartet.</string>
     <string name="setting_location_balanced_highAccuracy_title">Høy nøyaktighet posisjon</string>
     <string name="setting_location_balanced_highAccuracy_description">Bruk presis, høy-nøyaktighets posisjonssensor (GPS) når den er inaktiv i bakgrunnen. Dette vil bruke mer batteristrøm.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Moderat</string>
     <string name="setting_location_highPerformance_level_3">Lang</string>
     <string name="setting_location_highPerformance_level_4">Ingen grense</string>
-    <string name="setting_location_highPerformance_level_1_info">Opp til 10–20 minutter</string>
-    <string name="setting_location_highPerformance_level_2_info">Opp til 15–30 minutter</string>
-    <string name="setting_location_highPerformance_level_3_info">Opp til 30–40 minutter</string>
+    <string name="setting_location_highPerformance_level_1_info">Opptil 3–5 minutter</string>
+    <string name="setting_location_highPerformance_level_2_info">Inntil 5–10 minutter</string>
+    <string name="setting_location_highPerformance_level_3_info">Opptil 10–15 minutter</string>
     <string name="setting_location_highPerformance_level_4_info">Kan brukes hele tiden</string>
     <string name="setting_location_balanced_level_1">Best batteri</string>
     <string name="setting_location_balanced_level_2">Bedre batteri</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Lisensplan konflikt</string>
     <string name="onboarding_step_options_second_title">Deling uten press</string>
     <string name="onboarding_step_options_second_info">Du har alltid kontroll over hva du deler og hvordan du deler det.</string>
+    <string name="app_version_alert_message_updateInstalled">Ny versjon av Paralino er installert.</string>
 </resources>

@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Premium</string>
     <string name="setting_location_premium_banner_alert_message">L\'activation de ce paramètre nécessite un forfait premium.\n\nMettez à niveau votre forfait pour débloquer toutes les options.</string>
     <string name="setting_location_highPerformance_section_title">Lors de l\'utilisation</string>
-    <string name="setting_location_highPerformance_section_info">Le mode **haute performance** est actif uniquement si vous, ou l\'un des membres de votre groupe, consultez la carte pendant que le partage de localisation est activé.</string>
+    <string name="setting_location_highPerformance_section_info">Le mode **Haute performance** est actif si la carte est consultée par vous ou par un membre de votre groupe.</string>
     <string name="setting_location_highPerformance_duration_title">Autorisé</string>
-    <string name="setting_location_highPerformance_duration_info">Choisissez la durée maximale pendant laquelle votre appareil peut passer en mode haute performance dans une fenêtre de 1 heure en mouvement.</string>
-    <string name="setting_location_balanced_section_title">Lorsqu\'il est en arrière-plan</string>
+    <string name="setting_location_highPerformance_duration_info">Choisissez la durée maximale pendant laquelle votre appareil peut rester en mode haute performance dans une fenêtre glissante de 20 minutes.</string>
+    <string name="setting_location_balanced_section_title">Lorsqu\'il/elle n\'est pas utilisé(e) activement</string>
     <string name="setting_location_balanced_section_info">Choisissez votre fréquence de mise à jour de localisation préférée lorsque votre batterie est chargée à au moins 30 % et que l\'application est inactive.\nL\'application passera en mode **haute performance** si vous ou l\'un des membres de votre groupe consultez la carte.</string>
     <string name="setting_location_balanced_highAccuracy_title">Localisation haute précision</string>
     <string name="setting_location_balanced_highAccuracy_description">Utilisez un capteur de localisation précis et de haute précision (GPS) lorsque l\'application est inactive en arrière-plan. Cela consommera plus d\'énergie.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Moyen</string>
     <string name="setting_location_highPerformance_level_3">Long</string>
     <string name="setting_location_highPerformance_level_4">Pas de limite</string>
-    <string name="setting_location_highPerformance_level_1_info">Jusqu\'à 10–20 minutes</string>
-    <string name="setting_location_highPerformance_level_2_info">Jusqu\'à 15 à 30 minutes</string>
-    <string name="setting_location_highPerformance_level_3_info">Jusqu\'à 30 à 40 minutes</string>
+    <string name="setting_location_highPerformance_level_1_info">Jusqu\'à 3–5 minutes</string>
+    <string name="setting_location_highPerformance_level_2_info">Entre 5 et 10 minutes</string>
+    <string name="setting_location_highPerformance_level_3_info">Jusqu\'à 10–15 minutes</string>
     <string name="setting_location_highPerformance_level_4_info">Peut être utilisé tout le temps</string>
     <string name="setting_location_balanced_level_1">Meilleure batterie</string>
     <string name="setting_location_balanced_level_2">Meilleure batterie</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Conflit de plan de licence</string>
     <string name="onboarding_step_options_second_title">Partager sans pression</string>
     <string name="onboarding_step_options_second_info">Vous avez toujours le contrôle sur ce que vous partagez et sur la façon dont vous le partagez.</string>
+    <string name="app_version_alert_message_updateInstalled">La nouvelle version de Paralino a été installée.</string>
 </resources>

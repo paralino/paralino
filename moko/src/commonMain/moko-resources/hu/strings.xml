@@ -203,10 +203,10 @@
     <string name="setting_location_premium_banner_title">Prémium</string>
     <string name="setting_location_premium_banner_alert_message">Ennek a beállításnak az engedélyezéséhez prémium előfizetés szükséges.\n\nFrissítse előfizetését az összes lehetőség feloldásához.</string>
     <string name="setting_location_highPerformance_section_title">Használat közben</string>
-    <string name="setting_location_highPerformance_section_info">A **magas teljesítmény** mód csak akkor aktív, ha Ön vagy a csoportjának egyik tagja a térképet nézi, miközben a helymegosztás be van kapcsolva.</string>
+    <string name="setting_location_highPerformance_section_info">A **nagy teljesítményű** mód aktív, ha Ön vagy az Ön csoportjának egyik tagja a térképet nézi.</string>
     <string name="setting_location_highPerformance_duration_title">Engedélyezett</string>
-    <string name="setting_location_highPerformance_duration_info">Válassza ki a maximális időtartamot, amelyet az eszköze a magas teljesítmény módban tölthet el egy mozgó 1 órás időablakban.</string>
-    <string name="setting_location_balanced_section_title">Háttérben</string>
+    <string name="setting_location_highPerformance_duration_info">Válassza ki, hogy készüléke egy mozgó, 20 perces időablakon belül legfeljebb mennyi időt tölthet nagy teljesítményű üzemmódban.</string>
+    <string name="setting_location_balanced_section_title">Nem aktív használat esetén</string>
     <string name="setting_location_balanced_section_info">Válassza ki a preferált helyfrissítési gyakoriságot, amikor az akkumulátor legalább 30%-os töltöttségi szinten van, és az alkalmazás inaktív. \nAz alkalmazás **magas teljesítmény** módba vált, ha Ön vagy a csoportjának egyik tagja a térképet nézi.</string>
     <string name="setting_location_balanced_highAccuracy_title">Magas pontosságú helymeghatározás</string>
     <string name="setting_location_balanced_highAccuracy_description">Használjon pontos, nagy pontosságú helymeghatározó érzékelőt (GPS) inaktív állapotban a háttérben. Ez több akkumulátor energiát fog felhasználni.</string>
@@ -226,9 +226,9 @@
     <string name="setting_location_highPerformance_level_2">Közepes</string>
     <string name="setting_location_highPerformance_level_3">Hosszú</string>
     <string name="setting_location_highPerformance_level_4">Nincs korlátozás</string>
-    <string name="setting_location_highPerformance_level_1_info">Akár 10–20 perc</string>
-    <string name="setting_location_highPerformance_level_2_info">Akár 15–30 perc</string>
-    <string name="setting_location_highPerformance_level_3_info">Akár 30–40 perc</string>
+    <string name="setting_location_highPerformance_level_1_info">Akár 3–5 percig</string>
+    <string name="setting_location_highPerformance_level_2_info">Legfeljebb 5–10 perc</string>
+    <string name="setting_location_highPerformance_level_3_info">Legfeljebb 10–15 perc</string>
     <string name="setting_location_highPerformance_level_4_info">Mindig használható</string>
     <string name="setting_location_balanced_level_1">Legjobb akkumulátor</string>
     <string name="setting_location_balanced_level_2">Jobb akkumulátor</string>
@@ -938,4 +938,5 @@
     <string name="licence_loadingStep_planActive">Licenszterv ütközés</string>
     <string name="onboarding_step_options_second_title">Kényszertől mentes megosztás</string>
     <string name="onboarding_step_options_second_info">Ön mindig irányítja, hogy mit és hogyan oszt meg.</string>
+    <string name="app_version_alert_message_updateInstalled">Az új Paralino verzió telepítve van.</string>
 </resources>
