@@ -819,6 +819,7 @@
     <string name="app_version_alert_title_mandatory">Please update</string>
     <string name="app_version_alert_message_mandatory">This app version is deprecated!\n\nTo continue using the app, please update to the latest version!</string>
     <string name="app_version_alert_button_update">Update</string>
+    <string name="app_version_alert_message_updateInstalled">New Paralino version is installed.</string>
     <string name="blocklist_screen_title">Blocklist</string>
     <string name="blocklist_screen_empty_title">Your blocklist is empty</string>
     <string name="blocklist_screen_title_groups">Blocked groups</string>
