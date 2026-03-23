@@ -143,8 +143,8 @@ android {
     productFlavors {
         create("playStore") {
             dimension = "version"
-            versionCode = 77
-            versionName = "2.2.0"
+            versionCode = 78
+            versionName = "2.2.1"
 
             val propsFile = rootProject.file("user.properties")
             val props = Properties()
@@ -156,8 +156,8 @@ android {
         }
         create("direct") {
             dimension = "version"
-            versionCode = 77
-            versionName = "2.2.0"
+            versionCode = 78
+            versionName = "2.2.1"
 
             buildConfigField("String", "revenueCatApiKey", "\"\"")
             buildConfigField("boolean", "hasGoogleMaps", "false")
