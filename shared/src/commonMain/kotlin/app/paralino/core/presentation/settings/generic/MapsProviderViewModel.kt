@@ -27,7 +27,7 @@ class MapsProviderViewModel(
         _uiState.update { createInitialState() }
         coroutineScope.launch {
             try {
-                userConfigRepo.refreshMaybeAndGetConfig(cacheTime = 5.minutes)
+                userConfigRepo.refreshMaybeAndGetConfig(cacheTime = 1.minutes)
             } catch (e: Exception) {
             }
 
