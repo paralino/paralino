@@ -268,7 +268,7 @@ fun MapHomeSheetContent(
 
                 MapSheetSelectedContentType.MEMBERS -> {
                     membersList(
-                        isPersonalSpace = readyState.isPersonalSpace,
+                        canAddNewMember = !readyState.isPersonalSpace && readyState.isCurrentUserOwnerOfSelectedGroup,
                         members = members,
                         onEvent = {
                             onEvent(MapHomeScreenUiEvent.OnMemberItemEvent(it))
@@ -286,7 +286,7 @@ fun MapHomeSheetContent(
 }
 
 private fun LazyListScope.membersList(
-    isPersonalSpace: Boolean,
+    canAddNewMember: Boolean,
     members: List<GroupMemberItemState>,
     onEvent: (GroupMemberItemEvent) -> Unit,
     onAddNewMember: () -> Unit
@@ -305,7 +305,7 @@ private fun LazyListScope.membersList(
         )
     }
 
-    if (!isPersonalSpace) {
+    if (canAddNewMember) {
         this.item(key = "add_new_member") {
             AddNewActionButton(
                 modifier = Modifier,

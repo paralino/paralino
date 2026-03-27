@@ -30,6 +30,8 @@ sealed class MapHomeScreenState {
     abstract val selectedGroupId: String?
     abstract val selectedGroupImage: ImageModel?
     abstract val isPersonalSpace: Boolean
+    abstract val isCurrentUserOwnerOfSelectedGroup: Boolean
+    abstract val selectedGroupOwnerId: String?
     abstract val isSheetEnabled: Boolean
     abstract val defaultSheetPosition: BottomSheetPosition
     abstract val androidMapSDKProvider: MapsSDKProvider?
@@ -47,6 +49,8 @@ sealed class MapHomeScreenState {
         val groupOrSpaceImage: ImageModel,
 
         override val selectedGroupId: String?,
+        override val selectedGroupOwnerId: String?,
+        override val isCurrentUserOwnerOfSelectedGroup: Boolean,
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
 
@@ -136,6 +140,8 @@ sealed class MapHomeScreenState {
     data class Empty(
         val groupsEmptyState: GroupsInitEmptyScreenState?,
         override val selectedGroupId: String?,
+        override val selectedGroupOwnerId: String?,
+        override val isCurrentUserOwnerOfSelectedGroup: Boolean,
         override val selectedGroupImage: ImageModel?,
         override val currentUserImage: ImageModel,
         override val isPersonalSpace: Boolean,

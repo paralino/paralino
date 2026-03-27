@@ -96,6 +96,8 @@ class MapHomeViewModel constructor(
         MapHomeScreenState.Empty(
             groupsEmptyState = null,
             selectedGroupId = appPrefs.selectedGroupId,
+            isCurrentUserOwnerOfSelectedGroup = false,
+            selectedGroupOwnerId = null,
             selectedGroupImage = null,
             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
             currentUserImage = userRepository.localUser.value.data?.data?.userImage
@@ -379,6 +381,8 @@ class MapHomeViewModel constructor(
                         MapHomeScreenState.Empty(
                             groupsEmptyState = groupsEmptyState,
                             selectedGroupId = null,
+                            selectedGroupOwnerId = null,
+                            isCurrentUserOwnerOfSelectedGroup = false,
                             selectedGroupImage = null,
                             isPersonalSpace = appPrefs.isPersonalSpaceSelected,
                             currentUserImage = userData?.userImage ?: ImageModel.emoji(Emojis.robot),
@@ -412,6 +416,8 @@ class MapHomeViewModel constructor(
                     groupsEmptyState = null,
                     selectedGroupId = appPrefs.selectedGroupId,
                     selectedGroupImage = _uiState.value.selectedGroupImage,
+                    selectedGroupOwnerId = _uiState.value.selectedGroupOwnerId,
+                    isCurrentUserOwnerOfSelectedGroup = _uiState.value.isCurrentUserOwnerOfSelectedGroup,
                     isPersonalSpace = true,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,
@@ -449,6 +455,8 @@ class MapHomeViewModel constructor(
                     groupsEmptyState = null,
                     selectedGroupId = null,
                     selectedGroupImage = null,
+                    selectedGroupOwnerId = null,
+                    isCurrentUserOwnerOfSelectedGroup = false,
                     isPersonalSpace = false,
                     currentUserImage = ImageModel.emoji(Emojis.robot),
                     androidMapSDKProvider = mapProvider,

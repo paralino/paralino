@@ -105,6 +105,20 @@ class MapStateMapper(
             }
         }
 
+        val selectedGroupOwnerId: String? = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.ownerUserId
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                userGroupLocal.allGroupsState.value.data?.firstOrNull { it.id == selectedGroupId }?.group?.ownerUserId
+            }
+        }
+
+        val isCurrentUserOwnerOfSelectedGroup: Boolean = when (groupOrSpace) {
+            is GroupWithMembersOrUserSpace.Group -> groupOrSpace.group.isCurrentUserOwner
+            is GroupWithMembersOrUserSpace.PersonalSpace -> {
+                userGroupLocal.allGroupsState.value.data?.firstOrNull { it.id == selectedGroupId }?.group?.isCurrentUserOwner == true
+            }
+        }
+
         val membersData = buildMembersData(
             groupOrSpace = groupOrSpace,
             groupPlanConfig = planConfig,
@@ -173,6 +187,8 @@ class MapStateMapper(
             groupOrSpaceName = groupName,
             groupOrSpaceImage = groupImage,
             selectedGroupId = selectedGroupId,
+            selectedGroupOwnerId = selectedGroupOwnerId,
+            isCurrentUserOwnerOfSelectedGroup = isCurrentUserOwnerOfSelectedGroup,
             selectedGroupImage = selectedGroupImage,
             isFirstTimeInPersonalSpace = isFirstTimeInPersonalSpace,
             userCount = userCount,
