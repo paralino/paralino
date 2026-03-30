@@ -23,7 +23,6 @@ import app.paralino.core.utils.extensions.roundToPrecision
 import app.paralino.core.utils.extensions.safeLet
 
 class LocationPayloadProvider(
-    private val databaseHelper: MainDatabaseHelper,
     private val database: MainDatabaseHelper,
     private val appPrefs: AppPrefs,
     private val memberDeviceStatusProvider: MemberDeviceStatusProvider,
@@ -127,7 +126,7 @@ class LocationPayloadProvider(
 
         val member = memberWithCurrentLocation?.first
         val location = memberWithCurrentLocation?.second
-        val groupOwnerUserId = databaseHelper.groupRelatedDao.getGroupOwnerUserId(groupId = groupId)
+        val groupOwnerUserId = database.groupRelatedDao.getGroupOwnerUserId(groupId = groupId)
 
         if (member != null && location == null) {
             logg.d("Location is null for $groupId")

@@ -339,7 +339,7 @@ val coreModule = module {
     single { NetworkQualityMonitor() }
     single { AppAccountStateMonitor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProvider(get(), get(), get(), get()) }
-    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LocationPayloadProvider(get(), get(), get(), get(), get(), get(), get()) }
     single { MemberDeviceStatusProcessor(get(), get(), get(), get(), get(), get(), get()) }
     single { RevokeDeviceActiveStatusUseCase(get(), get(), get(), get(), get()) }
     single { UserCryptoKeyRefreshUseCase(get(), get(), get(), get()) }
