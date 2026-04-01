@@ -11,6 +11,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithFullStateLo
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithLocations
 import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.map.MapScreenViewSourceType.DefaultGroup
+import app.paralino.core.presentation.settings.generic.MapInteractionsType
 import app.paralino.core.provider.localizedString
 import app.paralino.core.repo.group.UserGroupLocalDataSource
 import app.paralino.core.ui.components.AppSnackbarData
@@ -121,6 +122,32 @@ class MapEventHandler(
                             it.order < BottomSheetPosition.HIDDEN.order
                         }
                     )
+                }
+            }
+
+            is MapHomeScreenUiEvent.OnScreenDensityChange -> {
+                updateReadyState { state ->
+                    val interaction = when (val interaction = appPrefs.mapInteractions) {
+                        MapInteractionsType.DEVICE_DEFAULT -> {
+                            when {
+                                event.maxHeightDp.value < 460 -> {
+                                    MapInteractionsType.COLLAPSED
+                                }
+
+                                event.maxHeightDp.value < 720 -> {
+                                    MapInteractionsType.MINIMIZE
+                                }
+
+                                else -> {
+                                    MapInteractionsType.NONE
+                                }
+                            }
+                        }
+
+                        else -> interaction
+                    }
+
+                    state.copy(mapInteractionType = interaction)
                 }
             }
 

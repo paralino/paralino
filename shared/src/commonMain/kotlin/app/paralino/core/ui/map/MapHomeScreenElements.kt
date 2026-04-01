@@ -19,6 +19,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -110,119 +112,126 @@ fun MapHomeScreenElements(
         )
     }
 
-    Column(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
     ) {
-
-        val readyState = rememberUpdatedState(state.asReady()).value
-        val isTopHeaderVisible = if (readyState != null) {
-            if (readyState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
-                !readyState.isMapInFocus
-            } else {
-                if (readyState.isMapInFocus) {
-                    false
-                } else {
-                    sheetCollapsedMinimizedProgress > 0f
-                }
-            }
-        } else {
-            sheetCollapsedMinimizedProgress > 0f
+        LaunchedEffect(this.maxHeight, this.maxWidth) {
+            onEvent(MapHomeScreenUiEvent.OnScreenDensityChange(maxWidthDp = maxWidth, maxHeightDp = maxHeight))
         }
 
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
         ) {
+            val readyState = rememberUpdatedState(state.asReady()).value
+            val isTopHeaderVisible = if (readyState != null) {
+                if (readyState.mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
+                    !readyState.canCollapseMapHeader
+                } else {
+                    if (readyState.canCollapseMapHeader) {
+                        false
+                    } else {
+                        sheetCollapsedMinimizedProgress > 0f
+                    }
+                }
+            } else {
+                sheetCollapsedMinimizedProgress > 0f
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(screenPaddingValues.calculateTopPadding())
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colors.background.copy(alpha = 0.6f),
-                                MaterialTheme.colors.background.copy(alpha = 0.3f),
-                                Color.Transparent
-                            )
-                        )
-                    )
-            )
-
-            androidx.compose.animation.AnimatedVisibility(
-                visible = isTopHeaderVisible,
-                enter = expandVertically(clip = false),
-                exit = shrinkVertically(clip = false)
             ) {
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = screenPaddingValues.calculateTopPadding()),
-//                    .offset(y = (-200).dp * (1f - sheetCollapsedMinimizedProgress)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    // group picker button
-                    MapGroupOrSpacePickerTabs(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .weight(1f, fill = false),
-                        isPersonalSpace = state.isPersonalSpace,
-                        groupImage = state.selectedGroupImage,
-                        spaceImage = state.currentUserImage,
-                        onGroupItemClick = {
-                            onEvent(MapHomeScreenUiEvent.SwitchToGroups)
-                        },
-                        onGroupPickerClick = {
-                            onEvent(MapHomeScreenUiEvent.OnGroupPickerClick)
-                        },
-                        onSpaceItemClick = {
-                            onEvent(MapHomeScreenUiEvent.SwitchToPersonalSpace)
-                        }
-                    )
-
-                    FilledButton(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(42.dp),
-                        onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
-                        icon = null,
-                        style = ButtonStyle.ICON,
-                        elevation = 12.dp,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.surface
-                        ),
-                        content = {
-                            Icon(
-                                painter = CoreAppIcons.Settings.asPainterResource(),
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                                modifier = Modifier
-                                    .size(42.dp)
-                                    .background(
-                                        color = MaterialTheme.colors.surface,
-                                        shape = CircleShape
-                                    )
-                                    .padding(8.dp)
+                        .height(screenPaddingValues.calculateTopPadding())
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colors.background.copy(alpha = 0.6f),
+                                    MaterialTheme.colors.background.copy(alpha = 0.3f),
+                                    Color.Transparent
+                                )
                             )
-                        }
-                    )
+                        )
+                )
+
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isTopHeaderVisible,
+                    enter = expandVertically(clip = false),
+                    exit = shrinkVertically(clip = false)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = screenPaddingValues.calculateTopPadding()),
+//                    .offset(y = (-200).dp * (1f - sheetCollapsedMinimizedProgress)),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        // group picker button
+                        MapGroupOrSpacePickerTabs(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .weight(1f, fill = false),
+                            isPersonalSpace = state.isPersonalSpace,
+                            groupImage = state.selectedGroupImage,
+                            spaceImage = state.currentUserImage,
+                            onGroupItemClick = {
+                                onEvent(MapHomeScreenUiEvent.SwitchToGroups)
+                            },
+                            onGroupPickerClick = {
+                                onEvent(MapHomeScreenUiEvent.OnGroupPickerClick)
+                            },
+                            onSpaceItemClick = {
+                                onEvent(MapHomeScreenUiEvent.SwitchToPersonalSpace)
+                            }
+                        )
+
+                        FilledButton(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .size(42.dp),
+                            onClick = { onEvent(MapHomeScreenUiEvent.OnSettingsClick) },
+                            icon = null,
+                            style = ButtonStyle.ICON,
+                            elevation = 12.dp,
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.surface
+                            ),
+                            content = {
+                                Icon(
+                                    painter = CoreAppIcons.Settings.asPainterResource(),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                                    modifier = Modifier
+                                        .size(42.dp)
+                                        .background(
+                                            color = MaterialTheme.colors.surface,
+                                            shape = CircleShape
+                                        )
+                                        .padding(8.dp)
+                                )
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        // map mode
-        if (readyState != null) {
-            Image(
-                painter = if (!state.isSatelliteModeActive) {
-                    MR.images.image_map_type_satellite.asPainterResource()
-                } else if (isSystemInDarkTheme()) {
-                    MR.images.image_map_type_default_dark.asPainterResource()
-                } else {
-                    MR.images.image_map_type_default_light.asPainterResource()
-                },
-                contentDescription = null,
-                modifier = Modifier
+            // map mode
+            if (readyState != null) {
+                Image(
+                    painter = if (!state.isSatelliteModeActive) {
+                        MR.images.image_map_type_satellite.asPainterResource()
+                    } else if (isSystemInDarkTheme()) {
+                        MR.images.image_map_type_default_dark.asPainterResource()
+                    } else {
+                        MR.images.image_map_type_default_light.asPainterResource()
+                    },
+                    contentDescription = null,
+                    modifier = Modifier
 //                    .offset(
 //                        y = animateDpAsState(
 //                            if (sheetCollapsedMinimizedProgress == 0f || sheetCollapsedMinimizedProgress == 1f) {
@@ -232,60 +241,61 @@ fun MapHomeScreenElements(
 //                            }
 //                        ).value
 //                    )
-                    .align(
-                        when (state.deviceType) {
-                            DeviceType.Android -> Alignment.End
-                            DeviceType.iOS -> Alignment.Start
-                        }
-                    )
-                    .padding(top = 14.dp, end = 8.dp, start = 8.dp)
-                    .size(40.dp)
-                    .clickable { onEvent(MapHomeScreenUiEvent.OnMapModeSwitch) }
-                    .background(
-                        color = AppColors.accentDark,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = sheetPeekHeight),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                MapHomeElementSharingRow(
-                    sheetFullProgress = sheetFullProgress,
-                    sheetCollapsedMinimizedProgress = sheetCollapsedMinimizedProgress,
-                    readyState = readyState,
-                    onEvent = onEvent
+                        .align(
+                            when (state.deviceType) {
+                                DeviceType.Android -> Alignment.End
+                                DeviceType.iOS -> Alignment.Start
+                            }
+                        )
+                        .padding(top = 14.dp, end = 8.dp, start = 8.dp)
+                        .size(40.dp)
+                        .clickable { onEvent(MapHomeScreenUiEvent.OnMapModeSwitch) }
+                        .background(
+                            color = AppColors.accentDark,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
                 )
-
-                if (readyState?.isOverLimit == true) {
-                    NoticeInfoChip(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(unbounded = true)
-                            .padding(horizontal = 20.dp)
-                            .padding(bottom = 6.dp),
-                        text = stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title),
-                        icon = CoreAppIcons.Warning.asPainterResource(),
-                        backgroundColor = MaterialTheme.colors.error,
-                        textColor = MaterialTheme.colors.onError,
-                        iconTint = MaterialTheme.colors.onError,
-                        onClick = { onEvent(MapHomeScreenUiEvent.OnOverLimitsBannerTap) }
-                    )
-                }
             }
 
-            bottomCards(sheetPeekHeight)
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = sheetPeekHeight),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    MapHomeElementSharingRow(
+                        sheetFullProgress = sheetFullProgress,
+                        sheetCollapsedMinimizedProgress = sheetCollapsedMinimizedProgress,
+                        readyState = readyState,
+                        onEvent = onEvent
+                    )
+
+                    if (readyState?.isOverLimit == true) {
+                        NoticeInfoChip(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(unbounded = true)
+                                .padding(horizontal = 20.dp)
+                                .padding(bottom = 6.dp),
+                            text = stringResource(MR.strings.plan_limit_overLimit_sharing_banner_title),
+                            icon = CoreAppIcons.Warning.asPainterResource(),
+                            backgroundColor = MaterialTheme.colors.error,
+                            textColor = MaterialTheme.colors.onError,
+                            iconTint = MaterialTheme.colors.onError,
+                            onClick = { onEvent(MapHomeScreenUiEvent.OnOverLimitsBannerTap) }
+                        )
+                    }
+                }
+
+                bottomCards(sheetPeekHeight)
+            }
         }
     }
 }

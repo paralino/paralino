@@ -1,5 +1,6 @@
 package app.paralino.core.presentation.map
 
+import androidx.compose.ui.unit.Dp
 import app.paralino.core.models.base.DeviceType
 import app.paralino.core.models.base.GroupOrSpaceId
 import app.paralino.core.models.base.ImageModel
@@ -15,6 +16,7 @@ import app.paralino.core.presentation.groups.GroupMemberItemStateWithOneLocation
 import app.paralino.core.presentation.groups.MemberActionsState
 import app.paralino.core.presentation.places.list.PlaceListItemData
 import app.paralino.core.presentation.settings.generic.IOSNavigationAppType
+import app.paralino.core.presentation.settings.generic.MapInteractionsType
 import app.paralino.core.presentation.settings.generic.MapsSDKProvider
 import app.paralino.core.provider.current
 import app.paralino.core.ui.components.dialogs.AlertDialogAction
@@ -69,7 +71,7 @@ sealed class MapHomeScreenState {
         val selectedGroupSharingContract: LocationSharingContract?,
 
         val isMapFocusRequested: Boolean,
-        val canAutomaticallyPutMapInFocus: Boolean,
+        val mapInteractionType: MapInteractionsType,
         val desiredMapSheetPosition: BottomSheetPosition?,
 
         val sharingEndTime: String?,
@@ -128,17 +130,38 @@ sealed class MapHomeScreenState {
             !mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused
         }
 
-        val isMapInFocus = if (canAutomaticallyPutMapInFocus) isMapFocusRequested else false
+        val canCollapseMapHeader = when (mapInteractionType) {
+            MapInteractionsType.DEVICE_DEFAULT -> false
+            MapInteractionsType.NONE -> false
+            MapInteractionsType.MINIMIZE -> false
+            MapInteractionsType.COLLAPSED -> isMapFocusRequested
+        }
 
         override val defaultSheetPosition = if (mapHomeScreenFocusType.isMemberPlaceOrHistoryFocused) {
             BottomSheetPosition.HIDDEN
         } else {
             if (isPersonalSpace && isFirstTimeInPersonalSpace) {
                 BottomSheetPosition.EXPANDED
-            } else if (isMapInFocus) {
-                BottomSheetPosition.COLLAPSED_MINIMISED
             } else {
-                desiredMapSheetPosition ?: BottomSheetPosition.HALF_EXPANDED
+                val default = desiredMapSheetPosition ?: BottomSheetPosition.HALF_EXPANDED
+                when (mapInteractionType) {
+                    MapInteractionsType.DEVICE_DEFAULT -> default
+                    MapInteractionsType.NONE -> default
+                    MapInteractionsType.MINIMIZE -> {
+                        if (isMapFocusRequested) {
+                            BottomSheetPosition.COLLAPSED
+                        } else {
+                            default
+                        }
+                    }
+                    MapInteractionsType.COLLAPSED -> {
+                        if (isMapFocusRequested) {
+                            BottomSheetPosition.COLLAPSED_MINIMISED
+                        } else {
+                            default
+                        }
+                    }
+                }
             }
         }
     }
@@ -201,6 +224,7 @@ sealed interface MapHomeScreenUiEvent {
     data class OpenGroupDetails(val groupId: GroupOrSpaceId) : MapHomeScreenUiEvent
     data class SwitchViewSource(val viewSource: MapScreenViewSourceType) : MapHomeScreenUiEvent
     data class OnMapSheetPositionChange(val position: BottomSheetPosition) : MapHomeScreenUiEvent
+    data class OnScreenDensityChange(val maxWidthDp: Dp, val maxHeightDp: Dp) : MapHomeScreenUiEvent
     data object OpenPersonalLocationHistory : MapHomeScreenUiEvent
     data object SwitchToPersonalSpace : MapHomeScreenUiEvent
     data object SwitchToGroups : MapHomeScreenUiEvent
